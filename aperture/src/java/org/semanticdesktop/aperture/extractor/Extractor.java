@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
 
-import org.semanticdesktop.aperture.rdf.RDFMap;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
  * 
@@ -35,7 +35,7 @@ stream.close() operation when you are finished extracting.
      * @throws ExctractorException when the metadata of the stream cannot be extracted,
      * when the stream does not conform to the MimeType's norms.
      */
-    public void extract(URI id, InputStream stream, Charset charset, String mimetype, RDFMap result)  throws IOException, ExtractorException;
+    public void extract(URI id, InputStream stream, Charset charset, String mimetype, RDFContainer result)  throws IOException, ExtractorException;
 
 
  /*
@@ -52,6 +52,9 @@ stream.close() operation when you are finished extracting.
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/26 14:08:59  leo_sauermann
+ * added the sesame-model and began with RDFContainer
+ *
  * Revision 1.1  2005/10/26 08:27:08  leo_sauermann
  * first shot, the result of our 3 month discussion on https://gnowsis.opendfki.de/cgi-bin/trac.cgi/wiki/SemanticDataIntegrationFramework
  *

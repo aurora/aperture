@@ -7,7 +7,7 @@ package org.semanticdesktop.aperture.access;
 
 import java.util.Iterator;
 
-import org.semanticdesktop.aperture.rdf.RDFMap;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
  * A general interface for folder data objects. Folders are important for
@@ -45,12 +45,15 @@ public interface DataObjectFolder {
      * 
      * @return The scheme-specific metadata.
      */
-    public RDFMap getMetadata();
+    public RDFContainer getMetadata();
 
 }
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/26 14:08:59  leo_sauermann
+ * added the sesame-model and began with RDFContainer
+ *
  * Revision 1.1  2005/10/26 08:27:08  leo_sauermann
  * first shot, the result of our 3 month discussion on https://gnowsis.opendfki.de/cgi-bin/trac.cgi/wiki/SemanticDataIntegrationFramework
  *

@@ -8,7 +8,7 @@ package org.semanticdesktop.aperture.access;
 import java.net.URI;
 
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.rdf.RDFMap;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
  * A general interface for data objects. A data object consists of an
@@ -55,12 +55,15 @@ public interface DataObject {
      * 
      * @return The scheme-specific metadata.
      */
-    public RDFMap getMetadata();
+    public RDFContainer getMetadata();
 
 }
 
 /*
  * $Log$
+ * Revision 1.2  2005/10/26 14:08:59  leo_sauermann
+ * added the sesame-model and began with RDFContainer
+ *
  * Revision 1.1  2005/10/26 08:27:08  leo_sauermann
  * first shot, the result of our 3 month discussion on https://gnowsis.opendfki.de/cgi-bin/trac.cgi/wiki/SemanticDataIntegrationFramework
  *
