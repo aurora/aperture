@@ -1,0 +1,108 @@
+<!-- ANT Build Script for compiling, distributing and testing
+the Aperture data extraction framework.
+
+You will need Apache ANT to execute this script, please get
+your copy of ANT at jakarta.apache.org/ant
+
+-->
+
+<project name="aperture" basedir="." default="distribution">
+	<property name="project.longname" value="Aperture data framework" />
+	<property name="project.shortname" value="aperture" />
+	<property name="project.version.major" value="0" />
+	<property name="project.version.minor" value="1" />
+	<property name="version-status" value="devel" />
+	<property name="project.version.full" value="${project.version.major}.${project.version.minor}${version-status}" />
+	<property name="project.jar" value="${project.shortname}-${project.version.full}.jar" />
+	<property name="src.dir" value="src/java" />
+	<property name="build.dir" value="build" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="dist.dir" value="${build.dir}/dist" />
+	<property name="test.src.dir" value="src/test" />
+	<property name="test.classes.dir" value="${build.dir}/test" />
+	<property name="lib.dir" value="lib" />
+	<property name="doc.dir" value="doc" />
+	<property name="javadoc.dir" value="doc/javadoc" />
+	<property name="test.results.dir" value="${build.dir}/test" />
+	<property name="test.results" value="${test.results.dir}/All-Tests.xml" />
+	<property name="compile.debug" value="true" />
+	<property name="compile.debuglevel" value="source,lines" />
+	<property name="compile.deprecation" value="false" />
+	<property name="compile.optimize" value="true" />
+	<property name="java.src.version" value="1.4" />
+	<property name="web.site.url" value="http://aperture.sourceforge.net/" />
+
+	<!-- compilation classpath -->
+	<path id="main.classpath">
+		<fileset id="main.jarfiles" dir="${lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	
+	<!-- classpath to run test cases against - depends on the compiled jar -->
+	<path id="test.classpath">
+		<path refid="main.classpath" />
+		<pathelement location="${dist.dir}/${project.jar}" />
+	</path>
+
+
+	<target name="distribution" description="build the jar files for distribution"
+		depends="jar, test, javadoc">
+	</target>
+
+	<target name="clean" description="delete generated classes">
+		<delete dir="${build.dir}" includeemptydirs="true"/>
+		<delete dir="${javadoc.dir}" includeemptydirs="true"/>
+	</target>
+
+	<target name="compile" description="compile aperture and copy resources">
+		<mkdir dir="${classes.dir}" />
+		<javac source="${java.src.version}" srcdir="${src.dir}" destdir="${classes.dir}" 
+			classpathref="main.classpath"
+			debug="${compile.debug}" debuglevel="${compile.debuglevel}" 
+			deprecation="${compile.deprecation}" optimize="${compile.optimize}">
+			<include name="**" />
+		</javac>
+		<!-- copy resource files -->
+		<copy todir="${classes.dir}">
+			<fileset dir="${src.dir}">
+				<include name="**" />
+				<exclude name="**/*.java" />
+				<exclude name="**/CVS, **/.svn/**" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="jar" depends="compile">
+		<mkdir dir="${dist.dir}" />
+		<jar destfile="${dist.dir}/${project.jar}">
+			<fileset dir="${classes.dir}" />
+		</jar>
+	</target>
+
+	<target name="javadoc" description="create the javadoc for the core classes">
+		<mkdir dir="${javadoc.dir}" />
+		<javadoc 
+			destdir="${javadoc.dir}" 
+			sourcepath="${src.dir}" 
+			author="true" version="true" additionalparam="-breakiterator" Use="true" 
+			classpathref="main.classpath" source="${java.src.version}" windowtitle="${project.longname} Framework ${project.version.full}" 
+			doctitle="${project.longname} Framework ${project.version.full}" 
+			packagenames="org.semanticdesktop.aperture.*" >
+			<link href="http://jena.sourceforge.net/javadoc/"  />
+			<link href="http://java.sun.com/j2se/1.4.2/docs/api"  />
+		</javadoc>
+	</target>
+
+	<!-- test the core classes -->
+  <target name="test" depends="jar" description="test the compiled jar">
+    <echo>testing using jUnit</echo>
+    <junit fork="yes" printsummary="yes" failureproperty="unit.test.failed" >
+    	<classpath refid="test.classpath" />
+      <test name="org.semanticdesktop.aperture.TestPackage"/>
+    	<!--<sysproperty key="log4j.configuration" value="file:${conf.dir}/log4j.test.properties"/>-->
+    </junit>
+		<fail if="unit.test.failed" message="Tests failed." />
+  </target>
+
+</project>
