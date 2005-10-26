@@ -1,7 +1,8 @@
 /*
- * Created on 26.10.2005
- * $Id$
+ * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
+ * All rights reserved.
  * 
+ * Licensed under the Academic Free License version 3.0.
  */
 package org.semanticdesktop.aperture.extractor;
 
@@ -9,53 +10,32 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
- * 
- * Extractors are used to extract metadata and fulltext from InputStreams,
- * the inputstream is in a format passed by Mime-Type.
- * These extractors can produce RDFMaps.
+ * Extractors extract information from binary streams such as document full-text, titles, authors and
+ * other metadata that may be supported by the format. Extractors are typically specific for a single
+ * mimetype or a number of closely related mimetypes.
  */
 public interface Extractor {
 
-
-    /**
-     * create extracted information into the passed RDFMap called "result"
-     * To see what fields should be needed and which must be added, look at the 
-     * commments above
-     * @param id the uri identifying the passed object. You may need it when you add sophisticated rdf information. It is also the topResource in the passed result
-     * @param stream an opened inputstream which you can exclusively read. You must call the
-stream.close() operation when you are finished extracting.
-     * @param charset the charset in which the inputstream is encoded
-     * @param mimetype the mimetype of the passed file/stream. If your extractor can handle multiple mime-types, this can be handy.
-     * @param result - the place where the extracted data is to be written to 
-     * @throws IOException when problems arise reading the stream.
-     * @throws ExctractorException when the metadata of the stream cannot be extracted,
-     * when the stream does not conform to the MimeType's norms.
-     */
-    public void extract(URI id, InputStream stream, Charset charset, String mimetype, RDFContainer result)  throws IOException, ExtractorException;
-
-
- /*
-  inferior ALTERNATIVE:
-
-    public RDFMap extract(URI id, InputStream stream, Charset charset, String mimetype)  throws IOException, DocumentExtractorException;
-
-  inferior because with first, they only need to know the interface and with inferior they 
-  have to know how to instantiate a RDFMap. Also performace of first is better, if the
-  RDF store is sneaked and passed through the method */
-
- 
+	/**
+	 * Extracts full-text and metadata from the specified binary stream and stores the extracted
+	 * information as RDF statements in the specified RDFContainer. The optionally specified Charset and
+	 * mimetype can be used to direct how the stream should be parsed.
+	 * 
+	 * @param id the URI identifying the object (e.g. a file or web page) from which the stream was
+	 *            obtained. The generated statements should describe this URI.
+	 * @param stream the InputStream delivering the raw bytes.
+	 * @param charset the charset in which the inputstream is encoded (optional).
+	 * @param mimetype the mimetype of the passed stream (optional).
+	 * @param result the container in which this Extractor can put its created RDF statements.
+	 * @throws ParseException when the stream does not conform to the structure expected by this
+	 *             Extractor.
+	 * @throws IOException in case of any other I/O error.
+	 */
+	public void extract(URI id, InputStream stream, Charset charset, String mimetype, RDFContainer result)
+			throws ParseException, IOException;
 }
-
-/*
- * $Log$
- * Revision 1.2  2005/10/26 14:08:59  leo_sauermann
- * added the sesame-model and began with RDFContainer
- *
- * Revision 1.1  2005/10/26 08:27:08  leo_sauermann
- * first shot, the result of our 3 month discussion on https://gnowsis.opendfki.de/cgi-bin/trac.cgi/wiki/SemanticDataIntegrationFramework
- *
- */
