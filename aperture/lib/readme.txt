@@ -1,1 +1,1 @@
-here be jar files generated as a result of the aperture build
+This is the place to put the library files needed to build Aperture.
