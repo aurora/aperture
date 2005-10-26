@@ -14,12 +14,16 @@ your copy of ANT at jakarta.apache.org/ant
 	<property name="version-status" value="devel" />
 	<property name="project.version.full" value="${project.version.major}.${project.version.minor}${version-status}" />
 	<property name="project.jar" value="${project.shortname}-${project.version.full}.jar" />
+	<property name="project-test.jar" value="${project.shortname}-${project.version.full}-test.jar" />
 	<property name="src.dir" value="src/java" />
 	<property name="build.dir" value="build" />
 	<property name="classes.dir" value="${build.dir}/classes" />
 	<property name="dist.dir" value="${build.dir}/dist" />
 	<property name="test.src.dir" value="src/test" />
-	<property name="test.classes.dir" value="${build.dir}/test" />
+	<property name="test.classes.dir" value="${build.dir}/classes-test" />
+	<property name="examples.src.dir" value="src/examples" />
+	<property name="examples.classes.dir" value="${classes.dir}" />
+
 	<property name="lib.dir" value="lib" />
 	<property name="doc.dir" value="doc" />
 	<property name="javadoc.dir" value="doc/javadoc" />
@@ -32,17 +36,24 @@ your copy of ANT at jakarta.apache.org/ant
 	<property name="java.src.version" value="1.4" />
 	<property name="web.site.url" value="http://aperture.sourceforge.net/" />
 
-	<!-- compilation classpath -->
+	<!-- main compilation classpath -->
 	<path id="main.classpath">
 		<fileset id="main.jarfiles" dir="${lib.dir}">
 			<include name="*.jar" />
 		</fileset>
 	</path>
 	
+	<!-- classpath to compile tests, requires aperture.jar -->
+	<path id="compile.test.classpath">
+		<path refid="main.classpath" />
+		<pathelement location="${dist.dir}/${project.jar}" />
+	</path>
+	
 	<!-- classpath to run test cases against - depends on the compiled jar -->
 	<path id="test.classpath">
 		<path refid="main.classpath" />
 		<pathelement location="${dist.dir}/${project.jar}" />
+		<pathelement location="${dist.dir}/${project-test.jar}" />
 	</path>
 
 
@@ -55,7 +66,7 @@ your copy of ANT at jakarta.apache.org/ant
 		<delete dir="${javadoc.dir}" includeemptydirs="true"/>
 	</target>
 
-	<target name="compile" description="compile aperture and copy resources">
+	<target name="compile" description="compile aperture plus examples and copy resources">
 		<mkdir dir="${classes.dir}" />
 		<javac source="${java.src.version}" srcdir="${src.dir}" destdir="${classes.dir}" 
 			classpathref="main.classpath"
@@ -63,9 +74,23 @@ your copy of ANT at jakarta.apache.org/ant
 			deprecation="${compile.deprecation}" optimize="${compile.optimize}">
 			<include name="**" />
 		</javac>
+		<javac source="${java.src.version}" srcdir="${examples.src.dir}" destdir="${examples.classes.dir}" 
+			classpathref="main.classpath"
+			debug="${compile.debug}" debuglevel="${compile.debuglevel}" 
+			deprecation="${compile.deprecation}" optimize="${compile.optimize}">
+			<include name="**" />
+		</javac>
+
 		<!-- copy resource files -->
 		<copy todir="${classes.dir}">
 			<fileset dir="${src.dir}">
+				<include name="**" />
+				<exclude name="**/*.java" />
+				<exclude name="**/CVS, **/.svn/**" />
+			</fileset>
+		</copy>
+		<copy todir="${examples.classes.dir}">
+			<fileset dir="${examples.src.dir}">
 				<include name="**" />
 				<exclude name="**/*.java" />
 				<exclude name="**/CVS, **/.svn/**" />
@@ -77,6 +102,23 @@ your copy of ANT at jakarta.apache.org/ant
 		<mkdir dir="${dist.dir}" />
 		<jar destfile="${dist.dir}/${project.jar}">
 			<fileset dir="${classes.dir}" />
+		</jar>
+	</target>
+	
+	<target name="compile.test" description="compile test cases" depends="compile">
+		<mkdir dir="${test.classes.dir}" />
+		<javac source="${java.src.version}" srcdir="${test.src.dir}" destdir="${test.classes.dir}" 
+			classpathref="compile.test.classpath"
+			debug="${compile.debug}" debuglevel="${compile.debuglevel}" 
+			deprecation="${compile.deprecation}" optimize="${compile.optimize}">
+			<include name="**" />
+		</javac>
+	</target>
+
+	<target name="jar.test" depends="compile.test" description="pack the compiled test cases into a seperate jar">
+		<mkdir dir="${dist.dir}" />
+		<jar destfile="${dist.dir}/${project-test.jar}">
+			<fileset dir="${test.classes.dir}" />
 		</jar>
 	</target>
 
@@ -95,13 +137,36 @@ your copy of ANT at jakarta.apache.org/ant
 	</target>
 
 	<!-- test the core classes -->
-  <target name="test" depends="jar" description="test the compiled jar">
+	<!-- to get this to work in eclipse, either put JUnit into your global ant dependencies
+	  or local ant dependencies. 
+	  
+	  A - global way
+   	https://www.cyberarmy.net/forum/sneak/threads/41700.html
+	  "If you'd rather use Eclipse's built-in Ant, you'll need to add junit.jar to its classpath. To 
+     do this, go to Window ? Preferences ? Ant ? Runtime. Then click the "Add JARs" button 
+     and select junit.jar and xalan.jar from sneak/lib/. Click OK until you arrive back at the 
+     workbench view. 
+    B - local way (recommended)
+     right-click the ant target "test" or do whatever you usually do to start ant,
+     then select the "run as ...." option, so that you can configure ant before
+     starting. This menu is also available on the "run external tools" button.
+     There, switch to the "classpath" tab and add the /aperture/lib/junit.jar to
+     the ant classpath. 
+  -->
+  <target name="test" depends="jar, jar.test" description="test the compiled jar">
     <echo>testing using jUnit</echo>
-    <junit fork="yes" printsummary="yes" failureproperty="unit.test.failed" >
+  	<!--java fork="yes" classname="junit.textui.TestRunner"> 
+  		<arg value="org.semanticdesktop.aperture.TestPackage"/>
+  	</java-->
+    <junit fork="yes" 
+    	printsummary="withOutAndErr" 
+    	failureproperty="unit.test.failed"
+    	showoutput="yes">
     	<classpath refid="test.classpath" />
-      <test name="org.semanticdesktop.aperture.TestPackage"/>
-    	<!--<sysproperty key="log4j.configuration" value="file:${conf.dir}/log4j.test.properties"/>-->
+      <test name="org.semanticdesktop.aperture.TestPackage" outfile="result"/>
     </junit>
+  	<!--<sysproperty key="log4j.configuration" value="file:${conf.dir}/log4j.test.properties"/>-->
+
 		<fail if="unit.test.failed" message="Tests failed." />
   </target>
 
