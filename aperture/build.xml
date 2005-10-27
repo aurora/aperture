@@ -6,7 +6,7 @@ your copy of ANT at jakarta.apache.org/ant
 
 -->
 
-<project name="aperture" basedir="." default="distribution">
+<project name="aperture" basedir="." default="dist">
 	<property name="project.longname" value="Aperture data framework" />
 	<property name="project.shortname" value="aperture" />
 	<property name="project.version.major" value="0" />
@@ -58,7 +58,7 @@ your copy of ANT at jakarta.apache.org/ant
 	</path>
 
 
-	<target name="distribution" description="build the jar files for distribution"
+	<target name="dist" description="build the jar files for distribution"
 		depends="jar, jar.examples, jar.test, test, javadoc">
 		<echo message="Distribution can be found in ${dist.dir}"/>
 	</target>
