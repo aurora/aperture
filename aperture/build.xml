@@ -15,6 +15,7 @@ your copy of ANT at jakarta.apache.org/ant
 	<property name="project.version.full" value="${project.version.major}.${project.version.minor}${version-status}" />
 	<property name="project.jar" value="${project.shortname}-${project.version.full}.jar" />
 	<property name="project-test.jar" value="${project.shortname}-${project.version.full}-test.jar" />
+	<property name="project-examples.jar" value="${project.shortname}-${project.version.full}-examples.jar" />
 	<property name="src.dir" value="src/java" />
 	<property name="build.dir" value="build" />
 	<property name="classes.dir" value="${build.dir}/classes" />
@@ -22,7 +23,7 @@ your copy of ANT at jakarta.apache.org/ant
 	<property name="test.src.dir" value="src/test" />
 	<property name="test.classes.dir" value="${build.dir}/classes-test" />
 	<property name="examples.src.dir" value="src/examples" />
-	<property name="examples.classes.dir" value="${classes.dir}" />
+	<property name="examples.classes.dir" value="${build.dir}/classes-examples" />
 
 	<property name="lib.dir" value="lib" />
 	<property name="doc.dir" value="doc" />
@@ -58,7 +59,8 @@ your copy of ANT at jakarta.apache.org/ant
 
 
 	<target name="distribution" description="build the jar files for distribution"
-		depends="jar, test, javadoc">
+		depends="jar, jar.examples, jar.test, test, javadoc">
+		<echo message="Distribution can be found in ${dist.dir}"/>
 	</target>
 
 	<target name="clean" description="delete generated classes">
@@ -66,7 +68,7 @@ your copy of ANT at jakarta.apache.org/ant
 		<delete dir="${javadoc.dir}" includeemptydirs="true"/>
 	</target>
 
-	<target name="compile" description="compile aperture plus examples and copy resources">
+	<target name="compile" description="compile aperture and copy resources">
 		<mkdir dir="${classes.dir}" />
 		<javac source="${java.src.version}" srcdir="${src.dir}" destdir="${classes.dir}" 
 			classpathref="main.classpath"
@@ -74,13 +76,6 @@ your copy of ANT at jakarta.apache.org/ant
 			deprecation="${compile.deprecation}" optimize="${compile.optimize}">
 			<include name="**" />
 		</javac>
-		<javac source="${java.src.version}" srcdir="${examples.src.dir}" destdir="${examples.classes.dir}" 
-			classpathref="main.classpath"
-			debug="${compile.debug}" debuglevel="${compile.debuglevel}" 
-			deprecation="${compile.deprecation}" optimize="${compile.optimize}">
-			<include name="**" />
-		</javac>
-
 		<!-- copy resource files -->
 		<copy todir="${classes.dir}">
 			<fileset dir="${src.dir}">
@@ -89,6 +84,24 @@ your copy of ANT at jakarta.apache.org/ant
 				<exclude name="**/CVS, **/.svn/**" />
 			</fileset>
 		</copy>
+	</target>
+	
+	<target name="jar" depends="compile">
+		<mkdir dir="${dist.dir}" />
+		<jar destfile="${dist.dir}/${project.jar}">
+			<fileset dir="${classes.dir}" />
+		</jar>
+	</target>
+		
+	<target name="compile.examples" description="comple examples and copy resources">
+		<mkdir dir="${examples.classes.dir}" />
+		<javac source="${java.src.version}" srcdir="${examples.src.dir}" destdir="${examples.classes.dir}" 
+			classpathref="main.classpath"
+			debug="${compile.debug}" debuglevel="${compile.debuglevel}" 
+			deprecation="${compile.deprecation}" optimize="${compile.optimize}">
+			<include name="**" />
+		</javac>
+		<!-- copy resource files -->
 		<copy todir="${examples.classes.dir}">
 			<fileset dir="${examples.src.dir}">
 				<include name="**" />
@@ -98,12 +111,13 @@ your copy of ANT at jakarta.apache.org/ant
 		</copy>
 	</target>
 
-	<target name="jar" depends="compile">
+	<target name="jar.examples" depends="compile.examples">
 		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/${project.jar}">
-			<fileset dir="${classes.dir}" />
+		<jar destfile="${dist.dir}/${project-examples.jar}">
+			<fileset dir="${examples.classes.dir}" />
 		</jar>
 	</target>
+
 	
 	<target name="compile.test" description="compile test cases" depends="compile">
 		<mkdir dir="${test.classes.dir}" />
