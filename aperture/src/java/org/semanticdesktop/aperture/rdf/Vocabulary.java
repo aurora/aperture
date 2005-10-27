@@ -18,9 +18,8 @@ public class Vocabulary {
    
     public static final String NS = "http://aperture.semanticdesktop.org/ontology/data#";
     
-    public static final String FULL_TEXT = "full-text";
-
-    public static final String CREATOR = "creator";
+    public static final String FULL_TEXT = NS + "full-text";
+    public static final String CREATOR = NS + "creator";
     
     static {
         ValueFactory factory = new ValueFactoryImpl();
@@ -29,7 +28,6 @@ public class Vocabulary {
     }
     
     public static final URI FULL_TEXT_URI;
-    
     public static final URI CREATOR_URI;
 
     private Vocabulary() {
