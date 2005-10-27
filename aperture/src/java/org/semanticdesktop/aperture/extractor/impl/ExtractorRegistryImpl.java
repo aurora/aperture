@@ -62,7 +62,7 @@ public class ExtractorRegistryImpl implements ExtractorRegistry {
     public Set get(String mimeType) {
         Set factorySet = (Set) factories.get(mimeType);
         if (factorySet == null) {
-            return Collections.emptySet();
+            return Collections.EMPTY_SET;
         }
         else {
             return new HashSet(factorySet);
