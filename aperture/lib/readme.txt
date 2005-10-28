@@ -1,1 +1,0 @@
-This is the place to put the library files needed to build Aperture.
