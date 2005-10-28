@@ -42,7 +42,7 @@ public class PlainTextExtractorTest extends TestCase {
         // check value
         Literal value = (Literal) statement.getObject();
         String text = value.getLabel();
-        assertTrue(text.contains("plain text"));
+        assertTrue((text.indexOf("plain text")!=-1));
     }
 
     public void testFailingExtraction() throws URISyntaxException, ParseException, IOException {
