@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.semanticdesktop.aperture.extractor.Extractor;
+import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.Vocabulary;
 import org.semanticdesktop.aperture.util.IOUtil;
@@ -24,25 +25,30 @@ public class PlainTextExtractor implements Extractor {
 
     private static final Logger LOGGER = Logger.getLogger(PlainTextExtractor.class.getName());
     
-    public void extract(URI id, InputStream stream, Charset charset, String mimetype, RDFContainer result) throws IOException {
-        // create a Reader that will convert the bytes to characters
-        Reader reader = charset == null ? new InputStreamReader(stream) : new InputStreamReader(stream, charset);
+    public void extract(URI id, InputStream stream, Charset charset, String mimetype, RDFContainer result) throws ExtractorException {
+        try {
+            // create a Reader that will convert the bytes to characters
+            Reader reader = charset == null ? new InputStreamReader(stream) : new InputStreamReader(stream, charset);
 
-        // verify that the first 256 characters really are text characters
-        String firstChars = IOUtil.readString(reader, 256);
+            // verify that the first 256 characters really are text characters
+            String firstChars = IOUtil.readString(reader, 256);
 
-        int nrChars = firstChars.length();
-        for (int i = 0; i < nrChars; i++) {
-            char c = firstChars.charAt(i);
-            if (!Character.isDefined(c) || (Character.isISOControl(c) && !Character.isWhitespace(c))) {
-                // c is not defined in Unicode or it is a control character that is not a whitespace character
-                LOGGER.log(Level.WARNING, "Document does not contain plain text");
-                return;
+            int nrChars = firstChars.length();
+            for (int i = 0; i < nrChars; i++) {
+                char c = firstChars.charAt(i);
+                if (!Character.isDefined(c) || (Character.isISOControl(c) && !Character.isWhitespace(c))) {
+                    // c is not defined in Unicode or it is a control character that is not a whitespace character
+                    LOGGER.log(Level.WARNING, "Document does not contain plain text");
+                    return;
+                }
             }
-        }
 
-        // everything is ok, read the full document 
-        String remainingChars = IOUtil.readString(reader);
-        result.put(Vocabulary.FULL_TEXT_URI, firstChars + remainingChars);
+            // everything is ok, read the full document 
+            String remainingChars = IOUtil.readString(reader);
+            result.put(Vocabulary.FULL_TEXT_URI, firstChars + remainingChars);
+        }
+        catch (IOException e) {
+            throw new ExtractorException(e);
+        }
     }
 }
