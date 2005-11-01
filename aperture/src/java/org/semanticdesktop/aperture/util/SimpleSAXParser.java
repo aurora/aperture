@@ -191,7 +191,7 @@ public class SimpleSAXParser {
             // Copy attributes to _deferredAttributes
             int attCount = attributes.getLength();
             if (attCount == 0) {
-                deferredAttributes = Collections.emptyMap();
+                deferredAttributes = Collections.EMPTY_MAP;
             }
             else {
                 deferredAttributes = new HashMap(attCount * 2);
