@@ -27,7 +27,7 @@ your copy of ANT at jakarta.apache.org/ant
 
 	<property name="lib.dir" value="lib" />
 	<property name="doc.dir" value="doc" />
-	<property name="javadoc.dir" value="doc/javadoc" />
+	<property name="javadoc.dir" value="${doc.dir}/api" />
 	<property name="test.results.dir" value="${build.dir}/test" />
 	<property name="test.results" value="${test.results.dir}/All-Tests.xml" />
 	<property name="compile.debug" value="true" />
@@ -46,6 +46,12 @@ your copy of ANT at jakarta.apache.org/ant
 	
 	<!-- classpath to compile tests, requires aperture.jar -->
 	<path id="compile.test.classpath">
+		<path refid="main.classpath" />
+		<pathelement location="${dist.dir}/${project.jar}" />
+	</path>
+	
+	<!-- classpath to compile examples, requires aperture.jar -->
+	<path id="compile.examples.classpath">
 		<path refid="main.classpath" />
 		<pathelement location="${dist.dir}/${project.jar}" />
 	</path>
@@ -88,15 +94,15 @@ your copy of ANT at jakarta.apache.org/ant
 	
 	<target name="jar" depends="compile">
 		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/${project.jar}">
+		<jar destfile="${dist.dir}/${project.jar}" compress="no">
 			<fileset dir="${classes.dir}" />
 		</jar>
 	</target>
 		
-	<target name="compile.examples" description="comple examples and copy resources">
+	<target name="compile.examples" description="compile examples and copy resources">
 		<mkdir dir="${examples.classes.dir}" />
 		<javac source="${java.src.version}" srcdir="${examples.src.dir}" destdir="${examples.classes.dir}" 
-			classpathref="main.classpath"
+			classpathref="compile.examples.classpath"
 			debug="${compile.debug}" debuglevel="${compile.debuglevel}" 
 			deprecation="${compile.deprecation}" optimize="${compile.optimize}">
 			<include name="**" />
@@ -113,7 +119,7 @@ your copy of ANT at jakarta.apache.org/ant
 
 	<target name="jar.examples" depends="compile.examples">
 		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/${project-examples.jar}">
+		<jar destfile="${dist.dir}/${project-examples.jar}" compress="no">
 			<fileset dir="${examples.classes.dir}" />
 		</jar>
 	</target>
@@ -127,11 +133,19 @@ your copy of ANT at jakarta.apache.org/ant
 			deprecation="${compile.deprecation}" optimize="${compile.optimize}">
 			<include name="**" />
 		</javac>
+		<!-- copy resource files -->
+		<copy todir="${test.classes.dir}">
+			<fileset dir="${test.src.dir}">
+				<include name="**" />
+				<exclude name="**/*.java" />
+				<exclude name="**/CVS, **/.svn/**" />
+			</fileset>
+		</copy>
 	</target>
 
 	<target name="jar.test" depends="compile.test" description="pack the compiled test cases into a seperate jar">
 		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/${project-test.jar}">
+		<jar destfile="${dist.dir}/${project-test.jar}" compress="no">
 			<fileset dir="${test.classes.dir}" />
 		</jar>
 	</target>
@@ -170,18 +184,18 @@ your copy of ANT at jakarta.apache.org/ant
   <target name="test" depends="jar, jar.test" description="test the compiled jar">
     <echo>testing using jUnit</echo>
   	<!--java fork="yes" classname="junit.textui.TestRunner"> 
-  		<arg value="org.semanticdesktop.aperture.TestPackage"/>
+  		<arg value="org.semanticdesktop.aperture.TestAll"/>
   	</java-->
     <junit fork="yes" 
     	printsummary="withOutAndErr" 
     	failureproperty="unit.test.failed"
     	showoutput="yes">
     	<classpath refid="test.classpath" />
-      <test name="org.semanticdesktop.aperture.TestPackage" outfile="result"/>
+      <test name="org.semanticdesktop.aperture.TestAll" outfile="result"/>
     </junit>
   	<!--<sysproperty key="log4j.configuration" value="file:${conf.dir}/log4j.test.properties"/>-->
 
-		<fail if="unit.test.failed" message="Tests failed." />
+	<fail if="unit.test.failed" message="Tests failed." />
   </target>
 
 </project>
