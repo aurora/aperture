@@ -19,7 +19,7 @@ public class GuiUtil {
     /**
      * Show this exception to the user. reading exceptions builds character.
      * 
-     * @param x the exception
+     * @param e the exception
      */
     public static void showException(Throwable e)
     {
