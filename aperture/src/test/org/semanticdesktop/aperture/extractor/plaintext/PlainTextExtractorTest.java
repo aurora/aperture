@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.ParseException;
 import java.util.Collection;
 
 import org.openrdf.model.Literal;
@@ -18,20 +17,22 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.sesame.repository.Repository;
 import org.semanticdesktop.aperture.extractor.Extractor;
+import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
+import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.Vocabulary;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
 
-import junit.framework.TestCase;
+public class PlainTextExtractorTest extends ExtractorTestBase {
 
-public class PlainTextExtractorTest extends TestCase {
-
-    public void testRegularExtraction() throws URISyntaxException, ParseException, IOException {
-        String uriString = "file:plain-text.txt";
-        Repository repository = getStatements(uriString, "org/semanticdesktop/aperture/docs/plain-text.txt");
+    public void testRegularExtraction() throws URISyntaxException, ExtractorException, IOException {
+        // apply the extractor on a text file
+        RDFContainerSesame container = getStatements("org/semanticdesktop/aperture/docs/plain-text.txt");
+        Repository repository = container.getRepository();
         ValueFactory valueFactory = repository.getSail().getValueFactory();
-
+                
         // check number of statements
+        String uriString = container.getDataObjectUri().toString();
         Collection statements = repository.getStatements(valueFactory.createURI(uriString), Vocabulary.FULL_TEXT_URI, null);
         assertEquals(1, statements.size());
 
@@ -42,30 +43,26 @@ public class PlainTextExtractorTest extends TestCase {
         // check value
         Literal value = (Literal) statement.getObject();
         String text = value.getLabel();
-        assertTrue((text.indexOf("plain text")!=-1));
+        assertTrue((text.indexOf("plain text") != -1));
     }
 
-    public void testFailingExtraction() throws URISyntaxException, ParseException, IOException {
-        String uriString = "file:plain-text-with-null-character.txt";
-        Repository repository = getStatements(uriString, "org/semanticdesktop/aperture/docs/plain-text-with-null-character.txt");
+    public void testFailingExtraction() throws URISyntaxException, ExtractorException, IOException {
+        // apply the extractor on a text file containing a null character
+        RDFContainerSesame container = getStatements("org/semanticdesktop/aperture/docs/plain-text-with-null-character.txt");
+        Repository repository = container.getRepository();
         ValueFactory valueFactory = repository.getSail().getValueFactory();
         
         // check number of statements
+        String uriString = container.getDataObjectUri().toString();
         Collection statements = repository.getStatements(valueFactory.createURI(uriString), Vocabulary.FULL_TEXT_URI, null);
         assertEquals(0, statements.size());
     }
     
-    private Repository getStatements(String uriString, String resourceName) throws URISyntaxException, ParseException, IOException {
-        // setup some info
-        URI id = new URI(uriString);
-        InputStream stream = ClassLoader.getSystemResourceAsStream(resourceName);
-        RDFContainerSesame rdfContainer = new RDFContainerSesame(id);
-        
-        // apply the extractor
+    private RDFContainerSesame getStatements(String resourceName) throws URISyntaxException, ExtractorException, IOException {
+        // apply the extractor on a text file containing a null character
         ExtractorFactory factory = new PlainTextExtractorFactory();
         Extractor extractor = factory.get();
-        extractor.extract(id, stream, null, null, rdfContainer);
-        
-        return rdfContainer.getRepository();
+        RDFContainerSesame container = extract(resourceName, extractor);
+        return container;
     }
 }

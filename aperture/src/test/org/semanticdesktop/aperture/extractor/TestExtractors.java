@@ -10,6 +10,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.semanticdesktop.aperture.extractor.impl.TestExtractorRegistryImpl;
+import org.semanticdesktop.aperture.extractor.opendocument.OpenDocumentExtractorTest;
 import org.semanticdesktop.aperture.extractor.plaintext.PlainTextExtractorTest;
 
 /**
@@ -25,6 +26,7 @@ public class TestExtractors extends TestSuite {
         super("extractors");
         
         addTest(new TestSuite(PlainTextExtractorTest.class));
+        addTest(new TestSuite(OpenDocumentExtractorTest.class));
         
         addTest(new TestSuite(TestExtractorRegistryImpl.class));
     }

@@ -12,13 +12,13 @@ import junit.framework.TestSuite;
 import org.semanticdesktop.aperture.extractor.TestExtractors;
 import org.semanticdesktop.aperture.rdf.TestRDFContainerSesame;
 
-public class TestPackage extends TestSuite {
+public class TestAll extends TestSuite {
 
     static public Test suite() {
-        return new TestPackage();
+        return new TestAll();
     }
 
-    private TestPackage() {
+    private TestAll() {
         super("aperture");
         addTest(new TestSuite(TestRDFContainerSesame.class));
         addTest(TestExtractors.suite());
