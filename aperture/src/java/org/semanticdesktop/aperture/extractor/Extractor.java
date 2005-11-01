@@ -6,11 +6,9 @@
  */
 package org.semanticdesktop.aperture.extractor;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.text.ParseException;
 
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
@@ -32,10 +30,7 @@ public interface Extractor {
 	 * @param charset the charset in which the inputstream is encoded (optional).
 	 * @param mimetype the mimetype of the passed stream (optional).
 	 * @param result the container in which this Extractor can put its created RDF statements.
-	 * @throws ParseException when the stream does not conform to the structure expected by this
-	 *             Extractor.
-	 * @throws IOException in case of any other I/O error.
+	 * @throws ExtractorException in case of any error during the extraction process.
 	 */
-	public void extract(URI id, InputStream stream, Charset charset, String mimetype, RDFContainer result)
-			throws ParseException, IOException;
+	public void extract(URI id, InputStream stream, Charset charset, String mimetype, RDFContainer result) throws ExtractorException;
 }
