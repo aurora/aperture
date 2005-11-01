@@ -8,11 +8,11 @@ package org.semanticdesktop.aperture.examples.filebrowser;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.net.URI;
-import java.text.ParseException;
 
 import org.semanticdesktop.aperture.extractor.Extractor;
+import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.plaintext.PlainTextExtractorFactory;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
 
@@ -33,10 +33,10 @@ public class FileBrowserData {
      * load the metadata from the passed file
      * TODO do the mimetype and extractor registry magic here
      * @param file the file to open
-     * @throws IOException when the extraction fails because of I/O
-     * @throws ParseException when the source file doesn't conform to the mimetype
+     * @throws FileNotFoundException 
+     * @throws ExtractorException when the extraction fails for some reason
      */
-    public void loadFile(File file) throws ParseException, IOException {
+    public void loadFile(File file) throws ExtractorException, FileNotFoundException {
         this.file = file;
         // guess mime
         mimetype = "text/plain";

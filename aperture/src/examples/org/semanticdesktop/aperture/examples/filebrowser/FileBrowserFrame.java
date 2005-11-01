@@ -7,20 +7,19 @@
 package org.semanticdesktop.aperture.examples.filebrowser;
 
 import java.awt.BorderLayout;
-import javax.swing.JPanel;
-
 import java.awt.FileDialog;
 import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 
-import javax.swing.JFrame;
-import javax.swing.JToolBar;
-import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
 
+import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.util.GuiUtil;
 
 /**
@@ -97,7 +96,7 @@ public class FileBrowserFrame extends JFrame {
      * show the passed file now
      * @param file the new file
      */
-    public void loadFile(File file) throws ParseException, IOException {
+    public void loadFile(File file) throws ExtractorException, IOException {
         data.loadFile(file);
         displayData();
         getTextFilename().setText(file.toString());
@@ -222,6 +221,9 @@ public class FileBrowserFrame extends JFrame {
 
 /*
  * $Log$
+ * Revision 1.2  2005/11/01 13:08:41  cfmfluit
+ * updated to comply with latest Extractor interface
+ *
  * Revision 1.1  2005/10/28 13:14:20  leo_sauermann
  * new project settings and example file gui
  *
