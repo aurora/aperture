@@ -19,7 +19,7 @@ public class Vocabulary {
     public static final String NS = "http://aperture.semanticdesktop.org/ontology/data#";
     
     public static final String FULL_TEXT = NS + "full-text";
-    public static final String CREATOR = NS + "creator";
+    public static final String CREATOR = NS + "creator";  // author, artist, etc. NOT: generating application
     public static final String TITLE = NS + "title";
     public static final String SUBJECT = NS + "subject";
     public static final String DESCRIPTION = NS + "description";
