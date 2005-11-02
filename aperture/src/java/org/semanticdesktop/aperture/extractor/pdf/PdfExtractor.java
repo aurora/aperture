@@ -30,7 +30,6 @@ import org.semanticdesktop.aperture.rdf.Vocabulary;
  * Extracts full-text and metadata from Adobe Acrobat (PDF) files.
  */
 public class PdfExtractor implements Extractor {
-
     private static final Logger LOGGER = Logger.getLogger(PdfExtractor.class.getName());
 
     public void extract(URI id, InputStream stream, Charset charset, String mimetype, RDFContainer result)
