@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>  
+  
+  
+  
+  
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+
+
+
+
+  
+  
+  
+  
+  <meta name="author" content="Leo Sauermann, Christiaan Fluit">
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  <meta name="keywords" content="aperture, rdf, data">
+  <title>Aperture framework</title>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  
+  
+  
+  <script type="text/javascript"></script>
+
+
+
+
+
+
+
+<!-- This document is inspired by the content style at http://www.csszengarden.com --></head><body>
+<div id="content">
+<h1>Documentation</h1>
+<h2>Preface</h2>
+This is a tutorial to the aperture framework and exaplains the use of
+Aperture objects. It is written for programmers that want to use
+Aperture in own applications to extract information from files or from
+various other datasources. Some familiarity with Java is assumed. We
+will explain some details about developing using the Eclipse SDK, which
+is not needed to use Aperture but may help during development.<br>
+If you have questions about the project or need support for using Aperture, go to the project homepage at <a href="http://aperture.sourceforge.net/">http://aperture.sourceforge.net/</a><br>
+<h2>Aperture Architecture Overview<br>
+</h2>
+
+<p>
+
+The central parts in the architecture are currently DataSource, DataCrawler,
+DataAccessor and DataObject. Together they are used to access the contents of
+an information system, such as a file system or web site.
+</p>
+<p>
+A DataSource contains all information necessary to locate the information
+items in a source. For example, a FileSystemDataSource has a set of one or
+more directories on a file system, a set of patterns that describe what files
+to include or exclude, etc. For the rest it is completely passive.
+</p>
+<p>
+A DataCrawler is responsible for actually accessing the physical source and
+reporting the individual information items as DataObjects. Each DataObject
+contains all metadata provided by the data source, such as file names,
+modification dates, etc., as well as the InputStream that provides access to
+physical resource (e.g. the file itself).
+</p>
+<p>
+We have chosen to separate the functionalities offered by DataSource and DataCrawler as there
+may be several alternative crawling strategies for a single DataSource type.
+Consider for example a generic FileSystemCrawler that handles any kind of
+file system accessible through java.io.File versus a WindowsFileSystemCrawler
+using OS-native functionality to get notified about file additions, deletions
+and changes. Another possibility is various DataCrawler implementations that
+have different trade-offs in speed and accuracy.
+</p>
+<p>
+Currently, A DataSource also contains support for writing its configuration
+to or initializing it from an XML file. We might consider putting this in a
+separate utility class, because the best way to store such information is
+often application dependent.
+</p>
+<p>
+A DataCrawler creates DataObjects for the individual information items it
+encounters in the physical data source. These DataObjects are reported to
+DataCrawlerListeners registered at the DataCrawler. An abstract base class
+(DataCrawlerBase) is provided that provides base functionality for
+maintaining information about which files have been reported in the past,
+allowing for incremental scanning.
+</p>
+
+<p>
+In order to create a DataObject for a single resource, a DataAccessor is used.
+This functionality is kept out of the
+DataCrawler implementations on purpose because there may be several crawlers
+who can make good use of the same data accessing functionality. A good
+example is the FileSystemCrawler and HypertextCrawler, which both make use of
+the FileDataAccessor. Although they arrive at the physical resource in
+different ways (by traversing folder trees vs. following links from other
+documents), they can use the same functionality to turn a java.io.File into a
+FileDataObject.
+</p>
+<p>
+It should be clear now that a DataCrawler is specific for the kind of
+DataSource it supports, whereas a DataAccessor is specific for the url
+scheme(s) it supports.</p>
+<h2>File Extractors</h2>
+
+File extractors are used to extract<br>
+ 
+<p>
+</p>
+
+<h2>Incremental Scanning</h2>
+<p>
+The AccessData instance used in DataCrawlerBase maintains the information
+about which objects have been scanned before. This instance is passed to the
+DataAccessor as this is the best place to do this detection:
+</p>
+<ul><li>This prevents object creation when the resource has not been modified since the last scan (DataAccessor.get returns null).
+</li></ul><ul><li>This allows for more sophisticated optimizations,
+e.g. the HttpDataAccessor uses HTTP-specific functionality so that the
+webserver can decide whether the resource has changed since the last
+scan. This prevents an unchanged web page from being transported to the
+crawling side in the first place.
+</li></ul><h2>HypertextCrawler Dependencies</h2>
+<p>
+The HypertextCrawler makes use of two external components: a mime type
+identifier and a hypertext link extractor.
+
+</p>
+<p>The latter component is required to know which resources are linked
+from a specific resource and should be crawled next. This functionality
+is realized as a separate component/service as there are many document
+types that support links (PDF might be a nice one to support next).
+</p>
+<p>A specific link extractor is therefore mimetype-specific. In order
+to know which link extractor to use, one first needs to know the mime
+type of the starting resource, which is handled by the first component.
+</p>
+<h2>Database and RDF file DataSources</h2>
+<p>
+For gnowsis and Aduna MetadataServer we often add special
+databases to be indexed together with files or web pages. These
+datasources can consist of a single big data file or a SQL server. For
+a single RDF file, an RDFFile-DataSource would be needed, with the only
+configuration being the RDF file's filename or its URL. When a SQL
+server is accessed, the server properties, table names and a mapping
+file (for D2RQ or similar) has to be passed, indicating which resources
+in the SQL database to index. Alternatively, SQL databases could be
+accessed via a SAIL.
+</p>
+
+</div>
+
+
+
+</body></html>
