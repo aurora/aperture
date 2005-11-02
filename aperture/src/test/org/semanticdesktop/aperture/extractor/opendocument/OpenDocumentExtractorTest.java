@@ -57,8 +57,15 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
         // repeat for every example OpenDocument/OpenOffice document
         for (int i = 0; i < RESOURCES.length; i++) {
             // check of any document text is extracted
-            checkPropertyValue(RESOURCES[i], Vocabulary.FULL_TEXT_URI, "This");
+            RDFContainerSesame container = getStatements(RESOURCES[i]);
+            checkStatement(Vocabulary.FULL_TEXT_URI, "This", container);
         }
+    }
+    
+    private RDFContainerSesame getStatements(String resourceName) throws URISyntaxException, ExtractorException, IOException {
+        ExtractorFactory factory = new OpenDocumentExtractorFactory();
+        Extractor extractor = factory.get();
+        return extract(resourceName, extractor);
     }
     
     public void testMetadataExtraction() throws URISyntaxException, ExtractorException, IOException {
@@ -67,54 +74,21 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
     }
 
     private void testMetadataExtraction(String resourceName) throws URISyntaxException, ExtractorException, IOException {
-        // check for all properties that we're sure of exist in this example document
-        checkPropertyValue(resourceName, Vocabulary.TITLE_URI, "Example");
-        checkPropertyValue(resourceName, Vocabulary.SUBJECT_URI, "Testing");
-        checkPropertyValue(resourceName, Vocabulary.KEYWORD_URI, "rdf");
-        checkPropertyValue(resourceName, Vocabulary.KEYWORD_URI, "test");
-        checkPropertyValue(resourceName, Vocabulary.DESCRIPTION_URI, "comments");
-        checkPropertyValue(resourceName, Vocabulary.CREATOR_URI, "Christiaan Fluit");
-        checkPropertyValue(resourceName, Vocabulary.DATE_URI, "2005");
-        checkPropertyValue(resourceName, Vocabulary.CREATION_DATE_URI, "2005");
-        checkPropertyValue(resourceName, Vocabulary.PRINT_DATE_URI, "2005");
-        checkPropertyValue(resourceName, Vocabulary.LANGUAGE_URI, "en-US");
-        checkPropertyValue(resourceName, Vocabulary.PAGE_COUNT_URI, "1");
-    }
-    
-    private void checkPropertyValue(String resourceName, org.openrdf.model.URI property, String substring)
-            throws URISyntaxException, ExtractorException, IOException {
         // apply the extractor
-        ExtractorFactory factory = new OpenDocumentExtractorFactory();
-        Extractor extractor = factory.get();
-        RDFContainerSesame container = extract(resourceName, extractor);
-        
-        // setup some info
-        String uriString = container.getDataObjectUri().toString();
-        Repository repository = container.getRepository();
-        ValueFactory valueFactory = repository.getSail().getValueFactory();
-        boolean encounteredSubstring = false;
-        
-        // loop over all statements that have the specified property uri as predicate
-        Collection statements = repository.getStatements(valueFactory.createURI(uriString), property, null);
-        Iterator iterator = statements.iterator();
-        
-        while (iterator.hasNext()) {
-            // check the property type
-            Statement statement = (Statement) iterator.next();
-            assertTrue(statement.getPredicate().equals(property));
-            
-            // see if it has a Literal containing the specified substring
-            Value object = statement.getObject();
-            if (object instanceof Literal) {
-                String value = ((Literal) object).getLabel();
-                if (value.indexOf(substring) >= 0) {
-                    encounteredSubstring = true;
-                    break;
-                }
-            }
-        }
-        
-        // see if any of the found properties contains the specified substring
-        assertTrue(encounteredSubstring);
+        RDFContainerSesame container = getStatements(resourceName);
+
+        // check for all properties that we're sure of exist in this example document
+        checkStatement(Vocabulary.TITLE_URI, "Example", container);
+        checkStatement(Vocabulary.SUBJECT_URI, "Testing", container);
+        checkStatement(Vocabulary.KEYWORD_URI, "rdf", container);
+        checkStatement(Vocabulary.KEYWORD_URI, "test", container);
+        checkStatement(Vocabulary.DESCRIPTION_URI, "comments", container);
+        checkStatement(Vocabulary.CREATOR_URI, "Christiaan Fluit", container);
+        checkStatement(Vocabulary.DATE_URI, "2005", container);
+        checkStatement(Vocabulary.CREATION_DATE_URI, "2005", container);
+        checkStatement(Vocabulary.PRINT_DATE_URI, "2005", container);
+        checkStatement(Vocabulary.LANGUAGE_URI, "en-US", container);
+        checkStatement(Vocabulary.PAGE_COUNT_URI, "1", container);
+        checkStatement(Vocabulary.GENERATOR_URI, "OpenOffice", container);
     }
 }

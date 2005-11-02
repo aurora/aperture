@@ -190,6 +190,9 @@ public class OpenDocumentExtractor implements Extractor {
             else if ("dc:language".equals(name)) {
                 addStatement(Vocabulary.LANGUAGE_URI, metaChild.getFirstChild(), result);
             }
+            else if ("meta:generator".equals(name)) {
+                addStatement(Vocabulary.GENERATOR_URI, metaChild.getFirstChild(), result);
+            }
             else if ("meta:keywords".equals(name)) {
                 // handles OpenOffice 1.x keywords
                 NodeList keywordNodes = metaChild.getChildNodes();
@@ -208,7 +211,19 @@ public class OpenDocumentExtractor implements Extractor {
             else if ("meta:document-statistic".equals(name)) {
                 NamedNodeMap attributes = metaChild.getAttributes();
                 if (attributes != null) {
-                    addStatement(Vocabulary.PAGE_COUNT_URI, attributes.getNamedItem("meta:page-count"), result);
+                    Node pageNode = attributes.getNamedItem("meta:page-count");
+                    if (pageNode != null) {
+                        String pageNodeValue = pageNode.getNodeValue();
+                        if (pageNodeValue != null) {
+                            try {
+                                int pageCount = Integer.parseInt(pageNodeValue);
+                                result.put(Vocabulary.PAGE_COUNT_URI, pageCount);
+                            }
+                            catch (NumberFormatException e) {
+                                // ignore
+                            }
+                        }
+                    }
                 }
             }
         }
