@@ -7,6 +7,7 @@
 package org.semanticdesktop.aperture.rdf;
 
 import java.net.URI;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.openrdf.model.Statement;
@@ -24,6 +25,8 @@ public interface RDFContainer {
 
     public void put(URI property, Date value);
 
+    public void put(URI property, Calendar value);
+
     public void put(URI property, boolean value);
 
     public void put(URI property, int value);
@@ -34,6 +37,8 @@ public interface RDFContainer {
 
     public void add(URI subject, URI property, Date value);
 
+    public void add(URI subject, URI property, Calendar value);
+
     public void add(URI subject, URI property, boolean value);
 
     public void add(URI subject, URI property, int value);
@@ -43,6 +48,8 @@ public interface RDFContainer {
     public void put(org.openrdf.model.URI property, String value);
 
     public void put(org.openrdf.model.URI property, Date value);
+
+    public void put(org.openrdf.model.URI property, Calendar value);
 
     public void put(org.openrdf.model.URI property, boolean value);
 

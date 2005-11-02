@@ -7,6 +7,7 @@ package org.semanticdesktop.aperture.rdf.impl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -24,7 +25,7 @@ import org.semanticdesktop.aperture.util.RDFUtil;
 
 public class RDFContainerSesame implements RDFContainer {
     
-    private static Logger log = Logger.getLogger(RDFContainerSesame.class.getName());
+    private static final Logger log = Logger.getLogger(RDFContainerSesame.class.getName());
 
     /** 
      * internal RDF graph
@@ -82,6 +83,11 @@ public class RDFContainerSesame implements RDFContainer {
         add(dataobjectUri, property, value); 
     }
 
+    public void put(URI property, Calendar value)
+    {
+        add(dataobjectUri, property, value); 
+    }
+
     public void put(URI property, boolean value)
     {
         add(dataobjectUri, property, value);                
@@ -106,6 +112,11 @@ public class RDFContainerSesame implements RDFContainer {
     {
         String date = RDFUtil.dateTime2String(value);        
         add(valfac.createURI(subject.toString()), valfac.createURI(property.toString()), valfac.createLiteral(date, XMLSchema.DATETIME)); 
+    }
+
+    public void add(URI subject, URI property, Calendar value)
+    {
+        add(subject, property, value.getTime());
     }
 
     public void add(URI subject, URI property, boolean value)
@@ -134,6 +145,11 @@ public class RDFContainerSesame implements RDFContainer {
     {
         String date = RDFUtil.dateTime2String(value);
         add(dataobject, property, valfac.createLiteral(date, XMLSchema.DATETIME));
+    }
+
+    public void put(org.openrdf.model.URI property, Calendar value)
+    {
+        put(property, value.getTime());
     }
 
     public void put(org.openrdf.model.URI property, boolean value)
@@ -195,16 +211,4 @@ public class RDFContainerSesame implements RDFContainer {
     {
         return dataobject;
     }
-
 }
-
-
-/*
- * $Log$
- * Revision 1.2  2005/10/26 14:57:02  leo_sauermann
- * added testcase for the RDFContainerSesame
- *
- * Revision 1.1  2005/10/26 14:08:59  leo_sauermann
- * added the sesame-model and began with RDFContainer
- *
- */
