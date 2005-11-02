@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="lib/rio-2.0-dev-20051026.jar"/>
 	<classpathentry kind="lib" path="lib/sesame-2.0-dev-20051026.jar"/>
 	<classpathentry kind="lib" path="lib/pdfbox-0.7.2.jar"/>
+	<classpathentry kind="lib" path="lib/htmlparser-1.5.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>
