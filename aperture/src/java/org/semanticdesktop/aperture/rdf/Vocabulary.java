@@ -29,6 +29,7 @@ public class Vocabulary {
     public static final String PRINT_DATE = NS + "printDate";
     public static final String LANGUAGE = NS + "language";
     public static final String PAGE_COUNT = NS + "pageCount";
+    public static final String GENERATOR = NS + "generator"; // the application that created the file
     
     static {
         ValueFactory factory = new ValueFactoryImpl();
@@ -43,6 +44,7 @@ public class Vocabulary {
         PRINT_DATE_URI = factory.createURI(PRINT_DATE);
         LANGUAGE_URI = factory.createURI(LANGUAGE);
         PAGE_COUNT_URI = factory.createURI(PAGE_COUNT);
+        GENERATOR_URI = factory.createURI(GENERATOR);
     }
     
     public static final URI FULL_TEXT_URI;
@@ -56,6 +58,7 @@ public class Vocabulary {
     public static final URI PRINT_DATE_URI;
     public static final URI LANGUAGE_URI;
     public static final URI PAGE_COUNT_URI;
+    public static final URI GENERATOR_URI;
 
     private Vocabulary() {
     	// prevents instantiation of this class
