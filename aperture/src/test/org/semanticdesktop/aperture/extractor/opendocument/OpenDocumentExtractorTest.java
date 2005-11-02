@@ -7,17 +7,8 @@
 package org.semanticdesktop.aperture.extractor.opendocument;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.Iterator;
 
-import org.openrdf.model.Literal;
-import org.openrdf.model.Statement;
-import org.openrdf.model.Value;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.sesame.repository.Repository;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
@@ -27,31 +18,29 @@ import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
 
 public class OpenDocumentExtractorTest extends ExtractorTestBase {
 
-    private static final String PATH = "org/semanticdesktop/aperture/docs/";
-    
     private static final String[] RESOURCES = {
-        PATH + "openoffice-2.0-calc.ods",
-        PATH + "openoffice-2.0-calc-template.ots",
-        PATH + "openoffice-2.0-draw.odg",
-        PATH + "openoffice-2.0-draw-template.otg",
-        PATH + "openoffice-2.0-formula.odf",
-        PATH + "openoffice-2.0-impress.odp",
-        PATH + "openoffice-2.0-impress-template.otp",
-        PATH + "openoffice-2.0-writer.odt",
-        PATH + "openoffice-2.0-writer-template.ott",
-        PATH + "openoffice-1.1.5-calc.sxc",
-        PATH + "openoffice-1.1.5-calc-template.stc",
-        PATH + "openoffice-1.1.5-draw.sxd",
-        PATH + "openoffice-1.1.5-draw-template.std",
-        PATH + "openoffice-1.1.5-impress.sxi",
-        PATH + "openoffice-1.1.5-impress-template.sti",
-        PATH + "openoffice-1.1.5-writer.sxw",
-        PATH + "openoffice-1.1.5-writer-template.stw"
+        DOCS_PATH + "openoffice-2.0-calc.ods",
+        DOCS_PATH + "openoffice-2.0-calc-template.ots",
+        DOCS_PATH + "openoffice-2.0-draw.odg",
+        DOCS_PATH + "openoffice-2.0-draw-template.otg",
+        DOCS_PATH + "openoffice-2.0-formula.odf",
+        DOCS_PATH + "openoffice-2.0-impress.odp",
+        DOCS_PATH + "openoffice-2.0-impress-template.otp",
+        DOCS_PATH + "openoffice-2.0-writer.odt",
+        DOCS_PATH + "openoffice-2.0-writer-template.ott",
+        DOCS_PATH + "openoffice-1.1.5-calc.sxc",
+        DOCS_PATH + "openoffice-1.1.5-calc-template.stc",
+        DOCS_PATH + "openoffice-1.1.5-draw.sxd",
+        DOCS_PATH + "openoffice-1.1.5-draw-template.std",
+        DOCS_PATH + "openoffice-1.1.5-impress.sxi",
+        DOCS_PATH + "openoffice-1.1.5-impress-template.sti",
+        DOCS_PATH + "openoffice-1.1.5-writer.sxw",
+        DOCS_PATH + "openoffice-1.1.5-writer-template.stw"
     };
     
-    private static final String OPEN_OFFICE_WRITER_DOC = PATH + "openoffice-1.1.5-writer.sxw";
+    private static final String OPEN_OFFICE_WRITER_DOC = DOCS_PATH + "openoffice-1.1.5-writer.sxw";
     
-    private static final String OPEN_DOCUMENT_WRITER_DOC = PATH + "openoffice-2.0-writer.odt";
+    private static final String OPEN_DOCUMENT_WRITER_DOC = DOCS_PATH + "openoffice-2.0-writer.odt";
     
     public void testContentExtraction() throws URISyntaxException, ExtractorException, IOException {
         // repeat for every example OpenDocument/OpenOffice document

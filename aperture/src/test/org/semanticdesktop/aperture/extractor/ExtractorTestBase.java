@@ -24,6 +24,8 @@ import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
 
 public class ExtractorTestBase extends TestCase {
 
+    public static final String DOCS_PATH = "org/semanticdesktop/aperture/docs/";
+    
     public RDFContainerSesame extract(String resourceName, Extractor extractor) throws URISyntaxException,
             ExtractorException, IOException {
         // setup some info

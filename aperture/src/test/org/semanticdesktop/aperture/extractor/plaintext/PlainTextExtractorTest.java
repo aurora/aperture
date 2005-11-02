@@ -27,7 +27,7 @@ public class PlainTextExtractorTest extends ExtractorTestBase {
 
     public void testRegularExtraction() throws URISyntaxException, ExtractorException, IOException {
         // apply the extractor on a text file
-        RDFContainerSesame container = getStatements("org/semanticdesktop/aperture/docs/plain-text.txt");
+        RDFContainerSesame container = getStatements(DOCS_PATH + "plain-text.txt");
         Repository repository = container.getRepository();
         ValueFactory valueFactory = repository.getSail().getValueFactory();
                 
@@ -48,7 +48,7 @@ public class PlainTextExtractorTest extends ExtractorTestBase {
 
     public void testFailingExtraction() throws URISyntaxException, ExtractorException, IOException {
         // apply the extractor on a text file containing a null character
-        RDFContainerSesame container = getStatements("org/semanticdesktop/aperture/docs/plain-text-with-null-character.txt");
+        RDFContainerSesame container = getStatements(DOCS_PATH + "plain-text-with-null-character.txt");
         Repository repository = container.getRepository();
         ValueFactory valueFactory = repository.getSail().getValueFactory();
         

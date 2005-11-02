@@ -18,13 +18,11 @@ import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
 
 public class PdfExtractorTest extends ExtractorTestBase {
 
-    private static final String PATH = "org/semanticdesktop/aperture/docs/";
+    private static final String OPEN_OFFICE_2_DOC = DOCS_PATH + "pdf-openoffice-2.0-writer.pdf";
     
-    private static final String OPEN_OFFICE_2_DOC = PATH + "pdf-openoffice-2.0-writer.pdf";
+    private static final String OPEN_OFFICE_1_DOC = DOCS_PATH + "pdf-openoffice-1.1.5-writer.pdf";
     
-    private static final String OPEN_OFFICE_1_DOC = PATH + "pdf-openoffice-1.1.5-writer.pdf";
-    
-    private static final String PDF_CREATOR_DOC = PATH + "pdf-word-2000-pdfcreator-0.8.0.pdf";
+    private static final String PDF_CREATOR_DOC = DOCS_PATH + "pdf-word-2000-pdfcreator-0.8.0.pdf";
     
     private RDFContainerSesame getStatements(String resourceName) throws URISyntaxException, ExtractorException, IOException {
         // apply the extractor
