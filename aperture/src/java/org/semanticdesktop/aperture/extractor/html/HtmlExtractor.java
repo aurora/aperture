@@ -54,7 +54,7 @@ public class HtmlExtractor implements Extractor {
         }
     };
 
-    public void extract(URI id, InputStream stream, Charset charset, String mimetype, RDFContainer result)
+    public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
             throws ExtractorException {
         // the specified charset will be used to direct the parser
         String charsetName = (charset == null) ? null : charset.displayName();

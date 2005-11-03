@@ -24,8 +24,8 @@ import org.openrdf.model.Statement;
 public class MetadataPanel extends JPanel {
 
     private JPanel panelBaseInfo = null;
-    private JLabel labelMimetypeL = null;
-    private JLabel labelMimetype = null;
+    private JLabel labelMimeTypeL = null;
+    private JLabel labelMimeType = null;
     private JScrollPane scrollTextOut = null;
     private JTextArea textOut = null;
 
@@ -63,7 +63,7 @@ public class MetadataPanel extends JPanel {
     }
     
     public void loadDataFrom(FileBrowserData data) {
-        labelMimetype.setText(data.getMimetype());
+        labelMimeType.setText(data.getMimeType());
         StringBuffer out = new StringBuffer();
         Collection col = data.getRDF().getRepository().extractStatements();
         for (Iterator iter = col.iterator(); iter.hasNext();)
@@ -91,18 +91,18 @@ public class MetadataPanel extends JPanel {
             gridBagConstraints1.fill = java.awt.GridBagConstraints.HORIZONTAL;
             gridBagConstraints1.weightx = 1.0;
             gridBagConstraints1.gridy = 0;
-            labelMimetype = new JLabel();
-            labelMimetype.setText("JLabel");
+            labelMimeType = new JLabel();
+            labelMimeType.setText("JLabel");
             GridBagConstraints gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.gridx = 0;
             gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
             gridBagConstraints.gridy = 0;
-            labelMimetypeL = new JLabel();
-            labelMimetypeL.setText("mimetype: ");
+            labelMimeTypeL = new JLabel();
+            labelMimeTypeL.setText("MIME Type: ");
             panelBaseInfo = new JPanel();
             panelBaseInfo.setLayout(new GridBagLayout());
-            panelBaseInfo.add(labelMimetypeL, gridBagConstraints);
-            panelBaseInfo.add(labelMimetype, gridBagConstraints1);
+            panelBaseInfo.add(labelMimeTypeL, gridBagConstraints);
+            panelBaseInfo.add(labelMimeType, gridBagConstraints1);
         }
         return panelBaseInfo;
     }

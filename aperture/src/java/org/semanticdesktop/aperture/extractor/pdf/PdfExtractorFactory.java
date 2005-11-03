@@ -16,14 +16,14 @@ import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 
 public class PdfExtractorFactory implements ExtractorFactory {
 
-    private static final Set MIMETYPES;
+    private static final Set MIME_TYPES;
     
     static {
         HashSet set = new HashSet();
         set.add("application/pdf");
         set.add("application/x-pdf");
         
-        MIMETYPES = Collections.unmodifiableSet(set);
+        MIME_TYPES = Collections.unmodifiableSet(set);
     }
     
     public PdfExtractor extractor;
@@ -36,6 +36,6 @@ public class PdfExtractorFactory implements ExtractorFactory {
     }
 
     public Set getSupportedMimeTypes() {
-        return MIMETYPES;
+        return MIME_TYPES;
     }
 }

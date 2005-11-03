@@ -24,10 +24,10 @@ public interface ExtractorRegistry {
     public void remove(ExtractorFactory factory);
 
     /**
-     * Returns all ExtractorFactories that support the specified mimetype.
+     * Returns all ExtractorFactories that support the specified MIME ype.
      * 
-     * @return A Set of ExtractorFactories whose getSupportedMimetypes method results contain the
-     *         specified mimetype.
+     * @return A Set of ExtractorFactories whose getSupportedMimeTypes method results contain the
+     *         specified MIME type.
      */
     public Set get(String mimeType);
 

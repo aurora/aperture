@@ -10,7 +10,7 @@ import java.util.Set;
 
 /**
  * An ExtractorFactory create instances of a specific Extractor implementation. As such, it embodies
- * knowledge about whether a singleton or unique instances are best returned and for which mimetypes the
+ * knowledge about whether a singleton or unique instances are best returned and for which MIME types the
  * Extractors can be used.
  * 
  * <P>
@@ -28,7 +28,7 @@ public interface ExtractorFactory {
     public Extractor get();
 
     /**
-     * Returns the mimetypes of the formats supported by the returned Extractor.
+     * Returns the MIME types of the formats supported by the returned Extractor.
      * 
      * @return A Set of Strings.
      */

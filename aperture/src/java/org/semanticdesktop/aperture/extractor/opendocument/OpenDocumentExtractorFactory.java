@@ -16,14 +16,14 @@ import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 public class OpenDocumentExtractorFactory implements ExtractorFactory {
 
     // see http://framework.openoffice.org/documentation/mimetypes/mimetypes.html for more info on
-    // OpenOffice/OpenDocument mimetypes
+    // OpenOffice/OpenDocument MIME types
 
-    private static final Set MIMETYPES;
+    private static final Set MIME_TYPES;
 
     static {
         HashSet set = new HashSet();
 
-        // all OpenDocument mimetypes
+        // all OpenDocument MIME types
         set.add("application/vnd.oasis.opendocument.text");
         set.add("application/vnd.oasis.opendocument.text-template");
         set.add("application/vnd.oasis.opendocument.text-master");
@@ -41,7 +41,7 @@ public class OpenDocumentExtractorFactory implements ExtractorFactory {
         set.add("application/vnd.oasis.opendocument.chart");
         set.add("application/vnd.oasis.opendocument.chart-template");
 
-        // all OpenOffice 1.x and StarOffice 6.x/7.x mimetypes
+        // all OpenOffice 1.x and StarOffice 6.x/7.x MIME types
         set.add("application/vnd.sun.xml.writer");
         set.add("application/vnd.sun.xml.writer.template");
         set.add("application/vnd.sun.xml.writer.global");
@@ -53,7 +53,7 @@ public class OpenDocumentExtractorFactory implements ExtractorFactory {
         set.add("application/vnd.sun.xml.impress.template");
         set.add("application/vnd.sun.xml.math");
 
-        MIMETYPES = Collections.unmodifiableSet(set);
+        MIME_TYPES = Collections.unmodifiableSet(set);
     }
 
     public OpenDocumentExtractor extractor;
@@ -66,6 +66,6 @@ public class OpenDocumentExtractorFactory implements ExtractorFactory {
     }
 
     public Set getSupportedMimeTypes() {
-        return MIMETYPES;
+        return MIME_TYPES;
     }
 }

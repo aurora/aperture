@@ -35,10 +35,10 @@ public class TestExtractorRegistryImpl extends TestCase {
     
     private static class DummyFactory implements ExtractorFactory {
 
-        private String mimetype;
+        private String mimeType;
         
-        public DummyFactory(String mimetype) {
-            this.mimetype = mimetype;
+        public DummyFactory(String mimeType) {
+            this.mimeType = mimeType;
         }
         
         public Extractor get() {
@@ -46,7 +46,7 @@ public class TestExtractorRegistryImpl extends TestCase {
         }
 
         public Set getSupportedMimeTypes() {
-            return Collections.singleton(mimetype);
+            return Collections.singleton(mimeType);
         }
     }
 }

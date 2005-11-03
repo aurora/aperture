@@ -32,7 +32,7 @@ import org.semanticdesktop.aperture.rdf.Vocabulary;
 public class PdfExtractor implements Extractor {
     private static final Logger LOGGER = Logger.getLogger(PdfExtractor.class.getName());
 
-    public void extract(URI id, InputStream stream, Charset charset, String mimetype, RDFContainer result)
+    public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
             throws ExtractorException {
         // setup a PDDocument
         PDDocument document = null;

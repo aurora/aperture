@@ -56,11 +56,11 @@ public interface DataObjectFile extends DataObject {
 
     /**
      * what is the mime-type of the content, if there is content? This is set by
-     * the DataAccessor. This method may cause complicated mimetype detection,
+     * the DataAccessor. This method may cause complicated mime type detection,
      * like looking at the http mime-type, file extensions, magic bytes inside
      * the file-stream.
      * 
-     * @return a mimetype identifier like "text/plain" or null if the identifier
+     * @return a mime type identifier like "text/plain" or null if the identifier
      *         cannot be determined, even using all tricks available.
      */
     public String getContentMimeType();
@@ -77,6 +77,9 @@ public interface DataObjectFile extends DataObject {
 
 /*
  * $Log$
+ * Revision 1.2  2005/11/03 08:34:12  cfmfluit
+ * globally changed spelling from mimetype to MIME type
+ *
  * Revision 1.1  2005/10/26 08:27:08  leo_sauermann
  * first shot, the result of our 3 month discussion on https://gnowsis.opendfki.de/cgi-bin/trac.cgi/wiki/SemanticDataIntegrationFramework
  *

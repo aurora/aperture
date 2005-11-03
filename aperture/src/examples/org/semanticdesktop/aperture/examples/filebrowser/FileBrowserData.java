@@ -27,11 +27,11 @@ public class FileBrowserData {
     
     private File file;
     private RDFContainerSesame data;
-    String mimetype;
+    String mimeType;
 
     /**
      * load the metadata from the passed file
-     * TODO do the mimetype and extractor registry magic here
+     * TODO do the mime type and extractor registry magic here
      * @param file the file to open
      * @throws FileNotFoundException 
      * @throws ExtractorException when the extraction fails for some reason
@@ -39,14 +39,14 @@ public class FileBrowserData {
     public void loadFile(File file) throws ExtractorException, FileNotFoundException {
         this.file = file;
         // guess mime
-        mimetype = "text/plain";
+        mimeType = "text/plain";
         // access file
         FileInputStream fin = new FileInputStream(file);
         // get Extractor
         Extractor extractor = new PlainTextExtractorFactory().get();
         URI uri = file.toURI();
         data = new RDFContainerSesame(uri);
-        extractor.extract(uri, fin, null, mimetype, data);
+        extractor.extract(uri, fin, null, mimeType, data);
     }
     
     public RDFContainerSesame getRDF() {
@@ -57,8 +57,8 @@ public class FileBrowserData {
         return file;
     }
     
-    public String getMimetype() {
-        return mimetype;
+    public String getMimeType() {
+        return mimeType;
     }
 
 }

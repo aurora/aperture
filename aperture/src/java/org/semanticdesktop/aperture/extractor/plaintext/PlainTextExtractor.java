@@ -25,7 +25,7 @@ public class PlainTextExtractor implements Extractor {
 
     private static final Logger LOGGER = Logger.getLogger(PlainTextExtractor.class.getName());
     
-    public void extract(URI id, InputStream stream, Charset charset, String mimetype, RDFContainer result) throws ExtractorException {
+    public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result) throws ExtractorException {
         try {
             // create a Reader that will convert the bytes to characters
             Reader reader = charset == null ? new InputStreamReader(stream) : new InputStreamReader(stream, charset);

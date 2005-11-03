@@ -54,7 +54,7 @@ public class OpenDocumentExtractor implements Extractor {
     // (see e.g. http://www.jroller.com/comments/santhosh/Weblog/putoff_dtd_parsing_html)
     private static final String SYSTEM_ID = ResourceUtil.getURL("org/semanticdesktop/aperture/extractor/opendocument/").toString();
     
-    public void extract(URI id, InputStream stream, Charset charset, String mimetype, RDFContainer result)
+    public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
             throws ExtractorException {
         byte[] contentBytes = null;
         byte[] metadataBytes = null;

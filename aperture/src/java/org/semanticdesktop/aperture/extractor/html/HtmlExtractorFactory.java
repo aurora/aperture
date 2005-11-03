@@ -15,14 +15,14 @@ import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 
 public class HtmlExtractorFactory implements ExtractorFactory {
 
-    private static final Set MIMETYPES;
+    private static final Set MIME_TYPES;
 
     static {
         HashSet set = new HashSet();
         set.add("text/html");
         set.add("application/xhtml+xml");  // found at http://www.hixie.ch/advocacy/xhtml
         
-        MIMETYPES = Collections.unmodifiableSet(set);
+        MIME_TYPES = Collections.unmodifiableSet(set);
     }
     
     private HtmlExtractor extractor;
@@ -35,6 +35,6 @@ public class HtmlExtractorFactory implements ExtractorFactory {
     }
 
     public Set getSupportedMimeTypes() {
-        return MIMETYPES;
+        return MIME_TYPES;
     }
 }

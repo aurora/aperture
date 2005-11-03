@@ -21,7 +21,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
 public class ExtractorRegistryImpl implements ExtractorRegistry {
 
     /**
-     * A mapping from mimetypes (Strings) to Sets of ExtractorFactories;
+     * A mapping from MIME types (Strings) to Sets of ExtractorFactories;
      */
     private HashMap factories = new HashMap();
 
