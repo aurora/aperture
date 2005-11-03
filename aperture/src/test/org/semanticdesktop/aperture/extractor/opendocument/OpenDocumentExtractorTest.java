@@ -7,7 +7,6 @@
 package org.semanticdesktop.aperture.extractor.opendocument;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
@@ -42,7 +41,7 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
     
     private static final String OPEN_DOCUMENT_WRITER_DOC = DOCS_PATH + "openoffice-2.0-writer.odt";
     
-    public void testContentExtraction() throws URISyntaxException, ExtractorException, IOException {
+    public void testContentExtraction() throws ExtractorException, IOException {
         // repeat for every example OpenDocument/OpenOffice document
         for (int i = 0; i < RESOURCES.length; i++) {
             // check of any document text is extracted
@@ -51,18 +50,18 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
         }
     }
     
-    private RDFContainerSesame getStatements(String resourceName) throws URISyntaxException, ExtractorException, IOException {
+    private RDFContainerSesame getStatements(String resourceName) throws ExtractorException, IOException {
         ExtractorFactory factory = new OpenDocumentExtractorFactory();
         Extractor extractor = factory.get();
         return extract(resourceName, extractor);
     }
     
-    public void testMetadataExtraction() throws URISyntaxException, ExtractorException, IOException {
+    public void testMetadataExtraction() throws ExtractorException, IOException {
         testMetadataExtraction(OPEN_DOCUMENT_WRITER_DOC);
         testMetadataExtraction(OPEN_OFFICE_WRITER_DOC);
     }
 
-    private void testMetadataExtraction(String resourceName) throws URISyntaxException, ExtractorException, IOException {
+    private void testMetadataExtraction(String resourceName) throws ExtractorException, IOException {
         // apply the extractor
         RDFContainerSesame container = getStatements(resourceName);
 

@@ -7,9 +7,6 @@
 package org.semanticdesktop.aperture.extractor.plaintext;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
 
 import org.openrdf.model.Literal;
@@ -25,14 +22,14 @@ import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
 
 public class PlainTextExtractorTest extends ExtractorTestBase {
 
-    public void testRegularExtraction() throws URISyntaxException, ExtractorException, IOException {
+    public void testRegularExtraction() throws ExtractorException, IOException {
         // apply the extractor on a text file
         RDFContainerSesame container = getStatements(DOCS_PATH + "plain-text.txt");
         Repository repository = container.getRepository();
         ValueFactory valueFactory = repository.getSail().getValueFactory();
                 
         // check number of statements
-        String uriString = container.getDataObjectUri().toString();
+        String uriString = container.getDescribedUri().toString();
         Collection statements = repository.getStatements(valueFactory.createURI(uriString), Vocabulary.FULL_TEXT_URI, null);
         assertEquals(1, statements.size());
 
@@ -46,19 +43,19 @@ public class PlainTextExtractorTest extends ExtractorTestBase {
         assertTrue((text.indexOf("plain text") != -1));
     }
 
-    public void testFailingExtraction() throws URISyntaxException, ExtractorException, IOException {
+    public void testFailingExtraction() throws ExtractorException, IOException {
         // apply the extractor on a text file containing a null character
         RDFContainerSesame container = getStatements(DOCS_PATH + "plain-text-with-null-character.txt");
         Repository repository = container.getRepository();
         ValueFactory valueFactory = repository.getSail().getValueFactory();
         
         // check number of statements
-        String uriString = container.getDataObjectUri().toString();
+        String uriString = container.getDescribedUri().toString();
         Collection statements = repository.getStatements(valueFactory.createURI(uriString), Vocabulary.FULL_TEXT_URI, null);
         assertEquals(0, statements.size());
     }
     
-    private RDFContainerSesame getStatements(String resourceName) throws URISyntaxException, ExtractorException, IOException {
+    private RDFContainerSesame getStatements(String resourceName) throws ExtractorException, IOException {
         // apply the extractor on a text file containing a null character
         ExtractorFactory factory = new PlainTextExtractorFactory();
         Extractor extractor = factory.get();

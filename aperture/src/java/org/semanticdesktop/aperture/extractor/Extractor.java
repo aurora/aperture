@@ -7,9 +7,9 @@
 package org.semanticdesktop.aperture.extractor;
 
 import java.io.InputStream;
-import java.net.URI;
 import java.nio.charset.Charset;
 
+import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**

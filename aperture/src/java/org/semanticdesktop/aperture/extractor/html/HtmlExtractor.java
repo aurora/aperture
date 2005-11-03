@@ -8,7 +8,6 @@ package org.semanticdesktop.aperture.extractor.html;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,6 +26,7 @@ import org.htmlparser.util.ParserException;
 import org.htmlparser.util.ParserFeedback;
 import org.htmlparser.util.Translate;
 import org.htmlparser.visitors.NodeVisitor;
+import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;

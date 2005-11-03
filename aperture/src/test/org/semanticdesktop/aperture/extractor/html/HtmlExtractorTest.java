@@ -7,7 +7,6 @@
 package org.semanticdesktop.aperture.extractor.html;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
@@ -22,13 +21,13 @@ public class HtmlExtractorTest extends ExtractorTestBase {
         DOCS_PATH + "html-handwritten.html"
     };
     
-    public void testExtraction() throws URISyntaxException, ExtractorException, IOException {
+    public void testExtraction() throws ExtractorException, IOException {
         for (int i = 0; i < RESOURCES.length; i++) {
             testExtraction(RESOURCES[i]);
         }
     }
 
-    private void testExtraction(String resourceName) throws URISyntaxException, ExtractorException, IOException {
+    private void testExtraction(String resourceName) throws ExtractorException, IOException {
         ExtractorFactory factory = new HtmlExtractorFactory();
         Extractor extractor = factory.get();
         RDFContainerSesame container = extract(resourceName, extractor);

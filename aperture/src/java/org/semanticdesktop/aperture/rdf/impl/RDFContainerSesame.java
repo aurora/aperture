@@ -1,18 +1,18 @@
 /*
- * Created on 26.10.2005
- * $Id$
+ * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
+ * All rights reserved.
  * 
+ * Licensed under the Academic Free License version 3.0.
  */
 package org.semanticdesktop.aperture.rdf.impl;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Logger;
 
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.XMLSchema;
@@ -24,191 +24,120 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.RDFUtil;
 
 public class RDFContainerSesame implements RDFContainer {
-    
-    private static final Logger log = Logger.getLogger(RDFContainerSesame.class.getName());
 
-    /** 
-     * internal RDF graph
-     */
-    Repository repository;
-    
-    ValueFactory valfac;
-    
-    /**
-     * internal dataobject
-     */
-    Resource dataobject;
-    
-    URI dataobjectUri;
-    
-    public RDFContainerSesame(URI dataobjectUri) {
-        this(dataobjectUri.toString());
-        this.dataobjectUri  = dataobjectUri;
+    private static final Logger LOGGER = Logger.getLogger(RDFContainerSesame.class.getName());
+
+    private Repository repository;
+
+    private ValueFactory valfac;
+
+    private URI describedUri;
+
+    public RDFContainerSesame(String uri) {
+        initRepository();
+        describedUri = valfac.createURI(uri);
     }
-
     
-    public RDFContainerSesame(String dataobjectUri) {
-        super();
-        MemoryStore memstore =  new MemoryStore();
-        repository = new Repository(memstore);
-        try
-        {
+    public RDFContainerSesame(URI uri) {
+        initRepository();
+        describedUri = uri;
+    }
+    
+    private void initRepository() {
+        MemoryStore memoryStore = new MemoryStore();
+        
+        repository = new Repository(memoryStore);
+        try {
             repository.initialize();
-            valfac = memstore.getValueFactory();
-            dataobject = valfac.createURI(dataobjectUri);
-            this.dataobjectUri = new URI(dataobjectUri.toString());
-        } catch (SailInitializationException e)
-        {
-            log.severe("cannot initialize standard in-memory SAIL: "+e);
-            throw new RuntimeException(e);
-        } catch (URISyntaxException e)
-        {
-            log.severe("URISyntax: "+e);
+        }
+        catch (SailInitializationException e) {
+            // should never happen, indicates an internal error
             throw new RuntimeException(e);
         }
+
+        // cannot happen before repository is initialized
+        valfac = memoryStore.getValueFactory();
+    }
+    
+    public URI getDescribedUri() {
+        return describedUri;
     }
 
-    public URI getDataObjectUri()
-    {
-        return dataobjectUri;
+    public Repository getRepository() {
+        return repository;
     }
 
-    public void put(URI property, String value)
-    {
-        add(dataobjectUri, property, value); 
+    public void put(URI property, String value) {
+        addInternal(describedUri, property, valfac.createLiteral(value));
     }
 
-    public void put(URI property, Date value)
-    {
-        add(dataobjectUri, property, value); 
-    }
-
-    public void put(URI property, Calendar value)
-    {
-        add(dataobjectUri, property, value); 
-    }
-
-    public void put(URI property, boolean value)
-    {
-        add(dataobjectUri, property, value);                
-    }
-
-    public void put(URI property, int value)
-    {
-        add(dataobjectUri, property, value); 
-    }
-
-    public void put(URI property, URI value)
-    {
-        add(dataobjectUri, property, value); 
-    }
-
-    public void add(URI subject, URI property, String value)
-    {
-        add(valfac.createURI(subject.toString()), valfac.createURI(property.toString()), valfac.createLiteral(value)); 
-    }
-
-    public void add(URI subject, URI property, Date value)
-    {
-        String date = RDFUtil.dateTime2String(value);        
-        add(valfac.createURI(subject.toString()), valfac.createURI(property.toString()), valfac.createLiteral(date, XMLSchema.DATETIME)); 
-    }
-
-    public void add(URI subject, URI property, Calendar value)
-    {
-        add(subject, property, value.getTime());
-    }
-
-    public void add(URI subject, URI property, boolean value)
-    {
-        String val = value?"true":"false";     
-        add(valfac.createURI(subject.toString()), valfac.createURI(property.toString()), valfac.createLiteral(val, XMLSchema.BOOLEAN)); 
-    }
-
-    public void add(URI subject, URI property, int value)
-    {
-        String val = Integer.toString(value);     
-        add(valfac.createURI(subject.toString()), valfac.createURI(property.toString()), valfac.createLiteral(val, XMLSchema.INT)); 
-    }
-
-    public void add(URI subject, URI property, URI value)
-    {
-        add(valfac.createURI(subject.toString()), valfac.createURI(property.toString()), valfac.createURI(value.toString())); 
-    }
-
-    public void put(org.openrdf.model.URI property, String value)
-    {
-        add(dataobject, property, valfac.createLiteral(value));
-    }
-
-    public void put(org.openrdf.model.URI property, Date value)
-    {
+    public void put(URI property, Date value) {
         String date = RDFUtil.dateTime2String(value);
-        add(dataobject, property, valfac.createLiteral(date, XMLSchema.DATETIME));
+        addInternal(describedUri, property, valfac.createLiteral(date, XMLSchema.DATETIME));
     }
 
-    public void put(org.openrdf.model.URI property, Calendar value)
-    {
+    public void put(URI property, Calendar value) {
         put(property, value.getTime());
     }
 
-    public void put(org.openrdf.model.URI property, boolean value)
-    {
-        String val = value?"true":"false";  
-        add(dataobject, property, valfac.createLiteral(val, XMLSchema.BOOLEAN));
+    public void put(URI property, boolean value) {
+        String val = value ? "true" : "false";
+        addInternal(describedUri, property, valfac.createLiteral(val, XMLSchema.BOOLEAN));
     }
 
-    public void put(org.openrdf.model.URI property, int value)
-    {
+    public void put(URI property, int value) {
+        String val = Integer.toString(value);
+        addInternal(describedUri, property, valfac.createLiteral(val, XMLSchema.INT));
+    }
+
+    public void put(URI property, URI value) {
+        addInternal(describedUri, property, value);
+    }
+    
+    public void add(URI subject, URI property, String value) {
+        addInternal(subject, property, valfac.createLiteral(value));
+    }
+
+    public void add(URI subject, URI property, Date value) {
+        String date = RDFUtil.dateTime2String(value);        
+        addInternal(subject, property, valfac.createLiteral(date, XMLSchema.DATETIME)); 
+    }
+
+    public void add(URI subject, URI property, Calendar value) {
+        add(subject, property, value.getTime());
+    }
+
+    public void add(URI subject, URI property, boolean value) {
+        String val = value ? "true" : "false";     
+        addInternal(subject, property, valfac.createLiteral(val, XMLSchema.BOOLEAN)); 
+    }
+
+    public void add(URI subject, URI property, int value) {
         String val = Integer.toString(value);     
-        add(dataobject, property, valfac.createLiteral(val, XMLSchema.INT)); 
-    }
-
-    public void put(org.openrdf.model.URI property, org.openrdf.model.URI value)
-    {
-        add(dataobject, property, value); 
+        addInternal(subject, property, valfac.createLiteral(val, XMLSchema.INT)); 
     }
     
-    public void add(Resource subject, org.openrdf.model.URI property, Value object) {
-        try
-        {
+    public void add(URI subject, URI property, URI value) {
+        addInternal(subject, property, value);
+    }
+
+    private void addInternal(Resource subject, URI property, Value object) {
+        try {
             repository.add(subject, property, object);
-        } catch (SailUpdateException e)
-        {
-            log.info("cannot add statement: "+e);
+        }
+        catch (SailUpdateException e) {
+            LOGGER.info("cannot add statement: " + e);
             throw new RuntimeException(e);
         }
     }
 
-    public void add(Statement statement)
-    {
-        try
-        {
+    public void add(Statement statement) {
+        try {
             repository.add(statement);
-        } catch (SailUpdateException e)
-        {
-            log.info("cannot add statement: "+e);
+        }
+        catch (SailUpdateException e) {
+            LOGGER.info("cannot add statement: " + e);
             throw new RuntimeException(e);
         }
-    }
-
-    public Object getRawRDF()
-    {
-        return repository;
-    }
-
-    public Object getRawResource()
-    {
-        return dataobject;
-    }
-    
-    public Repository getRepository()
-    {
-        return repository;
-    }
-
-    public Resource getResource()
-    {
-        return dataobject;
     }
 }

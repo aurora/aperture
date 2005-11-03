@@ -8,8 +8,6 @@ package org.semanticdesktop.aperture.extractor;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -17,8 +15,10 @@ import junit.framework.TestCase;
 
 import org.openrdf.model.Literal;
 import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.sesame.repository.Repository;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
 
@@ -26,11 +26,10 @@ public class ExtractorTestBase extends TestCase {
 
     public static final String DOCS_PATH = "org/semanticdesktop/aperture/docs/";
     
-    public RDFContainerSesame extract(String resourceName, Extractor extractor) throws URISyntaxException,
-            ExtractorException, IOException {
+    public RDFContainerSesame extract(String resourceName, Extractor extractor) throws ExtractorException, IOException {
         // setup some info
         String uriString = "http://docs-r-us.com/dummy";
-        URI id = new URI(uriString);
+        URI id = new URIImpl(uriString);
         InputStream stream = ClassLoader.getSystemResourceAsStream(resourceName);
         RDFContainerSesame rdfContainer = new RDFContainerSesame(id);
 
@@ -43,7 +42,7 @@ public class ExtractorTestBase extends TestCase {
     
     public void checkStatement(org.openrdf.model.URI property, String substring, RDFContainerSesame container) {
         // setup some info
-        String uriString = container.getDataObjectUri().toString();
+        String uriString = container.getDescribedUri().toString();
         Repository repository = container.getRepository();
         ValueFactory valueFactory = repository.getSail().getValueFactory();
         boolean encounteredSubstring = false;

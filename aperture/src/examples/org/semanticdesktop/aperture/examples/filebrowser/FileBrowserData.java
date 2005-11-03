@@ -9,7 +9,6 @@ package org.semanticdesktop.aperture.examples.filebrowser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.net.URI;
 
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
@@ -44,9 +43,8 @@ public class FileBrowserData {
         FileInputStream fin = new FileInputStream(file);
         // get Extractor
         Extractor extractor = new PlainTextExtractorFactory().get();
-        URI uri = file.toURI();
-        data = new RDFContainerSesame(uri);
-        extractor.extract(uri, fin, null, mimeType, data);
+        data = new RDFContainerSesame(file.toURI().toString());
+        extractor.extract(data.getDescribedUri(), fin, null, mimeType, data);
     }
     
     public RDFContainerSesame getRDF() {

@@ -7,7 +7,6 @@
 package org.semanticdesktop.aperture.extractor.pdf;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
@@ -24,28 +23,28 @@ public class PdfExtractorTest extends ExtractorTestBase {
     
     private static final String PDF_CREATOR_DOC = DOCS_PATH + "pdf-word-2000-pdfcreator-0.8.0.pdf";
     
-    private RDFContainerSesame getStatements(String resourceName) throws URISyntaxException, ExtractorException, IOException {
+    private RDFContainerSesame getStatements(String resourceName) throws ExtractorException, IOException {
         // apply the extractor
         ExtractorFactory factory = new PdfExtractorFactory();
         Extractor extractor = factory.get();
         return extract(resourceName, extractor);
     }
     
-    public void testOpenOffice2Writer() throws URISyntaxException, ExtractorException, IOException {
+    public void testOpenOffice2Writer() throws ExtractorException, IOException {
         // note: document has no date
         RDFContainerSesame container = getStatements(OPEN_OFFICE_2_DOC);
         checkStatement(Vocabulary.GENERATOR_URI, "OpenOffice", container);
         checkOmnipresentStatements(container);
     }
     
-    public void testOpenOffice1Writer() throws URISyntaxException, ExtractorException, IOException {
+    public void testOpenOffice1Writer() throws ExtractorException, IOException {
         // note: document has no date
         RDFContainerSesame container = getStatements(OPEN_OFFICE_1_DOC);
         checkStatement(Vocabulary.GENERATOR_URI, "OpenOffice", container);
         checkOmnipresentStatements(container);
     }
     
-    public void testPDFCreator() throws URISyntaxException, ExtractorException, IOException {
+    public void testPDFCreator() throws ExtractorException, IOException {
         RDFContainerSesame container = getStatements(PDF_CREATOR_DOC);
         checkStatement(Vocabulary.GENERATOR_URI, "PDFCreator", container);
         checkStatement(Vocabulary.GENERATOR_URI, "Ghostscript", container);
