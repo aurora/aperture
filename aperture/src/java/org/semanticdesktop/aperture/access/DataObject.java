@@ -5,8 +5,7 @@
  */
 package org.semanticdesktop.aperture.access;
 
-import java.net.URI;
-
+import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
@@ -61,6 +60,9 @@ public interface DataObject {
 
 /*
  * $Log$
+ * Revision 1.3  2005/11/03 22:33:40  cfmfluit
+ * changed java.net.URI into org.openrdf.model.URI
+ *
  * Revision 1.2  2005/10/26 14:08:59  leo_sauermann
  * added the sesame-model and began with RDFContainer
  *
