@@ -1,0 +1,824 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<mimeTypes>
+
+<!--
+	Copyright (c) 2005 Aduna.
+	All rights reserved.
+
+	Licensed under the Open Software License version 3.0.
+-->
+
+<!--
+Description of the contents of this file:
+
+* Each description element describes a way to identify a MIME type of a binary resource
+  based on a magic number sequence.
+
+* Each description element should describe a unique MIME type.
+
+* A description can refer to a parent description. This means that besides the requirements
+  posed by the child description, a resource should also match the requirements of the parent
+  type (recursively) in order to match the child description.
+  Examples are OpenOffice documents which are a special type of zip files.
+
+* This file denotes a preferential order: when a resource matches several descriptions,
+  the one listed first overrules all others. This does not apply to the case where one
+  description has the other as parent description, in that case the most specific description
+  is preferred.
+  Examples are MS Works descriptions that overrule the generic MS Office description.
+
+* The elements in each description element are all optional except for the mimeType element.
+  They have the following meaning:
+
+mimeType: the MIME type whose characteristics are described. Please use the most standard
+MIME type for this category. This is NOT the place to list all alternative equivalent MIME
+types.
+
+entensions: a comma-separated list of common file extensions used for this type, e.g. "html,htm".
+Defaults to an empty list.
+
+condition: a combination of magic number, offset and parent mime type that together describe a
+satisfying condition for a binary resource to be considered an instance of the represented
+MIME type.
+
+The condition element has the following nested elements, which are all optional:
+
+byteSequence: the magic number. The encoding attribute specified how the byte sequence
+should be read. "hex" indicates a hexademical value, e.g. "ca fe ba be 00", "string" indicates
+a string, e.g. "PK". Check the encoding of this XML file! Defaults to no byte sequence,
+meaning that identification is left to parent type and extension checking
+
+offset: the position in the byte stream where the sequence should occur. Defaults to 0.
+
+minimumSize: the minimum number of bytes the byte stream needs to have in order to match.
+This should at least be equal to offset + byteSequence.length, but could be larger if that
+makes sense for that particular description. Defaults to 0.
+
+parentType: the mime type that should also be detected in order for this condition to match.
+Defaults to no parent type.
+
+-->
+
+<!-- ================== Archive Types ================== -->
+
+<description>
+	<mimeType>application/zip</mimeType>
+	<extensions>zip</extensions>
+	<condition>
+		<byteSequence encoding="string">PK</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/gzip</mimeType>
+	<extensions>gz,tgz</extensions>
+	<condition>
+		<byteSequence encoding="hex">1f 8b 08</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/bzip2</mimeType>
+	<extensions>bz2,tbz2</extensions>
+	<condition>
+  		<byteSequence encoding="hex">42 5a 68 39 31</byteSequence>
+  		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+
+<description>
+	<mimeType>application/x-rar-compressed</mimeType>
+	<extensions>rar</extensions>
+	<condition>
+		<byteSequence encoding="hex">52 61 72 21 1a</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<!-- ================== HTML Type ================== -->
+
+<description>
+	<mimeType>text/html</mimeType>
+	<extensions>html,htm,shtml,php,asp,xhtml</extensions>
+	<condition>
+		<byteSequence encoding="string">&lt;HEAD</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="string">&lt;head</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="string">&lt;TITLE</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="string">&lt;title</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="string">&lt;!doctype HTML</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="string">&lt;!DOCTYPE HTML</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="string">&lt;!--</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="string">&lt;html</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="string">&lt;HTML</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="string">&lt;BODY</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="string">&lt;body</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="string">&lt;h1></byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="string">&lt;H1></byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<!-- ================== OpenOffice 1.x/StarOffice 6.x-7.x Types ================== -->
+
+<description>
+	<mimeType>application/vnd.sun.xml.calc</mimeType>
+	<extensions>sxc</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.sun.xml.draw</mimeType>
+	<extensions>sxd</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.sun.xml.impress</mimeType>
+	<extensions>sxi</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.sun.xml.writer</mimeType>
+	<extensions>sxw</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.sun.xml.math</mimeType>
+	<extensions>sxm</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.sun.xml.calc.template</mimeType>
+	<extensions>stc</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.sun.xml.draw.template</mimeType>
+	<extensions>std</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.sun.xml.impress.template</mimeType>
+	<extensions>sti</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.sun.xml.writer.template</mimeType>
+	<extensions>stw</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<!-- ================== OpenDocument Types ================== -->
+
+<description>
+	<mimeType>application/vnd.oasis.opendocument.spreadsheet</mimeType>
+	<extensions>ods</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.oasis.opendocument.graphics</mimeType>
+	<extensions>odg</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.oasis.opendocument.presentation</mimeType>
+	<extensions>odp</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.oasis.opendocument.text</mimeType>
+	<extensions>odt</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.oasis.opendocument.formula</mimeType>
+	<extensions>odf</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.oasis.opendocument.spreadsheet-template</mimeType>
+	<extensions>ots</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.oasis.opendocument.graphics-template</mimeType>
+	<extensions>otg</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.oasis.opendocument.presentation-template</mimeType>
+	<extensions>otp</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.oasis.opendocument.text-template</mimeType>
+	<extensions>ott</extensions>
+	<condition>
+		<parentType>application/zip</parentType>
+	</condition>
+</description>
+
+<!-- ================== Microsoft Works Types ================== -->
+<!-- Listed before MS Office definition because the starting header is the same -->
+
+<description>
+	<mimeType>application/vnd.ms-works-wdb</mimeType>
+	<extensions>wdb</extensions>
+	<condition>
+		<byteSequence encoding="hex">11 00 00 00 12 00 00 00 04 00 00</byteSequence>
+		<offset>576</offset>
+		<minimumLength>1300</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.ms-works-wdb</mimeType>
+	<extensions>wdb</extensions>
+	<condition>
+		<byteSequence encoding="hex">20 54 02 00 00 00 05 54 02 00 a1 0d 25 54</byteSequence>
+		<minimumLength>512</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.ms-works-wps</mimeType>
+	<extensions>wps</extensions>
+	<condition>
+		<byteSequence encoding="hex">01 00 fe ff 03 0a 00 00 ff ff ff ff 02 13 02 00 00 00 00 00 c0 00 00 00 00 00 00 46 10</byteSequence>
+		<offset>2112</offset>
+		<minimumLength>2300</minimumLength>
+		<parentType>application/vnd.ms-office</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.ms-works-wks</mimeType>
+	<extensions>wks</extensions>
+	<condition>
+		<byteSequence encoding="hex">ff 00 02 00 04 04 05 54 02 00</byteSequence>
+		<minimumLength>512</minimumLength>
+	</condition>
+</description>
+
+<!-- ================== MS Office Types ================== -->
+
+<description>
+	<mimeType>application/vnd.ms-office</mimeType>
+	<condition>
+		<byteSequence encoding="hex">d0 cf 11 e0 a1 b1 1a e1 00 00 00 00 00 00 00 00</byteSequence>
+		<minimumLength>2200</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.ms-word</mimeType>
+	<extensions>doc,dot</extensions>
+	<condition>
+		<parentType>application/vnd.ms-office</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.ms-excel</mimeType>
+	<extensions>xls,xlt</extensions>
+	<condition>
+		<parentType>application/vnd.ms-office</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.ms-powerpoint</mimeType>
+	<extensions>ppt,pot,pps</extensions>
+	<condition>
+		<parentType>application/vnd.ms-office</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.visio</mimeType>
+	<extensions>vsd,vst</extensions>
+	<condition>
+		<parentType>application/vnd.ms-office</parentType>
+	</condition>
+</description>
+
+<!-- ================== StarOffice 5.x Types ================== -->
+<!-- they have the same magic number as MSOffice (can you believe it?) -->
+
+<description>
+	<mimeType>application/vnd.stardivision.impress</mimeType>
+	<extensions>sdd</extensions>
+	<condition>
+		<parentType>application/vnd.ms-office</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.stardivision.draw</mimeType>
+	<extensions>sda</extensions>
+	<condition>
+		<parentType>application/vnd.ms-office</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.stardivision.writer</mimeType>
+	<extensions>sdw</extensions>
+	<condition>
+		<parentType>application/vnd.ms-office</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.stardivision.calc</mimeType>
+	<extensions>sdc</extensions>
+	<condition>
+		<parentType>application/vnd.ms-office</parentType>
+	</condition>
+</description>
+
+<!-- ================== WordPerfect Types ================== -->
+
+<description>
+	<mimeType>application/vnd.wordperfect</mimeType>
+	<extensions>wp,wpd,wpf,wpt,wpw,wp5,wp51,wp6,w60,w61</extensions>
+	<condition>
+		<byteSequence encoding="hex">ff 57 50 43</byteSequence>
+		<minimumLength>4</minimumLength>
+	</condition>
+</description>
+
+<!-- ================== E-mail Types ================== -->
+
+<description>
+	<mimeType>message/rdf822</mimeType>
+	<extensions>eml</extensions>
+</description>
+
+<description>
+	<mimeType>application/vnd.ms-outlook</mimeType>
+	<extensions>pst</extensions>
+	<condition>
+		<byteSequence encoding="hex">21 42 44 4e</byteSequence>
+		<minimumLength>4</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.ms-outlookexpress</mimeType>
+	<extensions>dbx</extensions>
+	<condition>
+		<byteSequence encoding="hex">4a 4d 46 36 03 00 10 00</byteSequence>
+		<minimumLength>8</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.ms-outlookexpress</mimeType>
+	<extensions>dbx</extensions>
+	<condition>
+		<byteSequence encoding="hex">cf ad 12 fe c5 fd 74 6f 66 e3 d1 11 9a 4e 00 c0</byteSequence>
+		<minimumLength>16</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.ms-outlookexpress</mimeType>
+	<extensions>dbx</extensions>
+	<condition>
+		<byteSequence encoding="hex">cf ad 12 fe c5 fd 74 6f 66 e3 d1 11 9a 4e 00 c0</byteSequence>
+		<minimumLength>16</minimumLength>
+	</condition>
+</description>
+
+<!-- ================== FrameMaker Types ================== -->
+
+<description>
+	<mimeType>application/x-framemaker</mimeType>
+	<condition>
+		<byteSequence encoding="string">&lt;MakerFile</byteSequence>
+		<minimumLength>100</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/x-framemaker</mimeType>
+	<condition>
+		<byteSequence encoding="string">&lt;MIFFile</byteSequence>
+		<minimumLength>100</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/x-framemaker</mimeType>
+	<condition>
+		<byteSequence encoding="string">&lt;MakerDictionary</byteSequence>
+		<minimumLength>100</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/x-framemaker</mimeType>
+	<condition>
+		<byteSequence encoding="string">&lt;MakerScreenFont</byteSequence>
+		<minimumLength>100</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/x-framemaker</mimeType>
+	<condition>
+		<byteSequence encoding="string">&lt;MML</byteSequence>
+		<minimumLength>100</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/x-framemaker</mimeType>
+	<condition>
+		<byteSequence encoding="string">&lt;BookFile</byteSequence>
+		<minimumLength>100</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/x-framemaker</mimeType>
+	<condition>
+		<byteSequence encoding="string">&lt;Maker</byteSequence>
+		<minimumLength>100</minimumLength>
+	</condition>
+</description>
+
+<!-- ================== Other Document Types ================== -->
+
+<description>
+	<mimeType>text/plain</mimeType>
+	<extensions>txt,1st,me,text,ans,asc,csv,faq,c,h,tex,latex,pv,log</extensions>
+</description>
+
+<description>
+	<mimeType>text/java</mimeType>
+	<extensions>java</extensions>
+</description>
+
+<description>
+	<mimeType>text/rtf</mimeType>
+	<extensions>rtf</extensions>
+	<condition>
+		<byteSequence encoding="string">{\rtf</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/pdf</mimeType>
+	<extensions>pdf</extensions>
+	<condition>
+		<byteSequence encoding="string">%PDF-</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>text/xml</mimeType>
+	<extensions>xml,xslt,wml</extensions>
+	<condition>
+		<byteSequence encoding="string">&lt;xml</byteSequence>
+		<minimumLength>10</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/postscript</mimeType>
+	<extensions>ps</extensions>
+	<condition>
+		<byteSequence encoding="string">%!</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/x-aduna-license-file</mimeType>
+	<extensions>alf</extensions>
+	<condition>
+		<byteSequence encoding="string">ALF</byteSequence>
+		<minimumLength>6</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/x-ms-registry</mimeType>
+	<extensions>reg</extensions>
+	<condition>
+		<byteSequence encoding="string">regf</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<!-- ================== Executables and similar stuff ================== -->
+
+<description>
+	<mimeType>application/x-ms-dos-executable</mimeType>
+	<extensions>exe</extensions>
+	<condition>
+		<byteSequence encoding="string">MZ</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/x-java-class</mimeType>
+	<extensions>class</extensions>
+	<condition>
+		<byteSequence encoding="hex">ca fe ba be 00</byteSequence>
+		<minimumLength>5</minimumLength>
+	</condition>
+</description>
+
+<!-- ================== Image Types ================== -->
+
+<description>
+	<mimeType>image/bmp</mimeType>
+	<extensions>bmp</extensions>
+	<condition>
+		<byteSequence encoding="string">BM</byteSequence>
+		<minimumLength>40</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>image/gif</mimeType>
+	<extensions>gif</extensions>
+	<condition>
+		<byteSequence encoding="string">GIF8</byteSequence>
+		<minimumLength>40</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>image/jpeg</mimeType>
+	<extensions>jpg</extensions>
+	<condition>
+		<byteSequence encoding="hex">ff d8 ff</byteSequence>
+		<minimumLength>40</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>image/x-portable-bitmap</mimeType>
+	<extensions>pgm</extensions>
+	<condition>
+		<byteSequence encoding="string">P1</byteSequence>
+		<minimumLength>40</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="string">P4</byteSequence>
+		<minimumLength>40</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>image/x-portable-greymap</mimeType>
+	<extensions>pgm</extensions>
+	<condition>
+		<byteSequence encoding="string">P2</byteSequence>
+		<minimumLength>40</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="string">P5</byteSequence>
+		<minimumLength>40</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>image/png</mimeType>
+	<extensions>png</extensions>
+	<condition>
+		<byteSequence encoding="hex">89 50 4e 47 0d 0a 1a</byteSequence>
+		<minimumLength>40</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>image/x-portable-pixmap</mimeType>
+	<extensions>ppm</extensions>
+	<condition>
+		<byteSequence encoding="string">P3</byteSequence>
+		<minimumLength>40</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="string">P6</byteSequence>
+		<minimumLength>40</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>image/tiff</mimeType>
+	<extensions>tif,tiff</extensions>
+	<condition>
+		<byteSequence encoding="hex">4d 4d 00 2a</byteSequence>
+		<minimumLength>40</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="hex">49 49 2a 00</byteSequence>
+		<offset> 0</offset>
+		<minimumLength>40</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>image/x-paintshoppro</mimeType>
+	<extensions>psp</extensions>
+	<condition>
+		<byteSequence encoding="string">Paint Shop Pro Image File</byteSequence>
+		<offset> 0</offset>
+		<minimumLength>25</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>image/xcf</mimeType>
+	<extensions>xcf</extensions>
+	<condition>
+		<byteSequence encoding="hex">67 69 6d 70 20 78 63 66 20</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.corel-draw</mimeType>
+	<extensions>cdr</extensions>
+	<condition>
+		<byteSequence encoding="string">CDRA</byteSequence>
+		<offset>8</offset>
+		<minimumLength>12</minimumLength>
+	</condition>
+</description>
+
+<!-- ================== Video Types ================== -->
+
+<description>
+	<mimeType>video/x-msvideo</mimeType>
+	<extensions>avi</extensions>
+	<condition>
+		<byteSequence encoding="hex">41 56 49 20</byteSequence>
+		<offset>8</offset>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>video/quicktime</mimeType>
+	<extensions>mov</extensions>
+	<condition>
+		<byteSequence encoding="string">moov</byteSequence>
+		<offset>4</offset>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>video/mpeg</mimeType>
+	<extensions>mpg,mpeg</extensions>
+	<condition>
+		<byteSequence encoding="hex">00 00 01 b3</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+	<condition>
+		<byteSequence encoding="hex">00 00 01 ba</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<!-- ================== RIFF-based Types ================== -->
+<!-- (see http://www.udayton.edu/~cps/faculty/jloomis/cps592B/asgn/asgn1/riff.html        -->
+<!-- and http://www.opensource.apple.com/darwinsource/10.3/file-1/file/magic/Magdir/riff) -->
+
+<description>
+	<mimeType>audio/x-wav</mimeType>
+	<extensions>wav</extensions>
+	<condition>
+		<byteSequence encoding="string">WAVE</byteSequence>
+		<offset>8</offset>
+		<minimumLength>12</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>audio/mpeg</mimeType>
+	<extensions>mp3,mp2</extensions>
+	<condition>
+		<byteSequence encoding="string">ID3</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>audio/midi</mimeType>
+	<extensions>mid,midi</extensions>
+	<condition>
+		<byteSequence encoding="string">MThd</byteSequence>
+		<offset> 0</offset>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>video/x-msvideo</mimeType>
+	<extensions>avi</extensions>
+	<condition>
+		<byteSequence encoding="hex">41 56 49 20</byteSequence>
+		<offset>8</offset>
+		<minimumLength>12</minimumLength>
+	</condition>
+</description>
+
+</mimeTypes>
