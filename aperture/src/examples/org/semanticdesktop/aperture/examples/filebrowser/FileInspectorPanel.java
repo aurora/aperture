@@ -133,8 +133,6 @@ public class FileInspectorPanel extends JPanel {
                 String mimeType = mimeTypeIdentifier.identify(bytes, file.getPath(), null);
                 buffer.reset();
 
-                System.out.println(mimeType);
-
                 // extract the full-text and metadata
                 URI uri = new URIImpl(file.toURI().toString());
                 RDFContainerSesame container = new RDFContainerSesame(file.toURI().toString());
@@ -145,6 +143,8 @@ public class FileInspectorPanel extends JPanel {
                     Extractor extractor = factory.get();
                     extractor.extract(uri, buffer, null, mimeType, container);
                 }
+                
+                stream.close();
 
                 // update the UI
                 metadataPanel.getModel().setMetadata(mimeType, container.getRepository());
