@@ -109,7 +109,10 @@ public class StatementsPanel extends JPanel {
     private void updateDisplay() {
         String text = null;
 
-        if (repository != null) {
+        if (repository == null) {
+            text = " [ metadata not available ]";
+        }
+        else {
             // determine the selected RDFFormat
             Object format = formatBoxModel.getSelectedItem();
 

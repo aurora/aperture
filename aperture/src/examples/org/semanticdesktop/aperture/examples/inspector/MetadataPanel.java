@@ -36,6 +36,8 @@ public class MetadataPanel extends JPanel implements ChangeListener {
         
         model = new MetadataModel();
         model.addChangeListener(this);
+        
+        updateDisplay();
     }
 
     /**
@@ -121,10 +123,21 @@ public class MetadataPanel extends JPanel implements ChangeListener {
     }
 
     public void stateChanged(ChangeEvent e) {
+        updateDisplay();
+    }
+    
+    private void updateDisplay() {
         // update UI accordingly
-        mimeTypeValueLabel.setText(model.getMimeType());
+        String mimeType = model.getMimeType();
+        mimeTypeValueLabel.setText(mimeType == null ? "--" : mimeType);
         
-        fullTextArea.setText(model.getFullText().trim());
+        String fullText = model.getFullText();
+        if (fullText == null) {
+            fullTextArea.setText("[ full-text not available ]");
+        }
+        else {
+            fullTextArea.setText(model.getFullText());
+        }
         fullTextArea.setCaretPosition(0);
         
         statementsPanel.setRepository(model.getRepository());

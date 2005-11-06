@@ -44,8 +44,11 @@ public class MetadataModel {
         this.repository = repository;
 
         // update the derived full-text property
-        StringBuffer buffer = new StringBuffer(10000);
-        if (repository != null) {
+        if (repository == null) {
+            fullText = null;
+        }
+        else {
+            StringBuffer buffer = new StringBuffer(10000);
             Collection statements = repository.getStatements(null, Vocabulary.FULL_TEXT_URI, null);
 
             Iterator iterator = statements.iterator();
@@ -60,9 +63,10 @@ public class MetadataModel {
                     buffer.append("\n\n=====================================================\n\n");
                 }
             }
+
+            fullText = buffer.toString().trim();
         }
 
-        fullText = buffer.toString();
 
         // notify listeners
         fireStateChanged();
