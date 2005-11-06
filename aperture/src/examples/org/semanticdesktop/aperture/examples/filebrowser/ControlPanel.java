@@ -16,6 +16,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class ControlPanel extends JPanel {
 
@@ -32,6 +34,7 @@ public class ControlPanel extends JPanel {
     public ControlPanel() {
         super();
         initialize();
+        updateEnabledState();
     }
 
     /**
@@ -76,8 +79,25 @@ public class ControlPanel extends JPanel {
     private JTextField getFileField() {
         if (fileField == null) {
             fileField = new JTextField();
+            fileField.getDocument().addDocumentListener(new DocumentListener() {
+                public void insertUpdate(DocumentEvent e) {
+                    updateEnabledState();
+                }
+
+                public void removeUpdate(DocumentEvent e) {
+                    updateEnabledState();
+                }
+
+                public void changedUpdate(DocumentEvent e) {
+                    updateEnabledState();
+                }
+            });
         }
         return fileField;
+    }
+
+    private void updateEnabledState() {
+        inspectButton.setEnabled(!fileField.getText().equals(""));
     }
 
     /**
