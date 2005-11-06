@@ -14,7 +14,7 @@ import javax.swing.SwingUtilities;
 public class FileInspectorFrame extends JFrame {
 
     private JPanel jContentPane = null;
-    private FileInspector fileInspector = null;
+    private FileInspectorPanel fileInspector = null;
 
     /**
      * This is the default constructor
@@ -52,16 +52,16 @@ public class FileInspectorFrame extends JFrame {
     /**
      * This method initializes fileInspector	
      * 	
-     * @return org.semanticdesktop.aperture.examples.filebrowser.FileInspector	
+     * @return org.semanticdesktop.aperture.examples.filebrowser.FileInspectorPanel	
      */
-    private FileInspector getFileInspector() {
+    private FileInspectorPanel getFileInspector() {
         if (fileInspector == null) {
-            fileInspector = new FileInspector();
+            fileInspector = new FileInspectorPanel();
         }
         return fileInspector;
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 FileInspectorFrame frame = new FileInspectorFrame();

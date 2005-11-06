@@ -36,7 +36,7 @@ import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifie
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
 import org.semanticdesktop.aperture.util.IOUtil;
 
-public class FileInspector extends JPanel {
+public class FileInspectorPanel extends JPanel {
 
     private ControlPanel controlPanel = null;
 
@@ -49,7 +49,7 @@ public class FileInspector extends JPanel {
     /**
      * This is the default constructor
      */
-    public FileInspector() {
+    public FileInspectorPanel() {
         super();
         initialize();
 
