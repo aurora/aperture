@@ -9,6 +9,7 @@ package org.semanticdesktop.aperture.examples.filebrowser;
 import javax.swing.JPanel;
 
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.n3.N3Writer;
@@ -95,10 +96,13 @@ public class StatementsPanel extends JPanel {
     }
     
     private void updateDisplay() {
-        // fixme: leave the full text property out of this or trim literal values
+        // determine the selected RDFFormat
         Object format = formatBoxModel.getSelectedItem();
+        
+        // choose a RDFWriter based on the chosen format
         RDFWriter writer = null;
         StringWriter buffer = new StringWriter(10000);
+        
         
         if (RDFFormat.RDFXML.equals(format)) {
             writer = new RDFXMLWriter(buffer);
@@ -116,13 +120,19 @@ public class StatementsPanel extends JPanel {
             writer = new TriXWriter(buffer);
         }
         
+        // export the statements to a String
         String text;
         if (writer == null) {
             text = "Unrecognized RDF format: " + format;
         }
         else {
             try {
-                repository.extractStatements(writer);
+                // wrap the writer in a utility RDFHandler that clips long literals
+                // (JTextArea - or actually Swing - will become unstable with long strongs)
+                RDFHandler handler = new LiteralClipper(writer);
+
+                // export the statements
+                repository.extractStatements(handler);
                 text = buffer.toString();
             }
             catch (RDFHandlerException e) {
@@ -131,6 +141,7 @@ public class StatementsPanel extends JPanel {
             }
         }
         
+        // update UI
         statementsTextArea.setText(text);
         statementsTextArea.setCaretPosition(0);
     }
