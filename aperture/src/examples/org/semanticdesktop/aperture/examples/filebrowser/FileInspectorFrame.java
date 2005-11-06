@@ -36,6 +36,11 @@ public class FileInspectorFrame extends JFrame {
         this.setSize(700, 500);
         this.setContentPane(getJContentPane());
         this.setTitle("Aperture File Inspector");
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                System.exit(0);
+            }
+        });
     }
 
     /**
