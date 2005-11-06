@@ -155,6 +155,7 @@ public class MetadataPanel extends JPanel implements ChangeListener {
             gridBagConstraints4.weighty = 0.0D;
             gridBagConstraints4.gridx = 0;
             gridBagConstraints4.gridy = 0;
+            gridBagConstraints4.insets = new java.awt.Insets(5,0,0,0);
             gridBagConstraints4.weightx = 1.0;
             GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
             gridBagConstraints3.fill = java.awt.GridBagConstraints.BOTH;
