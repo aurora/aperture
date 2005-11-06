@@ -126,13 +126,13 @@ public class FileInspectorPanel extends JPanel {
                 // determine the mime type
                 FileInputStream stream = new FileInputStream(file);
                 int minBufferSize = mimeTypeIdentifier.getMinArrayLength();
-                BufferedInputStream buffer = new BufferedInputStream(stream, 8192);
-                buffer.mark(minBufferSize);
-
+                BufferedInputStream buffer = new BufferedInputStream(stream, minBufferSize);
+                
                 byte[] bytes = IOUtil.readBytes(stream, minBufferSize);
                 String mimeType = mimeTypeIdentifier.identify(bytes, file.getPath(), null);
-                buffer.reset();
-
+                
+                stream.close();
+                
                 // extract the full-text and metadata
                 URI uri = new URIImpl(file.toURI().toString());
                 RDFContainerSesame container = new RDFContainerSesame(file.toURI().toString());
@@ -141,11 +141,16 @@ public class FileInspectorPanel extends JPanel {
                 if (factories != null && !factories.isEmpty()) {
                     ExtractorFactory factory = (ExtractorFactory) factories.iterator().next();
                     Extractor extractor = factory.get();
+                    
+                    // Somehow I couldn't get this working with a single stream and buffer and the use
+                    // of mark() and reset(). I probably misunderstood something in the API. For now I'll just
+                    // open a second stream.
+                    stream = new FileInputStream(file);
+                    buffer = new BufferedInputStream(stream, 8192);
                     extractor.extract(uri, buffer, null, mimeType, container);
+                    stream.close();
                 }
                 
-                stream.close();
-
                 // update the UI
                 metadataPanel.getModel().setMetadata(mimeType, container.getRepository());
             }
