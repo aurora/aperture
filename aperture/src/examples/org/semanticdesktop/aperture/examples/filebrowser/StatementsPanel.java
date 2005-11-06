@@ -35,12 +35,18 @@ import javax.swing.DefaultComboBoxModel;
 public class StatementsPanel extends JPanel {
 
     private Repository repository;
+
     private JLabel statementsLabel = null;
+
     private JScrollPane statementsScrollPane = null;
+
     private JTextArea statementsTextArea = null;
+
     private JLabel formatLabel = null;
+
     private JComboBox formatBox = null;
-    private DefaultComboBoxModel formatBoxModel = null;  //  @jve:decl-index=0:visual-constraint=""
+
+    private DefaultComboBoxModel formatBoxModel = null; // @jve:decl-index=0:visual-constraint=""
 
     /**
      * This is the default constructor
@@ -61,12 +67,12 @@ public class StatementsPanel extends JPanel {
         gridBagConstraints1.gridy = 0;
         gridBagConstraints1.weightx = 0.0D;
         gridBagConstraints1.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints1.insets = new java.awt.Insets(0,0,0,30);
+        gridBagConstraints1.insets = new java.awt.Insets(0, 0, 0, 30);
         gridBagConstraints1.gridx = 2;
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(0,0,0,15);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 15);
         gridBagConstraints.gridy = 0;
         formatLabel = new JLabel();
         formatLabel.setText("Serialization Format:");
@@ -76,7 +82,7 @@ public class StatementsPanel extends JPanel {
         gridBagConstraints3.weightx = 1.0;
         gridBagConstraints3.weighty = 1.0;
         gridBagConstraints3.gridwidth = 3;
-        gridBagConstraints3.insets = new java.awt.Insets(5,0,0,0);
+        gridBagConstraints3.insets = new java.awt.Insets(5, 0, 0, 0);
         gridBagConstraints3.gridx = 0;
         GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
         gridBagConstraints2.gridx = 0;
@@ -86,67 +92,72 @@ public class StatementsPanel extends JPanel {
         statementsLabel = new JLabel();
         statementsLabel.setText("Statements:");
         this.setLayout(new GridBagLayout());
-        this.setSize(new java.awt.Dimension(543,289));
+        this.setSize(new java.awt.Dimension(543, 289));
         this.add(statementsLabel, gridBagConstraints2);
         this.add(getStatementsScrollPane(), gridBagConstraints3);
         this.add(formatLabel, gridBagConstraints);
         this.add(getFormatBox(), gridBagConstraints1);
     }
-    
+
     public void setRepository(Repository repository) {
         Repository oldRepository = this.repository;
         this.repository = repository;
         updateDisplay();
         firePropertyChange("repository", oldRepository, this.repository);
     }
-    
-    private void updateDisplay() {
-        // determine the selected RDFFormat
-        Object format = formatBoxModel.getSelectedItem();
-        
-        // choose a RDFWriter based on the chosen format
-        RDFWriter writer = null;
-        StringWriter buffer = new StringWriter(10000);
-        
-        if (RDFFormat.RDFXML.equals(format)) {
-            writer = new RDFXMLWriter(buffer);
-        }
-        else if (RDFFormat.NTRIPLES.equals(format)) {
-            writer = new NTriplesWriter(buffer);
-        }
-        else if (RDFFormat.N3.equals(format)) {
-            writer = new N3Writer(buffer);
-        }
-        else if (RDFFormat.TURTLE.equals(format)) {
-            writer = new TurtleWriter(buffer);
-        }
-        else if (RDFFormat.TRIX.equals(format)) {
-            writer = new TriXWriter(buffer);
-        }
-        
-        // export the statements to a String
-        String text;
-        if (writer == null) {
-            text = "Unrecognized RDF format: " + format;
-        }
-        else {
-            try {
-                // wrap the writer in a utility RDFHandler that clips long literals
-                // (JTextArea - or actually Swing - will become unstable with long strongs)
-                RDFHandler handler = new LiteralClipper(writer);
 
-                // export the statements
-                repository.extractStatements(handler);
-                text = buffer.toString();
+    private void updateDisplay() {
+        String text = null;
+
+        if (repository != null) {
+            // determine the selected RDFFormat
+            Object format = formatBoxModel.getSelectedItem();
+
+            // choose a RDFWriter based on the chosen format
+            RDFWriter writer = null;
+            StringWriter buffer = new StringWriter(10000);
+
+            if (RDFFormat.RDFXML.equals(format)) {
+                writer = new RDFXMLWriter(buffer);
             }
-            catch (RDFHandlerException e) {
-                text = "Exception while extracting statements:\n\n" + e.getMessage() +
-                    "\n\nPartial contents:\n\n" + buffer.toString();
+            else if (RDFFormat.NTRIPLES.equals(format)) {
+                writer = new NTriplesWriter(buffer);
             }
+            else if (RDFFormat.N3.equals(format)) {
+                writer = new N3Writer(buffer);
+            }
+            else if (RDFFormat.TURTLE.equals(format)) {
+                writer = new TurtleWriter(buffer);
+            }
+            else if (RDFFormat.TRIX.equals(format)) {
+                writer = new TriXWriter(buffer);
+            }
+
+            // export the statements to a String
+            if (writer == null) {
+                text = "Unrecognized RDF format: " + format;
+            }
+            else {
+                try {
+                    // wrap the writer in a utility RDFHandler that clips long literals
+                    // (JTextArea - or actually Swing - will become unstable with long strongs)
+                    RDFHandler handler = new LiteralClipper(writer);
+
+                    // export the statements
+                    repository.extractStatements(handler);
+                    text = buffer.toString();
+                }
+                catch (RDFHandlerException e) {
+                    text = "Exception while extracting statements:\n\n" + e.getMessage()
+                            + "\n\nPartial contents:\n\n" + buffer.toString();
+                }
+            }
+            
+            text = text.trim();
         }
-        
+
         // update UI
-        statementsTextArea.setText(text.trim());
+        statementsTextArea.setText(text);
         statementsTextArea.setCaretPosition(0);
     }
 
@@ -155,9 +166,9 @@ public class StatementsPanel extends JPanel {
     }
 
     /**
-     * This method initializes statementsScrollPane	
-     * 	
-     * @return javax.swing.JScrollPane	
+     * This method initializes statementsScrollPane
+     * 
+     * @return javax.swing.JScrollPane
      */
     private JScrollPane getStatementsScrollPane() {
         if (statementsScrollPane == null) {
@@ -168,9 +179,9 @@ public class StatementsPanel extends JPanel {
     }
 
     /**
-     * This method initializes statementsTextArea	
-     * 	
-     * @return javax.swing.JTextArea	
+     * This method initializes statementsTextArea
+     * 
+     * @return javax.swing.JTextArea
      */
     private JTextArea getStatementsTextArea() {
         if (statementsTextArea == null) {
@@ -180,9 +191,9 @@ public class StatementsPanel extends JPanel {
     }
 
     /**
-     * This method initializes formatBox	
-     * 	
-     * @return javax.swing.JComboBox	
+     * This method initializes formatBox
+     * 
+     * @return javax.swing.JComboBox
      */
     private JComboBox getFormatBox() {
         if (formatBox == null) {
@@ -190,6 +201,7 @@ public class StatementsPanel extends JPanel {
             formatBox.setModel(getFormatBoxModel());
             formatBox.setRenderer(new FormatRenderer());
             formatBox.addItemListener(new java.awt.event.ItemListener() {
+
                 public void itemStateChanged(java.awt.event.ItemEvent e) {
                     updateDisplay();
                 }
@@ -199,9 +211,9 @@ public class StatementsPanel extends JPanel {
     }
 
     /**
-     * This method initializes formatBoxModel	
-     * 	
-     * @return javax.swing.DefaultComboBoxModel	
+     * This method initializes formatBoxModel
+     * 
+     * @return javax.swing.DefaultComboBoxModel
      */
     private DefaultComboBoxModel getFormatBoxModel() {
         if (formatBoxModel == null) {
@@ -215,17 +227,13 @@ public class StatementsPanel extends JPanel {
         }
         return formatBoxModel;
     }
-    
+
     private static class FormatRenderer extends DefaultListCellRenderer {
-        
-        public Component getListCellRendererComponent(
-                JList list,
-                Object value,
-                int index,
-                boolean isSelected,
-                boolean cellHasFocus) {
-            DefaultListCellRenderer renderer = (DefaultListCellRenderer)
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+        public Component getListCellRendererComponent(JList list, Object value, int index,
+                boolean isSelected, boolean cellHasFocus) {
+            DefaultListCellRenderer renderer = (DefaultListCellRenderer) super.getListCellRendererComponent(
+                    list, value, index, isSelected, cellHasFocus);
 
             String text = renderer.getText();
             if (RDFFormat.RDFXML.equals(value)) {
@@ -244,9 +252,9 @@ public class StatementsPanel extends JPanel {
                 text = "TriX";
             }
             renderer.setText(text);
-            
+
             return renderer;
         }
     }
-    
-}  //  @jve:decl-index=0:visual-constraint="10,10"
+
+} // @jve:decl-index=0:visual-constraint="10,10"

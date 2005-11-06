@@ -138,6 +138,7 @@ public class FileInspectorPanel extends JPanel {
             public void run() {
                 statusBar.setText("Processing " + file.getPath() + "...");
                 FileInspectorPanel.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                metadataPanel.getModel().setMetadata("--", null);
             }
         });
         
@@ -148,13 +149,13 @@ public class FileInspectorPanel extends JPanel {
             BufferedInputStream buffer = new BufferedInputStream(stream, minBufferSize);
 
             byte[] bytes = IOUtil.readBytes(stream, minBufferSize);
-            String mimeType = mimeTypeIdentifier.identify(bytes, file.getPath(), null);
+            final String mimeType = mimeTypeIdentifier.identify(bytes, file.getPath(), null);
 
             stream.close();
 
             // extract the full-text and metadata
             URI uri = new URIImpl(file.toURI().toString());
-            RDFContainerSesame container = new RDFContainerSesame(file.toURI().toString());
+            final RDFContainerSesame container = new RDFContainerSesame(file.toURI().toString());
 
             Set factories = extractorRegistry.get(mimeType);
             if (factories != null && !factories.isEmpty()) {
@@ -172,7 +173,11 @@ public class FileInspectorPanel extends JPanel {
             }
 
             // update the UI
-            metadataPanel.getModel().setMetadata(mimeType, container.getRepository());
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    metadataPanel.getModel().setMetadata(mimeType, container.getRepository());
+                }
+            });
         }
         catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(this, "File not found: " + file.getPath(), "File not found",

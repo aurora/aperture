@@ -44,19 +44,21 @@ public class MetadataModel {
         this.repository = repository;
 
         // update the derived full-text property
-        Collection statements = repository.getStatements(null, Vocabulary.FULL_TEXT_URI, null);
         StringBuffer buffer = new StringBuffer(10000);
+        if (repository != null) {
+            Collection statements = repository.getStatements(null, Vocabulary.FULL_TEXT_URI, null);
 
-        Iterator iterator = statements.iterator();
-        while (iterator.hasNext()) {
-            Statement statement = (Statement) iterator.next();
-            Value value = statement.getObject();
-            if (value instanceof Literal) {
-                buffer.append(((Literal) value).getLabel());
-            }
+            Iterator iterator = statements.iterator();
+            while (iterator.hasNext()) {
+                Statement statement = (Statement) iterator.next();
+                Value value = statement.getObject();
+                if (value instanceof Literal) {
+                    buffer.append(((Literal) value).getLabel());
+                }
 
-            if (iterator.hasNext()) {
-                buffer.append("\n\n=====================================================\n\n");
+                if (iterator.hasNext()) {
+                    buffer.append("\n\n=====================================================\n\n");
+                }
             }
         }
 
@@ -69,7 +71,7 @@ public class MetadataModel {
     public String getMimeType() {
         return mimeType;
     }
-    
+
     public Repository getRepository() {
         return repository;
     }
