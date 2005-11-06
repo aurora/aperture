@@ -6,47 +6,36 @@
  */
 package org.semanticdesktop.aperture.examples.filebrowser;
 
-import java.awt.LayoutManager;
-
 import javax.swing.JPanel;
-import java.awt.BorderLayout;
 import javax.swing.JLabel;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
-import java.util.Collection;
-import java.util.Iterator;
-
+import javax.swing.JTabbedPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-import org.openrdf.model.Statement;
+public class MetadataPanel extends JPanel implements ChangeListener {
 
-public class MetadataPanel extends JPanel {
-
-    private JPanel panelBaseInfo = null;
-    private JLabel labelMimeTypeL = null;
-    private JLabel labelMimeType = null;
-    private JScrollPane scrollTextOut = null;
-    private JTextArea textOut = null;
-
+    private MetadataModel model;
+    private JLabel mimeTypeMessageLabel = null;
+    private JLabel mimeTypeValueLabel = null;
+    private JTabbedPane tabbedPane = null;
+    private JScrollPane fullTextScrollPane = null;
+    private JTextArea fullTextArea = null;
+    private StatementsPanel statementsPanel = null;
+    private JPanel fullTextPanel = null;
+    private JTextArea fullTextMessageArea = null;
+    /**
+     * This is the default constructor
+     */
     public MetadataPanel() {
         super();
         initialize();
-    }
-
-    public MetadataPanel(boolean isDoubleBuffered) {
-        super(isDoubleBuffered);
-        initialize();
-    }
-
-    public MetadataPanel(LayoutManager layout) {
-        super(layout);
-        initialize();
-    }
-
-    public MetadataPanel(LayoutManager layout, boolean isDoubleBuffered) {
-        super(layout, isDoubleBuffered);
-        initialize();
+        
+        model = new MetadataModel();
+        model.addChangeListener(this);
     }
 
     /**
@@ -54,86 +43,149 @@ public class MetadataPanel extends JPanel {
      * 
      * @return void
      */
-    private void initialize()
-    {
-        this.setLayout(new BorderLayout());
-        this.setSize(300, 200);
-        this.add(getPanelBaseInfo(), java.awt.BorderLayout.NORTH);
-        this.add(getScrollTextOut(), java.awt.BorderLayout.CENTER);
+    private void initialize() {
+        GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
+        gridBagConstraints2.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints2.gridy = 1;
+        gridBagConstraints2.weightx = 1.0;
+        gridBagConstraints2.weighty = 1.0;
+        gridBagConstraints2.gridwidth = 2;
+        gridBagConstraints2.insets = new java.awt.Insets(5,0,0,0);
+        gridBagConstraints2.gridx = 0;
+        GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
+        gridBagConstraints1.insets = new java.awt.Insets(0,0,0,0);
+        gridBagConstraints1.gridy = 0;
+        gridBagConstraints1.weightx = 1.0D;
+        gridBagConstraints1.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints1.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints1.gridx = 1;
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0,10,0,10);
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.gridx = 0;
+        mimeTypeValueLabel = new JLabel();
+        mimeTypeValueLabel.setText("--");
+        mimeTypeMessageLabel = new JLabel();
+        mimeTypeMessageLabel.setText("Detected MIME Type:");
+        this.setLayout(new GridBagLayout());
+        this.setSize(500, 200);
+        this.add(mimeTypeMessageLabel, gridBagConstraints);
+        this.add(mimeTypeValueLabel, gridBagConstraints1);
+        this.add(getTabbedPane(), gridBagConstraints2);
     }
     
-    public void loadDataFrom(FileBrowserData data) {
-        labelMimeType.setText(data.getMimeType());
-        StringBuffer out = new StringBuffer();
-        Collection col = data.getRDF().getRepository().extractStatements();
-        for (Iterator iter = col.iterator(); iter.hasNext();)
-        {
-            Statement statement = (Statement) iter.next();
-            out.append(statement.getPredicate().getLocalName());
-            out.append(": ");
-            out.append(statement.getObject().toString());
-            out.append("\n");
-        }          
-        getTextOut().setText(out.toString());     
+    public MetadataModel getModel() {
+        return model;
     }
 
     /**
-     * This method initializes panelBaseInfo	
+     * This method initializes tabbedPane	
      * 	
-     * @return javax.swing.JPanel	
+     * @return javax.swing.JTabbedPane	
      */
-    private JPanel getPanelBaseInfo()
-    {
-        if (panelBaseInfo == null)
-        {
-            GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
-            gridBagConstraints1.gridx = 1;
-            gridBagConstraints1.fill = java.awt.GridBagConstraints.HORIZONTAL;
-            gridBagConstraints1.weightx = 1.0;
-            gridBagConstraints1.gridy = 0;
-            labelMimeType = new JLabel();
-            labelMimeType.setText("JLabel");
-            GridBagConstraints gridBagConstraints = new GridBagConstraints();
-            gridBagConstraints.gridx = 0;
-            gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-            gridBagConstraints.gridy = 0;
-            labelMimeTypeL = new JLabel();
-            labelMimeTypeL.setText("MIME Type: ");
-            panelBaseInfo = new JPanel();
-            panelBaseInfo.setLayout(new GridBagLayout());
-            panelBaseInfo.add(labelMimeTypeL, gridBagConstraints);
-            panelBaseInfo.add(labelMimeType, gridBagConstraints1);
+    private JTabbedPane getTabbedPane() {
+        if (tabbedPane == null) {
+            tabbedPane = new JTabbedPane();
+            tabbedPane.addTab("Full-text", null, getFullTextPanel(), null);
+            tabbedPane.addTab("Metadata", null, getStatementsPanel(), null);
         }
-        return panelBaseInfo;
+        return tabbedPane;
     }
 
     /**
-     * This method initializes scrollTextOut	
+     * This method initializes fullTextScrollPane	
      * 	
      * @return javax.swing.JScrollPane	
      */
-    private JScrollPane getScrollTextOut()
-    {
-        if (scrollTextOut == null)
-        {
-            scrollTextOut = new JScrollPane();
-            scrollTextOut.setViewportView(getTextOut());
+    private JScrollPane getFullTextScrollPane() {
+        if (fullTextScrollPane == null) {
+            fullTextScrollPane = new JScrollPane();
+            fullTextScrollPane.setViewportView(getFullTextArea());
         }
-        return scrollTextOut;
+        return fullTextScrollPane;
     }
 
     /**
-     * This method initializes textOut	
+     * This method initializes fullTextArea	
      * 	
      * @return javax.swing.JTextArea	
      */
-    private JTextArea getTextOut()
-    {
-        if (textOut == null)
-        {
-            textOut = new JTextArea();
+    private JTextArea getFullTextArea() {
+        if (fullTextArea == null) {
+            fullTextArea = new JTextArea();
+            fullTextArea.setWrapStyleWord(true);
+            fullTextArea.setEditable(false);
+            fullTextArea.setLineWrap(true);
         }
-        return textOut;
+        return fullTextArea;
     }
 
-}
+    public void stateChanged(ChangeEvent e) {
+        // update UI accordingly
+        mimeTypeValueLabel.setText(model.getMimeType());
+        
+        fullTextArea.setText(model.getFullText().trim());
+        fullTextArea.setCaretPosition(0);
+        
+        statementsPanel.setRepository(model.getRepository());
+    }
+
+    /**
+     * This method initializes statementsPanel1
+     * 	
+     * @return org.semanticdesktop.aperture.examples.filebrowser.StatementsPanel	
+     */
+    private StatementsPanel getStatementsPanel() {
+        if (statementsPanel == null) {
+            statementsPanel = new StatementsPanel();
+            statementsPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5,5,5,5));
+        }
+        return statementsPanel;
+    }
+
+    /**
+     * This method initializes jPanel	
+     * 	
+     * @return javax.swing.JPanel	
+     */
+    private JPanel getFullTextPanel() {
+        if (fullTextPanel == null) {
+            GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
+            gridBagConstraints4.fill = java.awt.GridBagConstraints.BOTH;
+            gridBagConstraints4.weighty = 0.0D;
+            gridBagConstraints4.gridx = 0;
+            gridBagConstraints4.gridy = 0;
+            gridBagConstraints4.weightx = 1.0;
+            GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
+            gridBagConstraints3.fill = java.awt.GridBagConstraints.BOTH;
+            gridBagConstraints3.gridx = 0;
+            gridBagConstraints3.gridy = 1;
+            gridBagConstraints3.weightx = 1.0;
+            gridBagConstraints3.weighty = 1.0;
+            gridBagConstraints3.insets = new java.awt.Insets(10,0,0,0);
+            fullTextPanel = new JPanel();
+            fullTextPanel.setLayout(new GridBagLayout());
+            fullTextPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5,5,5,5));
+            fullTextPanel.add(getFullTextMessageArea(), gridBagConstraints4);
+            fullTextPanel.add(getFullTextScrollPane(), gridBagConstraints3);
+        }
+        return fullTextPanel;
+    }
+
+    /**
+     * This method initializes fullTextMessageArea	
+     * 	
+     * @return javax.swing.JTextArea	
+     */
+    private JTextArea getFullTextMessageArea() {
+        if (fullTextMessageArea == null) {
+            fullTextMessageArea = new JTextArea();
+            fullTextMessageArea.setText("The following full-text was extracted from the file.\nLeading and trailing white space may have been removed.");
+            fullTextMessageArea.setLineWrap(true);
+            fullTextMessageArea.setOpaque(false);
+            fullTextMessageArea.setWrapStyleWord(true);
+        }
+        return fullTextMessageArea;
+    }
+}  //  @jve:decl-index=0:visual-constraint="10,10"
