@@ -9,9 +9,10 @@ package org.semanticdesktop.aperture.examples.filebrowser;
 import java.awt.BorderLayout;
 import java.io.File;
 
-import javax.swing.JPanel;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 public class FileInspectorFrame extends JFrame {
 
@@ -66,6 +67,17 @@ public class FileInspectorFrame extends JFrame {
     public static void main(final String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                // change look and feel
+                if (System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0) {
+                    try {
+                        UIManager.setLookAndFeel("net.java.plaf.windows.WindowsLookAndFeel");
+                    }
+                    catch (Exception e) {
+                        // ignore
+                    }
+                }
+                
+                // open the frame
                 FileInspectorFrame frame = new FileInspectorFrame();
                 frame.setVisible(true);
                 
