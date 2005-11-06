@@ -18,12 +18,16 @@ import org.openrdf.rio.rdfxml.RDFXMLWriter;
 import org.openrdf.rio.trix.TriXWriter;
 import org.openrdf.rio.turtle.TurtleWriter;
 import org.openrdf.sesame.repository.Repository;
+
+import java.awt.Component;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
 import java.io.StringWriter;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
+import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.DefaultComboBoxModel;
@@ -103,7 +107,6 @@ public class StatementsPanel extends JPanel {
         // choose a RDFWriter based on the chosen format
         RDFWriter writer = null;
         StringWriter buffer = new StringWriter(10000);
-        
         
         if (RDFFormat.RDFXML.equals(format)) {
             writer = new RDFXMLWriter(buffer);
@@ -185,6 +188,7 @@ public class StatementsPanel extends JPanel {
         if (formatBox == null) {
             formatBox = new JComboBox();
             formatBox.setModel(getFormatBoxModel());
+            formatBox.setRenderer(new FormatRenderer());
             formatBox.addItemListener(new java.awt.event.ItemListener() {
                 public void itemStateChanged(java.awt.event.ItemEvent e) {
                     updateDisplay();
@@ -211,4 +215,38 @@ public class StatementsPanel extends JPanel {
         }
         return formatBoxModel;
     }
+    
+    private static class FormatRenderer extends DefaultListCellRenderer {
+        
+        public Component getListCellRendererComponent(
+                JList list,
+                Object value,
+                int index,
+                boolean isSelected,
+                boolean cellHasFocus) {
+            DefaultListCellRenderer renderer = (DefaultListCellRenderer)
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+            String text = renderer.getText();
+            if (RDFFormat.RDFXML.equals(value)) {
+                text = "XML-Encoded RDF";
+            }
+            else if (RDFFormat.NTRIPLES.equals(value)) {
+                text = "N-Triples";
+            }
+            else if (RDFFormat.N3.equals(value)) {
+                text = "N3/Notation3";
+            }
+            else if (RDFFormat.TURTLE.equals(value)) {
+                text = "Turtle";
+            }
+            else if (RDFFormat.TRIX.equals(value)) {
+                text = "TriX";
+            }
+            renderer.setText(text);
+            
+            return renderer;
+        }
+    }
+    
 }  //  @jve:decl-index=0:visual-constraint="10,10"
