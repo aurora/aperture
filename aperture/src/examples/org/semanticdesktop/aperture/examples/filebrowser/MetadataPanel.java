@@ -60,7 +60,7 @@ public class MetadataPanel extends JPanel implements ChangeListener {
         gridBagConstraints1.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints1.gridx = 1;
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0,10,0,10);
+        gridBagConstraints.insets = new java.awt.Insets(0,0,0,10);
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.gridx = 0;

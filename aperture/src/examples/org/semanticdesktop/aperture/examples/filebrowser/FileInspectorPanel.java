@@ -35,6 +35,7 @@ import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifierFactory;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
 import org.semanticdesktop.aperture.util.IOUtil;
+import javax.swing.JSeparator;
 
 public class FileInspectorPanel extends JPanel {
 
@@ -68,8 +69,8 @@ public class FileInspectorPanel extends JPanel {
         gridBagConstraints1.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints1.weightx = 1.0D;
         gridBagConstraints1.weighty = 1.0D;
-        gridBagConstraints1.insets = new java.awt.Insets(25,0,0,0);
-        gridBagConstraints1.gridy = 1;
+        gridBagConstraints1.insets = new java.awt.Insets(20,10,10,10);
+        gridBagConstraints1.gridy = 2;
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.weightx = 1.0D;
@@ -189,7 +190,6 @@ public class FileInspectorPanel extends JPanel {
     private MetadataPanel getMetadataPanel() {
         if (metadataPanel == null) {
             metadataPanel = new MetadataPanel();
-            metadataPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,5,5,5));
         }
         return metadataPanel;
     }
