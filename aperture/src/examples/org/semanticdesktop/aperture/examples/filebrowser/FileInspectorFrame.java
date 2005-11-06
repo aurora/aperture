@@ -7,6 +7,8 @@
 package org.semanticdesktop.aperture.examples.filebrowser;
 
 import java.awt.BorderLayout;
+import java.io.File;
+
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -48,13 +50,13 @@ public class FileInspectorFrame extends JFrame {
         }
         return jContentPane;
     }
-
+    
     /**
      * This method initializes fileInspector	
      * 	
      * @return org.semanticdesktop.aperture.examples.filebrowser.FileInspectorPanel	
      */
-    private FileInspectorPanel getFileInspector() {
+    public FileInspectorPanel getFileInspector() {
         if (fileInspector == null) {
             fileInspector = new FileInspectorPanel();
         }
@@ -66,6 +68,10 @@ public class FileInspectorFrame extends JFrame {
             public void run() {
                 FileInspectorFrame frame = new FileInspectorFrame();
                 frame.setVisible(true);
+                
+                if (args.length > 0) {
+                    frame.getFileInspector().inspect(new File(args[0]));
+                }
             }
         });
     }

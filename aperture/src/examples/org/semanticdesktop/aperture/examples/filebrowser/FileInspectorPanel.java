@@ -98,15 +98,16 @@ public class FileInspectorPanel extends JPanel {
         getControlPanel().getInspectButton().addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                inspectFile();
+                inspect();
             }
         });
     }
 
-    private void inspectFile() {
-        // get the entered file
-        File file = controlPanel.getSelectedFile();
-
+    private void inspect() {
+        inspect(controlPanel.getSelectedFile());
+    }
+    
+    public void inspect(File file) {
         // some checks on whether we can process this file
         if (!file.exists()) {
             JOptionPane.showMessageDialog(this, "File does not exist: " + file.getPath(),
