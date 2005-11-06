@@ -6,10 +6,9 @@
  */
 package org.semanticdesktop.aperture.examples.filebrowser;
 
+import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,6 +18,8 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
@@ -35,11 +36,10 @@ import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifierFactory;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
 import org.semanticdesktop.aperture.util.IOUtil;
-import javax.swing.JSeparator;
 
 public class FileInspectorPanel extends JPanel {
 
-    private ControlPanel controlPanel = null;
+    private FileSelectorPanel controlPanel = null;
 
     private MetadataPanel metadataPanel = null;
 
@@ -55,7 +55,6 @@ public class FileInspectorPanel extends JPanel {
         initialize();
 
         initializeAperture();
-        initializeInspectionListener();
     }
 
     /**
@@ -95,19 +94,6 @@ public class FileInspectorPanel extends JPanel {
         extractorRegistry.add(new OpenDocumentExtractorFactory());
     };
 
-    private void initializeInspectionListener() {
-        getControlPanel().getInspectButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                inspect();
-            }
-        });
-    }
-
-    private void inspect() {
-        inspect(controlPanel.getSelectedFile());
-    }
-    
     public void inspect(File file) {
         // some checks on whether we can process this file
         if (!file.exists()) {
@@ -173,11 +159,16 @@ public class FileInspectorPanel extends JPanel {
     /**
      * This method initializes controlPanel
      * 
-     * @return org.semanticdesktop.aperture.examples.filebrowser.ControlPanel
+     * @return org.semanticdesktop.aperture.examples.filebrowser.FileSelectorPanel
      */
-    private ControlPanel getControlPanel() {
+    private FileSelectorPanel getControlPanel() {
         if (controlPanel == null) {
-            controlPanel = new ControlPanel();
+            controlPanel = new FileSelectorPanel();
+            controlPanel.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent e) {
+                    inspect(controlPanel.getFile());
+                }
+            });
         }
         return controlPanel;
     }
