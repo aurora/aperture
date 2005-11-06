@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.examples.filebrowser;
+package org.semanticdesktop.aperture.examples.inspector;
 
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;

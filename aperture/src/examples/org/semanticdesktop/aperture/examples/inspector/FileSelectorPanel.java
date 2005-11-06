@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.examples.filebrowser;
+package org.semanticdesktop.aperture.examples.inspector;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.examples.filebrowser;
+package org.semanticdesktop.aperture.examples.inspector;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -133,7 +133,7 @@ public class MetadataPanel extends JPanel implements ChangeListener {
     /**
      * This method initializes statementsPanel1
      * 	
-     * @return org.semanticdesktop.aperture.examples.filebrowser.StatementsPanel	
+     * @return org.semanticdesktop.aperture.examples.inspector.StatementsPanel	
      */
     private StatementsPanel getStatementsPanel() {
         if (statementsPanel == null) {

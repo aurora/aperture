@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.examples.filebrowser;
+package org.semanticdesktop.aperture.examples.inspector;
 
 import java.awt.BorderLayout;
 import java.io.File;
@@ -60,7 +60,7 @@ public class FileInspectorFrame extends JFrame {
     /**
      * This method initializes fileInspector	
      * 	
-     * @return org.semanticdesktop.aperture.examples.filebrowser.FileInspectorPanel	
+     * @return org.semanticdesktop.aperture.examples.inspector.FileInspectorPanel	
      */
     public FileInspectorPanel getFileInspector() {
         if (fileInspector == null) {

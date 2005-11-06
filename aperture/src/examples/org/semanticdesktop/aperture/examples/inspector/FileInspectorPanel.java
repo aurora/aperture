@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.examples.filebrowser;
+package org.semanticdesktop.aperture.examples.inspector;
 
 import java.awt.Cursor;
 import java.awt.GridBagConstraints;
@@ -204,7 +204,7 @@ public class FileInspectorPanel extends JPanel {
     /**
      * This method initializes controlPanel
      * 
-     * @return org.semanticdesktop.aperture.examples.filebrowser.FileSelectorPanel
+     * @return org.semanticdesktop.aperture.examples.inspector.FileSelectorPanel
      */
     private FileSelectorPanel getControlPanel() {
         if (controlPanel == null) {
@@ -222,7 +222,7 @@ public class FileInspectorPanel extends JPanel {
     /**
      * This method initializes metadataPanel
      * 
-     * @return org.semanticdesktop.aperture.examples.filebrowser.MetadataPanel
+     * @return org.semanticdesktop.aperture.examples.inspector.MetadataPanel
      */
     private MetadataPanel getMetadataPanel() {
         if (metadataPanel == null) {
