@@ -57,14 +57,15 @@ public class StatementsPanel extends JPanel {
         gridBagConstraints1.gridy = 0;
         gridBagConstraints1.weightx = 0.0D;
         gridBagConstraints1.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints1.insets = new java.awt.Insets(0,0,0,30);
         gridBagConstraints1.gridx = 2;
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(0,0,0,10);
+        gridBagConstraints.insets = new java.awt.Insets(0,0,0,15);
         gridBagConstraints.gridy = 0;
         formatLabel = new JLabel();
-        formatLabel.setText("Format:");
+        formatLabel.setText("Serialization Format:");
         GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
         gridBagConstraints3.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints3.gridy = 1;
@@ -142,7 +143,7 @@ public class StatementsPanel extends JPanel {
         }
         
         // update UI
-        statementsTextArea.setText(text);
+        statementsTextArea.setText(text.trim());
         statementsTextArea.setCaretPosition(0);
     }
 
@@ -171,7 +172,6 @@ public class StatementsPanel extends JPanel {
     private JTextArea getStatementsTextArea() {
         if (statementsTextArea == null) {
             statementsTextArea = new JTextArea();
-            statementsTextArea.setEditable(false);
         }
         return statementsTextArea;
     }
@@ -185,6 +185,11 @@ public class StatementsPanel extends JPanel {
         if (formatBox == null) {
             formatBox = new JComboBox();
             formatBox.setModel(getFormatBoxModel());
+            formatBox.addItemListener(new java.awt.event.ItemListener() {
+                public void itemStateChanged(java.awt.event.ItemEvent e) {
+                    updateDisplay();
+                }
+            });
         }
         return formatBox;
     }

@@ -115,7 +115,6 @@ public class MetadataPanel extends JPanel implements ChangeListener {
         if (fullTextArea == null) {
             fullTextArea = new JTextArea();
             fullTextArea.setWrapStyleWord(true);
-            fullTextArea.setEditable(false);
             fullTextArea.setLineWrap(true);
         }
         return fullTextArea;
