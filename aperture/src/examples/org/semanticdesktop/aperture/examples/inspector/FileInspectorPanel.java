@@ -30,6 +30,7 @@ import javax.swing.event.ChangeListener;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.sesame.repository.Repository;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
@@ -174,13 +175,14 @@ public class FileInspectorPanel extends JPanel {
 
             // extract the full-text and metadata
             URI uri = new URIImpl(file.toURI().toString());
-            final RDFContainerSesame container = new RDFContainerSesame(file.toURI().toString());
+            RDFContainerSesame container = null;
 
             Set factories = extractorRegistry.get(mimeType);
             if (factories != null && !factories.isEmpty()) {
                 ExtractorFactory factory = (ExtractorFactory) factories.iterator().next();
                 currentExtractor = factory.get();
-
+                container = new RDFContainerSesame(file.toURI().toString());
+                
                 // Somehow I couldn't get this working with a single stream and buffer and the use
                 // of mark() and reset(). I probably misunderstood something in the API. For now I'll
                 // just open a second stream.
@@ -191,9 +193,10 @@ public class FileInspectorPanel extends JPanel {
             }
 
             // update the UI
+            final Repository repository = container == null ? null : container.getRepository();
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    metadataPanel.getModel().setMetadata(mimeType, container.getRepository());
+                    metadataPanel.getModel().setMetadata(mimeType, repository);
                 }
             });
         }
