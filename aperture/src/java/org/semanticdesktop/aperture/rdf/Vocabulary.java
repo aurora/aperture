@@ -19,6 +19,7 @@ public class Vocabulary {
     public static final String NS = "http://aperture.semanticdesktop.org/ontology/data#";
     
     public static final String FULL_TEXT = NS + "full-text";
+    public static final String MIME_TYPE = NS + "mimeType";
     public static final String CREATOR = NS + "creator";  // author, artist, etc. NOT: generating application
     public static final String TITLE = NS + "title";
     public static final String SUBJECT = NS + "subject";
@@ -34,6 +35,7 @@ public class Vocabulary {
     static {
         ValueFactory factory = new ValueFactoryImpl();
         FULL_TEXT_URI = factory.createURI(FULL_TEXT);
+        MIME_TYPE_URI = factory.createURI(MIME_TYPE);
         CREATOR_URI = factory.createURI(CREATOR);
         TITLE_URI = factory.createURI(TITLE);
         SUBJECT_URI = factory.createURI(SUBJECT);
@@ -48,6 +50,7 @@ public class Vocabulary {
     }
     
     public static final URI FULL_TEXT_URI;
+    public static final URI MIME_TYPE_URI;
     public static final URI CREATOR_URI;
     public static final URI TITLE_URI;
     public static final URI SUBJECT_URI;
