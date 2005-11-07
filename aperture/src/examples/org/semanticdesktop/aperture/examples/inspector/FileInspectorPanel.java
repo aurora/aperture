@@ -54,6 +54,8 @@ public class FileInspectorPanel extends JPanel {
 
     private ExtractorRegistry extractorRegistry = null;
 
+    private Extractor currentExtractor;
+    
     private JLabel statusBar = null;
 
     /**
@@ -158,6 +160,8 @@ public class FileInspectorPanel extends JPanel {
         });
         
         try {
+            currentExtractor = null;
+            
             // determine the mime type
             FileInputStream stream = new FileInputStream(file);
             int minBufferSize = mimeTypeIdentifier.getMinArrayLength();
@@ -175,15 +179,14 @@ public class FileInspectorPanel extends JPanel {
             Set factories = extractorRegistry.get(mimeType);
             if (factories != null && !factories.isEmpty()) {
                 ExtractorFactory factory = (ExtractorFactory) factories.iterator().next();
-                Extractor extractor = factory.get();
+                currentExtractor = factory.get();
 
                 // Somehow I couldn't get this working with a single stream and buffer and the use
                 // of mark() and reset(). I probably misunderstood something in the API. For now I'll
-                // just
-                // open a second stream.
+                // just open a second stream.
                 stream = new FileInputStream(file);
                 buffer = new BufferedInputStream(stream, 8192);
-                extractor.extract(uri, buffer, null, mimeType, container);
+                currentExtractor.extract(uri, buffer, null, mimeType, container);
                 stream.close();
             }
 
@@ -210,7 +213,15 @@ public class FileInspectorPanel extends JPanel {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     FileInspectorPanel.this.setCursor(null);
-                    statusBar.setText(" "); // make sure it has a non-empty string or else its preferred height will change!!
+                    
+                    if (currentExtractor == null) {
+                        statusBar.setText("<html><b><font color=\"red\">No extractor available for this mime type!</font></b></html>");
+                    }
+                    else {
+                        statusBar.setText(" "); // make sure it has a non-empty string or else its preferred height will change!!
+                    }
+                    
+                    currentExtractor = null; 
                 }
             });
         }
