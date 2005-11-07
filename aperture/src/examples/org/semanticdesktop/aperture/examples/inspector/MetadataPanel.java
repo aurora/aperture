@@ -131,13 +131,7 @@ public class MetadataPanel extends JPanel implements ChangeListener {
         String mimeType = model.getMimeType();
         mimeTypeValueLabel.setText(mimeType == null ? "--" : mimeType);
         
-        String fullText = model.getFullText();
-        if (fullText == null) {
-            fullTextArea.setText("[ full-text not available ]");
-        }
-        else {
-            fullTextArea.setText(model.getFullText());
-        }
+        fullTextArea.setText(model.getFullText());
         fullTextArea.setCaretPosition(0);
         
         statementsPanel.setRepository(model.getRepository());
