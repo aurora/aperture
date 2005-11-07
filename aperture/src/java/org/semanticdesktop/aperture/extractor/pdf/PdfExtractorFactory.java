@@ -22,6 +22,10 @@ public class PdfExtractorFactory implements ExtractorFactory {
         HashSet set = new HashSet();
         set.add("application/pdf");
         set.add("application/x-pdf");
+        set.add("application/acrobat");
+        set.add("application/vnd.pdf");
+        set.add("text/pdf");
+        set.add("text/x-pdf");
         
         MIME_TYPES = Collections.unmodifiableSet(set);
     }

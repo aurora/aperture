@@ -24,23 +24,19 @@ public class OpenDocumentExtractorFactory implements ExtractorFactory {
         HashSet set = new HashSet();
 
         // all OpenDocument MIME types
-        set.add("application/vnd.oasis.opendocument.text");
-        set.add("application/vnd.oasis.opendocument.text-template");
+        add("vnd.oasis.opendocument.text", set);
+        add("vnd.oasis.opendocument.spreadsheet", set);
+        add("vnd.oasis.opendocument.graphics", set);
+        add("vnd.oasis.opendocument.presentation", set);
+        add("vnd.oasis.opendocument.image", set);
+        add("vnd.oasis.opendocument.formula", set);
+        add("vnd.oasis.opendocument.chart", set);
+
         set.add("application/vnd.oasis.opendocument.text-master");
         set.add("application/vnd.oasis.opendocument.text-web");
-        set.add("application/vnd.oasis.opendocument.spreadsheet");
-        set.add("application/vnd.oasis.opendocument.spreadsheet-template");
-        set.add("application/vnd.oasis.opendocument.graphics");
-        set.add("application/vnd.oasis.opendocument.graphics-template");
-        set.add("application/vnd.oasis.opendocument.presentation");
-        set.add("application/vnd.oasis.opendocument.presentation-template");
-        set.add("application/vnd.oasis.opendocument.image");
-        set.add("application/vnd.oasis.opendocument.image-template");
-        set.add("application/vnd.oasis.opendocument.formula");
-        set.add("application/vnd.oasis.opendocument.formula-template");
-        set.add("application/vnd.oasis.opendocument.chart");
-        set.add("application/vnd.oasis.opendocument.chart-template");
-
+        set.add("application/x-vnd.oasis.opendocument.text-master");
+        set.add("application/x-vnd.oasis.opendocument.text-web");
+        
         // all OpenOffice 1.x and StarOffice 6.x/7.x MIME types
         set.add("application/vnd.sun.xml.writer");
         set.add("application/vnd.sun.xml.writer.template");
@@ -52,8 +48,16 @@ public class OpenDocumentExtractorFactory implements ExtractorFactory {
         set.add("application/vnd.sun.xml.impress");
         set.add("application/vnd.sun.xml.impress.template");
         set.add("application/vnd.sun.xml.math");
+        set.add("application/x-soffice");
 
         MIME_TYPES = Collections.unmodifiableSet(set);
+    }
+    
+    private static void add(String baseType, Set set) {
+        set.add("application/" + baseType);
+        set.add("application/" + baseType + "-template");
+        set.add("application/x-" + baseType);
+        set.add("application/x-" + baseType + "-template");
     }
 
     public OpenDocumentExtractor extractor;

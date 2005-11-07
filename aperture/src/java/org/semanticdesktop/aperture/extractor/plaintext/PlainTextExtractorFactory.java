@@ -7,6 +7,7 @@
 package org.semanticdesktop.aperture.extractor.plaintext;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.semanticdesktop.aperture.extractor.Extractor;
@@ -15,6 +16,20 @@ import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 
 public class PlainTextExtractorFactory implements ExtractorFactory {
 
+   private static final Set MIME_TYPES;
+    
+    static {
+        HashSet set = new HashSet();
+        set.add("text/plain");
+        set.add("application/txt");
+        set.add("browser/internal");
+        set.add("text/anytext");
+        set.add("widetext/plain");
+        set.add("widetext/paragraph");
+        
+        MIME_TYPES = Collections.unmodifiableSet(set);
+    }
+    
     public PlainTextExtractor extractor;
     
     public Extractor get() {
@@ -25,6 +40,6 @@ public class PlainTextExtractorFactory implements ExtractorFactory {
     }
 
     public Set getSupportedMimeTypes() {
-        return Collections.singleton("text/plain");
+        return MIME_TYPES;
     }
 }
