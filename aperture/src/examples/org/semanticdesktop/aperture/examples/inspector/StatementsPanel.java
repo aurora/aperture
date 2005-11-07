@@ -12,6 +12,7 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFWriter;
+import org.openrdf.rio.Rio;
 import org.openrdf.rio.n3.N3Writer;
 import org.openrdf.rio.ntriples.NTriplesWriter;
 import org.openrdf.rio.rdfxml.RDFXMLWriter;
@@ -111,48 +112,27 @@ public class StatementsPanel extends JPanel {
 
         if (repository != null) {
             // determine the selected RDFFormat
-            Object format = formatBoxModel.getSelectedItem();
+            RDFFormat format = (RDFFormat) formatBoxModel.getSelectedItem();
 
-            // choose a RDFWriter based on the chosen format
-            RDFWriter writer = null;
+            // create an RDFWriter based on the chosen format
             StringWriter buffer = new StringWriter(10000);
-
-            if (RDFFormat.RDFXML.equals(format)) {
-                writer = new RDFXMLWriter(buffer);
-            }
-            else if (RDFFormat.NTRIPLES.equals(format)) {
-                writer = new NTriplesWriter(buffer);
-            }
-            else if (RDFFormat.N3.equals(format)) {
-                writer = new N3Writer(buffer);
-            }
-            else if (RDFFormat.TURTLE.equals(format)) {
-                writer = new TurtleWriter(buffer);
-            }
-            else if (RDFFormat.TRIX.equals(format)) {
-                writer = new TriXWriter(buffer);
-            }
+            RDFWriter writer = Rio.createWriter(format, buffer);
 
             // export the statements to a String
-            if (writer == null) {
-                text = "Unrecognized RDF format: " + format;
-            }
-            else {
-                try {
-                    // wrap the writer in a utility RDFHandler that clips long literals
-                    // (JTextArea - or actually Swing - will become unstable with long strongs)
-                    RDFHandler handler = new LiteralClipper(writer);
+            try {
+                // wrap the writer in a utility RDFHandler that clips long literals
+                // (JTextArea - or actually Swing - will become unstable with long strongs)
+                RDFHandler handler = new LiteralClipper(writer);
 
-                    // export the statements
-                    repository.extractStatements(handler);
-                    text = buffer.toString();
-                }
-                catch (RDFHandlerException e) {
-                    text = "Exception while extracting statements:\n\n" + e.getMessage()
-                            + "\n\nPartial contents:\n\n" + buffer.toString();
-                }
+                // export the statements
+                repository.extractStatements(handler);
+                text = buffer.toString();
             }
-            
+            catch (RDFHandlerException e) {
+                text = "Exception while extracting statements:\n\n" + e.getMessage()
+                        + "\n\nPartial contents:\n\n" + buffer.toString();
+            }
+
             text = text.trim();
         }
 
