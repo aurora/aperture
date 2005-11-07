@@ -121,7 +121,7 @@ public class PdfExtractor implements Extractor {
 
         String keywords = metadata.getKeywords();
         if (keywords != null) {
-            StringTokenizer tokenizer = new StringTokenizer(keywords, " ,\t", false);
+            StringTokenizer tokenizer = new StringTokenizer(keywords, " \t,;'\"|", false);
             while (tokenizer.hasMoreTokens()) {
                 String keyword = tokenizer.nextToken();
                 if (keyword != null) {
