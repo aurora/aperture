@@ -174,14 +174,14 @@ public class FileInspectorPanel extends JPanel {
             stream.close();
 
             // extract the full-text and metadata
-            URI uri = new URIImpl(file.toURI().toString());
             RDFContainerSesame container = null;
 
             Set factories = extractorRegistry.get(mimeType);
             if (factories != null && !factories.isEmpty()) {
                 ExtractorFactory factory = (ExtractorFactory) factories.iterator().next();
                 currentExtractor = factory.get();
-                container = new RDFContainerSesame(file.toURI().toString());
+                URI uri = new URIImpl(file.toURI().toString());
+                container = new RDFContainerSesame(uri);
                 
                 // Somehow I couldn't get this working with a single stream and buffer and the use
                 // of mark() and reset(). I probably misunderstood something in the API. For now I'll
