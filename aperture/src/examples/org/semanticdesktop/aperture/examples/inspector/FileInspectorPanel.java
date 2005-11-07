@@ -168,7 +168,7 @@ public class FileInspectorPanel extends JPanel {
             int minBufferSize = mimeTypeIdentifier.getMinArrayLength();
             BufferedInputStream buffer = new BufferedInputStream(stream, minBufferSize);
 
-            byte[] bytes = IOUtil.readBytes(stream, minBufferSize);
+            byte[] bytes = IOUtil.readBytes(buffer, minBufferSize);
             final String mimeType = mimeTypeIdentifier.identify(bytes, file.getPath(), null);
 
             stream.close();
