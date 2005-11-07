@@ -13,6 +13,7 @@ import java.awt.GridBagConstraints;
 import javax.swing.JTabbedPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.TransferHandler;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -195,4 +196,10 @@ public class MetadataPanel extends JPanel implements ChangeListener {
         }
         return fullTextMessageArea;
     }
+    
+    public void setTransferHandler(TransferHandler handler) {
+        super.setTransferHandler(handler);
+        getFullTextMessageArea().setTransferHandler(handler);
+    }
+    
 }  //  @jve:decl-index=0:visual-constraint="10,10"

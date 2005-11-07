@@ -9,16 +9,22 @@ package org.semanticdesktop.aperture.examples.inspector;
 import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.TransferHandler;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -37,7 +43,6 @@ import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifierFactory;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
 import org.semanticdesktop.aperture.util.IOUtil;
-import javax.swing.JLabel;
 
 public class FileInspectorPanel extends JPanel {
 
@@ -94,6 +99,7 @@ public class FileInspectorPanel extends JPanel {
         this.add(getControlPanel(), gridBagConstraints);
         this.add(getMetadataPanel(), gridBagConstraints1);
         this.add(statusBar, gridBagConstraints11);
+        this.setTransferHandler(new FileHandler());
     }
 
     private void initializeAperture() {
@@ -240,4 +246,42 @@ public class FileInspectorPanel extends JPanel {
         return metadataPanel;
     }
 
+    public void setTransferHandler(TransferHandler handler) {
+        super.setTransferHandler(handler);
+        getMetadataPanel().setTransferHandler(handler);
+    }
+    
+    private class FileHandler extends TransferHandler {
+        
+        public boolean canImport(JComponent component, DataFlavor[] flavors) {
+            for (int i = 0; i < flavors.length; i++) {
+                if (DataFlavor.javaFileListFlavor.equals(flavors[i])) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        public boolean importData(JComponent component, Transferable transferable) {
+            try {
+                Object value = transferable.getTransferData(DataFlavor.javaFileListFlavor);
+                if (value instanceof List) {
+                    List list = (List) value;
+                    if (!list.isEmpty()) {
+                        Object firstItem = list.get(0);
+                        if (firstItem instanceof File) {
+                            File file = (File) firstItem;
+                            FileInspectorPanel.this.setFile(file);
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception e) {
+            }
+            
+            return false;
+        }
+    }
+    
 } // @jve:decl-index=0:visual-constraint="10,10"
