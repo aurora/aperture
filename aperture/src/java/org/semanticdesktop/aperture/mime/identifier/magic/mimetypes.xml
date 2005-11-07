@@ -439,7 +439,7 @@ Defaults to no parent type.
 <!-- ================== E-mail Types ================== -->
 
 <description>
-	<mimeType>message/rdf822</mimeType>
+	<mimeType>message/rfc822</mimeType>
 	<extensions>eml</extensions>
 </description>
 
