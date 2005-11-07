@@ -87,7 +87,7 @@ public class FileInspectorFrame extends JFrame {
                 frame.setVisible(true);
                 
                 if (args.length > 0) {
-                    frame.getFileInspector().inspect(new File(args[0]));
+                    frame.getFileInspector().setFile(new File(args[0]));
                 }
             }
         });

@@ -108,7 +108,16 @@ public class FileInspectorPanel extends JPanel {
         extractorRegistry.add(new OpenDocumentExtractorFactory());
     };
 
-    public void inspect(final File file) {
+    public void setFile(File file) {
+        // triggers stateChanged event which on its turn triggers inspect(File)
+        controlPanel.setFile(file);
+    }
+    
+    public File getFile() {
+        return controlPanel.getFile();
+    }
+    
+    private void inspect(final File file) {
         // some checks on whether we can process this file
         if (!file.exists()) {
             JOptionPane.showMessageDialog(this, "File does not exist: " + file.getPath(),
