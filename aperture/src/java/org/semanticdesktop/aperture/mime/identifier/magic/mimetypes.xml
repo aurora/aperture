@@ -349,6 +349,8 @@ Defaults to no parent type.
 </description>
 
 <!-- ================== MS Office Types ================== -->
+<!-- some research with xvi32 seems to indicate that actually the first 32 -->
+<!-- *bytes* of MS Office files are always the same -->
 
 <description>
 	<mimeType>application/vnd.ms-office</mimeType>
