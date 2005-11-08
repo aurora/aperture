@@ -17,7 +17,7 @@ your copy of ANT at http://ant.apache.org/
 		<property name="project.shortname" value="aperture" />
 		
 		<!-- versions -->
-		<property name="project.version.major" value="0" />
+		<property name="project.version.major" value="2005" />
 		<property name="project.version.minor" value="1" />
 		<property name="version-status" value="-dev" />
 		<property name="project.version.full" value="${project.version.major}.${project.version.minor}${version-status}" />
@@ -83,7 +83,9 @@ your copy of ANT at http://ant.apache.org/
 	</target>
 	
 	<target name="clean" depends="init" description="delete generated classes and distribution results">
-		<delete dir="${build.dir}" includeemptydirs="true" />
+		<delete includeemptydirs="true">
+			<fileset dir="${build.dir}" includes="**"></fileset>
+		</delete>
 	</target>
 	
 	<target name="compile" depends="init" description="compile Aperture core classes">
@@ -146,7 +148,7 @@ your copy of ANT at http://ant.apache.org/
 		</jar>
 	</target>
 	
-	<target name="build" depends="jar, jar.examples, jar.test" description="builds all Aperture jar files" />
+	<target name="build" depends="clean, jar, jar.examples, jar.test" description="builds all Aperture jar files" />
 
 	<target name="javadoc" description="create the javadoc for the core classes">
 		<mkdir dir="${javadoc.dir}" />
