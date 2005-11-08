@@ -160,6 +160,10 @@ li {
  	padding: 0 0 6px 0;
 }
 
+.logo {
+	margin-left: 20px;
+}
+
 a:LINK {
 	text-decoration: none;
 	color: #CC0000;
