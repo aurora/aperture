@@ -205,10 +205,12 @@ public class FileInspectorPanel extends JPanel {
                     JOptionPane.ERROR_MESSAGE);
         }
         catch (IOException e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(this, "I/O error: " + e.getMessage(), "I/O Error",
                     JOptionPane.ERROR_MESSAGE);
         }
         catch (ExtractorException e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Extraction error: " + e.getMessage(), "Extraction Error",
                     JOptionPane.ERROR_MESSAGE);
         }
