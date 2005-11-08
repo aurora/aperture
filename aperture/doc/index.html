@@ -8,42 +8,58 @@
 <link rel="stylesheet" type="text/css" href="aperture.css">
 <!-- This document is inspired by the content style at http://www.csszengarden.com --></head>
 <body>
+
 <div id="container">
+
 <div id="intro">
+
 <div id="pageHeader">
 <h1>Aperture</h1>
-<h2>a Java framework to get data and metadata</h2>
-</div><div id="quickSummary"><p>Aperture is a
-Java framework for extracting and querying
-full-text
+<h2>a Java framework for getting data and metadata</h2>
+</div> <!-- pageheader -->
+
+<div id="quickSummary">
+<p>
+Aperture is a Java framework for extracting and querying full-text
 content and metadata from various information systems (file systems,
 web sites, mail boxes, ...) and the file formats (documents, images,
 ...) occurring in these systems.</p>
-</div>
+</div> <!-- quicksummary -->
 
-
-<div id="preamble"><h3>Project name</h3>
-<p>From <a class="ext-link" title="http://www.webster.com/" href="http://www.webster.com/">Merriam-Webster
-Online</a>:
-</p><p>Main Entry: <strong>ap&middot;er&middot;ture</strong>
+<div id="preamble">
+<p>
+<b>Project name</b>
+</p>
+<p>
+From <a class="ext-link" title="http://www.webster.com/" href="http://www.webster.com/">Merriam-Webster Online</a>:
+</p>
+<p>
+Main Entry: <strong>ap&middot;er&middot;ture</strong>
 (sounds like <a class="ext-link" title="http://cougar.eb.com/sound/a/apertu01.wav" href="http://cougar.eb.com/sound/a/apertu01.wav">this</a>)<br>
 Pronunciation: 'ap-&amp;(r)-"chur, -ch&amp;r, -"tyur, -"tur<br>
 Function: noun<br>
 Etymology: Middle English, from Latin apertura, from apertus, past
 participle of aperire to open<br>
-</p><ol><li>an opening or open space : HOLE</li>
+</p>
+<ol>
+<li>an opening or open space : HOLE</li>
 <li>a : the opening in a photographic lens that admits the light<br>
-b : the diameter of the stop in an optical system that determines the
-diameter
-of the bundle of rays traversing the instrument <br>
-c : the diameter of the objective lens or mirror of a telescope </li>
-</ol></div>
-</div>
+b : the diameter of the stop in an optical system that determines the diameter
+of the bundle of rays traversing the instrument<br>
+c : the diameter of the objective lens or mirror of a telescope</li>
+</ol>
+</div> <!-- preamble -->
+
+</div> <!-- intro -->
 
 
 <div id="content">
-<div class="element"><h2>Features</h2>
-<ul><li>Crawl information systems such as file systems,
+
+<div class="element">
+
+<h2>Features</h2>
+<ul>
+<li>Crawl information systems such as file systems,
 websites, mail boxes and mail servers
 </li><li>Extract full-text and metadata from many common
 file formats
@@ -52,11 +68,12 @@ file formats
 deploy in industrial projects
 </li><li>Flexible architecture: can be extended with custom
 file formats, data sources, etc., with support for deployment on OSGi
-platforms.
+platforms
 </li><li>Data exchange based on Semantic Web standards
-(e.g. RDF, SPARQL, ...)</li></ul>
+(e.g. RDF, SPARQL, ...)</li>
+</ul>
 
-<h3>Supported File Formats</h3>
+<h2>Supported File Formats</h2>
 <ul><li>Plain text
 </li><li>HTML
 </li><li>XML
@@ -66,62 +83,78 @@ platforms.
 </li><li>Microsoft Excel 97+
 </li><li>Microsoft Powerpoint 97+
 </li><li>Microsoft Works
-</li><li>OpenOffice 1.0+: Writer, Calc, Impress, Draw
-</li><li>StarOffice 6.0+: Writer, Calc, Impress, Draw
-</li><li>OpenDocument (OpenOffice 2.0+)
-</li><li>WordPerfect 5.x
+</li><li>OpenOffice 1.x: Writer, Calc, Impress, Draw
+</li><li>StarOffice 6.x - 7.x+: Writer, Calc, Impress, Draw
+</li><li>OpenDocument (OpenOffice 2.x, StarOffice 8.x)
+</li><li>WordPerfect
 </li><li>Emails (.eml files)</li>
 </ul>
 
-<h3>Crawlers</h3>
+<h2>Crawlers</h2>
 <p>Crawlers support the extraction of information from
-heterogenous data source. At the moment we support crawlers:</p><ul><li>Local
-File-System</li><li>Websites (web crawler)</li><li>IMAP
-e-mail servers</li><li>Microsoft Outlook (December 2005)</li></ul>
+heterogenous data source. At the moment we support the following source types:</p>
+<ul>
+<li>File Systems (local, remote, removeable media)</li>
+<li>Websites and intranets</li>
+<li>IMAP e-mail servers</li>
+<li>Microsoft Outlook</li>
+</ul>
 
 <h2><a name="support"></a>Support</h2>
 <p>
-At the moment, the project is in alpha stage and we provide only
-limited support. If you have questions about the project, join the <a href="https://sourceforge.net/mail/?group_id=150969">development
-mailinglist</a> and ask questions.</p>
+At this moment the project is still in alpha stage and we provide only limited support.
+If you have any questions about the project, feel free to join the
+<a href="https://sourceforge.net/mail/?group_id=150969">development mailinglist</a> and ask us.
+</p>
 
 <h2><a name="development"></a>Development</h2>
 <p>
 To use Aperture in your own projects, read the <a href="documentation.html">documentation</a>
-first. There are examples how to use the functionalities of Aperture in
-your projects. If you are interested in contributing, contact the
+for information about requirements and code examples.
+</p>
+<p>
+If you are interested in contributing, feel free to contact the
 project admins or join the <a href="https://sourceforge.net/mail/?group_id=150969">development
 mailinglist</a>. We are very interested in new extractors and
 other contributions including crawlers.
 </p>
-</div>
+
+</div> <!-- element -->
 
 <div id="footer"> 
 <a href="http://validator.w3.org/check/referer" title="Check the validity of this site&rsquo;s XHTML">xhtml</a>
-&nbsp; <a href="http://jigsaw.w3.org/css-validator/check/referer" title="Check the validity of this site&rsquo;s CSS">css</a>
-&nbsp; </div>
+&nbsp;<a href="http://jigsaw.w3.org/css-validator/check/referer" title="Check the validity of this site&rsquo;s CSS">css</a>
+</div> <!-- footer -->
 
-</div>
-
-
+</div> <!-- container -->
 
 
 <div id="linkList">
-<div id="menulinks" class="reflinks"><h2>Contents</h2>
+
+<div id="menulinks" class="reflinks">
+<h2>Contents</h2>
 <ul><li><a href="index.html">Home</a><br>
 </li><li><a href="https://sourceforge.net/project/showfiles.php?group_id=150969">Download</a></li>
 <li><a href="documentation.html">Documentation</a></li>
 <li><a href="index.html#support">Support</a></li>
 <li><a href="index.html#development">Development</a><br>
 </li><li><a href="license.html">License</a></li>
-</ul></div>
+</ul>
+</div> <!-- menulinks -->
 
-<div class="reflinks"><h2>Hosted by</h2>
-<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=150969&amp;type=2" alt="SourceForge.net Logo" border="0" height="37" width="125"></a>
-</div>
+<div class="reflinks">
+<h2>Hosted by</h2>
+<a href="http://sourceforge.net"><img class="logo" src="http://sourceforge.net/sflogo.php?group_id=150969&amp;type=2" alt="SourceForge.net Logo" border="0" height="37" width="125"></a>
+</div> <!-- reflinks -->
 
 <div class="reflinks">
 <h2>Developed by</h2>
 <ul><li><a href="http://aduna.biz">Aduna</a></li>
 <li><a href="http://www.dfki.de">DFKI</a></li>
-</ul></div></div><!-- linklist --></div><!-- wrapper --></body></html>
+</ul>
+</div><!-- reflinks -->
+
+</div><!-- linklist -->
+
+</body>
+</html>
