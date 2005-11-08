@@ -30,6 +30,7 @@ import org.semanticdesktop.aperture.rdf.Vocabulary;
  * Extracts full-text and metadata from Adobe Acrobat (PDF) files.
  */
 public class PdfExtractor implements Extractor {
+
     private static final Logger LOGGER = Logger.getLogger(PdfExtractor.class.getName());
 
     public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
@@ -93,41 +94,89 @@ public class PdfExtractor implements Extractor {
             }
         }
         catch (IOException e) {
-            throw new ExtractorException(e);
+            // exception ends here, maybe we can still extract metadata
+            LOGGER.log(Level.WARNING, "IOException while extracting full-text", e);
         }
 
         // extract the metadata
         // note: we map both pdf:creator and pdf:producer to aperture:generator
+        // note2: every call to PDFBox is wrapper in a separate try-catch, as an error
+        // in one of these calls doesn't automatically mean that the others won't work well
         PDDocumentInformation metadata = document.getDocumentInformation();
 
-        addStringMetadata(Vocabulary.CREATOR_URI, metadata.getAuthor(), result);
-        addStringMetadata(Vocabulary.TITLE_URI, metadata.getTitle(), result);
-        addStringMetadata(Vocabulary.SUBJECT_URI, metadata.getSubject(), result);
-        addStringMetadata(Vocabulary.GENERATOR_URI, metadata.getCreator(), result);
-        addStringMetadata(Vocabulary.GENERATOR_URI, metadata.getProducer(), result);
+        try {
+            addStringMetadata(Vocabulary.CREATOR_URI, metadata.getAuthor(), result);
+        }
+        catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Exception while extracting author", e);
+        }
+
+        try {
+            addStringMetadata(Vocabulary.TITLE_URI, metadata.getTitle(), result);
+        }
+        catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Exception while extracting title", e);
+        }
+
+        try {
+            addStringMetadata(Vocabulary.SUBJECT_URI, metadata.getSubject(), result);
+        }
+        catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Exception while extracting subject", e);
+        }
+
+        try {
+            addStringMetadata(Vocabulary.GENERATOR_URI, metadata.getCreator(), result);
+        }
+        catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Exception while extracting creator", e);
+        }
+
+        try {
+            addStringMetadata(Vocabulary.GENERATOR_URI, metadata.getProducer(), result);
+        }
+        catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Exception while extracting producer", e);
+        }
 
         try {
             addCalendarMetadata(Vocabulary.CREATION_DATE_URI, metadata.getCreationDate(), result);
+        }
+        catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Exception while extracting creation date", e);
+        }
+
+        try {
             addCalendarMetadata(Vocabulary.DATE_URI, metadata.getModificationDate(), result);
         }
-        catch (IOException e) {
-            throw new ExtractorException(e);
+        catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Exception while extracting modification date", e);
         }
 
-        int nrPages = document.getNumberOfPages();
-        if (nrPages > 0) {
-            result.put(Vocabulary.PAGE_COUNT_URI, nrPages);
+        try {
+            int nrPages = document.getNumberOfPages();
+            if (nrPages >= 0) {
+                result.put(Vocabulary.PAGE_COUNT_URI, nrPages);
+            }
+        }
+        catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Exception while extracting number of pages", e);
         }
 
-        String keywords = metadata.getKeywords();
-        if (keywords != null) {
-            StringTokenizer tokenizer = new StringTokenizer(keywords, " \t,;'\"|", false);
-            while (tokenizer.hasMoreTokens()) {
-                String keyword = tokenizer.nextToken();
-                if (keyword != null) {
-                    result.put(Vocabulary.KEYWORD_URI, keyword);
+        try {
+            String keywords = metadata.getKeywords();
+            if (keywords != null) {
+                StringTokenizer tokenizer = new StringTokenizer(keywords, " \t,;'\"|", false);
+                while (tokenizer.hasMoreTokens()) {
+                    String keyword = tokenizer.nextToken();
+                    if (keyword != null) {
+                        result.put(Vocabulary.KEYWORD_URI, keyword);
+                    }
                 }
             }
+        }
+        catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Exception while extracting keywords", e);
         }
     }
 
