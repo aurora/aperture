@@ -125,7 +125,7 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
                     String extensionsString = valueNode.getNodeValue().trim();
                     StringTokenizer tokenizer = new StringTokenizer(extensionsString, ", ", false);
                     while (tokenizer.hasMoreTokens()) {
-                        extensions.add(tokenizer.nextToken());
+                        extensions.add(tokenizer.nextToken().toLowerCase());
                     }
                 }
             }
@@ -348,6 +348,8 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
             if (lastDotIndex > 0 && lastDotIndex < extension.length() - 1) {
                 extension = extension.substring(lastDotIndex + 1);
             }
+            
+            extension = extension.toLowerCase();
         }
 
         // now traverse the MimeTypeDescription tree to find a matching MIME type
