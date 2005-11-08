@@ -93,8 +93,6 @@ public class HtmlExtractor implements Extractor {
 
     private static class ExtractionVisitor extends NodeVisitor {
 
-        private static final String META = "META";
-
         private static final String XMP = "XMP";
 
         private static final String PLAINTEXT = "PLAINTEXT";
