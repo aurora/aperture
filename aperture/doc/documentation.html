@@ -15,7 +15,8 @@ Aperture in own applications to extract information from files or from
 various other datasources. Some familiarity with Java is assumed. We
 will explain some details about developing using the Eclipse SDK, which
 is not needed to use Aperture but may help during development.<br>
-If you have questions about the project or need support for using Aperture, go to the project homepage at <a href="http://aperture.sourceforge.net/">http://aperture.sourceforge.net/</a><br>
+If you have questions about the project or need support for using Aperture, 
+go to the project homepage at <a href="http://aperture.sourceforge.net/">http://aperture.sourceforge.net/</a><br>
 <h2>Aperture Architecture Overview<br>
 </h2>
 
@@ -77,40 +78,70 @@ FileDataObject.
 It should be clear now that a DataCrawler is specific for the kind of
 DataSource it supports, whereas a DataAccessor is specific for the url
 scheme(s) it supports.</p>
-<h2>File Extractors</h2>
-
-File extractors are used to extract<br>
- 
+<h2>File Extractors</h2> 
 <p>
+Extractors extract information from binary streams such as document full-text, titles, authors and 
+other metadata that may be supported by the format. Extractors are typically specific for a single 
+MIME type or a number of closely related MIME types.
+</p>
+<p>
+Aperture has an ExtractorFactory interface, which provides methods to create instances 
+of a specific Extractor implementation. As such, it embodies
+knowledge about whether a singleton or unique instances are best returned and for which MIME types the
+Extractors can be used.
+</p>
+<p>
+The code to create an Extractor is very simple, here is an specific example for PDF-files:
+<blockquote>
+<pre>
+ExtractorFactory factory = new PdfExtractorFactory();
+Extractor extractor = factory.get();
+</pre>
+</blockquote>
+The Extractor interface provides an <code>
+extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)</code> method to 
+get full-text and metadata from the specified binary stream and stores the extracted
+information as RDF statements in the specified RDFContainer. The optionally specified Charset and
+MIME type can be used to direct how the stream should be parsed. The URI can be used to identify the object
+ (e.g. a file or web page) from which the stream was obtained. The generated statements should describe this URI.
+Here is a simple example:
+<blockquote>
+<pre>
+// some definitions
+String resource = "org/semanticdesktop/aperture/docs/pdf-word-2000-pdfcreator-0.8.0.pdf";
+URI id = new URIImpl("http://docs-r-us.com/dummy");
+
+//init stream and RDFContainer
+InputStream stream = ClassLoader.getSystemResourceAsStream(resource);
+RDFContainerSesame rdfContainer = new RDFContainerSesame(id);
+
+// apply the extractor
+extractor.extract(id, stream, null, null, rdfContainer);
+stream.close();
+</pre>
+</blockquote>
+</p>
+<p>
+An example with plain-text MIME-type could look like this:
+<blockquote>
+<pre>
+// some definitions
+String resource = "org/semanticdesktop/aperture/docs/plain-text.txt";
+File file = new File(resource);
+
+//init stream, extractor and RDFContainer
+FileInputStream fin = new FileInputStream(file);
+Extractor extractor = new PlainTextExtractorFactory().get();
+RDFContainerSesame rdfContainer = new RDFContainerSesame(file.toURI().toString());
+
+// apply the extractor
+extractor.extract(rdfContainer.getDescribedUri(), fin, null, "text/plain", rdfContainer);
+fin.close();
+</pre>
+</blockquote>
 </p>
 
-<h2>Incremental Scanning</h2>
-<p>
-The AccessData instance used in DataCrawlerBase maintains the information
-about which objects have been scanned before. This instance is passed to the
-DataAccessor as this is the best place to do this detection:
-</p>
-<ul><li>This prevents object creation when the resource has not been modified since the last scan (DataAccessor.get returns null).
-</li></ul><ul><li>This allows for more sophisticated optimizations,
-e.g. the HttpDataAccessor uses HTTP-specific functionality so that the
-webserver can decide whether the resource has changed since the last
-scan. This prevents an unchanged web page from being transported to the
-crawling side in the first place.
-</li></ul><h2>HypertextCrawler Dependencies</h2>
-<p>
-The HypertextCrawler makes use of two external components: a mime type
-identifier and a hypertext link extractor.
 
-</p>
-<p>The latter component is required to know which resources are linked
-from a specific resource and should be crawled next. This functionality
-is realized as a separate component/service as there are many document
-types that support links (PDF might be a nice one to support next).
-</p>
-<p>A specific link extractor is therefore mimetype-specific. In order
-to know which link extractor to use, one first needs to know the mime
-type of the starting resource, which is handled by the first component.
-</p>
 <h2>Database and RDF file DataSources</h2>
 <p>
 For gnowsis and Aduna MetadataServer we often add special
@@ -123,7 +154,6 @@ file (for D2RQ or similar) has to be passed, indicating which resources
 in the SQL database to index. Alternatively, SQL databases could be
 accessed via a SAIL.
 </p>
-
 </div>
 
 
