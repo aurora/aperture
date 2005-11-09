@@ -16,17 +16,4 @@ do
   fi
 done
 
-for i in ${APERTURE_HOME}/build/dist/*.jar
-do
-  # if the directory is empty, then it will return the input string
-  # this is stupid, so case for it
-  if [ -f "$i" ] ; then
-    if [ -z "$LOCALCLASSPATH" ] ; then
-      LOCALCLASSPATH="$i"
-    else
-      LOCALCLASSPATH="$i":"$LOCALCLASSPATH"
-    fi
-  fi
-done
-
 java -classpath ${LOCALCLASSPATH} org.semanticdesktop.aperture.examples.inspector.FileInspectorFrame $*
