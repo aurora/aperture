@@ -16,7 +16,7 @@ import org.openrdf.model.impl.ValueFactoryImpl;
  */
 public class Vocabulary {
    
-    public static final String NS = "http://aperture.semanticdesktop.org/ontology/data#";
+    public static final String NS = "http://aperture.semanticdesktop.org/ontology/data/";
     
     public static final String FULL_TEXT = NS + "full-text";
     public static final String MIME_TYPE = NS + "mimeType";
