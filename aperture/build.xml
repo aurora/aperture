@@ -148,7 +148,7 @@ your copy of ANT at http://ant.apache.org/
 		</jar>
 	</target>
 	
-	<target name="build" depends="clean, jar, jar.examples, jar.test" description="builds all Aperture jar files" />
+	<target name="build" depends="jar, jar.examples, jar.test" description="incrementally builds all Aperture jar files" />
 
 	<target name="javadoc" description="create the javadoc for the core classes">
 		<mkdir dir="${javadoc.dir}" />
