@@ -172,6 +172,10 @@ li {
 	margin-left: 20px;
 }
 
+.acknowledgements {
+	margin: 10px;
+}
+
 a:LINK {
 	text-decoration: none;
 	color: #CC0000;
