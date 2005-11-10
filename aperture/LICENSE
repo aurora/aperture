@@ -1,3 +1,6 @@
-See doc/license.html for information about the Open Source licenses
+See ./doc/license.html for information about the Open Source licenses
 under which Aperture is distributed.
+
+Licenses for third party libraries used in Aperture can be found in ./lib/
+
 --
