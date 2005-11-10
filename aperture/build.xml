@@ -40,19 +40,25 @@ your copy of ANT at http://ant.apache.org/
 		<!-- dist dirs and files -->
 		<property name="dist.dir" value="${build.dir}/dist" />
 		<property name="dist.lib.dir" value="${dist.dir}/lib" />
-		<property name="dist.bin.dir" value="${dist.dir}/bin" />
-		<property name="dist.doc.dir" value="${dist.dir}/doc" />
-		<property name="javadoc.dir" value="${dist.doc.dir}/api" />
-		<property name="src.zip" value="${dist.dir}/src.zip" />
+		<property name="javadoc.dir" value="${dist.dir}/api" />
 		<property name="project.jar" value="${project.shortname}-${project.version.full}.jar" />
 		<property name="project-test.jar" value="${project.shortname}-test-${project.version.full}.jar" />
 		<property name="project-examples.jar" value="${project.shortname}-examples-${project.version.full}.jar" />
 
 		<!-- release dirs and files -->
 		<property name="release.dir" value="${build.dir}/release" />
-		<property name="release.prefix" value="${project.shortname}-${project.version.full}" />
-		<property name="release.zip" value="${release.dir}/${release.prefix}.zip" />
-		<property name="release.tgz" value="${release.dir}/${release.prefix}.tar.gz" />
+		<property name="release.lib.dir" value="${release.dir}/lib" />
+		<property name="release.lib.licenses.dir" value="${release.lib.dir}/licenses" />
+		<property name="release.bin.dir" value="${release.dir}/bin" />
+		<property name="release.doc.dir" value="${release.dir}/doc" />
+		<property name="release.doc.api.dir" value="${release.doc.dir}/api" />
+		<property name="release.src.zip" value="${dist.dir}/src.zip" />
+		
+		<!-- package dirs and files -->
+		<property name="package.dir" value="${build.dir}/package" />
+		<property name="package.prefix" value="${project.shortname}-${project.version.full}" />
+		<property name="package.zip" value="${package.dir}/${package.prefix}.zip" />
+		<property name="package.tgz" value="${package.dir}/${package.prefix}.tar.gz" />
 		
 		<!-- compilation flags -->		
 		<property name="compile.debug" value="true" />
@@ -173,38 +179,60 @@ your copy of ANT at http://ant.apache.org/
 		</javadoc>
 	</target>
 	
-	<target name="dist" description="build the jar files for distribution" depends="build, test, javadoc">
-		<!-- jar files and javadoc have already been created -->
+	<target name="dist" description="build the jar and javadoc files" depends="build, test, javadoc" />
+
+	<target name="release" depends="clean, dist" description="builds a directory tree containing a complete Aperture distro">
+		<!-- copy README-like files -->
+		<mkdir dir="${release.dir}" />
+		<copy todir="${release.dir}">
+			<fileset file="${basedir}/README" />
+			<fileset file="${basedir}/LICENSE" />
+			<fileset file="${basedir}/CHANGELOG" />
+		</copy>
+
+		<!-- copy Aperture jar files -->
+		<mkdir dir="${release.lib.dir}" />
+		<copy todir="${release.lib.dir}">
+			<fileset dir="${dist.lib.dir}" />
+		</copy>
 		
-		<!-- copy external libs -->
-		<copy todir="${dist.lib.dir}">
-			<fileset dir="${lib.dir}" />
+		<!-- copy third party libs -->
+		<copy todir="${release.lib.dir}">
+			<fileset dir="${lib.dir}">
+				<include name="*.jar" />
+			</fileset>
 		</copy>		
 		
-		<!-- copy license files -->
-		<copy todir="${dist.dir}">
-			<fileset dir="${basedir}">
-				<include name="license*.html" />
+		<!-- copy licenses of third party libs -->
+		<mkdir dir="${release.lib.licenses.dir}" />
+		<copy todir="${release.lib.licenses.dir}">
+			<fileset dir="${lib.dir}">
+				<include name="*.txt" />
 			</fileset>
 		</copy>
 		
 		<!-- copy bin files -->
-		<mkdir dir="${dist.bin.dir}" />
-		<copy todir="${dist.bin.dir}">
+		<mkdir dir="${release.bin.dir}" />
+		<copy todir="${release.bin.dir}">
 			<fileset dir="${bin.dir}" />
 		</copy>		
 		
 		<!-- copy documentation files -->
-		<mkdir dir="${dist.doc.dir}" />
-		<copy todir="${dist.doc.dir}">
+		<mkdir dir="${release.doc.dir}" />
+		<copy todir="${release.doc.dir}">
 			<fileset dir="${doc.dir}">
 				<include name="**" />
 				<exclude name="aperture_overview.ppt" />  <!-- file is not uptodate yet -->
 			</fileset>
 		</copy>
 		
+		<mkdir dir="${release.doc.api.dir}" />
+		<copy todir="${release.doc.api.dir}">
+			<fileset dir="${javadoc.dir}" />
+		</copy>
+		
 		<!-- create src.zip file -->
-		<zip destfile="${src.zip}" basedir="${basedir}">
+		<zip destfile="${release.src.zip}" basedir="${basedir}">
 			<include name="src/**" />
 			<include name="build.xml" />
 			
@@ -218,26 +246,20 @@ your copy of ANT at http://ant.apache.org/
 			<exclude name="**/org/semanticdesktop/aperture/datasource/**" />
 			<exclude name="**/org/semanticdesktop/aperture/opener/**" />
 		</zip>
-						
-		<echo message="Succesfully created an Aperture distribution." />
-		<echo message="Distribution results can be found in ${dist.dir}." />
 	</target>
-
-	<target name="release" depends="dist" description="builds archive files from the dist results">
-		<mkdir dir="${release.dir}" />
 		
-		<!-- put the contents of the dist dir in a zip file, with the project name as path prefix -->
-		<zip destfile="${release.zip}">
-			<zipfileset dir="${dist.dir}" prefix="${release.prefix}" />
+	<target name="package" depends="release" description="">
+		<mkdir dir="${package.dir}" />
+		
+		<!-- put the contents of the release dir in a zip file, with the project name as path prefix -->
+		<zip destfile="${package.zip}">
+			<zipfileset dir="${release.dir}" prefix="${package.prefix}" />
 		</zip>
 		
 		<!-- do basically the same to create a tar file -->
-		<tar destfile="${release.tgz}" compression="gzip" longfile="gnu">
-			<tarfileset dir="${dist.dir}" prefix="${release.prefix}" />
+		<tar destfile="${package.tgz}" compression="gzip" longfile="gnu">
+			<tarfileset dir="${release.dir}" prefix="${package.prefix}" />
 		</tar>
-		
-		<echo message="Successfully created an Aperture release." />
-		<echo message="Release results can be found in ${release.dir}." />
 	</target>
 	
 	<!--
@@ -262,4 +284,14 @@ your copy of ANT at http://ant.apache.org/
 		<fail if="unit.test.failed" message="Tests failed." />
 	</target>
 
+	<target name="changelog">
+		<cvschangelog dir="${basedir}" destfile="changelog.xml"/>
+		<style in="changelog.xml" out="changelog.html" style="${ant.home}/etc/changelog.xsl">
+			<param name="title" expression="Aperture ChangeLog"/>
+			<param name="module" expression="aperture"/>
+			<param name="cvsweb" expression="http://cvs.sourceforge.net/viewcvs.py/aperture/"/>
+		</style>
+		<delete file="changelog.xml"/>
+	</target>
+	
 </project>
