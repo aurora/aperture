@@ -1,0 +1,39 @@
+Aperture is a Java framework for extracting and querying full-text content
+and metadata from various information systems (file systems, web sites, mail
+boxes, ...) and the file formats (documents, images, ...) occurring in these
+systems.
+
+*) To use Aperture in your own application:
+
+Add lib/aperture-<version>.jar and all non-Aperture jar files in the same
+directory to your classpath.
+  
+The aperture-examples-<version.jar> and aperture-test-<version>.jar are
+not needed to use the core functionality.
+  
+The junit jar file is only needed when you want to run unit tests
+("ant test").
+  
+Finally, read doc/documentation.html for instructions on how to use the
+provided APIs.
+
+*) To create your own jar files:
+
+Install Java 1.4 or higher and Ant 1.6.x or higher.
+
+Unzip the src.zip in the Aperture root directory (i.e. where this file is
+located). This should result in an src directory and a build.xml file.
+
+Type "ant build" to only compile the source files, "ant dist" to create jar
+files, "ant release" to create an entire Aperture release or "ant package"
+to create zip and tar.gz files containing an entire Aperture release.
+
+"ant test" will run all unit tests. "ant javadoc" will create javadoc
+documentation.
+
+*) To contribute your own implementations of Aperture APIs:
+
+Please visit the Aperture homepage at http://aperture.sourceforge.net
+for further instructions.
+
+--
