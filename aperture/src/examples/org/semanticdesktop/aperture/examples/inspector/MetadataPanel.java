@@ -147,6 +147,7 @@ public class MetadataPanel extends JPanel implements ChangeListener {
         if (statementsPanel == null) {
             statementsPanel = new StatementsPanel();
             statementsPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5,5,5,5));
+            statementsPanel.setOpaque(false);
         }
         return statementsPanel;
     }
@@ -175,6 +176,7 @@ public class MetadataPanel extends JPanel implements ChangeListener {
             fullTextPanel = new JPanel();
             fullTextPanel.setLayout(new GridBagLayout());
             fullTextPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5,5,5,5));
+            fullTextPanel.setOpaque(false);
             fullTextPanel.add(getFullTextMessageArea(), gridBagConstraints4);
             fullTextPanel.add(getFullTextScrollPane(), gridBagConstraints3);
         }
