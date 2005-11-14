@@ -11,6 +11,16 @@
 
 <h1>Documentation</h1>
 
+<h2>Index</h2>
+<p>
+<ul>
+ <li><a href="#crawlers">Crawlers</a></li>
+ <li><a href="#extractors">Extractors</a></li>
+ <li><a href="#dbandrdf">Database and RDF DataSources</a></li>
+ <li><a href="architecture.html">Architecture</a> (seperate document)</li>
+</ul>
+</p>
+
 <h2>Preface</h2>
 
 <p>
@@ -37,7 +47,9 @@ go to the project homepage at
 and read the Support section.
 </p>
 
-<h2>Crawlers</h2>
+
+
+<h2><a name="crawlers">Crawlers</a></h2>
 
 <p>
 <b><u>WARNING:</u></b> The following text was taken from an Aduna design document and explains
@@ -132,7 +144,7 @@ the web server decide whether the web page has changed or not. This prevents dow
 requested page when it has not changed.
 </p>
 
-<h2>Extractors</h2> 
+<h2><a name="extractors">Extractors</a></h2> 
 
 <p>
 Extractors extract information from binary streams, such as document full-text, titles,
@@ -189,7 +201,7 @@ Repository repository = container.getRepository();
 </blockquote>
 </p>
 
-<h2>Database and RDF DataSources</h2>
+<h2><a name="dbandrdf">Database and RDF DataSources</a></h2>
 
 <p>
 For Gnowsis and Aduna Metadata Server we often have special types of
