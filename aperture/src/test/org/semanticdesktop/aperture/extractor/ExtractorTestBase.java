@@ -19,16 +19,16 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.sesame.repository.Repository;
 import org.semanticdesktop.aperture.ApertureTestBase;
-import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
+import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 
 public class ExtractorTestBase extends ApertureTestBase {
 
-    public RDFContainerSesame extract(String resourceName, Extractor extractor) throws ExtractorException, IOException {
+    public SesameRDFContainer extract(String resourceName, Extractor extractor) throws ExtractorException, IOException {
         // setup some info
         String uriString = "http://docs-r-us.com/dummy";
         URI id = new URIImpl(uriString);
         InputStream stream = ClassLoader.getSystemResourceAsStream(resourceName);
-        RDFContainerSesame rdfContainer = new RDFContainerSesame(id);
+        SesameRDFContainer rdfContainer = new SesameRDFContainer(id);
 
         // apply the extractor
         extractor.extract(id, stream, null, null, rdfContainer);
@@ -37,7 +37,7 @@ public class ExtractorTestBase extends ApertureTestBase {
         return rdfContainer;
     }
     
-    public void checkStatement(org.openrdf.model.URI property, String substring, RDFContainerSesame container) {
+    public void checkStatement(org.openrdf.model.URI property, String substring, SesameRDFContainer container) {
         // setup some info
         String uriString = container.getDescribedUri().toString();
         Repository repository = container.getRepository();

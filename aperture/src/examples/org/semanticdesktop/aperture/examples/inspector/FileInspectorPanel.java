@@ -42,7 +42,7 @@ import org.semanticdesktop.aperture.extractor.pdf.PdfExtractorFactory;
 import org.semanticdesktop.aperture.extractor.plaintext.PlainTextExtractorFactory;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifierFactory;
-import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
+import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 
 public class FileInspectorPanel extends JPanel {
@@ -174,14 +174,14 @@ public class FileInspectorPanel extends JPanel {
             stream.close();
 
             // extract the full-text and metadata
-            RDFContainerSesame container = null;
+            SesameRDFContainer container = null;
 
             Set factories = extractorRegistry.get(mimeType);
             if (factories != null && !factories.isEmpty()) {
                 ExtractorFactory factory = (ExtractorFactory) factories.iterator().next();
                 currentExtractor = factory.get();
                 URI uri = new URIImpl(file.toURI().toString());
-                container = new RDFContainerSesame(uri);
+                container = new SesameRDFContainer(uri);
                 
                 // Somehow I couldn't get this working with a single stream and buffer and the use
                 // of mark() and reset(). I probably misunderstood something in the API. For now I'll

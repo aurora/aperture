@@ -29,7 +29,7 @@ import org.semanticdesktop.aperture.extractor.plaintext.PlainTextExtractorFactor
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifierFactory;
 import org.semanticdesktop.aperture.rdf.Vocabulary;
-import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
+import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 
 /**
@@ -89,7 +89,7 @@ public class FileInspector {
 
         // create the RDFContainer that will hold the RDF model
         URI uri = new URIImpl(file.toURI().toString());
-        RDFContainerSesame container = new RDFContainerSesame(uri);
+        SesameRDFContainer container = new SesameRDFContainer(uri);
 
         // retrieve an Extractor that can process this MIME type
         Set factories = extractorRegistry.get(mimeType);

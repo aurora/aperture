@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.rdf.impl;
+package org.semanticdesktop.aperture.rdf.sesame;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -23,9 +23,12 @@ import org.openrdf.sesame.sailimpl.memory.MemoryStore;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.RDFUtil;
 
-public class RDFContainerSesame implements RDFContainer {
+/**
+ * An implementation of RDFContainer that uses a Sesame non-inferencing in-memory repository.
+ */
+public class SesameRDFContainer implements RDFContainer {
 
-    private static final Logger LOGGER = Logger.getLogger(RDFContainerSesame.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SesameRDFContainer.class.getName());
 
     private Repository repository;
 
@@ -33,12 +36,12 @@ public class RDFContainerSesame implements RDFContainer {
 
     private URI describedUri;
 
-    public RDFContainerSesame(String uri) {
+    public SesameRDFContainer(String uri) {
         initRepository();
         describedUri = valfac.createURI(uri);
     }
     
-    public RDFContainerSesame(URI uri) {
+    public SesameRDFContainer(URI uri) {
         initRepository();
         describedUri = uri;
     }

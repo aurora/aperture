@@ -1,0 +1,25 @@
+/*
+ * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
+ * All rights reserved.
+ * 
+ * Licensed under the Academic Free License version 3.0.
+ */
+package org.semanticdesktop.aperture.rdf.sesame;
+
+import org.openrdf.model.URI;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.RDFContainerFactory;
+
+/**
+ * Creates SesameRDFContainer instances. 
+ */
+public class SesameRDFContainerFactory implements RDFContainerFactory {
+
+    public RDFContainer newInstance(String uri) {
+        return new SesameRDFContainer(uri);
+    }
+    
+    public RDFContainer newInstance(URI uri) {
+        return new SesameRDFContainer(uri);
+    }
+}

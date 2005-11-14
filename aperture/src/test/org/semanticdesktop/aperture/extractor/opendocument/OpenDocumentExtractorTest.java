@@ -13,7 +13,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.Vocabulary;
-import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
+import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 
 public class OpenDocumentExtractorTest extends ExtractorTestBase {
 
@@ -45,12 +45,12 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
         // repeat for every example OpenDocument/OpenOffice document
         for (int i = 0; i < RESOURCES.length; i++) {
             // check of any document text is extracted
-            RDFContainerSesame container = getStatements(RESOURCES[i]);
+            SesameRDFContainer container = getStatements(RESOURCES[i]);
             checkStatement(Vocabulary.FULL_TEXT_URI, "This", container);
         }
     }
     
-    private RDFContainerSesame getStatements(String resourceName) throws ExtractorException, IOException {
+    private SesameRDFContainer getStatements(String resourceName) throws ExtractorException, IOException {
         ExtractorFactory factory = new OpenDocumentExtractorFactory();
         Extractor extractor = factory.get();
         return extract(resourceName, extractor);
@@ -63,7 +63,7 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
 
     private void testMetadataExtraction(String resourceName) throws ExtractorException, IOException {
         // apply the extractor
-        RDFContainerSesame container = getStatements(resourceName);
+        SesameRDFContainer container = getStatements(resourceName);
 
         // check for all properties that we're sure of exist in this example document
         checkStatement(Vocabulary.TITLE_URI, "Example", container);

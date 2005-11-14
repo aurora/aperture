@@ -7,11 +7,12 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.sesame.repository.Repository;
-import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
+import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainerFactory;
 
 import junit.framework.TestCase;
 
-public class TestRDFContainerSesame extends TestCase {
+public class TestSesameRDFContainer extends TestCase {
 
     public final static String TEST_OBJECT_URI = "urn:test:dataobject";
 
@@ -48,32 +49,20 @@ public class TestRDFContainerSesame extends TestCase {
         TEST_RESOURCE = val.createURI(TEST_RESOURCE_URI);
     }
 
-    private RDFContainerSesame container;
+    private SesameRDFContainer container;
 
     private Repository repository;
 
     private Resource subject;
 
     protected void setUp() throws Exception {
-        container = new RDFContainerSesame(TEST_OBJECT_URI);
+        container = (SesameRDFContainer) new SesameRDFContainerFactory().newInstance(TEST_OBJECT_URI);
         repository = container.getRepository();
         subject = container.getDescribedUri();
     }
 
     protected void tearDown() throws Exception {
         // container.
-    }
-
-    /**
-     * something to look in system.out
-     * 
-     * @throws Exception
-     */
-    public static void main(String[] args) throws Exception {
-        TestRDFContainerSesame test = new TestRDFContainerSesame();
-        test.setUp();
-        test.testPutBasicTypes();
-        test.repository.extractStatements();
     }
 
     public void testPutBasicTypes() throws Exception {
@@ -88,5 +77,4 @@ public class TestRDFContainerSesame extends TestCase {
         assertTrue(repository.hasStatement(subject, PROP_STRING_URI, val.createLiteral("label")));
         assertTrue(repository.hasStatement(subject, PROP_STRING_URI, val.createLiteral("label")));
     }
-
 }

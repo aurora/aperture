@@ -13,7 +13,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.Vocabulary;
-import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
+import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 
 public class PdfExtractorTest extends ExtractorTestBase {
 
@@ -27,7 +27,7 @@ public class PdfExtractorTest extends ExtractorTestBase {
     
     private static final String PDF_WRITER_DOC = DOCS_PATH + "pdf-word-2000-pdfwriter-7.0.pdf";
     
-    private RDFContainerSesame getStatements(String resourceName) throws ExtractorException, IOException {
+    private SesameRDFContainer getStatements(String resourceName) throws ExtractorException, IOException {
         // apply the extractor
         ExtractorFactory factory = new PdfExtractorFactory();
         Extractor extractor = factory.get();
@@ -36,7 +36,7 @@ public class PdfExtractorTest extends ExtractorTestBase {
     
     public void testOpenOffice2Writer() throws ExtractorException, IOException {
         // note: document has no date
-        RDFContainerSesame container = getStatements(OPEN_OFFICE_2_DOC);
+        SesameRDFContainer container = getStatements(OPEN_OFFICE_2_DOC);
         
         checkStatement(Vocabulary.GENERATOR_URI, "OpenOffice", container);
         
@@ -45,7 +45,7 @@ public class PdfExtractorTest extends ExtractorTestBase {
     
     public void testOpenOffice1Writer() throws ExtractorException, IOException {
         // note: document has no date
-        RDFContainerSesame container = getStatements(OPEN_OFFICE_1_DOC);
+        SesameRDFContainer container = getStatements(OPEN_OFFICE_1_DOC);
         
         checkStatement(Vocabulary.GENERATOR_URI, "OpenOffice", container);
         
@@ -53,7 +53,7 @@ public class PdfExtractorTest extends ExtractorTestBase {
     }
     
     public void testPDFCreator() throws ExtractorException, IOException {
-        RDFContainerSesame container = getStatements(PDF_CREATOR_DOC);
+        SesameRDFContainer container = getStatements(PDF_CREATOR_DOC);
         
         checkStatement(Vocabulary.GENERATOR_URI, "PDFCreator", container);
         checkStatement(Vocabulary.GENERATOR_URI, "Ghostscript", container);
@@ -63,7 +63,7 @@ public class PdfExtractorTest extends ExtractorTestBase {
     }
     
     public void testPDFMaker() throws ExtractorException, IOException {
-        RDFContainerSesame container = getStatements(PDF_MAKER_DOC);
+        SesameRDFContainer container = getStatements(PDF_MAKER_DOC);
         
         checkStatement(Vocabulary.GENERATOR_URI, "PDFMaker", container);
         checkStatement(Vocabulary.GENERATOR_URI, "Distiller", container);
@@ -73,7 +73,7 @@ public class PdfExtractorTest extends ExtractorTestBase {
     }
     
     public void testPDFWriter() throws ExtractorException, IOException {
-        RDFContainerSesame container = getStatements(PDF_WRITER_DOC);
+        SesameRDFContainer container = getStatements(PDF_WRITER_DOC);
         
         checkStatement(Vocabulary.TITLE_URI, "Microsoft Word", container);
         checkStatement(Vocabulary.CREATOR_URI, "Christiaan Fluit", container);
@@ -84,7 +84,7 @@ public class PdfExtractorTest extends ExtractorTestBase {
         checkStatement(Vocabulary.PAGE_COUNT_URI, "1", container);
     }
     
-    private void checkOmnipresentStatements(RDFContainerSesame container) {
+    private void checkOmnipresentStatements(SesameRDFContainer container) {
         checkStatement(Vocabulary.CREATOR_URI, "Christiaan Fluit", container);
         checkStatement(Vocabulary.SUBJECT_URI, "Testing", container);
         checkStatement(Vocabulary.TITLE_URI, "Example", container);

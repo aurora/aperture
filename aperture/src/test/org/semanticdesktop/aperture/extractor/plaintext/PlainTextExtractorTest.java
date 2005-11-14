@@ -18,13 +18,13 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.Vocabulary;
-import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
+import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 
 public class PlainTextExtractorTest extends ExtractorTestBase {
 
     public void testRegularExtraction() throws ExtractorException, IOException {
         // apply the extractor on a text file
-        RDFContainerSesame container = getStatements(DOCS_PATH + "plain-text.txt");
+        SesameRDFContainer container = getStatements(DOCS_PATH + "plain-text.txt");
         Repository repository = container.getRepository();
         ValueFactory valueFactory = repository.getSail().getValueFactory();
                 
@@ -45,7 +45,7 @@ public class PlainTextExtractorTest extends ExtractorTestBase {
 
     public void testFailingExtraction() throws ExtractorException, IOException {
         // apply the extractor on a text file containing a null character
-        RDFContainerSesame container = getStatements(DOCS_PATH + "plain-text-with-null-character.txt");
+        SesameRDFContainer container = getStatements(DOCS_PATH + "plain-text-with-null-character.txt");
         Repository repository = container.getRepository();
         ValueFactory valueFactory = repository.getSail().getValueFactory();
         
@@ -55,11 +55,11 @@ public class PlainTextExtractorTest extends ExtractorTestBase {
         assertEquals(0, statements.size());
     }
     
-    private RDFContainerSesame getStatements(String resourceName) throws ExtractorException, IOException {
+    private SesameRDFContainer getStatements(String resourceName) throws ExtractorException, IOException {
         // apply the extractor on a text file containing a null character
         ExtractorFactory factory = new PlainTextExtractorFactory();
         Extractor extractor = factory.get();
-        RDFContainerSesame container = extract(resourceName, extractor);
+        SesameRDFContainer container = extract(resourceName, extractor);
         return container;
     }
 }

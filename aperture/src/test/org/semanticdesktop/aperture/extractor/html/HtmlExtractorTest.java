@@ -13,7 +13,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.Vocabulary;
-import org.semanticdesktop.aperture.rdf.impl.RDFContainerSesame;
+import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 
 public class HtmlExtractorTest extends ExtractorTestBase {
     
@@ -30,7 +30,7 @@ public class HtmlExtractorTest extends ExtractorTestBase {
     private void testExtraction(String resourceName) throws ExtractorException, IOException {
         ExtractorFactory factory = new HtmlExtractorFactory();
         Extractor extractor = factory.get();
-        RDFContainerSesame container = extract(resourceName, extractor);
+        SesameRDFContainer container = extract(resourceName, extractor);
         checkStatement(Vocabulary.FULL_TEXT_URI, "text", container);
         checkStatement(Vocabulary.TITLE_URI, "document", container);
         checkStatement(Vocabulary.CREATOR_URI, "Chris", container);
