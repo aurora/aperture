@@ -1,41 +1,29 @@
 /*
- * Created on 26.10.2005
- * $Id$
+ * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
+ * All rights reserved.
  * 
+ * Licensed under the Academic Free License version 3.0.
  */
 package org.semanticdesktop.aperture.opener;
 
-import java.net.URI;
+import java.io.IOException;
 
-import org.semanticdesktop.aperture.access.DataObjectNotFoundException;
+import org.openrdf.model.URI;
 
 /**
- * A DataOpener is a handler, tightly coupled to a DataSource, that
- * knows how to open DataObjects (identified by URI) to be seen by the user.
- * The DataOpener will open a file using the operating system or open an email
- * using an email application or open a KOrganizer address book entry using
- * KOrganizer.
+ * A DataOpener opens a URI in its native application, e.g. an editor, web browser or mail reader.
+ * DataOpeners are typically scheme-dependent, e.g. a "file:" DataOpener may immediately open the
+ * indicated File in the application registered with the platform whereas a "http:" DataOpener may open a
+ * web browser.
  */
-
 public interface DataOpener {
-    
-  /**
-   * opens the passed DataObject in the application that the user
-   * typically would use to access the object.
-   * @param uri uri of the resource that should be opened
-   * @throws an Exception when something goes wrong.
-   * @throws ResourceNotFoundException when the uri does not point 
-   * to a known resource, perhaps the resource was deleted?
-   */
-  public void openDataObject(URI uri) throws
-      DataObjectNotFoundException, OpeningException;
 
+    /**
+     * Opens the resource indicated by the specified URI in the application that the user typically would
+     * use to access such a resource.
+     * 
+     * @param uri The uri of the resource that should be opened
+     * @throws IOException In case of an I/O error.
+     */
+    public void open(URI uri) throws IOException;
 }
-
-
-/*
- * $Log$
- * Revision 1.1  2005/10/26 08:27:08  leo_sauermann
- * first shot, the result of our 3 month discussion on https://gnowsis.opendfki.de/cgi-bin/trac.cgi/wiki/SemanticDataIntegrationFramework
- *
- */

@@ -1,41 +1,31 @@
 /*
- * Created on 26.10.2005
- * $Id$
+ * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
+ * All rights reserved.
  * 
+ * Licensed under the Academic Free License version 3.0.
  */
 package org.semanticdesktop.aperture.access;
 
+import java.io.IOException;
+
 /**
- * thrown when the binary resource could not be found
- * 
- * 
- * @author Sauermann
- * $Id$
+ * Thrown by DataAccessors when the requested url did not point to an existing resource. 
  */
-public class UrlNotFoundException extends Exception {
+public class UrlNotFoundException extends IOException {
 
-    public UrlNotFoundException() {
-        super();
+    private String url;
+    
+    public UrlNotFoundException(String url) {
+        super("URL not found: " + url);
+        this.url = url;
     }
-
-    public UrlNotFoundException(String message) {
+    
+    public UrlNotFoundException(String url, String message) {
         super(message);
+        this.url = url;
     }
-
-    public UrlNotFoundException(Throwable cause) {
-        super(cause);
+    
+    public String getUrl() {
+        return url;
     }
-
-    public UrlNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
 }
-
-
-/*
- * $Log$
- * Revision 1.1  2005/10/26 08:27:08  leo_sauermann
- * first shot, the result of our 3 month discussion on https://gnowsis.opendfki.de/cgi-bin/trac.cgi/wiki/SemanticDataIntegrationFramework
- *
- */
