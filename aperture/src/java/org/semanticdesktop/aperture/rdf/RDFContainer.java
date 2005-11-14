@@ -12,6 +12,22 @@ import java.util.Date;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 
+/**
+ * RDFContainer defines a simple interface for small RDF stores. Its purpose is to make populating an
+ * model as simple as possible for developers new to RDF and triple stores.
+ * 
+ * <p>
+ * RDFContainers typically have a central URI called the "described URI". The semantics of this is that
+ * the content of the RDFContainer describes properties of this URI. All put methods in this interface
+ * implicitly use this URI as subject. However, RDFContainers may still contain any arbitrary statement,
+ * it is not restricted in any way.
+ * 
+ * <p>
+ * Putting a layer between the code generating the statements and the code that stores the statements
+ * provides an additional benefit: decisions on how Java types such as ints and Dates are transformed
+ * into RDF triples are now made in a single piece of code (the RDFContainer implementation), without
+ * requiring the populators of the RDF model to address this issue.
+ */
 public interface RDFContainer {
 
     /**
