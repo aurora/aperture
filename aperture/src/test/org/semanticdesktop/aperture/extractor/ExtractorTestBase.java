@@ -8,16 +8,9 @@ package org.semanticdesktop.aperture.extractor;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.Iterator;
 
-import org.openrdf.model.Literal;
-import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.sesame.repository.Repository;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 
@@ -35,36 +28,5 @@ public class ExtractorTestBase extends ApertureTestBase {
         stream.close();
 
         return rdfContainer;
-    }
-    
-    public void checkStatement(org.openrdf.model.URI property, String substring, SesameRDFContainer container) {
-        // setup some info
-        String uriString = container.getDescribedUri().toString();
-        Repository repository = container.getRepository();
-        ValueFactory valueFactory = repository.getSail().getValueFactory();
-        boolean encounteredSubstring = false;
-        
-        // loop over all statements that have the specified property uri as predicate
-        Collection statements = repository.getStatements(valueFactory.createURI(uriString), property, null);
-        Iterator iterator = statements.iterator();
-        
-        while (iterator.hasNext()) {
-            // check the property type
-            Statement statement = (Statement) iterator.next();
-            assertTrue(statement.getPredicate().equals(property));
-            
-            // see if it has a Literal containing the specified substring
-            Value object = statement.getObject();
-            if (object instanceof Literal) {
-                String value = ((Literal) object).getLabel();
-                if (value.indexOf(substring) >= 0) {
-                    encounteredSubstring = true;
-                    break;
-                }
-            }
-        }
-        
-        // see if any of the found properties contains the specified substring
-        assertTrue(encounteredSubstring);
     }
 }
