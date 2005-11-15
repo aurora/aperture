@@ -20,7 +20,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.semanticdesktop.aperture.access.DataAccessor;
 import org.semanticdesktop.aperture.access.UrlNotFoundException;
-import org.semanticdesktop.aperture.access.datasource.DataSource;
+import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.model.DataObject;
 import org.semanticdesktop.aperture.model.Vocabulary;
 import org.semanticdesktop.aperture.model.base.BinaryObjectBase;

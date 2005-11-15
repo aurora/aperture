@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
-import org.semanticdesktop.aperture.access.datasource.DataSource;
+import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.model.DataObject;
 
 /**

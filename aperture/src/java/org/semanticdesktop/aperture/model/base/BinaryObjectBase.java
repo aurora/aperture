@@ -9,7 +9,7 @@ package org.semanticdesktop.aperture.model.base;
 import java.io.InputStream;
 
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.access.datasource.DataSource;
+import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.model.BinaryObject;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
