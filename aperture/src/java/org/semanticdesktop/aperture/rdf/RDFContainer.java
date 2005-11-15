@@ -46,6 +46,8 @@ public interface RDFContainer {
     public void put(URI property, boolean value);
 
     public void put(URI property, int value);
+    
+    public void put(URI property, long value);
 
     public void put(URI property, URI value);
 
@@ -58,6 +60,8 @@ public interface RDFContainer {
     public void add(URI subject, URI property, boolean value);
 
     public void add(URI subject, URI property, int value);
+    
+    public void add(URI subject, URI property, long value);
 
     public void add(URI subject, URI property, URI value);
 

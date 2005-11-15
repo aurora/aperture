@@ -92,6 +92,11 @@ public class SesameRDFContainer implements RDFContainer {
         String val = Integer.toString(value);
         addInternal(describedUri, property, valfac.createLiteral(val, XMLSchema.INT));
     }
+    
+    public void put(URI property, long value) {
+        String val = Long.toString(value);
+        addInternal(describedUri, property, valfac.createLiteral(val, XMLSchema.LONG));
+    }
 
     public void put(URI property, URI value) {
         addInternal(describedUri, property, value);
@@ -118,6 +123,11 @@ public class SesameRDFContainer implements RDFContainer {
     public void add(URI subject, URI property, int value) {
         String val = Integer.toString(value);     
         addInternal(subject, property, valfac.createLiteral(val, XMLSchema.INT)); 
+    }
+    
+    public void add(URI subject, URI property, long value) {
+        String val = Long.toString(value);
+        addInternal(subject, property, valfac.createLiteral(val, XMLSchema.LONG));
     }
     
     public void add(URI subject, URI property, URI value) {
