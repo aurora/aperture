@@ -6,7 +6,7 @@
  */
 package org.semanticdesktop.aperture.crawler;
 
-import org.semanticdesktop.aperture.model.DataObject;
+import org.semanticdesktop.aperture.datasource.DataObject;
 
 /**
  * CrawlerListeners are notified by a Crawler about additions, changes and deletions or resources in a

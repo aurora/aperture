@@ -17,6 +17,7 @@ import org.openrdf.model.impl.URIImpl;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.ntriples.NTriplesWriter;
+import org.semanticdesktop.aperture.datasource.Vocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
@@ -28,7 +29,6 @@ import org.semanticdesktop.aperture.extractor.pdf.PdfExtractorFactory;
 import org.semanticdesktop.aperture.extractor.plaintext.PlainTextExtractorFactory;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifierFactory;
-import org.semanticdesktop.aperture.model.Vocabulary;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 

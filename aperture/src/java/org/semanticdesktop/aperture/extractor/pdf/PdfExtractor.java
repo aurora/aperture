@@ -21,9 +21,9 @@ import org.pdfbox.pdfparser.PDFParser;
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.pdmodel.PDDocumentInformation;
 import org.pdfbox.util.PDFTextStripper;
+import org.semanticdesktop.aperture.datasource.Vocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
-import org.semanticdesktop.aperture.model.Vocabulary;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**

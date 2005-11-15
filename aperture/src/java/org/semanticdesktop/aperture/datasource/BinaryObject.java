@@ -1,4 +1,4 @@
-package org.semanticdesktop.aperture.model;
+package org.semanticdesktop.aperture.datasource;
 
 import java.io.IOException;
 import java.io.InputStream;

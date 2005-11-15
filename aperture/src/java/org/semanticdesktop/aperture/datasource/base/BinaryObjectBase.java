@@ -4,13 +4,13 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.model.base;
+package org.semanticdesktop.aperture.datasource.base;
 
 import java.io.InputStream;
 
 import org.openrdf.model.URI;
+import org.semanticdesktop.aperture.datasource.BinaryObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.model.BinaryObject;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**

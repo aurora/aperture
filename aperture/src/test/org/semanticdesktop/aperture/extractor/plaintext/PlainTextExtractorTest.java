@@ -13,11 +13,11 @@ import org.openrdf.model.Literal;
 import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.sesame.repository.Repository;
+import org.semanticdesktop.aperture.datasource.Vocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
-import org.semanticdesktop.aperture.model.Vocabulary;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 
 public class PlainTextExtractorTest extends ExtractorTestBase {
