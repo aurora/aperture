@@ -6,7 +6,7 @@
  */
 package org.semanticdesktop.aperture.crawler;
 
-import org.semanticdesktop.aperture.model.DataSource;
+import org.semanticdesktop.aperture.access.datasource.DataSource;
 
 /**
  * A Crawler accesses the physical source represented by a DataSource and delivers a stream of

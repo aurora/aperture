@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
+import org.semanticdesktop.aperture.access.datasource.DataSource;
 import org.semanticdesktop.aperture.model.DataObject;
-import org.semanticdesktop.aperture.model.DataSource;
 
 /**
  * A DataAccessor provides access to physical resources by creating DataObjects representing the

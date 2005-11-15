@@ -7,8 +7,8 @@
 package org.semanticdesktop.aperture.model.base;
 
 import org.openrdf.model.URI;
+import org.semanticdesktop.aperture.access.datasource.DataSource;
 import org.semanticdesktop.aperture.model.DataObject;
-import org.semanticdesktop.aperture.model.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
