@@ -21,6 +21,10 @@ provided APIs.
 
 Install Java 1.4 or higher and Ant 1.6.x or higher.
 
+Add the junit-<version>.jar file to the $ANT_HOME\lib directory or make sure
+in another way that it is added to the Ant classpath. See 
+http://ant.apache.org/manual/OptionalTasks/junit.html for more information.
+
 Unzip the src.zip in the Aperture root directory (i.e. where this file is
 located). This should result in an src directory and a build.xml file.
 
