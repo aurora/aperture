@@ -10,14 +10,6 @@ import java.io.InputStream;
 public interface BinaryObject extends DataObject {
 
     /**
-     * Returns the byte size of the represented resource. This has been defined at this global level due
-     * to the importance of this attribute for performance reasons.
-     * 
-     * @return the size of the binary resource in bytes, or a negative value when the size is unknown.
-     */
-    public long getSize();
-
-    /**
      * Gets an InputStream containing the content represented by the DataObject.
      * 
      * <p>
@@ -26,7 +18,12 @@ public interface BinaryObject extends DataObject {
      * Care should therefore be taken to mark and reset the stream when the stream's content is to be
      * read again later.
      * 
-     * @return An InputStream from which the content of the data object can be read.
+     * <p>
+     * The returned InputStream is null in cases where the physical resource could not be accessed, e.g.
+     * in case of missing file read permissions.
+     * 
+     * @return An InputStream from which the content of the data object can be read, or null when the
+     *         stream cannot be accessed.
      * @throws IOException If an I/O error occurred.
      */
     public InputStream getContent() throws IOException;
