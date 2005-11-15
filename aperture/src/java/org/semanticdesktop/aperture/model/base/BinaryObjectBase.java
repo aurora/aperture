@@ -9,13 +9,14 @@ package org.semanticdesktop.aperture.model.base;
 import java.io.InputStream;
 
 import org.openrdf.model.URI;
+import org.semanticdesktop.aperture.model.BinaryObject;
 import org.semanticdesktop.aperture.model.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
  * A trivial default implementation of BinaryObject. 
  */
-public class BinaryObjectBase extends DataObjectBase {
+public class BinaryObjectBase extends DataObjectBase implements BinaryObject {
 
     private InputStream content;
     
@@ -34,4 +35,3 @@ public class BinaryObjectBase extends DataObjectBase {
         return content;
     }
 }
-
