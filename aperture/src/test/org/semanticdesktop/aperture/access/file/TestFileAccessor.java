@@ -17,7 +17,7 @@ import org.semanticdesktop.aperture.access.UrlNotFoundException;
 import org.semanticdesktop.aperture.model.BinaryObject;
 import org.semanticdesktop.aperture.model.DataObject;
 import org.semanticdesktop.aperture.model.Folder;
-import org.semanticdesktop.aperture.rdf.Vocabulary;
+import org.semanticdesktop.aperture.model.Vocabulary;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainerFactory;
 import org.semanticdesktop.aperture.util.FileUtil;

@@ -17,8 +17,8 @@ import java.util.logging.Logger;
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
+import org.semanticdesktop.aperture.model.Vocabulary;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.Vocabulary;
 import org.semanticdesktop.aperture.util.IOUtil;
 
 public class PlainTextExtractor implements Extractor {

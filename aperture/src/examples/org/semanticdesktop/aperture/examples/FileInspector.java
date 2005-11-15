@@ -28,7 +28,7 @@ import org.semanticdesktop.aperture.extractor.pdf.PdfExtractorFactory;
 import org.semanticdesktop.aperture.extractor.plaintext.PlainTextExtractorFactory;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifierFactory;
-import org.semanticdesktop.aperture.rdf.Vocabulary;
+import org.semanticdesktop.aperture.model.Vocabulary;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 

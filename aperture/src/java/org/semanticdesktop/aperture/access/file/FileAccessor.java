@@ -22,12 +22,12 @@ import org.semanticdesktop.aperture.access.DataAccessor;
 import org.semanticdesktop.aperture.access.UrlNotFoundException;
 import org.semanticdesktop.aperture.model.DataObject;
 import org.semanticdesktop.aperture.model.DataSource;
+import org.semanticdesktop.aperture.model.Vocabulary;
 import org.semanticdesktop.aperture.model.base.BinaryObjectBase;
 import org.semanticdesktop.aperture.model.base.DataObjectBase;
 import org.semanticdesktop.aperture.model.base.FolderBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.RDFContainerFactory;
-import org.semanticdesktop.aperture.rdf.Vocabulary;
 
 /**
  * A DataAccessor implementation for the file scheme.

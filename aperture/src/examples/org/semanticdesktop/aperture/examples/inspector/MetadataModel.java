@@ -17,7 +17,7 @@ import org.openrdf.model.Literal;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 import org.openrdf.sesame.repository.Repository;
-import org.semanticdesktop.aperture.rdf.Vocabulary;
+import org.semanticdesktop.aperture.model.Vocabulary;
 
 public class MetadataModel {
 

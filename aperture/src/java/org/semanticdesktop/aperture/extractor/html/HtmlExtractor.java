@@ -29,8 +29,8 @@ import org.htmlparser.visitors.NodeVisitor;
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
+import org.semanticdesktop.aperture.model.Vocabulary;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.Vocabulary;
 
 /**
  * HtmlExtractor extracts full-text and metadata from HTML and XHTML documents.
