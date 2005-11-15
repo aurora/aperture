@@ -9,6 +9,7 @@ package org.semanticdesktop.aperture;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.semanticdesktop.aperture.access.TestAccessors;
 import org.semanticdesktop.aperture.extractor.TestExtractors;
 import org.semanticdesktop.aperture.mime.identifier.magic.TestMagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.TestSesameRDFContainer;
@@ -22,6 +23,7 @@ public class TestAll extends TestSuite {
     private TestAll() {
         super("aperture");
         addTest(new TestSuite(TestSesameRDFContainer.class));
+        addTest(TestAccessors.suite());
         addTest(TestExtractors.suite());
         addTest(new TestSuite(TestMagicMimeTypeIdentifier.class));
     }
