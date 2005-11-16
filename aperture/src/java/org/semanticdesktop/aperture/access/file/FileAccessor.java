@@ -14,10 +14,12 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
+import org.semanticdesktop.aperture.access.AccessData;
 import org.semanticdesktop.aperture.access.DataAccessor;
 import org.semanticdesktop.aperture.access.UrlNotFoundException;
 import org.semanticdesktop.aperture.datasource.DataObject;
@@ -50,7 +52,7 @@ public class FileAccessor implements DataAccessor {
      * instance as value, this File will be used to retrieve information from, else one will be created
      * by using the specified url.
      */
-    public DataObject get(String url, DataSource source, Date previousDate, Map params)
+    public DataObject get(String url, DataSource source, AccessData accessData, Map params)
             throws UrlNotFoundException, IOException {
         // sanity check: make sure we're processing file urls
         if (!url.startsWith("file:")) {
@@ -74,13 +76,35 @@ public class FileAccessor implements DataAccessor {
             LOGGER.warning("not a file nor a folder: " + file);
         }
 
-        // check whether the file has been modified, if required
-        if (previousDate != null) {
-            Date fileDate = new Date(file.lastModified());
-            if (previousDate.equals(fileDate)) {
-                // not modified: we can exit immediately
-                return null;
+        // Check whether the file has been modified, if required. Note: this assumes that a folder gets a
+        // different last modified date when Files are added to or removed from it. This seems reasonable
+        // and is the case on Windows, but the API isn't clear about it.
+        if (accessData != null) {
+            // determine when the file was last modified
+            long lastModified = file.lastModified();
+
+            // check whether it has been modified
+            String value = accessData.get(url, AccessData.DATE_KEY);
+            if (value != null) {
+                try {
+                    long registeredDate = Long.parseLong(value);
+
+                    // now that we now its previous last modified date, see if it has been modified
+                    if (registeredDate == lastModified) {
+                        // the file has not been modified
+                        return null;
+                    }
+                }
+                catch (NumberFormatException e) {
+                    LOGGER.log(Level.WARNING, "illegal long: " + value, e);
+                }
             }
+
+            // It has been modified; register the new modification date. Note: we store them under the
+            // specified url, not the uri of the canonical path: quicker for incremental rescans and this
+            // is what we were asked for to retrieve: important when other people access the AccessData
+            // as well
+            accessData.put(url, AccessData.DATE_KEY, String.valueOf(lastModified));
         }
 
         // create the metadata
@@ -129,7 +153,7 @@ public class FileAccessor implements DataAccessor {
             throw ioe;
         }
     }
-    
+
     private RDFContainer constructMetadata(File file, URI id, boolean isFile, boolean isFolder) {
         // create a new, empty RDFContainer
         RDFContainer metadata = containerFactory.newInstance(id);
@@ -171,7 +195,7 @@ public class FileAccessor implements DataAccessor {
                 }
             }
         }
-        
+
         // done!
         return metadata;
     }

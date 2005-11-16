@@ -7,7 +7,6 @@
 package org.semanticdesktop.aperture.access;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Map;
 
 import org.semanticdesktop.aperture.datasource.DataObject;
@@ -15,28 +14,25 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 
 /**
  * A DataAccessor provides access to physical resources by creating DataObjects representing the
- * resource, based on a url and optionally data about a previous access and other parameters.
- * 
- * <p>
- * The optionally passed Date can be used to instruct the DataAccessor to only create and return a
- * DataObject when its "date" (typically a last modified date, depending on the scheme) differs from the
- * specified date. This facilitates the creation of fast incremental Crawlers.
- * 
- * <p>
- * The ID of the returned DataObject may differ from the specified URL, based on normalization, following
- * redirected URLs, etc. It is required though to provide a URI through which this DataAccessor can later
- * on also access the same resource, i.e. the URI should also be a URL.
+ * resource, based on a url and optionally previous acces data and other parameters.
  */
 public interface DataAccessor {
 
     /**
-     * Get a DataObject for the specified url. The resulting DataObject's ID may differ from the
-     * specified url due to normalization schemes, following of redirected URLs, etc.
+     * Get a DataObject for the specified url.
      * 
      * <p>
-     * A Date can optionally be specified, indicating that the DataObject is only wanted when its regular
-     * date (typically a last modified date) differs from the specified date. When no Date is specified,
-     * a DataObject is always returned.
+     * The resulting DataObject's ID may differ from the specified url due to normalization schemes,
+     * following of redirected URLs, etc. It is required though to provide a URI through which this
+     * DataAccessor can later on also access the same resource, i.e. the URI should also be a URL.
+     * 
+     * <p>
+     * The optionally passed AccessData can be used to let the DataAccessor store information about the
+     * created DataSource. The next time it is invoked with the same URL, it can then use this
+     * information to determine whether the resource has changed or not. The DataAccessor should return
+     * null when the resource has not changed. This facilitates fast incremental crawling of DataSources.
+     * When no AccessData is specified, no change detection takes place and an AccessData is always
+     * returned.
      * 
      * <p>
      * Specific DataAccessor implementations may accept additional parameters through the params Map,
@@ -45,7 +41,7 @@ public interface DataAccessor {
      * implementations should not rely on the contents of this Map to work properly.
      * 
      * @param url The url of the requested resource.
-     * @param dataSource The DataSource that will be registered as the source of the DataObject.
+     * @param dataSource The DataSource to be registered as the source of the DataObject (optional).
      * @param previousDate The previous date of the DataObject (optional).
      * @param params Additional parameters facilitating access to the physical resource (optional).
      * @return A DataObject for the specified URI, or null when the binary resource has not been modified
@@ -53,6 +49,6 @@ public interface DataAccessor {
      * @throws UrlNotFoundException When the specified url did not point to an existing resource.
      * @throws IOException When any kind of I/O error occurs.
      */
-    public DataObject get(String url, DataSource source, Date previousDate, Map params)
+    public DataObject get(String url, DataSource source, AccessData accessData, Map params)
             throws UrlNotFoundException, IOException;
 }
