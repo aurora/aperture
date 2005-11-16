@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.datasource;
+package org.semanticdesktop.aperture.access;
 
 /**
  * A Folder holds the metadata of a single folder. Currently this is a marker interface, no

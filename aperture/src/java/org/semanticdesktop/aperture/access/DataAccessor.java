@@ -9,7 +9,6 @@ package org.semanticdesktop.aperture.access;
 import java.io.IOException;
 import java.util.Map;
 
-import org.semanticdesktop.aperture.datasource.DataObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
 
 /**

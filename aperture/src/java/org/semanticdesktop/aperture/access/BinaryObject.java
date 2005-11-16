@@ -1,4 +1,4 @@
-package org.semanticdesktop.aperture.datasource;
+package org.semanticdesktop.aperture.access;
 
 import java.io.IOException;
 import java.io.InputStream;
