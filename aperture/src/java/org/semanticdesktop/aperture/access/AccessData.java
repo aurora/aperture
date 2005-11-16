@@ -5,9 +5,24 @@ import java.util.Set;
 /**
  * An AccessData instance stores information about accessed resources such as last modification dates,
  * locations, etc. This primarily facilitates incremental crawling of DataSources.
+ * 
+ * AccessData proposes a number of keys to use when storing values, combined with a proposed value
+ * encoding. This is to ensure that several DataAccessors and possibly other components can share the
+ * same AccessData instance without resulting in conflicts.
  */
 public interface AccessData {
 
+    /**
+     * Recommended key to store a resource's date. Recommended value encoding: time in milliseconds as a
+     * string.
+     */
+    public static final String DATE_KEY = "date";
+
+    /**
+     * Recommended key to store a resource's byte size. Recommended value encoding: String-encoded long.
+     */
+    public static final String BYTE_SIZE_KEY = "byteSize";
+    
     /**
      * Gets the number of resources for which information has been stored in this AccessData.
      * 
