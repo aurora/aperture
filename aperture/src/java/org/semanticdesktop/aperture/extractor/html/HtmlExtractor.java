@@ -27,7 +27,7 @@ import org.htmlparser.util.ParserFeedback;
 import org.htmlparser.util.Translate;
 import org.htmlparser.visitors.NodeVisitor;
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.datasource.Vocabulary;
+import org.semanticdesktop.aperture.access.Vocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
