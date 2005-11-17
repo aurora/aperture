@@ -24,7 +24,7 @@ import org.openrdf.sesame.sail.SailInitializationException;
 import org.openrdf.sesame.sail.SailUpdateException;
 import org.openrdf.sesame.sailimpl.memory.MemoryStore;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.util.RDFUtil;
+import org.semanticdesktop.aperture.util.DateUtil;
 
 /**
  * An implementation of RDFContainer that uses a Sesame non-inferencing in-memory repository.
@@ -78,7 +78,7 @@ public class SesameRDFContainer implements RDFContainer {
     }
 
     public void put(URI property, Date value) {
-        String date = RDFUtil.dateTime2String(value);
+        String date = DateUtil.dateTime2String(value);
         addInternal(describedUri, property, valfac.createLiteral(date, XMLSchema.DATETIME));
     }
 
@@ -138,7 +138,7 @@ public class SesameRDFContainer implements RDFContainer {
     }
 
     public void add(URI subject, URI property, Date value) {
-        String date = RDFUtil.dateTime2String(value);
+        String date = DateUtil.dateTime2String(value);
         addInternal(subject, property, valfac.createLiteral(date, XMLSchema.DATETIME));
     }
 
@@ -182,7 +182,7 @@ public class SesameRDFContainer implements RDFContainer {
         }
         else {
             try {
-                return RDFUtil.string2DateTime(value);
+                return DateUtil.string2DateTime(value);
             }
             catch (ParseException e) {
                 // illegal date: interpret as no date available

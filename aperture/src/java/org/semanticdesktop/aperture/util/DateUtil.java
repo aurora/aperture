@@ -6,9 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Provides helper methods to handle RDF statements.
+ * Provides utility methods for handling dates.
  */
-public class RDFUtil {
+public class DateUtil {
 
     private static DateFormat dateFormat = null;
 
