@@ -116,7 +116,10 @@ public class OpenDocumentExtractor implements Extractor {
         }
 
         // put the extracted full-text in the RDF container
-        result.put(Vocabulary.FULL_TEXT_URI, contentExtractor.getContents());
+        String contents = contentExtractor.getContents();
+        if (contents != null && !contents.equals("")) {
+            result.put(Vocabulary.FULL_TEXT_URI, contents);
+        }
     }
 
     /**
