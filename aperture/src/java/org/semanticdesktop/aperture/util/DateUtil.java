@@ -18,6 +18,7 @@ public class DateUtil {
      * 
      * @param date A date instance.
      * @return A String containing the date in ISO-8601 format.
+     * @see #string2DateTime(String)
      */
     public static String dateTime2String(Date date) {
         return getISO8601DateFormat().format(date);
@@ -28,6 +29,7 @@ public class DateUtil {
      * 
      * @param string A String in ISO-8601 format.
      * @return A Date instance with a timestamp obtained from the specified String.
+     * @throws ParseException when the specified string did not conform to the ISO-8601 standard.
      * @see #dateTime2String(Date)
      */
     public static Date string2DateTime(String string) throws ParseException {
