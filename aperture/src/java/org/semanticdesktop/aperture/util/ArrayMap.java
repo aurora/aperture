@@ -18,6 +18,10 @@ import java.util.Set;
 /**
  * A simple Map implementation, taking roughly the same strategy as ArrayList, resulting in a
  * memory-efficient and (for small amounts of key-value pairs) fast implementation.
+ * 
+ * <p>
+ * Please note that methods like containsKey, get, etc. test on object identity (i.e. key == keys[i]),
+ * rather than using Object.equals.
  */
 public class ArrayMap implements Map {
 
@@ -366,10 +370,9 @@ public class ArrayMap implements Map {
         public boolean equals(Object object) {
             if (object instanceof Map.Entry) {
                 Map.Entry entry = (Map.Entry) object;
-                boolean keyOK = keys[index] == null ? entry.getKey() == null : keys[index] == entry
-                        .getKey();
-                boolean valueOK = values[index] == null ? entry.getValue() == null
-                        : values[index] == entry.getValue();
+                boolean keyOK = keys[index] == null ? entry.getKey() == null : keys[index] == entry.getKey();
+                boolean valueOK = values[index] == null ? entry.getValue() == null : values[index] == entry
+                        .getValue();
                 return keyOK && valueOK;
             }
             else {
