@@ -7,6 +7,7 @@
 package org.semanticdesktop.aperture.datasource;
 
 import org.openrdf.model.URI;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
  * A DataSource defines the characteristics of a source from which DataObjects can be extracted. A
@@ -42,4 +43,12 @@ public interface DataSource {
      * @param name A descriptive name for the data source.
      */
     public void setName(String name);
+
+    /**
+     * Gets the RDF model containing the configuration of this DataSource. The returned RDFContainer can
+     * be modified in order to update the configuration.
+     * 
+     * @return A mutable RDFContainer.
+     */
+    public RDFContainer getConfiguration();
 }
