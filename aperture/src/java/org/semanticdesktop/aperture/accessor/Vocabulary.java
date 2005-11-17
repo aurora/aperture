@@ -7,8 +7,7 @@
 package org.semanticdesktop.aperture.accessor;
 
 import org.openrdf.model.URI;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.model.impl.ValueFactoryImpl;
+import org.openrdf.model.impl.URIImpl;
 
 /**
  * This class defines a comprehensive list of URIs to be used for modeling DataObject metadata.
@@ -35,23 +34,22 @@ public class Vocabulary {
     public static final String PART_OF = NS + "partOf"; // nesting of files or folders in folders, nesting of attachments in mails
     
     static {
-        ValueFactory factory = new ValueFactoryImpl();
-        FULL_TEXT_URI = factory.createURI(FULL_TEXT);
-        MIME_TYPE_URI = factory.createURI(MIME_TYPE);
-        BYTE_SIZE_URI = factory.createURI(BYTE_SIZE);
-        CREATOR_URI = factory.createURI(CREATOR);
-        TITLE_URI = factory.createURI(TITLE);
-        SUBJECT_URI = factory.createURI(SUBJECT);
-        NAME_URI = factory.createURI(NAME);
-        DESCRIPTION_URI = factory.createURI(DESCRIPTION);
-        KEYWORD_URI = factory.createURI(KEYWORD);
-        DATE_URI = factory.createURI(DATE);
-        CREATION_DATE_URI = factory.createURI(CREATION_DATE);
-        PRINT_DATE_URI = factory.createURI(PRINT_DATE);
-        LANGUAGE_URI = factory.createURI(LANGUAGE);
-        PAGE_COUNT_URI = factory.createURI(PAGE_COUNT);
-        GENERATOR_URI = factory.createURI(GENERATOR);
-        PART_OF_URI = factory.createURI(PART_OF);
+        FULL_TEXT_URI = new URIImpl(FULL_TEXT);
+        MIME_TYPE_URI = new URIImpl(MIME_TYPE);
+        BYTE_SIZE_URI = new URIImpl(BYTE_SIZE);
+        CREATOR_URI = new URIImpl(CREATOR);
+        TITLE_URI = new URIImpl(TITLE);
+        SUBJECT_URI = new URIImpl(SUBJECT);
+        NAME_URI = new URIImpl(NAME);
+        DESCRIPTION_URI = new URIImpl(DESCRIPTION);
+        KEYWORD_URI = new URIImpl(KEYWORD);
+        DATE_URI = new URIImpl(DATE);
+        CREATION_DATE_URI = new URIImpl(CREATION_DATE);
+        PRINT_DATE_URI = new URIImpl(PRINT_DATE);
+        LANGUAGE_URI = new URIImpl(LANGUAGE);
+        PAGE_COUNT_URI = new URIImpl(PAGE_COUNT);
+        GENERATOR_URI = new URIImpl(GENERATOR);
+        PART_OF_URI = new URIImpl(PART_OF);
     }
     
     public static final URI FULL_TEXT_URI;
