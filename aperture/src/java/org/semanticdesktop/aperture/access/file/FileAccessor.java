@@ -33,8 +33,15 @@ import org.semanticdesktop.aperture.rdf.RDFContainerFactory;
 
 /**
  * A DataAccessor implementation for the file scheme.
+ * 
+ * <p>
+ * FileAccessor can be passed a File instance by putting a File object in the params Map with the String
+ * "file" as key. It will then use this File, rather than constructing one based on the specified URL.
+ * This can optimize cases where a File instance is already available.
  */
 public class FileAccessor implements DataAccessor {
+
+    public static final String FILE_KEY = "file";
 
     private static final Logger LOGGER = Logger.getLogger(FileAccessor.class.getName());
 
@@ -136,7 +143,7 @@ public class FileAccessor implements DataAccessor {
     private File getFile(String url, Map params) throws IOException {
         // first try to fetch it from the params map
         if (params != null) {
-            Object value = params.get("file");
+            Object value = params.get(FILE_KEY);
             if (value instanceof File) {
                 return (File) value;
             }
