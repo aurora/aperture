@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -26,6 +25,7 @@ import org.semanticdesktop.aperture.accessor.Vocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.util.DateUtil;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.util.SimpleSAXAdapter;
@@ -46,9 +46,6 @@ public class OpenDocumentExtractor implements Extractor {
     // used to append to extracted text, to make it more readable
     private static final String END_OF_LINE = System.getProperty("line.separator", "\n");
 
-    // used to format date's occurring in the meta.xml part
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    
     // used to fool the parser, when it tries to load the system dtd.
     // seems to work better than tricks such as providing a dummy EntityResolver, which is probably parser implementation-dependent
     // (see e.g. http://www.jroller.com/comments/santhosh/Weblog/putoff_dtd_parsing_html)
@@ -246,7 +243,7 @@ public class OpenDocumentExtractor implements Extractor {
             String value = node.getNodeValue();
             if (value != null) {
                 try {
-                    Date date = DATE_FORMAT.parse(value);
+                    Date date = DateUtil.string2DateTime(value);
                     container.put(uri, date);
                 }
                 catch (ParseException e) {
