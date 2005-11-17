@@ -10,9 +10,9 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 
 /**
- * This class defines a comprehensive list of URIs to be used for modeling DataObject metadata.
+ * This interface defines a comprehensive list of URIs to be used for modeling DataObject metadata.
  */
-public class Vocabulary {
+public interface Vocabulary {
    
     public static final String NS = "http://aperture.semanticdesktop.org/ontology/data/";
     
@@ -33,43 +33,20 @@ public class Vocabulary {
     public static final String GENERATOR = NS + "generator"; // the application that created the file
     public static final String PART_OF = NS + "partOf"; // nesting of files or folders in folders, nesting of attachments in mails
     
-    static {
-        FULL_TEXT_URI = new URIImpl(FULL_TEXT);
-        MIME_TYPE_URI = new URIImpl(MIME_TYPE);
-        BYTE_SIZE_URI = new URIImpl(BYTE_SIZE);
-        CREATOR_URI = new URIImpl(CREATOR);
-        TITLE_URI = new URIImpl(TITLE);
-        SUBJECT_URI = new URIImpl(SUBJECT);
-        NAME_URI = new URIImpl(NAME);
-        DESCRIPTION_URI = new URIImpl(DESCRIPTION);
-        KEYWORD_URI = new URIImpl(KEYWORD);
-        DATE_URI = new URIImpl(DATE);
-        CREATION_DATE_URI = new URIImpl(CREATION_DATE);
-        PRINT_DATE_URI = new URIImpl(PRINT_DATE);
-        LANGUAGE_URI = new URIImpl(LANGUAGE);
-        PAGE_COUNT_URI = new URIImpl(PAGE_COUNT);
-        GENERATOR_URI = new URIImpl(GENERATOR);
-        PART_OF_URI = new URIImpl(PART_OF);
-    }
-    
-    public static final URI FULL_TEXT_URI;
-    public static final URI MIME_TYPE_URI;
-    public static final URI BYTE_SIZE_URI;
-    public static final URI CREATOR_URI;
-    public static final URI TITLE_URI;
-    public static final URI SUBJECT_URI;
-    public static final URI NAME_URI;
-    public static final URI DESCRIPTION_URI;
-    public static final URI KEYWORD_URI;
-    public static final URI DATE_URI;
-    public static final URI CREATION_DATE_URI;
-    public static final URI PRINT_DATE_URI;
-    public static final URI LANGUAGE_URI;
-    public static final URI PAGE_COUNT_URI;
-    public static final URI GENERATOR_URI;
-    public static final URI PART_OF_URI;
-
-    private Vocabulary() {
-    	// prevents instantiation of this class
-    }
+    public static final URI FULL_TEXT_URI = new URIImpl(FULL_TEXT);
+    public static final URI MIME_TYPE_URI = new URIImpl(MIME_TYPE);
+    public static final URI BYTE_SIZE_URI = new URIImpl(BYTE_SIZE);
+    public static final URI CREATOR_URI = new URIImpl(CREATOR);
+    public static final URI TITLE_URI = new URIImpl(TITLE);
+    public static final URI SUBJECT_URI = new URIImpl(SUBJECT);
+    public static final URI NAME_URI = new URIImpl(NAME);
+    public static final URI DESCRIPTION_URI = new URIImpl(DESCRIPTION);
+    public static final URI KEYWORD_URI = new URIImpl(KEYWORD);
+    public static final URI DATE_URI = new URIImpl(DATE);
+    public static final URI CREATION_DATE_URI = new URIImpl(CREATION_DATE);
+    public static final URI PRINT_DATE_URI = new URIImpl(PRINT_DATE);
+    public static final URI LANGUAGE_URI = new URIImpl(LANGUAGE);
+    public static final URI PAGE_COUNT_URI = new URIImpl(PAGE_COUNT);
+    public static final URI GENERATOR_URI = new URIImpl(GENERATOR);
+    public static final URI PART_OF_URI = new URIImpl(PART_OF);
 }
