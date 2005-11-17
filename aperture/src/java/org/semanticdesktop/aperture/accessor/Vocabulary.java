@@ -11,8 +11,7 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
 
 /**
- * Vocabulary defines a comprehensive list of URIs to be used in communication with various Aperture
- * components.
+ * This class defines a comprehensive list of URIs to be used for modeling DataObject metadata.
  */
 public class Vocabulary {
    
