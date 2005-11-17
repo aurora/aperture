@@ -4,13 +4,13 @@
  * 
  * Licensed under the Open Software License version 3.0.
  */
-package org.semanticdesktop.aperture.access.file;
+package org.semanticdesktop.aperture.accessor.file;
 
 import java.util.Collections;
 import java.util.Set;
 
-import org.semanticdesktop.aperture.access.DataAccessor;
-import org.semanticdesktop.aperture.access.DataAccessorFactory;
+import org.semanticdesktop.aperture.accessor.DataAccessor;
+import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 import org.semanticdesktop.aperture.rdf.RDFContainerFactory;
 
 /**

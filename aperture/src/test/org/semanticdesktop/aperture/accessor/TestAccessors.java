@@ -4,9 +4,9 @@
  * 
  * Licensed under the Open Software License version 3.0.
  */
-package org.semanticdesktop.aperture.access;
+package org.semanticdesktop.aperture.accessor;
 
-import org.semanticdesktop.aperture.access.file.TestFileAccessor;
+import org.semanticdesktop.aperture.accessor.file.TestFileAccessor;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

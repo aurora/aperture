@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.access.impl;
+package org.semanticdesktop.aperture.accessor.impl;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,8 +12,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.semanticdesktop.aperture.access.DataAccessorFactory;
-import org.semanticdesktop.aperture.access.DataAccessorRegistry;
+import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
+import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 
 public class DataAccessorRegistryImpl implements DataAccessorRegistry {
 

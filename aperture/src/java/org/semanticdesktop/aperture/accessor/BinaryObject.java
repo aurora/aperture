@@ -1,4 +1,4 @@
-package org.semanticdesktop.aperture.access;
+package org.semanticdesktop.aperture.accessor;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -13,7 +13,7 @@ import org.openrdf.model.Literal;
 import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.sesame.repository.Repository;
-import org.semanticdesktop.aperture.access.Vocabulary;
+import org.semanticdesktop.aperture.accessor.Vocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;

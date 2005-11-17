@@ -4,7 +4,7 @@
  * 
  * Licensed under the Open Software License version 3.0.
  */
-package org.semanticdesktop.aperture.access.file;
+package org.semanticdesktop.aperture.accessor.file;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,13 +14,13 @@ import java.util.HashMap;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.semanticdesktop.aperture.ApertureTestBase;
-import org.semanticdesktop.aperture.access.AccessData;
-import org.semanticdesktop.aperture.access.BinaryObject;
-import org.semanticdesktop.aperture.access.DataObject;
-import org.semanticdesktop.aperture.access.Folder;
-import org.semanticdesktop.aperture.access.UrlNotFoundException;
-import org.semanticdesktop.aperture.access.Vocabulary;
-import org.semanticdesktop.aperture.access.base.AccessDataBase;
+import org.semanticdesktop.aperture.accessor.AccessData;
+import org.semanticdesktop.aperture.accessor.BinaryObject;
+import org.semanticdesktop.aperture.accessor.DataObject;
+import org.semanticdesktop.aperture.accessor.Folder;
+import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
+import org.semanticdesktop.aperture.accessor.Vocabulary;
+import org.semanticdesktop.aperture.accessor.base.AccessDataBase;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainerFactory;
 import org.semanticdesktop.aperture.util.FileUtil;

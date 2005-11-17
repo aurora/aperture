@@ -1,4 +1,4 @@
-package org.semanticdesktop.aperture.access.base;
+package org.semanticdesktop.aperture.accessor.base;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.semanticdesktop.aperture.access.AccessData;
+import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.util.ArrayMap;
 import org.semanticdesktop.aperture.util.SimpleSAXAdapter;
 import org.semanticdesktop.aperture.util.SimpleSAXParser;

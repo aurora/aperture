@@ -4,7 +4,7 @@
  * 
  * Licensed under the Open Software License version 3.0.
  */
-package org.semanticdesktop.aperture.access.file;
+package org.semanticdesktop.aperture.accessor.file;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -19,14 +19,14 @@ import java.util.logging.Logger;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
-import org.semanticdesktop.aperture.access.AccessData;
-import org.semanticdesktop.aperture.access.DataAccessor;
-import org.semanticdesktop.aperture.access.DataObject;
-import org.semanticdesktop.aperture.access.UrlNotFoundException;
-import org.semanticdesktop.aperture.access.Vocabulary;
-import org.semanticdesktop.aperture.access.base.BinaryObjectBase;
-import org.semanticdesktop.aperture.access.base.DataObjectBase;
-import org.semanticdesktop.aperture.access.base.FolderBase;
+import org.semanticdesktop.aperture.accessor.AccessData;
+import org.semanticdesktop.aperture.accessor.DataAccessor;
+import org.semanticdesktop.aperture.accessor.DataObject;
+import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
+import org.semanticdesktop.aperture.accessor.Vocabulary;
+import org.semanticdesktop.aperture.accessor.base.BinaryObjectBase;
+import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
+import org.semanticdesktop.aperture.accessor.base.FolderBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.RDFContainerFactory;

@@ -4,10 +4,10 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.access.base;
+package org.semanticdesktop.aperture.accessor.base;
 
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.access.DataObject;
+import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
