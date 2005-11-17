@@ -23,6 +23,11 @@ import org.openrdf.model.URI;
  * it is not restricted in any way.
  * 
  * <p>
+ * The get methods in this interface look for the first available triple that matches their requirements.
+ * They return null when there are no such triples or when the handling of the first triple (e.g. the
+ * parsing of a Date from a String) resulted in errors.
+ * 
+ * <p>
  * Putting a layer between the code generating the statements and the code that stores the statements
  * provides an additional benefit: decisions on how Java types such as ints and Dates are transformed
  * into RDF triples are now made in a single piece of code (the RDFContainer implementation), without
@@ -46,10 +51,24 @@ public interface RDFContainer {
     public void put(URI property, boolean value);
 
     public void put(URI property, int value);
-    
+
     public void put(URI property, long value);
 
     public void put(URI property, URI value);
+
+    public String getString(URI property);
+
+    public Date getDate(URI property);
+
+    public Calendar getCalendar(URI property);
+
+    public Boolean getBoolean(URI property);
+
+    public Integer getInteger(URI property);
+
+    public Long getLong(URI property);
+
+    public URI getURI(URI property);
 
     public void add(URI subject, URI property, String value);
 
@@ -60,10 +79,24 @@ public interface RDFContainer {
     public void add(URI subject, URI property, boolean value);
 
     public void add(URI subject, URI property, int value);
-    
+
     public void add(URI subject, URI property, long value);
 
     public void add(URI subject, URI property, URI value);
 
     public void add(Statement statement);
+
+    public String getString(URI subject, URI property);
+
+    public Date getDate(URI subject, URI property);
+
+    public Calendar getCalendar(URI subject, URI property);
+
+    public Boolean getBoolean(URI subject, URI property);
+
+    public Integer getInteger(URI subject, URI property);
+
+    public Long getLong(URI subject, URI property);
+
+    public URI getURI(URI subject, URI property);
 }
