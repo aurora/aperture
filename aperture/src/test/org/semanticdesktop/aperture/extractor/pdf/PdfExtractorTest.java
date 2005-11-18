@@ -38,7 +38,7 @@ public class PdfExtractorTest extends ExtractorTestBase {
         // note: document has no date
         SesameRDFContainer container = getStatements(OPEN_OFFICE_2_DOC);
         
-        checkStatement(Vocabulary.GENERATOR_URI, "OpenOffice", container);
+        checkStatement(Vocabulary.GENERATOR, "OpenOffice", container);
         
         checkOmnipresentStatements(container);
     }
@@ -47,7 +47,7 @@ public class PdfExtractorTest extends ExtractorTestBase {
         // note: document has no date
         SesameRDFContainer container = getStatements(OPEN_OFFICE_1_DOC);
         
-        checkStatement(Vocabulary.GENERATOR_URI, "OpenOffice", container);
+        checkStatement(Vocabulary.GENERATOR, "OpenOffice", container);
         
         checkOmnipresentStatements(container);
     }
@@ -55,9 +55,9 @@ public class PdfExtractorTest extends ExtractorTestBase {
     public void testPDFCreator() throws ExtractorException, IOException {
         SesameRDFContainer container = getStatements(PDF_CREATOR_DOC);
         
-        checkStatement(Vocabulary.GENERATOR_URI, "PDFCreator", container);
-        checkStatement(Vocabulary.GENERATOR_URI, "Ghostscript", container);
-        checkStatement(Vocabulary.DATE_URI, "2005", container);
+        checkStatement(Vocabulary.GENERATOR, "PDFCreator", container);
+        checkStatement(Vocabulary.GENERATOR, "Ghostscript", container);
+        checkStatement(Vocabulary.DATE, "2005", container);
         
         checkOmnipresentStatements(container);
     }
@@ -65,9 +65,9 @@ public class PdfExtractorTest extends ExtractorTestBase {
     public void testPDFMaker() throws ExtractorException, IOException {
         SesameRDFContainer container = getStatements(PDF_MAKER_DOC);
         
-        checkStatement(Vocabulary.GENERATOR_URI, "PDFMaker", container);
-        checkStatement(Vocabulary.GENERATOR_URI, "Distiller", container);
-        checkStatement(Vocabulary.DATE_URI, "2005", container);
+        checkStatement(Vocabulary.GENERATOR, "PDFMaker", container);
+        checkStatement(Vocabulary.GENERATOR, "Distiller", container);
+        checkStatement(Vocabulary.DATE, "2005", container);
         
         checkOmnipresentStatements(container);
     }
@@ -75,22 +75,22 @@ public class PdfExtractorTest extends ExtractorTestBase {
     public void testPDFWriter() throws ExtractorException, IOException {
         SesameRDFContainer container = getStatements(PDF_WRITER_DOC);
         
-        checkStatement(Vocabulary.TITLE_URI, "Microsoft Word", container);
-        checkStatement(Vocabulary.CREATOR_URI, "Christiaan Fluit", container);
-        checkStatement(Vocabulary.GENERATOR_URI, "PScript5.dll", container);
-        checkStatement(Vocabulary.GENERATOR_URI, "Distiller", container);
-        checkStatement(Vocabulary.DATE_URI, "2005", container);
-        checkStatement(Vocabulary.CREATION_DATE_URI, "2005", container);
-        checkStatement(Vocabulary.PAGE_COUNT_URI, "1", container);
+        checkStatement(Vocabulary.TITLE, "Microsoft Word", container);
+        checkStatement(Vocabulary.CREATOR, "Christiaan Fluit", container);
+        checkStatement(Vocabulary.GENERATOR, "PScript5.dll", container);
+        checkStatement(Vocabulary.GENERATOR, "Distiller", container);
+        checkStatement(Vocabulary.DATE, "2005", container);
+        checkStatement(Vocabulary.CREATION_DATE, "2005", container);
+        checkStatement(Vocabulary.PAGE_COUNT, "1", container);
     }
     
     private void checkOmnipresentStatements(SesameRDFContainer container) {
-        checkStatement(Vocabulary.CREATOR_URI, "Christiaan Fluit", container);
-        checkStatement(Vocabulary.SUBJECT_URI, "Testing", container);
-        checkStatement(Vocabulary.TITLE_URI, "Example", container);
-        checkStatement(Vocabulary.CREATION_DATE_URI, "2005", container);
-        checkStatement(Vocabulary.PAGE_COUNT_URI, "1", container);
-        checkStatement(Vocabulary.KEYWORD_URI, "rdf", container);
-        checkStatement(Vocabulary.KEYWORD_URI, "test", container);
+        checkStatement(Vocabulary.CREATOR, "Christiaan Fluit", container);
+        checkStatement(Vocabulary.SUBJECT, "Testing", container);
+        checkStatement(Vocabulary.TITLE, "Example", container);
+        checkStatement(Vocabulary.CREATION_DATE, "2005", container);
+        checkStatement(Vocabulary.PAGE_COUNT, "1", container);
+        checkStatement(Vocabulary.KEYWORD, "rdf", container);
+        checkStatement(Vocabulary.KEYWORD, "test", container);
     }
 }

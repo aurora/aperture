@@ -118,7 +118,7 @@ public class OpenDocumentExtractor implements Extractor {
         // put the extracted full-text in the RDF container
         String contents = contentExtractor.getContents();
         if (contents != null && !contents.equals("")) {
-            result.put(Vocabulary.FULL_TEXT_URI, contents);
+            result.put(Vocabulary.FULL_TEXT, contents);
         }
     }
 
@@ -164,34 +164,34 @@ public class OpenDocumentExtractor implements Extractor {
 
             // determine which metadata property we're dealing with
             if ("dc:creator".equals(name)) {
-                addStatement(Vocabulary.CREATOR_URI, metaChild.getFirstChild(), result);
+                addStatement(Vocabulary.CREATOR, metaChild.getFirstChild(), result);
             }
             else if ("meta:initial-creator".equals(name)) {
-                addStatement(Vocabulary.CREATOR_URI, metaChild.getFirstChild(), result);
+                addStatement(Vocabulary.CREATOR, metaChild.getFirstChild(), result);
             }
             else if ("dc:title".equals(name)) {
-                addStatement(Vocabulary.TITLE_URI, metaChild.getFirstChild(), result);
+                addStatement(Vocabulary.TITLE, metaChild.getFirstChild(), result);
             }
             else if ("dc:description".equals(name)) {
-                addStatement(Vocabulary.DESCRIPTION_URI, metaChild.getFirstChild(), result);
+                addStatement(Vocabulary.DESCRIPTION, metaChild.getFirstChild(), result);
             }
             else if ("dc:subject".equals(name)) {
-                addStatement(Vocabulary.SUBJECT_URI, metaChild.getFirstChild(), result);
+                addStatement(Vocabulary.SUBJECT, metaChild.getFirstChild(), result);
             }
             else if ("dc:date".equals(name)) {
-                addDateStatement(Vocabulary.DATE_URI, metaChild.getFirstChild(), result);
+                addDateStatement(Vocabulary.DATE, metaChild.getFirstChild(), result);
             }
             else if ("meta:creation-date".equals(name)) {
-                addDateStatement(Vocabulary.CREATION_DATE_URI, metaChild.getFirstChild(), result);
+                addDateStatement(Vocabulary.CREATION_DATE, metaChild.getFirstChild(), result);
             }
             else if ("meta:print-date".equals(name)) {
-                addDateStatement(Vocabulary.PRINT_DATE_URI, metaChild.getFirstChild(), result);
+                addDateStatement(Vocabulary.PRINT_DATE, metaChild.getFirstChild(), result);
             }
             else if ("dc:language".equals(name)) {
-                addStatement(Vocabulary.LANGUAGE_URI, metaChild.getFirstChild(), result);
+                addStatement(Vocabulary.LANGUAGE, metaChild.getFirstChild(), result);
             }
             else if ("meta:generator".equals(name)) {
-                addStatement(Vocabulary.GENERATOR_URI, metaChild.getFirstChild(), result);
+                addStatement(Vocabulary.GENERATOR, metaChild.getFirstChild(), result);
             }
             else if ("meta:keywords".equals(name)) {
                 // handles OpenOffice 1.x keywords
@@ -200,13 +200,13 @@ public class OpenDocumentExtractor implements Extractor {
                 for (int j = 0; j < nrKeywordNodes; j++) {
                     Node keywordNode = keywordNodes.item(j);
                     if ("meta:keyword".equals(keywordNode.getNodeName())) {
-                        addStatement(Vocabulary.KEYWORD_URI, keywordNode.getFirstChild(), result);
+                        addStatement(Vocabulary.KEYWORD, keywordNode.getFirstChild(), result);
                     }
                 }
             }
             else if ("meta:keyword".equals(name)) {
                 // handles OpenOffice 2.x, i.e. OpenDocument
-                addStatement(Vocabulary.KEYWORD_URI, metaChild.getFirstChild(), result);
+                addStatement(Vocabulary.KEYWORD, metaChild.getFirstChild(), result);
             }
             else if ("meta:document-statistic".equals(name)) {
                 NamedNodeMap attributes = metaChild.getAttributes();
@@ -217,7 +217,7 @@ public class OpenDocumentExtractor implements Extractor {
                         if (pageNodeValue != null) {
                             try {
                                 int pageCount = Integer.parseInt(pageNodeValue);
-                                result.put(Vocabulary.PAGE_COUNT_URI, pageCount);
+                                result.put(Vocabulary.PAGE_COUNT, pageCount);
                             }
                             catch (NumberFormatException e) {
                                 // ignore

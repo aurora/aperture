@@ -45,7 +45,7 @@ public class PlainTextExtractor implements Extractor {
 
             // everything is ok, read the full document 
             String remainingChars = IOUtil.readString(reader);
-            result.put(Vocabulary.FULL_TEXT_URI, firstChars + remainingChars);
+            result.put(Vocabulary.FULL_TEXT, firstChars + remainingChars);
         }
         catch (IOException e) {
             throw new ExtractorException(e);

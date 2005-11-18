@@ -49,7 +49,7 @@ public class MetadataModel {
         }
         else {
             StringBuffer buffer = new StringBuffer(10000);
-            Collection statements = repository.getStatements(null, Vocabulary.FULL_TEXT_URI, null);
+            Collection statements = repository.getStatements(null, Vocabulary.FULL_TEXT, null);
 
             Iterator iterator = statements.iterator();
             while (iterator.hasNext()) {

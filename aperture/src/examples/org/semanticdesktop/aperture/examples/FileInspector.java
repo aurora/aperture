@@ -106,7 +106,7 @@ public class FileInspector {
         }
 
         // add the mime type as an additional statement to the RDF model
-        container.put(Vocabulary.MIME_TYPE_URI, mimeType);
+        container.put(Vocabulary.MIME_TYPE, mimeType);
 
         // report the output to System.out
         RDFWriter writer = new NTriplesWriter(System.out);

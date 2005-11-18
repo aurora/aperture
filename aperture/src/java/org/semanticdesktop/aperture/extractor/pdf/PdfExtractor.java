@@ -90,7 +90,7 @@ public class PdfExtractor implements Extractor {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
             if (text != null) {
-                result.put(Vocabulary.FULL_TEXT_URI, text);
+                result.put(Vocabulary.FULL_TEXT, text);
             }
         }
         catch (IOException e) {
@@ -105,49 +105,49 @@ public class PdfExtractor implements Extractor {
         PDDocumentInformation metadata = document.getDocumentInformation();
 
         try {
-            addStringMetadata(Vocabulary.CREATOR_URI, metadata.getAuthor(), result);
+            addStringMetadata(Vocabulary.CREATOR, metadata.getAuthor(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting author", e);
         }
 
         try {
-            addStringMetadata(Vocabulary.TITLE_URI, metadata.getTitle(), result);
+            addStringMetadata(Vocabulary.TITLE, metadata.getTitle(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting title", e);
         }
 
         try {
-            addStringMetadata(Vocabulary.SUBJECT_URI, metadata.getSubject(), result);
+            addStringMetadata(Vocabulary.SUBJECT, metadata.getSubject(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting subject", e);
         }
 
         try {
-            addStringMetadata(Vocabulary.GENERATOR_URI, metadata.getCreator(), result);
+            addStringMetadata(Vocabulary.GENERATOR, metadata.getCreator(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting creator", e);
         }
 
         try {
-            addStringMetadata(Vocabulary.GENERATOR_URI, metadata.getProducer(), result);
+            addStringMetadata(Vocabulary.GENERATOR, metadata.getProducer(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting producer", e);
         }
 
         try {
-            addCalendarMetadata(Vocabulary.CREATION_DATE_URI, metadata.getCreationDate(), result);
+            addCalendarMetadata(Vocabulary.CREATION_DATE, metadata.getCreationDate(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting creation date", e);
         }
 
         try {
-            addCalendarMetadata(Vocabulary.DATE_URI, metadata.getModificationDate(), result);
+            addCalendarMetadata(Vocabulary.DATE, metadata.getModificationDate(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting modification date", e);
@@ -156,7 +156,7 @@ public class PdfExtractor implements Extractor {
         try {
             int nrPages = document.getNumberOfPages();
             if (nrPages >= 0) {
-                result.put(Vocabulary.PAGE_COUNT_URI, nrPages);
+                result.put(Vocabulary.PAGE_COUNT, nrPages);
             }
         }
         catch (Exception e) {
@@ -170,7 +170,7 @@ public class PdfExtractor implements Extractor {
                 while (tokenizer.hasMoreTokens()) {
                     String keyword = tokenizer.nextToken();
                     if (keyword != null) {
-                        result.put(Vocabulary.KEYWORD_URI, keyword);
+                        result.put(Vocabulary.KEYWORD, keyword);
                     }
                 }
             }

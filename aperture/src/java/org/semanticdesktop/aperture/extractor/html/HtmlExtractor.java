@@ -250,26 +250,26 @@ public class HtmlExtractor implements Extractor {
 
         public void finishedParsing() {
             // store extracted text
-            container.put(Vocabulary.FULL_TEXT_URI, textBuffer.toString());
+            container.put(Vocabulary.FULL_TEXT, textBuffer.toString());
 
             // store keywords
             Iterator keywords = keywordBuffer.iterator();
             while (keywords.hasNext()) {
                 String keyword = (String) keywords.next();
                 if (keyword != null) {
-                    container.put(Vocabulary.KEYWORD_URI, keyword);
+                    container.put(Vocabulary.KEYWORD, keyword);
                 }
             }
             
             // store other metadata
             if (title != null) {
-                container.put(Vocabulary.TITLE_URI, title);
+                container.put(Vocabulary.TITLE, title);
             }
             if (author != null) {
-                container.put(Vocabulary.CREATOR_URI, author);
+                container.put(Vocabulary.CREATOR, author);
             }
             if (description != null) {
-                container.put(Vocabulary.DESCRIPTION_URI, description);
+                container.put(Vocabulary.DESCRIPTION, description);
             }
             
             // cleanup

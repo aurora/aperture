@@ -46,7 +46,7 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
         for (int i = 0; i < RESOURCES.length; i++) {
             // check of any document text is extracted
             SesameRDFContainer container = getStatements(RESOURCES[i]);
-            checkStatement(Vocabulary.FULL_TEXT_URI, "This", container);
+            checkStatement(Vocabulary.FULL_TEXT, "This", container);
         }
     }
     
@@ -66,17 +66,17 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
         SesameRDFContainer container = getStatements(resourceName);
 
         // check for all properties that we're sure of exist in this example document
-        checkStatement(Vocabulary.TITLE_URI, "Example", container);
-        checkStatement(Vocabulary.SUBJECT_URI, "Testing", container);
-        checkStatement(Vocabulary.KEYWORD_URI, "rdf", container);
-        checkStatement(Vocabulary.KEYWORD_URI, "test", container);
-        checkStatement(Vocabulary.DESCRIPTION_URI, "comments", container);
-        checkStatement(Vocabulary.CREATOR_URI, "Christiaan Fluit", container);
-        checkStatement(Vocabulary.DATE_URI, "2005", container);
-        checkStatement(Vocabulary.CREATION_DATE_URI, "2005", container);
-        checkStatement(Vocabulary.PRINT_DATE_URI, "2005", container);
-        checkStatement(Vocabulary.LANGUAGE_URI, "en-US", container);
-        checkStatement(Vocabulary.PAGE_COUNT_URI, "1", container);
-        checkStatement(Vocabulary.GENERATOR_URI, "OpenOffice", container);
+        checkStatement(Vocabulary.TITLE, "Example", container);
+        checkStatement(Vocabulary.SUBJECT, "Testing", container);
+        checkStatement(Vocabulary.KEYWORD, "rdf", container);
+        checkStatement(Vocabulary.KEYWORD, "test", container);
+        checkStatement(Vocabulary.DESCRIPTION, "comments", container);
+        checkStatement(Vocabulary.CREATOR, "Christiaan Fluit", container);
+        checkStatement(Vocabulary.DATE, "2005", container);
+        checkStatement(Vocabulary.CREATION_DATE, "2005", container);
+        checkStatement(Vocabulary.PRINT_DATE, "2005", container);
+        checkStatement(Vocabulary.LANGUAGE, "en-US", container);
+        checkStatement(Vocabulary.PAGE_COUNT, "1", container);
+        checkStatement(Vocabulary.GENERATOR, "OpenOffice", container);
     }
 }

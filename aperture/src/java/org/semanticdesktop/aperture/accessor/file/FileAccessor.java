@@ -168,24 +168,24 @@ public class FileAccessor implements DataAccessor {
         // populate it with "regular" metadata first
         long lastModified = file.lastModified();
         if (lastModified != 0l) {
-            metadata.put(Vocabulary.DATE_URI, new Date(lastModified));
+            metadata.put(Vocabulary.DATE, new Date(lastModified));
         }
 
         String name = file.getName();
         if (name != null) {
-            metadata.put(Vocabulary.NAME_URI, name);
+            metadata.put(Vocabulary.NAME, name);
         }
 
         File parent = file.getParentFile();
         if (parent != null) {
-            metadata.put(Vocabulary.PART_OF_URI, toURI(parent));
+            metadata.put(Vocabulary.PART_OF, toURI(parent));
         }
 
         // add file-specific metadata
         if (isFile) {
             long length = file.length();
             if (length != 0l) {
-                metadata.put(Vocabulary.BYTE_SIZE_URI, length);
+                metadata.put(Vocabulary.BYTE_SIZE, length);
             }
         }
 
@@ -197,7 +197,7 @@ public class FileAccessor implements DataAccessor {
                 for (int i = 0; i < children.length; i++) {
                     File child = children[i];
                     if (child != null) {
-                        metadata.add(toURI(child), Vocabulary.PART_OF_URI, id);
+                        metadata.add(toURI(child), Vocabulary.PART_OF, id);
                     }
                 }
             }

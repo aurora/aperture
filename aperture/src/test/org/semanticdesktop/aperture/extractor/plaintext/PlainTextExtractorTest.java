@@ -30,12 +30,12 @@ public class PlainTextExtractorTest extends ExtractorTestBase {
                 
         // check number of statements
         String uriString = container.getDescribedUri().toString();
-        Collection statements = repository.getStatements(valueFactory.createURI(uriString), Vocabulary.FULL_TEXT_URI, null);
+        Collection statements = repository.getStatements(valueFactory.createURI(uriString), Vocabulary.FULL_TEXT, null);
         assertEquals(1, statements.size());
 
         // check predicate
         Statement statement = (Statement) statements.iterator().next();
-        assertTrue(statement.getPredicate().equals(Vocabulary.FULL_TEXT_URI));
+        assertTrue(statement.getPredicate().equals(Vocabulary.FULL_TEXT));
         
         // check value
         Literal value = (Literal) statement.getObject();
@@ -51,7 +51,7 @@ public class PlainTextExtractorTest extends ExtractorTestBase {
         
         // check number of statements
         String uriString = container.getDescribedUri().toString();
-        Collection statements = repository.getStatements(valueFactory.createURI(uriString), Vocabulary.FULL_TEXT_URI, null);
+        Collection statements = repository.getStatements(valueFactory.createURI(uriString), Vocabulary.FULL_TEXT, null);
         assertEquals(0, statements.size());
     }
     

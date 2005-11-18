@@ -64,10 +64,10 @@ public class TestFileAccessor extends ApertureTestBase {
 
         // check its metadata
         SesameRDFContainer metadata = (SesameRDFContainer) dataObject.getMetadata();
-        checkStatement(Vocabulary.NAME_URI, "file-", metadata);
+        checkStatement(Vocabulary.NAME, "file-", metadata);
 
         URI parentURI = new URIImpl(tmpDir.toURI().toString());
-        checkStatement(Vocabulary.PART_OF_URI, parentURI, metadata);
+        checkStatement(Vocabulary.PART_OF, parentURI, metadata);
     }
 
     public void testFolderAccess() throws UrlNotFoundException, MalformedURLException, IOException {
@@ -78,7 +78,7 @@ public class TestFileAccessor extends ApertureTestBase {
 
         // check its metadata
         SesameRDFContainer metadata = (SesameRDFContainer) dataObject.getMetadata();
-        checkStatement(Vocabulary.NAME_URI, "TestFileAccessor", metadata);
+        checkStatement(Vocabulary.NAME, "TestFileAccessor", metadata);
     }
 
     public void testNonModifiedFile() throws UrlNotFoundException, IOException {

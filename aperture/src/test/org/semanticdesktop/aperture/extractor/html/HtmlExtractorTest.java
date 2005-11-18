@@ -31,11 +31,11 @@ public class HtmlExtractorTest extends ExtractorTestBase {
         ExtractorFactory factory = new HtmlExtractorFactory();
         Extractor extractor = factory.get();
         SesameRDFContainer container = extract(resourceName, extractor);
-        checkStatement(Vocabulary.FULL_TEXT_URI, "text", container);
-        checkStatement(Vocabulary.TITLE_URI, "document", container);
-        checkStatement(Vocabulary.CREATOR_URI, "Chris", container);
-        checkStatement(Vocabulary.KEYWORD_URI, "test", container);
-        checkStatement(Vocabulary.KEYWORD_URI, "rdf", container);
-        checkStatement(Vocabulary.DESCRIPTION_URI, "testing", container);
+        checkStatement(Vocabulary.FULL_TEXT, "text", container);
+        checkStatement(Vocabulary.TITLE, "document", container);
+        checkStatement(Vocabulary.CREATOR, "Chris", container);
+        checkStatement(Vocabulary.KEYWORD, "test", container);
+        checkStatement(Vocabulary.KEYWORD, "rdf", container);
+        checkStatement(Vocabulary.DESCRIPTION, "testing", container);
     }
 }
