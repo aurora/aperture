@@ -64,24 +64,12 @@ public class FileSystemCrawler extends CrawlerBase {
         // determine the root file
         // create a URI because File has a convenient constructor for it
         FileSystemDataSource source = (FileSystemDataSource) getDataSource();
-        String rootUrl = source.getRootUrl();
-
-        if (rootUrl == null) {
+        File root = source.getRootFile();
+        if (root == null) {
             // treat this as an error rather than an "empty source" to prevent information loss
-            LOGGER.log(Level.SEVERE, "missing root URL");
+            LOGGER.log(Level.SEVERE, "missing root file");
             return ExitCode.FATAL_ERROR;
         }
-
-        URI uri;
-        try {
-            uri = new URI(rootUrl);
-        }
-        catch (URISyntaxException e) {
-            LOGGER.log(Level.SEVERE, "unable to create URI for " + rootUrl, e);
-            return ExitCode.FATAL_ERROR;
-        }
-
-        File root = new File(uri);
         root = root.getAbsoluteFile();
 
         // determine the maximum depth
