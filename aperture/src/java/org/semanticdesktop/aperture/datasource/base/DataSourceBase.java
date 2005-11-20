@@ -63,8 +63,7 @@ public class DataSourceBase implements DataSource {
     }
     
     public void setRootUrl(String url) {
-        RDFContainer configuration = getConfiguration();
-        configuration.put(Vocabulary.ROOT_URL, url);
+        getConfiguration().put(Vocabulary.ROOT_URL, url);
     }
     
     public String getRootUrl() {
@@ -75,15 +74,24 @@ public class DataSourceBase implements DataSource {
         getConfiguration().put(Vocabulary.MAXIMUM_DEPTH, maximumDepth);
     }
 
-    public int getMaximumDepth() {
-        Integer value = getConfiguration().getInteger(Vocabulary.MAXIMUM_DEPTH);
-        if (value == null) {
-            // interpret as no depth restrictions
-            return -1;
-        }
-        else {
-            return value.intValue();
-        }
+    public Integer getMaximumDepth() {
+        return getConfiguration().getInteger(Vocabulary.MAXIMUM_DEPTH);
+    }
+    
+    public void setMaximumByteSize(int maximumSize) {
+        getConfiguration().put(Vocabulary.MAXIMUM_BYTE_SIZE, maximumSize);
+    }
+
+    public Integer getMaximumByteSize() {
+        return getConfiguration().getInteger(Vocabulary.MAXIMUM_BYTE_SIZE);
+    }
+    
+    public Boolean getIncludeHiddenResourceS() {
+        return getConfiguration().getBoolean(Vocabulary.INCLUDE_HIDDEN_RESOURCES);
+    }
+    
+    public void setIncludeHiddenResources(Boolean b) {
+        getConfiguration().put(Vocabulary.INCLUDE_HIDDEN_RESOURCES, b.booleanValue());
     }
 
     // fixme: add methods for adding and removing patterns
