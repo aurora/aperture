@@ -62,7 +62,7 @@ public abstract class CrawlerBase implements Crawler {
      * or sometimes lazily created by the getLastCrawlReport method when trying to retrieve the last
      * report of a previous session.
      */
-    protected CrawlReportBase lastCrawlReport;
+    protected CrawlReportBase crawlReport;
 
     /**
      * The CrawlerHandler that gets notified about crawling progress and that delivers RDFContainers on
@@ -103,8 +103,8 @@ public abstract class CrawlerBase implements Crawler {
 
     public synchronized void crawl() {
         // set up a new CrawlReport
-        lastCrawlReport = new CrawlReportBase();
-        lastCrawlReport.setCrawlStarted(System.currentTimeMillis());
+        crawlReport = new CrawlReportBase();
+        crawlReport.setCrawlStarted(System.currentTimeMillis());
 
         // initialize flags
         stopRequested = false;
@@ -126,7 +126,7 @@ public abstract class CrawlerBase implements Crawler {
         // only when the scan was completed succesfully will we report removed resources,
         // else we might indirectly destroy information that may still be up-to-date
         if (exitCode.equals(ExitCode.COMPLETED)) {
-            lastCrawlReport.setRemovedCount(deprecatedUrls.size());
+            crawlReport.setRemovedCount(deprecatedUrls.size());
             reportRemoved(deprecatedUrls);
         }
 
@@ -137,8 +137,8 @@ public abstract class CrawlerBase implements Crawler {
         storeAccessData();
 
         // wrap up and store the CrawlReport
-        lastCrawlReport.setExitCode(exitCode);
-        lastCrawlReport.setCrawlStopped(System.currentTimeMillis());
+        crawlReport.setExitCode(exitCode);
+        crawlReport.setCrawlStopped(System.currentTimeMillis());
         storeCrawlReport();
 
         // notify the CrawlerHandler
@@ -206,14 +206,14 @@ public abstract class CrawlerBase implements Crawler {
     }
 
     public CrawlReport getCrawlReport() {
-        if (lastCrawlReport == null && crawlReportFile != null && crawlReportFile.exists()) {
+        if (crawlReport == null && crawlReportFile != null && crawlReportFile.exists()) {
             try {
                 CrawlReportBase tmp = new CrawlReportBase();
 
                 InputStream stream = new BufferedInputStream(new FileInputStream(crawlReportFile));
                 try {
                     tmp.read(stream);
-                    lastCrawlReport = tmp;
+                    crawlReport = tmp;
                 }
                 finally {
                     stream.close();
@@ -224,7 +224,7 @@ public abstract class CrawlerBase implements Crawler {
             }
         }
 
-        return lastCrawlReport;
+        return crawlReport;
     }
 
     private void reportRemoved(HashSet ids) {
@@ -338,11 +338,11 @@ public abstract class CrawlerBase implements Crawler {
      * Stores the current CrawlReport, if any, to the crawl report file, is set.
      */
     protected void storeCrawlReport() {
-        if (lastCrawlReport != null && crawlReportFile != null) {
+        if (crawlReport != null && crawlReportFile != null) {
             try {
                 OutputStream stream = new BufferedOutputStream(new FileOutputStream(crawlReportFile));
                 try {
-                    lastCrawlReport.write(stream);
+                    crawlReport.write(stream);
                 }
                 finally {
                     stream.close();
