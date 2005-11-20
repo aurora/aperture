@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * A general interface for data objects that have some binary, stream-based content. Examples are files
- * or web pages.
+ * A general interface for DataObjects that have File-like semantics. Examples are files or web pages.
  */
-public interface BinaryObject extends DataObject {
+public interface FileDataObject extends DataObject {
 
     /**
      * Gets an InputStream containing the content represented by the DataObject.

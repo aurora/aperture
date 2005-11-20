@@ -7,9 +7,9 @@
 package org.semanticdesktop.aperture.accessor;
 
 /**
- * A Folder holds the metadata of a single folder. Currently this is a marker interface, no
+ * A FolderDataObject holds the metadata of a single folder. Currently this is a marker interface, no
  * additional methods are required.
  */
-public interface Folder extends DataObject {
+public interface FolderDataObject extends DataObject {
 
 }

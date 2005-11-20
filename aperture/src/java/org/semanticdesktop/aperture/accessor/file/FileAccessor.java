@@ -25,9 +25,9 @@ import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.accessor.Vocabulary;
-import org.semanticdesktop.aperture.accessor.base.BinaryObjectBase;
+import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
-import org.semanticdesktop.aperture.accessor.base.FolderBase;
+import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.RDFContainerFactory;
@@ -128,10 +128,10 @@ public class FileAccessor implements DataAccessor {
                 contentStream = new BufferedInputStream(new FileInputStream(file));
             }
 
-            result = new BinaryObjectBase(id, source, metadata, contentStream);
+            result = new FileDataObjectBase(id, source, metadata, contentStream);
         }
         else if (isFolder) {
-            result = new FolderBase(id, source, metadata);
+            result = new FolderDataObjectBase(id, source, metadata);
         }
         else {
             result = new DataObjectBase(id, source, metadata);

@@ -9,20 +9,20 @@ package org.semanticdesktop.aperture.accessor.base;
 import java.io.InputStream;
 
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.accessor.BinaryObject;
+import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
- * A trivial default implementation of BinaryObject. 
+ * A trivial default implementation of FileDataObject. 
  */
-public class BinaryObjectBase extends DataObjectBase implements BinaryObject {
+public class FileDataObjectBase extends DataObjectBase implements FileDataObject {
 
     private InputStream content;
     
-    public BinaryObjectBase() { }
+    public FileDataObjectBase() { }
     
-    public BinaryObjectBase(URI id, DataSource dataSource, RDFContainer metadata, InputStream content) {
+    public FileDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata, InputStream content) {
         super(id, dataSource, metadata);
         this.content = content;
     }

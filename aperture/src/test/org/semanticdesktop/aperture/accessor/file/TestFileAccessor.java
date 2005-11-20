@@ -15,9 +15,9 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.AccessData;
-import org.semanticdesktop.aperture.accessor.BinaryObject;
+import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.DataObject;
-import org.semanticdesktop.aperture.accessor.Folder;
+import org.semanticdesktop.aperture.accessor.FolderDataObject;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.accessor.Vocabulary;
 import org.semanticdesktop.aperture.accessor.base.AccessDataBase;
@@ -60,7 +60,7 @@ public class TestFileAccessor extends ApertureTestBase {
         // create the data object
         DataObject dataObject = fileAccessor.get(tmpFile.toURI().toString(), null, null, null);
         assertNotNull(dataObject);
-        assertTrue(dataObject instanceof BinaryObject);
+        assertTrue(dataObject instanceof FileDataObject);
 
         // check its metadata
         SesameRDFContainer metadata = (SesameRDFContainer) dataObject.getMetadata();
@@ -74,7 +74,7 @@ public class TestFileAccessor extends ApertureTestBase {
         // create the data object
         DataObject dataObject = fileAccessor.get(tmpDir.toURI().toString(), null, null, null);
         assertNotNull(dataObject);
-        assertTrue(dataObject instanceof Folder);
+        assertTrue(dataObject instanceof FolderDataObject);
 
         // check its metadata
         SesameRDFContainer metadata = (SesameRDFContainer) dataObject.getMetadata();
