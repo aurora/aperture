@@ -37,6 +37,8 @@ public interface Vocabulary {
 
     public static final URI MAXIMUM_DEPTH = new URIImpl(NS + "maximumDepth");
 
+    public static final URI MAXIMUM_BYTE_SIZE = new URIImpl(NS + "maximumSize");
+    
     public static final URI INCLUDE_PATTERN = new URIImpl(NS + "includePattern");
 
     public static final URI EXCLUDE_PATTERN = new URIImpl(NS + "excludePattern");
