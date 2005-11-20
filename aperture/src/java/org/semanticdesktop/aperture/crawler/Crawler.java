@@ -50,17 +50,17 @@ public interface Crawler {
     public CrawlReport getCrawlReport();
 
     /**
-     * Adds a CrawlerHandler to which this Crawler should report any scanned or cleared resources.
+     * Sets the CrawlerHandler to which this Crawler should report any scanned or cleared resources and
+     * from which it obtains RDFContainer.
      * 
-     * @param listener The CrawlerHandler to add.
+     * @param listener The CrawlerHandler to register.
      */
-    public void addListener(CrawlerHandler listener);
+    public void setCrawlerHandler(CrawlerHandler handler);
 
     /**
-     * Removes a CrawlerHandler from this Crawler. Nothing happens when the specified CrawlerHandler
-     * was not registered on this Crawler.
+     * Returns the currently registered CrawlerHandler.
      * 
-     * @param listener The CrawlerHandler to remove.
+     * @return The current CrawlerHandler.
      */
-    public void removeListener(CrawlerHandler listener);
+    public CrawlerHandler getCrawlerHandler();
 }
