@@ -11,7 +11,6 @@ import java.util.Set;
 
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
-import org.semanticdesktop.aperture.rdf.RDFContainerFactory;
 
 /**
  * Returns FileAccessor instances. 
@@ -22,24 +21,13 @@ public class FileAccessorFactory implements DataAccessorFactory {
     
     private FileAccessor accessor;
 
-    private RDFContainerFactory containerFactory;
-    
-    public void setContainerFactory(RDFContainerFactory factory) {
-        containerFactory = factory;
-    }
-    
-    public RDFContainerFactory getContainerFactory() {
-        return containerFactory;
-    }
-    
     public Set getSupportedSchemes() {
         return SUPPORTED_SCHEMES;
     }
     
     public DataAccessor get() {
         if (accessor == null) {
-            // instance is statefull but does not change after initialization, hence can be shared
-            accessor = new FileAccessor(containerFactory);
+            accessor = new FileAccessor();
         }
         return accessor;
     }

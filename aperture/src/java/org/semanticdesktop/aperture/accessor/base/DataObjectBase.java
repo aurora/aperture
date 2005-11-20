@@ -9,7 +9,7 @@ package org.semanticdesktop.aperture.accessor.base;
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.rdf.RDFContainer;
+//import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
  * A trivial default implementation of DataObject. 
@@ -20,15 +20,20 @@ public class DataObjectBase implements DataObject {
     
     private DataSource dataSource;
     
-    private RDFContainer metadata;
+//    private RDFContainer metadata;
     
     public DataObjectBase() { }
     
-    public DataObjectBase(URI id, DataSource dataSource, RDFContainer metadata) {
+    public DataObjectBase(URI id, DataSource dataSource) {
         this.id = id;
         this.dataSource = dataSource;
-        this.metadata = metadata;
     }
+    
+//    public DataObjectBase(URI id, DataSource dataSource, RDFContainer metadata) {
+//        this.id = id;
+//        this.dataSource = dataSource;
+//        this.metadata = metadata;
+//    }
     
     public void setID(URI id) {
         this.id = id;
@@ -46,11 +51,11 @@ public class DataObjectBase implements DataObject {
         return dataSource;
     }
 
-    public void setMetadata(RDFContainer metadata) {
-        this.metadata = metadata;
-    }
-    
-    public RDFContainer getMetadata() {
-        return metadata;
-    }
+//    public void setMetadata(RDFContainer metadata) {
+//        this.metadata = metadata;
+//    }
+//    
+//    public RDFContainer getMetadata() {
+//        return metadata;
+//    }
 }

@@ -9,14 +9,19 @@ package org.semanticdesktop.aperture.accessor.base;
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.accessor.FolderDataObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.rdf.RDFContainer;
+//import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
  * A trivial default implementation of FolderDataObject. 
  */
 public class FolderDataObjectBase extends DataObjectBase implements FolderDataObject {
 
-    public FolderDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata) {
-        super(id, dataSource, metadata);
+    public FolderDataObjectBase(URI id, DataSource dataSource) {
+        super(id, dataSource);
     }
+    
+//
+//    public FolderDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata) {
+//        super(id, dataSource, metadata);
+//    }
 }

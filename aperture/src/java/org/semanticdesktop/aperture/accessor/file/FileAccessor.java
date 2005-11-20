@@ -25,12 +25,11 @@ import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.accessor.Vocabulary;
-import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
+import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.RDFContainerFactory;
 
 /**
  * A DataAccessor implementation for the file scheme.
@@ -46,13 +45,14 @@ public class FileAccessor implements DataAccessor {
 
     private static final Logger LOGGER = Logger.getLogger(FileAccessor.class.getName());
 
-    private RDFContainerFactory containerFactory;
-
-    public FileAccessor(RDFContainerFactory containerFactory) {
-        if (containerFactory == null) {
-            throw new IllegalArgumentException("containerFactory should not be null");
-        }
-        this.containerFactory = containerFactory;
+    /**
+     * Return a DataObject for the specified url. If the specified Map contains a "file" key with a File
+     * instance as value, this File will be used to retrieve information from, else one will be created
+     * by using the specified url.
+     */
+    public DataObject getDataObject(String url, DataSource source, Map params, RDFContainer metadataContainer)
+            throws UrlNotFoundException, IOException {
+        return get(url, source, null, params, metadataContainer);
     }
 
     /**
@@ -60,23 +60,13 @@ public class FileAccessor implements DataAccessor {
      * instance as value, this File will be used to retrieve information from, else one will be created
      * by using the specified url.
      */
-    public DataObject getDataObject(String url, DataSource source, Map params) throws UrlNotFoundException,
-            IOException {
-        return get(url, source, null, params);
+    public DataObject getDataObjectIfModified(String url, DataSource source, AccessData accessData,
+            Map params, RDFContainer metadataContainer) throws UrlNotFoundException, IOException {
+        return get(url, source, accessData, params, metadataContainer);
     }
 
-    /**
-     * Return a DataObject for the specified url. If the specified Map contains a "file" key with a File
-     * instance as value, this File will be used to retrieve information from, else one will be created
-     * by using the specified url.
-     */
-    public DataObject getDataObjectIfModified(String url, DataSource source, AccessData accessData, Map params)
-            throws UrlNotFoundException, IOException {
-        return get(url, source, accessData, params);
-    }
-
-    private DataObject get(String url, DataSource source, AccessData accessData, Map params)
-            throws UrlNotFoundException, IOException {
+    private DataObject get(String url, DataSource source, AccessData accessData, Map params,
+            RDFContainer metadataContainer) throws UrlNotFoundException, IOException {
         // sanity check: make sure we're processing file urls
         if (!url.startsWith("file:")) {
             throw new IllegalArgumentException("non-file scheme: " + url);
@@ -129,7 +119,7 @@ public class FileAccessor implements DataAccessor {
 
         // create the metadata
         URI id = toURI(file);
-        RDFContainer metadata = constructMetadata(file, id, isFile, isFolder);
+        putMetadata(file, id, isFile, isFolder, metadataContainer);
 
         // create the DataObject
         DataObject result = null;
@@ -140,13 +130,13 @@ public class FileAccessor implements DataAccessor {
                 contentStream = new BufferedInputStream(new FileInputStream(file));
             }
 
-            result = new FileDataObjectBase(id, source, metadata, contentStream);
+            result = new FileDataObjectBase(id, source, contentStream);
         }
         else if (isFolder) {
-            result = new FolderDataObjectBase(id, source, metadata);
+            result = new FolderDataObjectBase(id, source);
         }
         else {
-            result = new DataObjectBase(id, source, metadata);
+            result = new DataObjectBase(id, source);
         }
 
         // done!
@@ -174,31 +164,29 @@ public class FileAccessor implements DataAccessor {
         }
     }
 
-    private RDFContainer constructMetadata(File file, URI id, boolean isFile, boolean isFolder) {
-        // create a new, empty RDFContainer
-        RDFContainer metadata = containerFactory.newInstance(id);
-
-        // populate it with "regular" metadata first
+    private void putMetadata(File file, URI id, boolean isFile, boolean isFolder,
+            RDFContainer metadataContainer) {
+        // create regular File metadata first
         long lastModified = file.lastModified();
         if (lastModified != 0l) {
-            metadata.put(Vocabulary.DATE, new Date(lastModified));
+            metadataContainer.put(Vocabulary.DATE, new Date(lastModified));
         }
 
         String name = file.getName();
         if (name != null) {
-            metadata.put(Vocabulary.NAME, name);
+            metadataContainer.put(Vocabulary.NAME, name);
         }
 
         File parent = file.getParentFile();
         if (parent != null) {
-            metadata.put(Vocabulary.PART_OF, toURI(parent));
+            metadataContainer.put(Vocabulary.PART_OF, toURI(parent));
         }
 
         // add file-specific metadata
         if (isFile) {
             long length = file.length();
             if (length != 0l) {
-                metadata.put(Vocabulary.BYTE_SIZE, length);
+                metadataContainer.put(Vocabulary.BYTE_SIZE, length);
             }
         }
 
@@ -210,14 +198,11 @@ public class FileAccessor implements DataAccessor {
                 for (int i = 0; i < children.length; i++) {
                     File child = children[i];
                     if (child != null) {
-                        metadata.add(new StatementImpl(toURI(child), Vocabulary.PART_OF, id));
+                        metadataContainer.add(new StatementImpl(toURI(child), Vocabulary.PART_OF, id));
                     }
                 }
             }
         }
-
-        // done!
-        return metadata;
     }
 
     private URI toURI(File file) {

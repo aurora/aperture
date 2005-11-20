@@ -47,7 +47,6 @@ public class TestFileAccessor extends ApertureTestBase {
 
         // setup a FileAccessor
         FileAccessorFactory factory = new FileAccessorFactory();
-        factory.setContainerFactory(new SesameRDFContainerFactory());
         fileAccessor = (FileAccessor) factory.get();
     }
 
@@ -57,13 +56,16 @@ public class TestFileAccessor extends ApertureTestBase {
     }
 
     public void testFileAccess() throws UrlNotFoundException, MalformedURLException, IOException {
+        // create an RDFContainer
+        String url = tmpFile.toURI().toString();
+        SesameRDFContainer metadata = new SesameRDFContainer(url);
+        
         // create the data object
-        DataObject dataObject = fileAccessor.getDataObject(tmpFile.toURI().toString(), null, null);
+        DataObject dataObject = fileAccessor.getDataObject(url, null, null, metadata);
         assertNotNull(dataObject);
         assertTrue(dataObject instanceof FileDataObject);
 
         // check its metadata
-        SesameRDFContainer metadata = (SesameRDFContainer) dataObject.getMetadata();
         checkStatement(Vocabulary.NAME, "file-", metadata);
 
         URI parentURI = new URIImpl(tmpDir.toURI().toString());
@@ -71,31 +73,37 @@ public class TestFileAccessor extends ApertureTestBase {
     }
 
     public void testFolderAccess() throws UrlNotFoundException, MalformedURLException, IOException {
+        // create an RDFContainer
+        String url = tmpFile.toURI().toString();
+        SesameRDFContainer metadata = new SesameRDFContainer(url);
+
         // create the data object
-        DataObject dataObject = fileAccessor.getDataObject(tmpDir.toURI().toString(), null, null);
+        DataObject dataObject = fileAccessor.getDataObject(tmpDir.toURI().toString(), null, null, metadata);
         assertNotNull(dataObject);
         assertTrue(dataObject instanceof FolderDataObject);
 
         // check its metadata
-        SesameRDFContainer metadata = (SesameRDFContainer) dataObject.getMetadata();
         checkStatement(Vocabulary.NAME, "TestFileAccessor", metadata);
     }
 
     public void testNonModifiedFile() throws UrlNotFoundException, IOException {
+        // create an RDFContainer
+        String url = tmpFile.toURI().toString();
+        SesameRDFContainer metadata = new SesameRDFContainer(url);
+
         // create a fake AccessData that holds the last modified date of tmpFile
         AccessData accessData = new AccessDataBase();
-        String id = "file:/does.not.matter";
-        accessData.put(id, AccessData.DATE_KEY, String.valueOf(tmpFile.lastModified()));
+        accessData.put(url, AccessData.DATE_KEY, String.valueOf(tmpFile.lastModified()));
 
         // check that the FileAccessor returns null when we try to fetch a DataObject while passing it
         // this AccessData
         HashMap params = new HashMap();
         params.put(FileAccessor.FILE_KEY, tmpFile);
-        DataObject object1 = fileAccessor.getDataObjectIfModified(id, null, accessData, params);
+        DataObject object1 = fileAccessor.getDataObjectIfModified(url, null, accessData, params, metadata);
         assertNull(object1);
         
         // double-check that we *do* get a DataObject when we don't pass the AccessData
-        DataObject object2 = fileAccessor.getDataObject(id, null, params);
+        DataObject object2 = fileAccessor.getDataObject(url, null, params, metadata);
         assertNotNull(object2);
     }
 }
