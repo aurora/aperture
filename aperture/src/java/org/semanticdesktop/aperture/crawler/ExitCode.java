@@ -12,9 +12,9 @@ package org.semanticdesktop.aperture.crawler;
 public class ExitCode {
 
     /**
-     * Indicates that the process completed.
+     * Indicates that the process completed naturally.
      */
-    public static final ExitCode CRAWL_COMPLETED = new ExitCode("crawl completed");
+    public static final ExitCode COMPLETED = new ExitCode("completed");
     
     /**
      * Indicates that the process was interrupted by a request to stop.

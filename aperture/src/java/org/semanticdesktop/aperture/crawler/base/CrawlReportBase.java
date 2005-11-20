@@ -186,7 +186,7 @@ public class CrawlReportBase implements CrawlReport {
 
         if (exitCode != null) {
             String value = null;
-            if (exitCode.equals(ExitCode.CRAWL_COMPLETED)) {
+            if (exitCode.equals(ExitCode.COMPLETED)) {
                 value = COMPLETED_VALUE;
             }
             else if (exitCode.equals(ExitCode.STOP_REQUESTED)) {
@@ -274,7 +274,7 @@ public class CrawlReportBase implements CrawlReport {
             }
             else if (EXIT_CODE_TAG.equals(tagName)) {
                 if (COMPLETED_VALUE.equals(text)) {
-                    exitCode = ExitCode.CRAWL_COMPLETED;
+                    exitCode = ExitCode.COMPLETED;
                 }
                 else if (STOP_REQUESTED_VALUE.equals(text)) {
                     exitCode = ExitCode.STOP_REQUESTED;
