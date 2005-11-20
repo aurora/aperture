@@ -217,7 +217,7 @@ public class OpenDocumentExtractor implements Extractor {
                         if (pageNodeValue != null) {
                             try {
                                 int pageCount = Integer.parseInt(pageNodeValue);
-                                result.put(Vocabulary.PAGE_COUNT, pageCount);
+                                result.add(Vocabulary.PAGE_COUNT, pageCount);
                             }
                             catch (NumberFormatException e) {
                                 // ignore
@@ -229,25 +229,25 @@ public class OpenDocumentExtractor implements Extractor {
         }
     }
     
-    private void addStatement(org.openrdf.model.URI uri, Node node, RDFContainer container) {
+    private void addStatement(URI uri, Node node, RDFContainer container) {
         if (node != null) {
             addStatement(uri, node.getNodeValue(), container);
         }
     }
 
-    private void addStatement(org.openrdf.model.URI uri, String value, RDFContainer container) {
+    private void addStatement(URI uri, String value, RDFContainer container) {
         if (value != null) {
-            container.put(uri, value);
+            container.add(uri, value);
         }
     }
     
-    private void addDateStatement(org.openrdf.model.URI uri, Node node, RDFContainer container) {
+    private void addDateStatement(URI uri, Node node, RDFContainer container) {
         if (node != null) {
             String value = node.getNodeValue();
             if (value != null) {
                 try {
                     Date date = DateUtil.string2DateTime(value);
-                    container.put(uri, date);
+                    container.add(uri, date);
                 }
                 catch (ParseException e) {
                     // ignore

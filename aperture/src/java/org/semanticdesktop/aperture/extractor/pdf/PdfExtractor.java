@@ -105,21 +105,21 @@ public class PdfExtractor implements Extractor {
         PDDocumentInformation metadata = document.getDocumentInformation();
 
         try {
-            addStringMetadata(Vocabulary.CREATOR, metadata.getAuthor(), result);
+            putStringMetadata(Vocabulary.CREATOR, metadata.getAuthor(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting author", e);
         }
 
         try {
-            addStringMetadata(Vocabulary.TITLE, metadata.getTitle(), result);
+            putStringMetadata(Vocabulary.TITLE, metadata.getTitle(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting title", e);
         }
 
         try {
-            addStringMetadata(Vocabulary.SUBJECT, metadata.getSubject(), result);
+            putStringMetadata(Vocabulary.SUBJECT, metadata.getSubject(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting subject", e);
@@ -140,14 +140,14 @@ public class PdfExtractor implements Extractor {
         }
 
         try {
-            addCalendarMetadata(Vocabulary.CREATION_DATE, metadata.getCreationDate(), result);
+            putCalendarMetadata(Vocabulary.CREATION_DATE, metadata.getCreationDate(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting creation date", e);
         }
 
         try {
-            addCalendarMetadata(Vocabulary.DATE, metadata.getModificationDate(), result);
+            putCalendarMetadata(Vocabulary.DATE, metadata.getModificationDate(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting modification date", e);
@@ -170,7 +170,7 @@ public class PdfExtractor implements Extractor {
                 while (tokenizer.hasMoreTokens()) {
                     String keyword = tokenizer.nextToken();
                     if (keyword != null) {
-                        result.put(Vocabulary.KEYWORD, keyword);
+                        result.add(Vocabulary.KEYWORD, keyword);
                     }
                 }
             }
@@ -180,13 +180,19 @@ public class PdfExtractor implements Extractor {
         }
     }
 
-    private void addStringMetadata(org.openrdf.model.URI property, String value, RDFContainer result) {
+    private void putStringMetadata(org.openrdf.model.URI property, String value, RDFContainer result) {
         if (value != null) {
             result.put(property, value);
         }
     }
 
-    private void addCalendarMetadata(org.openrdf.model.URI property, Calendar value, RDFContainer result) {
+    private void addStringMetadata(org.openrdf.model.URI property, String value, RDFContainer result) {
+        if (value != null) {
+            result.add(property, value);
+        }
+    }
+
+    private void putCalendarMetadata(org.openrdf.model.URI property, Calendar value, RDFContainer result) {
         if (value != null) {
             result.put(property, value);
         }

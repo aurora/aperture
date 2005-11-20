@@ -1,0 +1,33 @@
+/*
+ * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
+ * All rights reserved.
+ * 
+ * Licensed under the Academic Free License version 3.0.
+ */
+package org.semanticdesktop.aperture.rdf;
+
+import org.openrdf.model.URI;
+
+/**
+ * A MultipleValuesException is thown in cases where an RDF model contains multiple values for a
+ * subject-property pair, whereas one or zero values were expected.
+ */
+public class MultipleValuesException extends RuntimeException {
+
+    private URI subject;
+    
+    private URI property;
+
+    public MultipleValuesException(URI subject, URI property) {
+        this.subject = subject;
+        this.property = property;
+    }
+    
+    public URI getSubject() {
+        return subject;
+    }
+
+    public URI getProperty() {
+        return property;
+    }
+}

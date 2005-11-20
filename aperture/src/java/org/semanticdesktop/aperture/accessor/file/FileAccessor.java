@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openrdf.model.URI;
+import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
@@ -197,7 +198,7 @@ public class FileAccessor implements DataAccessor {
                 for (int i = 0; i < children.length; i++) {
                     File child = children[i];
                     if (child != null) {
-                        metadata.add(toURI(child), Vocabulary.PART_OF, id);
+                        metadata.add(new StatementImpl(toURI(child), Vocabulary.PART_OF, id));
                     }
                 }
             }

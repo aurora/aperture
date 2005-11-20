@@ -257,7 +257,7 @@ public class HtmlExtractor implements Extractor {
             while (keywords.hasNext()) {
                 String keyword = (String) keywords.next();
                 if (keyword != null) {
-                    container.put(Vocabulary.KEYWORD, keyword);
+                    container.add(Vocabulary.KEYWORD, keyword);
                 }
             }
             
