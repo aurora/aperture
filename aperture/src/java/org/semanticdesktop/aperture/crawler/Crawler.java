@@ -50,17 +50,17 @@ public interface Crawler {
     public CrawlReport getCrawlReport();
 
     /**
-     * Adds a CrawlerListener to which this Crawler should report any scanned or cleared resources.
+     * Adds a CrawlerHandler to which this Crawler should report any scanned or cleared resources.
      * 
-     * @param listener The CrawlerListener to add.
+     * @param listener The CrawlerHandler to add.
      */
-    public void addListener(CrawlerListener listener);
+    public void addListener(CrawlerHandler listener);
 
     /**
-     * Removes a CrawlerListener from this Crawler. Nothing happens when the specified CrawlerListener
+     * Removes a CrawlerHandler from this Crawler. Nothing happens when the specified CrawlerHandler
      * was not registered on this Crawler.
      * 
-     * @param listener The CrawlerListener to remove.
+     * @param listener The CrawlerHandler to remove.
      */
-    public void removeListener(CrawlerListener listener);
+    public void removeListener(CrawlerHandler listener);
 }

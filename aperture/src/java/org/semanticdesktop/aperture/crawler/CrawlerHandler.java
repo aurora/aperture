@@ -7,12 +7,20 @@
 package org.semanticdesktop.aperture.crawler;
 
 import org.semanticdesktop.aperture.accessor.DataObject;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
- * CrawlerListeners are notified by a Crawler about additions, changes and deletions or resources in a
+ * CrawlerHandlers are notified by a Crawler about additions, changes and deletions or resources in a
  * DataSource. Furthermore, they are notified when the Crawler is cleaning up all its crawl results.
+ * 
+ * <p>
+ * Rather than being pure listeners on a Crawler, CrawlerHandlers are also responsible to produce an
+ * RDFContainer on demand which the Crawler can use to store the source-specific metadata of a
+ * DataObject. It is up to the CrawlerHandler implementor to decide whether a new instance is returned
+ * for every DataObject or whether a shared instance is used. It is also responsible for any transaction
+ * and context management.
  */
-public interface CrawlerListener {
+public interface CrawlerHandler {
 
     /**
      * Notification that the specified Crawler has started crawling its DataSource for DataObjects.
@@ -38,6 +46,13 @@ public interface CrawlerListener {
      * @param url The url of the data object that is going to be accessed.
      */
     public void accessingObject(Crawler crawler, String url);
+
+    /**
+     * Returns a RDFContainer that will be used to store the metadata of the next DataObject that will be
+     * generated.
+     * @return an RDFContainer instance. 
+     */
+    public RDFContainer getRDFContainer(Crawler crawler, String url);
 
     /**
      * Notification that the Crawler has found a new resource in the domain it is crawling.

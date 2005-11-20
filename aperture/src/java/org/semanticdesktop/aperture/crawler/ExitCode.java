@@ -7,7 +7,7 @@
 package org.semanticdesktop.aperture.crawler;
 
 /**
- * Class that defines ExitCodes to be used in the CrawlerListener interface.
+ * Class that defines ExitCodes to be used in the CrawlerHandler interface.
  */
 public class ExitCode {
 
