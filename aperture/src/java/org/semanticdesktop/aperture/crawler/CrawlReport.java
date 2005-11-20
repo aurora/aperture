@@ -7,25 +7,26 @@
 package org.semanticdesktop.aperture.crawler;
 
 /**
- * A CrawlReport instance contains statistics about the last performed or currently active scan procedure
- * of a Crawler.
+ * A CrawlReport instance contains statistics about the last performed or currently active crawl
+ * procedure of a Crawler.
  */
 public interface CrawlReport {
 
     /**
-     * Returns when the scan was started, encoded in the typical milliseconds style.
+     * Returns when the crawl was started, encoded in the typical milliseconds style.
      */
-    public long getScanStarted();
+    public long getCrawlStarted();
 
     /**
-     * Returns when the scan stopped. Returns a negative value when the scan is still in progress.
+     * Returns when the crawl stopped. Returns a negative value when the crawl is still in progress.
      */
-    public long getScanStopped();
+    public long getCrawlStopped();
 
     /**
-     * Returns the status with which the scan completed. Returns null when the scan is still in progress.
+     * Returns the status with which the crawl completed. Returns null when the crawl is still in
+     * progress.
      */
-    public int getExitCode();
+    public ExitCode getExitCode();
 
     /**
      * Returns the number of new data objects encountered so far.
