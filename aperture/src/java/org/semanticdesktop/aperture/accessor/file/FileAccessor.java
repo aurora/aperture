@@ -166,6 +166,9 @@ public class FileAccessor implements DataAccessor {
 
     private void putMetadata(File file, URI id, boolean isFile, boolean isFolder,
             RDFContainer metadataContainer) {
+        // update the described URI
+        metadataContainer.setDescribedUri(id);
+        
         // create regular File metadata first
         long lastModified = file.lastModified();
         if (lastModified != 0l) {
