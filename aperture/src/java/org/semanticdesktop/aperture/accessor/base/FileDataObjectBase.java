@@ -26,6 +26,19 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
         super(id, dataSource);
         this.content = content;
     }
+    
+    public void finalize() throws Throwable {
+        try {
+            // just try to close the InputStream once more: can remedy nasty programming errors
+            // not documented in the Javadoc as programmers shouldn't rely on this
+            if (content != null) {
+                content.close();
+            }
+        }
+        finally {
+            super.finalize();
+        }
+    }
 //    
 //    public FileDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata, InputStream content) {
 //        super(id, dataSource, metadata);
