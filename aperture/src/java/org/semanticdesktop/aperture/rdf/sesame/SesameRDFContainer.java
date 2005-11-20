@@ -74,6 +74,10 @@ public class SesameRDFContainer implements RDFContainer {
     public URI getDescribedUri() {
         return describedUri;
     }
+
+    public void setDescribedUri(URI describedUri) {
+        this.describedUri = describedUri;
+    }
     
     public Object getModel() {
         return repository;

@@ -46,6 +46,11 @@ public interface RDFContainer {
     public URI getDescribedUri();
 
     /**
+     * Set the identifier of the resource that is described by the contents of this RDFContainer.
+     */
+    public void setDescribedUri(URI describedUri);
+    
+    /**
      * Get the underlying RDF model holding the RDF statements. Examples of RDF models are a Sesame
      * Repository or a Jena Graph.
      */
