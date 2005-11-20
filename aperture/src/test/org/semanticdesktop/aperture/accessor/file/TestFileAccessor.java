@@ -58,7 +58,7 @@ public class TestFileAccessor extends ApertureTestBase {
 
     public void testFileAccess() throws UrlNotFoundException, MalformedURLException, IOException {
         // create the data object
-        DataObject dataObject = fileAccessor.get(tmpFile.toURI().toString(), null, null, null);
+        DataObject dataObject = fileAccessor.getDataObject(tmpFile.toURI().toString(), null, null);
         assertNotNull(dataObject);
         assertTrue(dataObject instanceof FileDataObject);
 
@@ -72,7 +72,7 @@ public class TestFileAccessor extends ApertureTestBase {
 
     public void testFolderAccess() throws UrlNotFoundException, MalformedURLException, IOException {
         // create the data object
-        DataObject dataObject = fileAccessor.get(tmpDir.toURI().toString(), null, null, null);
+        DataObject dataObject = fileAccessor.getDataObject(tmpDir.toURI().toString(), null, null);
         assertNotNull(dataObject);
         assertTrue(dataObject instanceof FolderDataObject);
 
@@ -91,7 +91,11 @@ public class TestFileAccessor extends ApertureTestBase {
         // this AccessData
         HashMap params = new HashMap();
         params.put(FileAccessor.FILE_KEY, tmpFile);
-        DataObject object = fileAccessor.get(id, null, accessData, params);
-        assertNull(object);
+        DataObject object1 = fileAccessor.getDataObjectIfModified(id, null, accessData, params);
+        assertNull(object1);
+        
+        // double-check that we *do* get a DataObject when we don't pass the AccessData
+        DataObject object2 = fileAccessor.getDataObject(id, null, params);
+        assertNotNull(object2);
     }
 }

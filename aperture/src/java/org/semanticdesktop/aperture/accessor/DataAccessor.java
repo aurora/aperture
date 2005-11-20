@@ -26,6 +26,31 @@ public interface DataAccessor {
      * DataAccessor can later on also access the same resource, i.e. the URI should also be a URL.
      * 
      * <p>
+     * Specific DataAccessor implementations may accept additional parameters through the params Map,
+     * e.g. to speed up this method with ready-made datastructures it can reuse. See the documentation of
+     * these implementations for information on the type of parameters they accept. However,
+     * implementations should not rely on the contents of this Map to work properly.
+     * 
+     * @param url The url of the requested resource.
+     * @param dataSource The DataSource to be registered as the source of the DataObject (optional).
+     * @param params Additional parameters facilitating access to the physical resource (optional).
+     * @return A DataObject for the specified URI, or null when the binary resource has not been modified
+     *         since the last access.
+     * @throws UrlNotFoundException When the specified url did not point to an existing resource.
+     * @throws IOException When any kind of I/O error occurs.
+     */
+    public DataObject getDataObject(String url, DataSource source, Map params) throws UrlNotFoundException,
+            IOException;
+
+    /**
+     * Get a DataObject for the specified url.
+     * 
+     * <p>
+     * The resulting DataObject's ID may differ from the specified url due to normalization schemes,
+     * following of redirected URLs, etc. It is required though to provide a URI through which this
+     * DataAccessor can later on also access the same resource, i.e. the URI should also be a URL.
+     * 
+     * <p>
      * The optionally passed AccessData can be used to let the DataAccessor store information about the
      * created DataSource. The next time it is invoked with the same URL, it can then use this
      * information to determine whether the resource has changed or not. The DataAccessor should return
@@ -41,13 +66,14 @@ public interface DataAccessor {
      * 
      * @param url The url of the requested resource.
      * @param dataSource The DataSource to be registered as the source of the DataObject (optional).
-     * @param previousDate The previous date of the DataObject (optional).
+     * @param accessData Any access data obtained during the previous access to this DataObject
+     *            (optional).
      * @param params Additional parameters facilitating access to the physical resource (optional).
      * @return A DataObject for the specified URI, or null when the binary resource has not been modified
      *         since the last access.
      * @throws UrlNotFoundException When the specified url did not point to an existing resource.
      * @throws IOException When any kind of I/O error occurs.
      */
-    public DataObject get(String url, DataSource source, AccessData accessData, Map params)
+    public DataObject getDataObjectIfModified(String url, DataSource source, AccessData accessData, Map params)
             throws UrlNotFoundException, IOException;
 }

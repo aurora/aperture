@@ -60,7 +60,22 @@ public class FileAccessor implements DataAccessor {
      * instance as value, this File will be used to retrieve information from, else one will be created
      * by using the specified url.
      */
-    public DataObject get(String url, DataSource source, AccessData accessData, Map params)
+    public DataObject getDataObject(String url, DataSource source, Map params) throws UrlNotFoundException,
+            IOException {
+        return get(url, source, null, params);
+    }
+
+    /**
+     * Return a DataObject for the specified url. If the specified Map contains a "file" key with a File
+     * instance as value, this File will be used to retrieve information from, else one will be created
+     * by using the specified url.
+     */
+    public DataObject getDataObjectIfModified(String url, DataSource source, AccessData accessData, Map params)
+            throws UrlNotFoundException, IOException {
+        return get(url, source, accessData, params);
+    }
+
+    private DataObject get(String url, DataSource source, AccessData accessData, Map params)
             throws UrlNotFoundException, IOException {
         // sanity check: make sure we're processing file urls
         if (!url.startsWith("file:")) {
@@ -108,10 +123,7 @@ public class FileAccessor implements DataAccessor {
                 }
             }
 
-            // It has been modified; register the new modification date. Note: we store them under the
-            // specified url, not the uri of the canonical path: quicker for incremental rescans and this
-            // is what we were asked for to retrieve: important when other people access the AccessData
-            // as well
+            // It has been modified; register the new modification date.
             accessData.put(url, AccessData.DATE_KEY, String.valueOf(lastModified));
         }
 
