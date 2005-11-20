@@ -6,15 +6,32 @@
  */
 package org.semanticdesktop.aperture.datasource;
 
+import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
+import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.model.vocabulary.XMLSchema;
 
 /**
  * This interface defines a comprehensive list of URIs to be used for modeling DataSource configurations.
  */
 public interface Vocabulary {
 
+    /* Namespaces */
+
     public static final String NS = "http://aperture.semanticdesktop.org/ontology/source/";
+
+    /* Classes */
+
+    public static final URI DATA_SOURCE = new URIImpl(NS + "DataSource");
+
+    public static final URI PATTERN = new URIImpl(NS + "Pattern");
+
+    public static final URI REGEXP_PATTERN = new URIImpl(NS + "RegExpPattern");
+
+    public static final URI SUBSTRING_PATTERN = new URIImpl(NS + "SubstringPattern");
+
+    /* Properties */
 
     public static final URI ROOT_URL = new URIImpl(NS + "rootUrl");
 
@@ -24,5 +41,17 @@ public interface Vocabulary {
 
     public static final URI EXCLUDE_PATTERN = new URIImpl(NS + "excludePattern");
 
+    public static final URI CONDITION = new URIImpl(NS + "condition");
+
     public static final URI INCLUDE_HIDDEN_RESOURCES = new URIImpl(NS + "includeHiddenResources");
+
+    /* Literals */
+
+    public static final Literal STARTS_WITH = new LiteralImpl("startsWith", XMLSchema.STRING);
+
+    public static final Literal ENDS_WITH = new LiteralImpl("endsWith", XMLSchema.STRING);
+
+    public static final Literal CONTAINS = new LiteralImpl("contains", XMLSchema.STRING);
+
+    public static final Literal DOES_NOT_CONTAIN = new LiteralImpl("doesNotContain", XMLSchema.STRING);
 }
