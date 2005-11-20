@@ -66,9 +66,9 @@ public interface CrawlerHandler {
      * Notification that the Crawler has found a changed resource in the domain it is crawling.
      * 
      * @param crawler The reporting Crawler.
-     * @param dataObject The constructed DataObject modeling the changed resource.
+     * @param object The constructed DataObject modeling the changed resource.
      */
-    public void objectChanged(Crawler dataCrawler, DataObject dataObject);
+    public void objectChanged(Crawler dataCrawler, DataObject object);
 
     /**
      * Notification that the Crawler has found a resource that has not been modified since the previous
