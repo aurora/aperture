@@ -58,7 +58,7 @@ public class ConfigurationPanel extends JPanel {
         gridBagConstraints3.insets = new java.awt.Insets(20,0,5,0);
         gridBagConstraints3.gridy = 2;
         repositoryLabel = new JLabel();
-        repositoryLabel.setText("Repository file (TriX format):");
+        repositoryLabel.setText("Output file (TriX format):");
         GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
         gridBagConstraints2.gridx = 1;
         gridBagConstraints2.insets = new java.awt.Insets(0,20,0,0);
@@ -75,7 +75,7 @@ public class ConfigurationPanel extends JPanel {
         gridBagConstraints.insets = new java.awt.Insets(0,0,5,0);
         gridBagConstraints.gridy = 0;
         rootFileLabel = new JLabel();
-        rootFileLabel.setText("Root file:");
+        rootFileLabel.setText("Directory to crawl (recursively!):");
         this.setLayout(new GridBagLayout());
         this.setSize(459, 143);
         this.add(rootFileLabel, gridBagConstraints);
