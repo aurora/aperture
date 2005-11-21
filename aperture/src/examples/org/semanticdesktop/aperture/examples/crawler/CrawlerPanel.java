@@ -52,6 +52,8 @@ public class CrawlerPanel extends JPanel {
 
     private JLabel progressLabel = null;
 
+    private FileSystemCrawler crawler;
+    
     /**
      * This is the default constructor
      */
@@ -175,6 +177,14 @@ public class CrawlerPanel extends JPanel {
             stopButton = new JButton();
             stopButton.setText("Stop");
             stopButton.setEnabled(false);
+            stopButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    Crawler crawler = CrawlerPanel.this.crawler;
+                    if (crawler != null) {
+                        crawler.stop();
+                    }
+                }
+            });
         }
         return stopButton;
     }
@@ -195,7 +205,7 @@ public class CrawlerPanel extends JPanel {
         source.setRootFile(rootFile);
         
         // setup a crawler
-        final FileSystemCrawler crawler = new FileSystemCrawler();
+        crawler = new FileSystemCrawler();
         crawler.setDataSource(source);
         crawler.setCrawlerHandler(new SimpleCrawlerHandler());
         
@@ -206,6 +216,7 @@ public class CrawlerPanel extends JPanel {
         Thread thread = new Thread() {
             public void run() {
                 crawler.crawl();
+                crawler = null;
             }
         };
         thread.setPriority(Thread.MIN_PRIORITY);
@@ -246,7 +257,7 @@ public class CrawlerPanel extends JPanel {
                 JOptionPane.showMessageDialog(CrawlerPanel.this, "Exception while saving RDF file, see stderr.", "Exception", JOptionPane.ERROR_MESSAGE);
             }
                 
-            displayMessage("Crawled " + nrObjects + " files (exit code = " + exitCode + ")");
+            displayMessage("Crawled " + nrObjects + " files (exit code: " + exitCode + ")");
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     crawlButton.setEnabled(true);
