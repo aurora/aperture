@@ -28,6 +28,7 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.sesame.repository.Repository;
+import org.openrdf.sesame.sail.SailUpdateException;
 import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.file.FileAccessorFactory;
@@ -53,7 +54,7 @@ public class CrawlerPanel extends JPanel {
     private JLabel progressLabel = null;
 
     private FileSystemCrawler crawler;
-    
+
     /**
      * This is the default constructor
      */
@@ -74,20 +75,20 @@ public class CrawlerPanel extends JPanel {
         gridBagConstraints3.gridx = 0;
         gridBagConstraints3.weightx = 1.0D;
         gridBagConstraints3.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints3.insets = new java.awt.Insets(0,10,0,10);
+        gridBagConstraints3.insets = new java.awt.Insets(0, 10, 0, 10);
         gridBagConstraints3.gridy = 1;
         progressLabel = new JLabel();
         progressLabel.setText("Status: Inactive");
         GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
         gridBagConstraints2.gridx = 0;
-        gridBagConstraints2.insets = new java.awt.Insets(5,0,0,0);
+        gridBagConstraints2.insets = new java.awt.Insets(5, 0, 0, 0);
         gridBagConstraints2.gridy = 2;
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0D;
-        gridBagConstraints.insets = new java.awt.Insets(0,10,20,10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 20, 10);
         gridBagConstraints.gridy = 0;
         this.setLayout(new GridBagLayout());
         this.setSize(528, 203);
@@ -159,6 +160,7 @@ public class CrawlerPanel extends JPanel {
             crawlButton = new JButton();
             crawlButton.setText("Crawl");
             crawlButton.addActionListener(new java.awt.event.ActionListener() {
+
                 public void actionPerformed(java.awt.event.ActionEvent e) {
                     crawl();
                 }
@@ -178,6 +180,7 @@ public class CrawlerPanel extends JPanel {
             stopButton.setText("Stop");
             stopButton.setEnabled(false);
             stopButton.addActionListener(new java.awt.event.ActionListener() {
+
                 public void actionPerformed(java.awt.event.ActionEvent e) {
                     Crawler crawler = CrawlerPanel.this.crawler;
                     if (crawler != null) {
@@ -193,27 +196,28 @@ public class CrawlerPanel extends JPanel {
         // change enabled states of some buttons
         getCrawlButton().setEnabled(false);
         getStopButton().setEnabled(true);
-        
+
         // create a FileSystemDataSource
         FileSystemDataSource source = new FileSystemDataSource();
-        
+
         URI sourceID = new URIImpl("source:testSource");
         source.setID(sourceID);
-        
+
         source.setConfiguration(new SesameRDFContainer(sourceID));
         File rootFile = new File(configurationPanel.getFileField().getText());
         source.setRootFile(rootFile);
-        
+
         // setup a crawler
         crawler = new FileSystemCrawler();
         crawler.setDataSource(source);
         crawler.setCrawlerHandler(new SimpleCrawlerHandler());
-        
+
         DataAccessorRegistry registry = new DataAccessorRegistryImpl();
         registry.add(new FileAccessorFactory());
         crawler.setDataAccessorRegistry(registry);
-        
+
         Thread thread = new Thread() {
+
             public void run() {
                 crawler.crawl();
                 crawler = null;
@@ -222,19 +226,30 @@ public class CrawlerPanel extends JPanel {
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
     }
-    
+
     private class SimpleCrawlerHandler implements CrawlerHandler {
 
         private SesameRDFContainer rdfContainer;
-        
+
         private Repository repository;
 
         private int nrObjects;
-        
+
         public SimpleCrawlerHandler() {
             // set up a repository
             rdfContainer = new SesameRDFContainer("file:dummy");
             repository = rdfContainer.getRepository();
+
+            // if we set auto-commit to false, we don't have to hassle with Transaction instances.
+            // Statements are now only "really" added after each commit.
+            try {
+                repository.setAutoCommit(false);
+            }
+            catch (SailUpdateException e) {
+                // will hurt performance but we can still continue. Each add and remove will now be a
+                // separate transaction.
+                e.printStackTrace();
+            }
         }
 
         public void crawlStarted(Crawler crawler) {
@@ -244,7 +259,7 @@ public class CrawlerPanel extends JPanel {
 
         public void crawlStopped(Crawler crawler, ExitCode exitCode) {
             displayMessage("Crawling completed, saving results...");
-            
+
             try {
                 File repositoryFile = new File(configurationPanel.getRepositoryField().getText());
                 Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
@@ -254,11 +269,14 @@ public class CrawlerPanel extends JPanel {
             }
             catch (Exception e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(CrawlerPanel.this, "Exception while saving RDF file, see stderr.", "Exception", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(CrawlerPanel.this,
+                        "Exception while saving RDF file, see stderr.", "Exception",
+                        JOptionPane.ERROR_MESSAGE);
             }
-                
+
             displayMessage("Crawled " + nrObjects + " files (exit code: " + exitCode + ")");
             SwingUtilities.invokeLater(new Runnable() {
+
                 public void run() {
                     crawlButton.setEnabled(true);
                     stopButton.setEnabled(false);
@@ -277,22 +295,36 @@ public class CrawlerPanel extends JPanel {
 
         public void objectNew(Crawler dataCrawler, DataObject object) {
             process(object);
+            commit();
         }
 
         public void objectChanged(Crawler dataCrawler, DataObject object) {
             process(object);
+            commit();
         }
 
         public void objectNotModified(Crawler crawler, String url) {
+            commit();
         }
 
         public void objectRemoved(Crawler dataCrawler, String url) {
+            commit();
         }
 
         private void process(DataObject object) {
-            
+
         }
-        
+
+        private void commit() {
+            try {
+                repository.commit();
+            }
+            catch (SailUpdateException e) {
+                // don't continue when this happens
+                throw new RuntimeException(e);
+            }
+        }
+
         public void clearStarted(Crawler crawler) {
             // no-op
         }
@@ -304,14 +336,15 @@ public class CrawlerPanel extends JPanel {
         public void clearFinished(Crawler crawler, ExitCode exitCode) {
             // no-op
         }
-        
+
         private void displayMessage(final String message) {
             SwingUtilities.invokeLater(new Runnable() {
+
                 public void run() {
                     CrawlerPanel.this.progressLabel.setText(message);
                 }
             });
         }
     }
-    
+
 } // @jve:decl-index=0:visual-constraint="10,10"
