@@ -197,7 +197,7 @@ public class FileSystemCrawler extends CrawlerBase {
                     crawlReport.increaseChangedCount();
                 }
                 else {
-                    handler.objectNotModified(this, url);
+                    handler.objectNew(this, dataObject);
                     crawlReport.increaseNewCount();
                 }
             }
