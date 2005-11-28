@@ -1,0 +1,202 @@
+/*
+ * Copyright (c) 2005 Aduna.
+ * All rights reserved.
+ * 
+ * Licensed under the Open Software License version 3.0.
+ */
+package org.semanticdesktop.aperture.crawler.filesystem;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+
+import org.openrdf.model.URI;
+import org.openrdf.model.impl.LiteralImpl;
+import org.openrdf.model.impl.URIImpl;
+import org.semanticdesktop.aperture.ApertureTestBase;
+import org.semanticdesktop.aperture.accessor.DataObject;
+import org.semanticdesktop.aperture.accessor.FileDataObject;
+import org.semanticdesktop.aperture.accessor.FolderDataObject;
+import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
+import org.semanticdesktop.aperture.accessor.Vocabulary;
+import org.semanticdesktop.aperture.accessor.file.FileAccessorFactory;
+import org.semanticdesktop.aperture.accessor.impl.DataAccessorRegistryImpl;
+import org.semanticdesktop.aperture.crawler.Crawler;
+import org.semanticdesktop.aperture.crawler.CrawlerHandler;
+import org.semanticdesktop.aperture.crawler.ExitCode;
+import org.semanticdesktop.aperture.datasource.DataSource;
+import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
+import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSourceFactory;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.util.FileUtil;
+import org.semanticdesktop.aperture.util.IOUtil;
+
+public class TestFileSystemCrawler extends ApertureTestBase {
+
+    private static final String TMP_SUBDIR = "TestFileSystemCrawler.tmpDir";
+
+    private File tmpDir;
+
+    private File subDir;
+
+    private File tmpFile1;
+
+    private File tmpFile2;
+
+    private File tmpFile3;
+
+    public void setUp() throws IOException {
+        // create a temporary folder containing a temporary file
+        // unfortunately there is no File.createTempDir
+        tmpDir = new File(System.getProperty("java.io.tmpdir"), TMP_SUBDIR).getCanonicalFile();
+        FileUtil.deltree(tmpDir);
+        tmpDir.mkdir();
+
+        // put two files in it
+        tmpFile1 = File.createTempFile("file-", ".txt", tmpDir);
+        IOUtil.writeString("test file 1", tmpFile1);
+
+        tmpFile2 = File.createTempFile("file-", ".txt", tmpDir);
+        IOUtil.writeString("test file 2", tmpFile2);
+
+        // put another folder containing another file in it
+        subDir = new File(tmpDir, "dir");
+        subDir.mkdir();
+
+        tmpFile3 = File.createTempFile("file-", ".txt", subDir);
+        IOUtil.writeString("test file 3", tmpFile3);
+    }
+
+    public void tearDown() {
+        // delete the temporary folder
+        FileUtil.deltree(tmpDir);
+    }
+
+    public void testCrawler() {
+        // create a DataSource
+        FileSystemDataSourceFactory factory = new FileSystemDataSourceFactory();
+        DataSource dataSource = factory.newInstance();
+
+        // set generic properties
+        dataSource.setID(new URIImpl("urn:test:dummySource"));
+        dataSource.setName("Dummy DataSource");
+
+        // set FileSystemDataSource-specific properties
+        FileSystemDataSource fileSource = (FileSystemDataSource) dataSource;
+        fileSource.setConfiguration(new SesameRDFContainer(dataSource.getID()));
+        fileSource.setRootFile(tmpDir);
+        fileSource.setMaximumDepth(1);
+
+        // create a Crawler for this DataSource (hardcoded for now)
+        FileSystemCrawler crawler = new FileSystemCrawler();
+        crawler.setDataSource(dataSource);
+
+        // setup a DataAccessorRegistry
+        DataAccessorRegistryImpl registry = new DataAccessorRegistryImpl();
+        registry.add(new FileAccessorFactory());
+        crawler.setDataAccessorRegistry(registry);
+
+        // setup a CrawlerHandler
+        SimpleCrawlerHandler crawlerHandler = new SimpleCrawlerHandler();
+        crawler.setCrawlerHandler(crawlerHandler);
+
+        // start Crawling
+        crawler.crawl();
+
+        // inspect results
+        assertEquals(4, crawlerHandler.getObjectCount());
+        
+        SesameRDFContainer container = crawlerHandler.getRDFContainer();
+        
+        checkStatement(toURI(tmpFile1), Vocabulary.NAME, new LiteralImpl(tmpFile1.getName()), container);
+        checkStatement(toURI(tmpFile2), Vocabulary.NAME, new LiteralImpl(tmpFile2.getName()), container);
+        checkStatement(toURI(subDir), Vocabulary.NAME, new LiteralImpl(subDir.getName()), container);
+
+        // This should not be found because of maximum depth restrictions: this file should not be
+        // reached. We deliberately check for a specific property rather than doing getStatements(URI,
+        // null, null) as the URI of the skipped file will still be part of the metadata of the
+        // containing Folder.
+        Collection stms = container.getRepository().getStatements(toURI(tmpFile3), Vocabulary.NAME, null);
+        assertEquals(0, stms.size());
+    }
+
+    private URI toURI(File file) {
+        return new URIImpl(file.toURI().toString());
+    }
+
+    private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
+
+        private SesameRDFContainer container = new SesameRDFContainer("urn:dummy");
+
+        private int objectCount = 0;
+        
+        public SesameRDFContainer getRDFContainer() {
+            return container;
+        }
+        
+        public int getObjectCount() {
+            return objectCount;
+        }
+
+        public void crawlStarted(Crawler crawler) {
+            // no-op
+        }
+
+        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
+            assertEquals(ExitCode.COMPLETED, exitCode);
+        }
+
+        public void accessingObject(Crawler crawler, String url) {
+            // no-op
+        }
+
+        public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
+            return this;
+        }
+
+        public RDFContainer getRDFContainer(URI uri) {
+            container.setDescribedUri(uri);
+            return container;
+        }
+
+        public void objectNew(Crawler dataCrawler, DataObject object) {
+            objectCount++;
+            
+            assertNotNull(object);
+            assertSame(container, object.getMetadata());
+            
+            String uri = object.getID().toString();
+            if (uri.equals(subDir.toURI().toString())) {
+                assertTrue(object instanceof FolderDataObject);
+            }
+            else if (uri.indexOf("file-") != -1) {
+                assertTrue(object instanceof FileDataObject);
+            }
+        }
+
+        public void objectChanged(Crawler dataCrawler, DataObject object) {
+            fail();
+        }
+
+        public void objectNotModified(Crawler crawler, String url) {
+            fail();
+        }
+
+        public void objectRemoved(Crawler dataCrawler, String url) {
+            fail();
+        }
+
+        public void clearStarted(Crawler crawler) {
+            fail();
+        }
+
+        public void clearingObject(Crawler crawler, String url) {
+            fail();
+        }
+
+        public void clearFinished(Crawler crawler, ExitCode exitCode) {
+            fail();
+        }
+    }
+}
