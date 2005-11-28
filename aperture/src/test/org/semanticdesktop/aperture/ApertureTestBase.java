@@ -62,7 +62,7 @@ public class ApertureTestBase extends TestCase {
         checkStatement(subject, property, value, container);
     }
     
-    public void checkStatement(URI subject, URI property, URI value, SesameRDFContainer container) {
+    public void checkStatement(URI subject, URI property, Value value, SesameRDFContainer container) {
         Repository repository = container.getRepository();
         boolean encounteredValue = false;
         
