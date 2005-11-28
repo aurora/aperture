@@ -115,39 +115,52 @@ public class FileSystemCrawler extends CrawlerBase {
      * @return true if the path has been scanned completely, false if the scan has been aborted.
      */
     private boolean scanFileTree(File file, int depth) {
-        if (file.isFile()) {
+        if (file.isFile() && depth >= 0) {
+            // report the File
             if (inDomain(file) && file.canRead() && file.length() <= maximumSize) {
-                process(file);
+                report(file);
             }
 
+            // by definition we've completed this subtree
             return true;
         }
         else if (file.isDirectory() && depth >= 0) {
-            File[] nestedFiles = file.listFiles();
+            // report the Folder itself
+            if (inDomain(file)) {
+                report(file);
+            }
 
-            if (nestedFiles == null) {
-                // This happens on certain "special" directories, although the
-                // API documentation doesn't mention it, see java bug #4803836.
+            // report nested Files
+            if (depth > 0) {
+                File[] nestedFiles = file.listFiles();
+
+                if (nestedFiles == null) {
+                    // This happens on certain "special" directories, although the
+                    // API documentation doesn't mention it, see java bug #4803836.
+                    return true;
+                }
+
+                int i = 0;
+                for (; !stopRequested && i < nestedFiles.length; i++) {
+                    File nestedFile = nestedFiles[i];
+
+                    if (ignoreHiddenFiles && nestedFile.isHidden()) {
+                        continue;
+                    }
+
+                    boolean scanCompleted = scanFileTree(nestedFile, depth - 1);
+
+                    if (!scanCompleted) {
+                        return false;
+                    }
+                }
+
+                // scan has been completed when i has reached the end of the array successfully
+                return i == nestedFiles.length;
+            }
+            else {
                 return true;
             }
-
-            int i = 0;
-            for (; !stopRequested && i < nestedFiles.length; i++) {
-                File nestedFile = nestedFiles[i];
-
-                if (ignoreHiddenFiles && nestedFile.isHidden()) {
-                    continue;
-                }
-
-                boolean scanCompleted = scanFileTree(nestedFile, depth - 1);
-
-                if (!scanCompleted) {
-                    return false;
-                }
-            }
-
-            // scan has been completed when i has reached the end of the array successfully
-            return i == nestedFiles.length;
         }
         else {
             // Unknown path type (is this possible?) or depth < 0
@@ -164,7 +177,7 @@ public class FileSystemCrawler extends CrawlerBase {
     /**
      * Reports a scanned file to the registered DataSourceListeners.
      */
-    private void process(File file) {
+    private void report(File file) {
         // create an identifier for the file
         String url = file.toURI().toString();
 
