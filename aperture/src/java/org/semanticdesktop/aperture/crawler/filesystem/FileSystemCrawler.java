@@ -24,7 +24,6 @@ import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
-import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
  * A Crawler implementation for crawling file system sources modeled by a FileSystemDataSource.
