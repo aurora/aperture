@@ -13,6 +13,7 @@ import java.util.Date;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.semanticdesktop.aperture.rdf.sesame.UpdateException;
 
 /**
  * RDFContainer defines a simple interface for small RDF stores. Its purpose is to make populating an
@@ -50,33 +51,33 @@ public interface RDFContainer {
 
     // Map-oriented methods that automatically take the described URI as subject
 
-    public void put(URI property, String value);
+    public void put(URI property, String value) throws UpdateException;
 
-    public void put(URI property, Date value);
+    public void put(URI property, Date value) throws UpdateException;
 
-    public void put(URI property, Calendar value);
+    public void put(URI property, Calendar value) throws UpdateException;
 
-    public void put(URI property, boolean value);
+    public void put(URI property, boolean value) throws UpdateException;
 
-    public void put(URI property, int value);
+    public void put(URI property, int value) throws UpdateException;
 
-    public void put(URI property, long value);
+    public void put(URI property, long value) throws UpdateException;
 
-    public void put(URI property, Value value);
+    public void put(URI property, Value value) throws UpdateException;
 
-    public void add(URI property, String value);
+    public void add(URI property, String value) throws UpdateException;
 
-    public void add(URI property, Date value);
+    public void add(URI property, Date value) throws UpdateException;
 
-    public void add(URI property, Calendar value);
+    public void add(URI property, Calendar value) throws UpdateException;
 
-    public void add(URI property, boolean value);
+    public void add(URI property, boolean value) throws UpdateException;
 
-    public void add(URI property, int value);
+    public void add(URI property, int value) throws UpdateException;
 
-    public void add(URI property, long value);
+    public void add(URI property, long value) throws UpdateException;
 
-    public void add(URI property, Value value);
+    public void add(URI property, Value value) throws UpdateException;
 
     public String getString(URI property);
 
@@ -94,7 +95,7 @@ public interface RDFContainer {
 
     public Value getValue(URI property);
 
-    public void remove(URI property);
+    public void remove(URI property) throws UpdateException;
 
     // returns a Collection of Values
     public Collection getAll(URI property);
@@ -135,7 +136,7 @@ public interface RDFContainer {
 
     // Statement-oriented methods
 
-    public void add(Statement statement);
+    public void add(Statement statement) throws UpdateException;
 
-    public void remove(Statement statement);
+    public void remove(Statement statement) throws UpdateException;
 }

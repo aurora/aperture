@@ -42,7 +42,7 @@ public class SesameRDFContainer implements RDFContainer {
     private ValueFactory valfac;
 
     private URI describedUri;
-    
+
     private Resource context;
 
     public SesameRDFContainer(String uri) {
@@ -63,7 +63,8 @@ public class SesameRDFContainer implements RDFContainer {
             repository.initialize();
         }
         catch (SailInitializationException e) {
-            // should never happen, indicates an internal error
+            // should never happen, indicates an internal error and therefore wrapper in a
+            // RuntimeException rather than an UpdateException
             throw new RuntimeException(e);
         }
 
@@ -78,7 +79,7 @@ public class SesameRDFContainer implements RDFContainer {
     public void setDescribedUri(URI describedUri) {
         this.describedUri = describedUri;
     }
-    
+
     public Object getModel() {
         return repository;
     }
@@ -90,11 +91,11 @@ public class SesameRDFContainer implements RDFContainer {
     public void setContext(Resource context) {
         this.context = context;
     }
-    
+
     public Resource getContext() {
         return context;
     }
-    
+
     public void put(URI property, String value) {
         replaceInternal(property, valfac.createLiteral(value));
     }
@@ -135,16 +136,16 @@ public class SesameRDFContainer implements RDFContainer {
                 throw new MultipleValuesException(describedUri, property);
             }
             repository.remove(toRemove, context);
-            
+
             // add the new statement
             repository.add(describedUri, property, object, context);
         }
         catch (SailUpdateException e) {
             LOGGER.log(Level.INFO, "cannot update statement", e);
-            throw new RuntimeException(e);
+            throw new UpdateException("cannot update statement", e);
         }
     }
-    
+
     public void add(URI property, String value) {
         addInternal(property, valfac.createLiteral(value));
     }
@@ -176,17 +177,17 @@ public class SesameRDFContainer implements RDFContainer {
     public void add(URI property, Value value) {
         addInternal(property, value);
     }
-    
+
     private void addInternal(URI property, Value object) {
         try {
             repository.add(describedUri, property, object, context);
         }
         catch (SailUpdateException e) {
             LOGGER.log(Level.INFO, "cannot add statement", e);
-            throw new RuntimeException(e);
+            throw new UpdateException("cannot add statement", e);
         }
     }
-    
+
     public String getString(URI property) {
         Value value = getInternal(property);
         if (value instanceof Literal) {
@@ -268,7 +269,7 @@ public class SesameRDFContainer implements RDFContainer {
             return null;
         }
     }
-    
+
     public Value getValue(URI property) {
         return getInternal(property);
     }
@@ -287,7 +288,7 @@ public class SesameRDFContainer implements RDFContainer {
             return firstStatement.getObject();
         }
     }
-    
+
     public void remove(URI property) {
         // note: this also throws a MultipleValueException when there are multiple values
         Value value = getInternal(property);
@@ -297,58 +298,58 @@ public class SesameRDFContainer implements RDFContainer {
             }
             catch (SailUpdateException e) {
                 LOGGER.log(Level.INFO, "cannot remove statement", e);
-                throw new RuntimeException(e);
+                throw new UpdateException("cannot remove statement", e);
             }
         }
     }
-    
+
     public Collection getAll(URI property) {
         // determine all matching Statements
         Collection statements = repository.getStatements(describedUri, property, null);
         Iterator iterator = statements.iterator();
-        
+
         // put their values in a new Collection
         ArrayList result = new ArrayList();
         while (iterator.hasNext()) {
             Statement statement = (Statement) iterator.next();
             result.add(statement.getObject());
         }
-        
+
         return result;
     }
-    
-//    public void add(URI subject, URI property, String value) {
-//        addInternal(subject, property, valfac.createLiteral(value));
-//    }
-//
-//    public void add(URI subject, URI property, Date value) {
-//        String date = DateUtil.dateTime2String(value);
-//        addInternal(subject, property, valfac.createLiteral(date, XMLSchema.DATETIME));
-//    }
-//
-//    public void add(URI subject, URI property, Calendar value) {
-//        add(subject, property, value.getTime());
-//    }
-//
-//    public void add(URI subject, URI property, boolean value) {
-//        String val = value ? "true" : "false";
-//        addInternal(subject, property, valfac.createLiteral(val, XMLSchema.BOOLEAN));
-//    }
-//
-//    public void add(URI subject, URI property, int value) {
-//        String val = Integer.toString(value);
-//        addInternal(subject, property, valfac.createLiteral(val, XMLSchema.INT));
-//    }
-//
-//    public void add(URI subject, URI property, long value) {
-//        String val = Long.toString(value);
-//        addInternal(subject, property, valfac.createLiteral(val, XMLSchema.LONG));
-//    }
-//
-//    public void add(URI subject, URI property, URI value) {
-//        addInternal(subject, property, value);
-//    }
-//
+
+    // public void add(URI subject, URI property, String value) {
+    // addInternal(subject, property, valfac.createLiteral(value));
+    // }
+    //
+    // public void add(URI subject, URI property, Date value) {
+    // String date = DateUtil.dateTime2String(value);
+    // addInternal(subject, property, valfac.createLiteral(date, XMLSchema.DATETIME));
+    // }
+    //
+    // public void add(URI subject, URI property, Calendar value) {
+    // add(subject, property, value.getTime());
+    // }
+    //
+    // public void add(URI subject, URI property, boolean value) {
+    // String val = value ? "true" : "false";
+    // addInternal(subject, property, valfac.createLiteral(val, XMLSchema.BOOLEAN));
+    // }
+    //
+    // public void add(URI subject, URI property, int value) {
+    // String val = Integer.toString(value);
+    // addInternal(subject, property, valfac.createLiteral(val, XMLSchema.INT));
+    // }
+    //
+    // public void add(URI subject, URI property, long value) {
+    // String val = Long.toString(value);
+    // addInternal(subject, property, valfac.createLiteral(val, XMLSchema.LONG));
+    // }
+    //
+    // public void add(URI subject, URI property, URI value) {
+    // addInternal(subject, property, value);
+    // }
+    //
 
     public void add(Statement statement) {
         try {
@@ -356,7 +357,7 @@ public class SesameRDFContainer implements RDFContainer {
         }
         catch (SailUpdateException e) {
             LOGGER.log(Level.INFO, "cannot add statement", e);
-            throw new RuntimeException(e);
+            throw new UpdateException("cannot add statement", e);
         }
     }
 
@@ -366,7 +367,7 @@ public class SesameRDFContainer implements RDFContainer {
         }
         catch (SailUpdateException e) {
             LOGGER.log(Level.INFO, "cannot add statement", e);
-            throw new RuntimeException(e);
+            throw new UpdateException("cannot add statement", e);
         }
     }
 }
