@@ -28,9 +28,6 @@ import org.openrdf.model.Value;
  * and get properties with the triple-oriented add and get methods.
  * 
  * <p>
- * extra bonus: can transparently use a different triple store by switching implementations. FIXME FIXME
- * FIXME
- * 
  * Putting a layer between the code generating the statements and the code that stores the statements
  * provides an additional benefit: decisions on how Java types such as ints and Dates are transformed
  * into RDF triples are now made in a single piece of code (the RDFContainer implementation), without
@@ -45,11 +42,6 @@ public interface RDFContainer {
      */
     public URI getDescribedUri();
 
-    /**
-     * Set the identifier of the resource that is described by the contents of this RDFContainer.
-     */
-    public void setDescribedUri(URI describedUri);
-    
     /**
      * Get the underlying RDF model holding the RDF statements. Examples of RDF models are a Sesame
      * Repository or a Jena Graph.

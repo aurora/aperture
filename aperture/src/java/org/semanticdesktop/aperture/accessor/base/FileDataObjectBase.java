@@ -11,7 +11,7 @@ import java.io.InputStream;
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
-//import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
  * A trivial default implementation of FileDataObject. 
@@ -22,8 +22,8 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
     
     public FileDataObjectBase() { }
     
-    public FileDataObjectBase(URI id, DataSource dataSource, InputStream content) {
-        super(id, dataSource);
+    public FileDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata, InputStream content) {
+        super(id, dataSource, metadata);
         this.content = content;
     }
     
@@ -39,11 +39,6 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
             super.finalize();
         }
     }
-//    
-//    public FileDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata, InputStream content) {
-//        super(id, dataSource, metadata);
-//        this.content = content;
-//    }
     
     public void setContent(InputStream content) {
         this.content = content;

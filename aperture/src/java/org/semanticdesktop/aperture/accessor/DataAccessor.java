@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
  * A DataAccessor provides access to physical resources by creating DataObjects representing the
@@ -35,14 +34,16 @@ public interface DataAccessor {
      * @param url The url of the requested resource.
      * @param dataSource The DataSource to be registered as the source of the DataObject (optional).
      * @param params Additional parameters facilitating access to the physical resource (optional).
-     * @param metadataContainer An RDFContainer to which the metadata of the DataObject can be added.
+     * @param containerFactory An RDFContainerFactory that delivers the RDFContainer to which the
+     *            metadata of the DataObject should be added. The provided RDFContainer can later be
+     *            retrieved as the DataObject's metadata container.
      * @return A DataObject for the specified URI, or null when the binary resource has not been modified
      *         since the last access.
      * @throws UrlNotFoundException When the specified url did not point to an existing resource.
      * @throws IOException When any kind of I/O error occurs.
      */
-    public DataObject getDataObject(String url, DataSource source, Map params, RDFContainer metadataContainer)
-            throws UrlNotFoundException, IOException;
+    public DataObject getDataObject(String url, DataSource source, Map params,
+            RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException;
 
     /**
      * Get a DataObject for the specified url.
@@ -71,12 +72,14 @@ public interface DataAccessor {
      * @param accessData Any access data obtained during the previous access to this DataObject
      *            (optional).
      * @param params Additional parameters facilitating access to the physical resource (optional).
-     * @param metadataContainer An RDFContainer to which the metadata of the DataObject can be added.
+     * @param containerFactory An RDFContainerFactory that delivers the RDFContainer to which the
+     *            metadata of the DataObject should be added. The provided RDFContainer can later be
+     *            retrieved as the DataObject's metadata container.
      * @return A DataObject for the specified URI, or null when the binary resource has not been modified
      *         since the last access.
      * @throws UrlNotFoundException When the specified url did not point to an existing resource.
      * @throws IOException When any kind of I/O error occurs.
      */
     public DataObject getDataObjectIfModified(String url, DataSource source, AccessData accessData,
-            Map params, RDFContainer metadataContainer) throws UrlNotFoundException, IOException;
+            Map params, RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException;
 }

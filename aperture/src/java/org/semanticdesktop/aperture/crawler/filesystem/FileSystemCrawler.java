@@ -19,6 +19,7 @@ import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
+import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
@@ -47,13 +48,6 @@ public class FileSystemCrawler extends CrawlerBase {
     private DataAccessorFactory accessorFactory;
 
     private HashMap params;
-
-    // public FileSystemCrawler(DataSource source) {
-    // if (!(source instanceof FileSystemDataSource)) {
-    // throw new IllegalArgumentException("illegal DataSource type: " + source.getClass().getName();
-    // }
-    // super.setDataSource(source);
-    // }
 
     public void setDataAccessorRegistry(DataAccessorRegistry registry) {
         accessorRegistry = registry;
@@ -183,13 +177,14 @@ public class FileSystemCrawler extends CrawlerBase {
         boolean knownObject = accessData.isKnownId(url);
 
         // fetch a RDFContainer from the handler (note: is done for every
-        RDFContainer container = handler.getRDFContainer(this, url);
-        
+        RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, url);
+
         // fetch the DataObject
         DataAccessor accessor = accessorFactory.get();
         params.put("file", file);
         try {
-            DataObject dataObject = accessor.getDataObjectIfModified(url, source, accessData, params, container);
+            DataObject dataObject = accessor.getDataObjectIfModified(url, source, accessData, params,
+                    containerFactory);
 
             if (dataObject == null) {
                 // the object was not modified
@@ -207,7 +202,7 @@ public class FileSystemCrawler extends CrawlerBase {
                     crawlReport.increaseNewCount();
                 }
             }
-            
+
             // close any InputStream
             if (dataObject instanceof FileDataObject) {
                 FileDataObject fdo = (FileDataObject) dataObject;

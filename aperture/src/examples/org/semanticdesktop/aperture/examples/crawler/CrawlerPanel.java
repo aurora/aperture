@@ -31,6 +31,7 @@ import org.openrdf.sesame.repository.Repository;
 import org.openrdf.sesame.sail.SailUpdateException;
 import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 import org.semanticdesktop.aperture.accessor.DataObject;
+import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.file.FileAccessorFactory;
 import org.semanticdesktop.aperture.accessor.impl.DataAccessorRegistryImpl;
 import org.semanticdesktop.aperture.crawler.Crawler;
@@ -227,7 +228,7 @@ public class CrawlerPanel extends JPanel {
         thread.start();
     }
 
-    private class SimpleCrawlerHandler implements CrawlerHandler {
+    private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
         private SesameRDFContainer rdfContainer;
 
@@ -289,10 +290,15 @@ public class CrawlerPanel extends JPanel {
             displayMessage("Processing file " + nrObjects + ": " + url + "...");
         }
 
-        public RDFContainer getRDFContainer(Crawler crawler, String url) {
-            return rdfContainer;
+        public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
+            return this;
         }
 
+        public RDFContainer getRDFContainer(URI uri) {
+            rdfContainer.setDescribedUri(uri);
+            return rdfContainer;
+        }
+        
         public void objectNew(Crawler dataCrawler, DataObject object) {
             process(object);
             commit();
