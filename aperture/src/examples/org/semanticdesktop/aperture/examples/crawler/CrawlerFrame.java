@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 public class CrawlerFrame extends JFrame {
 
@@ -69,6 +70,17 @@ public class CrawlerFrame extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                // change look and feel
+                if (System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0) {
+                    try {
+                        UIManager.setLookAndFeel("net.java.plaf.windows.WindowsLookAndFeel");
+                    }
+                    catch (Exception e) {
+                        // ignore
+                    }
+                }
+
+                // set up a CrawlerFrame
                 CrawlerFrame frame = new CrawlerFrame();
                 frame.setVisible(true);
             }
