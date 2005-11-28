@@ -41,6 +41,7 @@ public class TestFileAccessor extends ApertureTestBase {
         // create a temporary folder containing a temporary file
         // unfortunately there is no File.createTempDir
         tmpDir = new File(System.getProperty("java.io.tmpdir"), TMP_SUBDIR).getCanonicalFile();
+        FileUtil.deltree(tmpDir);
         tmpDir.mkdir();
 
         tmpFile = File.createTempFile("file-", ".txt", tmpDir);
