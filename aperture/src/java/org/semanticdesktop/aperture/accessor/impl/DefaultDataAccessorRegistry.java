@@ -37,6 +37,8 @@ public class DefaultDataAccessorRegistry extends DataAccessorRegistryImpl {
 
     private static final String DEFAULT_FILE = "org/semanticdesktop/aperture/accessor/impl/defaults.xml";
 
+    private static final String CRAWLER_FACTORY_TAG = "crawlerFactory";
+    
     private static final String NAME_TAG = "name";
 
     private static final Logger LOGGER = Logger.getLogger(DefaultDataAccessorRegistry.class.getName());
@@ -78,12 +80,23 @@ public class DefaultDataAccessorRegistry extends DataAccessorRegistryImpl {
     
     private class DataAccessorParser extends SimpleSAXAdapter {
 
+        private boolean insideFactoryElement = false;
+        
         public void startTag(String tagName, Map atts, String text) throws SAXException {
-            if (NAME_TAG.equals(tagName) && text != null) {
+            if (CRAWLER_FACTORY_TAG.equals(tagName)) {
+                insideFactoryElement = true;
+            }
+            else if (NAME_TAG.equals(tagName) && insideFactoryElement && text != null) {
                 processClassName(text);
             }
         }
 
+        public void endTag(String tagName) {
+            if (CRAWLER_FACTORY_TAG.equals(tagName)) {
+                insideFactoryElement = false;
+            }
+        }
+        
         private void processClassName(String className) {
             className = className.trim();
             if (!className.equals("")) {
