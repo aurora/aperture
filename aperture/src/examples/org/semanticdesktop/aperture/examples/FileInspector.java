@@ -24,9 +24,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
 import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
-import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierFactory;
-import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierRegistry;
-import org.semanticdesktop.aperture.mime.identifier.impl.DefaultMimeTypeIdentifierRegistry;
+import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 
@@ -54,9 +52,7 @@ public class FileInspector {
         }
 
         // create a MimeTypeIdentifier (fetch the first one provided by the registry)
-        MimeTypeIdentifierRegistry identifierRegistry = new DefaultMimeTypeIdentifierRegistry();
-        MimeTypeIdentifierFactory identifierFactory = (MimeTypeIdentifierFactory) identifierRegistry.getAll().iterator().next();
-        MimeTypeIdentifier identifier = identifierFactory.get();
+        MimeTypeIdentifier identifier = new MagicMimeTypeIdentifier();
 
         // create an ExtractorRegistry containing all available ExtractorFactories
         ExtractorRegistry extractorRegistry = new DefaultExtractorRegistry();

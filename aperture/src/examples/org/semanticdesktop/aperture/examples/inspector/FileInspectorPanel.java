@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -38,8 +37,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
 import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
-import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierFactory;
-import org.semanticdesktop.aperture.mime.identifier.impl.DefaultMimeTypeIdentifierRegistry;
+import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 
@@ -104,11 +102,8 @@ public class FileInspectorPanel extends JPanel {
     }
 
     private void initializeAperture() {
-        // fetch a mime type identifier
-        DefaultMimeTypeIdentifierRegistry identifierRegistry = new DefaultMimeTypeIdentifierRegistry();
-        Iterator factories = identifierRegistry.getAll().iterator();
-        MimeTypeIdentifierFactory factory = (MimeTypeIdentifierFactory) factories.next();
-        mimeTypeIdentifier = factory.get();
+        // create a mime type identifier
+        mimeTypeIdentifier = new MagicMimeTypeIdentifier();
             
         // initialize the extractor registry
         extractorRegistry = new DefaultExtractorRegistry();
