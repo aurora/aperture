@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
+import java.io.File;
 
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
@@ -132,6 +133,7 @@ public class ConfigurationPanel extends JPanel {
     public JTextField getRepositoryField() {
         if (repositoryField == null) {
             repositoryField = new JTextField();
+            repositoryField.setText(new File("output.trix").getAbsolutePath());
         }
         return repositoryField;
     }
@@ -149,6 +151,7 @@ public class ConfigurationPanel extends JPanel {
                 public void actionPerformed(java.awt.event.ActionEvent e) {
                     if (repositoryChooser == null) {
                         repositoryChooser = new JFileChooser();
+                        repositoryChooser.setSelectedFile(new File(getRepositoryField().getText()));
                         repositoryChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                     }
                     
