@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<dataSourceFactories>
+	<dataSourceFactory>
+		<name>org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSourceFactory</name>
+	</dataSourceFactory>
+</dataSourceFactories>
