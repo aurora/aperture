@@ -10,6 +10,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.semanticdesktop.aperture.accessor.TestAccessors;
+import org.semanticdesktop.aperture.crawler.filesystem.TestFileSystemCrawler;
 import org.semanticdesktop.aperture.extractor.TestExtractors;
 import org.semanticdesktop.aperture.mime.identifier.magic.TestMagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.TestSesameRDFContainer;
@@ -24,6 +25,7 @@ public class TestAll extends TestSuite {
         super("aperture");
         addTest(new TestSuite(TestSesameRDFContainer.class));
         addTest(TestAccessors.suite());
+        addTest(new TestSuite(TestFileSystemCrawler.class));
         addTest(TestExtractors.suite());
         addTest(new TestSuite(TestMagicMimeTypeIdentifier.class));
     }
