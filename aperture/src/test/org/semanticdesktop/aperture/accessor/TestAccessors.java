@@ -7,6 +7,7 @@
 package org.semanticdesktop.aperture.accessor;
 
 import org.semanticdesktop.aperture.accessor.file.TestFileAccessor;
+import org.semanticdesktop.aperture.accessor.impl.TestDefaultDataAccessorRegistry;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -21,5 +22,6 @@ public class TestAccessors extends TestSuite {
         super("accessors");
         
         addTest(new TestSuite(TestFileAccessor.class));
+        addTest(new TestSuite(TestDefaultDataAccessorRegistry.class));
     }
 }
