@@ -22,6 +22,10 @@ public class FileSystemDataSource extends DataSourceBase {
     public static final org.openrdf.model.URI FILE_SYSTEM_DATA_SOURCE_TYPE = new URIImpl(Vocabulary.NS
             + "FileSystemDataSource");
 
+    public org.openrdf.model.URI getType() {
+        return FILE_SYSTEM_DATA_SOURCE_TYPE;
+    }
+    
     public void setRootFile(File rootFile) {
         setRootUrl(rootFile.toURI().toString());
     }

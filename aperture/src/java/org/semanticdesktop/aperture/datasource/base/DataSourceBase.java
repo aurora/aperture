@@ -14,7 +14,7 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 /**
  * A trivial default implementation of the DataSource interface.
  */
-public class DataSourceBase implements DataSource {
+public abstract class DataSourceBase implements DataSource {
 
     // Note: the utility get methods operating on the RDFContainer interpret invalid data as no
     // configuration, i.e. exceptions result in null return values. This is in line with the general

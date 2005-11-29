@@ -45,6 +45,14 @@ public interface DataSource {
     public void setName(String name);
 
     /**
+     * Returns a URI that indicates the DataSource type in a platform- and programming
+     * language-independent way.
+     * 
+     * @return A URI indicating the DataSource type
+     */
+    public URI getType();
+
+    /**
      * Gets the RDF model containing the configuration of this DataSource. The returned RDFContainer can
      * be modified in order to update the configuration.
      * 
