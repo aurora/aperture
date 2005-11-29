@@ -8,7 +8,6 @@ package org.semanticdesktop.aperture.datasource.base;
 
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.datasource.Vocabulary;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
@@ -18,7 +17,7 @@ public abstract class DataSourceBase implements DataSource {
 
     // Note: the utility get methods operating on the RDFContainer interpret invalid data as no
     // configuration, i.e. exceptions result in null return values. This is in line with the general
-    // spirit of RDF that it should be ossible to make any arbitrary statement, only some statements
+    // spirit of RDF that it should be possible to make any arbitrary statement, only some statements
     // cannot be interpreted automatically.
 
     private URI id;
@@ -61,39 +60,4 @@ public abstract class DataSourceBase implements DataSource {
         // set the configuration
         this.configuration = configuration;
     }
-    
-    public void setRootUrl(String url) {
-        getConfiguration().put(Vocabulary.ROOT_URL, url);
-    }
-    
-    public String getRootUrl() {
-        return getConfiguration().getString(Vocabulary.ROOT_URL);
-    }
-    
-    public void setMaximumDepth(int maximumDepth) {
-        getConfiguration().put(Vocabulary.MAXIMUM_DEPTH, maximumDepth);
-    }
-
-    public Integer getMaximumDepth() {
-        return getConfiguration().getInteger(Vocabulary.MAXIMUM_DEPTH);
-    }
-    
-    public void setMaximumByteSize(int maximumSize) {
-        getConfiguration().put(Vocabulary.MAXIMUM_BYTE_SIZE, maximumSize);
-    }
-
-    public Integer getMaximumByteSize() {
-        return getConfiguration().getInteger(Vocabulary.MAXIMUM_BYTE_SIZE);
-    }
-    
-    public Boolean getIncludeHiddenResourceS() {
-        return getConfiguration().getBoolean(Vocabulary.INCLUDE_HIDDEN_RESOURCES);
-    }
-    
-    public void setIncludeHiddenResources(Boolean b) {
-        getConfiguration().put(Vocabulary.INCLUDE_HIDDEN_RESOURCES, b.booleanValue());
-    }
-
-    // fixme: add methods for adding and removing patterns
-    // perhaps use RDFReactor right away for this?
 }

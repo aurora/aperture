@@ -9,6 +9,8 @@ package org.semanticdesktop.aperture.crawler.filesystem;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Level;
@@ -23,7 +25,9 @@ import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
-import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
+import org.semanticdesktop.aperture.datasource.ConfigurationUtil;
+import org.semanticdesktop.aperture.datasource.DataSource;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
  * A Crawler implementation for crawling file system sources modeled by a FileSystemDataSource.
@@ -53,10 +57,12 @@ public class FileSystemCrawler extends CrawlerBase {
     }
 
     protected ExitCode crawlObjects() {
+        // fetch the source and its configuration
+        DataSource source = getDataSource();
+        RDFContainer configuration = source.getConfiguration();
+        
         // determine the root file
-        // create a URI because File has a convenient constructor for it
-        FileSystemDataSource source = (FileSystemDataSource) getDataSource();
-        File root = source.getRootFile();
+        File root = getRootFile(configuration);
         if (root == null) {
             // treat this as an error rather than an "empty source" to prevent information loss
             LOGGER.log(Level.SEVERE, "missing root file");
@@ -65,15 +71,15 @@ public class FileSystemCrawler extends CrawlerBase {
         root = root.getAbsoluteFile();
 
         // determine the maximum depth
-        Integer i = source.getMaximumDepth();
+        Integer i = ConfigurationUtil.getMaximumDepth(configuration);
         int maxDepth = i == null ? DEFAULT_MAX_DEPTH : i.intValue();
 
         // determine the maximum byte size
-        i = source.getMaximumByteSize();
+        i = ConfigurationUtil.getMaximumByteSize(configuration);
         maximumSize = i == null ? DEFAULT_MAX_SIZE : i.intValue();
 
         // determine whether we should crawl hidden files and directories
-        Boolean b = source.getIncludeHiddenResourceS();
+        Boolean b = ConfigurationUtil.getIncludeHiddenResourceS(configuration);
         ignoreHiddenFiles = b == null ? DEFAULT_IGNORE_HIDDEN_FILES : b.booleanValue();
 
         // init some other params
@@ -90,6 +96,23 @@ public class FileSystemCrawler extends CrawlerBase {
         return crawlCompleted ? ExitCode.COMPLETED : ExitCode.STOP_REQUESTED;
     }
 
+    private File getRootFile(RDFContainer configuration) {
+        String rootUrl = ConfigurationUtil.getRootUrl(configuration);
+        if (rootUrl == null) {
+            return null;
+        }
+
+        URI uri = null;
+        try {
+            uri = new URI(rootUrl);
+        }
+        catch (URISyntaxException e) {
+            return null;
+        }
+
+        return new File(uri);
+    }
+    
     /**
      * Retrieves a DataAccessorFactory for the file scheme and throws an exception when there is no such
      * factory or when the DataAccessorRegistry has not been set.

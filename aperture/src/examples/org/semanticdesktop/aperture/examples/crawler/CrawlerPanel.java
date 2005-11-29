@@ -38,6 +38,7 @@ import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.filesystem.FileSystemCrawler;
+import org.semanticdesktop.aperture.datasource.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
@@ -204,10 +205,11 @@ public class CrawlerPanel extends JPanel {
         URI sourceID = new URIImpl("source:testSource");
         source.setID(sourceID);
 
-        source.setConfiguration(new SesameRDFContainer(sourceID));
         File rootFile = new File(configurationPanel.getFileField().getText());
-        source.setRootFile(rootFile);
-
+        SesameRDFContainer configuration = new SesameRDFContainer(sourceID);
+        ConfigurationUtil.setRootUrl(rootFile.toURI().toString(), configuration);
+        source.setConfiguration(configuration);
+        
         // setup a crawler
         crawler = new FileSystemCrawler();
         crawler.setDataSource(source);

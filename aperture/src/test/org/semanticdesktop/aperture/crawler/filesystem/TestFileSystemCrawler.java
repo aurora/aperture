@@ -24,6 +24,7 @@ import org.semanticdesktop.aperture.accessor.impl.DataAccessorRegistryImpl;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
+import org.semanticdesktop.aperture.datasource.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSourceFactory;
@@ -84,10 +85,12 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
         // set FileSystemDataSource-specific properties
         FileSystemDataSource fileSource = (FileSystemDataSource) dataSource;
-        fileSource.setConfiguration(new SesameRDFContainer(dataSource.getID()));
-        fileSource.setRootFile(tmpDir);
-        fileSource.setMaximumDepth(1);
-
+        
+        RDFContainer configuration = new SesameRDFContainer(dataSource.getID());
+        ConfigurationUtil.setRootUrl(tmpDir.toURI().toString(), configuration);
+        ConfigurationUtil.setMaximumDepth(1, configuration);
+        fileSource.setConfiguration(configuration);
+        
         // create a Crawler for this DataSource (hardcoded for now)
         FileSystemCrawler crawler = new FileSystemCrawler();
         crawler.setDataSource(dataSource);
