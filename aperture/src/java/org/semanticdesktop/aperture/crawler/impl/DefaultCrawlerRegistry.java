@@ -105,7 +105,6 @@ public class DefaultCrawlerRegistry extends CrawlerRegistryImpl {
                     Object instance = clazz.newInstance();
                     CrawlerFactory factory = (CrawlerFactory) instance;
                     add(factory);
-                    System.out.println(factory);
                 }
                 catch (ClassNotFoundException e) {
                     LOGGER.log(Level.WARNING, "unable to find class " + className + ", ignoring", e);
