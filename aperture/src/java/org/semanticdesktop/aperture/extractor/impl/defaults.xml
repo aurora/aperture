@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<extractorFactories>
+	<extractorFactory>
+		<name>org.semanticdesktop.aperture.extractor.html.HtmlExtractorFactory</name>
+	</extractorFactory>
+	<extractorFactory>
+		<name>org.semanticdesktop.aperture.extractor.opendocument.OpenDocumentExtractorFactory</name>
+	</extractorFactory>
+	<extractorFactory>
+		<name>org.semanticdesktop.aperture.extractor.pdf.PdfExtractorFactory</name>
+	</extractorFactory>
+	<extractorFactory>
+		<name>org.semanticdesktop.aperture.extractor.plaintext.PlainTextExtractorFactory</name>
+	</extractorFactory>
+</extractorFactories>
