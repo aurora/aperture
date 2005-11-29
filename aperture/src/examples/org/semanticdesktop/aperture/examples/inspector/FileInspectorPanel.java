@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -35,13 +36,10 @@ import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
-import org.semanticdesktop.aperture.extractor.html.HtmlExtractorFactory;
-import org.semanticdesktop.aperture.extractor.impl.ExtractorRegistryImpl;
-import org.semanticdesktop.aperture.extractor.opendocument.OpenDocumentExtractorFactory;
-import org.semanticdesktop.aperture.extractor.pdf.PdfExtractorFactory;
-import org.semanticdesktop.aperture.extractor.plaintext.PlainTextExtractorFactory;
+import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
-import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifierFactory;
+import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierFactory;
+import org.semanticdesktop.aperture.mime.identifier.impl.DefaultMimeTypeIdentifierRegistry;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 
@@ -106,15 +104,14 @@ public class FileInspectorPanel extends JPanel {
     }
 
     private void initializeAperture() {
-        // initialize the mime type identifier
-        mimeTypeIdentifier = new MagicMimeTypeIdentifierFactory().get();
-
+        // fetch a mime type identifier
+        DefaultMimeTypeIdentifierRegistry identifierRegistry = new DefaultMimeTypeIdentifierRegistry();
+        Iterator factories = identifierRegistry.getAll().iterator();
+        MimeTypeIdentifierFactory factory = (MimeTypeIdentifierFactory) factories.next();
+        mimeTypeIdentifier = factory.get();
+            
         // initialize the extractor registry
-        extractorRegistry = new ExtractorRegistryImpl();
-        extractorRegistry.add(new PlainTextExtractorFactory());
-        extractorRegistry.add(new HtmlExtractorFactory());
-        extractorRegistry.add(new PdfExtractorFactory());
-        extractorRegistry.add(new OpenDocumentExtractorFactory());
+        extractorRegistry = new DefaultExtractorRegistry();
     };
 
     public void setFile(File file) {
