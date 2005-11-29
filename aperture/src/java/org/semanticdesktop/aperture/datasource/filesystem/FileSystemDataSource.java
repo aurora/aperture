@@ -10,7 +10,6 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.openrdf.model.impl.URIImpl;
 import org.semanticdesktop.aperture.datasource.Vocabulary;
 import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
 
@@ -19,11 +18,8 @@ import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
  */
 public class FileSystemDataSource extends DataSourceBase {
 
-    public static final org.openrdf.model.URI FILE_SYSTEM_DATA_SOURCE_TYPE = new URIImpl(Vocabulary.NS
-            + "FileSystemDataSource");
-
     public org.openrdf.model.URI getType() {
-        return FILE_SYSTEM_DATA_SOURCE_TYPE;
+        return Vocabulary.FILE_SYSTEM_DATA_SOURCE;
     }
     
     public void setRootFile(File rootFile) {

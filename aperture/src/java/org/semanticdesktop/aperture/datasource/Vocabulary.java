@@ -25,6 +25,8 @@ public interface Vocabulary {
 
     public static final URI DATA_SOURCE = new URIImpl(NS + "DataSource");
 
+    public static final URI FILE_SYSTEM_DATA_SOURCE = new URIImpl(NS + "FileSystemDataSource");
+
     public static final URI PATTERN = new URIImpl(NS + "Pattern");
 
     public static final URI REGEXP_PATTERN = new URIImpl(NS + "RegExpPattern");
