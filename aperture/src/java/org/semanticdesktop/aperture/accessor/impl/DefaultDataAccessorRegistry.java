@@ -37,7 +37,7 @@ public class DefaultDataAccessorRegistry extends DataAccessorRegistryImpl {
 
     private static final String DEFAULT_FILE = "org/semanticdesktop/aperture/accessor/impl/defaults.xml";
 
-    private static final String CRAWLER_FACTORY_TAG = "crawlerFactory";
+    private static final String ACCESSOR_FACTORY_TAG = "accessorFactory";
     
     private static final String NAME_TAG = "name";
 
@@ -83,7 +83,7 @@ public class DefaultDataAccessorRegistry extends DataAccessorRegistryImpl {
         private boolean insideFactoryElement = false;
         
         public void startTag(String tagName, Map atts, String text) throws SAXException {
-            if (CRAWLER_FACTORY_TAG.equals(tagName)) {
+            if (ACCESSOR_FACTORY_TAG.equals(tagName)) {
                 insideFactoryElement = true;
             }
             else if (NAME_TAG.equals(tagName) && insideFactoryElement && text != null) {
@@ -92,7 +92,7 @@ public class DefaultDataAccessorRegistry extends DataAccessorRegistryImpl {
         }
 
         public void endTag(String tagName) {
-            if (CRAWLER_FACTORY_TAG.equals(tagName)) {
+            if (ACCESSOR_FACTORY_TAG.equals(tagName)) {
                 insideFactoryElement = false;
             }
         }
@@ -105,7 +105,6 @@ public class DefaultDataAccessorRegistry extends DataAccessorRegistryImpl {
                     Object instance = clazz.newInstance();
                     DataAccessorFactory factory = (DataAccessorFactory) instance;
                     add(factory);
-                    System.out.println(factory);
                 }
                 catch (ClassNotFoundException e) {
                     LOGGER.log(Level.WARNING, "unable to find class " + className + ", ignoring", e);
