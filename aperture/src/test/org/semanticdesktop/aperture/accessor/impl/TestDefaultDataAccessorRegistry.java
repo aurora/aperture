@@ -12,7 +12,7 @@ public class TestDefaultDataAccessorRegistry extends ApertureTestBase {
 
     public void testRegistry() {
         DefaultDataAccessorRegistry registry = new DefaultDataAccessorRegistry();
-        assertNotNull(registry.get("file"));
+        assertEquals(1, registry.get("file").size());
     }
 }
 
