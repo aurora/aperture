@@ -43,6 +43,8 @@ public class StatementsPanel extends JPanel {
 
     private DefaultComboBoxModel formatBoxModel = null; // @jve:decl-index=0:visual-constraint=""
 
+    private JLabel warningLabel = null;
+
     /**
      * This is the default constructor
      */
@@ -57,9 +59,19 @@ public class StatementsPanel extends JPanel {
      * @return void
      */
     private void initialize() {
+        GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
+        gridBagConstraints11.gridx = 0;
+        gridBagConstraints11.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints11.gridwidth = 3;
+        gridBagConstraints11.weightx = 1.0D;
+        gridBagConstraints11.insets = new java.awt.Insets(0, 0, 10, 0);
+        gridBagConstraints11.gridy = 0;
+        warningLabel = new JLabel();
+        warningLabel.setText("Note: partial RDF shown, literal values are clipped to "
+                + LiteralClipper.DEFAULT_MAX_LENGTH + " characters.");
         GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
         gridBagConstraints1.fill = java.awt.GridBagConstraints.NONE;
-        gridBagConstraints1.gridy = 0;
+        gridBagConstraints1.gridy = 1;
         gridBagConstraints1.weightx = 0.0D;
         gridBagConstraints1.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints1.insets = new java.awt.Insets(0, 0, 0, 30);
@@ -68,12 +80,12 @@ public class StatementsPanel extends JPanel {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 15);
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         formatLabel = new JLabel();
         formatLabel.setText("Serialization Format:");
         GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
         gridBagConstraints3.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints3.gridy = 1;
+        gridBagConstraints3.gridy = 2;
         gridBagConstraints3.weightx = 1.0;
         gridBagConstraints3.weighty = 1.0;
         gridBagConstraints3.gridwidth = 3;
@@ -83,7 +95,7 @@ public class StatementsPanel extends JPanel {
         gridBagConstraints2.gridx = 0;
         gridBagConstraints2.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints2.weightx = 1.0D;
-        gridBagConstraints2.gridy = 0;
+        gridBagConstraints2.gridy = 1;
         statementsLabel = new JLabel();
         statementsLabel.setText("Statements:");
         this.setLayout(new GridBagLayout());
@@ -92,6 +104,7 @@ public class StatementsPanel extends JPanel {
         this.add(getStatementsScrollPane(), gridBagConstraints3);
         this.add(formatLabel, gridBagConstraints);
         this.add(getFormatBox(), gridBagConstraints1);
+        this.add(warningLabel, gridBagConstraints11);
     }
 
     public void setRepository(Repository repository) {
