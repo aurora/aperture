@@ -37,7 +37,7 @@ public class DefaultDataAccessorRegistry extends DataAccessorRegistryImpl {
 
     private static final String DEFAULT_FILE = "org/semanticdesktop/aperture/accessor/impl/defaults.xml";
 
-    private static final String ACCESSOR_FACTORY_TAG = "accessorFactory";
+    private static final String ACCESSOR_FACTORY_TAG = "dataAccessorFactory";
     
     private static final String NAME_TAG = "name";
 

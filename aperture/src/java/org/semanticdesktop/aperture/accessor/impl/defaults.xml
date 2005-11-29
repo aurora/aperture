@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 
-<accessorFactories>
-	<accessorFactory>
+<dataAccessorFactories>
+	<dataAccessorFactory>
 		<name>org.semanticdesktop.aperture.accessor.file.FileAccessorFactory</name>
-	</accessorFactory>
-</accessorFactories>
+	</dataAccessorFactory>
+</dataAccessorFactories>
