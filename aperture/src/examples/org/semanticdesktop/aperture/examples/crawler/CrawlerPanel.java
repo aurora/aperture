@@ -296,6 +296,7 @@ public class CrawlerPanel extends JPanel {
 
         public RDFContainer getRDFContainer(URI uri) {
             rdfContainer.setDescribedUri(uri);
+            rdfContainer.setContext(uri);
             return rdfContainer;
         }
         
