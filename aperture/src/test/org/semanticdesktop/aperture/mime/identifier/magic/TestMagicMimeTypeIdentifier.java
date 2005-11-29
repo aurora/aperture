@@ -18,8 +18,8 @@ import org.semanticdesktop.aperture.util.ResourceUtil;
 public class TestMagicMimeTypeIdentifier extends ApertureTestBase {
 
     public void testXmlFileParsing() {
-        // test whether the Java class file description contains the right byte sequence (ca fe ba be 00)
-        byte[] requiredBytes = new byte[] { (byte) 202, (byte) 254, (byte) 186, (byte) 190, (byte) 0 };
+        // test whether the Java class file description contains the right byte sequence (ca fe ba be)
+        byte[] requiredBytes = new byte[] { (byte) 202, (byte) 254, (byte) 186, (byte) 190 };
 
         MagicMimeTypeIdentifierFactory factory = new MagicMimeTypeIdentifierFactory();
         MagicMimeTypeIdentifier identifier = (MagicMimeTypeIdentifier) factory.get();
