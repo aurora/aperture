@@ -620,7 +620,7 @@ Defaults to no parent type.
 	<mimeType>application/x-java-class</mimeType>
 	<extensions>class</extensions>
 	<condition>
-		<byteSequence encoding="hex">ca fe ba be 00</byteSequence>
+		<byteSequence encoding="hex">ca fe ba be</byteSequence>
 		<minimumLength>5</minimumLength>
 	</condition>
 </description>
