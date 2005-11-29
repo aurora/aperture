@@ -235,7 +235,6 @@ public class CrawlReportBase implements CrawlReport {
             ie.initCause(e);
             throw ie;
         }
-
     }
 
     private class ScanReportParser extends SimpleSAXAdapter {
