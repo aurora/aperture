@@ -22,13 +22,11 @@ import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
-import org.semanticdesktop.aperture.extractor.html.HtmlExtractorFactory;
-import org.semanticdesktop.aperture.extractor.impl.ExtractorRegistryImpl;
-import org.semanticdesktop.aperture.extractor.opendocument.OpenDocumentExtractorFactory;
-import org.semanticdesktop.aperture.extractor.pdf.PdfExtractorFactory;
-import org.semanticdesktop.aperture.extractor.plaintext.PlainTextExtractorFactory;
+import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
-import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifierFactory;
+import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierFactory;
+import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierRegistry;
+import org.semanticdesktop.aperture.mime.identifier.impl.DefaultMimeTypeIdentifierRegistry;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 
@@ -51,25 +49,17 @@ public class FileInspector {
     public static void main(String[] args) throws IOException, ExtractorException {
         // check if a commandline argument was specified
         if (args.length == 0) {
-            System.err.println("Aperture File Inspector\nUsage: java " + FileInspector.class.getName()
-                    + " <file>");
+            System.err.println("Aperture File Inspector\nUsage: java " + FileInspector.class.getName() + " <file>");
             System.exit(-1);
         }
 
-        // We're only going to use a single MimeTypeIdentifier instance and in the current code
-        // base there is only a single implementation available, so we instantiate it directly instead of
-        // accessing it through a MimeTypeIdentifierRegistry.
-        MimeTypeIdentifier identifier = new MagicMimeTypeIdentifierFactory().get();
+        // create a MimeTypeIdentifier (fetch the first one provided by the registry)
+        MimeTypeIdentifierRegistry identifierRegistry = new DefaultMimeTypeIdentifierRegistry();
+        MimeTypeIdentifierFactory identifierFactory = (MimeTypeIdentifierFactory) identifierRegistry.getAll().iterator().next();
+        MimeTypeIdentifier identifier = identifierFactory.get();
 
-        // Create an ExtractorRegistry. Right now this initialization process is hard-coded. If this
-        // were an OSGi-based application, this would not have been necessary, you would simply be able
-        // to ask the platform for implementations of these services. Consequently, a new Extractor
-        // implementation would immediately become available.
-        ExtractorRegistry extractorRegistry = new ExtractorRegistryImpl();
-        extractorRegistry.add(new PlainTextExtractorFactory());
-        extractorRegistry.add(new HtmlExtractorFactory());
-        extractorRegistry.add(new PdfExtractorFactory());
-        extractorRegistry.add(new OpenDocumentExtractorFactory());
+        // create an ExtractorRegistry containing all available ExtractorFactories
+        ExtractorRegistry extractorRegistry = new DefaultExtractorRegistry();
 
         // read as many bytes of the file as desired by the MIME type identifier
         File file = new File(args[0]);
@@ -91,7 +81,7 @@ public class FileInspector {
         URI uri = new URIImpl(file.toURI().toString());
         SesameRDFContainer container = new SesameRDFContainer(uri);
 
-        // retrieve an Extractor that can process this MIME type
+        // determine and apply an Extractor that can handle this MIME type
         Set factories = extractorRegistry.get(mimeType);
         if (factories != null && !factories.isEmpty()) {
             // just fetch the first available Extractor
