@@ -745,7 +745,7 @@ Defaults to no parent type.
 	</condition>
 </description>
 
-<!-- ================== Video Types ================== -->
+<!-- ================== Video and Multimedia Types ================== -->
 
 <description>
 	<mimeType>video/x-msvideo</mimeType>
@@ -753,6 +753,16 @@ Defaults to no parent type.
 	<condition>
 		<byteSequence encoding="hex">41 56 49 20</byteSequence>
 		<offset>8</offset>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>video/x-ms-wmv</mimeType>
+	<extensions>wmv</extensions>
+	<condition>
+		<byteSequence encoding="hex">30 26 b2 75 8e 66 cf 11 a6 d9 00 aa 00 62 ce 6c</byteSequence>
+		<offset>0</offset>
 		<minimumLength>20</minimumLength>
 	</condition>
 </description>
@@ -776,6 +786,15 @@ Defaults to no parent type.
 	</condition>
 	<condition>
 		<byteSequence encoding="hex">00 00 01 ba</byteSequence>
+		<minimumLength>20</minimumLength>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/x-shockwave-flash</mimeType>
+	<extensions>swf</extensions>
+	<condition>
+		<byteSequence encoding="hex">46 57 53</byteSequence>
 		<minimumLength>20</minimumLength>
 	</condition>
 </description>
