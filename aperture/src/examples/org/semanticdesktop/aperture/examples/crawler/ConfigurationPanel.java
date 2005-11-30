@@ -16,6 +16,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
+import javax.swing.JCheckBox;
 
 public class ConfigurationPanel extends JPanel {
 
@@ -28,6 +29,8 @@ public class ConfigurationPanel extends JPanel {
     
     private JFileChooser rootFileChooser;
     private JFileChooser repositoryChooser;
+    private JCheckBox determineMimeTypeBox = null;
+    private JCheckBox extractContentsBox = null;
 
     /**
      * This is the default constructor
@@ -35,6 +38,7 @@ public class ConfigurationPanel extends JPanel {
     public ConfigurationPanel() {
         super();
         initialize();
+        updateEnabledState();
     }
 
     /**
@@ -43,21 +47,34 @@ public class ConfigurationPanel extends JPanel {
      * @return void
      */
     private void initialize() {
+        GridBagConstraints gridBagConstraints21 = new GridBagConstraints();
+        gridBagConstraints21.gridx = 0;
+        gridBagConstraints21.weightx = 1.0D;
+        gridBagConstraints21.gridwidth = 2;
+        gridBagConstraints21.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints21.gridy = 3;
+        GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
+        gridBagConstraints11.gridx = 0;
+        gridBagConstraints11.gridwidth = 2;
+        gridBagConstraints11.weightx = 1.0D;
+        gridBagConstraints11.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints11.insets = new java.awt.Insets(10,0,0,0);
+        gridBagConstraints11.gridy = 2;
         GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
         gridBagConstraints5.gridx = 1;
         gridBagConstraints5.insets = new java.awt.Insets(0,20,0,0);
-        gridBagConstraints5.gridy = 3;
+        gridBagConstraints5.gridy = 5;
         GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
         gridBagConstraints4.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints4.gridy = 3;
+        gridBagConstraints4.gridy = 5;
         gridBagConstraints4.weightx = 1.0;
         gridBagConstraints4.gridx = 0;
         GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
         gridBagConstraints3.gridx = 0;
         gridBagConstraints3.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints3.gridwidth = 21;
-        gridBagConstraints3.insets = new java.awt.Insets(20,0,5,0);
-        gridBagConstraints3.gridy = 2;
+        gridBagConstraints3.insets = new java.awt.Insets(40,0,5,0);
+        gridBagConstraints3.gridy = 4;
         repositoryLabel = new JLabel();
         repositoryLabel.setText("Output file (TriX format):");
         GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
@@ -78,13 +95,15 @@ public class ConfigurationPanel extends JPanel {
         rootFileLabel = new JLabel();
         rootFileLabel.setText("Directory to crawl (recursively!):");
         this.setLayout(new GridBagLayout());
-        this.setSize(459, 143);
+        this.setSize(463, 200);
         this.add(rootFileLabel, gridBagConstraints);
         this.add(getFileField(), gridBagConstraints1);
         this.add(getFileButton(), gridBagConstraints2);
         this.add(repositoryLabel, gridBagConstraints3);
         this.add(getRepositoryField(), gridBagConstraints4);
         this.add(getRepositoryButton(), gridBagConstraints5);
+        this.add(getDetermineMimeTypeBox(), gridBagConstraints11);
+        this.add(getExtractContentsBox(), gridBagConstraints21);
     }
 
     /**
@@ -163,6 +182,41 @@ public class ConfigurationPanel extends JPanel {
             });
         }
         return repositoryButton;
+    }
+
+    /**
+     * This method initializes determineMimeTypeBox	
+     * 	
+     * @return javax.swing.JCheckBox	
+     */
+    public JCheckBox getDetermineMimeTypeBox() {
+        if (determineMimeTypeBox == null) {
+            determineMimeTypeBox = new JCheckBox();
+            determineMimeTypeBox.setText("Determine MIME type");
+            determineMimeTypeBox.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    updateEnabledState();
+                }
+            });
+        }
+        return determineMimeTypeBox;
+    }
+
+    private void updateEnabledState() {
+        getExtractContentsBox().setEnabled(getDetermineMimeTypeBox().isSelected());
+    }
+
+    /**
+     * This method initializes extractContentsBox	
+     * 	
+     * @return javax.swing.JCheckBox	
+     */
+    public JCheckBox getExtractContentsBox() {
+        if (extractContentsBox == null) {
+            extractContentsBox = new JCheckBox();
+            extractContentsBox.setText("Extract document text and metadata");
+        }
+        return extractContentsBox;
     }
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"

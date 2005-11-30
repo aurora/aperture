@@ -34,13 +34,11 @@ import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.sesame.repository.Repository;
 import org.openrdf.sesame.sail.SailUpdateException;
-import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.Vocabulary;
-import org.semanticdesktop.aperture.accessor.file.FileAccessorFactory;
-import org.semanticdesktop.aperture.accessor.impl.DataAccessorRegistryImpl;
+import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
@@ -95,9 +93,11 @@ public class CrawlerPanel extends JPanel {
         gridBagConstraints3.weightx = 1.0D;
         gridBagConstraints3.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints3.insets = new java.awt.Insets(0, 10, 0, 10);
+        gridBagConstraints3.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints3.gridy = 1;
         progressLabel = new JLabel();
         progressLabel.setText("Status: Inactive");
+        progressLabel.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), javax.swing.BorderFactory.createEmptyBorder(2,5,2,5)));
         GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
         gridBagConstraints2.gridx = 0;
         gridBagConstraints2.insets = new java.awt.Insets(5, 0, 0, 0);
@@ -110,7 +110,7 @@ public class CrawlerPanel extends JPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 20, 10);
         gridBagConstraints.gridy = 0;
         this.setLayout(new GridBagLayout());
-        this.setSize(528, 203);
+        this.setSize(534, 293);
         this.add(getConfigurationPanel(), gridBagConstraints);
         this.add(getButtonPanel(), gridBagConstraints2);
         this.add(progressLabel, gridBagConstraints3);
@@ -218,24 +218,30 @@ public class CrawlerPanel extends JPanel {
 
         // create a FileSystemDataSource
         FileSystemDataSource source = new FileSystemDataSource();
-
         URI sourceID = new URIImpl("source:testSource");
         source.setID(sourceID);
 
+        // configure the directory tree to crawl
         File rootFile = new File(configurationPanel.getFileField().getText());
         SesameRDFContainer configuration = new SesameRDFContainer(sourceID);
         ConfigurationUtil.setRootUrl(rootFile.toURI().toString(), configuration);
         source.setConfiguration(configuration);
 
-        // setup a crawler
+        // setup a crawler that can handle this type of DataSource
         crawler = new FileSystemCrawler();
         crawler.setDataSource(source);
-        crawler.setCrawlerHandler(new SimpleCrawlerHandler());
-
-        DataAccessorRegistry registry = new DataAccessorRegistryImpl();
-        registry.add(new FileAccessorFactory());
-        crawler.setDataAccessorRegistry(registry);
-
+        crawler.setDataAccessorRegistry(new DefaultDataAccessorRegistry());
+        
+        // setup a CrawlerHandler
+        SimpleCrawlerHandler crawlerHandler = new SimpleCrawlerHandler();
+        crawler.setCrawlerHandler(crawlerHandler);
+        
+        boolean identifyMimeType = getConfigurationPanel().getDetermineMimeTypeBox().isSelected();
+        boolean extractContents = identifyMimeType && getConfigurationPanel().getExtractContentsBox().isSelected();
+        crawlerHandler.setIdentifyMimeType(identifyMimeType);
+        crawlerHandler.setExtractContents(extractContents);
+        
+        // start a Thread that performs the crawling
         Thread thread = new Thread() {
 
             public void run() {
@@ -258,6 +264,10 @@ public class CrawlerPanel extends JPanel {
         private MimeTypeIdentifier mimeTypeIdentifier;
 
         private ExtractorRegistry extractorRegistry;
+        
+        private boolean identifyMimeType;
+        
+        private boolean extractContents;
 
         public SimpleCrawlerHandler() {
             // set up a repository
@@ -280,6 +290,14 @@ public class CrawlerPanel extends JPanel {
             extractorRegistry = new DefaultExtractorRegistry();
         }
 
+        public void setIdentifyMimeType(boolean identifyMimeType) {
+            this.identifyMimeType = identifyMimeType;
+        }
+        
+        public void setExtractContents(boolean extractContents) {
+            this.extractContents = extractContents;
+        }
+        
         public void crawlStarted(Crawler crawler) {
             displayMessage("Crawling started...");
             nrObjects = 0;
@@ -350,6 +368,10 @@ public class CrawlerPanel extends JPanel {
         }
 
         private void process(FileDataObject object) {
+            if (!identifyMimeType) {
+                return;
+            }
+            
             URI id = object.getID();
             
             try {
@@ -371,13 +393,15 @@ public class CrawlerPanel extends JPanel {
                     metadata.put(Vocabulary.MIME_TYPE, mimeType);
                     
                     // apply an Extractor if available
-                    buffer.reset();
+                    if (extractContents) {
+                        buffer.reset();
                     
-                    Set extractors = extractorRegistry.get(mimeType);
-                    if (!extractors.isEmpty()) {
-                        ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
-                        Extractor extractor = factory.get();
-                        extractor.extract(id, buffer, null, mimeType, metadata);
+                        Set extractors = extractorRegistry.get(mimeType);
+                        if (!extractors.isEmpty()) {
+                            ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
+                            Extractor extractor = factory.get();
+                            extractor.extract(id, buffer, null, mimeType, metadata);
+                        }
                     }
                 }
             }

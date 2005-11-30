@@ -31,7 +31,7 @@ public class CrawlerFrame extends JFrame {
      * @return void
      */
     private void initialize() {
-        this.setSize(561, 248);
+        this.setSize(564, 336);
         this.setContentPane(getJContentPane());
         this.setTitle("Aperture File System Crawler");
         this.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -63,6 +63,7 @@ public class CrawlerFrame extends JFrame {
     private CrawlerPanel getCrawlerPanel() {
         if (crawlerPanel == null) {
             crawlerPanel = new CrawlerPanel();
+            crawlerPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(0,10,0,10));
         }
         return crawlerPanel;
     }
