@@ -9,10 +9,15 @@ package org.semanticdesktop.aperture.examples.crawler;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Writer;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -31,7 +36,9 @@ import org.openrdf.sesame.repository.Repository;
 import org.openrdf.sesame.sail.SailUpdateException;
 import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 import org.semanticdesktop.aperture.accessor.DataObject;
+import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
+import org.semanticdesktop.aperture.accessor.Vocabulary;
 import org.semanticdesktop.aperture.accessor.file.FileAccessorFactory;
 import org.semanticdesktop.aperture.accessor.impl.DataAccessorRegistryImpl;
 import org.semanticdesktop.aperture.crawler.Crawler;
@@ -40,10 +47,20 @@ import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.filesystem.FileSystemCrawler;
 import org.semanticdesktop.aperture.datasource.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
+import org.semanticdesktop.aperture.extractor.Extractor;
+import org.semanticdesktop.aperture.extractor.ExtractorException;
+import org.semanticdesktop.aperture.extractor.ExtractorFactory;
+import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
+import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
+import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
+import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.util.IOUtil;
 
 public class CrawlerPanel extends JPanel {
+
+    private static final Logger LOGGER = Logger.getLogger(CrawlerPanel.class.getName());
 
     private ConfigurationPanel configurationPanel = null;
 
@@ -209,7 +226,7 @@ public class CrawlerPanel extends JPanel {
         SesameRDFContainer configuration = new SesameRDFContainer(sourceID);
         ConfigurationUtil.setRootUrl(rootFile.toURI().toString(), configuration);
         source.setConfiguration(configuration);
-        
+
         // setup a crawler
         crawler = new FileSystemCrawler();
         crawler.setDataSource(source);
@@ -238,6 +255,10 @@ public class CrawlerPanel extends JPanel {
 
         private int nrObjects;
 
+        private MimeTypeIdentifier mimeTypeIdentifier;
+
+        private ExtractorRegistry extractorRegistry;
+
         public SimpleCrawlerHandler() {
             // set up a repository
             rdfContainer = new SesameRDFContainer("file:dummy");
@@ -253,6 +274,10 @@ public class CrawlerPanel extends JPanel {
                 // separate transaction.
                 e.printStackTrace();
             }
+
+            // create components for determining file contents
+            mimeTypeIdentifier = new MagicMimeTypeIdentifier();
+            extractorRegistry = new DefaultExtractorRegistry();
         }
 
         public void crawlStarted(Crawler crawler) {
@@ -301,27 +326,67 @@ public class CrawlerPanel extends JPanel {
             rdfContainer.setContext(uri);
             return rdfContainer;
         }
-        
+
         public void objectNew(Crawler dataCrawler, DataObject object) {
-            process(object);
+            if (object instanceof FileDataObject) {
+                process((FileDataObject) object);
+            }
             commit();
         }
 
         public void objectChanged(Crawler dataCrawler, DataObject object) {
-            process(object);
+            displayUnexpectedEventWarning("changed");
             commit();
         }
 
         public void objectNotModified(Crawler crawler, String url) {
+            displayUnexpectedEventWarning("unmodified");
             commit();
         }
 
         public void objectRemoved(Crawler dataCrawler, String url) {
+            displayUnexpectedEventWarning("removed");
             commit();
         }
 
-        private void process(DataObject object) {
-
+        private void process(FileDataObject object) {
+            URI id = object.getID();
+            
+            try {
+                // Create a buffer around the object's stream large enough to be able to reset the stream
+                // after MIME type identification has taken place. Add some extra to the minimum array
+                // length required by the MimeTypeIdentifier for safety.
+                int minimumArrayLength = mimeTypeIdentifier.getMinArrayLength();
+                int bufferSize = Math.max(minimumArrayLength, 8192);
+                BufferedInputStream buffer = new BufferedInputStream(object.getContent(), bufferSize);
+                buffer.mark(minimumArrayLength + 10); // add some for safety
+                
+                // apply the MimeTypeIdentifier
+                byte[] bytes = IOUtil.readBytes(buffer, minimumArrayLength);
+                String mimeType = mimeTypeIdentifier.identify(bytes, null, id);
+                
+                if (mimeType != null) {
+                    // add the mime type to the metadata
+                    RDFContainer metadata = object.getMetadata();
+                    metadata.put(Vocabulary.MIME_TYPE, mimeType);
+                    
+                    // apply an Extractor if available
+                    buffer.reset();
+                    
+                    Set extractors = extractorRegistry.get(mimeType);
+                    if (!extractors.isEmpty()) {
+                        ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
+                        Extractor extractor = factory.get();
+                        extractor.extract(id, buffer, null, mimeType, metadata);
+                    }
+                }
+            }
+            catch (IOException e) {
+                LOGGER.log(Level.WARNING, "IOException while processing " + id, e);
+            }
+            catch (ExtractorException e) {
+                LOGGER.log(Level.WARNING, "ExtractorException while processing " + id, e);
+            }
         }
 
         private void commit() {
@@ -332,6 +397,12 @@ public class CrawlerPanel extends JPanel {
                 // don't continue when this happens
                 throw new RuntimeException(e);
             }
+        }
+
+        private void displayUnexpectedEventWarning(String event) {
+            // as we don't keep track of access data in this example code, some events should never occur
+            System.err.println("WARNING: encountered unexpected event (" + event
+                    + ") with non-incremental crawler");
         }
 
         public void clearStarted(Crawler crawler) {
