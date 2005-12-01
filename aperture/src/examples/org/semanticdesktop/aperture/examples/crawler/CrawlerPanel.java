@@ -6,9 +6,9 @@
  */
 package org.semanticdesktop.aperture.examples.crawler;
 
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
+import javax.swing.JPanel;
 import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,10 +19,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -59,16 +59,16 @@ import org.semanticdesktop.aperture.util.IOUtil;
 public class CrawlerPanel extends JPanel {
 
     private static final Logger LOGGER = Logger.getLogger(CrawlerPanel.class.getName());
-
+    
     private ConfigurationPanel configurationPanel = null;
 
-    private JPanel buttonPanel = null;
+    private JLabel statusLabel = null;
 
     private JButton crawlButton = null;
 
     private JButton stopButton = null;
 
-    private JLabel progressLabel = null;
+    private JButton exitButton = null;
 
     private FileSystemCrawler crawler;
 
@@ -79,7 +79,7 @@ public class CrawlerPanel extends JPanel {
         super();
         initialize();
         installListeners();
-        updateEnabledStates();
+        updateEnabledState();
     }
 
     /**
@@ -88,56 +88,78 @@ public class CrawlerPanel extends JPanel {
      * @return void
      */
     private void initialize() {
+        GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
+        gridBagConstraints4.gridx = 2;
+        gridBagConstraints4.anchor = java.awt.GridBagConstraints.SOUTHEAST;
+        gridBagConstraints4.weighty = 1.0D;
+        gridBagConstraints4.gridy = 2;
         GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
-        gridBagConstraints3.gridx = 0;
-        gridBagConstraints3.weightx = 1.0D;
-        gridBagConstraints3.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints3.insets = new java.awt.Insets(0, 10, 0, 10);
-        gridBagConstraints3.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints3.gridy = 1;
-        progressLabel = new JLabel();
-        progressLabel.setText("Status: Inactive");
-        progressLabel.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), javax.swing.BorderFactory.createEmptyBorder(2,5,2,5)));
+        gridBagConstraints3.gridx = 1;
+        gridBagConstraints3.anchor = java.awt.GridBagConstraints.SOUTHEAST;
+        gridBagConstraints3.insets = new java.awt.Insets(0, 0, 0, 80);
+        gridBagConstraints3.weighty = 1.0D;
+        gridBagConstraints3.gridy = 2;
         GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
         gridBagConstraints2.gridx = 0;
-        gridBagConstraints2.insets = new java.awt.Insets(5, 0, 0, 0);
+        gridBagConstraints2.anchor = java.awt.GridBagConstraints.SOUTHEAST;
+        gridBagConstraints2.weightx = 1.0D;
+        gridBagConstraints2.insets = new java.awt.Insets(0, 0, 0, 20);
+        gridBagConstraints2.weighty = 1.0D;
         gridBagConstraints2.gridy = 2;
+        GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
+        gridBagConstraints1.gridx = 0;
+        gridBagConstraints1.weightx = 1.0D;
+        gridBagConstraints1.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints1.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints1.insets = new java.awt.Insets(20, 0, 0, 0);
+        gridBagConstraints1.gridwidth = 3;
+        gridBagConstraints1.gridy = 1;
+        statusLabel = new JLabel();
+        statusLabel.setText("Status: inactive");
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0D;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 20, 10);
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.gridwidth = 3;
         gridBagConstraints.gridy = 0;
         this.setLayout(new GridBagLayout());
-        this.setSize(534, 293);
+        this.setSize(540, 378);
         this.add(getConfigurationPanel(), gridBagConstraints);
-        this.add(getButtonPanel(), gridBagConstraints2);
-        this.add(progressLabel, gridBagConstraints3);
+        this.add(statusLabel, gridBagConstraints1);
+        this.add(getCrawlButton(), gridBagConstraints2);
+        this.add(getStopButton(), gridBagConstraints3);
+        this.add(getExitButton(), gridBagConstraints4);
     }
 
     private void installListeners() {
         DocumentListener listener = new DocumentListener() {
 
             public void insertUpdate(DocumentEvent e) {
-                updateEnabledStates();
+                updateEnabledState();
             }
 
             public void removeUpdate(DocumentEvent e) {
-                updateEnabledStates();
+                updateEnabledState();
             }
 
             public void changedUpdate(DocumentEvent e) {
-                updateEnabledStates();
+                updateEnabledState();
             }
         };
-        configurationPanel.getFileField().getDocument().addDocumentListener(listener);
-        configurationPanel.getRepositoryField().getDocument().addDocumentListener(listener);
+
+        getConfigurationPanel().getInputPanel().getFolderField().getDocument().addDocumentListener(listener);
+        getConfigurationPanel().getOutputPanel().getFileField().getDocument().addDocumentListener(listener);
     }
 
-    private void updateEnabledStates() {
-        crawlButton.setEnabled(!configurationPanel.getFileField().getText().equals("")
-                && !configurationPanel.getRepositoryField().getText().equals(""));
+    private void updateEnabledState() {
+        InputPanel inputPanel = getConfigurationPanel().getInputPanel();
+        OutputPanel outputPanel = getConfigurationPanel().getOutputPanel();
+        crawlButton.setEnabled(hasText(inputPanel.getFolderField()) && hasText(outputPanel.getFileField()));
+    }
+
+    private boolean hasText(JTextField textField) {
+        return !textField.getText().equals("");
     }
 
     /**
@@ -150,23 +172,6 @@ public class CrawlerPanel extends JPanel {
             configurationPanel = new ConfigurationPanel();
         }
         return configurationPanel;
-    }
-
-    /**
-     * This method initializes buttonPanel
-     * 
-     * @return javax.swing.JPanel
-     */
-    private JPanel getButtonPanel() {
-        if (buttonPanel == null) {
-            FlowLayout flowLayout = new FlowLayout();
-            flowLayout.setHgap(20);
-            buttonPanel = new JPanel();
-            buttonPanel.setLayout(flowLayout);
-            buttonPanel.add(getCrawlButton(), null);
-            buttonPanel.add(getStopButton(), null);
-        }
-        return buttonPanel;
     }
 
     /**
@@ -211,10 +216,30 @@ public class CrawlerPanel extends JPanel {
         return stopButton;
     }
 
+    /**
+     * This method initializes exitButton
+     * 
+     * @return javax.swing.JButton
+     */
+    private JButton getExitButton() {
+        if (exitButton == null) {
+            exitButton = new JButton();
+            exitButton.setText("Exit");
+            exitButton.addActionListener(new java.awt.event.ActionListener() {
+
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    System.exit(0);
+                }
+            });
+        }
+        return exitButton;
+    }
+
     private void crawl() {
         // change enabled states of some buttons
         getCrawlButton().setEnabled(false);
         getStopButton().setEnabled(true);
+        getExitButton().setEnabled(false);
 
         // create a FileSystemDataSource
         FileSystemDataSource source = new FileSystemDataSource();
@@ -222,7 +247,8 @@ public class CrawlerPanel extends JPanel {
         source.setID(sourceID);
 
         // configure the directory tree to crawl
-        File rootFile = new File(configurationPanel.getFileField().getText());
+        InputPanel inputPanel = getConfigurationPanel().getInputPanel();
+        File rootFile = new File(inputPanel.getFolderField().getText());
         SesameRDFContainer configuration = new SesameRDFContainer(sourceID);
         ConfigurationUtil.setRootUrl(rootFile.toURI().toString(), configuration);
         source.setConfiguration(configuration);
@@ -236,8 +262,8 @@ public class CrawlerPanel extends JPanel {
         SimpleCrawlerHandler crawlerHandler = new SimpleCrawlerHandler();
         crawler.setCrawlerHandler(crawlerHandler);
         
-        boolean identifyMimeType = getConfigurationPanel().getDetermineMimeTypeBox().isSelected();
-        boolean extractContents = identifyMimeType && getConfigurationPanel().getExtractContentsBox().isSelected();
+        boolean identifyMimeType = inputPanel.getDetermineMimeTypeBox().isSelected();
+        boolean extractContents = identifyMimeType && inputPanel.getExtractContentsBox().isSelected();
         crawlerHandler.setIdentifyMimeType(identifyMimeType);
         crawlerHandler.setExtractContents(extractContents);
         
@@ -255,27 +281,36 @@ public class CrawlerPanel extends JPanel {
 
     private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
+        // this RDFContainer implementation will be used to pass to the Crawler and Extractor to store
+        // the metadata in
         private SesameRDFContainer rdfContainer;
 
+        // the Repository used internally in the SesameRDFContainer
         private Repository repository;
 
+        // the number of objects accessed thus far
         private int nrObjects;
 
+        // the object responsible for determining a file's MIME type
         private MimeTypeIdentifier mimeTypeIdentifier;
 
+        // the registry holding the ExtractorFactories
         private ExtractorRegistry extractorRegistry;
-        
+
+        // switch to enable MIME type identification
         private boolean identifyMimeType;
-        
+
+        // switch to enable full-text and metadata extraction, implies MIME type identification
         private boolean extractContents;
 
         public SimpleCrawlerHandler() {
-            // set up a repository
-            rdfContainer = new SesameRDFContainer("file:dummy");
+            // set up a place to store the metadata
+            rdfContainer = new SesameRDFContainer("urn:dummy");
             repository = rdfContainer.getRepository();
 
-            // if we set auto-commit to false, we don't have to hassle with Transaction instances.
-            // Statements are now only "really" added after each commit.
+            // Set auto-commit to false to enable transactions at a higher level than per-statement
+            // without the hassle of having to deal with Transaction objects. Statements are now only
+            // "really" added after each commit, no startTransaction is necessary
             try {
                 repository.setAutoCommit(false);
             }
@@ -285,7 +320,7 @@ public class CrawlerPanel extends JPanel {
                 e.printStackTrace();
             }
 
-            // create components for determining file contents
+            // create components for processing file contents
             mimeTypeIdentifier = new MagicMimeTypeIdentifier();
             extractorRegistry = new DefaultExtractorRegistry();
         }
@@ -293,11 +328,11 @@ public class CrawlerPanel extends JPanel {
         public void setIdentifyMimeType(boolean identifyMimeType) {
             this.identifyMimeType = identifyMimeType;
         }
-        
+
         public void setExtractContents(boolean extractContents) {
             this.extractContents = extractContents;
         }
-        
+
         public void crawlStarted(Crawler crawler) {
             displayMessage("Crawling started...");
             nrObjects = 0;
@@ -307,7 +342,8 @@ public class CrawlerPanel extends JPanel {
             displayMessage("Crawling completed, saving results...");
 
             try {
-                File repositoryFile = new File(configurationPanel.getRepositoryField().getText());
+                String text = getConfigurationPanel().getOutputPanel().getFileField().getText();
+                File repositoryFile = new File(text);
                 Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
                 RDFWriter rdfWriter = Rio.createWriter(RDFFormat.TRIX, writer);
                 repository.extractStatements(rdfWriter);
@@ -324,8 +360,9 @@ public class CrawlerPanel extends JPanel {
             SwingUtilities.invokeLater(new Runnable() {
 
                 public void run() {
-                    crawlButton.setEnabled(true);
-                    stopButton.setEnabled(false);
+                    getCrawlButton().setEnabled(true);
+                    getStopButton().setEnabled(false);
+                    getExitButton().setEnabled(true);
                 }
             });
         }
@@ -371,9 +408,9 @@ public class CrawlerPanel extends JPanel {
             if (!identifyMimeType) {
                 return;
             }
-            
+
             URI id = object.getID();
-            
+
             try {
                 // Create a buffer around the object's stream large enough to be able to reset the stream
                 // after MIME type identification has taken place. Add some extra to the minimum array
@@ -382,20 +419,20 @@ public class CrawlerPanel extends JPanel {
                 int bufferSize = Math.max(minimumArrayLength, 8192);
                 BufferedInputStream buffer = new BufferedInputStream(object.getContent(), bufferSize);
                 buffer.mark(minimumArrayLength + 10); // add some for safety
-                
+
                 // apply the MimeTypeIdentifier
                 byte[] bytes = IOUtil.readBytes(buffer, minimumArrayLength);
                 String mimeType = mimeTypeIdentifier.identify(bytes, null, id);
-                
+
                 if (mimeType != null) {
                     // add the mime type to the metadata
                     RDFContainer metadata = object.getMetadata();
                     metadata.put(Vocabulary.MIME_TYPE, mimeType);
-                    
+
                     // apply an Extractor if available
                     if (extractContents) {
                         buffer.reset();
-                    
+
                         Set extractors = extractorRegistry.get(mimeType);
                         if (!extractors.isEmpty()) {
                             ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
@@ -445,7 +482,7 @@ public class CrawlerPanel extends JPanel {
             SwingUtilities.invokeLater(new Runnable() {
 
                 public void run() {
-                    CrawlerPanel.this.progressLabel.setText(message);
+                    statusLabel.setText(message);
                 }
             });
         }
