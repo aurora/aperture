@@ -20,6 +20,7 @@ import org.htmlparser.Tag;
 import org.htmlparser.Text;
 import org.htmlparser.lexer.Lexer;
 import org.htmlparser.lexer.Page;
+import org.htmlparser.lexer.Stream;
 import org.htmlparser.tags.MetaTag;
 import org.htmlparser.util.EncodingChangeException;
 import org.htmlparser.util.ParserException;
@@ -58,6 +59,31 @@ public class HtmlExtractor implements Extractor {
             throws ExtractorException {
         // the specified charset will be used to direct the parser
         String charsetName = (charset == null) ? null : charset.displayName();
+
+        // The following outcommented code does not seem to work properly, even when choosing a rather
+        // high read limit for the mark operation. The mark position is still invalid once the parser
+        // gets to invoke the reset method, even when the content-type change occurs very early in the
+        // document. This makes me wonder whether the HTMLParser authors fully understand the mark/reset
+        // approach. While this is being sorted out, we just use the Stream class they provide, which
+        // unfortunately buffers the entire document in main memory so that a reset can always be
+        // performed regardless of how much is read already from the InputStream, at the cost of a
+        // potential OutOfMemoryError. Also, if this resetting takes place internally, I do not
+        // understand why they may sometimes throw an EncodingChangeException.
+
+        // wrap the InputStream if it does not support mark and reset
+        // if (!stream.markSupported()) {
+        // stream = new BufferedInputStream(stream, 8192);
+        // }
+        //
+        // mark the stream with a sufficiently high read limit so that the Parser can do a reset after it
+        // encounteres a <meta http-equiv="content-type" content="..."> statement. Apparently the Parser
+        // does a reset in this case but does not do a mark beforehand. The chosen read limit should be
+        // high enough to contain all such meta statements without leading to serious memory consumption.
+        // stream.mark(8192);
+
+        // instead of the outcommented code above we use the Stream class for now, which buffers the
+        // entire (!) stream in memory and solves the mark/reset problem in its own way
+        stream = new Stream(stream);
 
         // parse the document
         try {
@@ -135,12 +161,14 @@ public class HtmlExtractor implements Extractor {
          * Buffer that temporarily contains keywords found in the meta element.
          */
         private HashSet keywordBuffer = new HashSet();
-        
-        /// temporary pointers to extracted metadata
+
+        // / temporary pointers to extracted metadata
         private String title;
+
         private String author;
+
         private String description;
-        
+
         public ExtractionVisitor(RDFContainer container) {
             this.container = container;
             initFlags();
@@ -194,7 +222,7 @@ public class HtmlExtractor implements Extractor {
 
         public void visitTag(Tag tag) {
             String tagName = tag.getTagName();
-            
+
             if (STYLE.equals(tagName) || SCRIPT.equals(tagName)) {
                 // disable text extraction inside these elements
                 inTextContext = false;
@@ -205,16 +233,16 @@ public class HtmlExtractor implements Extractor {
 
                 // see if we are in a title context
                 inTitleContext = TITLE.equals(tagName);
-                
+
                 if (tag instanceof MetaTag) {
                     // handle metadata
                     MetaTag metaTag = (MetaTag) tag;
                     String metaTagName = metaTag.getMetaTagName();
                     String metaTagContent = metaTag.getMetaContent();
-                    
+
                     if (metaTagName != null && metaTagContent != null) {
                         metaTagName = metaTagName.toLowerCase();
-                        
+
                         if (metaTagName.equals("author")) {
                             author = metaTagContent;
                         }
@@ -241,7 +269,7 @@ public class HtmlExtractor implements Extractor {
 
         public void visitEndTag(Tag tag) {
             inTitleContext = false;
-            
+
             String tagName = tag.getTagName();
             if (XMP.equals(tagName) || PLAINTEXT.equals(tagName)) {
                 decodeText = true;
@@ -260,7 +288,7 @@ public class HtmlExtractor implements Extractor {
                     container.add(Vocabulary.KEYWORD, keyword);
                 }
             }
-            
+
             // store other metadata
             if (title != null) {
                 container.put(Vocabulary.TITLE, title);
@@ -271,7 +299,7 @@ public class HtmlExtractor implements Extractor {
             if (description != null) {
                 container.put(Vocabulary.DESCRIPTION, description);
             }
-            
+
             // cleanup
             reset();
         }
