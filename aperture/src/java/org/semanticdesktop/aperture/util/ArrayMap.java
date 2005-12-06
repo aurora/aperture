@@ -108,7 +108,7 @@ public class ArrayMap implements Map {
                     Map.Entry entry = (Map.Entry) object;
                     int pos = indexOf(entry.getKey(), keys, size);
                     if (pos != -1 && values[pos] == entry.getValue()) {
-                        remove(pos);
+                        ArrayMap.this.remove(pos);
                         return true;
                     }
                 }
@@ -275,7 +275,7 @@ public class ArrayMap implements Map {
                     return false;
                 }
                 else {
-                    remove(index);
+                    ArrayMap.this.remove(index);
                     return true;
                 }
             }
