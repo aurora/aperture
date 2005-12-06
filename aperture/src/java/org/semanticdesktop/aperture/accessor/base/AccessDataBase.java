@@ -264,7 +264,7 @@ public class AccessDataBase implements AccessData {
                     TreeSet children = (TreeSet) childrenMap.get(dataObjectId);
 
                     if (children == null) {
-                        children = new TreeSet<String>();
+                        children = new TreeSet();
                         childrenMap.put(dataObjectId, children);
                     }
 
