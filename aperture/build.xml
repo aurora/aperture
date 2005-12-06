@@ -19,7 +19,7 @@ your copy of ANT at http://ant.apache.org/
 		<!-- versions -->
 		<property name="project.version.major" value="2005" />
 		<property name="project.version.minor" value="1" />
-		<property name="version-status" value="-alpha-1" />
+		<property name="version-status" value="-alpha-2" />
 		<property name="project.version.full" value="${project.version.major}.${project.version.minor}${version-status}" />
 	
 		<!-- input dirs -->
@@ -172,7 +172,7 @@ your copy of ANT at http://ant.apache.org/
 		<mkdir dir="${javadoc.dir}" />
 		<javadoc destdir="${javadoc.dir}" sourcepath="${src.java.dir}" author="true" version="true" additionalparam="-breakiterator" use="true" classpathref="classpath" source="${java.src.version}" windowtitle="${project.longname} API release ${project.version.full}" doctitle="${project.longname} API release ${project.version.full}"
 			packagenames="org.semanticdesktop.aperture.*"
-			excludepackagenames="org.semanticdesktop.aperture.access.*,org.semanticdesktop.aperture.crawler.*,org.semanticdesktop.aperture.datasource.*,org.semanticdesktop.aperture.opener.*">
+			excludepackagenames="org.semanticdesktop.aperture.opener.*">
 			<link href="http://www.openrdf.org/doc/sesame2/api/" />
 			<link href="http://jena.sourceforge.net/javadoc/" />
 			<link href="http://java.sun.com/j2se/1.4.2/docs/api" />
@@ -241,9 +241,6 @@ your copy of ANT at http://ant.apache.org/
 			
 			<!-- The following files are exluded while their APIs are still under heavy revision.
 			     Note that this exludes both core code and unit tests. -->
-			<exclude name="**/org/semanticdesktop/aperture/access/**" />
-			<exclude name="**/org/semanticdesktop/aperture/crawler/**" />
-			<exclude name="**/org/semanticdesktop/aperture/datasource/**" />
 			<exclude name="**/org/semanticdesktop/aperture/opener/**" />
 		</zip>
 	</target>
