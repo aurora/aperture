@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.extractor.html;
 
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -18,6 +19,7 @@ import java.util.logging.Logger;
 import org.htmlparser.Parser;
 import org.htmlparser.Tag;
 import org.htmlparser.Text;
+import org.htmlparser.lexer.InputStreamSource;
 import org.htmlparser.lexer.Lexer;
 import org.htmlparser.lexer.Page;
 import org.htmlparser.lexer.Stream;
@@ -40,6 +42,8 @@ public class HtmlExtractor implements Extractor {
 
     private static final Logger LOGGER = Logger.getLogger(HtmlExtractor.class.getName());
 
+    private static final int BUFFER_SIZE = InputStreamSource.BUFFER_SIZE;
+    
     private static final ParserFeedback FEEDBACK_LOGGER = new ParserFeedback() {
 
         public void info(String message) {
@@ -57,38 +61,27 @@ public class HtmlExtractor implements Extractor {
 
     public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
             throws ExtractorException {
-        // the specified charset will be used to direct the parser
-        String charsetName = (charset == null) ? null : charset.displayName();
+        // the specified charset will be used to direct the parser, until it encounters a meta tag that
+        // tells him to use a different charset
+        String charsetName = (charset == null) ? Page.DEFAULT_CHARSET : charset.displayName();
 
-        // The following outcommented code does not seem to work properly, even when choosing a rather
-        // high read limit for the mark operation. The mark position is still invalid once the parser
-        // gets to invoke the reset method, even when the content-type change occurs very early in the
-        // document. This makes me wonder whether the HTMLParser authors fully understand the mark/reset
-        // approach. While this is being sorted out, we just use the Stream class they provide, which
-        // unfortunately buffers the entire document in main memory so that a reset can always be
-        // performed regardless of how much is read already from the InputStream, at the cost of a
-        // potential OutOfMemoryError. Also, if this resetting takes place internally, I do not
-        // understand why they may sometimes throw an EncodingChangeException.
+        // wrap the InputStream in a BufferedInputStream if it does not support mark and reset
+        if (!stream.markSupported()) {
+            stream = new BufferedInputStream(stream, BUFFER_SIZE);
+        }
 
-        // wrap the InputStream if it does not support mark and reset
-        // if (!stream.markSupported()) {
-        // stream = new BufferedInputStream(stream, 8192);
-        // }
-        //
         // mark the stream with a sufficiently high read limit so that the Parser can do a reset after it
         // encounteres a <meta http-equiv="content-type" content="..."> statement. Apparently the Parser
         // does a reset in this case but does not do a mark beforehand. The chosen read limit should be
-        // high enough to contain all such meta statements without leading to serious memory consumption.
-        // stream.mark(8192);
-
-        // instead of the outcommented code above we use the Stream class for now, which buffers the
-        // entire (!) stream in memory and solves the mark/reset problem in its own way
-        stream = new Stream(stream);
+        // greater than or equal to the buffer size of the InputStreamSource created later on as the
+        // latter will fill its entire buffer.
+        stream.mark(BUFFER_SIZE);
 
         // parse the document
         try {
             // setup some data structures
-            Page page = new Page(stream, charsetName);
+            InputStreamSource source = new InputStreamSource(stream, charsetName, BUFFER_SIZE);
+            Page page = new Page(source);
             Lexer lexer = new Lexer(page);
             Parser parser = new Parser(lexer, FEEDBACK_LOGGER);
             ExtractionVisitor visitor = new ExtractionVisitor(result);
