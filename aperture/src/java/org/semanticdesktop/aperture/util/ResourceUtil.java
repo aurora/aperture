@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import javax.swing.ImageIcon;
+
 /**
  * ResourceUtil is a utility class for retrieving resources (images, property-files, etc) from the
  * classpath.
@@ -58,6 +60,17 @@ public class ResourceUtil {
             }
         }
 
+        return result;
+    }
+    
+    public static ImageIcon getImageIcon(String resourceName) {
+        ImageIcon result = null;
+
+        URL resourceURL = getURL(resourceName);
+        if (resourceURL != null) {
+            result = new ImageIcon(resourceURL);
+        }
+        
         return result;
     }
 }

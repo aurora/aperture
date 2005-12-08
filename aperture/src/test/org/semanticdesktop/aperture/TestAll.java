@@ -14,8 +14,8 @@ import org.semanticdesktop.aperture.crawler.TestCrawlers;
 import org.semanticdesktop.aperture.datasource.TestDataSources;
 import org.semanticdesktop.aperture.extractor.TestExtractors;
 import org.semanticdesktop.aperture.mime.TestMimeStuff;
-import org.semanticdesktop.aperture.mime.identifier.magic.TestMagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.TestSesameRDFContainer;
+import org.semanticdesktop.aperture.security.TestSecurityStuff;
 
 public class TestAll extends TestSuite {
 
@@ -31,5 +31,6 @@ public class TestAll extends TestSuite {
         addTest(TestCrawlers.suite());
         addTest(TestExtractors.suite());
         addTest(TestMimeStuff.suite());
+        addTest(TestSecurityStuff.suite());
     }
 }
