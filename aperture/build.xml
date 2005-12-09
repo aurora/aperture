@@ -167,7 +167,7 @@ your copy of ANT at http://ant.apache.org/
 	
 	<target name="build" depends="jar, jar.examples, jar.test" description="incrementally builds all Aperture jar files" />
 
-	<target name="javadoc" description="create the javadoc for the core classes">
+	<target name="javadoc" depends="init" description="create the javadoc for the core classes">
 		<!-- create javadoc files -->
 		<mkdir dir="${javadoc.dir}" />
 		<javadoc destdir="${javadoc.dir}" sourcepath="${src.java.dir}" author="true" version="true" additionalparam="-breakiterator" use="true" classpathref="classpath" source="${java.src.version}" windowtitle="${project.longname} API release ${project.version.full}" doctitle="${project.longname} API release ${project.version.full}"
