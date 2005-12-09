@@ -53,7 +53,7 @@ public interface Crawler {
      * Sets the CrawlerHandler to which this Crawler should report any scanned or cleared resources and
      * from which it obtains RDFContainer.
      * 
-     * @param listener The CrawlerHandler to register.
+     * @param handler The CrawlerHandler to register.
      */
     public void setCrawlerHandler(CrawlerHandler handler);
 

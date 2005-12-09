@@ -32,7 +32,7 @@ public interface DataAccessor {
      * implementations should not rely on the contents of this Map to work properly.
      * 
      * @param url The url of the requested resource.
-     * @param dataSource The DataSource to be registered as the source of the DataObject (optional).
+     * @param source The DataSource to be registered as the source of the DataObject (optional).
      * @param params Additional parameters facilitating access to the physical resource (optional).
      * @param containerFactory An RDFContainerFactory that delivers the RDFContainer to which the
      *            metadata of the DataObject should be added. The provided RDFContainer can later be
@@ -68,7 +68,7 @@ public interface DataAccessor {
      * implementations should not rely on the contents of this Map to work properly.
      * 
      * @param url The url of the requested resource.
-     * @param dataSource The DataSource to be registered as the source of the DataObject (optional).
+     * @param source The DataSource to be registered as the source of the DataObject (optional).
      * @param accessData Any access data obtained during the previous access to this DataObject
      *            (optional).
      * @param params Additional parameters facilitating access to the physical resource (optional).

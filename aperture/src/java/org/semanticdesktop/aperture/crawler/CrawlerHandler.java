@@ -51,7 +51,7 @@ public interface CrawlerHandler {
      * Returns a RDFContainerFactory that will be used to provide RDFContainers that will hold a
      * DataObject's metadata.
      * 
-     * @param Crawler The requesting Crawler.
+     * @param crawler The requesting Crawler.
      * @param url The url of the resource that is currently being accessed.
      * @return an RDFContainer instance.
      */
@@ -63,7 +63,7 @@ public interface CrawlerHandler {
      * @param crawler The reporting Crawler.
      * @param object The constructed DataObject modeling the new resource.
      */
-    public void objectNew(Crawler dataCrawler, DataObject object);
+    public void objectNew(Crawler crawler, DataObject object);
 
     /**
      * Notification that the Crawler has found a changed resource in the domain it is crawling.
@@ -71,7 +71,7 @@ public interface CrawlerHandler {
      * @param crawler The reporting Crawler.
      * @param object The constructed DataObject modeling the changed resource.
      */
-    public void objectChanged(Crawler dataCrawler, DataObject object);
+    public void objectChanged(Crawler crawler, DataObject object);
 
     /**
      * Notification that the Crawler has found a resource that has not been modified since the previous
@@ -90,7 +90,7 @@ public interface CrawlerHandler {
      * @param crawler The reporting Crawler.
      * @param url The url that could no longer be found.
      */
-    public void objectRemoved(Crawler dataCrawler, String url);
+    public void objectRemoved(Crawler crawler, String url);
 
     /**
      * Notification that the specified Crawler has started clearing its results. This is followed by a

@@ -108,7 +108,7 @@ public class FileUtil {
     /**
      * Gets the extension of the specified file name.
      * 
-     * @param filename A file name.
+     * @param fileName The file name to process.
      * @return The file name extension (e.g. "exe" or "txt"), or null if the file name does not have a
      *         (valid) extension.
      */
