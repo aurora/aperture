@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.examples.inspector;
+package org.semanticdesktop.aperture.examples.fileinspector;
 
 import java.util.Collection;
 import java.util.Iterator;

@@ -16,4 +16,4 @@ do
   fi
 done
 
-java -classpath ${LOCALCLASSPATH} org.semanticdesktop.aperture.examples.inspector.FileInspectorFrame $*
+java -classpath ${LOCALCLASSPATH} org.semanticdesktop.aperture.examples.fileinspector.FileInspectorFrame $*
