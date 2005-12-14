@@ -20,20 +20,22 @@ import org.semanticdesktop.aperture.datasource.Vocabulary;
  */
 public class FileSystemCrawlerFactory implements CrawlerFactory {
 
+    private static final Set SUPPORTED_TYPES = Collections.singleton(Vocabulary.FILE_SYSTEM_DATA_SOURCE);
+
     private DataAccessorRegistry accessorRegistry;
-    
+
     public Set getSupportedTypes() {
-        return Collections.singleton(Vocabulary.FILE_SYSTEM_DATA_SOURCE);
+        return SUPPORTED_TYPES;
     }
 
     public void setDataAccessorRegistry(DataAccessorRegistry registry) {
         this.accessorRegistry = registry;
     }
-    
+
     public DataAccessorRegistry getDataAccessorRegistry() {
         return accessorRegistry;
     }
-    
+
     public Crawler getCrawler(DataSource dataSource) {
         FileSystemCrawler crawler = new FileSystemCrawler();
         crawler.setDataSource(dataSource);
@@ -41,4 +43,3 @@ public class FileSystemCrawlerFactory implements CrawlerFactory {
         return crawler;
     }
 }
-
