@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.examples.crawler;
+package org.semanticdesktop.aperture.examples.filecrawler;
 
 import javax.swing.JPanel;
 import java.awt.GridBagLayout;
@@ -165,7 +165,7 @@ public class CrawlerPanel extends JPanel {
     /**
      * This method initializes configurationPanel
      * 
-     * @return org.semanticdesktop.aperture.examples.crawler.ConfigurationPanel
+     * @return org.semanticdesktop.aperture.examples.filecrawler.ConfigurationPanel
      */
     private ConfigurationPanel getConfigurationPanel() {
         if (configurationPanel == null) {

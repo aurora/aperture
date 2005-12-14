@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.examples.crawler;
+package org.semanticdesktop.aperture.examples.filecrawler;
 
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
@@ -58,7 +58,7 @@ public class CrawlerFrame extends JFrame {
     /**
      * This method initializes crawlerPanel	
      * 	
-     * @return org.semanticdesktop.aperture.examples.crawler.CrawlerPanel	
+     * @return org.semanticdesktop.aperture.examples.filecrawler.CrawlerPanel	
      */
     private CrawlerPanel getCrawlerPanel() {
         if (crawlerPanel == null) {

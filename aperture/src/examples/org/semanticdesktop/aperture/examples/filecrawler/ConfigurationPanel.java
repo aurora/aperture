@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.examples.crawler;
+package org.semanticdesktop.aperture.examples.filecrawler;
 
 import javax.swing.JPanel;
 import java.awt.GridBagLayout;
@@ -49,7 +49,7 @@ public class ConfigurationPanel extends JPanel {
     /**
      * This method initializes inputPanel	
      * 	
-     * @return org.semanticdesktop.aperture.examples.crawler.InputPanel	
+     * @return org.semanticdesktop.aperture.examples.filecrawler.InputPanel	
      */
     public InputPanel getInputPanel() {
         if (inputPanel == null) {
@@ -62,7 +62,7 @@ public class ConfigurationPanel extends JPanel {
     /**
      * This method initializes outputPanel	
      * 	
-     * @return org.semanticdesktop.aperture.examples.crawler.OutputPanel	
+     * @return org.semanticdesktop.aperture.examples.filecrawler.OutputPanel	
      */
     public OutputPanel getOutputPanel() {
         if (outputPanel == null) {

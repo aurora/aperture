@@ -16,4 +16,4 @@ do
   fi
 done
 
-java -classpath ${LOCALCLASSPATH} org.semanticdesktop.aperture.examples.crawler.CrawlerFrame $*
+java -classpath ${LOCALCLASSPATH} org.semanticdesktop.aperture.examples.filecrawler.CrawlerFrame $*
