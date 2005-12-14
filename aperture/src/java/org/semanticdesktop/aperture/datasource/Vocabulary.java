@@ -27,6 +27,8 @@ public interface Vocabulary {
 
     public static final URI FILE_SYSTEM_DATA_SOURCE = new URIImpl(NS + "FileSystemDataSource");
 
+    public static final URI IMAP_DATA_SOURCE = new URIImpl(NS + "IMAPDataSource");
+    
     public static final URI PATTERN = new URIImpl(NS + "Pattern");
 
     public static final URI REGEXP_PATTERN = new URIImpl(NS + "RegExpPattern");
@@ -37,6 +39,10 @@ public interface Vocabulary {
 
     public static final URI ROOT_URL = new URIImpl(NS + "rootUrl");
 
+    public static final URI PASSWORD = new URIImpl(NS + "password");
+    
+    public static final URI CONNECTION_SECURITY = new URIImpl(NS + "connectionSecurity");
+    
     public static final URI MAXIMUM_DEPTH = new URIImpl(NS + "maximumDepth");
 
     public static final URI MAXIMUM_BYTE_SIZE = new URIImpl(NS + "maximumSize");
@@ -58,4 +64,8 @@ public interface Vocabulary {
     public static final Literal CONTAINS = new LiteralImpl("contains", XMLSchema.STRING);
 
     public static final Literal DOES_NOT_CONTAIN = new LiteralImpl("doesNotContain", XMLSchema.STRING);
+    
+    public static final Literal PLAIN = new LiteralImpl("plain", XMLSchema.STRING);
+    
+    public static final Literal SSL = new LiteralImpl("ssl", XMLSchema.STRING);
 }

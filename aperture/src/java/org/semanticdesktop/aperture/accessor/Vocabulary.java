@@ -20,11 +20,27 @@ public interface Vocabulary {
 
     public static final URI MIME_TYPE = new URIImpl(NS + "mimeType");
 
+    // Key used to store the MIME type of the content of an object when it is different from the object's
+    // main MIME type. This value can be used, for example, to model an e-mail message whose mime type is
+    // "message/rfc822", but whose content has type "text/html". If not specified, the MIME type of the
+    // content defaults to the value specified by the MIME_TYPE key.
+    public static final URI CONTENT_MIME_TYPE = new URIImpl(NS + "contentMimeType");
+
+    public static final URI CHARACTER_SET = new URIImpl(NS + "characterSet");
+
     public static final URI BYTE_SIZE = new URIImpl(NS + "byteSize");
 
     // author, artist, etc. NOT: generating application
     public static final URI CREATOR = new URIImpl(NS + "creator");
 
+    public static final URI FROM = new URIImpl(NS + "from");
+
+    public static final URI TO = new URIImpl(NS + "to");
+
+    public static final URI CC = new URIImpl(NS + "cc");
+
+    public static final URI BCC = new URIImpl(NS + "bcc");
+    
     public static final URI TITLE = new URIImpl(NS + "title");
 
     public static final URI SUBJECT = new URIImpl(NS + "subject");
@@ -52,4 +68,6 @@ public interface Vocabulary {
 
     // nesting of files or folders in folders, nesting of attachments in mails, etc.
     public static final URI PART_OF = new URIImpl(NS + "partOf");
+    
+    public static final URI EMAIL_ADDRESS = new URIImpl(NS + "emailAddress");
 }

@@ -26,6 +26,14 @@ public class ConfigurationUtil {
         return configuration.getString(Vocabulary.ROOT_URL);
     }
 
+    public static void setPassword(String password, RDFContainer configuration) {
+        configuration.put(Vocabulary.PASSWORD, password);
+    }
+    
+    public static String getPassword(RDFContainer configuration) {
+        return configuration.getString(Vocabulary.PASSWORD);
+    }
+    
     public static void setMaximumDepth(int maximumDepth, RDFContainer configuration) {
         configuration.put(Vocabulary.MAXIMUM_DEPTH, maximumDepth);
     }
@@ -42,12 +50,19 @@ public class ConfigurationUtil {
         return configuration.getInteger(Vocabulary.MAXIMUM_BYTE_SIZE);
     }
 
-    public static Boolean getIncludeHiddenResourceS(RDFContainer configuration) {
-        return configuration.getBoolean(Vocabulary.INCLUDE_HIDDEN_RESOURCES);
-    }
-
     public static void setIncludeHiddenResources(boolean value, RDFContainer configuration) {
         configuration.put(Vocabulary.INCLUDE_HIDDEN_RESOURCES, value);
     }
 
+    public static Boolean getIncludeHiddenResourceS(RDFContainer configuration) {
+        return configuration.getBoolean(Vocabulary.INCLUDE_HIDDEN_RESOURCES);
+    }
+
+    public static void setConnectionSecurity(String securityType, RDFContainer configuration) {
+        configuration.put(Vocabulary.CONNECTION_SECURITY, securityType);
+    }
+    
+    public static String getConnectionSecurity(RDFContainer configuration) {
+        return configuration.getString(Vocabulary.CONNECTION_SECURITY);
+    }
 }
