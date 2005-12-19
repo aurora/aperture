@@ -150,8 +150,8 @@ public class DataObjectFactory {
             charsetStr = "us-ascii";
         }
 
-        // content is not a Multipart object (or not a correct one), report its
-        // content in a new DataObject
+        // content is not a Multipart object (or not a correct one), report its content in a new
+        // DataObject
         charsetStr = normalizeCharset(charsetStr);
 
         // create the Imap data object
@@ -358,8 +358,8 @@ public class DataObjectFactory {
         }
     }
 
-    private DataObject handleDigestPart(Multipart part, ContentType contentType, URI uri, Date date, List resultList)
-            throws MessagingException, IOException {
+    private DataObject handleDigestPart(Multipart part, ContentType contentType, URI uri, Date date,
+            List resultList) throws MessagingException, IOException {
         // create a data object for the parent part
         Part parentPart = part.getParent();
         if (parentPart == null) {
@@ -401,8 +401,8 @@ public class DataObjectFactory {
         return parentObject;
     }
 
-    private DataObject handleRelatedPart(Multipart part, ContentType contentType, URI uri, Date date, List resultList)
-            throws MessagingException, IOException {
+    private DataObject handleRelatedPart(Multipart part, ContentType contentType, URI uri, Date date,
+            List resultList) throws MessagingException, IOException {
         // create a data object for the parent part
         Part parentPart = part.getParent();
         if (parentPart == null) {
@@ -463,13 +463,13 @@ public class DataObjectFactory {
         return parentObject;
     }
 
-    private DataObject handleSignedPart(Multipart part, ContentType contentType, URI uri, Date date, List resultList)
-            throws MessagingException, IOException {
+    private DataObject handleSignedPart(Multipart part, ContentType contentType, URI uri, Date date,
+            List resultList) throws MessagingException, IOException {
         return handleProtectedPart(part, 0, contentType, uri, date, resultList);
     }
 
-    private DataObject handleEncryptedPart(Multipart part, ContentType contentType, URI uri, Date date, List resultList)
-            throws MessagingException, IOException {
+    private DataObject handleEncryptedPart(Multipart part, ContentType contentType, URI uri, Date date,
+            List resultList) throws MessagingException, IOException {
         return handleProtectedPart(part, 1, contentType, uri, date, resultList);
     }
 
@@ -504,8 +504,8 @@ public class DataObjectFactory {
         }
     }
 
-    private DataObject handleReportPart(Multipart part, ContentType contentType, URI uri, Date date, List resultList)
-            throws MessagingException, IOException {
+    private DataObject handleReportPart(Multipart part, ContentType contentType, URI uri, Date date,
+            List resultList) throws MessagingException, IOException {
         // create a data object for the parent message
         Part parentPart = part.getParent();
         if (parentPart == null) {
@@ -529,7 +529,8 @@ public class DataObjectFactory {
         // the optional third part contains the (partial) returned message and will become an attachment
         if (count > 2) {
             URI nestedURI = new URIImpl(getBodyPartURIPrefix(uri) + "0");
-            DataObject returnedMessageObject = handleMailPart(part.getBodyPart(2), nestedURI, date, resultList);
+            DataObject returnedMessageObject = handleMailPart(part.getBodyPart(2), nestedURI, date,
+                    resultList);
             if (returnedMessageObject != null) {
                 ArrayList children = new ArrayList();
                 children.add(returnedMessageObject);
@@ -571,6 +572,9 @@ public class DataObjectFactory {
             charsetStr = MimeUtility.javaCharset(charsetStr);
         }
 
+        // note: even MimeUtility.javaCharset may return different casings of the same charset
+        charsetStr = charsetStr.toLowerCase();
+
         return charsetStr;
     }
 
@@ -606,7 +610,7 @@ public class DataObjectFactory {
         String name = address.getPersonal();
         String emailAddress = address.getAddress();
 
-        if (name == null) {
+        if (name != null) {
             name = name.trim();
         }
 

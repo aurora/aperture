@@ -7,7 +7,6 @@
 package org.semanticdesktop.aperture.crawler.imap;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,6 +28,7 @@ import javax.mail.UIDFolder;
 import javax.mail.URLName;
 import javax.mail.internet.MimeMessage;
 
+import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -164,32 +164,32 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
         else {
             hostName = hostPart.substring(atIndex + 1);
-            userName = hostPart.substring(0, atIndex);
+            userName = decode(hostPart.substring(0, atIndex));
         }
 
         // determine the folder name
-        if (folderPart.indexOf('*') >= 0 || folderPart.indexOf('%') >= 0) {
+        folderName = decode(folderPart);
+
+        if (folderName.indexOf('*') >= 0 || folderName.indexOf('%') >= 0) {
             throw new IllegalArgumentException("wildcards in the folder name are not supported");
         }
 
         // Formally a ";TYPE=..." part is required according to RFC 2192. However, since we ignore it
         // anyway, we simply cut it off.
-        int semiColonIndex = folderPart.indexOf(';');
+        int semiColonIndex = folderName.indexOf(';');
         if (semiColonIndex >= 0) {
-            folderPart = folderPart.substring(0, semiColonIndex);
+            folderName = folderName.substring(0, semiColonIndex);
         }
-
-        folderName = decodeFolderName(folderPart);
 
         // determine the password
         password = ConfigurationUtil.getPassword(config);
 
         // determine the connection type
         String securityType = ConfigurationUtil.getConnectionSecurity(config);
-        if (securityType == null || Vocabulary.PLAIN.equals(securityType)) {
+        if (securityType == null || Vocabulary.PLAIN.toString().equals(securityType)) {
             connectionType = "imap";
         }
-        else if (Vocabulary.SSL.equals(securityType)) {
+        else if (Vocabulary.SSL.toString().equals(securityType)) {
             connectionType = "imaps";
         }
         else {
@@ -206,7 +206,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
     }
 
-    public String decodeFolderName(String string) {
+    public String decode(String string) {
         int percentIndex = string.indexOf('%');
         if (percentIndex < 0) {
             return string;
@@ -215,7 +215,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         int startIndex = 0;
         StringBuffer buffer = new StringBuffer(string.length());
 
-        while (percentIndex < -1) {
+        while (percentIndex >= 0) {
             buffer.append(string.substring(startIndex, percentIndex));
 
             // The two character following the '%' contain a hexadecimal
@@ -315,7 +315,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
         // start with protocol
         // don't use url.getProtocol or your urls may start with "imaps://"
-        buffer.append(url.getProtocol());
         buffer.append("imap://");
 
         // append host and username
@@ -328,32 +327,52 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         buffer.append(url.getHost());
 
         // append path
-        buffer.append(HttpClientUtil.formUrlEncode(getAbsolutePath(folder)));
+        buffer.append('/');
+        buffer.append(encodeFolderName(folder.getFullName()));
+        buffer.append('/');
 
         return buffer.toString();
     }
 
-    private String getAbsolutePath(Folder folder) throws MessagingException {
-        // create the list of folder names in reverse order
-        ArrayList folderNames = new ArrayList();
+    // does the same as HttpClientUtil.formUrlEncode (i.e. RFC 1738) except for encoding the slash,
+    // which should not be encoded according to RFC 2192.
+    private String encodeFolderName(String string) {
+        int length = string.length();
+        StringBuffer buffer = new StringBuffer(length + 10);
 
-        while (folder != null && folder.getName().length() > 0) {
-            folderNames.add(folder.getName());
-            folder = folder.getParent();
+        for (int i = 0; i < length; i++) {
+            char c = string.charAt(i);
+
+            // Only characters in the range 48 - 57 (numbers), 65 - 90 (upper case letters), 97 - 122
+            // (lower case letters) can be left unencoded. The rest needs to be escaped.
+
+            if (c == ' ') {
+                // replace all spaces with a '+'
+                buffer.append('+');
+            }
+            else {
+                int cInt = (int) c;
+                if (cInt >= 48 && cInt <= 57 || cInt >= 65 && cInt <= 90 || cInt >= 97 && cInt <= 122
+                        || cInt == 46) {
+                    // alphanumeric character or slash
+                    buffer.append(c);
+                }
+                else {
+                    // escape all non-alphanumerics
+                    buffer.append('%');
+                    String hexVal = Integer.toHexString((int) c);
+
+                    // ensure use of two characters
+                    if (hexVal.length() == 1) {
+                        buffer.append('0');
+                    }
+
+                    buffer.append(hexVal);
+                }
+            }
         }
 
-        // convert this list into a string
-        StringBuffer path = new StringBuffer(40);
-        char separatorChar = folder.getSeparator();
-
-        for (int i = folderNames.size() - 1; i >= 0; i--) {
-            path.append(separatorChar);
-            path.append(folderNames.get(i));
-        }
-
-        path.append(separatorChar);
-
-        return path.toString();
+        return buffer.toString();
     }
 
     private void scan(MimeMessage message, String uri) throws MessagingException {
@@ -362,15 +381,15 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             return;
         }
 
-        handler.accessingObject(this, uri);
-
         // build a queue of urls to access
         LinkedList queue = new LinkedList();
         queue.add(uri);
 
         // process the entire queue
         while (!queue.isEmpty()) {
+            // fetch the first element in the queue
             String queuedUri = (String) queue.removeFirst();
+            handler.accessingObject(this, queuedUri);
 
             // get this DataObject
             RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, queuedUri);
@@ -427,19 +446,39 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
     }
 
     private void registerParent(DataObject object) {
-        URI parentURI = object.getMetadata().getURI(org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF);
-        if (parentURI != null) {
-            String parentID = parentURI.toString();
-            String childID = object.getID().toString();
+        Repository metadata = (Repository) object.getMetadata().getModel();
+        Collection statements = metadata.getStatements(object.getID(),
+                org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF, null);
+        if (statements.isEmpty()) {
+            return;
+        }
+        else if (statements.size() > 1) {
+            LOGGER.warning("Multiple parents for " + object.getID() + ", ignoring all");
+        }
+        else {
+            Statement statement = (Statement) statements.iterator().next();
+            Value parent = statement.getObject();
 
-            // only register this child when the parent ID is already known: prevent garbage data from
-            // entering the AccessData.
-            if (accessData.isKnownId(parentID)) {
-                accessData.putChild(parentID, childID);
+            if (parent instanceof URI) {
+                String parentID = parent.toString();
+                String childID = object.getID().toString();
+
+                if (accessData.isKnownId(parentID)) {
+                    if (parentID.equals(childID)) {
+                        LOGGER.warning("cyclical " + org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF
+                                + " property for " + parentID + ", ignoring");
+                    }
+                    else {
+                        accessData.putChild(parentID, childID);
+                    }
+                }
+                else {
+                    LOGGER.severe("Internal error: encountered unknown parent: " + parentID + ", child = "
+                            + childID);
+                }
             }
             else {
-                LOGGER.severe("Internal error: encountered unknown parent: " + parentID + ", child = "
-                        + childID);
+                LOGGER.severe("Internal error: unknown parent value type: " + parent.getClass());
             }
         }
     }
@@ -456,13 +495,13 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         Iterator iterator = statements.iterator();
         while (iterator.hasNext()) {
             Statement statement = (Statement) iterator.next();
-            Value value = statement.getObject();
+            Resource resource = statement.getSubject();
 
-            if (value instanceof URI) {
-                queue.add(value.toString());
+            if (resource instanceof URI) {
+                queue.add(resource.toString());
             }
             else {
-                LOGGER.severe("Internal error: unknown child value type: " + value.getClass());
+                LOGGER.severe("Internal error: unknown child value type: " + resource.getClass());
             }
         }
     }
@@ -477,7 +516,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
     public DataObject getDataObjectIfModified(String url, DataSource source, AccessData accessData,
             Map params, RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException {
         MimeMessage message;
-        
+
         // reconfigure for the specified DataSource if necessary
         if (source != configuredDataSource) {
             retrieveConfigurationData(source);
@@ -545,7 +584,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             messageUrl = "";
         }
         else if (index > 0) {
-            messageUrl = messageUrl.substring(0, index - 1);
+            messageUrl = messageUrl.substring(0, index);
         }
 
         // see if we have cached the DataObjects obtained from this message
