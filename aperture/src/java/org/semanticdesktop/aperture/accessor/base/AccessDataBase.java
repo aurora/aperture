@@ -77,7 +77,7 @@ public class AccessDataBase implements AccessData {
 
     public void put(String id, String key, String value) {
         // assumption: lots of objects with relative few things to store: use an ArrayMap
-        ArrayMap infoMap = getInfoMap(id);
+        ArrayMap infoMap = createInfoMap(id);
         infoMap.put(key, value);
     }
 
@@ -93,7 +93,7 @@ public class AccessDataBase implements AccessData {
     }
 
     public String get(String id, String key) {
-        ArrayMap infoMap = getInfoMap(id);
+        ArrayMap infoMap = (ArrayMap) idMap.get(id);
         if (infoMap == null) {
             return null;
         }
@@ -107,7 +107,7 @@ public class AccessDataBase implements AccessData {
     }
 
     public void remove(String id, String key) {
-        ArrayMap infoMap = getInfoMap(id);
+        ArrayMap infoMap = (ArrayMap) idMap.get(id);
         if (infoMap != null) {
             infoMap.remove(key);
         }
@@ -125,7 +125,7 @@ public class AccessDataBase implements AccessData {
         childrenMap.remove(id);
     }
 
-    private ArrayMap getInfoMap(String id) {
+    private ArrayMap createInfoMap(String id) {
         ArrayMap infoMap = (ArrayMap) idMap.get(id);
         if (infoMap == null) {
             infoMap = new ArrayMap();
@@ -206,15 +206,17 @@ public class AccessDataBase implements AccessData {
      * Writes the information for the data object with the specified id using the supplied XmlWriter.
      */
     private void writeInfo(String id, XmlWriter xmlWriter) throws IOException {
-        Map info = getInfoMap(id);
-        Iterator entries = info.entrySet().iterator();
+        ArrayMap infoMap = (ArrayMap) idMap.get(id);
+        if (infoMap != null) {
+            Iterator entries = infoMap.entrySet().iterator();
 
-        while (entries.hasNext()) {
-            Map.Entry entry = (Entry) entries.next();
-            String key = (String) entry.getKey();
-            String value = (String) entry.getValue();
+            while (entries.hasNext()) {
+                Map.Entry entry = (Entry) entries.next();
+                String key = (String) entry.getKey();
+                String value = (String) entry.getValue();
 
-            xmlWriter.textElement(key, value);
+                xmlWriter.textElement(key, value);
+            }
         }
 
         Set childrenSet = (Set) childrenMap.get(id);
