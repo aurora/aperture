@@ -22,7 +22,6 @@ import org.htmlparser.Text;
 import org.htmlparser.lexer.InputStreamSource;
 import org.htmlparser.lexer.Lexer;
 import org.htmlparser.lexer.Page;
-import org.htmlparser.lexer.Stream;
 import org.htmlparser.tags.MetaTag;
 import org.htmlparser.util.EncodingChangeException;
 import org.htmlparser.util.ParserException;
