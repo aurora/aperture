@@ -9,12 +9,9 @@ package org.semanticdesktop.aperture.crawler.imap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,23 +27,18 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 
 import org.openrdf.model.Literal;
-import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
-import org.openrdf.model.Value;
 import org.openrdf.model.impl.BNodeImpl;
 import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.sesame.repository.Repository;
 import org.semanticdesktop.aperture.accessor.DataObject;
-import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.Vocabulary;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 
 /**
  * Creates a set of DataObjects from a MimeMessage.
@@ -57,25 +49,30 @@ public class DataObjectFactory {
 
     private static final String ATTACHMENT_SEPARATOR = "-";
 
+    private static final String ID_KEY = "id";
+
+    private static final String CHILDREN_KEY = "children";
+
+    private static final String CONTENTS_KEY = "contents";
+
     private DataSource source;
 
     private RDFContainerFactory containerFactory;
 
     private int bnodeIndex;
 
-    // a mapping from child DataObjects to their virtual parent DataObjects
-    private Map messageHierarchy;
-
     public DataObjectFactory(DataSource source, RDFContainerFactory containerFactory) {
         this.source = source;
         this.containerFactory = containerFactory;
         this.bnodeIndex = 0;
-        this.messageHierarchy = new IdentityHashMap();
     }
 
     /**
      * Returns a list of DataObjects that have been created based on the contents of the specified
-     * MimeMessage. The order of the DataObjects reflects the order of the message parts they represent.
+     * MimeMessage. The order of the DataObjects reflects the order of the message parts they represent,
+     * i.e. the first DataObject represents the entire message, subsequent DataObjects represent
+     * attachments in a depth first orderseveral layers of attachments can exist when forwarding messages
+     * containing attachments).
      * 
      * @param message The MimeMessage to interpret.
      * @param messageUri The URI to use to identify the specified MimeMessage. URIs of child DataObjects
@@ -88,21 +85,16 @@ public class DataObjectFactory {
     public List createDataObjects(MimeMessage message, String messageUri) throws MessagingException,
             IOException {
         // TODO: we could use the URL format specified in RFC 2192 to construct a proper IMAP4 URL.
+        // Right now we use something home-grown for representing attachments.
         // To investigate: does JavaMail provide us with enough information for constructing proper
         // URLs for attachments?
-        URI uri = new URIImpl(messageUri);
-
-        ArrayList resultList = new ArrayList();
-        handleMailPart(message, uri, getDate(message), resultList);
-        encodeHierarchy();
-
-        return resultList;
+        HashMap map = handleMailPart(message, new URIImpl(messageUri), getDate(message));
+        return createDataObjects(map);
     }
 
     /* ----------------------------- Methods for MIME interpretation ----------------------------- */
 
-    private DataObject handleMailPart(Part mailPart, URI uri, Date date, List resultList)
-            throws MessagingException, IOException {
+    private HashMap handleMailPart(Part mailPart, URI uri, Date date) throws MessagingException, IOException {
         // determine the primary type of this Part
         ContentType contentType = null;
         String primaryType = null;
@@ -118,7 +110,7 @@ public class DataObjectFactory {
             Object content = mailPart.getContent();
             if (content instanceof Multipart) {
                 // Content is a container for multiple other parts
-                return handleMultipart((Multipart) content, contentType, uri, date, resultList);
+                return handleMultipart((Multipart) content, contentType, uri, date);
             }
             else {
                 LOGGER.log(Level.WARNING, "multipart '" + uri + "' does not contain a Multipart object: "
@@ -127,12 +119,12 @@ public class DataObjectFactory {
             }
         }
         else {
-            return handleSinglePart(mailPart, contentType, uri, date, false, resultList);
+            return handleSinglePart(mailPart, contentType, uri, date, false);
         }
     }
 
-    private DataObject handleSinglePart(Part mailPart, ContentType contentType, URI uri, Date date,
-            boolean emptyContent, List resultList) throws MessagingException, IOException {
+    private HashMap handleSinglePart(Part mailPart, ContentType contentType, URI uri, Date date,
+            boolean emptyContent) throws MessagingException, IOException {
         // determine the content type properties of this mail
         String mimeType = null;
         String charsetStr = null;
@@ -150,23 +142,21 @@ public class DataObjectFactory {
             charsetStr = "us-ascii";
         }
 
-        // content is not a Multipart object (or not a correct one), report its content in a new
-        // DataObject
         charsetStr = normalizeCharset(charsetStr);
 
-        // create the Imap data object
-        DataObject result = null;
-        RDFContainer metadata = containerFactory.getRDFContainer(uri);
+        // extract the mail's contents
+        HashMap result = null;
 
         if (emptyContent) {
             // create a data object without content, as explicitly requested
-            result = new DataObjectBase(uri, source, metadata);
+            result = new HashMap();
+            result.put(ID_KEY, uri);
         }
         else if ("message/rfc822".equals(mimeType)) {
             Object content = mailPart.getContent();
             if (content instanceof Message) {
                 Message nestedMessage = (Message) content;
-                return handleMailPart(nestedMessage, uri, getDate(nestedMessage), resultList);
+                return handleMailPart(nestedMessage, uri, getDate(nestedMessage));
             }
             else {
                 LOGGER.warning("message/rfc822 part with unknown content class: "
@@ -176,104 +166,102 @@ public class DataObjectFactory {
         }
         else {
             // create a data object embedding the data stream of the mail part
-            result = new FileDataObjectBase(uri, source, metadata, mailPart.getInputStream());
+            result = new HashMap();
+            result.put(ID_KEY, uri);
+            result.put(CONTENTS_KEY, mailPart.getInputStream());
 
             if (charsetStr != null) {
-                metadata.put(Vocabulary.CHARACTER_SET, charsetStr);
+                result.put(Vocabulary.CHARACTER_SET, charsetStr);
             }
 
             String fileName = mailPart.getFileName();
             if (fileName != null) {
-                metadata.put(Vocabulary.NAME, fileName);
+                result.put(Vocabulary.NAME, fileName);
             }
         }
-
-        resultList.add(result);
 
         // set some generally applicable metadata properties
         int size = mailPart.getSize();
         if (size >= 0) {
-            metadata.put(Vocabulary.BYTE_SIZE, size);
+            result.put(Vocabulary.BYTE_SIZE, new Integer(size));
         }
 
-        metadata.put(Vocabulary.DATE, date);
+        result.put(Vocabulary.DATE, date);
 
         // Differentiate between Messages and other mail Parts. We don't use the Part.getHeader message
         // as they don't decode non-ASCII 'encoded words' (see RFC 2047).
         if (mailPart instanceof Message) {
-            metadata.put(Vocabulary.MIME_TYPE, "message/rfc822");
-            metadata.put(Vocabulary.CONTENT_MIME_TYPE, mimeType);
+            result.put(Vocabulary.MIME_TYPE, "message/rfc822");
+            result.put(Vocabulary.CONTENT_MIME_TYPE, mimeType);
 
             Message message = (Message) mailPart;
-            metadata.put(Vocabulary.SUBJECT, message.getSubject());
-
-            addAddressMetadata(message.getFrom(), Vocabulary.FROM, metadata);
-            addAddressMetadata(message.getRecipients(RecipientType.TO), Vocabulary.TO, metadata);
-            addAddressMetadata(message.getRecipients(RecipientType.CC), Vocabulary.CC, metadata);
-            addAddressMetadata(message.getRecipients(RecipientType.BCC), Vocabulary.BCC, metadata);
+            addIfNotNull(Vocabulary.SUBJECT, message.getSubject(), result);
+            addIfNotNull(Vocabulary.FROM, message.getFrom(), result);
+            addIfNotNull(Vocabulary.TO, message.getRecipients(RecipientType.TO), result);
+            addIfNotNull(Vocabulary.CC, message.getRecipients(RecipientType.CC), result);
+            addIfNotNull(Vocabulary.BCC, message.getRecipients(RecipientType.BCC), result);
         }
         else {
-            metadata.put(Vocabulary.MIME_TYPE, mimeType);
+            result.put(Vocabulary.MIME_TYPE, mimeType);
         }
 
         // done!
         return result;
     }
 
-    private DataObject handleMultipart(Multipart part, ContentType contentType, URI uri, Date date,
-            List resultList) throws MessagingException, IOException {
+    private HashMap handleMultipart(Multipart part, ContentType contentType, URI uri, Date date)
+            throws MessagingException, IOException {
         // fetch the content subtype
         String subType = normalizeString(contentType.getSubType());
 
         if ("mixed".equals(subType)) {
-            return handleMixedPart(part, contentType, uri, date, resultList);
+            return handleMixedPart(part, contentType, uri, date);
         }
         else if ("alternative".equals(subType)) {
-            return handleAlternativePart(part, contentType, uri, date, resultList);
+            return handleAlternativePart(part, contentType, uri, date);
         }
         else if ("digest".equals(subType)) {
-            return handleDigestPart(part, contentType, uri, date, resultList);
+            return handleDigestPart(part, contentType, uri, date);
         }
         else if ("related".equals(subType)) {
-            return handleRelatedPart(part, contentType, uri, date, resultList);
+            return handleRelatedPart(part, contentType, uri, date);
         }
         else if ("signed".equals(subType)) {
-            return handleSignedPart(part, contentType, uri, date, resultList);
+            return handleSignedPart(part, contentType, uri, date);
         }
         else if ("encrypted".equals(subType)) {
-            return handleEncryptedPart(part, contentType, uri, date, resultList);
+            return handleEncryptedPart(part, contentType, uri, date);
         }
         else if ("report".equals(subType)) {
-            return handleReportPart(part, contentType, uri, date, resultList);
+            return handleReportPart(part, contentType, uri, date);
         }
         else if ("parallel".equals(subType)) {
-            return handleParallelPart(part, contentType, uri, date, resultList);
+            return handleParallelPart(part, contentType, uri, date);
         }
         else {
-            return handleUnknownTypePart(part, contentType, uri, date, resultList);
+            return handleUnknownTypePart(part, contentType, uri, date);
         }
     }
 
-    private DataObject handleMixedPart(Multipart part, ContentType contentType, URI uri, Date date,
-            List resultList) throws MessagingException, IOException {
-        // create a data object for the parent part, reflecting subject and address metadata, and skip if
-        // there is no parent
+    private HashMap handleMixedPart(Multipart part, ContentType contentType, URI uri, Date date)
+            throws MessagingException, IOException {
+        // interpret the parent part, reflecting subject and address metadata, and skip if there is none
         Part parentPart = part.getParent();
         if (parentPart == null) {
             return null;
         }
 
-        DataObject parentObject = handleSinglePart(parentPart, contentType, uri, date, true, resultList);
-        if (parentObject == null) {
+        HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true);
+        if (parent == null) {
             return null;
         }
 
         // determine the uri prefix that all attachments parts should have
         String uriPrefix = getBodyPartURIPrefix(uri);
 
-        // create an ImapDataObject for every nested part
+        // interpret every nested part
         int nrParts = part.getCount();
-        ArrayList dataObjects = new ArrayList(nrParts);
+        ArrayList children = new ArrayList(nrParts);
 
         for (int i = 0; i < nrParts; i++) {
             BodyPart bodyPart = part.getBodyPart(i);
@@ -282,36 +270,36 @@ public class DataObjectFactory {
             }
 
             URI bodyURI = new URIImpl(uriPrefix + i);
-            DataObject dataObject = handleMailPart(bodyPart, bodyURI, date, resultList);
+            HashMap childResult = handleMailPart(bodyPart, bodyURI, date);
 
-            if (dataObject != null) {
-                dataObjects.add(dataObject);
+            if (childResult != null) {
+                children.add(childResult);
             }
         }
 
-        // the first ImapDataObject of type text/plain or text/html is promoted to become the body text
+        // the first child with type text/plain or text/html is promoted to become the body text
         // of the parent object
-        int nrObjects = dataObjects.size();
-        for (int i = 0; i < nrObjects; i++) {
-            DataObject bodyObject = (DataObject) dataObjects.get(i);
-            Object bodyMimeType = getLiteral(bodyObject, Vocabulary.MIME_TYPE);
+        int nrChildren = children.size();
+        for (int i = 0; i < nrChildren; i++) {
+            HashMap child = (HashMap) children.get(i);
+            Object bodyMimeType = child.get(Vocabulary.MIME_TYPE);
 
             if ("text/plain".equals(bodyMimeType) || "text/html".equals(bodyMimeType)) {
-                dataObjects.remove(i);
-                transferInfo(bodyObject, parentObject);
+                children.remove(i);
+                transferInfo(child, parent);
                 break;
             }
         }
 
         // all remaining data objects are registered as the parent object's children
-        messageHierarchy.put(parentObject, dataObjects);
+        parent.put(CHILDREN_KEY, children);
 
-        // return the parent data object as the result of this operation
-        return parentObject;
+        // return the parent as the result of this operation
+        return parent;
     }
 
-    private DataObject handleAlternativePart(Multipart part, ContentType contentType, URI uri, Date date,
-            List resultList) throws MessagingException, IOException {
+    private HashMap handleAlternativePart(Multipart part, ContentType contentType, URI uri, Date date)
+            throws MessagingException, IOException {
         // nothing to return when there are no parts
         int count = part.getCount();
         if (count == 0) {
@@ -333,48 +321,48 @@ public class DataObjectFactory {
             index = 0;
         }
 
-        // create a data object for the selected alternative part
-        DataObject childObject = handleMailPart(part.getBodyPart(index), uri, date, resultList);
+        // interpret the selected alternative part
+        HashMap child = handleMailPart(part.getBodyPart(index), uri, date);
 
         // If this part was nested in a message, we should merge the obtained info with a data object
         // modeling all message info, in all other cases (e.g. when the multipart/alternative was
         // nested in a multipart/mixed), we can simply return the child data object.
         // We can use the same uri as for the child object, as only one of these objects will actually
         // be returned.
-        Part parent = part.getParent();
-        if (parent instanceof Message) {
-            DataObject parentObject = handleSinglePart(parent, contentType, uri, date, true, resultList);
+        Part parentPart = part.getParent();
+        if (parentPart instanceof Message) {
+            HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true);
 
-            if (parentObject == null) {
-                return childObject;
+            if (parent == null) {
+                return child;
             }
             else {
-                transferInfo(childObject, parentObject);
-                return parentObject;
+                transferInfo(child, parent);
+                return parent;
             }
         }
         else {
-            return childObject;
+            return child;
         }
     }
 
-    private DataObject handleDigestPart(Multipart part, ContentType contentType, URI uri, Date date,
-            List resultList) throws MessagingException, IOException {
-        // create a data object for the parent part
+    private HashMap handleDigestPart(Multipart part, ContentType contentType, URI uri, Date date)
+            throws MessagingException, IOException {
+        // interpret the parent part
         Part parentPart = part.getParent();
         if (parentPart == null) {
             return null;
         }
 
-        DataObject parentObject = handleSinglePart(parentPart, contentType, uri, date, true, resultList);
-        if (parentObject == null) {
+        HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true);
+        if (parent == null) {
             return null;
         }
 
         // create the URI prefix for all children
         String bodyURIPrefix = getBodyPartURIPrefix(uri);
 
-        // add child objects for every body part in the digest multipart
+        // interpret every body part in the digest multipart
         ArrayList children = new ArrayList();
 
         int nrParts = part.getCount();
@@ -388,29 +376,28 @@ public class DataObjectFactory {
             // derive a URI
             URI bodyURI = new URIImpl(bodyURIPrefix + i);
 
-            // create and append a child data object
-            DataObject bodyObject = handleMailPart(bodyPart, bodyURI, date, resultList);
-            if (bodyObject != null) {
-                children.add(bodyObject);
+            // interpret this part
+            HashMap child = handleMailPart(bodyPart, bodyURI, date);
+            if (child != null) {
+                children.add(child);
             }
         }
 
-        messageHierarchy.put(parentObject, children);
+        parent.put(CHILDREN_KEY, children);
 
-        // done!
-        return parentObject;
+        return parent;
     }
 
-    private DataObject handleRelatedPart(Multipart part, ContentType contentType, URI uri, Date date,
-            List resultList) throws MessagingException, IOException {
-        // create a data object for the parent part
+    private HashMap handleRelatedPart(Multipart part, ContentType contentType, URI uri, Date date)
+            throws MessagingException, IOException {
+        // interpret the parent part
         Part parentPart = part.getParent();
         if (parentPart == null) {
             return null;
         }
 
-        DataObject parentObject = handleSinglePart(parentPart, contentType, uri, date, true, resultList);
-        if (parentObject == null) {
+        HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true);
+        if (parent == null) {
             return null;
         }
 
@@ -436,123 +423,249 @@ public class DataObjectFactory {
             }
         }
 
-        // create child objects for each body part, giving special treatment to the root part
+        // interpret each body part, giving special treatment to the root part
         ArrayList children = new ArrayList();
 
         for (int i = 0; i < nrBodyParts; i++) {
             // fetch the body part
             BodyPart bodyPart = part.getBodyPart(i);
 
-            // create a data object for this body part
+            // interpret this body part
             URI bodyURI = new URIImpl(bodyURIPrefix + i);
-            DataObject bodyObject = handleMailPart(bodyPart, bodyURI, date, resultList);
+            HashMap child = handleMailPart(bodyPart, bodyURI, date);
 
             // append it to the part object in the appropriate way
-            if (bodyObject != null) {
+            if (child != null) {
                 if (i == rootPartIndex) {
-                    transferInfo(bodyObject, parentObject);
+                    transferInfo(child, parent);
                 }
                 else {
-                    children.add(bodyObject);
+                    children.add(child);
                 }
             }
         }
 
-        messageHierarchy.put(parentObject, children);
+        parent.put(CHILDREN_KEY, children);
 
-        return parentObject;
+        return parent;
     }
 
-    private DataObject handleSignedPart(Multipart part, ContentType contentType, URI uri, Date date,
-            List resultList) throws MessagingException, IOException {
-        return handleProtectedPart(part, 0, contentType, uri, date, resultList);
+    private HashMap handleSignedPart(Multipart part, ContentType contentType, URI uri, Date date)
+            throws MessagingException, IOException {
+        return handleProtectedPart(part, 0, contentType, uri, date);
     }
 
-    private DataObject handleEncryptedPart(Multipart part, ContentType contentType, URI uri, Date date,
-            List resultList) throws MessagingException, IOException {
-        return handleProtectedPart(part, 1, contentType, uri, date, resultList);
+    private HashMap handleEncryptedPart(Multipart part, ContentType contentType, URI uri, Date date)
+            throws MessagingException, IOException {
+        return handleProtectedPart(part, 1, contentType, uri, date);
     }
 
-    private DataObject handleProtectedPart(Multipart part, int partIndex, ContentType contentType, URI uri,
-            Date date, List resultList) throws MessagingException, IOException {
-        // create a data object for the first body part, which contains the actual content
-        DataObject childObject = null;
+    private HashMap handleProtectedPart(Multipart part, int partIndex, ContentType contentType, URI uri,
+            Date date) throws MessagingException, IOException {
+        // interpret the first body part, which contains the actual content
+        HashMap child = null;
         if (part.getCount() >= 2) {
-            childObject = handleMailPart(part.getBodyPart(partIndex), uri, date, resultList);
+            child = handleMailPart(part.getBodyPart(partIndex), uri, date);
         }
         else {
             LOGGER.info("multipart/signed or multipart/encrypted without enough body parts, uri = " + uri);
         }
 
-        // if this part was nested in a message, we should merge the obtained info with a data object
-        // modeling all message info, else we simply return the child object
-        Part parent = part.getParent();
-        if (parent instanceof Message) {
-            DataObject parentObject = handleSinglePart(parent, contentType, uri, date, true, resultList);
-            if (parentObject == null) {
-                return childObject;
+        // if this part was nested in a message, we should merge the obtained info with the message info,
+        // else we simply return the child
+        Part parentPart = part.getParent();
+        if (parentPart instanceof Message) {
+            HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true);
+            if (parent == null) {
+                return child;
             }
             else {
-                if (childObject != null) {
-                    transferInfo(childObject, parentObject);
+                if (child != null) {
+                    transferInfo(child, parent);
                 }
-                return parentObject;
+                return parent;
             }
         }
         else {
-            return childObject;
+            return child;
         }
     }
 
-    private DataObject handleReportPart(Multipart part, ContentType contentType, URI uri, Date date,
-            List resultList) throws MessagingException, IOException {
-        // create a data object for the parent message
+    private HashMap handleReportPart(Multipart part, ContentType contentType, URI uri, Date date)
+            throws MessagingException, IOException {
+        // interpret for the parent message
         Part parentPart = part.getParent();
         if (parentPart == null) {
             return null;
         }
 
-        DataObject parentObject = handleSinglePart(parentPart, contentType, uri, date, true, resultList);
-        if (parentObject == null) {
+        HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true);
+        if (parent == null) {
             return null;
         }
 
         // the first part contains a human-readable error message and is treated as the body.
         int count = part.getCount();
         if (count > 0) {
-            DataObject errorObject = handleMailPart(part.getBodyPart(0), uri, date, resultList);
-            if (errorObject != null) {
-                transferInfo(errorObject, parentObject);
+            HashMap error = handleMailPart(part.getBodyPart(0), uri, date);
+            if (error != null) {
+                transferInfo(error, parent);
             }
         }
 
         // the optional third part contains the (partial) returned message and will become an attachment
         if (count > 2) {
             URI nestedURI = new URIImpl(getBodyPartURIPrefix(uri) + "0");
-            DataObject returnedMessageObject = handleMailPart(part.getBodyPart(2), nestedURI, date,
-                    resultList);
-            if (returnedMessageObject != null) {
+            HashMap returnedMessage = handleMailPart(part.getBodyPart(2), nestedURI, date);
+            if (returnedMessage != null) {
                 ArrayList children = new ArrayList();
-                children.add(returnedMessageObject);
-                messageHierarchy.put(parentObject, children);
+                children.add(returnedMessage);
+                parent.put(CHILDREN_KEY, children);
             }
         }
 
-        return parentObject;
+        return parent;
     }
 
-    private DataObject handleParallelPart(Multipart part, ContentType contentType, URI uri, Date date,
-            List resultList) throws MessagingException, IOException {
+    private HashMap handleParallelPart(Multipart part, ContentType contentType, URI uri, Date date)
+            throws MessagingException, IOException {
         // treat this as multipart/mixed
-        return handleMixedPart(part, contentType, uri, date, resultList);
+        return handleMixedPart(part, contentType, uri, date);
     }
 
-    private DataObject handleUnknownTypePart(Multipart part, ContentType contentType, URI uri, Date date,
-            List resultList) throws MessagingException, IOException {
+    private HashMap handleUnknownTypePart(Multipart part, ContentType contentType, URI uri, Date date)
+            throws MessagingException, IOException {
         // treat this as multipart/mixed, as imposed by RFC 2046
         LOGGER.log(Level.INFO, "Unknown multipart MIME type: \"" + contentType.getBaseType()
                 + "\", treating as multipart/mixed");
-        return handleMixedPart(part, contentType, uri, date, resultList);
+        return handleMixedPart(part, contentType, uri, date);
+    }
+
+    /* ------- Methods for transforming a HashMap to a list of DataObjects ------- */
+
+    private ArrayList createDataObjects(HashMap map) {
+        ArrayList result = new ArrayList();
+        createDataObjects(map, null, result);
+        return result;
+    }
+
+    private void createDataObjects(HashMap map, URI parentUri, ArrayList result) {
+        // fetch the properties needed to create a DataObject
+        URI id = (URI) map.get(ID_KEY);
+        InputStream content = (InputStream) map.get(CONTENTS_KEY);
+        RDFContainer metadata = containerFactory.getRDFContainer(id);
+
+        // create the DataObject
+        DataObject object = content == null ? new DataObjectBase(id, source, metadata)
+                : new FileDataObjectBase(id, source, metadata, content);
+        result.add(object);
+
+        // extend metadata with additional properties
+        if (parentUri != null) {
+            metadata.put(Vocabulary.PART_OF, parentUri);
+        }
+
+        copyString(Vocabulary.CHARACTER_SET, map, metadata);
+        copyString(Vocabulary.MIME_TYPE, map, metadata);
+        copyString(Vocabulary.CONTENT_MIME_TYPE, map, metadata);
+        copyString(Vocabulary.SUBJECT, map, metadata);
+        copyString(Vocabulary.NAME, map, metadata);
+
+        copyInt(Vocabulary.BYTE_SIZE, map, metadata);
+
+        copyDate(Vocabulary.DATE, map, metadata);
+
+        copyAddresses(Vocabulary.FROM, map, metadata);
+        copyAddresses(Vocabulary.TO, map, metadata);
+        copyAddresses(Vocabulary.CC, map, metadata);
+        copyAddresses(Vocabulary.BCC, map, metadata);
+
+        // repeat recursively on children
+        ArrayList children = (ArrayList) map.get(CHILDREN_KEY);
+        if (children != null) {
+            int nrChildren = children.size();
+            for (int i = 0; i < nrChildren; i++) {
+                HashMap child = (HashMap) children.get(i);
+
+                // also register the child in the parent's metadata
+                URI childID = (URI) child.get(ID_KEY);
+                metadata.add(new StatementImpl(childID, Vocabulary.PART_OF, id));
+
+                createDataObjects(child, id, result);
+            }
+        }
+    }
+
+    private void copyString(URI predicate, HashMap map, RDFContainer metadata) {
+        String value = (String) map.get(predicate);
+        if (value != null) {
+            metadata.put(predicate, value);
+        }
+    }
+
+    private void copyInt(URI predicate, HashMap map, RDFContainer metadata) {
+        Integer value = (Integer) map.get(predicate);
+        if (value != null) {
+            metadata.put(predicate, value.intValue());
+        }
+    }
+
+    private void copyDate(URI predicate, HashMap map, RDFContainer metadata) {
+        Date value = (Date) map.get(predicate);
+        if (value != null) {
+            metadata.put(predicate, value);
+        }
+    }
+
+    private void copyAddresses(URI predicate, HashMap map, RDFContainer metadata) {
+        Object value = map.get(predicate);
+
+        if (value instanceof InternetAddress) {
+            addAddressMetadata((InternetAddress) value, predicate, metadata);
+        }
+        else if (value instanceof InternetAddress[]) {
+            InternetAddress[] array = (InternetAddress[]) value;
+            for (int i = 0; i < array.length; i++) {
+                addAddressMetadata(array[i], predicate, metadata);
+            }
+        }
+        else if (value != null) {
+            LOGGER.warning("Unknown address class: " + value.getClass().getName());
+        }
+    }
+
+    private void addAddressMetadata(InternetAddress address, URI predicate, RDFContainer metadata) {
+        // create a BNode with the name and address and associate it with the container's described URI
+        String name = address.getPersonal();
+        String emailAddress = address.getAddress();
+
+        if (name != null) {
+            name = name.trim();
+        }
+
+        if (emailAddress != null) {
+            emailAddress = emailAddress.trim();
+        }
+
+        if (hasRealValue(name) || hasRealValue(emailAddress)) {
+            String identifier = metadata.getDescribedUri().toString() + "-bnode-" + bnodeIndex++;
+            BNodeImpl bnode = new BNodeImpl(identifier);
+            metadata.put(predicate, bnode);
+
+            if (hasRealValue(name)) {
+                Literal literal = new LiteralImpl(name);
+                metadata.add(new StatementImpl(bnode, Vocabulary.NAME, literal));
+            }
+
+            if (hasRealValue(emailAddress)) {
+                Literal literal = new LiteralImpl(emailAddress);
+                metadata.add(new StatementImpl(bnode, Vocabulary.EMAIL_ADDRESS, literal));
+            }
+        }
+    }
+
+    private boolean hasRealValue(String string) {
+        return string != null && !string.equals("");
     }
 
     /* ----------------------------- Utility methods ----------------------------- */
@@ -590,53 +703,10 @@ public class DataObjectFactory {
         return result;
     }
 
-    private void addAddressMetadata(Object value, URI predicate, RDFContainer metadata) {
-        if (value instanceof InternetAddress) {
-            addAddressMetadata((InternetAddress) value, predicate, metadata);
+    private void addIfNotNull(URI predicate, Object value, HashMap map) {
+        if (value != null) {
+            map.put(predicate, value);
         }
-        else if (value instanceof InternetAddress[]) {
-            InternetAddress[] array = (InternetAddress[]) value;
-            for (int i = 0; i < array.length; i++) {
-                addAddressMetadata(array[i], predicate, metadata);
-            }
-        }
-        else if (value != null) {
-            LOGGER.warning("Unknown address class: " + value.getClass().getName());
-        }
-    }
-
-    private void addAddressMetadata(InternetAddress address, URI predicate, RDFContainer metadata) {
-        // create a BNode with the name and address and associate it with the container's described URI
-        String name = address.getPersonal();
-        String emailAddress = address.getAddress();
-
-        if (name != null) {
-            name = name.trim();
-        }
-
-        if (emailAddress != null) {
-            emailAddress = emailAddress.trim();
-        }
-
-        if (hasProperValue(name) || hasProperValue(emailAddress)) {
-            String identifier = metadata.getDescribedUri().toString() + "-bnode-" + bnodeIndex++;
-            BNodeImpl bnode = new BNodeImpl(identifier);
-            metadata.put(predicate, bnode);
-
-            if (name != null) {
-                Literal literal = new LiteralImpl(name);
-                metadata.add(new StatementImpl(bnode, Vocabulary.NAME, literal));
-            }
-
-            if (emailAddress != null) {
-                Literal literal = new LiteralImpl(emailAddress);
-                metadata.add(new StatementImpl(bnode, Vocabulary.EMAIL_ADDRESS, literal));
-            }
-        }
-    }
-
-    private boolean hasProperValue(String string) {
-        return string != null && !string.equals("");
     }
 
     private String getBodyPartURIPrefix(URI parentURI) {
@@ -644,54 +714,30 @@ public class DataObjectFactory {
         return prefix + (prefix.indexOf('#') < 0 ? "#" : ATTACHMENT_SEPARATOR);
     }
 
-    /**
-     * Temporary workaround for accessing a property of a DataObject when the described URI of its
-     * RDFContainer can no longer be relied upon.
-     */
-    private String getLiteral(DataObject object, URI predicate) {
-        RDFContainer metadata = object.getMetadata();
-        Repository repository = ((SesameRDFContainer) metadata).getRepository();
-        Collection statements = repository.getStatements(object.getID(), predicate, null);
-        if (statements.isEmpty()) {
-            return null;
-        }
-        else {
-            Statement firstStatement = (Statement) statements.iterator().next();
-            Value value = firstStatement.getObject();
-            if (value instanceof Literal) {
-                return ((Literal) value).getLabel();
-            }
-            else {
-                return null;
-            }
-        }
-    }
-
-    private void transferInfo(DataObject fromObject, DataObject toObject) throws IOException {
+    private void transferInfo(HashMap fromObject, HashMap toObject) throws IOException {
         // transfer content stream if applicable
-        if (fromObject instanceof FileDataObjectBase && toObject instanceof FileDataObjectBase) {
-            InputStream stream = ((FileDataObject) fromObject).getContent();
-            ((FileDataObjectBase) toObject).setContent(stream);
+        Object content = fromObject.get(CONTENTS_KEY);
+        if (content != null) {
+            toObject.put(CONTENTS_KEY, content);
         }
 
         // transfer mime type, carefully placing it as mime type or content mime type
-        String fromType = getLiteral(fromObject, Vocabulary.MIME_TYPE);
+        Object fromType = fromObject.get(Vocabulary.MIME_TYPE);
         if (fromType != null) {
-            RDFContainer metadata = toObject.getMetadata();
-            String toType = getLiteral(toObject, Vocabulary.MIME_TYPE);
+            Object toType = toObject.get(Vocabulary.MIME_TYPE);
             URI predicate = "message/rfc822".equals(toType) ? Vocabulary.CONTENT_MIME_TYPE
                     : Vocabulary.MIME_TYPE;
-            metadata.add(new StatementImpl(toObject.getID(), predicate, new LiteralImpl(fromType)));
+            toObject.put(predicate, fromType);
         }
 
         // transfer the first object's children to the second object relationships
-        ArrayList fromChildren = (ArrayList) messageHierarchy.remove(fromObject);
+        ArrayList fromChildren = (ArrayList) fromObject.get(CHILDREN_KEY);
 
         if (fromChildren != null && !fromChildren.isEmpty()) {
-            ArrayList toChildren = (ArrayList) messageHierarchy.get(toObject);
+            ArrayList toChildren = (ArrayList) toObject.get(CHILDREN_KEY);
             if (toChildren == null) {
                 toChildren = new ArrayList();
-                messageHierarchy.put(toObject, toChildren);
+                toObject.put(CHILDREN_KEY, toChildren);
             }
 
             toChildren.addAll(fromChildren);
@@ -725,32 +771,5 @@ public class DataObjectFactory {
     private String getHeader(Part mailPart, String headerName) throws MessagingException {
         String[] headerValues = mailPart.getHeader(headerName);
         return (headerValues != null && headerValues.length > 0) ? headerValues[0] : null;
-    }
-
-    private void encodeHierarchy() {
-        // loop over all registered DataObjects
-        Iterator objects = messageHierarchy.keySet().iterator();
-        while (objects.hasNext()) {
-            // fetch a parent DataObject and its children
-            DataObject parent = (DataObject) objects.next();
-            ArrayList children = (ArrayList) messageHierarchy.get(parent);
-
-            // retrieve some info from the parent
-            RDFContainer parentMetadata = parent.getMetadata();
-            URI parentID = parent.getID();
-
-            // loop over all children
-            int nrChildren = children.size();
-            for (int i = 0; i < nrChildren; i++) {
-                DataObject child = (DataObject) children.get(i);
-
-                // create the statement that is added to both the parent's and the child's metadata
-                Statement statement = new StatementImpl(child.getID(), Vocabulary.PART_OF, parentID);
-
-                // add this statement to both DataObjects
-                parentMetadata.add(statement);
-                child.getMetadata().add(statement);
-            }
-        }
     }
 }

@@ -9,6 +9,7 @@ package org.semanticdesktop.aperture.crawler.imap;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -446,39 +447,51 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
     }
 
     private void registerParent(DataObject object) {
+        // query for all parents
         Repository metadata = (Repository) object.getMetadata().getModel();
         Collection statements = metadata.getStatements(object.getID(),
                 org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF, null);
-        if (statements.isEmpty()) {
-            return;
-        }
-        else if (statements.size() > 1) {
-            LOGGER.warning("Multiple parents for " + object.getID() + ", ignoring all");
-        }
-        else {
-            Statement statement = (Statement) statements.iterator().next();
+
+        // determine all unique parent URIs (the partOf statement may be
+        HashSet parentIDs = new HashSet();
+        Iterator iterator = statements.iterator();
+        while (iterator.hasNext()) {
+            Statement statement = (Statement) iterator.next();
             Value parent = statement.getObject();
 
             if (parent instanceof URI) {
-                String parentID = parent.toString();
-                String childID = object.getID().toString();
+                parentIDs.add(parent);
+            }
+            else {
+                LOGGER.severe("Internal error: unexpected parent value type: " + parent.getClass());
+            }
+        }
 
-                if (accessData.isKnownId(parentID)) {
-                    if (parentID.equals(childID)) {
-                        LOGGER.warning("cyclical " + org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF
-                                + " property for " + parentID + ", ignoring");
-                    }
-                    else {
-                        accessData.putChild(parentID, childID);
-                    }
+        // register the parent
+        if (parentIDs.isEmpty()) {
+            return;
+        }
+        else if (parentIDs.size() > 1) {
+            LOGGER.warning("Multiple parents for " + object.getID() + ", ignoring all");
+        }
+        else {
+            URI parent = (URI) parentIDs.iterator().next();
+
+            String parentID = parent.toString();
+            String childID = object.getID().toString();
+
+            if (accessData.isKnownId(parentID)) {
+                if (parentID.equals(childID)) {
+                    LOGGER.warning("cyclical " + org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF
+                            + " property for " + parentID + ", ignoring");
                 }
                 else {
-                    LOGGER.severe("Internal error: encountered unknown parent: " + parentID + ", child = "
-                            + childID);
+                    accessData.putChild(parentID, childID);
                 }
             }
             else {
-                LOGGER.severe("Internal error: unknown parent value type: " + parent.getClass());
+                LOGGER.severe("Internal error: encountered unknown parent: " + parentID + ", child = "
+                        + childID);
             }
         }
     }
@@ -498,7 +511,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             Resource resource = statement.getSubject();
 
             if (resource instanceof URI) {
-                queue.add(resource.toString());
+                String id = resource.toString();
+                if (!queue.contains(id)) {
+                    queue.add(id);
+                }
             }
             else {
                 LOGGER.severe("Internal error: unknown child value type: " + resource.getClass());
