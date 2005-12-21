@@ -45,17 +45,40 @@ public class SesameRDFContainer implements RDFContainer {
 
     private Resource context;
 
-    public SesameRDFContainer(String uri) {
-        initRepository();
-        describedUri = valueFactory.createURI(uri);
+    /**
+     * Create a new SesameRDFContainer that will manage statements concerning the specified URI.
+     * 
+     * @param describedUri The URI that typically will serve as object in most statements.
+     */
+    public SesameRDFContainer(String describedUri) {
+        createRepository();
+        this.describedUri = valueFactory.createURI(describedUri);
     }
 
-    public SesameRDFContainer(URI uri) {
-        initRepository();
-        describedUri = uri;
+    /**
+     * Create a new SesameRDFContainer that will manage statements concerning the specified URI.
+     * 
+     * @param describedUri The URI that typically will serve as object in most statements.
+     */
+    public SesameRDFContainer(URI describedUri) {
+        createRepository();
+        this.describedUri = describedUri;
     }
 
-    private void initRepository() {
+    /**
+     * Create a new SesameRDFContainer that will manage statements concerning the specified URI. All
+     * statements will be stored in and retrieved from the specified Repository.
+     * 
+     * @param repository The Repository to store statements in and retrieve statements from.
+     * @param describedUri The URI that typically will serve as object in most statements.
+     */
+    public SesameRDFContainer(Repository repository, URI describedUri) {
+        this.repository = repository;
+        this.describedUri = describedUri;
+        valueFactory = repository.getSail().getValueFactory();
+    }
+
+    private void createRepository() {
         MemoryStore memoryStore = new MemoryStore();
 
         repository = new Repository(memoryStore);
@@ -74,10 +97,6 @@ public class SesameRDFContainer implements RDFContainer {
 
     public URI getDescribedUri() {
         return describedUri;
-    }
-
-    public void setDescribedUri(URI describedUri) {
-        this.describedUri = describedUri;
     }
 
     public Object getModel() {

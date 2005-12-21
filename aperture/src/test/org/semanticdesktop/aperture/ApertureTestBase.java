@@ -63,7 +63,10 @@ public class ApertureTestBase extends TestCase {
     }
     
     public void checkStatement(URI subject, URI property, Value value, SesameRDFContainer container) {
-        Repository repository = container.getRepository();
+        checkStatement(subject, property, value, container.getRepository());
+    }
+    
+    public void checkStatement(URI subject, URI property, Value value, Repository repository) {
         boolean encounteredValue = false;
         
         // loop over all statements that have the specified property uri as predicate

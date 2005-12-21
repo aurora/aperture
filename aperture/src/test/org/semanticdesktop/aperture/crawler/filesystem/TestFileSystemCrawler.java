@@ -13,6 +13,10 @@ import java.util.Collection;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.sesame.repository.Repository;
+import org.openrdf.sesame.sail.SailInitializationException;
+import org.openrdf.sesame.sail.SailUpdateException;
+import org.openrdf.sesame.sailimpl.memory.MemoryStore;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
@@ -85,12 +89,12 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
         // set FileSystemDataSource-specific properties
         FileSystemDataSource fileSource = (FileSystemDataSource) dataSource;
-        
+
         RDFContainer configuration = new SesameRDFContainer(dataSource.getID());
         ConfigurationUtil.setRootUrl(tmpDir.toURI().toString(), configuration);
         ConfigurationUtil.setMaximumDepth(1, configuration);
         fileSource.setConfiguration(configuration);
-        
+
         // create a Crawler for this DataSource (hardcoded for now)
         FileSystemCrawler crawler = new FileSystemCrawler();
         crawler.setDataSource(dataSource);
@@ -109,18 +113,18 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
         // inspect results
         assertEquals(4, crawlerHandler.getObjectCount());
-        
-        SesameRDFContainer container = crawlerHandler.getRDFContainer();
-        
-        checkStatement(toURI(tmpFile1), Vocabulary.NAME, new LiteralImpl(tmpFile1.getName()), container);
-        checkStatement(toURI(tmpFile2), Vocabulary.NAME, new LiteralImpl(tmpFile2.getName()), container);
-        checkStatement(toURI(subDir), Vocabulary.NAME, new LiteralImpl(subDir.getName()), container);
+
+        Repository repository = crawlerHandler.getRepository();
+
+        checkStatement(toURI(tmpFile1), Vocabulary.NAME, new LiteralImpl(tmpFile1.getName()), repository);
+        checkStatement(toURI(tmpFile2), Vocabulary.NAME, new LiteralImpl(tmpFile2.getName()), repository);
+        checkStatement(toURI(subDir), Vocabulary.NAME, new LiteralImpl(subDir.getName()), repository);
 
         // This should not be found because of maximum depth restrictions: this file should not be
         // reached. We deliberately check for a specific property rather than doing getStatements(URI,
         // null, null) as the URI of the skipped file will still be part of the metadata of the
         // containing Folder.
-        Collection stms = container.getRepository().getStatements(toURI(tmpFile3), Vocabulary.NAME, null);
+        Collection stms = repository.getStatements(toURI(tmpFile3), Vocabulary.NAME, null);
         assertEquals(0, stms.size());
     }
 
@@ -130,12 +134,40 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
     private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
-        private SesameRDFContainer container = new SesameRDFContainer("urn:dummy");
+        private Repository repository;
 
-        private int objectCount = 0;
+        private int objectCount;
+
+        private SesameRDFContainer lastContainer;
         
-        public SesameRDFContainer getRDFContainer() {
-            return container;
+        public SimpleCrawlerHandler() {
+            // create a Repository
+            repository = new Repository(new MemoryStore());
+
+            try {
+                repository.initialize();
+            }
+            catch (SailInitializationException e) {
+                // we cannot effectively continue
+                throw new RuntimeException(e);
+            }
+
+            // set auto-commit off so that all additions and deletions between two commits become a
+            // single transaction
+            try {
+                repository.setAutoCommit(false);
+            }
+            catch (SailUpdateException e) {
+                // we could theoretically continue (although much slower), but as this is a unit test,
+                // exit anyway
+                throw new RuntimeException(e);
+            }
+
+            objectCount = 0;
+        }
+
+        public Repository getRepository() {
+            return repository;
         }
         
         public int getObjectCount() {
@@ -159,22 +191,33 @@ public class TestFileSystemCrawler extends ApertureTestBase {
         }
 
         public RDFContainer getRDFContainer(URI uri) {
-            container.setDescribedUri(uri);
+            SesameRDFContainer container = new SesameRDFContainer(repository, uri);
+            container.setContext(uri);
+            
+            lastContainer = container;
+            
             return container;
         }
 
         public void objectNew(Crawler dataCrawler, DataObject object) {
             objectCount++;
-            
+
             assertNotNull(object);
-            assertSame(container, object.getMetadata());
-            
+            assertSame(lastContainer, object.getMetadata());
+
             String uri = object.getID().toString();
             if (uri.equals(subDir.toURI().toString())) {
                 assertTrue(object instanceof FolderDataObject);
             }
             else if (uri.indexOf("file-") != -1) {
                 assertTrue(object instanceof FileDataObject);
+            }
+            
+            try {
+                repository.commit();
+            }
+            catch (SailUpdateException e) {
+                fail();
             }
         }
 

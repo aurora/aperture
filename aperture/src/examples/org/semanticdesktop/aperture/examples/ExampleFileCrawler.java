@@ -22,7 +22,9 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.sesame.repository.Repository;
+import org.openrdf.sesame.sail.SailInitializationException;
 import org.openrdf.sesame.sail.SailUpdateException;
+import org.openrdf.sesame.sailimpl.memory.MemoryStore;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -146,31 +148,32 @@ public class ExampleFileCrawler {
 
     private static class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
-        // this RDFContainer implementation will be used to pass to the Crawler and Extractor to store
-        // the metadata in
-        private SesameRDFContainer rdfContainer;
-
-        // the Repository used internally in the SesameRDFContainer
         private Repository repository;
 
-        // the number of objects accessed thus far
         private int nrObjects;
 
         public SimpleCrawlerHandler() {
-            // set up a place to store the metadata
-            rdfContainer = new SesameRDFContainer("urn:dummy");
-            repository = rdfContainer.getRepository();
+            // create a Repository
+            repository = new Repository(new MemoryStore());
 
-            // Set auto-commit to false to enable transactions at a higher level than per-statement
-            // without the hassle of having to deal with Transaction objects. Statements are now only
-            // "really" added after each commit, no startTransaction is necessary
+            try {
+                repository.initialize();
+            }
+            catch (SailInitializationException e) {
+                // we cannot effectively continue
+                throw new RuntimeException(e);
+            }
+
+            // set auto-commit off so that all additions and deletions between two commits become a
+            // single transaction
             try {
                 repository.setAutoCommit(false);
             }
             catch (SailUpdateException e) {
-                // will hurt performance but we can still continue. Each add and remove will now be a
-                // separate transaction.
-                e.printStackTrace();
+                // this will hurt performance but we can still continue.
+                // Each add and remove will now be a separate transaction (slow).
+                LOGGER.log(Level.SEVERE,
+                        "Exception while setting auto-commit off, continuing in auto-commit mode", e);
             }
         }
 
@@ -205,11 +208,11 @@ public class ExampleFileCrawler {
         }
 
         public RDFContainer getRDFContainer(URI uri) {
-            rdfContainer.setDescribedUri(uri);
-            rdfContainer.setContext(uri);
-            return rdfContainer;
+            SesameRDFContainer container = new SesameRDFContainer(repository, uri);
+            container.setContext(uri);
+            return container;
         }
-
+        
         public void objectNew(Crawler dataCrawler, DataObject object) {
             if (object instanceof FileDataObject) {
                 process((FileDataObject) object);
