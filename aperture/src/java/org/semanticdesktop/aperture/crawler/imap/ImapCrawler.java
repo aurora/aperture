@@ -448,23 +448,13 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
     private void registerParent(DataObject object) {
         // query for all parents
-        Repository metadata = (Repository) object.getMetadata().getModel();
-        Collection statements = metadata.getStatements(object.getID(),
-                org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF, null);
+        Collection parentIDs = object.getMetadata().getAll(
+                org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF);
 
-        // determine all unique parent URIs (the partOf statement may be
-        HashSet parentIDs = new HashSet();
-        Iterator iterator = statements.iterator();
-        while (iterator.hasNext()) {
-            Statement statement = (Statement) iterator.next();
-            Value parent = statement.getObject();
-
-            if (parent instanceof URI) {
-                parentIDs.add(parent);
-            }
-            else {
-                LOGGER.severe("Internal error: unexpected parent value type: " + parent.getClass());
-            }
+        // determine all unique parent URIs (the same partOf statement may be returned more than once due
+        // to the use of context in the underlying model)
+        if (!(parentIDs instanceof Set)) {
+            parentIDs = new HashSet(parentIDs);
         }
 
         // register the parent
@@ -475,29 +465,34 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             LOGGER.warning("Multiple parents for " + object.getID() + ", ignoring all");
         }
         else {
-            URI parent = (URI) parentIDs.iterator().next();
+            Value parent = (Value) parentIDs.iterator().next();
+            if (parent instanceof URI) {
+                String parentID = parent.toString();
+                String childID = object.getID().toString();
 
-            String parentID = parent.toString();
-            String childID = object.getID().toString();
-
-            if (accessData.isKnownId(parentID)) {
-                if (parentID.equals(childID)) {
-                    LOGGER.warning("cyclical " + org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF
-                            + " property for " + parentID + ", ignoring");
+                if (accessData.isKnownId(parentID)) {
+                    if (parentID.equals(childID)) {
+                        LOGGER.warning("cyclical " + org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF
+                                + " property for " + parentID + ", ignoring");
+                    }
+                    else {
+                        accessData.putChild(parentID, childID);
+                    }
                 }
                 else {
-                    accessData.putChild(parentID, childID);
+                    LOGGER.severe("Internal error: encountered unknown parent: " + parentID + ", child = "
+                            + childID);
                 }
             }
             else {
-                LOGGER.severe("Internal error: encountered unknown parent: " + parentID + ", child = "
-                        + childID);
+                LOGGER.severe("Internal error: encountered unexpected parent type: " + parent.getClass());
             }
         }
     }
 
     private void queueChildren(DataObject object, LinkedList queue) {
-        // fetch the DataObject's Repository
+        // as RDFContainer does not support querying for statements with the described URI as subject, we
+        // have no other option than to retrieve the Repository
         Repository metadata = (Repository) object.getMetadata().getModel();
 
         // query for all child URIs
