@@ -39,7 +39,7 @@ public class SesameRDFContainer implements RDFContainer {
 
     private Repository repository;
 
-    private ValueFactory valfac;
+    private ValueFactory valueFactory;
 
     private URI describedUri;
 
@@ -47,7 +47,7 @@ public class SesameRDFContainer implements RDFContainer {
 
     public SesameRDFContainer(String uri) {
         initRepository();
-        describedUri = valfac.createURI(uri);
+        describedUri = valueFactory.createURI(uri);
     }
 
     public SesameRDFContainer(URI uri) {
@@ -63,13 +63,13 @@ public class SesameRDFContainer implements RDFContainer {
             repository.initialize();
         }
         catch (SailInitializationException e) {
-            // should never happen, indicates an internal error and therefore wrapper in a
+            // should never happen, indicates an internal error and therefore wrapped in a
             // RuntimeException rather than an UpdateException
             throw new RuntimeException(e);
         }
 
         // cannot happen before repository is initialized
-        valfac = memoryStore.getValueFactory();
+        valueFactory = memoryStore.getValueFactory();
     }
 
     public URI getDescribedUri() {
@@ -97,12 +97,12 @@ public class SesameRDFContainer implements RDFContainer {
     }
 
     public void put(URI property, String value) {
-        replaceInternal(property, valfac.createLiteral(value));
+        replaceInternal(property, valueFactory.createLiteral(value));
     }
 
     public void put(URI property, Date value) {
         String date = DateUtil.dateTime2String(value);
-        replaceInternal(property, valfac.createLiteral(date, XMLSchema.DATETIME));
+        replaceInternal(property, valueFactory.createLiteral(date, XMLSchema.DATETIME));
     }
 
     public void put(URI property, Calendar value) {
@@ -111,48 +111,30 @@ public class SesameRDFContainer implements RDFContainer {
 
     public void put(URI property, boolean value) {
         String val = value ? "true" : "false";
-        replaceInternal(property, valfac.createLiteral(val, XMLSchema.BOOLEAN));
+        replaceInternal(property, valueFactory.createLiteral(val, XMLSchema.BOOLEAN));
     }
 
     public void put(URI property, int value) {
         String val = Integer.toString(value);
-        replaceInternal(property, valfac.createLiteral(val, XMLSchema.INT));
+        replaceInternal(property, valueFactory.createLiteral(val, XMLSchema.INT));
     }
 
     public void put(URI property, long value) {
         String val = Long.toString(value);
-        replaceInternal(property, valfac.createLiteral(val, XMLSchema.LONG));
+        replaceInternal(property, valueFactory.createLiteral(val, XMLSchema.LONG));
     }
 
     public void put(URI property, Value value) {
         replaceInternal(property, value);
     }
 
-    private void replaceInternal(URI property, Value object) throws MultipleValuesException {
-        try {
-            // remove any existing statements with this property
-            Collection toRemove = repository.getStatements(describedUri, property, null);
-            if (toRemove.size() > 1) {
-                throw new MultipleValuesException(describedUri, property);
-            }
-            repository.remove(toRemove, context);
-
-            // add the new statement
-            repository.add(describedUri, property, object, context);
-        }
-        catch (SailUpdateException e) {
-            LOGGER.log(Level.INFO, "cannot update statement", e);
-            throw new UpdateException("cannot update statement", e);
-        }
-    }
-
     public void add(URI property, String value) {
-        addInternal(property, valfac.createLiteral(value));
+        addInternal(property, valueFactory.createLiteral(value));
     }
 
     public void add(URI property, Date value) {
         String date = DateUtil.dateTime2String(value);
-        addInternal(property, valfac.createLiteral(date, XMLSchema.DATETIME));
+        addInternal(property, valueFactory.createLiteral(date, XMLSchema.DATETIME));
     }
 
     public void add(URI property, Calendar value) {
@@ -161,31 +143,21 @@ public class SesameRDFContainer implements RDFContainer {
 
     public void add(URI property, boolean value) {
         String val = value ? "true" : "false";
-        addInternal(property, valfac.createLiteral(val, XMLSchema.BOOLEAN));
+        addInternal(property, valueFactory.createLiteral(val, XMLSchema.BOOLEAN));
     }
 
     public void add(URI property, int value) {
         String val = Integer.toString(value);
-        addInternal(property, valfac.createLiteral(val, XMLSchema.INT));
+        addInternal(property, valueFactory.createLiteral(val, XMLSchema.INT));
     }
 
     public void add(URI property, long value) {
         String val = Long.toString(value);
-        addInternal(property, valfac.createLiteral(val, XMLSchema.LONG));
+        addInternal(property, valueFactory.createLiteral(val, XMLSchema.LONG));
     }
 
     public void add(URI property, Value value) {
         addInternal(property, value);
-    }
-
-    private void addInternal(URI property, Value object) {
-        try {
-            repository.add(describedUri, property, object, context);
-        }
-        catch (SailUpdateException e) {
-            LOGGER.log(Level.INFO, "cannot add statement", e);
-            throw new UpdateException("cannot add statement", e);
-        }
     }
 
     public String getString(URI property) {
@@ -274,21 +246,6 @@ public class SesameRDFContainer implements RDFContainer {
         return getInternal(property);
     }
 
-    private Value getInternal(URI property) {
-        Collection statements = repository.getStatements(describedUri, property, null);
-        if (statements.isEmpty()) {
-            return null;
-        }
-        else {
-            Iterator iterator = statements.iterator();
-            Statement firstStatement = (Statement) iterator.next();
-            if (iterator.hasNext()) {
-                throw new MultipleValuesException(describedUri, property);
-            }
-            return firstStatement.getObject();
-        }
-    }
-
     public void remove(URI property) {
         // note: this also throws a MultipleValueException when there are multiple values
         Value value = getInternal(property);
@@ -318,39 +275,6 @@ public class SesameRDFContainer implements RDFContainer {
         return result;
     }
 
-    // public void add(URI subject, URI property, String value) {
-    // addInternal(subject, property, valfac.createLiteral(value));
-    // }
-    //
-    // public void add(URI subject, URI property, Date value) {
-    // String date = DateUtil.dateTime2String(value);
-    // addInternal(subject, property, valfac.createLiteral(date, XMLSchema.DATETIME));
-    // }
-    //
-    // public void add(URI subject, URI property, Calendar value) {
-    // add(subject, property, value.getTime());
-    // }
-    //
-    // public void add(URI subject, URI property, boolean value) {
-    // String val = value ? "true" : "false";
-    // addInternal(subject, property, valfac.createLiteral(val, XMLSchema.BOOLEAN));
-    // }
-    //
-    // public void add(URI subject, URI property, int value) {
-    // String val = Integer.toString(value);
-    // addInternal(subject, property, valfac.createLiteral(val, XMLSchema.INT));
-    // }
-    //
-    // public void add(URI subject, URI property, long value) {
-    // String val = Long.toString(value);
-    // addInternal(subject, property, valfac.createLiteral(val, XMLSchema.LONG));
-    // }
-    //
-    // public void add(URI subject, URI property, URI value) {
-    // addInternal(subject, property, value);
-    // }
-    //
-
     public void add(Statement statement) {
         try {
             repository.add(statement, context);
@@ -368,6 +292,49 @@ public class SesameRDFContainer implements RDFContainer {
         catch (SailUpdateException e) {
             LOGGER.log(Level.INFO, "cannot add statement", e);
             throw new UpdateException("cannot add statement", e);
+        }
+    }
+
+    private void addInternal(URI property, Value object) {
+        try {
+            repository.add(describedUri, property, object, context);
+        }
+        catch (SailUpdateException e) {
+            LOGGER.log(Level.INFO, "cannot add statement", e);
+            throw new UpdateException("cannot add statement", e);
+        }
+    }
+
+    private void replaceInternal(URI property, Value object) throws MultipleValuesException {
+        try {
+            // remove any existing statements with this property
+            Collection toRemove = repository.getStatements(describedUri, property, null);
+            if (toRemove.size() > 1) {
+                throw new MultipleValuesException(describedUri, property);
+            }
+            repository.remove(toRemove, context);
+
+            // add the new statement
+            repository.add(describedUri, property, object, context);
+        }
+        catch (SailUpdateException e) {
+            LOGGER.log(Level.INFO, "cannot update statement", e);
+            throw new UpdateException("cannot update statement", e);
+        }
+    }
+
+    private Value getInternal(URI property) {
+        Collection statements = repository.getStatements(describedUri, property, null);
+        if (statements.isEmpty()) {
+            return null;
+        }
+        else {
+            Iterator iterator = statements.iterator();
+            Statement firstStatement = (Statement) iterator.next();
+            if (iterator.hasNext()) {
+                throw new MultipleValuesException(describedUri, property);
+            }
+            return firstStatement.getObject();
         }
     }
 }
