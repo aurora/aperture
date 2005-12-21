@@ -16,8 +16,8 @@ import org.openrdf.model.Value;
 import org.semanticdesktop.aperture.rdf.sesame.UpdateException;
 
 /**
- * RDFContainer defines a simple interface for small RDF stores. Its purpose is to make populating an
- * model as simple as possible for developers new to RDF and triple stores.
+ * RDFContainer defines a simple interface for RDF stores. Its purpose is to make populating an model as
+ * simple as possible for developers new to RDF and triple stores.
  * 
  * <p>
  * RDFContainers typically have a central URI called the "described URI". The semantics of this is that
@@ -49,7 +49,7 @@ public interface RDFContainer {
      */
     public Object getModel();
 
-    // Map-oriented methods that automatically take the described URI as subject
+    /* Map-oriented methods that automatically take the described URI as subject */
 
     public void put(URI property, String value) throws UpdateException;
 
@@ -100,41 +100,7 @@ public interface RDFContainer {
     // returns a Collection of Values
     public Collection getAll(URI property);
 
-    // // Triple-oriented methods
-    //
-    // public void add(URI subject, URI property, String value);
-    //
-    // public void add(URI subject, URI property, Date value);
-    //
-    // public void add(URI subject, URI property, Calendar value);
-    //
-    // public void add(URI subject, URI property, boolean value);
-    //
-    // public void add(URI subject, URI property, int value);
-    //
-    // public void add(URI subject, URI property, long value);
-    //
-    // public void add(URI subject, URI property, URI value);
-    //
-    // public String getString(URI subject, URI property);
-    //
-    // public Date getDate(URI subject, URI property);
-    //
-    // public Calendar getCalendar(URI subject, URI property);
-    //
-    // public Boolean getBoolean(URI subject, URI property);
-    //
-    // public Integer getInteger(URI subject, URI property);
-    //
-    // public Long getLong(URI subject, URI property);
-    //
-    // public URI getURI(URI subject, URI property);
-    //
-    // public void remove(URI subject, URI property);
-    //
-    // public Collection getAll(URI subject, URI property);
-
-    // Statement-oriented methods
+    /* Statement-oriented methods */
 
     public void add(Statement statement) throws UpdateException;
 
