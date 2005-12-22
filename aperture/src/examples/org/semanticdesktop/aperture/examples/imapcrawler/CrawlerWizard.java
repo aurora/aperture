@@ -368,6 +368,7 @@ public class CrawlerWizard extends JPanel {
         crawler.setServerName(server);
         crawler.setUsername(username);
         crawler.setPassword(password);
+        crawler.setSecureConnection(sslSelected);
         crawler.setFolder(folder);
         crawler.setRepositoryFile(repositoryFile);
         crawler.setIdentifyingMimeType(identifyMimeType);

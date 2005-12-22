@@ -35,6 +35,7 @@ import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.imap.ImapCrawler;
 import org.semanticdesktop.aperture.datasource.ConfigurationUtil;
+import org.semanticdesktop.aperture.datasource.Vocabulary;
 import org.semanticdesktop.aperture.datasource.imap.ImapDataSource;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
@@ -91,10 +92,15 @@ public class ExampleImapCrawler {
 
     private boolean extractingContents = false;
 
+    // not settable on command-line! correct handling requires rather complex setup, dependent on Java
+    // version, whether or not it's a GUI application, etc. See ImapCrawler.sessionProperties and the
+    // SSLNOTES.TXT file delivered with the Javamail package.
+    private boolean secureConnection = false;
+
     /* Observable properties - determined during crawling */
 
     private ImapCrawler crawler;
-    
+
     private int nrObjects = 0;
 
     private String currentURL;
@@ -125,6 +131,10 @@ public class ExampleImapCrawler {
         return repositoryFile;
     }
 
+    public boolean hasSecureConnection() {
+        return secureConnection;
+    }
+    
     public String getUsername() {
         return username;
     }
@@ -165,6 +175,10 @@ public class ExampleImapCrawler {
         this.repositoryFile = repositoryFile;
     }
 
+    public void setSecureConnection(boolean secureConnection) {
+        this.secureConnection = secureConnection;
+    }
+    
     public void setUsername(String username) {
         this.username = username;
     }
@@ -199,6 +213,10 @@ public class ExampleImapCrawler {
             ConfigurationUtil.setPassword(password, config);
         }
 
+        if (secureConnection) {
+            ConfigurationUtil.setConnectionSecurity(Vocabulary.SSL.toString(), config);
+        }
+        
         ImapDataSource dataSource = new ImapDataSource();
         dataSource.setID(sourceID);
         dataSource.setName("Example IMAP DataSource");
@@ -217,12 +235,12 @@ public class ExampleImapCrawler {
             crawler.stop();
         }
     }
-    
+
     public boolean isStopRequested() {
         ImapCrawler crawler = this.crawler;
         return crawler == null ? false : crawler.isStopRequested();
     }
-    
+
     public static void main(String[] args) {
         // create a new ExampleImapCrawler instance
         ExampleImapCrawler crawler = new ExampleImapCrawler();
@@ -362,7 +380,7 @@ public class ExampleImapCrawler {
             catch (Exception e) {
                 e.printStackTrace();
             }
-            
+
             ExampleImapCrawler.this.exitCode = exitCode;
         }
 
@@ -395,7 +413,7 @@ public class ExampleImapCrawler {
                 }
             }
         }
-        
+
         private void commit() {
             try {
                 // commit if any changes have been made
@@ -505,7 +523,7 @@ public class ExampleImapCrawler {
                                 // ignore
                             }
                         }
-                        
+
                         // apply the extractor
                         ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
                         Extractor extractor = factory.get();
