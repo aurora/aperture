@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -438,9 +440,15 @@ public class ExampleImapCrawler {
         }
 
         private void process(FileDataObject object) throws IOException, ExtractorException {
+            // some initialization
             URI id = object.getID();
             RDFContainer metadata = object.getMetadata();
             String mimeType = null;
+
+            // fetch some constants to make sure the code remains readable
+            final URI mimeTypeProperty = org.semanticdesktop.aperture.accessor.Vocabulary.MIME_TYPE;
+            final URI contentMimeTypeProperty = org.semanticdesktop.aperture.accessor.Vocabulary.CONTENT_MIME_TYPE;
+            final URI charsetProperty = org.semanticdesktop.aperture.accessor.Vocabulary.CHARACTER_SET;
 
             // Create a buffer around the object's stream large enough to be able to reset the stream
             // after MIME type identification has taken place. Add some extra to the minimum array
@@ -449,10 +457,6 @@ public class ExampleImapCrawler {
             int bufferSize = Math.max(minimumArrayLength, 8192);
             BufferedInputStream buffer = new BufferedInputStream(object.getContent(), bufferSize);
             buffer.mark(minimumArrayLength + 10); // add some for safety
-
-            // make sure code remains readable
-            final URI mimeTypeProperty = org.semanticdesktop.aperture.accessor.Vocabulary.MIME_TYPE;
-            final URI contentMimeTypeProperty = org.semanticdesktop.aperture.accessor.Vocabulary.CONTENT_MIME_TYPE;
 
             // apply the mime type identifier if requested
             if (identifyingMimeType) {
@@ -483,15 +487,29 @@ public class ExampleImapCrawler {
                     mimeType = metadata.getString(mimeTypeProperty);
                 }
 
-                // apply an Extractor if available
+                // if we know a MIME type, try to find a matching extractor
                 if (mimeType != null) {
-                    buffer.reset();
-
                     Set extractors = extractorRegistry.get(mimeType);
                     if (!extractors.isEmpty()) {
+                        // reset the stream to its start
+                        buffer.reset();
+
+                        // see if we know the charset
+                        Charset charset = null;
+                        String charsetStr = metadata.getString(charsetProperty);
+                        if (charsetStr != null) {
+                            try {
+                                charset = Charset.forName(charsetStr);
+                            }
+                            catch (IllegalCharsetNameException e) {
+                                // ignore
+                            }
+                        }
+                        
+                        // apply the extractor
                         ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
                         Extractor extractor = factory.get();
-                        extractor.extract(id, buffer, null, mimeType, metadata);
+                        extractor.extract(id, buffer, charset, mimeType, metadata);
                     }
                 }
             }
