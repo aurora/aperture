@@ -91,6 +91,8 @@ public class ExampleImapCrawler {
 
     /* Observable properties - determined during crawling */
 
+    private ImapCrawler crawler;
+    
     private int nrObjects = 0;
 
     private String currentURL;
@@ -201,12 +203,24 @@ public class ExampleImapCrawler {
         dataSource.setConfiguration(config);
 
         // set up an IMAP crawler
-        ImapCrawler crawler = new ImapCrawler();
+        crawler = new ImapCrawler();
         crawler.setDataSource(dataSource);
         crawler.setCrawlerHandler(new SimpleCrawlerHandler());
         crawler.crawl();
     }
 
+    public void stop() {
+        ImapCrawler crawler = this.crawler;
+        if (crawler != null) {
+            crawler.stop();
+        }
+    }
+    
+    public boolean isStopRequested() {
+        ImapCrawler crawler = this.crawler;
+        return crawler == null ? false : crawler.isStopRequested();
+    }
+    
     public static void main(String[] args) {
         // create a new ExampleImapCrawler instance
         ExampleImapCrawler crawler = new ExampleImapCrawler();
@@ -346,6 +360,8 @@ public class ExampleImapCrawler {
             catch (Exception e) {
                 e.printStackTrace();
             }
+            
+            ExampleImapCrawler.this.exitCode = exitCode;
         }
 
         public void accessingObject(Crawler crawler, String url) {
