@@ -137,7 +137,7 @@ public class OutputPanel extends JPanel {
     private JCheckBox getExtractorBox() {
         if (extractorBox == null) {
             extractorBox = new JCheckBox();
-            extractorBox.setText("Extract content and metadata");
+            extractorBox.setText("Extract contents");
             extractorBox.setSelected(true);
         }
         return extractorBox;
@@ -270,7 +270,7 @@ public class OutputPanel extends JPanel {
     private JTextArea getTypeExplanationArea() {
         if (typeExplanationArea == null) {
             typeExplanationArea = new JTextArea();
-            typeExplanationArea.setText("When MIME type detection is disabled, content and metadata extraction will fall back on the MIME type as mentioned in the mail message.");
+            typeExplanationArea.setText("When MIME type detection is disabled, content extraction will fall back on the MIME type as mentioned in the mail.");
             typeExplanationArea.setWrapStyleWord(true);
             typeExplanationArea.setLineWrap(true);
             typeExplanationArea.setOpaque(false);

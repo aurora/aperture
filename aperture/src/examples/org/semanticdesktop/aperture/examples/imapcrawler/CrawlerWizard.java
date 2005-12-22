@@ -355,7 +355,7 @@ public class CrawlerWizard extends JPanel {
 
         buffer.append("\n\nMIME type detection:  ");
         buffer.append(identifyMimeType ? "on" : "off");
-        buffer.append("\nExtract attachment contents:  ");
+        buffer.append("\nExtract contents:  ");
         buffer.append(extractContents ? "on" : "off");
 
         buffer.append("\n\nRepository file:  ");
