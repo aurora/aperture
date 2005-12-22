@@ -4,4 +4,7 @@
 	<dataSourceFactory>
 		<name>org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSourceFactory</name>
 	</dataSourceFactory>
+	<dataSourceFactory>
+		<name>org.semanticdesktop.aperture.datasource.imap.ImapDataSourceFactory</name>
+	</dataSourceFactory>
 </dataSourceFactories>
