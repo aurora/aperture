@@ -10,6 +10,9 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.text.Collator;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import javax.mail.Folder;
 import javax.mail.MessagingException;
@@ -32,6 +35,8 @@ public class FolderPanel extends JPanel {
 
     private static final String ERROR_MESSAGE = "An error occurred while retrieving the folders.";
 
+    private static final Comparator FOLDER_COMPARATOR = new FolderComparator();
+    
     private JLabel explanationLabel = null;
 
     private JScrollPane treePane = null;
@@ -186,11 +191,17 @@ public class FolderPanel extends JPanel {
         }
 
         private void createTree(Folder folder, DefaultMutableTreeNode parentNode) throws MessagingException {
+            // retrieve all subfolders
             Folder[] subFolders = folder.list();
+            
+            // sort them alphabetically
+            Arrays.sort(subFolders, FOLDER_COMPARATOR);
+            
+            // create subtrees for them
             for (int i = 0; i < subFolders.length; i++) {
                 Folder subFolder = subFolders[i];
 
-                if (subFolder.exists()) {
+                if (subFolder.exists() && subFolder.isSubscribed()) {
                     DefaultMutableTreeNode subNode = new DefaultMutableTreeNode(subFolder);
                     parentNode.add(subNode);
 
@@ -200,7 +211,7 @@ public class FolderPanel extends JPanel {
         }
     }
 
-    public static class FolderRenderer extends DefaultTreeCellRenderer {
+    private static class FolderRenderer extends DefaultTreeCellRenderer {
 
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
                 boolean expanded, boolean leaf, int row, boolean hasFocus) {
@@ -224,6 +235,17 @@ public class FolderPanel extends JPanel {
             }
 
             return result;
+        }
+    }
+    
+    private static class FolderComparator implements Comparator {
+
+        private Collator collator = Collator.getInstance();
+        
+        public int compare(Object object1, Object object2) {
+            String name1 = ((Folder) object1).getName();
+            String name2 = ((Folder) object2).getName();
+            return collator.compare(name1, name2);
         }
     }
 }
