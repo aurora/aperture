@@ -228,19 +228,19 @@ public class CrawlerWizard extends JPanel {
     }
 
     private void updateButtons() {
-        nextButton.setText(currentPanel == summaryPanel ? "Finish" : "Next >");
-        
         ExampleImapCrawler crawler = this.crawler;
         boolean finishedCrawling = crawler != null && crawler.getExitCode() != null;
 
         if (finishedCrawling) {
             backButton.setEnabled(false);
             nextButton.setEnabled(false);
-            cancelButton.setText("Close");
+            cancelButton.setEnabled(true);
+            cancelButton.setText("Finish");
         }
         else {
             backButton.setEnabled(currentPanel != connectionPanel && currentPanel != crawlerPanel);
             nextButton.setEnabled(currentPanel != crawlerPanel);
+            cancelButton.setEnabled(currentPanel != crawlerPanel);
         }
     }
 
