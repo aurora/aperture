@@ -297,7 +297,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             String uri = uriPrefix + messageID;
 
             try {
-                scan(message, uri);
+                crawlMessage(message, uri);
             }
             catch (Exception e) {
                 // just log these exceptions; as they only affect a single message, they are
@@ -376,7 +376,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         return buffer.toString();
     }
 
-    private void scan(MimeMessage message, String uri) throws MessagingException {
+    private void crawlMessage(MimeMessage message, String uri) throws MessagingException {
         // see if we should skip this message for some reason
         if (message.isExpunged() || message.isSet(Flags.Flag.DELETED) || message.getSize() > maximumByteSize) {
             return;
