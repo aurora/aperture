@@ -445,7 +445,7 @@ public class ExampleImapCrawler {
             // Create a buffer around the object's stream large enough to be able to reset the stream
             // after MIME type identification has taken place. Add some extra to the minimum array
             // length required by the MimeTypeIdentifier for safety.
-            int minimumArrayLength = mimeTypeIdentifier.getMinArrayLength();
+            int minimumArrayLength = identifyingMimeType ? mimeTypeIdentifier.getMinArrayLength() : 0;
             int bufferSize = Math.max(minimumArrayLength, 8192);
             BufferedInputStream buffer = new BufferedInputStream(object.getContent(), bufferSize);
             buffer.mark(minimumArrayLength + 10); // add some for safety
