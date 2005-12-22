@@ -8,6 +8,7 @@ package org.semanticdesktop.aperture.crawler.imap;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -62,6 +63,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
     // DataAccessor implementation may be passed a different DataSource.
     private DataSource configuredDataSource;
 
+    // A Property instance holding *extra* properties to use when a Session is initiated.
+    // This can be used in apps running on Java < 5.0 to instruct to use a different SocketFactory,
+    // when you don't want to communicate this via the system properties
+    private Properties sessionProperties;
+
     private String hostName;
 
     private String userName;
@@ -80,6 +86,14 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
     private Map cachedDataObjectsMap = new HashMap();
 
+    public void setSessionProperties(Properties sessionProperties) {
+        this.sessionProperties = sessionProperties;
+    }
+    
+    public Properties getSessionProperties() {
+        return sessionProperties;
+    }
+    
     /* ----------------------------- Crawler implementation ----------------------------- */
 
     protected ExitCode crawlObjects() {
@@ -207,7 +221,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
     }
 
-    public String decode(String string) {
+    private String decode(String string) {
         int percentIndex = string.indexOf('%');
         if (percentIndex < 0) {
             return string;
@@ -236,7 +250,20 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
     private void ensureConnectedStore() throws MessagingException {
         // if there is no store yet, create one now
         if (store == null) {
+            // get all system properties
             Properties properties = System.getProperties();
+            
+            // copy all extra registered session properties 
+            if (sessionProperties != null) {
+                Enumeration keys = sessionProperties.elements();
+                while (keys.hasMoreElements()) {
+                    String key = (String) keys.nextElement();
+                    String value = sessionProperties.getProperty(key);
+                    properties.setProperty(key, value);
+                }
+            }
+            
+            
             Session session = Session.getDefaultInstance(properties);
             store = session.getStore(connectionType);
         }
