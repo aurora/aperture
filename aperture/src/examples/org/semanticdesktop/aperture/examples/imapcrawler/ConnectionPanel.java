@@ -133,7 +133,6 @@ public class ConnectionPanel extends JPanel {
     private JTextField getServerField() {
         if (serverField == null) {
             serverField = new JTextField();
-            serverField.setText("mail.messagingengine.com");
         }
         return serverField;
     }
@@ -146,7 +145,6 @@ public class ConnectionPanel extends JPanel {
     private JTextField getUsernameField() {
         if (usernameField == null) {
             usernameField = new JTextField();
-            usernameField.setText("cfmfluit@mailworks.org");
         }
         return usernameField;
     }
@@ -159,7 +157,6 @@ public class ConnectionPanel extends JPanel {
     private JPasswordField getPasswordField() {
         if (passwordField == null) {
             passwordField = new JPasswordField();
-            passwordField.setText("adunab1z");
         }
         return passwordField;
     }
