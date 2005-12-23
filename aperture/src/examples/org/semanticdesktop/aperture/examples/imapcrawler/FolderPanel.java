@@ -201,7 +201,7 @@ public class FolderPanel extends JPanel {
             for (int i = 0; i < subFolders.length; i++) {
                 Folder subFolder = subFolders[i];
 
-                if (subFolder.exists() && subFolder.isSubscribed()) {
+                if (subFolder.exists()) {
                     DefaultMutableTreeNode subNode = new DefaultMutableTreeNode(subFolder);
                     parentNode.add(subNode);
 
