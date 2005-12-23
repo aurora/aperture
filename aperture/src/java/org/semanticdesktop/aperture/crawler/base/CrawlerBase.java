@@ -163,6 +163,10 @@ public abstract class CrawlerBase implements Crawler {
         return stopRequested;
     }
 
+    /**
+     * Reports all IDs stored in the AccessData as being cleared to the CrawlerHandler and then gets rid
+     * of the AccessData instance.
+     */
     public void clear() {
         handler.clearStarted(this);
 
@@ -178,8 +182,8 @@ public abstract class CrawlerBase implements Crawler {
         }
 
         // remove persistent access data registration
-        accessData = null;
         clearAccessData();
+        accessData = null;
 
         ExitCode exitCode = stopRequested ? ExitCode.STOP_REQUESTED : ExitCode.COMPLETED;
         handler.clearFinished(this, exitCode);
@@ -325,8 +329,10 @@ public abstract class CrawlerBase implements Crawler {
     }
 
     /**
-     * Removes the stored AccessData, if any. By default this deletes the access data file if it exists.
-     * Subclasses can override this if they want to provide their own AccessData implementation.
+     * Removes the persistent storage of the AccessData, if any. By default this deletes the access data
+     * file if it exists. Subclasses can override this if they want to provide their own AccessData
+     * implementation. It is not necessary to report the clearing process to the CrawlerHandler, that is
+     * taken care of by the clear method that invokes this method.
      */
     protected void clearAccessData() {
         if (accessDataFile.exists()) {
