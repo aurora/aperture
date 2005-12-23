@@ -190,6 +190,9 @@ public class ExampleImapCrawler {
         if (folder == null) {
             throw new IllegalArgumentException("server cannot be null");
         }
+        if (repositoryFile == null) {
+            throw new IllegalArgumentException("repository file cannot be null");
+        }
 
         // determine the root url of the data source
         StringBuffer buffer = new StringBuffer(100);
