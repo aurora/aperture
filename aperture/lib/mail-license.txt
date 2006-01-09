@@ -1,3 +1,6 @@
+http://java.sun.com/products/javamail/
+
+
 Sun Microsystems, Inc. ("Sun") SOFTWARE LICENSE AGREEMENT and
 ENTITLEMENT for SOFTWARE
 
