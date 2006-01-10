@@ -34,12 +34,16 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.model.impl.StatementImpl;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.sesame.repository.Repository;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
+import org.semanticdesktop.aperture.accessor.FolderDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
+import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.ConfigurationUtil;
@@ -47,6 +51,8 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.Vocabulary;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.HttpClientUtil;
+
+import com.sun.mail.imap.IMAPFolder;
 
 /**
  * A Combined Crawler and DataAccessor implementation for IMAP.
@@ -57,7 +63,13 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
     private static final String MANDATORY_URL_PREFIX = "imap://";
 
-    private static final String ACCESSED_KEY = "x";
+    private static final String ACCESSED_KEY = "accessed";
+
+    private static final String NEXT_UID_KEY = "nextuid";
+
+    private static final String SIZE_KEY = "size";
+
+    private static final String SUBFOLDERS_KEY = "subfolders";
 
     // The source whose properties we're currently using. A separate DataSource is necessary as the
     // DataAccessor implementation may be passed a different DataSource.
@@ -89,11 +101,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
     public void setSessionProperties(Properties sessionProperties) {
         this.sessionProperties = sessionProperties;
     }
-    
+
     public Properties getSessionProperties() {
         return sessionProperties;
     }
-    
+
     /* ----------------------------- Crawler implementation ----------------------------- */
 
     protected ExitCode crawlObjects() {
@@ -136,6 +148,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
     }
 
     private void retrieveConfigurationData(DataSource dataSource) {
+        // see if we have already configured for this source
+        if (dataSource == configuredDataSource) {
+            return;
+        }
+
         // retrieve the DataSource's configuration object
         configuredDataSource = dataSource;
         RDFContainer config = dataSource.getConfiguration();
@@ -219,6 +236,12 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         else {
             maximumByteSize = maximumSize.intValue();
         }
+
+        // make sure we get rid of any store that may relate to an older configuration
+        if (store != null) {
+            closeConnection();
+            store = null;
+        }
     }
 
     private String decode(String string) {
@@ -252,8 +275,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         if (store == null) {
             // get all system properties
             Properties properties = System.getProperties();
-            
-            // copy all extra registered session properties 
+
+            // copy all extra registered session properties
             if (sessionProperties != null) {
                 Enumeration keys = sessionProperties.elements();
                 while (keys.hasMoreElements()) {
@@ -262,8 +285,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                     properties.setProperty(key, value);
                 }
             }
-            
-            
+
             Session session = Session.getDefaultInstance(properties);
             store = session.getStore(connectionType);
         }
@@ -286,8 +308,9 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
     }
 
     private void crawlFolder() throws MessagingException {
-        // FIXME: give the crawler handler a FolderDataObject?
-
+        // FIXME: debug code
+        long startTime = System.currentTimeMillis();
+        
         // fetch the Folder instance
         Folder folder = store.getFolder(folderName);
         UIDFolder uidFolder = (UIDFolder) folder;
@@ -314,27 +337,58 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
         // determine the start of all URIs originating from this folder
         String uriPrefix = getURIPrefix(folder);
+        String messagePrefix = uriPrefix + "/";
 
-        // scan this folder for new and changed messages
-        Message[] messages = folder.getMessages();
+        // report the folder's metadata
+        String folderUrl = uriPrefix + ";TYPE=LIST";
+        RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, folderUrl);
 
-        for (int i = 0; !isStopRequested() && i < messages.length; i++) {
-            MimeMessage message = (MimeMessage) messages[i];
-            long messageID = uidFolder.getUID(message);
-            String uri = uriPrefix + messageID;
-
-            try {
-                crawlMessage(message, uri);
+        try {
+            FolderDataObject folderObject = getObject(folder, folderUrl, source, accessData, containerFactory);
+            if (folderObject == null) {
+                // folder was not modified. Do NOT use reportNotModified: we do not want to register all
+                // children as unmodified as well, as they will be investigated independently below
+                crawlReport.increaseUnchangedCount();
+                handler.objectNotModified(this, folderUrl);
+                deprecatedUrls.remove(folderUrl);
             }
-            catch (Exception e) {
-                // just log these exceptions; as they only affect a single message, they are
-                // not considered fatal exceptions
-                LOGGER.log(Level.WARNING, "Exception while scanning message " + uri, e);
+            else {
+                // report this object as a new object (assumption: objects are always new, never
+                // changed, since mails are immutable)
+                crawlReport.increaseNewCount();
+                handler.objectNew(this, folderObject);
+
+                // as the folder is new or has changed, we need to crawl its messages
+                // FIXME: make this smarter by using the prefetched UID and the access data
+                Message[] messages = folder.getMessages();
+
+                for (int i = 0; !isStopRequested() && i < messages.length; i++) {
+                    MimeMessage message = (MimeMessage) messages[i];
+                    long messageID = uidFolder.getUID(message);
+                    String uri = messagePrefix + messageID;
+
+                    try {
+                        crawlMessage(message, uri);
+                    }
+                    catch (Exception e) {
+                        // just log these exceptions; as they only affect a single message, they are
+                        // not considered fatal exceptions
+                        LOGGER.log(Level.WARNING, "Exception while crawling message " + uri, e);
+                    }
+                }
             }
+        }
+        catch (MessagingException e) {
+            // just log this exception and continue, perhaps the messages can still be accessed
+            LOGGER.log(Level.WARNING, "Exception while crawling folder " + folderUrl, e);
         }
 
         // close the folder without deleting expunged messages
         folder.close(false);
+        
+        // FIXME: debug code
+        long duration = System.currentTimeMillis() - startTime;
+        System.out.println("duration: " + (duration / 1000.0) + " sec");
     }
 
     private String getURIPrefix(Folder folder) throws MessagingException {
@@ -357,7 +411,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         // append path
         buffer.append('/');
         buffer.append(encodeFolderName(folder.getFullName()));
-        buffer.append('/');
 
         return buffer.toString();
     }
@@ -405,7 +458,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
     private void crawlMessage(MimeMessage message, String uri) throws MessagingException {
         // see if we should skip this message for some reason
-        if (message.isExpunged() || message.isSet(Flags.Flag.DELETED) || message.getSize() > maximumByteSize) {
+        if (!isAcceptable(message)) {
             return;
         }
 
@@ -434,7 +487,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                     crawlReport.increaseNewCount();
                     handler.objectNew(this, object);
 
-                    // register parent child relationship
+                    // register parent child relationship (necessary in order to be able to report
+                    // unmodified or deleted attachments)
                     registerParent(object);
 
                     // queue all its children
@@ -457,6 +511,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
     }
 
+    private boolean isAcceptable(Message message) throws MessagingException {
+        return !(message.isExpunged() || message.isSet(Flags.Flag.DELETED) || message.getSize() > maximumByteSize);
+    }
+
     private void reportNotModified(String uri) {
         // report this object as unmodified
         crawlReport.increaseUnchangedCount();
@@ -473,7 +531,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
     }
 
-    private void registerParent(DataObject object) {
+    private URI getParent(DataObject object) {
         // query for all parents
         Collection parentIDs = object.getMetadata().getAll(
                 org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF);
@@ -484,35 +542,44 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             parentIDs = new HashSet(parentIDs);
         }
 
-        // register the parent
+        // return the parent if there is only one
         if (parentIDs.isEmpty()) {
-            return;
+            return null;
         }
         else if (parentIDs.size() > 1) {
             LOGGER.warning("Multiple parents for " + object.getID() + ", ignoring all");
+            return null;
         }
         else {
             Value parent = (Value) parentIDs.iterator().next();
             if (parent instanceof URI) {
-                String parentID = parent.toString();
-                String childID = object.getID().toString();
-
-                if (accessData.isKnownId(parentID)) {
-                    if (parentID.equals(childID)) {
-                        LOGGER.warning("cyclical " + org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF
-                                + " property for " + parentID + ", ignoring");
-                    }
-                    else {
-                        accessData.putChild(parentID, childID);
-                    }
-                }
-                else {
-                    LOGGER.severe("Internal error: encountered unknown parent: " + parentID + ", child = "
-                            + childID);
-                }
+                return (URI) parent;
             }
             else {
                 LOGGER.severe("Internal error: encountered unexpected parent type: " + parent.getClass());
+                return null;
+            }
+        }
+    }
+
+    private void registerParent(DataObject object) {
+        URI parent = getParent(object);
+        if (parent != null) {
+            String parentID = parent.toString();
+            String childID = object.getID().toString();
+
+            if (accessData.isKnownId(parentID)) {
+                if (parentID.equals(childID)) {
+                    LOGGER.warning("cyclical " + org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF
+                            + " property for " + parentID + ", ignoring");
+                }
+                else {
+                    accessData.putChild(parentID, childID);
+                }
+            }
+            else {
+                LOGGER.severe("Internal error: encountered unknown parent: " + parentID + ", child = "
+                        + childID);
             }
         }
     }
@@ -553,38 +620,47 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
     public DataObject getDataObjectIfModified(String url, DataSource source, AccessData accessData,
             Map params, RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException {
-        MimeMessage message;
-
         // reconfigure for the specified DataSource if necessary
-        if (source != configuredDataSource) {
-            retrieveConfigurationData(source);
-        }
+        retrieveConfigurationData(source);
 
-        // retrieve the MimeMessage
         try {
             // make sure we have a connection to the mail store
             ensureConnectedStore();
 
-            // retrieve the indicated folder
+            // retrieve the configured folder
+            // NOTE: no check is made whether the root folder specified in the data source is actually
+            // the same as the
+            // one mentioned in the url patameter.
             Folder folder = store.getFolder(folderName);
 
-            // determine the message UID
-            int index = url.lastIndexOf(folder.getSeparator());
-            if (index < 0 || index >= url.length() - 1) {
-                throw new IllegalArgumentException("unable to get message UID from " + url);
-            }
-            String messageNumberString = url.substring(index + 1);
+            // see if we need to process a folder or a message
+            int typeIndex = url.indexOf(";TYPE=");
+            if (typeIndex < 0) {
+                // determine the message UID
+                int separatorIndex = url.lastIndexOf(folder.getSeparator());
+                if (separatorIndex < 0 || separatorIndex >= url.length() - 1) {
+                    throw new IllegalArgumentException("unable to get message UID from " + url);
+                }
+                String messageNumberString = url.substring(separatorIndex + 1);
 
-            long messageUID;
-            try {
-                messageUID = Long.parseLong(messageNumberString);
-            }
-            catch (NumberFormatException e) {
-                throw new IllegalArgumentException("illegal message UID: " + messageNumberString);
-            }
+                long messageUID;
+                try {
+                    messageUID = Long.parseLong(messageNumberString);
+                }
+                catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("illegal message UID: " + messageNumberString);
+                }
 
-            // retrieve the message
-            message = (MimeMessage) ((UIDFolder) folder).getMessageByUID(messageUID);
+                // retrieve the message
+                MimeMessage message = (MimeMessage) ((UIDFolder) folder).getMessageByUID(messageUID);
+
+                // create a DataObject for this MimeMessage
+                return getObject(message, url, source, accessData, containerFactory);
+            }
+            else {
+                // create a DataObject for this Folder
+                return getObject(folder, url, source, accessData, containerFactory);
+            }
         }
         catch (MessagingException e) {
             IOException ioe = new IOException();
@@ -593,16 +669,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
         finally {
             closeConnection();
-        }
-
-        // create a DataObject for this message
-        try {
-            return getObject(message, url, source, accessData, containerFactory);
-        }
-        catch (MessagingException e) {
-            IOException ioe = new IOException();
-            ioe.initCause(e);
-            throw ioe;
         }
     }
 
@@ -661,4 +727,118 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
         return result;
     }
+
+    private FolderDataObject getObject(Folder folder, String url, DataSource source, AccessData accessData,
+            RDFContainerFactory containerFactory) throws MessagingException {
+        // See if this url has been accessed before and hasn't changed in the mean time.
+        // A check for the next UID guarantees that no mails have been added (see RFC 3501).
+        // If this is still the same, a check on the number of messages guarantees that no mails have
+        // been removed either. Finally, we check that it has the same set of subfolders
+        IMAPFolder imapFolder = (IMAPFolder) folder;
+        Message[] messages = null;
+
+        // check if the folder has changed
+        if (accessData != null) {
+            String nextUIDString = accessData.get(url, NEXT_UID_KEY);
+            String sizeString = accessData.get(url, SIZE_KEY);
+            String subFolders = accessData.get(url, SUBFOLDERS_KEY);
+
+            if (nextUIDString != null && sizeString != null && subFolders != null) {
+                try {
+                    // parse stored information
+                    long nextUID = Long.parseLong(nextUIDString);
+                    long size = Integer.parseInt(sizeString);
+
+                    // determine new information
+                    messages = folder.getMessages();
+                    String latestSubfolders = getSubFoldersString(folder);
+
+                    // compare
+                    if (nextUID == imapFolder.getUIDNext() && size == messages.length
+                            && subFolders.equals(latestSubfolders)) {
+                        // the folder contents have not changed, we can return immediately
+                        return null;
+                    }
+                }
+                catch (NumberFormatException e) {
+                    LOGGER.log(Level.WARNING, "exception while parsing access data, ingoring access data", e);
+                }
+            }
+        }
+
+        // register the folder's name
+        URI folderURI = new URIImpl(url);
+        RDFContainer metadata = containerFactory.getRDFContainer(folderURI);
+        metadata.put(org.semanticdesktop.aperture.accessor.Vocabulary.NAME, folder.getName());
+
+        // register the folder's parent
+        Folder parent = folder.getParent();
+        URI partOf = org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF;
+        if (parent != null) {
+            metadata.put(partOf, getURI(parent));
+        }
+
+        // add message URIs as children
+        // FIXME: see if accessing the message UIDs is instantaneous. If not, use the fetch profile in
+        // UIDFolder to prefetch them.
+        String uriPrefix = getURIPrefix(folder) + "/";
+        if (messages == null) {
+            messages = folder.getMessages();
+        }
+
+        for (int i = 0; i < messages.length; i++) {
+            MimeMessage message = (MimeMessage) messages[i];
+
+            if (isAcceptable(message)) {
+                long messageID = imapFolder.getUID(message);
+                URI messageURI = new URIImpl(uriPrefix + messageID);
+                metadata.add(new StatementImpl(messageURI, partOf, folderURI));
+            }
+        }
+
+        // add subfolder URIs
+        Folder[] subFolders = folder.list();
+        for (int i = 0; i < subFolders.length; i++) {
+            Folder subFolder = subFolders[i];
+            if (subFolder.exists()) {
+                metadata.add(new StatementImpl(getURI(subFolder), partOf, folderURI));
+            }
+        }
+
+        // register the access data of this url
+        if (accessData != null) {
+            accessData.put(url, NEXT_UID_KEY, String.valueOf(imapFolder.getUIDNext()));
+            accessData.put(url, SIZE_KEY, String.valueOf(messages.length));
+            accessData.put(url, SUBFOLDERS_KEY, getSubFoldersString(folder));
+        }
+
+        // create the resulting FolderDataObject instance
+        return new FolderDataObjectBase(folderURI, source, metadata);
+    }
+
+    private URI getURI(Folder folder) throws MessagingException {
+        return new URIImpl(getURIPrefix(folder) + ";TYPE=LIST");
+    }
+
+    private String getSubFoldersString(Folder folder) throws MessagingException {
+        StringBuffer buffer = new StringBuffer();
+
+        Folder[] subFolders = folder.list();
+        for (int i = 0; i < subFolders.length; i++) {
+            Folder subFolder = subFolders[i];
+            if (subFolder.exists()) {
+                buffer.append(subFolder.getFullName());
+
+                if (i < subFolders.length - 1) {
+                    buffer.append('@');
+                }
+            }
+
+        }
+
+        return buffer.toString();
+    }
+
+    // FIXME: make sure DataObjectFactory creates a parent URI for root MimeMessages and that it is
+    // stored in output.trix
 }
