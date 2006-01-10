@@ -82,14 +82,20 @@ public class DataObjectFactory {
      * @throws MessagingException Thrown when accessing the mail contents.
      * @throws IOException Thrown when accessing the mail contents.
      */
-    public List createDataObjects(MimeMessage message, String messageUri) throws MessagingException,
-            IOException {
+    public List createDataObjects(MimeMessage message, String messageUri, URI folderUri)
+            throws MessagingException, IOException {
         // TODO: we could use the URL format specified in RFC 2192 to construct a proper IMAP4 URL.
         // Right now we use something home-grown for representing attachments.
         // To investigate: does JavaMail provide us with enough information for constructing proper
         // URLs for attachments?
+
+        // create a HashMap representation of this message and all its nested parts
         HashMap map = handleMailPart(message, new URIImpl(messageUri), getDate(message));
-        return createDataObjects(map);
+
+        // convert the HashMap representation to a DataObject representation
+        ArrayList result = new ArrayList();
+        createDataObjects(map, folderUri, result);
+        return result;
     }
 
     /* ----------------------------- Methods for MIME interpretation ----------------------------- */
@@ -542,12 +548,6 @@ public class DataObjectFactory {
     }
 
     /* ------- Methods for transforming a HashMap to a list of DataObjects ------- */
-
-    private ArrayList createDataObjects(HashMap map) {
-        ArrayList result = new ArrayList();
-        createDataObjects(map, null, result);
-        return result;
-    }
 
     private void createDataObjects(HashMap map, URI parentUri, ArrayList result) {
         // fetch the properties needed to create a DataObject

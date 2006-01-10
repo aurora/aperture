@@ -310,7 +310,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
     private void crawlFolder() throws MessagingException {
         // FIXME: debug code
         long startTime = System.currentTimeMillis();
-        
+
         // fetch the Folder instance
         Folder folder = store.getFolder(folderName);
         UIDFolder uidFolder = (UIDFolder) folder;
@@ -359,8 +359,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 handler.objectNew(this, folderObject);
 
                 // as the folder is new or has changed, we need to crawl its messages
-                // FIXME: make this smarter by using the prefetched UID and the access data
+                // FIXME: make this smarter by using the prefetched UID and the access data to determine
+                // the new messages and prefetch their content as well
                 Message[] messages = folder.getMessages();
+                URI folderUri = folderObject.getID();
 
                 for (int i = 0; !isStopRequested() && i < messages.length; i++) {
                     MimeMessage message = (MimeMessage) messages[i];
@@ -368,7 +370,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                     String uri = messagePrefix + messageID;
 
                     try {
-                        crawlMessage(message, uri);
+                        crawlMessage(message, uri, folderUri);
                     }
                     catch (Exception e) {
                         // just log these exceptions; as they only affect a single message, they are
@@ -385,7 +387,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
         // close the folder without deleting expunged messages
         folder.close(false);
-        
+
         // FIXME: debug code
         long duration = System.currentTimeMillis() - startTime;
         System.out.println("duration: " + (duration / 1000.0) + " sec");
@@ -456,7 +458,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         return buffer.toString();
     }
 
-    private void crawlMessage(MimeMessage message, String uri) throws MessagingException {
+    private void crawlMessage(MimeMessage message, String uri, URI folderUri) throws MessagingException {
         // see if we should skip this message for some reason
         if (!isAcceptable(message)) {
             return;
@@ -475,7 +477,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             // get this DataObject
             RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, queuedUri);
             try {
-                DataObject object = getObject(message, queuedUri, source, accessData, containerFactory);
+                DataObject object = getObject(message, queuedUri, folderUri, source, accessData,
+                        containerFactory);
 
                 if (object == null) {
                     // report this object and all its children as unmodified
@@ -655,7 +658,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 MimeMessage message = (MimeMessage) ((UIDFolder) folder).getMessageByUID(messageUID);
 
                 // create a DataObject for this MimeMessage
-                return getObject(message, url, source, accessData, containerFactory);
+                return getObject(message, url, getURI(folder), source, accessData, containerFactory);
             }
             else {
                 // create a DataObject for this Folder
@@ -672,8 +675,9 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
     }
 
-    private DataObject getObject(MimeMessage message, String url, DataSource source, AccessData accessData,
-            RDFContainerFactory containerFactory) throws MessagingException, IOException {
+    private DataObject getObject(MimeMessage message, String url, URI folderUri, DataSource source,
+            AccessData accessData, RDFContainerFactory containerFactory) throws MessagingException,
+            IOException {
         // See if this url has been accessed before so that we can stop immediately. Note
         // that no check on message date is done as messages are immutable. Therefore we only have to
         // check whether the AccessData knows this ID.
@@ -701,7 +705,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
             // create DataObjects for the mail and its attachments
             DataObjectFactory factory = new DataObjectFactory(source, containerFactory);
-            List objects = factory.createDataObjects(message, messageUrl);
+            List objects = factory.createDataObjects(message, messageUrl, folderUri);
 
             // register the created DataObjects in the cache map
             Iterator iterator = objects.iterator();
@@ -838,7 +842,4 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
         return buffer.toString();
     }
-
-    // FIXME: make sure DataObjectFactory creates a parent URI for root MimeMessages and that it is
-    // stored in output.trix
 }
