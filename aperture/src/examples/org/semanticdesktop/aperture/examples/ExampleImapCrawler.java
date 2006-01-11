@@ -55,7 +55,7 @@ import org.semanticdesktop.aperture.util.IOUtil;
  * <p>
  * Warning: this implementation does not provide any form of security. This means that the provided
  * password is sent as plain text over the wire. Read the SSLNOTES.txt file delivered with the Javamail
- * library to see how to realize a secured connection or take a look at how the GUI version of the
+ * library to see how to realize a secure connection or take a look at how the GUI version of the
  * ExampleImapCrawler is implemented.
  */
 public class ExampleImapCrawler {
