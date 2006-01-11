@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.mail.FetchProfile;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -308,12 +309,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
     }
 
     private void crawlFolder() throws MessagingException {
-        // FIXME: debug code
-        long startTime = System.currentTimeMillis();
-
         // fetch the Folder instance
         Folder folder = store.getFolder(folderName);
-        UIDFolder uidFolder = (UIDFolder) folder;
 
         // skip if the folder does not exist
         if (folder == null || !folder.exists()) {
@@ -335,12 +332,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             folder.open(Folder.READ_ONLY);
         }
 
-        // determine the start of all URIs originating from this folder
-        String uriPrefix = getURIPrefix(folder);
-        String messagePrefix = uriPrefix + "/";
-
         // report the folder's metadata
-        String folderUrl = uriPrefix + ";TYPE=LIST";
+        String folderUrl = getURIPrefix(folder) + ";TYPE=LIST";
         RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, folderUrl);
 
         try {
@@ -359,25 +352,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 handler.objectNew(this, folderObject);
 
                 // as the folder is new or has changed, we need to crawl its messages
-                // FIXME: make this smarter by using the prefetched UID and the access data to determine
-                // the new messages and prefetch their content as well
-                Message[] messages = folder.getMessages();
-                URI folderUri = folderObject.getID();
-
-                for (int i = 0; !isStopRequested() && i < messages.length; i++) {
-                    MimeMessage message = (MimeMessage) messages[i];
-                    long messageID = uidFolder.getUID(message);
-                    String uri = messagePrefix + messageID;
-
-                    try {
-                        crawlMessage(message, uri, folderUri);
-                    }
-                    catch (Exception e) {
-                        // just log these exceptions; as they only affect a single message, they are
-                        // not considered fatal exceptions
-                        LOGGER.log(Level.WARNING, "Exception while crawling message " + uri, e);
-                    }
-                }
+                crawlMessages((IMAPFolder) folder, folderObject.getID());
             }
         }
         catch (MessagingException e) {
@@ -387,10 +362,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
         // close the folder without deleting expunged messages
         folder.close(false);
-
-        // FIXME: debug code
-        long duration = System.currentTimeMillis() - startTime;
-        System.out.println("duration: " + (duration / 1000.0) + " sec");
     }
 
     private String getURIPrefix(Folder folder) throws MessagingException {
@@ -456,6 +427,33 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
 
         return buffer.toString();
+    }
+
+    private void crawlMessages(IMAPFolder folder, URI folderUri) throws MessagingException {
+        // FIXME: use access data to determine all new messages: no need to prefetch old messages
+        Message[] messages = folder.getMessages();
+        String messagePrefix = getURIPrefix(folder) + "/";
+
+        // pre-fetch content info (assumption: all other info has already been pre-fetched when
+        // determining the folder's metadata, no need to request it again)
+        FetchProfile profile = new FetchProfile();
+        profile.add(FetchProfile.Item.CONTENT_INFO);
+        folder.fetch(messages, profile);
+
+        for (int i = 0; !isStopRequested() && i < messages.length; i++) {
+            MimeMessage message = (MimeMessage) messages[i];
+            long messageID = folder.getUID(message);
+            String uri = messagePrefix + messageID;
+
+            try {
+                crawlMessage(message, uri, folderUri);
+            }
+            catch (Exception e) {
+                // just log these exceptions; as they only affect a single message, they are
+                // not considered fatal exceptions
+                LOGGER.log(Level.WARNING, "Exception while crawling message " + uri, e);
+            }
+        }
     }
 
     private void crawlMessage(MimeMessage message, String uri, URI folderUri) throws MessagingException {
@@ -783,12 +781,17 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
 
         // add message URIs as children
-        // FIXME: see if accessing the message UIDs is instantaneous. If not, use the fetch profile in
-        // UIDFolder to prefetch them.
         String uriPrefix = getURIPrefix(folder) + "/";
         if (messages == null) {
             messages = folder.getMessages();
         }
+
+        // for faster access, prefetch all message UIDs and flags
+        FetchProfile profile = new FetchProfile();
+        profile.add(UIDFolder.FetchProfileItem.UID); // needed for message.getUID
+        profile.add(FetchProfile.Item.FLAGS); // needed for isAcceptable (DELETED)
+        profile.add(FetchProfile.Item.ENVELOPE); // needed for isAcceptable (size check)
+        folder.fetch(messages, profile);
 
         for (int i = 0; i < messages.length; i++) {
             MimeMessage message = (MimeMessage) messages[i];
