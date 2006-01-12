@@ -103,6 +103,10 @@ public class ExampleImapCrawler {
 
     private int nrObjects = 0;
 
+    private long startTime = 0L;
+    
+    private long finishTime = 0L;
+    
     private String currentURL;
 
     private ExitCode exitCode;
@@ -151,6 +155,14 @@ public class ExampleImapCrawler {
         return nrObjects;
     }
 
+    public long getStartTime() {
+        return startTime;
+    }
+    
+    public long getFinishTime() {
+        return finishTime;
+    }
+    
     public void setExtractingContents(boolean extractingContents) {
         this.extractingContents = extractingContents;
     }
@@ -366,18 +378,19 @@ public class ExampleImapCrawler {
         }
 
         public void crawlStarted(Crawler crawler) {
+            startTime = System.currentTimeMillis();
             nrObjects = 0;
             exitCode = null;
         }
 
         public void crawlStopped(Crawler crawler, ExitCode exitCode) {
+            System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
+
             try {
                 Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
                 RDFWriter rdfWriter = Rio.createWriter(RDFFormat.TRIX, writer);
                 repository.extractStatements(rdfWriter);
                 writer.close();
-
-                System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
                 System.out.println("Saved RDF model to " + repositoryFile);
             }
             catch (Exception e) {
@@ -385,6 +398,10 @@ public class ExampleImapCrawler {
             }
 
             ExampleImapCrawler.this.exitCode = exitCode;
+            finishTime = System.currentTimeMillis();
+            
+            double duration = (finishTime - startTime) / 1000.0;
+            System.out.println("Required time: " + duration + " sec.");
         }
 
         public void accessingObject(Crawler crawler, String url) {
