@@ -148,6 +148,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
     }
 
+    /**
+     * Prepare for accessing the specified DataSource by fetching all properties from it that are
+     * required to connect to the mail box.
+     */
     private void retrieveConfigurationData(DataSource dataSource) {
         // see if we have already configured for this source
         if (dataSource == configuredDataSource) {
@@ -430,7 +434,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
     }
 
     private void crawlMessages(IMAPFolder folder, URI folderUri) throws MessagingException {
-        // FIXME: use access data to determine all new messages: no need to prefetch old messages
+        // FIXME: use access data to determine all new messages: no need to prefetch information for old
+        // messages
         Message[] messages = folder.getMessages();
         String messagePrefix = getURIPrefix(folder) + "/";
 
@@ -702,8 +707,9 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             cachedDataObjectsMap.clear();
 
             // create DataObjects for the mail and its attachments
-            DataObjectFactory factory = new DataObjectFactory(source, containerFactory);
-            List objects = factory.createDataObjects(message, messageUrl, folderUri);
+            DataObjectFactory factory = new DataObjectFactory();
+            List objects = factory
+                    .createDataObjects(message, messageUrl, folderUri, source, containerFactory);
 
             // register the created DataObjects in the cache map
             Iterator iterator = objects.iterator();

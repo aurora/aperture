@@ -42,30 +42,57 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
  * Creates a set of DataObjects from a MimeMessage.
+ * 
+ * <p>
+ * DataObjectFactory interprets the structure of a MimeMessage and creates a tree of DataObjects that
+ * model its contents in a way that is most natural to users. Practically this means that the DataObject
+ * tree should be as similar as possible to how mail readers present the mail.
+ * 
+ * <p>
+ * For example, a multipart/alternative message may have a rather complex object structure (a Part with a
+ * MultiPart content, on its turn containing two BodyParts), but this is translated to a single
+ * DataObject holding all the mail metadata (sender, receiver, etc) as well as an InputStream accessing
+ * the simplest of the two body parts (typically the text/plain part).
  */
 public class DataObjectFactory {
 
+    // TODO: we could use the URL format specified in RFC 2192 to construct a proper IMAP4 URL.
+    // Right now we use something home-grown for representing attachments rather than isections.
+    // To investigate: does JavaMail provide us with enough information for constructing proper
+    // URLs for attachments? Perhaps we can create them ourselves by carefully counting BodyParts?
+
     private static final Logger LOGGER = Logger.getLogger(DataObjectFactory.class.getName());
 
-    private static final String ATTACHMENT_SEPARATOR = "-";
-
+    /**
+     * Key used to store a DataObject's URI in the intermediate HashMap representation.
+     */
     private static final String ID_KEY = "id";
 
+    /**
+     * Key used to store a DataObject's children in the intermediate HashMap representation.
+     */
     private static final String CHILDREN_KEY = "children";
 
+    /**
+     * Key used to store a DataObject's content (an InputStream) in the intermediate HashMap
+     * representation.
+     */
     private static final String CONTENTS_KEY = "contents";
 
+    /**
+     * The DataSource that the generated DataObjects will report as source.
+     */
     private DataSource source;
 
+    /**
+     * The RDFContainerFactory delivering the RDFContainer to be used in the DataObjects.
+     */
     private RDFContainerFactory containerFactory;
 
+    /**
+     * Internal counter used to generate BNode identifiers.
+     */
     private int bnodeIndex;
-
-    public DataObjectFactory(DataSource source, RDFContainerFactory containerFactory) {
-        this.source = source;
-        this.containerFactory = containerFactory;
-        this.bnodeIndex = 0;
-    }
 
     /**
      * Returns a list of DataObjects that have been created based on the contents of the specified
@@ -77,17 +104,22 @@ public class DataObjectFactory {
      * @param message The MimeMessage to interpret.
      * @param messageUri The URI to use to identify the specified MimeMessage. URIs of child DataObjects
      *            must be derived from this URI.
+     * @param folderUri The URI of the Folder from which these MimeMessages were obtained. The root
+     *            DataObject will have this URI as parent.
+     * @param source The DataSource that the DataObjects will return as source.
+     * @param containerFactory An RDFContainerFactory that can deliver RDFContainer to be used in the
+     *            returned DataObjects.
      * @return A List of DataObjects derived from the specified MimeMessage. The order of the DataObjects
      *         reflects the order of the message parts they represent.
      * @throws MessagingException Thrown when accessing the mail contents.
      * @throws IOException Thrown when accessing the mail contents.
      */
-    public List createDataObjects(MimeMessage message, String messageUri, URI folderUri)
-            throws MessagingException, IOException {
-        // TODO: we could use the URL format specified in RFC 2192 to construct a proper IMAP4 URL.
-        // Right now we use something home-grown for representing attachments.
-        // To investigate: does JavaMail provide us with enough information for constructing proper
-        // URLs for attachments?
+    public List createDataObjects(MimeMessage message, String messageUri, URI folderUri, DataSource source,
+            RDFContainerFactory containerFactory) throws MessagingException, IOException {
+        // initialize variables
+        this.source = source;
+        this.containerFactory = containerFactory;
+        this.bnodeIndex = 0;
 
         // create a HashMap representation of this message and all its nested parts
         HashMap map = handleMailPart(message, new URIImpl(messageUri), getDate(message));
@@ -115,7 +147,7 @@ public class DataObjectFactory {
         if ("multipart".equals(primaryType)) {
             Object content = mailPart.getContent();
             if (content instanceof Multipart) {
-                // Content is a container for multiple other parts
+                // content is a container for multiple other parts
                 return handleMultipart((Multipart) content, contentType, uri, date);
             }
             else {
@@ -161,6 +193,10 @@ public class DataObjectFactory {
         else if ("message/rfc822".equals(mimeType)) {
             Object content = mailPart.getContent();
             if (content instanceof Message) {
+                // this part contains a nested message (typically a forwarded message): ignore this part
+                // and only model the contents of the nested message, as the parent message will have
+                // been generated already and this specific Part contains no additional useful
+                // information
                 Message nestedMessage = (Message) content;
                 return handleMailPart(nestedMessage, uri, getDate(nestedMessage));
             }
@@ -194,12 +230,15 @@ public class DataObjectFactory {
 
         result.put(Vocabulary.DATE, date);
 
-        // Differentiate between Messages and other mail Parts. We don't use the Part.getHeader message
-        // as they don't decode non-ASCII 'encoded words' (see RFC 2047).
+        // Differentiate between Messages and other types of mail parts. We don't use the Part.getHeader
+        // method as they don't decode non-ASCII 'encoded words' (see RFC 2047).
         if (mailPart instanceof Message) {
+            // the data object's primary mimetype is message/rfc822. The MIME type of the InputStream
+            // (most often text/plain or text/html) is modeled as a secondary MIME type
             result.put(Vocabulary.MIME_TYPE, "message/rfc822");
             result.put(Vocabulary.CONTENT_MIME_TYPE, mimeType);
 
+            // add message metadata
             Message message = (Message) mailPart;
             addIfNotNull(Vocabulary.SUBJECT, message.getSubject(), result);
             addIfNotNull(Vocabulary.FROM, message.getFrom(), result);
@@ -208,6 +247,8 @@ public class DataObjectFactory {
             addIfNotNull(Vocabulary.BCC, message.getRecipients(RecipientType.BCC), result);
         }
         else {
+            // this is most likely an attachment: set the InputStream's mime type as the data object's
+            // primary MIME type
             result.put(Vocabulary.MIME_TYPE, mimeType);
         }
 
@@ -220,6 +261,7 @@ public class DataObjectFactory {
         // fetch the content subtype
         String subType = normalizeString(contentType.getSubType());
 
+        // handle the part according to its subtype
         if ("mixed".equals(subType)) {
             return handleMixedPart(part, contentType, uri, date);
         }
@@ -309,8 +351,6 @@ public class DataObjectFactory {
         // nothing to return when there are no parts
         int count = part.getCount();
         if (count == 0) {
-            // fixme: shouldn't we create a data object for the parent, similar to handleMixedPart?
-            // after all, the parent part may still contain useful metadata
             return null;
         }
 
@@ -389,6 +429,7 @@ public class DataObjectFactory {
             }
         }
 
+        // all interpreted body parts become children of the parent
         parent.put(CHILDREN_KEY, children);
 
         return parent;
@@ -410,7 +451,7 @@ public class DataObjectFactory {
         // determine the prefix for all children
         String bodyURIPrefix = getBodyPartURIPrefix(uri);
 
-        // find the index of the root part, if specified (default to 0)
+        // find the index of the root part, if specified (defaults to 0)
         int rootPartIndex = 0;
         int nrBodyParts = part.getCount();
 
@@ -451,6 +492,8 @@ public class DataObjectFactory {
             }
         }
 
+        // all interpreted body parts become children of the parent part, except for the root part, whose
+        // properties have already been shifted to the parent
         parent.put(CHILDREN_KEY, children);
 
         return parent;
@@ -510,12 +553,12 @@ public class DataObjectFactory {
             return null;
         }
 
-        // the first part contains a human-readable error message and is treated as the body.
+        // the first part contains a human-readable error message and will be treated as the mail body
         int count = part.getCount();
         if (count > 0) {
-            HashMap error = handleMailPart(part.getBodyPart(0), uri, date);
-            if (error != null) {
-                transferInfo(error, parent);
+            HashMap errorPart = handleMailPart(part.getBodyPart(0), uri, date);
+            if (errorPart != null) {
+                transferInfo(errorPart, parent);
             }
         }
 
@@ -550,7 +593,7 @@ public class DataObjectFactory {
     /* ------- Methods for transforming a HashMap to a list of DataObjects ------- */
 
     private void createDataObjects(HashMap map, URI parentUri, ArrayList result) {
-        // fetch the properties needed to create a DataObject
+        // fetch the minimal set of properties needed to create a DataObject
         URI id = (URI) map.get(ID_KEY);
         InputStream content = (InputStream) map.get(CONTENTS_KEY);
         RDFContainer metadata = containerFactory.getRDFContainer(id);
@@ -664,10 +707,6 @@ public class DataObjectFactory {
         }
     }
 
-    private boolean hasRealValue(String string) {
-        return string != null && !string.equals("");
-    }
-
     /* ----------------------------- Utility methods ----------------------------- */
 
     private String normalizeString(String string) {
@@ -711,9 +750,13 @@ public class DataObjectFactory {
 
     private String getBodyPartURIPrefix(URI parentURI) {
         String prefix = parentURI.toString();
-        return prefix + (prefix.indexOf('#') < 0 ? "#" : ATTACHMENT_SEPARATOR);
+        return prefix + (prefix.indexOf('#') < 0 ? "#" : "-");
     }
 
+    /**
+     * Transfer all properties from one interpreted mail part to another, taking care to merge
+     * information rather than overwrite it when appropriate.
+     */
     private void transferInfo(HashMap fromObject, HashMap toObject) throws IOException {
         // transfer content stream if applicable
         Object content = fromObject.get(CONTENTS_KEY);
@@ -771,5 +814,9 @@ public class DataObjectFactory {
     private String getHeader(Part mailPart, String headerName) throws MessagingException {
         String[] headerValues = mailPart.getHeader(headerName);
         return (headerValues != null && headerValues.length > 0) ? headerValues[0] : null;
+    }
+
+    private boolean hasRealValue(String string) {
+        return string != null && !string.equals("");
     }
 }
