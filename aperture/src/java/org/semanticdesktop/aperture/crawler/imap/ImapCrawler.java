@@ -7,6 +7,7 @@
 package org.semanticdesktop.aperture.crawler.imap;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -434,17 +435,37 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
     }
 
     private void crawlMessages(IMAPFolder folder, URI folderUri) throws MessagingException {
-        // FIXME: use access data to determine all new messages: no need to prefetch information for old
-        // messages
+        // fetch all messages
         Message[] messages = folder.getMessages();
         String messagePrefix = getURIPrefix(folder) + "/";
 
-        // pre-fetch content info (assumption: all other info has already been pre-fetched when
-        // determining the folder's metadata, no need to request it again)
+        // determine the set of messages we haven't seen yet (this will also include all messages skipped
+        // because they were too large, but ok). The getObject method will also perform this check, but
+        // skipping them upfront will let us prevent prefetching the content info for old messages:
+        // especially handy when only a few mails were added to a large folder.
+        if (accessData != null) {
+            ArrayList filteredMessages = new ArrayList(messages.length);
+
+            for (int i = 0; i < messages.length; i++) {
+                MimeMessage message = (MimeMessage) messages[i];
+                long messageID = folder.getUID(message);
+                String uri = messagePrefix + messageID;
+
+                if (accessData.get(uri, ACCESSED_KEY) == null) {
+                    filteredMessages.add(message);
+                }
+            }
+
+            messages = (Message[]) filteredMessages.toArray(new Message[filteredMessages.size()]);
+        }
+
+        // pre-fetch content info for the selected messages (assumption: all other info has already been
+        // pre-fetched when determining the folder's metadata, no need to prefetch it again)
         FetchProfile profile = new FetchProfile();
         profile.add(FetchProfile.Item.CONTENT_INFO);
         folder.fetch(messages, profile);
 
+        // crawl every selected message
         for (int i = 0; !isStopRequested() && i < messages.length; i++) {
             MimeMessage message = (MimeMessage) messages[i];
             long messageID = folder.getUID(message);
