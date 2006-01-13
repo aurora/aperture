@@ -4,4 +4,7 @@
 	<dataAccessorFactory>
 		<name>org.semanticdesktop.aperture.accessor.file.FileAccessorFactory</name>
 	</dataAccessorFactory>
+	<dataAccessorFactory>
+		<name>org.semanticdesktop.aperture.accessor.http.HttpAccessorFactory</name>
+	</dataAccessorFactory>
 </dataAccessorFactories>
