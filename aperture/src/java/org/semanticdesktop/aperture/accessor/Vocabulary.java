@@ -57,6 +57,10 @@ public interface Vocabulary {
 
     public static final URI CREATION_DATE = new URIImpl(NS + "creationDate");
 
+    public static final URI RETRIEVAL_DATE = new URIImpl(NS + "retrievalDate");
+    
+    public static final URI EXPIRATION_DATE = new URIImpl(NS + "expirationDate");
+    
     public static final URI PRINT_DATE = new URIImpl(NS + "printDate");
 
     public static final URI LANGUAGE = new URIImpl(NS + "language");
