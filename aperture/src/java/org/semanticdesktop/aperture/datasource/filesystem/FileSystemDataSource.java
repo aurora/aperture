@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.datasource.filesystem;
 
+import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.datasource.Vocabulary;
 import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
 
@@ -14,7 +15,7 @@ import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
  */
 public class FileSystemDataSource extends DataSourceBase {
 
-    public org.openrdf.model.URI getType() {
+    public URI getType() {
         return Vocabulary.FILE_SYSTEM_DATA_SOURCE;
     }
 }

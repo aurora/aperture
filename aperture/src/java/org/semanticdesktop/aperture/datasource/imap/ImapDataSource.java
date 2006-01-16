@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.datasource.imap;
 
+import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.datasource.Vocabulary;
 import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
 
@@ -14,7 +15,7 @@ import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
  */
 public class ImapDataSource extends DataSourceBase {
 
-    public org.openrdf.model.URI getType() {
+    public URI getType() {
         return Vocabulary.IMAP_DATA_SOURCE;
     }
 }
