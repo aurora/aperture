@@ -21,7 +21,7 @@ public class TestDataSources extends TestSuite {
     }
     
     private TestDataSources() {
-        super("crawlers");
+        super("data sources");
         addTest(new TestSuite(TestDefaultDataSourceRegistry.class));
     }
 }

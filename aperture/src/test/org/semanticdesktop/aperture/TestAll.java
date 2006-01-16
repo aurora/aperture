@@ -15,7 +15,7 @@ import org.semanticdesktop.aperture.datasource.TestDataSources;
 import org.semanticdesktop.aperture.extractor.TestExtractors;
 import org.semanticdesktop.aperture.hypertext.linkextractor.TestLinkExtractors;
 import org.semanticdesktop.aperture.mime.TestMimeStuff;
-import org.semanticdesktop.aperture.rdf.TestSesameRDFContainer;
+import org.semanticdesktop.aperture.rdf.TestRDFContainers;
 import org.semanticdesktop.aperture.security.TestSecurityStuff;
 
 public class TestAll extends TestSuite {
@@ -26,7 +26,8 @@ public class TestAll extends TestSuite {
 
     private TestAll() {
         super("aperture");
-        addTest(new TestSuite(TestSesameRDFContainer.class));
+        
+        addTest(TestRDFContainers.suite());
         addTest(TestAccessors.suite());
         addTest(TestDataSources.suite());
         addTest(TestCrawlers.suite());

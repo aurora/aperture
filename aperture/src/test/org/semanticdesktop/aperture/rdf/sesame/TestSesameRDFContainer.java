@@ -1,4 +1,4 @@
-package org.semanticdesktop.aperture.rdf;
+package org.semanticdesktop.aperture.rdf.sesame;
 
 import java.util.Date;
 
