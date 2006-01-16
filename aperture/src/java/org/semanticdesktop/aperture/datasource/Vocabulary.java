@@ -27,6 +27,8 @@ public interface Vocabulary {
 
     public static final URI FILE_SYSTEM_DATA_SOURCE = new URIImpl(NS + "FileSystemDataSource");
 
+    public static final URI WEB_DATA_SOURCE = new URIImpl(NS + "WebDataSource");
+    
     public static final URI IMAP_DATA_SOURCE = new URIImpl(NS + "IMAPDataSource");
     
     public static final URI PATTERN = new URIImpl(NS + "Pattern");
