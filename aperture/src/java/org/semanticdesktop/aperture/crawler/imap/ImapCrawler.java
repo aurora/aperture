@@ -549,7 +549,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         deprecatedUrls.remove(uri);
 
         // repeat recursively on all registered children
-        Set children = accessData.getChildren(uri);
+        Set children = accessData.getReferredIDs(uri);
         if (children != null) {
             Iterator iterator = children.iterator();
             while (iterator.hasNext()) {
@@ -601,7 +601,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                             + " property for " + parentID + ", ignoring");
                 }
                 else {
-                    accessData.putChild(parentID, childID);
+                    accessData.putReferredID(parentID, childID);
                 }
             }
             else {

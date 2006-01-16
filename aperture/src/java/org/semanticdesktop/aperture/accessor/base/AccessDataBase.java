@@ -29,7 +29,7 @@ public class AccessDataBase implements AccessData {
 
     private static final Logger LOGGER = Logger.getLogger(AccessDataBase.class.getName());
 
-    private static final String CHILD_TAG = "child";
+    private static final String REFERRED_ID_TAG = "referredID";
 
     /**
      * A Map mapping IDs to another Map that contains the key-value pairs for that ID.
@@ -37,10 +37,11 @@ public class AccessDataBase implements AccessData {
     private HashMap idMap;
 
     /**
-     * A mapping from IDs to Sets of IDs, representing a parent-child relationship. The parent is used as
-     * key and maps to a Set of children.
+     * A mapping from IDs to Sets of IDs that the former ID refers to. This can be used to model
+     * parent-child relationships or links between IDs. The use of this mapping is typically to register
+     * IDs that need special treatment once the referring ID has been changed or removed.
      */
-    private HashMap childrenMap;
+    private HashMap referredIDMap;
 
     /**
      * Creates a new AccessData instance.
@@ -51,7 +52,7 @@ public class AccessDataBase implements AccessData {
 
     private void initMaps() {
         idMap = new HashMap(1024);
-        childrenMap = new HashMap(1024);
+        referredIDMap = new HashMap(1024);
     }
 
     public int getSize() {
@@ -62,12 +63,12 @@ public class AccessDataBase implements AccessData {
 
     public Set getStoredIDs() {
         HashSet result = new HashSet(idMap.keySet());
-        result.addAll(childrenMap.keySet());
+        result.addAll(referredIDMap.keySet());
         return result;
     }
 
     public boolean isKnownId(String id) {
-        return idMap.containsKey(id) || childrenMap.containsKey(id);
+        return idMap.containsKey(id) || referredIDMap.containsKey(id);
     }
 
     public void clear() {
@@ -80,15 +81,15 @@ public class AccessDataBase implements AccessData {
         infoMap.put(key, value);
     }
 
-    public void putChild(String id, String child) {
-        HashSet children = (HashSet) childrenMap.get(id);
+    public void putReferredID(String id, String referredID) {
+        HashSet ids = (HashSet) referredIDMap.get(id);
 
-        if (children == null) {
-            children = new HashSet();
-            childrenMap.put(id, children);
+        if (ids == null) {
+            ids = new HashSet();
+            referredIDMap.put(id, ids);
         }
 
-        children.add(child);
+        ids.add(referredID);
     }
 
     public String get(String id, String key) {
@@ -101,8 +102,8 @@ public class AccessDataBase implements AccessData {
         }
     }
 
-    public Set getChildren(String id) {
-        return (Set) childrenMap.get(id);
+    public Set getReferredIDs(String id) {
+        return (Set) referredIDMap.get(id);
     }
 
     public void remove(String id, String key) {
@@ -112,16 +113,20 @@ public class AccessDataBase implements AccessData {
         }
     }
 
-    public void removeChild(String id, String child) {
-        HashSet children = (HashSet) childrenMap.get(id);
-        if (children != null) {
-            children.remove(child);
+    public void removeReferredID(String id, String referredID) {
+        HashSet ids = (HashSet) referredIDMap.get(id);
+        if (ids != null) {
+            ids.remove(referredID);
+            
+            if (ids.isEmpty()) {
+                referredIDMap.remove(id);
+            }
         }
     }
 
     public void remove(String id) {
         idMap.remove(id);
-        childrenMap.remove(id);
+        referredIDMap.remove(id);
     }
 
     private ArrayMap createInfoMap(String id) {
@@ -218,12 +223,12 @@ public class AccessDataBase implements AccessData {
             }
         }
 
-        Set childrenSet = (Set) childrenMap.get(id);
-        if (childrenSet != null) {
-            Iterator children = childrenSet.iterator();
-            while (children.hasNext()) {
-                String child = (String) children.next();
-                xmlWriter.textElement(CHILD_TAG, child.toString());
+        Set referredIDs = (Set) referredIDMap.get(id);
+        if (referredIDs != null) {
+            Iterator ids = referredIDs.iterator();
+            while (ids.hasNext()) {
+                String referredID = (String) ids.next();
+                xmlWriter.textElement(REFERRED_ID_TAG, referredID);
             }
         }
     }
@@ -258,18 +263,18 @@ public class AccessDataBase implements AccessData {
             else if (tagName.equals("dataobject")) {
                 dataObjectId = (String) atts.get("id");
             }
-            else if (tagName.equals(CHILD_TAG)) {
-                String childURI = text;
+            else if (tagName.equals(REFERRED_ID_TAG)) {
+                String referredID = text;
 
-                if (childURI != null && dataObjectId != null) {
-                    HashSet children = (HashSet) childrenMap.get(dataObjectId);
+                if (referredID != null && dataObjectId != null) {
+                    HashSet referredIDs = (HashSet) referredIDMap.get(dataObjectId);
 
-                    if (children == null) {
-                        children = new HashSet();
-                        childrenMap.put(dataObjectId, children);
+                    if (referredIDs == null) {
+                        referredIDs = new HashSet();
+                        referredIDMap.put(dataObjectId, referredIDs);
                     }
 
-                    children.add(childURI);
+                    referredIDs.add(referredID);
                 }
             }
             else if (dataObjectId != null) {

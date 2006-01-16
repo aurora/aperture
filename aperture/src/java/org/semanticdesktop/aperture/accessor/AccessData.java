@@ -22,7 +22,7 @@ public interface AccessData {
      * Recommended key to store a resource's byte size. Recommended value encoding: String-encoded long.
      */
     public static final String BYTE_SIZE_KEY = "byteSize";
-    
+
     /**
      * Gets the number of resources for which information has been stored in this AccessData.
      * 
@@ -59,12 +59,13 @@ public interface AccessData {
     public void put(String id, String key, String value);
 
     /**
-     * Stores a parent child relationship between two resources.
+     * Stores a reference relation between two resources, modeling e.d. a parent-child relationship or a
+     * link.
      * 
-     * @param id The parent resource's ID.
-     * @param child The child resource's ID.
+     * @param id The referring resource's ID.
+     * @param referredID The referred resource's ID.
      */
-    public void putChild(String id, String child);
+    public void putReferredID(String id, String referredID);
 
     /**
      * Gets specific information about the specified id.
@@ -76,11 +77,11 @@ public interface AccessData {
     public String get(String id, String key);
 
     /**
-     * Returns all child resources of the specified resource.
+     * Returns all referred resources of the specified resource.
      * 
-     * @return A Set of Strings, or null when there are no child resources registered for this resource.
+     * @return A Set of Strings, or null when there are no referred resources registered for this resource.
      */
-    public Set getChildren(String id);
+    public Set getReferredIDs(String id);
 
     /**
      * Removes the value for the specified id and key.
@@ -91,12 +92,12 @@ public interface AccessData {
     public void remove(String id, String key);
 
     /**
-     * Removes a parent-child relationship between two resources.
+     * Removes a reference relationship between two resources.
      * 
-     * @param id The parent resource's ID.
-     * @param child The child resource's ID.
+     * @param id The referring resource's ID.
+     * @param referredID The referred resource's ID.
      */
-    public void removeChild(String id, String child);
+    public void removeReferredID(String id, String referredID);
 
     /**
      * Removes all information about the resource with the specified ID.
