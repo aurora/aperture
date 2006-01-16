@@ -11,7 +11,7 @@ your copy of ANT at http://ant.apache.org/
 <project name="aperture" basedir="." default="build">
 
 	<!-- define properties and paths -->
-	<target name="init">
+	<target name="init" description="initialize variables used in all other targets">
 		<!-- names -->
 		<property name="project.longname" value="Aperture Crawling and Extraction Framework" />
 		<property name="project.shortname" value="aperture" />
@@ -245,7 +245,7 @@ your copy of ANT at http://ant.apache.org/
 		</zip>
 	</target>
 		
-	<target name="package" depends="release" description="">
+	<target name="package" depends="release" description="create zipped release files, to be uploaded to sourceforge.net">
 		<mkdir dir="${package.dir}" />
 		
 		<!-- put the contents of the release dir in a zip file, with the project name as path prefix -->
@@ -281,7 +281,7 @@ your copy of ANT at http://ant.apache.org/
 		<fail if="unit.test.failed" message="Tests failed." />
 	</target>
 
-	<target name="changelog">
+	<target name="changelog" description="build an overview of commits">
 		<cvschangelog dir="${basedir}" destfile="changelog.xml"/>
 		<style in="changelog.xml" out="changelog.html" style="${ant.home}/etc/changelog.xsl">
 			<param name="title" expression="Aperture ChangeLog"/>
