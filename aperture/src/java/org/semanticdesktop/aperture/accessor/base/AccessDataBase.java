@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,8 +37,8 @@ public class AccessDataBase implements AccessData {
     private HashMap idMap;
 
     /**
-     * A Map mapping IDs to TreeSets of IDs, representing a parent-child relationship. The parent is used
-     * as key and maps to a TreeSet of children.
+     * A mapping from IDs to Sets of IDs, representing a parent-child relationship. The parent is used as
+     * key and maps to a Set of children.
      */
     private HashMap childrenMap;
 
@@ -82,10 +81,10 @@ public class AccessDataBase implements AccessData {
     }
 
     public void putChild(String id, String child) {
-        TreeSet children = (TreeSet) childrenMap.get(id);
+        HashSet children = (HashSet) childrenMap.get(id);
 
         if (children == null) {
-            children = new TreeSet();
+            children = new HashSet();
             childrenMap.put(id, children);
         }
 
@@ -114,7 +113,7 @@ public class AccessDataBase implements AccessData {
     }
 
     public void removeChild(String id, String child) {
-        TreeSet children = (TreeSet) childrenMap.get(id);
+        HashSet children = (HashSet) childrenMap.get(id);
         if (children != null) {
             children.remove(child);
         }
@@ -263,10 +262,10 @@ public class AccessDataBase implements AccessData {
                 String childURI = text;
 
                 if (childURI != null && dataObjectId != null) {
-                    TreeSet children = (TreeSet) childrenMap.get(dataObjectId);
+                    HashSet children = (HashSet) childrenMap.get(dataObjectId);
 
                     if (children == null) {
-                        children = new TreeSet();
+                        children = new HashSet();
                         childrenMap.put(dataObjectId, children);
                     }
 
