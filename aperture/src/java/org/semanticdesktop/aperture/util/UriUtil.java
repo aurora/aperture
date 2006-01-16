@@ -33,7 +33,7 @@ public final class UriUtil {
      * Encodes a string according to RFC 2396.
      * 
      * @param uri The URI to encode.
-     * @param buf The StringBuilder that the encoded URI will be appended to.
+     * @param buffer The StringBuilder that the encoded URI will be appended to.
      * @see #encodeUri(java.lang.String)
      */
 	public static void encodeUri(String uri, StringBuffer buffer) {
@@ -82,7 +82,7 @@ public final class UriUtil {
      * Decodes a string according to RFC 2396.
      * 
      * @param uri The URI to decode.
-     * @param buf The StringBuilder that the decoded URI will be appended to.
+     * @param buffer The StringBuilder that the decoded URI will be appended to.
      * @see #decodeUri(java.lang.String)
      */
 	public static void decodeUri(String uri, StringBuffer buffer) {
