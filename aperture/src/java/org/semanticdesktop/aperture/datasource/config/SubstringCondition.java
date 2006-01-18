@@ -1,0 +1,93 @@
+/*
+ * Copyright (c) 2005 Aduna.
+ * All rights reserved.
+ * 
+ * Licensed under the Open Software License version 3.0.
+ */
+package org.semanticdesktop.aperture.datasource.config;
+
+import org.openrdf.model.Value;
+import org.semanticdesktop.aperture.datasource.Vocabulary;
+
+/**
+ * Instances of this class indicate how a substring test needs to be performed and are able to evaluate
+ * the test. Subclasses embody a particular kind of substring test, e.g. "starts with", "ends with" or
+ * "contains".
+ */
+public abstract class SubstringCondition {
+
+    /**
+     * Tests the substring condition embodied by the implementing class on a String.
+     * 
+     * @param string The String to test the substring condition on.
+     * @param substring The String to test the substring condition with.
+     * @return 'true' when the string contains the substring in the way embodied by the implementing
+     *         class, 'false' otherwise.
+     */
+    public abstract boolean test(String string, String substring);
+
+    /**
+     * Return the Value used to encode this SubstringCondition in an RDF model.
+     */
+    public abstract Value toValue();
+    
+    public static class StartsWith extends SubstringCondition {
+
+        public String toString() {
+            return "StartsWith";
+        }
+        
+        public boolean test(String string, String substring) {
+            return string.startsWith(substring);
+        }
+        
+        public Value toValue() {
+            return Vocabulary.STARTS_WITH;
+        }
+    }
+    
+    public static class EndsWith extends SubstringCondition {
+
+        public String toString() {
+            return "EndsWith";
+        }
+        
+        public boolean test(String string, String substring) {
+            return string.endsWith(substring);
+        }
+        
+        public Value toValue() {
+            return Vocabulary.ENDS_WITH;
+        }
+    }
+    
+    public static class Contains extends SubstringCondition {
+
+        public String toString() {
+            return "Contains";
+        }
+        
+        public boolean test(String string, String substring) {
+            return string.indexOf(substring) >= 0;
+        }
+        
+        public Value toValue() {
+            return Vocabulary.CONTAINS;
+        }
+    }
+    
+    public static class DoesNotContain extends SubstringCondition {
+
+        public String toString() {
+            return "DoesNotContain";
+        }
+        
+        public boolean test(String string, String substring) {
+            return string.indexOf(substring) < 0;
+        }
+        
+        public Value toValue() {
+            return Vocabulary.DOES_NOT_CONTAIN;
+        }
+    }
+}
