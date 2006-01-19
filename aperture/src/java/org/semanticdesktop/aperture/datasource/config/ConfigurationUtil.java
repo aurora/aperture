@@ -17,7 +17,7 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
-import org.openrdf.model.impl.BNodeImpl;
+import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.sesame.repository.Repository;
@@ -38,8 +38,6 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 public class ConfigurationUtil {
 
     private static final String BOUNDARY_CONTEXT_POSTFIX = "-DomainBoundariesContext";
-
-    private static final String BNODE_POSTFIX = "-bnode-";
 
     private ConfigurationUtil() {
         // prevent instantiation
@@ -117,11 +115,10 @@ public class ConfigurationUtil {
 
             // add statements reflecting the specified DomainBoundaries
             if (boundaries != null) {
-                Counter counter = new Counter();
-                addPatternStatements(id, boundaries.getIncludePatterns(), Vocabulary.INCLUDE_PATTERN, context,
-                        counter, repository);
-                addPatternStatements(id, boundaries.getExcludePatterns(), Vocabulary.EXCLUDE_PATTERN, context,
-                        counter, repository);
+                addPatternStatements(id, boundaries.getIncludePatterns(), Vocabulary.INCLUDE_PATTERN,
+                        context, repository);
+                addPatternStatements(id, boundaries.getExcludePatterns(), Vocabulary.EXCLUDE_PATTERN,
+                        context, repository);
             }
         }
         catch (SailUpdateException e) {
@@ -130,15 +127,17 @@ public class ConfigurationUtil {
     }
 
     private static void addPatternStatements(URI sourceID, List patterns, URI predicate, URI context,
-            Counter counter, Repository repository) throws SailUpdateException {
+            Repository repository) throws SailUpdateException {
+        // a ValueFactory will be used to create BNodes
+        ValueFactory factory = repository.getSail().getValueFactory();
+
         // loop over all patterns
         Iterator iterator = patterns.iterator();
         while (iterator.hasNext()) {
             UrlPattern pattern = (UrlPattern) iterator.next();
 
-            // create a BNode for this pattern, using an inner class that provides an increasing index
-            // number rather than a static variable to guarantee thread safety of this method
-            BNode patternResource = new BNodeImpl(sourceID.toString() + BNODE_POSTFIX + counter.getIndex());
+            // create a BNode for this pattern
+            BNode patternResource = factory.createBNode();
 
             // store the statements modeling the pattern contents
             repository.add(pattern.getStatements(patternResource), context);
@@ -200,7 +199,7 @@ public class ConfigurationUtil {
                 }
                 else if (Vocabulary.SUBSTRING_PATTERN.equals(typeValue)) {
                     // also fetch the condition statement
-                    Value conditionValue = getSingleValue(patternResource, Vocabulary.CONDITION, null);
+                    Value conditionValue = getSingleValue(patternResource, Vocabulary.CONDITION, repository);
                     SubstringCondition condition = resolveCondition(conditionValue);
                     if (condition != null) {
                         result.add(new SubstringPattern(patternString, condition));
@@ -221,7 +220,8 @@ public class ConfigurationUtil {
             return null;
         }
         else {
-            return (Value) statements.iterator().next();
+            Statement statement = (Statement) statements.iterator().next();
+            return statement.getObject();
         }
     }
 
@@ -240,15 +240,6 @@ public class ConfigurationUtil {
         }
         else {
             return null;
-        }
-    }
-
-    private static class Counter {
-
-        private int index = 0;
-
-        public int getIndex() {
-            return index++;
         }
     }
 }
