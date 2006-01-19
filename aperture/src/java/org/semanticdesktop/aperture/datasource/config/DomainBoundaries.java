@@ -86,7 +86,7 @@ public class DomainBoundaries {
      * @param url The URL to check.
      * @return 'true' if the URL is inside the crawl domain, 'false' otherwise.
      */
-	public boolean urlInDomain(String url) {
+	public boolean inDomain(String url) {
         UrlPattern pattern;
         
 		boolean insideDomain = false;
