@@ -7,6 +7,7 @@
 package org.semanticdesktop.aperture.datasource;
 
 import org.semanticdesktop.aperture.datasource.config.TestConfigurationUtil;
+import org.semanticdesktop.aperture.datasource.config.TestDomainBoundaries;
 import org.semanticdesktop.aperture.datasource.impl.TestDefaultDataSourceRegistry;
 
 import junit.framework.Test;
@@ -24,6 +25,7 @@ public class TestDataSources extends TestSuite {
     private TestDataSources() {
         super("data sources");
         addTest(new TestSuite(TestDefaultDataSourceRegistry.class));
+        addTest(new TestSuite(TestDomainBoundaries.class));
         addTest(new TestSuite(TestConfigurationUtil.class));
     }
 }
