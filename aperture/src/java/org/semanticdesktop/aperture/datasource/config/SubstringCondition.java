@@ -16,6 +16,14 @@ import org.semanticdesktop.aperture.datasource.Vocabulary;
  */
 public abstract class SubstringCondition {
 
+    public static final StartsWith STARTS_WITH = new StartsWith();
+    
+    public static final EndsWith ENDS_WITH = new EndsWith();
+    
+    public static final Contains CONTAINS = new Contains();
+    
+    public static final DoesNotContain DOES_NOT_CONTAIN = new DoesNotContain();
+    
     /**
      * Tests the substring condition embodied by the implementing class on a String.
      * 
