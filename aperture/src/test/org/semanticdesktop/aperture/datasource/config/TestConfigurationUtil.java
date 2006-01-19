@@ -65,36 +65,36 @@ public class TestConfigurationUtil extends ApertureTestBase {
         assertEquals(security1, security2);
     }
 
-    /*
-     * This method has temporarily been outcommented as it does not evaluate correctly due to a bug in
-     * Sesame (see http://openrdf.org/issues/browse/SES-220).
-     */
-    
-//     public void testDomainBoundaries() {
-//        String javaString = ".java";
-//        String cvsString = ".*/CVS/.*";
-//
-//        // first check that a boundaries is correctly stored and retrieved
-//        DomainBoundaries boundaries1 = new DomainBoundaries();
-//        boundaries1.addIncludePattern(new SubstringPattern(javaString, new SubstringCondition.EndsWith()));
-//        boundaries1.addExcludePattern(new RegExpPattern(cvsString));
-//        ConfigurationUtil.setDomainBoundaries(boundaries1, configuration);
-//
-//        DomainBoundaries boundaries2 = ConfigurationUtil.getDomainBoundaries(configuration);
-//        assertEquals(1, boundaries2.getIncludePatterns().size());
-//        assertEquals(1, boundaries2.getExcludePatterns().size());
-//
-//        SubstringPattern pattern1 = (SubstringPattern) boundaries2.getIncludePatterns().get(0);
-//        assertEquals(javaString, pattern1.getSubstring());
-//        assertTrue(pattern1.getCondition().getClass().getName().endsWith("SubstringCondition.EndsWith"));
-//
-//        RegExpPattern pattern2 = (RegExpPattern) boundaries2.getExcludePatterns().get(0);
-//        assertEquals(cvsString, pattern2.getPatternString());
-//
-//        // check that the boundaries can also be completely removed
-//        ConfigurationUtil.setDomainBoundaries(null, configuration);
-//        DomainBoundaries boundaries3 = ConfigurationUtil.getDomainBoundaries(configuration);
-//        assertEquals(0, boundaries3.getIncludePatterns().size());
-//        assertEquals(0, boundaries3.getExcludePatterns().size());
-//    }
+    public void testDomainBoundaries() {
+        String javaString = ".java";
+        String cvsString = ".*/CVS/.*";
+
+        // first check that a boundaries is correctly stored and retrieved
+        DomainBoundaries boundaries1 = new DomainBoundaries();
+        boundaries1.addIncludePattern(new SubstringPattern(javaString, new SubstringCondition.EndsWith()));
+        boundaries1.addExcludePattern(new RegExpPattern(cvsString));
+        ConfigurationUtil.setDomainBoundaries(boundaries1, configuration);
+
+        DomainBoundaries boundaries2 = ConfigurationUtil.getDomainBoundaries(configuration);
+        assertEquals(1, boundaries2.getIncludePatterns().size());
+        assertEquals(1, boundaries2.getExcludePatterns().size());
+
+        SubstringPattern pattern1 = (SubstringPattern) boundaries2.getIncludePatterns().get(0);
+        assertEquals(javaString, pattern1.getSubstring());
+        assertTrue(pattern1.getCondition().getClass().equals(SubstringCondition.EndsWith.class));
+
+        RegExpPattern pattern2 = (RegExpPattern) boundaries2.getExcludePatterns().get(0);
+        assertEquals(cvsString, pattern2.getPatternString());
+
+        /*
+         * The folling test fails, probably due to a bug in Sesame 2.0 alpha 1 (see
+         * http://www.openrdf.org/issues/browse/SES-221).
+         */
+
+        // // check that the boundaries can also be completely removed
+        // ConfigurationUtil.setDomainBoundaries(null, configuration);
+        // DomainBoundaries boundaries3 = ConfigurationUtil.getDomainBoundaries(configuration);
+        // assertEquals(0, boundaries3.getIncludePatterns().size());
+        // assertEquals(0, boundaries3.getExcludePatterns().size());
+    }
 }
