@@ -87,7 +87,7 @@ public class FileSystemCrawler extends CrawlerBase {
         getAccessorFactory();
 
         // crawl the file tree
-        boolean crawlCompleted = scanFileTree(root, maxDepth);
+        boolean crawlCompleted = crawlFileTree(root, maxDepth);
 
         // clean-up
         params = null;
@@ -133,15 +133,15 @@ public class FileSystemCrawler extends CrawlerBase {
     }
 
     /**
-     * Scans a File tree.
+     * Crawls a File tree.
      * 
-     * @return true if the path has been scanned completely, false if the scan has been aborted.
+     * @return true if the path has been crawler completely, false if the crawl was aborted.
      */
-    private boolean scanFileTree(File file, int depth) {
+    private boolean crawlFileTree(File file, int depth) {
         if (file.isFile() && depth >= 0) {
             // report the File
             if (inDomain(file) && file.canRead() && file.length() <= maximumSize) {
-                report(file);
+                crawlSingleFile(file);
             }
 
             // by definition we've completed this subtree
@@ -150,7 +150,7 @@ public class FileSystemCrawler extends CrawlerBase {
         else if (file.isDirectory() && depth >= 0) {
             // report the Folder itself
             if (inDomain(file)) {
-                report(file);
+                crawlSingleFile(file);
             }
 
             // report nested Files
@@ -171,7 +171,7 @@ public class FileSystemCrawler extends CrawlerBase {
                         continue;
                     }
 
-                    boolean scanCompleted = scanFileTree(nestedFile, depth - 1);
+                    boolean scanCompleted = crawlFileTree(nestedFile, depth - 1);
 
                     if (!scanCompleted) {
                         return false;
@@ -198,9 +198,9 @@ public class FileSystemCrawler extends CrawlerBase {
     }
 
     /**
-     * Reports a scanned file to the registered DataSourceListeners.
+     * Crawls a single File and reports it to the registered DataSourceListeners.
      */
-    private void report(File file) {
+    private void crawlSingleFile(File file) {
         // create an identifier for the file
         String url = file.toURI().toString();
 
