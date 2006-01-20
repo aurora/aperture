@@ -60,6 +60,7 @@ public class TestMagicMimeTypeIdentifier extends ApertureTestBase {
         checkMimeType("openoffice-1.1.5-writer.sxw", "application/vnd.sun.xml.writer", identifier);
         checkMimeType("staroffice-5.2-writer.sdw", "application/vnd.stardivision.writer", identifier);
         checkMimeType("microsoft-word-2000.doc", "application/vnd.ms-word", identifier);
+        checkMimeType("microsoft-works-word-processor-7.0.wps", "application/vnd.ms-works-wps", identifier);
         checkMimeType("plain-text.txt", "text/plain", identifier);
 
         // try throwing some confusing stuff at it, e.g. files with wrong extensions (lacking a
