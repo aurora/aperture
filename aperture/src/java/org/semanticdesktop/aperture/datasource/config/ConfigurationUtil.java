@@ -83,6 +83,14 @@ public class ConfigurationUtil {
         return configuration.getBoolean(Vocabulary.INCLUDE_HIDDEN_RESOURCES);
     }
 
+    public static void setIncludeEmbeddedResources(boolean value, RDFContainer configuration) {
+        configuration.put(Vocabulary.INCLUDE_EMBEDDED_RESOURCES, value);
+    }
+
+    public static Boolean getIncludeEmbeddedResourceS(RDFContainer configuration) {
+        return configuration.getBoolean(Vocabulary.INCLUDE_EMBEDDED_RESOURCES);
+    }
+
     public static void setConnectionSecurity(String securityType, RDFContainer configuration) {
         configuration.put(Vocabulary.CONNECTION_SECURITY, securityType);
     }
