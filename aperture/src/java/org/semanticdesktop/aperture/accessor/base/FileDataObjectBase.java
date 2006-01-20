@@ -24,7 +24,7 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
     
     public FileDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata, InputStream content) {
         super(id, dataSource, metadata);
-        this.content = content;
+        setContent(content);
     }
     
     public void finalize() throws Throwable {
@@ -41,6 +41,9 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
     }
     
     public void setContent(InputStream content) {
+        if (content != null && !content.markSupported()) {
+            throw new IllegalArgumentException("content should support mark and reset");
+        }
         this.content = content;
     }
     

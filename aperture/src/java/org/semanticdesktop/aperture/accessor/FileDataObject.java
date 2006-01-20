@@ -26,4 +26,12 @@ public interface FileDataObject extends DataObject {
      * @throws IOException If an I/O error occurred.
      */
     public InputStream getContent() throws IOException;
+
+    /**
+     * Sets the InputStream containing the content represented by the DataObject. The specified
+     * InputStream is required to support marking (markSupported() must return true).
+     * 
+     * @param stream The InputStream containing the resource's content.
+     */
+    public void setContent(InputStream stream);
 }
