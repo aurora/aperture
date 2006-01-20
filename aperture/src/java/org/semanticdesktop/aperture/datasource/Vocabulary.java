@@ -56,6 +56,8 @@ public interface Vocabulary {
     public static final URI CONDITION = new URIImpl(NS + "condition");
 
     public static final URI INCLUDE_HIDDEN_RESOURCES = new URIImpl(NS + "includeHiddenResources");
+    
+    public static final URI INCLUDE_EMBEDDED_RESOURCES = new URIImpl(NS + "includeEmbeddedResources");
 
     /* Literals */
 
