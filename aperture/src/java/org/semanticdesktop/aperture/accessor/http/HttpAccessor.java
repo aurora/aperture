@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.accessor.http;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -194,7 +195,12 @@ public class HttpAccessor implements DataAccessor {
         // create the resulting instance
         URI uri = new URIImpl(url);
         RDFContainer metadata = containerFactory.getRDFContainer(uri);
+        
         InputStream stream = HttpClientUtil.getInputStream(connection);
+        if (!stream.markSupported()) {
+            stream = new BufferedInputStream(stream, 8192);
+        }
+        
         DataObject object = new FileDataObjectBase(uri, source, metadata, stream);
 
         // populate the metadata
