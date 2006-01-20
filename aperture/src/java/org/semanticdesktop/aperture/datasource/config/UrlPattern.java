@@ -26,9 +26,9 @@ public abstract class UrlPattern {
     /**
      * Return a Collection of RDF Statements modeling the contents of this UrlPattern.
      * 
-     * @param resource the resource to use as the subject of the statements, as a UrlPattern has no kind
+     * @param subject The resource to use as the subject of the statements, as a UrlPattern has no kind
      *            of ID of its own.
-     * @return a Collection of Statement instances.
+     * @return A Collection of Statement instances.
      */
     public abstract Collection getStatements(Resource subject);
 }
