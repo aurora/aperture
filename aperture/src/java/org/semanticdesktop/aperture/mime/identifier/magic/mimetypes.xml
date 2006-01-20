@@ -356,7 +356,7 @@ Defaults to no parent type.
 	<mimeType>application/vnd.ms-office</mimeType>
 	<condition>
 		<byteSequence encoding="hex">d0 cf 11 e0 a1 b1 1a e1 00 00 00 00 00 00 00 00</byteSequence>
-		<minimumLength>44</minimumLength>
+		<minimumLength>2200</minimumLength>
 	</condition>
 </description>
 
