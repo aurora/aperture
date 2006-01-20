@@ -24,7 +24,8 @@ public class HtmlLinkExtractor implements LinkExtractor, TokenHandler {
 
     private URL baseURL;
 
-    private boolean extractNonDocumentLinks;
+    // indicates whether embedded images, backgrounds, etc., also need to be returned
+    private boolean includeEmbeddedResources;
 
     private ArrayList links;
 
@@ -38,7 +39,7 @@ public class HtmlLinkExtractor implements LinkExtractor, TokenHandler {
         Tokenizer tokenizer = new Tokenizer(this);
         links = new ArrayList();
         baseURL = null;
-        extractNonDocumentLinks = false;
+        includeEmbeddedResources = false;
 
         // fetch parameters
         Object value = params.get(BASE_URL_KEY);
@@ -49,9 +50,9 @@ public class HtmlLinkExtractor implements LinkExtractor, TokenHandler {
             baseURL = new URL((String) value);
         }
 
-        value = params.get(NAVIGATIONAL_LINKS_ONLY_KEY);
+        value = params.get(INCLUDE_EMBEDDED_RESOURCES_KEY);
         if (value instanceof Boolean) {
-            extractNonDocumentLinks = !((Boolean) value).booleanValue();
+            includeEmbeddedResources = ((Boolean) value).booleanValue();
         }
 
         // parse the stream
@@ -133,7 +134,7 @@ public class HtmlLinkExtractor implements LinkExtractor, TokenHandler {
             localLinks.add(attributes.get("CITE"));
         }
         else if ("LINK".equals(startTag)) {
-            if (extractNonDocumentLinks) {
+            if (includeEmbeddedResources) {
                 localLinks.add(attributes.get("HREF"));
                 localLinks.add(attributes.get("SRC"));
             }
@@ -141,18 +142,18 @@ public class HtmlLinkExtractor implements LinkExtractor, TokenHandler {
         else if ("LAYER".equals(startTag) || "ILAYER".equals(startTag)) {
             localLinks.add(attributes.get("SRC"));
 
-            if (extractNonDocumentLinks) {
+            if (includeEmbeddedResources) {
                 localLinks.add(attributes.get("BACKGROUND"));
             }
         }
         else if ("BODY".equals(startTag) || "TABLE".equals(startTag) || "TR".equals(startTag)
                 || "TH".equals(startTag) || "TD".equals(startTag)) {
-            if (extractNonDocumentLinks) {
+            if (includeEmbeddedResources) {
                 localLinks.add(attributes.get("BACKGROUND"));
             }
         }
         else if ("IMG".equals(startTag)) {
-            if (extractNonDocumentLinks) {
+            if (includeEmbeddedResources) {
                 localLinks.add(attributes.get("SRC"));
                 localLinks.add(attributes.get("LOWSRC"));
             }
@@ -161,7 +162,7 @@ public class HtmlLinkExtractor implements LinkExtractor, TokenHandler {
             localLinks.add(attributes.get("USEMAP"));
         }
         else if ("INPUT".equals(startTag)) {
-            if (extractNonDocumentLinks) {
+            if (includeEmbeddedResources) {
                 localLinks.add(attributes.get("SRC"));
             }
             localLinks.add(attributes.get("USEMAP"));

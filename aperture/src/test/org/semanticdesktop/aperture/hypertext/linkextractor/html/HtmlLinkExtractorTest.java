@@ -28,24 +28,24 @@ public class HtmlLinkExtractorTest extends ApertureTestBase {
     }
 
     public void testNavigationLinks() throws IOException {
-        List links = getLinks(Boolean.TRUE);
+        List links = getLinks(Boolean.FALSE);
         assertEquals(2, links.size());
         assertTrue(links.contains("http://example.com/absolute/link"));
         assertTrue(links.contains("http://example.com/relative/link"));
     }
-    
+
     public void testAllLinks() throws IOException {
-        List links = getLinks(Boolean.FALSE);
+        List links = getLinks(Boolean.TRUE);
         assertEquals(3, links.size());
         assertTrue(links.contains("http://example.com/absolute/link"));
         assertTrue(links.contains("http://example.com/relative/link"));
         assertTrue(links.contains("http://example.com/image"));
     }
-    
-    private List getLinks(Boolean navLinksOnly) throws IOException {
+
+    private List getLinks(Boolean includeEmbeddedResources) throws IOException {
         HtmlLinkExtractor extractor = new HtmlLinkExtractor();
         HashMap params = new HashMap();
-        params.put(LinkExtractor.NAVIGATIONAL_LINKS_ONLY_KEY, navLinksOnly);
+        params.put(LinkExtractor.INCLUDE_EMBEDDED_RESOURCES_KEY, includeEmbeddedResources);
         return extractor.extractLinks(stream, params);
     }
 }

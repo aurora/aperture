@@ -27,11 +27,11 @@ public interface LinkExtractor {
     public static final Object BASE_URL_KEY = "baseUrl";
 
     /**
-     * Suggested key to use in the params map to indicate that only navigational links should be
-     * extracted, i.e. actual hyperlinks are extracted but links to embedded images are ignored. The
-     * corresponding value should be a Boolean.
+     * Suggested key to use in the params map to indicate that non-navigational links should als be
+     * extracted, e.g. embedded images, background, stylesheets, etc. The corresponding value should be a
+     * Boolean.
      */
-    public static final Object NAVIGATIONAL_LINKS_ONLY_KEY = "navigationalLinksOnly";
+    public static final Object INCLUDE_EMBEDDED_RESOURCES_KEY = "includeEmbeddedResources";
 
     /**
      * Extracts all links occurring in the specified stream.
