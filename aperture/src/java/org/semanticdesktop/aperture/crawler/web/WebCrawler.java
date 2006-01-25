@@ -21,12 +21,15 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.openrdf.sesame.repository.Repository;
+import org.openrdf.sesame.sail.SailUpdateException;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
+import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.accessor.Vocabulary;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
@@ -42,6 +45,15 @@ import org.semanticdesktop.aperture.util.UrlUtil;
 
 /**
  * A Crawler implementation for WebDataSources.
+ * 
+ * <p>
+ * Implementation note: this WebCrawler fetches URLs one-by-one in a single-threaded manner. Previous
+ * implementations used a configurable number of threads to fetch the URLs. However, it turned out that
+ * even when running with a single thread, the bandwidth was by far the biggest bottle-neck for crawling
+ * websites, rather than processing of documents or network latency. In other words: there was no
+ * performance gain in using multiple fetch threads but the implementation was a lot more complicated,
+ * especially because the listeners handling the results assumed to be running in a single thread.
+ * Therefore we've decided to keep this implementation simple and single-threaded.
  */
 public class WebCrawler extends CrawlerBase {
 
@@ -120,9 +132,10 @@ public class WebCrawler extends CrawlerBase {
     protected ExitCode crawlObjects() {
         initialize();
         processQueue();
+        boolean completed = jobsQueue.isEmpty();
         cleanUp();
 
-        return jobsQueue.isEmpty() ? ExitCode.COMPLETED : ExitCode.STOP_REQUESTED;
+        return completed ? ExitCode.COMPLETED : ExitCode.STOP_REQUESTED;
     }
 
     private void initialize() {
@@ -252,8 +265,22 @@ public class WebCrawler extends CrawlerBase {
                     }
                     // we have a new or changed object
                     else {
+                        // Make sure that the URI of the created DataObject is also registered as a
+                        // crawled URL, rather than only the original URL we started with. The data
+                        // accessor may for example follow redirections and we don't want to report the
+                        // redirected URLs later on as changed objects when a page links to the
+                        // redirected version of the URL directly.
+                        crawledUrls.add(dataObject.getID().toString());
+
                         // only report the object when it does not exceed the size limit
                         if (hasAcceptableByteSize(dataObject)) {
+                            // extract and schedule links
+                            // do this before reporting: you never know what the handler will do to the
+                            // DataObject's stream (e.g. reading it without resetting it, closing it)
+                            if (depth > 0 && dataObject instanceof FileDataObject) {
+                                scheduleLinks((FileDataObject) dataObject, url, depth - 1);
+                            }
+
                             // report the object
                             if (knownUrl) {
                                 handler.objectChanged(this, dataObject);
@@ -262,11 +289,6 @@ public class WebCrawler extends CrawlerBase {
                             else {
                                 handler.objectNew(this, dataObject);
                                 crawlReport.increaseNewCount();
-                            }
-
-                            // extract and schedule links
-                            if (depth > 0 && dataObject instanceof FileDataObject) {
-                                scheduleLinks((FileDataObject) dataObject, url, depth - 1);
                             }
                         }
                         else {
@@ -277,6 +299,11 @@ public class WebCrawler extends CrawlerBase {
                             }
                         }
                     }
+                }
+                catch (UrlNotFoundException e) {
+                    // this happens a lot for hypertext graphs, it does not reflect an internal error in
+                    // the crawler, so we choose to ignore it. Perhaps create a separate method for it in
+                    // CrawlerHandler?
                 }
                 catch (IOException e) {
                     LOGGER.log(Level.INFO, "I/O error while accessing " + url, e);
@@ -358,6 +385,26 @@ public class WebCrawler extends CrawlerBase {
         if (mimeType == null) {
             return;
         }
+
+        // overrule the DataObject's MIME type: magic-number based determination is much more reliable
+        // than what web servers return, especially for non-web formats
+        // FIXME: terrible hack to commit any open transactions or else the put method will not be able
+        // to overwrite the current MIME type as it has not been committed yet, leading to two MIME types
+        // and a consequential MultipleValuesException once the commit finally takes place
+        Object model = object.getMetadata().getModel();
+        if (model instanceof Repository) {
+            Repository repository = (Repository) model;
+            if (repository.isActive()) {
+                try {
+                    repository.commit();
+                }
+                catch (SailUpdateException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        
+        object.getMetadata().put(Vocabulary.MIME_TYPE, mimeType);
 
         // fetch a LinkExtractor for this MIME type and exit when there is none
         LinkExtractor extractor = null;
