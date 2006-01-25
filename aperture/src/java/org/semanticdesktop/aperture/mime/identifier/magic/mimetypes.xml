@@ -103,7 +103,7 @@ Defaults to no parent type.
 
 <description>
 	<mimeType>text/html</mimeType>
-	<extensions>html,htm,shtml,php,asp,xhtml</extensions>
+	<extensions>html,htm,shtml,jsp,php,asp,xhtml</extensions>
 	<condition>
 		<byteSequence encoding="string">&lt;HEAD</byteSequence>
 		<minimumLength>20</minimumLength>
