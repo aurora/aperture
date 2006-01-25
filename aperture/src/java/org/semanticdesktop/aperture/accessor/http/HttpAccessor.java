@@ -151,6 +151,10 @@ public class HttpAccessor implements DataAccessor {
         }
         else {
             String value = accessData.get(urlString, DATE_KEY);
+            if (value == null) {
+                return null;
+            }
+            
             try {
                 long l = Long.parseLong(value);
                 return new Date(l);
