@@ -328,10 +328,13 @@ public class SesameRDFContainer implements RDFContainer {
         try {
             // remove any existing statements with this property
             Collection toRemove = repository.getStatements(describedUri, property, null);
-            if (toRemove.size() > 1) {
+            int size = toRemove.size();
+            if (size > 1) {
                 throw new MultipleValuesException(describedUri, property);
             }
-            repository.remove(toRemove, context);
+            else if (size == 1) {
+                repository.remove(toRemove, context);
+            }
 
             // add the new statement
             repository.add(describedUri, property, object, context);
