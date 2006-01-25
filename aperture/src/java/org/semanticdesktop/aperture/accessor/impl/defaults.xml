@@ -7,4 +7,8 @@
 	<dataAccessorFactory>
 		<name>org.semanticdesktop.aperture.accessor.http.HttpAccessorFactory</name>
 	</dataAccessorFactory>
+	<dataAccessorFactory>
+		<!-- Note: this class implements both AccessorFactory and CrawlerFactory -->
+		<name>org.semanticdesktop.aperture.crawler.imap.ImapCrawlerFactory</name>
+	</dataAccessorFactory>
 </dataAccessorFactories>
