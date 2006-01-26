@@ -339,7 +339,9 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
         String extension = fileName;
         
         if (extension == null && uri != null) {
-            extension = uri.getLocalName();
+            extension = uri.toString();
+            extension = removeFragment('?', extension);
+            extension = removeFragment('#', extension);
         }
         
         if (extension != null) {
@@ -354,6 +356,19 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 
         // now traverse the MimeTypeDescription tree to find a matching MIME type
         return identify(firstBytes, extension, mimeTypeDescriptions);
+    }
+
+    private String removeFragment(char separatorChar, String input) {
+        String result = input;
+        
+        if (input != null) {
+            int index = input.indexOf(separatorChar);
+            if (index >= 0 && index < input.length() - 1) {
+                return input.substring(0, index);
+            }
+        }
+        
+        return result;
     }
 
     private String identify(byte[] firstBytes, String extension, ArrayList descriptions) {
