@@ -6,18 +6,16 @@
  */
 package org.semanticdesktop.aperture;
 
-import java.util.Collection;
-import java.util.Iterator;
+import junit.framework.TestCase;
 
 import org.openrdf.model.Literal;
-import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.Repository;
+import org.openrdf.util.iterator.CloseableIterator;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
-
-import junit.framework.TestCase;
 
 public class ApertureTestBase extends TestCase {
 
@@ -31,12 +29,10 @@ public class ApertureTestBase extends TestCase {
         boolean encounteredSubstring = false;
         
         // loop over all statements that have the specified property uri as predicate
-        Collection statements = repository.getStatements(valueFactory.createURI(uriString), property, null);
-        Iterator iterator = statements.iterator();
-        
-        while (iterator.hasNext()) {
+        CloseableIterator statements = repository.getStatements(valueFactory.createURI(uriString), property, null);
+        while (statements.hasNext()) {
             // check the property type
-            Statement statement = (Statement) iterator.next();
+            RStatement statement = (RStatement) statements.next();
             assertTrue(statement.getPredicate().equals(property));
             
             // see if it has a Literal containing the specified substring
@@ -49,6 +45,8 @@ public class ApertureTestBase extends TestCase {
                 }
             }
         }
+        
+        statements.close();
         
         // see if any of the found properties contains the specified substring
         assertTrue(encounteredSubstring);
@@ -70,12 +68,10 @@ public class ApertureTestBase extends TestCase {
         boolean encounteredValue = false;
         
         // loop over all statements that have the specified property uri as predicate
-        Collection statements = repository.getStatements(subject, property, null);
-        Iterator iterator = statements.iterator();
-        
-        while (iterator.hasNext()) {
+        CloseableIterator statements = repository.getStatements(subject, property, null);
+        while (statements.hasNext()) {
             // check the property type
-            Statement statement = (Statement) iterator.next();
+            RStatement statement = (RStatement) statements.next();
             assertTrue(statement.getPredicate().equals(property));
             
             // see if it has a Literal containing the specified substring
@@ -85,6 +81,8 @@ public class ApertureTestBase extends TestCase {
                 break;
             }
         }
+        
+        statements.close();
         
         // see if any of the found properties contains the specified substring
         assertTrue(encounteredValue);

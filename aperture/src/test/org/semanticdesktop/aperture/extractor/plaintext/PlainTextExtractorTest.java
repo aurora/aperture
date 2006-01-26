@@ -7,12 +7,12 @@
 package org.semanticdesktop.aperture.extractor.plaintext;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import org.openrdf.model.Literal;
-import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.Repository;
+import org.openrdf.util.iterator.CloseableIterator;
 import org.semanticdesktop.aperture.accessor.Vocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
@@ -27,20 +27,24 @@ public class PlainTextExtractorTest extends ExtractorTestBase {
         SesameRDFContainer container = getStatements(DOCS_PATH + "plain-text.txt");
         Repository repository = container.getRepository();
         ValueFactory valueFactory = repository.getSail().getValueFactory();
-                
-        // check number of statements
+        
+        // fetch the full-text property
         String uriString = container.getDescribedUri().toString();
-        Collection statements = repository.getStatements(valueFactory.createURI(uriString), Vocabulary.FULL_TEXT, null);
-        assertEquals(1, statements.size());
+        CloseableIterator statements = repository.getStatements(valueFactory.createURI(uriString), Vocabulary.FULL_TEXT, null);
 
         // check predicate
-        Statement statement = (Statement) statements.iterator().next();
+        RStatement statement = (RStatement) statements.next();
         assertTrue(statement.getPredicate().equals(Vocabulary.FULL_TEXT));
+        
+        // check number of statements
+        assertFalse(statements.hasNext());
         
         // check value
         Literal value = (Literal) statement.getObject();
         String text = value.getLabel();
         assertTrue((text.indexOf("plain text") != -1));
+        
+        statements.close();
     }
 
     public void testFailingExtraction() throws ExtractorException, IOException {
@@ -51,8 +55,9 @@ public class PlainTextExtractorTest extends ExtractorTestBase {
         
         // check number of statements
         String uriString = container.getDescribedUri().toString();
-        Collection statements = repository.getStatements(valueFactory.createURI(uriString), Vocabulary.FULL_TEXT, null);
-        assertEquals(0, statements.size());
+        CloseableIterator statements = repository.getStatements(valueFactory.createURI(uriString), Vocabulary.FULL_TEXT, null);
+        assertFalse(statements.hasNext());
+        statements.close();
     }
     
     private SesameRDFContainer getStatements(String resourceName) throws ExtractorException, IOException {

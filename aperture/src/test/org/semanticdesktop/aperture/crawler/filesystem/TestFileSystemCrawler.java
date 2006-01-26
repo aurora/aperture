@@ -8,7 +8,6 @@ package org.semanticdesktop.aperture.crawler.filesystem;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.LiteralImpl;
@@ -17,6 +16,7 @@ import org.openrdf.sesame.repository.Repository;
 import org.openrdf.sesame.sail.SailInitializationException;
 import org.openrdf.sesame.sail.SailUpdateException;
 import org.openrdf.sesame.sailimpl.memory.MemoryStore;
+import org.openrdf.util.iterator.CloseableIterator;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
@@ -124,8 +124,9 @@ public class TestFileSystemCrawler extends ApertureTestBase {
         // reached. We deliberately check for a specific property rather than doing getStatements(URI,
         // null, null) as the URI of the skipped file will still be part of the metadata of the
         // containing Folder.
-        Collection stms = repository.getStatements(toURI(tmpFile3), Vocabulary.NAME, null);
-        assertEquals(0, stms.size());
+        CloseableIterator stms = repository.getStatements(toURI(tmpFile3), Vocabulary.NAME, null);
+        assertFalse(stms.hasNext());
+        stms.close();
     }
 
     private URI toURI(File file) {

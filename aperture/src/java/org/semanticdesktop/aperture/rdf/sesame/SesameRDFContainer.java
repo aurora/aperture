@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,10 +21,12 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.XMLSchema;
+import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.Repository;
 import org.openrdf.sesame.sail.SailInitializationException;
 import org.openrdf.sesame.sail.SailUpdateException;
 import org.openrdf.sesame.sailimpl.memory.MemoryStore;
+import org.openrdf.util.iterator.CloseableIterator;
 import org.semanticdesktop.aperture.rdf.MultipleValuesException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.DateUtil;
@@ -281,15 +282,16 @@ public class SesameRDFContainer implements RDFContainer {
 
     public Collection getAll(URI property) {
         // determine all matching Statements
-        Collection statements = repository.getStatements(describedUri, property, null);
-        Iterator iterator = statements.iterator();
+        CloseableIterator iterator = repository.getStatements(describedUri, property, null);
 
         // put their values in a new Collection
         ArrayList result = new ArrayList();
         while (iterator.hasNext()) {
-            Statement statement = (Statement) iterator.next();
+            RStatement statement = (RStatement) iterator.next();
             result.add(statement.getObject());
         }
+        
+        iterator.close();
 
         return result;
     }
@@ -326,16 +328,20 @@ public class SesameRDFContainer implements RDFContainer {
 
     private void replaceInternal(URI property, Value object) throws MultipleValuesException {
         try {
-            // remove any existing statements with this property
-            Collection toRemove = repository.getStatements(describedUri, property, null);
-            int size = toRemove.size();
-            if (size > 1) {
-                throw new MultipleValuesException(describedUri, property);
-            }
-            else if (size == 1) {
-                repository.remove(toRemove, context);
+            // remove any existing statements with this property, throw an exception when there is more
+            // than one such statement
+            CloseableIterator statements = repository.getStatements(describedUri, property, null);
+            if (statements.hasNext()) {
+                RStatement statement = (RStatement) statements.next();
+                if (statements.hasNext()) {
+                    throw new MultipleValuesException(describedUri, property);
+                }
+                
+                repository.remove(statement, context);
             }
 
+            statements.close();
+            
             // add the new statement
             repository.add(describedUri, property, object, context);
         }
@@ -346,17 +352,20 @@ public class SesameRDFContainer implements RDFContainer {
     }
 
     private Value getInternal(URI property) {
-        Collection statements = repository.getStatements(describedUri, property, null);
-        if (statements.isEmpty()) {
-            return null;
-        }
-        else {
-            Iterator iterator = statements.iterator();
-            Statement firstStatement = (Statement) iterator.next();
-            if (iterator.hasNext()) {
+        Value result = null;
+        
+        CloseableIterator statements = repository.getStatements(describedUri, property, null);
+        if (statements.hasNext()) {
+            RStatement firstStatement = (RStatement) statements.next();
+            if (statements.hasNext()) {
+                statements.close();
                 throw new MultipleValuesException(describedUri, property);
             }
-            return firstStatement.getObject();
+            result = firstStatement.getObject();
         }
+        
+        statements.close();
+        
+        return result;
     }
 }

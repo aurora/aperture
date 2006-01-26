@@ -33,12 +33,13 @@ import javax.mail.URLName;
 import javax.mail.internet.MimeMessage;
 
 import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.Repository;
+import org.openrdf.util.iterator.CloseableIterator;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -617,13 +618,12 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         Repository metadata = (Repository) object.getMetadata().getModel();
 
         // query for all child URIs
-        Collection statements = metadata.getStatements(null,
+        CloseableIterator statements = metadata.getStatements(null,
                 org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF, object.getID());
 
         // queue these URIs
-        Iterator iterator = statements.iterator();
-        while (iterator.hasNext()) {
-            Statement statement = (Statement) iterator.next();
+        while (statements.hasNext()) {
+            RStatement statement = (RStatement) statements.next();
             Resource resource = statement.getSubject();
 
             if (resource instanceof URI) {
@@ -636,6 +636,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 LOGGER.severe("Internal error: unknown child value type: " + resource.getClass());
             }
         }
+        
+        statements.close();
     }
 
     /* ----------------------------- DataAccessor implementation ----------------------------- */

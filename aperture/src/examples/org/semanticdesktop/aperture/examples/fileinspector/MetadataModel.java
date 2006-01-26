@@ -6,17 +6,15 @@
  */
 package org.semanticdesktop.aperture.examples.fileinspector;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 
 import org.openrdf.model.Literal;
-import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
+import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.Repository;
+import org.openrdf.util.iterator.CloseableIterator;
 import org.semanticdesktop.aperture.accessor.Vocabulary;
 
 public class MetadataModel {
@@ -49,20 +47,20 @@ public class MetadataModel {
         }
         else {
             StringBuffer buffer = new StringBuffer(10000);
-            Collection statements = repository.getStatements(null, Vocabulary.FULL_TEXT, null);
-
-            Iterator iterator = statements.iterator();
-            while (iterator.hasNext()) {
-                Statement statement = (Statement) iterator.next();
+            CloseableIterator statements = repository.getStatements(null, Vocabulary.FULL_TEXT, null);
+            while (statements.hasNext()) {
+                RStatement statement = (RStatement) statements.next();
                 Value value = statement.getObject();
                 if (value instanceof Literal) {
                     buffer.append(((Literal) value).getLabel());
                 }
 
-                if (iterator.hasNext()) {
+                if (statements.hasNext()) {
                     buffer.append("\n\n=====================================================\n\n");
                 }
             }
+            
+            statements.close();
 
             fullText = buffer.toString().trim();
         }

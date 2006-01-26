@@ -7,21 +7,21 @@
 package org.semanticdesktop.aperture.datasource.config;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.Repository;
 import org.openrdf.sesame.sail.SailUpdateException;
+import org.openrdf.util.iterator.CloseableIterator;
 import org.semanticdesktop.aperture.datasource.Vocabulary;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
@@ -180,9 +180,9 @@ public class ConfigurationUtil {
         ArrayList result = new ArrayList();
 
         // query for all include or exclude pattern statements
-        Iterator statements = repository.getStatements(id, predicate, null).iterator();
+        CloseableIterator statements = repository.getStatements(id, predicate, null);
         while (statements.hasNext()) {
-            Statement statement = (Statement) statements.next();
+            RStatement statement = (RStatement) statements.next();
             Value value = statement.getObject();
 
             // only proceed when the value is a Resource
@@ -219,18 +219,23 @@ public class ConfigurationUtil {
             }
         }
 
+        statements.close();
+        
         return result;
     }
 
     private static Value getSingleValue(Resource resource, URI predicate, Repository repository) {
-        Collection statements = repository.getStatements(resource, predicate, null);
-        if (statements.isEmpty()) {
-            return null;
+        Value result = null;
+        
+        CloseableIterator statements = repository.getStatements(resource, predicate, null);
+        if (statements.hasNext()) {
+            RStatement statement = (RStatement) statements.next();
+            result = statement.getObject();
         }
-        else {
-            Statement statement = (Statement) statements.iterator().next();
-            return statement.getObject();
-        }
+
+        statements.close();
+        
+        return result;
     }
 
     public static SubstringCondition resolveCondition(Value value) {
