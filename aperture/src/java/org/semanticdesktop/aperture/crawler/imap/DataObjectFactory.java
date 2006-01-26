@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.crawler.imap;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -598,6 +599,10 @@ public class DataObjectFactory {
         InputStream content = (InputStream) map.get(CONTENTS_KEY);
         RDFContainer metadata = containerFactory.getRDFContainer(id);
 
+        if (!content.markSupported()) {
+            content = new BufferedInputStream(content, 16384);
+        }
+        
         // create the DataObject
         DataObject object = content == null ? new DataObjectBase(id, source, metadata)
                 : new FileDataObjectBase(id, source, metadata, content);
