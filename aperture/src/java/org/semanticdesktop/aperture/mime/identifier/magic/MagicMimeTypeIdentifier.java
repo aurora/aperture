@@ -97,6 +97,7 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
         String mimeType = null;
         ArrayList extensions = new ArrayList();
         ArrayList conditions = new ArrayList();
+        boolean allowsLeadingWhiteSpace = false;
         
         // extract info from the specified element
         NodeList childNodes = descriptionElement.getChildNodes();
@@ -137,6 +138,15 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
                     conditions.add(condition);
                 }
             }
+            
+            // handle allowsLeadingWhiteSpace element
+            else if ("allowsLeadingWhiteSpace".equals(tagName)) {
+                Node valueNode = childNode.getFirstChild();
+                if (valueNode != null) {
+                    String text = valueNode.getNodeValue().trim();
+                    allowsLeadingWhiteSpace = Boolean.parseBoolean(text);
+                }
+            }
         }
         
         // create the resulting MimeTypeDescription
@@ -144,7 +154,7 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
             return null;
         }
         else {
-            return new MimeTypeDescription(mimeType, extensions, conditions);
+            return new MimeTypeDescription(mimeType, extensions, conditions, allowsLeadingWhiteSpace);
         }
     }
 

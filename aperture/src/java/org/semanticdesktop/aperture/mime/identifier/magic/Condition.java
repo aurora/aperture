@@ -39,20 +39,21 @@ public class Condition {
         return parentType;
     }
     
-    public boolean matches(byte[] bytes) {
+    public boolean matches(byte[] bytes, int skippedLeadingBytes) {
         // check whether this Condition actually checks for a magic byte sequence 
         if (magicBytes == null || offset < 0) {
             return false;
         }
         
         // check whether the specified array is long enough to check for the byte sequence
-        if (bytes.length < offset + magicBytes.length) {
+        if (bytes.length < offset + magicBytes.length + skippedLeadingBytes) {
             return false;
         }
         
         // chech the magic bytes
+        int realOffset = offset + skippedLeadingBytes;
         for (int i = 0; i < magicBytes.length; i++) {
-            if (magicBytes[i] != bytes[i + offset]) {
+            if (magicBytes[i] != bytes[i + realOffset]) {
                 return false;
             }
         }

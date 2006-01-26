@@ -38,6 +38,11 @@ types.
 entensions: a comma-separated list of common file extensions used for this type, e.g. "html,htm".
 Defaults to an empty list.
 
+allowsLeadingWhiteSpace: a boolean ("true"/"false") that indicates whether the file format allows
+white space before the identifying part described in a condition occurs. A typical example is
+text/html, which allows a file to start with white space before the <html> element. Defaults to
+"false".
+
 condition: a combination of magic number, offset and parent mime type that together describe a
 satisfying condition for a binary resource to be considered an instance of the represented
 MIME type.
@@ -46,8 +51,8 @@ The condition element has the following nested elements, which are all optional:
 
 byteSequence: the magic number. The encoding attribute specified how the byte sequence
 should be read. "hex" indicates a hexademical value, e.g. "ca fe ba be 00", "string" indicates
-a string, e.g. "PK". Check the encoding of this XML file! Defaults to no byte sequence,
-meaning that identification is left to parent type and extension checking
+a string, e.g. "PK". Defaults to no byte sequence, meaning that identification is left to parent
+type and extension checking.
 
 offset: the position in the byte stream where the sequence should occur. Defaults to 0.
 
@@ -89,7 +94,6 @@ Defaults to no parent type.
 	</condition>
 </description>
 
-
 <description>
 	<mimeType>application/x-rar-compressed</mimeType>
 	<extensions>rar</extensions>
@@ -104,6 +108,7 @@ Defaults to no parent type.
 <description>
 	<mimeType>text/html</mimeType>
 	<extensions>html,htm,shtml,jsp,php,asp,xhtml</extensions>
+	<allowsLeadingWhiteSpace>true</allowsLeadingWhiteSpace>
 	<condition>
 		<byteSequence encoding="string">&lt;HEAD</byteSequence>
 		<minimumLength>20</minimumLength>
