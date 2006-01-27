@@ -207,7 +207,7 @@ public class FileSystemCrawler extends CrawlerBase {
         deprecatedUrls.remove(url);
 
         // see if this object has been encountered before (we must do this before applying the accessor!)
-        boolean knownObject = accessData.isKnownId(url);
+        boolean knownObject = accessData == null ? false : accessData.isKnownId(url);
 
         // fetch a RDFContainer from the handler (note: is done for every
         RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, url);

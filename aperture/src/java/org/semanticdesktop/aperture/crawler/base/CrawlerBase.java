@@ -14,15 +14,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import org.semanticdesktop.aperture.accessor.AccessData;
-import org.semanticdesktop.aperture.accessor.base.AccessDataBase;
 import org.semanticdesktop.aperture.crawler.CrawlReport;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
@@ -43,19 +42,14 @@ public abstract class CrawlerBase implements Crawler {
     protected DataSource source;
 
     /**
-     * The file for persistent storage of the AccessData.
+     * The current AccessData instance.
      */
-    protected File accessDataFile;
+    protected AccessData accessData;
 
     /**
      * The file for persistent storage of CrawlReports.
      */
     protected File crawlReportFile;
-
-    /**
-     * The current AccessData instance.
-     */
-    protected AccessData accessData;
 
     /**
      * The CrawlReport containing statistics about the last or ongoing crawl. Created by the crawl method
@@ -79,7 +73,7 @@ public abstract class CrawlerBase implements Crawler {
      * A set that is used to temporary record all urls that do no longer point to existing resources, so
      * that we can report them as removed.
      */
-    protected HashSet deprecatedUrls;
+    protected Set deprecatedUrls;
 
     public CrawlerBase() {
         this.stopRequested = false;
@@ -91,6 +85,14 @@ public abstract class CrawlerBase implements Crawler {
 
     public DataSource getDataSource() {
         return source;
+    }
+
+    public void setAccessData(AccessData accessData) {
+        this.accessData = accessData;
+    }
+
+    public AccessData getAccessData() {
+        return accessData;
     }
 
     public void setCrawlerHandler(CrawlerHandler handler) {
@@ -108,33 +110,46 @@ public abstract class CrawlerBase implements Crawler {
 
         // initialize flags
         stopRequested = false;
+        ExitCode exitCode = null;
 
         // we do all this before notifying the CrawlerHandler as its implementation may depend on this
         // initialization
         handler.crawlStarted(this);
 
-        // read the access data from the previous crawl
-        setUpAccessData();
+        try {
+            // read the access data from the previous crawl
+            deprecatedUrls = Collections.EMPTY_SET;
+            
+            if (accessData != null) {
+                accessData.initialize();
 
-        // this set will at the end of the crawl prodecure hold the urls of resources found in a previous
-        // crawl that can no longer be found
-        deprecatedUrls = new HashSet(accessData.getStoredIDs());
+                // this set will at the end of the crawl prodecure hold the urls of resources found in a
+                // previous crawl that can no longer be found
+                deprecatedUrls = new HashSet(accessData.getStoredIDs());
+            }
 
-        // start crawling
-        ExitCode exitCode = crawlObjects();
+            // start crawling
+            exitCode = crawlObjects();
 
-        // only when the scan was completed succesfully will we report removed resources,
-        // else we might indirectly destroy information that may still be up-to-date
-        if (exitCode.equals(ExitCode.COMPLETED)) {
-            crawlReport.setRemovedCount(deprecatedUrls.size());
-            reportRemoved(deprecatedUrls);
+            // only when the scan was completed succesfully will we report removed resources,
+            // else we might indirectly destroy information that may still be up-to-date
+            if (exitCode.equals(ExitCode.COMPLETED)) {
+                crawlReport.setRemovedCount(deprecatedUrls.size());
+                reportRemoved(deprecatedUrls);
+            }
+
+            // this set *can* be very large, get rid of it ASAP
+            deprecatedUrls = null;
+
+            // store the access data
+            if (accessData != null) {
+                accessData.store();
+            }
         }
-
-        // this set *can* be very large, get rid of it ASAP
-        deprecatedUrls = null;
-
-        // store the access data to disk
-        storeAccessData();
+        catch (IOException e) {
+            LOGGER.log(Level.WARNING, "IOException while accessing AccessData", e);
+            exitCode = ExitCode.FATAL_ERROR;
+        }
 
         // wrap up and store the CrawlReport
         crawlReport.setExitCode(exitCode);
@@ -170,35 +185,37 @@ public abstract class CrawlerBase implements Crawler {
     public void clear() {
         handler.clearStarted(this);
 
-        // read the persistent access data
-        setUpAccessData();
+        ExitCode exitCode = ExitCode.COMPLETED;
 
-        // Report removal of data objects
-        if (accessData != null) {
-            Iterator idIter = accessData.getStoredIDs().iterator();
-            while (!stopRequested && idIter.hasNext()) {
-                clear((String) idIter.next());
+        try {
+            if (accessData != null) {
+                // read the persistent access data
+                accessData.initialize();
+
+                // Report removal of data objects
+                Iterator iterator = accessData.getStoredIDs().iterator();
+                while (!stopRequested && iterator.hasNext()) {
+                    clear((String) iterator.next());
+                }
+
+                // remove persistent access data registration
+                accessData.clear();
+
+                if (stopRequested) {
+                    exitCode = ExitCode.STOP_REQUESTED;
+                }
             }
         }
+        catch (IOException e) {
+            LOGGER.log(Level.WARNING, "IOException while accessing AccessData", e);
+            exitCode = ExitCode.FATAL_ERROR;
+        }
 
-        // remove persistent access data registration
-        clearAccessData();
-        accessData = null;
-
-        ExitCode exitCode = stopRequested ? ExitCode.STOP_REQUESTED : ExitCode.COMPLETED;
         handler.clearFinished(this, exitCode);
     }
 
     protected void clear(String url) {
         handler.clearingObject(this, url);
-    }
-
-    public void setAccessDataFile(File file) throws IOException {
-        this.accessDataFile = file;
-    }
-
-    public File getAccessDataFile() {
-        return accessDataFile;
     }
 
     public void setCrawlReportFile(File file) {
@@ -231,112 +248,14 @@ public abstract class CrawlerBase implements Crawler {
         return crawlReport;
     }
 
-    private void reportRemoved(HashSet ids) {
+    private void reportRemoved(Set ids) {
         Iterator idIter = ids.iterator();
         while (idIter.hasNext()) {
             String url = (String) idIter.next();
-            accessData.remove(url);
+            if (accessData != null) {
+                accessData.remove(url);
+            }
             handler.objectRemoved(this, url);
-        }
-    }
-
-    /**
-     * Returns returns a new AccessData instance. This defaults to an AccessDataBase instance. Subclasses
-     * can override this (and other related) methods to provide their own AccessData implementation.
-     */
-    protected AccessData createEmptyAccessData() {
-        return new AccessDataBase();
-    }
-
-    /**
-     * Reads the access data from the configured access data file, if any. When no access data file has
-     * been configured or when the file does not exist, an empty AccessData instance is set, so that
-     * afterwards an AccessData instance is always available.
-     */
-    protected void setUpAccessData() {
-        accessData = null;
-
-        if (accessDataFile != null && accessDataFile.exists()) {
-            InputStream in = null;
-            try {
-                in = new FileInputStream(accessDataFile);
-                AccessDataBase tmp = new AccessDataBase();
-                in = new GZIPInputStream(in);
-                tmp.read(in);
-                accessData = tmp;
-            }
-            catch (IOException e) {
-                // log but ignore
-                LOGGER.log(Level.WARNING, "IOException while reading scan data", e);
-            }
-            finally {
-                try {
-                    if (in != null) {
-                        in.close();
-                    }
-                }
-                catch (IOException e) {
-                    // ignore
-                    LOGGER.log(Level.WARNING, "IOException while closing stream", e);
-                }
-            }
-        }
-
-        // if no access data file is available or when an error occurred, then at least make sure an
-        // AccessData instance is available
-        if (accessData == null) {
-            accessData = createEmptyAccessData();
-        }
-    }
-
-    /**
-     * Stores the specified access data in the configured access data file, if any. If no access data
-     * file has been configured, this method has no effect.
-     */
-    protected void storeAccessData() {
-        // nothing to do when there is no access data or we know no access file to store to
-        if (accessData == null || accessDataFile == null) {
-            return;
-        }
-
-        // we only know how to handle an AccessDataBase
-        if (accessData == null) {
-            throw new IllegalArgumentException("no AccessData available");
-        }
-        else if (!(accessData instanceof AccessDataBase)) {
-            throw new IllegalArgumentException("unknown AccessData implementation: "
-                    + accessData.getClass().getName());
-        }
-
-        // cast to the implementation class
-        AccessDataBase accessDataBase = (AccessDataBase) createEmptyAccessData();
-
-        // store the data
-        try {
-            OutputStream out = new BufferedOutputStream(new FileOutputStream(accessDataFile));
-            out = new GZIPOutputStream(out);
-            accessDataBase.write(out);
-            out.flush();
-            out.close();
-        }
-        catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Unable to store access data", e);
-        }
-
-        // get rid of the AccessData instance, it will be reread the next time a scan is started and only
-        // occupies a lot of memory in the mean time
-        accessData = null;
-    }
-
-    /**
-     * Removes the persistent storage of the AccessData, if any. By default this deletes the access data
-     * file if it exists. Subclasses can override this if they want to provide their own AccessData
-     * implementation. It is not necessary to report the clearing process to the CrawlerHandler, that is
-     * taken care of by the clear method that invokes this method.
-     */
-    protected void clearAccessData() {
-        if (accessDataFile.exists()) {
-            accessDataFile.delete();
         }
     }
 

@@ -1,5 +1,6 @@
 package org.semanticdesktop.aperture.accessor;
 
+import java.io.IOException;
 import java.util.Set;
 
 /**
@@ -24,6 +25,26 @@ public interface AccessData {
     public static final String BYTE_SIZE_KEY = "byteSize";
 
     /**
+     * Prepares the AccessData for operation. This may for example mean reading files or opening
+     * repositories that hold the stored data.
+     */
+    public void initialize() throws IOException;
+
+    /**
+     * Informs the AccessData that processing has completed and, in case of a persistent storage, now is
+     * a good time to write or flush results. Afterwards the AccessData may be in an unusable state until
+     * 'initialize' is invoked again.
+     */
+    public void store() throws IOException;
+
+    /**
+     * Clears this AccessData. This may be invoked on initialized and unititialized AccessData's. Both
+     * in-memory information as any persistent storage will be cleared. Afterwards the AccessData may be
+     * in an unusable state until 'initialize' is invoked again.
+     */
+    public void clear() throws IOException;
+
+    /**
      * Gets the number of resources for which information has been stored in this AccessData.
      * 
      * @return The number of registered resources.
@@ -43,11 +64,6 @@ public interface AccessData {
      * @return "true" when this AccessData has information about the specified ID, "false" otherwise.
      */
     public boolean isKnownId(String id);
-
-    /**
-     * Clears this AccessData.
-     */
-    public void clear();
 
     /**
      * Stores information (a key-value pair) for the specified id.
@@ -79,7 +95,8 @@ public interface AccessData {
     /**
      * Returns all referred resources of the specified resource.
      * 
-     * @return A Set of Strings, or null when there are no referred resources registered for this resource.
+     * @return A Set of Strings, or null when there are no referred resources registered for this
+     *         resource.
      */
     public Set getReferredIDs(String id);
 

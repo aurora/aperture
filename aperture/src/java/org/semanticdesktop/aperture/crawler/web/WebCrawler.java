@@ -238,7 +238,7 @@ public class WebCrawler extends CrawlerBase {
             jobsMap.remove(url);
 
             // see if we've ever accessed this url before
-            boolean knownUrl = accessData.isKnownId(url);
+            boolean knownUrl = accessData == null ? false : accessData.isKnownId(url);
 
             // fetch a DataAccessor for this id
             DataAccessor accessor = getDataAccessor(url);
@@ -343,13 +343,20 @@ public class WebCrawler extends CrawlerBase {
     }
 
     private void scheduleCachedLinks(String url, int depth) {
-        Set links = accessData.getReferredIDs(url);
+        if (accessData == null) {
+            LOGGER.log(Level.SEVERE,
+                    "Internal error: scheduling cached links for unmodified url while no AccessData is set: "
+                            + url);
+        }
+        else {
+            Set links = accessData.getReferredIDs(url);
 
-        if (links != null) {
-            Iterator iterator = links.iterator();
-            while (iterator.hasNext()) {
-                String link = (String) iterator.next();
-                schedule(link, depth, true);
+            if (links != null) {
+                Iterator iterator = links.iterator();
+                while (iterator.hasNext()) {
+                    String link = (String) iterator.next();
+                    schedule(link, depth, true);
+                }
             }
         }
     }
@@ -403,7 +410,7 @@ public class WebCrawler extends CrawlerBase {
                 }
             }
         }
-        
+
         object.getMetadata().put(Vocabulary.MIME_TYPE, mimeType);
 
         // fetch a LinkExtractor for this MIME type and exit when there is none
@@ -486,7 +493,9 @@ public class WebCrawler extends CrawlerBase {
                 if (!url.equals(link) && !scheduledLinks.contains(link)) {
                     schedule(link, depth, true);
                     scheduledLinks.add(link);
-                    accessData.putReferredID(url, link);
+                    if (accessData != null) {
+                        accessData.putReferredID(url, link);
+                    }
                 }
             }
         }

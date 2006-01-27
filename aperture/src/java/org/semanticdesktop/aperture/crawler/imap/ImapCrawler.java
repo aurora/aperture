@@ -550,11 +550,17 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         deprecatedUrls.remove(uri);
 
         // repeat recursively on all registered children
-        Set children = accessData.getReferredIDs(uri);
-        if (children != null) {
-            Iterator iterator = children.iterator();
-            while (iterator.hasNext()) {
-                reportNotModified((String) iterator.next());
+        if (accessData == null) {
+            LOGGER.log(Level.SEVERE, "Internal error: reporting unmodified uri while no AccessData is set: "
+                    + uri);
+        }
+        else {
+            Set children = accessData.getReferredIDs(uri);
+            if (children != null) {
+                Iterator iterator = children.iterator();
+                while (iterator.hasNext()) {
+                    reportNotModified((String) iterator.next());
+                }
             }
         }
     }
@@ -591,6 +597,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
     }
 
     private void registerParent(DataObject object) {
+        if (accessData == null) {
+            return;
+        }
+
         URI parent = getParent(object);
         if (parent != null) {
             String parentID = parent.toString();
@@ -636,7 +646,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 LOGGER.severe("Internal error: unknown child value type: " + resource.getClass());
             }
         }
-        
+
         statements.close();
     }
 

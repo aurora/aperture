@@ -21,7 +21,7 @@ import org.semanticdesktop.aperture.accessor.FolderDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.accessor.Vocabulary;
-import org.semanticdesktop.aperture.accessor.base.AccessDataBase;
+import org.semanticdesktop.aperture.accessor.base.FileAccessData;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.FileUtil;
@@ -88,7 +88,8 @@ public class TestFileAccessor extends ApertureTestBase {
 
     public void testNonModifiedFile() throws UrlNotFoundException, IOException {
         // create a fake AccessData that holds the last modified date of tmpFile
-        AccessData accessData = new AccessDataBase();
+        AccessData accessData = new FileAccessData();
+        accessData.initialize();
         String url = tmpFile.toURI().toString();
         accessData.put(url, AccessData.DATE_KEY, String.valueOf(tmpFile.lastModified()));
 

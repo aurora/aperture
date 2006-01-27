@@ -1,5 +1,10 @@
 package org.semanticdesktop.aperture.accessor.base;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,6 +16,8 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -23,11 +30,11 @@ import org.xml.sax.SAXException;
 
 /**
  * A basic AccessData implementation that stores all its information in main memory and can read it from
- * and write it to a stream.
+ * and write it to a file.
  */
-public class AccessDataBase implements AccessData {
+public class FileAccessData implements AccessData {
 
-    private static final Logger LOGGER = Logger.getLogger(AccessDataBase.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(FileAccessData.class.getName());
 
     private static final String REFERRED_ID_TAG = "referredID";
 
@@ -44,17 +51,75 @@ public class AccessDataBase implements AccessData {
     private HashMap referredIDMap;
 
     /**
-     * Creates a new AccessData instance.
+     * The File from which previous access data is loaded and to which new data will be written. This may
+     * be null in case an in-memory-only AccessData is required.
      */
-    public AccessDataBase() {
-        initMaps();
+    private File dataFile;
+
+    /**
+     * Creates a new FileAccessData instance. The access data cannot be made persistent until a data file
+     * is specified.
+     */
+    public FileAccessData() {
     }
 
-    private void initMaps() {
+    /**
+     * Creates a new FileAccessData that uses the specified File for persistent storage.
+     * 
+     * @param file The data file to be used by this FileAccessData.
+     */
+    public FileAccessData(File dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    /**
+     * Sets the data File to be used by this FileAccessData.
+     * 
+     * @param dataFile The data File to use or 'null' when the FileAccessData is not required (anymore)
+     *            to persistently store its access data.
+     */
+    public void setDataFile(File dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public File getDataFile() {
+        return dataFile;
+    }
+
+    public void initialize() throws IOException {
         idMap = new HashMap(1024);
         referredIDMap = new HashMap(1024);
+        
+        if (dataFile != null && dataFile.exists()) {
+            FileInputStream fileStream = new FileInputStream(dataFile);
+            BufferedInputStream buffer = new BufferedInputStream(fileStream);
+            GZIPInputStream zipStream = new GZIPInputStream(buffer);
+            read(zipStream);
+            zipStream.close();
+        }
     }
 
+    public void store() throws IOException {
+        if (dataFile != null) {
+            FileOutputStream fileStream = new FileOutputStream(dataFile);
+            BufferedOutputStream buffer = new BufferedOutputStream(fileStream);
+            GZIPOutputStream zipStream = new GZIPOutputStream(buffer);
+            write(zipStream);
+            zipStream.close();
+        }
+        
+        idMap = null;
+        referredIDMap = null;
+    }
+    
+    public void clear() throws IOException {
+        idMap = null;
+        referredIDMap = null;
+        if (dataFile != null && dataFile.exists()) {
+            dataFile.delete();
+        }
+    }
+    
     public int getSize() {
         // warning: this assumes that every ID is at least stored in the idMap, i.e. IDs for which only
         // parent-child relationships are stored are not counted.
@@ -69,10 +134,6 @@ public class AccessDataBase implements AccessData {
 
     public boolean isKnownId(String id) {
         return idMap.containsKey(id) || referredIDMap.containsKey(id);
-    }
-
-    public void clear() {
-        initMaps();
     }
 
     public void put(String id, String key, String value) {
@@ -117,7 +178,7 @@ public class AccessDataBase implements AccessData {
         HashSet ids = (HashSet) referredIDMap.get(id);
         if (ids != null) {
             ids.remove(referredID);
-            
+
             if (ids.isEmpty()) {
                 referredIDMap.remove(id);
             }
@@ -138,22 +199,11 @@ public class AccessDataBase implements AccessData {
         return infoMap;
     }
 
-    /**
-     * Reads an XML document containing ID information from the supplied InputStream. This method does
-     * not close the InputStream when it has finished reading, this is the responsibility of the method's
-     * caller.
-     * 
-     * @param in The stream to read the XML document from.
-     * @exception IOException If an I/O error occurred while reading from the supplied stream.
-     */
-    public void read(InputStream in) throws IOException {
-        read(in, new AccessDataParser());
-    }
-
-    private void read(InputStream in, SimpleSAXAdapter listener) throws IOException {
+    private void read(InputStream in) throws IOException {
         try {
             // Parse the document
             SimpleSAXParser parser = new SimpleSAXParser();
+            SimpleSAXAdapter listener = new AccessDataParser();
             parser.setListener(listener);
             parser.parse(in);
         }
@@ -169,15 +219,7 @@ public class AccessDataBase implements AccessData {
         }
     }
 
-    /**
-     * Writes an XML document containing data object info to the supplied OutputStream. This method does
-     * not close the OutputStream when it has finished writing, this is the responsibility of the
-     * method's caller.
-     * 
-     * @param out The stream to write the XML document to.
-     * @exception IOException If an I/O error occurred while writing to the supplied stream.
-     */
-    public void write(OutputStream out) throws IOException {
+    private void write(OutputStream out) throws IOException {
         XmlWriter xmlWriter = new XmlWriter(out);
         xmlWriter.setPrettyPrint(true);
 
@@ -236,11 +278,6 @@ public class AccessDataBase implements AccessData {
     private class AccessDataParser extends SimpleSAXAdapter {
 
         private String dataObjectId;
-
-        public void startDocument() {
-            // Clear any current results
-            clear();
-        }
 
         public void startTag(String tagName, Map atts, String text) throws SAXException {
             if (tagName.equals("scanresult")) {
