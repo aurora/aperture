@@ -56,10 +56,6 @@ type and extension checking.
 
 offset: the position in the byte stream where the sequence should occur. Defaults to 0.
 
-minimumSize: the minimum number of bytes the byte stream needs to have in order to match.
-This should at least be equal to offset + byteSequence.length, but could be larger if that
-makes sense for that particular description. Defaults to 0.
-
 parentType: the mime type that should also be detected in order for this condition to match.
 Defaults to no parent type.
 
@@ -72,7 +68,6 @@ Defaults to no parent type.
 	<extensions>zip</extensions>
 	<condition>
 		<byteSequence encoding="string">PK</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -81,7 +76,6 @@ Defaults to no parent type.
 	<extensions>gz,tgz</extensions>
 	<condition>
 		<byteSequence encoding="hex">1f 8b 08</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -90,7 +84,6 @@ Defaults to no parent type.
 	<extensions>bz2,tbz2</extensions>
 	<condition>
   		<byteSequence encoding="hex">42 5a 68 39 31</byteSequence>
-  		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -99,7 +92,6 @@ Defaults to no parent type.
 	<extensions>rar</extensions>
 	<condition>
 		<byteSequence encoding="hex">52 61 72 21 1a</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -111,55 +103,42 @@ Defaults to no parent type.
 	<allowsLeadingWhiteSpace>true</allowsLeadingWhiteSpace>
 	<condition>
 		<byteSequence encoding="string">&lt;HEAD</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="string">&lt;head</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="string">&lt;TITLE</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="string">&lt;title</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="string">&lt;!doctype HTML</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="string">&lt;!DOCTYPE HTML</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="string">&lt;!--</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="string">&lt;html</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="string">&lt;HTML</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="string">&lt;BODY</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="string">&lt;body</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="string">&lt;h1></byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="string">&lt;H1></byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -320,7 +299,6 @@ Defaults to no parent type.
 	<condition>
 		<byteSequence encoding="hex">11 00 00 00 12 00 00 00 04 00 00</byteSequence>
 		<offset>576</offset>
-		<minimumLength>1300</minimumLength>
 	</condition>
 </description>
 
@@ -329,7 +307,6 @@ Defaults to no parent type.
 	<extensions>wdb</extensions>
 	<condition>
 		<byteSequence encoding="hex">20 54 02 00 00 00 05 54 02 00 a1 0d 25 54</byteSequence>
-		<minimumLength>512</minimumLength>
 	</condition>
 </description>
 
@@ -339,7 +316,6 @@ Defaults to no parent type.
 	<condition>
 		<byteSequence encoding="hex">01 00 fe ff 03 0a 00 00 ff ff ff ff 02 13 02 00 00 00 00 00 c0 00 00 00 00 00 00 46 10</byteSequence>
 		<offset>2112</offset>
-		<minimumLength>2300</minimumLength>
 		<parentType>application/vnd.ms-office</parentType>
 	</condition>
 </description>
@@ -349,7 +325,6 @@ Defaults to no parent type.
 	<extensions>wks</extensions>
 	<condition>
 		<byteSequence encoding="hex">ff 00 02 00 04 04 05 54 02 00</byteSequence>
-		<minimumLength>512</minimumLength>
 	</condition>
 </description>
 
@@ -361,7 +336,6 @@ Defaults to no parent type.
 	<mimeType>application/vnd.ms-office</mimeType>
 	<condition>
 		<byteSequence encoding="hex">d0 cf 11 e0 a1 b1 1a e1 00 00 00 00 00 00 00 00</byteSequence>
-		<minimumLength>2200</minimumLength>
 	</condition>
 </description>
 
@@ -439,7 +413,6 @@ Defaults to no parent type.
 	<extensions>wp,wpd,wpf,wpt,wpw,wp5,wp51,wp6,w60,w61</extensions>
 	<condition>
 		<byteSequence encoding="hex">ff 57 50 43</byteSequence>
-		<minimumLength>4</minimumLength>
 	</condition>
 </description>
 
@@ -455,7 +428,6 @@ Defaults to no parent type.
 	<extensions>pst</extensions>
 	<condition>
 		<byteSequence encoding="hex">21 42 44 4e</byteSequence>
-		<minimumLength>4</minimumLength>
 	</condition>
 </description>
 
@@ -464,7 +436,6 @@ Defaults to no parent type.
 	<extensions>dbx</extensions>
 	<condition>
 		<byteSequence encoding="hex">4a 4d 46 36 03 00 10 00</byteSequence>
-		<minimumLength>8</minimumLength>
 	</condition>
 </description>
 
@@ -473,7 +444,6 @@ Defaults to no parent type.
 	<extensions>dbx</extensions>
 	<condition>
 		<byteSequence encoding="hex">cf ad 12 fe c5 fd 74 6f 66 e3 d1 11 9a 4e 00 c0</byteSequence>
-		<minimumLength>16</minimumLength>
 	</condition>
 </description>
 
@@ -482,7 +452,6 @@ Defaults to no parent type.
 	<extensions>dbx</extensions>
 	<condition>
 		<byteSequence encoding="hex">cf ad 12 fe c5 fd 74 6f 66 e3 d1 11 9a 4e 00 c0</byteSequence>
-		<minimumLength>16</minimumLength>
 	</condition>
 </description>
 
@@ -492,7 +461,6 @@ Defaults to no parent type.
 	<mimeType>application/x-framemaker</mimeType>
 	<condition>
 		<byteSequence encoding="string">&lt;MakerFile</byteSequence>
-		<minimumLength>100</minimumLength>
 	</condition>
 </description>
 
@@ -500,7 +468,6 @@ Defaults to no parent type.
 	<mimeType>application/x-framemaker</mimeType>
 	<condition>
 		<byteSequence encoding="string">&lt;MIFFile</byteSequence>
-		<minimumLength>100</minimumLength>
 	</condition>
 </description>
 
@@ -508,7 +475,6 @@ Defaults to no parent type.
 	<mimeType>application/x-framemaker</mimeType>
 	<condition>
 		<byteSequence encoding="string">&lt;MakerDictionary</byteSequence>
-		<minimumLength>100</minimumLength>
 	</condition>
 </description>
 
@@ -516,7 +482,6 @@ Defaults to no parent type.
 	<mimeType>application/x-framemaker</mimeType>
 	<condition>
 		<byteSequence encoding="string">&lt;MakerScreenFont</byteSequence>
-		<minimumLength>100</minimumLength>
 	</condition>
 </description>
 
@@ -524,7 +489,6 @@ Defaults to no parent type.
 	<mimeType>application/x-framemaker</mimeType>
 	<condition>
 		<byteSequence encoding="string">&lt;MML</byteSequence>
-		<minimumLength>100</minimumLength>
 	</condition>
 </description>
 
@@ -532,7 +496,6 @@ Defaults to no parent type.
 	<mimeType>application/x-framemaker</mimeType>
 	<condition>
 		<byteSequence encoding="string">&lt;BookFile</byteSequence>
-		<minimumLength>100</minimumLength>
 	</condition>
 </description>
 
@@ -540,7 +503,6 @@ Defaults to no parent type.
 	<mimeType>application/x-framemaker</mimeType>
 	<condition>
 		<byteSequence encoding="string">&lt;Maker</byteSequence>
-		<minimumLength>100</minimumLength>
 	</condition>
 </description>
 
@@ -561,7 +523,6 @@ Defaults to no parent type.
 	<extensions>rtf</extensions>
 	<condition>
 		<byteSequence encoding="string">{\rtf</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -570,7 +531,6 @@ Defaults to no parent type.
 	<extensions>pdf</extensions>
 	<condition>
 		<byteSequence encoding="string">%PDF-</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -579,7 +539,6 @@ Defaults to no parent type.
 	<extensions>xml,xslt,wml</extensions>
 	<condition>
 		<byteSequence encoding="string">&lt;xml</byteSequence>
-		<minimumLength>10</minimumLength>
 	</condition>
 </description>
 
@@ -588,7 +547,6 @@ Defaults to no parent type.
 	<extensions>ps</extensions>
 	<condition>
 		<byteSequence encoding="string">%!</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -597,7 +555,6 @@ Defaults to no parent type.
 	<extensions>alf</extensions>
 	<condition>
 		<byteSequence encoding="string">ALF</byteSequence>
-		<minimumLength>6</minimumLength>
 	</condition>
 </description>
 
@@ -606,7 +563,6 @@ Defaults to no parent type.
 	<extensions>reg</extensions>
 	<condition>
 		<byteSequence encoding="string">regf</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -617,7 +573,6 @@ Defaults to no parent type.
 	<extensions>exe</extensions>
 	<condition>
 		<byteSequence encoding="string">MZ</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -626,7 +581,6 @@ Defaults to no parent type.
 	<extensions>class</extensions>
 	<condition>
 		<byteSequence encoding="hex">ca fe ba be</byteSequence>
-		<minimumLength>5</minimumLength>
 	</condition>
 </description>
 
@@ -637,7 +591,6 @@ Defaults to no parent type.
 	<extensions>bmp</extensions>
 	<condition>
 		<byteSequence encoding="string">BM</byteSequence>
-		<minimumLength>40</minimumLength>
 	</condition>
 </description>
 
@@ -646,7 +599,6 @@ Defaults to no parent type.
 	<extensions>gif</extensions>
 	<condition>
 		<byteSequence encoding="string">GIF8</byteSequence>
-		<minimumLength>40</minimumLength>
 	</condition>
 </description>
 
@@ -655,7 +607,6 @@ Defaults to no parent type.
 	<extensions>jpg</extensions>
 	<condition>
 		<byteSequence encoding="hex">ff d8 ff</byteSequence>
-		<minimumLength>40</minimumLength>
 	</condition>
 </description>
 
@@ -664,11 +615,9 @@ Defaults to no parent type.
 	<extensions>pgm</extensions>
 	<condition>
 		<byteSequence encoding="string">P1</byteSequence>
-		<minimumLength>40</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="string">P4</byteSequence>
-		<minimumLength>40</minimumLength>
 	</condition>
 </description>
 
@@ -677,11 +626,9 @@ Defaults to no parent type.
 	<extensions>pgm</extensions>
 	<condition>
 		<byteSequence encoding="string">P2</byteSequence>
-		<minimumLength>40</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="string">P5</byteSequence>
-		<minimumLength>40</minimumLength>
 	</condition>
 </description>
 
@@ -690,7 +637,6 @@ Defaults to no parent type.
 	<extensions>png</extensions>
 	<condition>
 		<byteSequence encoding="hex">89 50 4e 47 0d 0a 1a</byteSequence>
-		<minimumLength>40</minimumLength>
 	</condition>
 </description>
 
@@ -699,11 +645,9 @@ Defaults to no parent type.
 	<extensions>ppm</extensions>
 	<condition>
 		<byteSequence encoding="string">P3</byteSequence>
-		<minimumLength>40</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="string">P6</byteSequence>
-		<minimumLength>40</minimumLength>
 	</condition>
 </description>
 
@@ -712,12 +656,10 @@ Defaults to no parent type.
 	<extensions>tif,tiff</extensions>
 	<condition>
 		<byteSequence encoding="hex">4d 4d 00 2a</byteSequence>
-		<minimumLength>40</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="hex">49 49 2a 00</byteSequence>
 		<offset> 0</offset>
-		<minimumLength>40</minimumLength>
 	</condition>
 </description>
 
@@ -727,7 +669,6 @@ Defaults to no parent type.
 	<condition>
 		<byteSequence encoding="string">Paint Shop Pro Image File</byteSequence>
 		<offset> 0</offset>
-		<minimumLength>25</minimumLength>
 	</condition>
 </description>
 
@@ -736,7 +677,6 @@ Defaults to no parent type.
 	<extensions>xcf</extensions>
 	<condition>
 		<byteSequence encoding="hex">67 69 6d 70 20 78 63 66 20</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -746,7 +686,6 @@ Defaults to no parent type.
 	<condition>
 		<byteSequence encoding="string">CDRA</byteSequence>
 		<offset>8</offset>
-		<minimumLength>12</minimumLength>
 	</condition>
 </description>
 
@@ -758,7 +697,6 @@ Defaults to no parent type.
 	<condition>
 		<byteSequence encoding="hex">41 56 49 20</byteSequence>
 		<offset>8</offset>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -768,7 +706,6 @@ Defaults to no parent type.
 	<condition>
 		<byteSequence encoding="hex">30 26 b2 75 8e 66 cf 11 a6 d9 00 aa 00 62 ce 6c</byteSequence>
 		<offset>0</offset>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -778,7 +715,6 @@ Defaults to no parent type.
 	<condition>
 		<byteSequence encoding="string">moov</byteSequence>
 		<offset>4</offset>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -787,11 +723,9 @@ Defaults to no parent type.
 	<extensions>mpg,mpeg</extensions>
 	<condition>
 		<byteSequence encoding="hex">00 00 01 b3</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 	<condition>
 		<byteSequence encoding="hex">00 00 01 ba</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -800,7 +734,6 @@ Defaults to no parent type.
 	<extensions>swf</extensions>
 	<condition>
 		<byteSequence encoding="hex">46 57 53</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -814,7 +747,6 @@ Defaults to no parent type.
 	<condition>
 		<byteSequence encoding="string">WAVE</byteSequence>
 		<offset>8</offset>
-		<minimumLength>12</minimumLength>
 	</condition>
 </description>
 
@@ -823,7 +755,6 @@ Defaults to no parent type.
 	<extensions>mp3,mp2</extensions>
 	<condition>
 		<byteSequence encoding="string">ID3</byteSequence>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -833,7 +764,6 @@ Defaults to no parent type.
 	<condition>
 		<byteSequence encoding="string">MThd</byteSequence>
 		<offset> 0</offset>
-		<minimumLength>20</minimumLength>
 	</condition>
 </description>
 
@@ -843,7 +773,6 @@ Defaults to no parent type.
 	<condition>
 		<byteSequence encoding="hex">41 56 49 20</byteSequence>
 		<offset>8</offset>
-		<minimumLength>12</minimumLength>
 	</condition>
 </description>
 

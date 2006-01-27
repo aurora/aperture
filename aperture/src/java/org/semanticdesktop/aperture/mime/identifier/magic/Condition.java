@@ -12,14 +12,11 @@ public class Condition {
     
     private int offset;
     
-    private int minimumLength;
-    
     private String parentType;
     
-    public Condition(byte[] magicBytes, int offset, int minimumLength, String parentType) {
+    public Condition(byte[] magicBytes, int offset, String parentType) {
         this.magicBytes = magicBytes;
         this.offset = offset;
-        this.minimumLength = minimumLength;
         this.parentType = parentType;
     }
     
@@ -32,7 +29,7 @@ public class Condition {
     }
     
     public int getMinimumLength() {
-        return minimumLength;
+        return magicBytes == null ? 0 : magicBytes.length + offset;
     }
     
     public String getParentType() {

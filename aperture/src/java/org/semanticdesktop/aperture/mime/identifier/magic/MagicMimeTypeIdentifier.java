@@ -162,7 +162,6 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
         // initialize variables
         byte[] magicBytes = null;
         int offset = 0;
-        int minimumLength = 0;
         String parentType = null;
 
         // extract info from the specified element
@@ -258,20 +257,6 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
                 }                
             }
             
-            // handle minimumLength element
-            else if ("minimumLength".equals(tagName)) {
-                Node valueNode = childNode.getFirstChild();
-                if (valueNode != null) {
-                    String lengthString = valueNode.getNodeValue().trim();
-                    try {
-                        minimumLength = Integer.parseInt(lengthString);
-                    }
-                    catch (NumberFormatException e) {
-                        LOGGER.log(Level.WARNING, "unable to parse minimumLength: " + lengthString, e);
-                    }
-                }
-            }
-            
             // handle parentType element
             else if ("parentType".equals(tagName)) {
                 Node valueNode = childNode.getFirstChild();
@@ -282,7 +267,7 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
         }
         
         // create the resulting Condition
-        return new Condition(magicBytes, offset, minimumLength, parentType);
+        return new Condition(magicBytes, offset, parentType);
     }
 
     private void setRequiringTypes() {
