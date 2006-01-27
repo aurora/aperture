@@ -8,7 +8,6 @@ package org.semanticdesktop.aperture.crawler.filesystem;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -20,7 +19,6 @@ import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 import org.semanticdesktop.aperture.accessor.DataObject;
-import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.crawler.ExitCode;
@@ -235,15 +233,6 @@ public class FileSystemCrawler extends CrawlerBase {
                 else {
                     handler.objectNew(this, dataObject);
                     crawlReport.increaseNewCount();
-                }
-            }
-
-            // close any InputStream
-            if (dataObject instanceof FileDataObject) {
-                FileDataObject fdo = (FileDataObject) dataObject;
-                InputStream stream = fdo.getContent();
-                if (stream != null) {
-                    stream.close();
                 }
             }
         }

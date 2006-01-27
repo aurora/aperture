@@ -69,6 +69,8 @@ public class TestFileAccessor extends ApertureTestBase {
 
         URI parentURI = new URIImpl(tmpDir.toURI().toString());
         checkStatement(Vocabulary.PART_OF, parentURI, (SesameRDFContainer) dataObject.getMetadata());
+        
+        dataObject.dispose();
     }
 
     public void testFolderAccess() throws UrlNotFoundException, MalformedURLException, IOException {
@@ -80,6 +82,8 @@ public class TestFileAccessor extends ApertureTestBase {
 
         // check its metadata
         checkStatement(Vocabulary.NAME, "TestFileAccessor", (SesameRDFContainer) dataObject.getMetadata());
+        
+        dataObject.dispose();
     }
 
     public void testNonModifiedFile() throws UrlNotFoundException, IOException {
@@ -99,6 +103,7 @@ public class TestFileAccessor extends ApertureTestBase {
         // double-check that we *do* get a DataObject when we don't pass the AccessData
         DataObject object2 = fileAccessor.getDataObject(url, null, params, factory);
         assertNotNull(object2);
+        object2.dispose();
     }
     
     private static class SimpleRDFContainerFactory implements RDFContainerFactory {

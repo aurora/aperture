@@ -432,6 +432,8 @@ public class ExampleImapCrawler {
                     LOGGER.log(Level.WARNING, "ExtractorException while processing " + object.getID(), e);
                 }
             }
+            
+            object.dispose();
         }
 
         private void commit() {
@@ -448,6 +450,7 @@ public class ExampleImapCrawler {
         }
 
         public void objectChanged(Crawler crawler, DataObject object) {
+            object.dispose();
             printUnexpectedEventWarning("changed");
         }
 

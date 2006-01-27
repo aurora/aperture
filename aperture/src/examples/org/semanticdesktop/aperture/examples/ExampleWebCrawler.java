@@ -422,9 +422,12 @@ public class ExampleWebCrawler {
                     LOGGER.log(Level.WARNING, "ExtractorException while processing " + object.getID(), e);
                 }
             }
+            
+            object.dispose();
         }
 
         public void objectChanged(Crawler dataCrawler, DataObject object) {
+            object.dispose();
             printUnexpectedEventWarning("changed");
         }
 

@@ -6,7 +6,10 @@
  */
 package org.semanticdesktop.aperture.accessor.base;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
@@ -18,6 +21,8 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
  */
 public class FileDataObjectBase extends DataObjectBase implements FileDataObject {
 
+    private static final Logger LOGGER = Logger.getLogger(FileDataObjectBase.class.getName());
+    
     private InputStream content;
     
     public FileDataObjectBase() { }
@@ -49,5 +54,16 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
     
     public InputStream getContent() {
         return content;
+    }
+    
+    public void dispose() {
+        try {
+            content.close();
+        }
+        catch (IOException e) {
+            LOGGER.log(Level.WARNING, "IOException while closing stream", e);
+        }
+        
+        super.dispose();
     }
 }

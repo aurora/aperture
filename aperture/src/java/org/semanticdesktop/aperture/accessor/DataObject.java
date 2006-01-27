@@ -44,4 +44,9 @@ public interface DataObject {
      * @return An RDFContainer containing an RDF model formulated using the Aperture vocabulary.
      */
     public RDFContainer getMetadata();
+    
+    /**
+     * Closes this DataObject, freeing any resources that it keeps hold of.
+     */
+    public void dispose();
 }

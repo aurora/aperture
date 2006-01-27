@@ -392,11 +392,13 @@ public class CrawlerPanel extends JPanel {
                 process((FileDataObject) object);
             }
             commit();
+            object.dispose();
         }
 
         public void objectChanged(Crawler dataCrawler, DataObject object) {
             displayUnexpectedEventWarning("changed");
             commit();
+            object.dispose();
         }
 
         public void objectNotModified(Crawler crawler, String url) {

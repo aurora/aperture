@@ -214,6 +214,8 @@ public class TestFileSystemCrawler extends ApertureTestBase {
                 assertTrue(object instanceof FileDataObject);
             }
             
+            object.dispose();
+            
             try {
                 repository.commit();
             }
@@ -223,6 +225,7 @@ public class TestFileSystemCrawler extends ApertureTestBase {
         }
 
         public void objectChanged(Crawler dataCrawler, DataObject object) {
+            object.dispose();
             fail();
         }
 
