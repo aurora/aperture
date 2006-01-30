@@ -26,7 +26,6 @@ Description of the contents of this file:
   the one listed first overrules all others. This does not apply to the case where one
   description has the other as parent description, in that case the most specific description
   is preferred.
-  Examples are MS Works descriptions that overrule the generic MS Office description.
 
 * The elements in each description element are all optional except for the mimeType element.
   They have the following meaning:
@@ -59,6 +58,10 @@ offset: the position in the byte stream where the sequence should occur. Default
 parentType: the mime type that should also be detected in order for this condition to match.
 Defaults to no parent type.
 
+-->
+
+<!--
+Tip: see http://www.filext.com/ for a reasonably complete database of file formats and magic numbers.
 -->
 
 <!-- ================== Archive Types ================== -->
@@ -290,44 +293,6 @@ Defaults to no parent type.
 	</condition>
 </description>
 
-<!-- ================== Microsoft Works Types ================== -->
-<!-- Listed before MS Office definition because the starting header is the same -->
-
-<description>
-	<mimeType>application/vnd.ms-works-wdb</mimeType>
-	<extensions>wdb</extensions>
-	<condition>
-		<byteSequence encoding="hex">11 00 00 00 12 00 00 00 04 00 00</byteSequence>
-		<offset>576</offset>
-	</condition>
-</description>
-
-<description>
-	<mimeType>application/vnd.ms-works-wdb</mimeType>
-	<extensions>wdb</extensions>
-	<condition>
-		<byteSequence encoding="hex">20 54 02 00 00 00 05 54 02 00 a1 0d 25 54</byteSequence>
-	</condition>
-</description>
-
-<description>
-	<mimeType>application/vnd.ms-works-wps</mimeType>
-	<extensions>wps</extensions>
-	<condition>
-		<byteSequence encoding="hex">01 00 fe ff 03 0a 00 00 ff ff ff ff 02 13 02 00 00 00 00 00 c0 00 00 00 00 00 00 46 10</byteSequence>
-		<offset>2112</offset>
-		<parentType>application/vnd.ms-office</parentType>
-	</condition>
-</description>
-
-<description>
-	<mimeType>application/vnd.ms-works-wks</mimeType>
-	<extensions>wks</extensions>
-	<condition>
-		<byteSequence encoding="hex">ff 00 02 00 04 04 05 54 02 00</byteSequence>
-	</condition>
-</description>
-
 <!-- ================== MS Office Types ================== -->
 <!-- some research with xvi32 seems to indicate that actually the first 32 -->
 <!-- *bytes* of MS Office files are always the same -->
@@ -403,6 +368,25 @@ Defaults to no parent type.
 	<extensions>sdc</extensions>
 	<condition>
 		<parentType>application/vnd.ms-office</parentType>
+	</condition>
+</description>
+
+<!-- ================== MS Works Types ================== -->
+<!-- same as with StarOffice 5.4 formats -->
+
+<description>
+	<mimeType>application/vnd.ms-works</mimeType>
+	<extensions>wps,xlr</extensions>
+	<condition>
+		<parentType>application/vnd.ms-office</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/vnd.ms-works</mimeType>
+	<extensions>wks</extensions>
+	<condition>
+		<byteSequence encoding="hex">ff 00 02 00 04 04 05 54 02 00</byteSequence>
 	</condition>
 </description>
 
