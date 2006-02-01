@@ -16,4 +16,7 @@
 	<extractorFactory>
 		<name>org.semanticdesktop.aperture.extractor.rtf.RtfExtractorFactory</name>
 	</extractorFactory>
+	<extractorFactory>
+		<name>org.semanticdesktop.aperture.extractor.word.WordExtractorFactory</name>
+	</extractorFactory>
 </extractorFactories>
