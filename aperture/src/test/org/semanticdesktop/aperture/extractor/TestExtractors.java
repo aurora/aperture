@@ -16,6 +16,7 @@ import org.semanticdesktop.aperture.extractor.opendocument.OpenDocumentExtractor
 import org.semanticdesktop.aperture.extractor.pdf.PdfExtractorTest;
 import org.semanticdesktop.aperture.extractor.plaintext.PlainTextExtractorTest;
 import org.semanticdesktop.aperture.extractor.rtf.RtfExtractorTest;
+import org.semanticdesktop.aperture.extractor.word.WordExtractorTest;
 
 /**
  * Tests all Extractor implelementations and related classes.
@@ -35,6 +36,7 @@ public class TestExtractors extends TestSuite {
         addTest(new TestSuite(PdfExtractorTest.class));
         addTest(new TestSuite(PlainTextExtractorTest.class));
         addTest(new TestSuite(RtfExtractorTest.class));
+        addTest(new TestSuite(WordExtractorTest.class));
         
         // test the registries holding the ExtractorFactories
         addTest(new TestSuite(TestExtractorRegistryImpl.class));
