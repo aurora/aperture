@@ -50,7 +50,7 @@ import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.datasource.Vocabulary;
+import org.semanticdesktop.aperture.datasource.SourceVocabulary;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.HttpClientUtil;
@@ -225,10 +225,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
         // determine the connection type
         String securityType = ConfigurationUtil.getConnectionSecurity(config);
-        if (securityType == null || Vocabulary.PLAIN.toString().equals(securityType)) {
+        if (securityType == null || SourceVocabulary.PLAIN.toString().equals(securityType)) {
             connectionType = "imap";
         }
-        else if (Vocabulary.SSL.toString().equals(securityType)) {
+        else if (SourceVocabulary.SSL.toString().equals(securityType)) {
             connectionType = "imaps";
         }
         else {
@@ -568,7 +568,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
     private URI getParent(DataObject object) {
         // query for all parents
         Collection parentIDs = object.getMetadata().getAll(
-                org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF);
+                org.semanticdesktop.aperture.accessor.AccesVocabulary.PART_OF);
 
         // determine all unique parent URIs (the same partOf statement may be returned more than once due
         // to the use of context in the underlying model)
@@ -608,7 +608,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
             if (accessData.isKnownId(parentID)) {
                 if (parentID.equals(childID)) {
-                    LOGGER.warning("cyclical " + org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF
+                    LOGGER.warning("cyclical " + org.semanticdesktop.aperture.accessor.AccesVocabulary.PART_OF
                             + " property for " + parentID + ", ignoring");
                 }
                 else {
@@ -629,7 +629,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
         // query for all child URIs
         CloseableIterator statements = metadata.getStatements(null,
-                org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF, object.getID());
+                org.semanticdesktop.aperture.accessor.AccesVocabulary.PART_OF, object.getID());
 
         // queue these URIs
         while (statements.hasNext()) {
@@ -810,11 +810,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         // register the folder's name
         URI folderURI = new URIImpl(url);
         RDFContainer metadata = containerFactory.getRDFContainer(folderURI);
-        metadata.put(org.semanticdesktop.aperture.accessor.Vocabulary.NAME, folder.getName());
+        metadata.put(org.semanticdesktop.aperture.accessor.AccesVocabulary.NAME, folder.getName());
 
         // register the folder's parent
         Folder parent = folder.getParent();
-        URI partOf = org.semanticdesktop.aperture.accessor.Vocabulary.PART_OF;
+        URI partOf = org.semanticdesktop.aperture.accessor.AccesVocabulary.PART_OF;
         if (parent != null) {
             metadata.put(partOf, getURI(parent));
         }

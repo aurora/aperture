@@ -23,7 +23,7 @@ import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
-import org.semanticdesktop.aperture.accessor.Vocabulary;
+import org.semanticdesktop.aperture.accessor.AccesVocabulary;
 import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -223,30 +223,30 @@ public class HttpAccessor implements DataAccessor {
             characterSet = "ISO-8859-1";
         }
 
-        metadata.put(Vocabulary.CHARACTER_SET, characterSet);
+        metadata.put(AccesVocabulary.CHARACTER_SET, characterSet);
         
         if (mimeType != null) {
-            metadata.put(Vocabulary.MIME_TYPE, mimeType);
+            metadata.put(AccesVocabulary.MIME_TYPE, mimeType);
         }
 
         long contentLength = connection.getContentLength();
         if (contentLength >= 0l) {
-            metadata.put(Vocabulary.BYTE_SIZE, contentLength);
+            metadata.put(AccesVocabulary.BYTE_SIZE, contentLength);
         }
         
         long retrieved = connection.getDate();
         if (retrieved != 0L) {
-            metadata.put(Vocabulary.RETRIEVAL_DATE, new Date(retrieved));
+            metadata.put(AccesVocabulary.RETRIEVAL_DATE, new Date(retrieved));
         }
 
         long lastModified = connection.getLastModified();
         if (lastModified != 0L) {
-            metadata.put(Vocabulary.DATE, new Date(lastModified));
+            metadata.put(AccesVocabulary.DATE, new Date(lastModified));
         }
 
         long expires = connection.getExpiration();
         if (expires != 0L) {
-            metadata.put(Vocabulary.EXPIRATION_DATE, new Date(expires));
+            metadata.put(AccesVocabulary.EXPIRATION_DATE, new Date(expires));
         }
 
         return object;

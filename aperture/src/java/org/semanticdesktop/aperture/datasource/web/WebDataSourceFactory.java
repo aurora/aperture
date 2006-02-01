@@ -9,7 +9,7 @@ package org.semanticdesktop.aperture.datasource.web;
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
-import org.semanticdesktop.aperture.datasource.Vocabulary;
+import org.semanticdesktop.aperture.datasource.SourceVocabulary;
 
 /**
  * WebDataSourceFactory returns instances of the WebDataSource class. 
@@ -17,7 +17,7 @@ import org.semanticdesktop.aperture.datasource.Vocabulary;
 public class WebDataSourceFactory implements DataSourceFactory {
 
     public URI getSupportedType() {
-        return Vocabulary.WEB_DATA_SOURCE;
+        return SourceVocabulary.WEB_DATA_SOURCE;
     }
 
     public DataSource newInstance() {

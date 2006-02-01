@@ -21,7 +21,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.accessor.Vocabulary;
+import org.semanticdesktop.aperture.accessor.AccesVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -118,7 +118,7 @@ public class OpenDocumentExtractor implements Extractor {
         // put the extracted full-text in the RDF container
         String contents = contentExtractor.getContents();
         if (contents != null && !contents.equals("")) {
-            result.put(Vocabulary.FULL_TEXT, contents);
+            result.put(AccesVocabulary.FULL_TEXT, contents);
         }
     }
 
@@ -164,34 +164,34 @@ public class OpenDocumentExtractor implements Extractor {
 
             // determine which metadata property we're dealing with
             if ("dc:creator".equals(name)) {
-                addStatement(Vocabulary.CREATOR, metaChild.getFirstChild(), result);
+                addStatement(AccesVocabulary.CREATOR, metaChild.getFirstChild(), result);
             }
             else if ("meta:initial-creator".equals(name)) {
-                addStatement(Vocabulary.CREATOR, metaChild.getFirstChild(), result);
+                addStatement(AccesVocabulary.CREATOR, metaChild.getFirstChild(), result);
             }
             else if ("dc:title".equals(name)) {
-                addStatement(Vocabulary.TITLE, metaChild.getFirstChild(), result);
+                addStatement(AccesVocabulary.TITLE, metaChild.getFirstChild(), result);
             }
             else if ("dc:description".equals(name)) {
-                addStatement(Vocabulary.DESCRIPTION, metaChild.getFirstChild(), result);
+                addStatement(AccesVocabulary.DESCRIPTION, metaChild.getFirstChild(), result);
             }
             else if ("dc:subject".equals(name)) {
-                addStatement(Vocabulary.SUBJECT, metaChild.getFirstChild(), result);
+                addStatement(AccesVocabulary.SUBJECT, metaChild.getFirstChild(), result);
             }
             else if ("dc:date".equals(name)) {
-                addDateStatement(Vocabulary.DATE, metaChild.getFirstChild(), result);
+                addDateStatement(AccesVocabulary.DATE, metaChild.getFirstChild(), result);
             }
             else if ("meta:creation-date".equals(name)) {
-                addDateStatement(Vocabulary.CREATION_DATE, metaChild.getFirstChild(), result);
+                addDateStatement(AccesVocabulary.CREATION_DATE, metaChild.getFirstChild(), result);
             }
             else if ("meta:print-date".equals(name)) {
-                addDateStatement(Vocabulary.PRINT_DATE, metaChild.getFirstChild(), result);
+                addDateStatement(AccesVocabulary.PRINT_DATE, metaChild.getFirstChild(), result);
             }
             else if ("dc:language".equals(name)) {
-                addStatement(Vocabulary.LANGUAGE, metaChild.getFirstChild(), result);
+                addStatement(AccesVocabulary.LANGUAGE, metaChild.getFirstChild(), result);
             }
             else if ("meta:generator".equals(name)) {
-                addStatement(Vocabulary.GENERATOR, metaChild.getFirstChild(), result);
+                addStatement(AccesVocabulary.GENERATOR, metaChild.getFirstChild(), result);
             }
             else if ("meta:keywords".equals(name)) {
                 // handles OpenOffice 1.x keywords
@@ -200,13 +200,13 @@ public class OpenDocumentExtractor implements Extractor {
                 for (int j = 0; j < nrKeywordNodes; j++) {
                     Node keywordNode = keywordNodes.item(j);
                     if ("meta:keyword".equals(keywordNode.getNodeName())) {
-                        addStatement(Vocabulary.KEYWORD, keywordNode.getFirstChild(), result);
+                        addStatement(AccesVocabulary.KEYWORD, keywordNode.getFirstChild(), result);
                     }
                 }
             }
             else if ("meta:keyword".equals(name)) {
                 // handles OpenOffice 2.x, i.e. OpenDocument
-                addStatement(Vocabulary.KEYWORD, metaChild.getFirstChild(), result);
+                addStatement(AccesVocabulary.KEYWORD, metaChild.getFirstChild(), result);
             }
             else if ("meta:document-statistic".equals(name)) {
                 NamedNodeMap attributes = metaChild.getAttributes();
@@ -217,7 +217,7 @@ public class OpenDocumentExtractor implements Extractor {
                         if (pageNodeValue != null) {
                             try {
                                 int pageCount = Integer.parseInt(pageNodeValue);
-                                result.add(Vocabulary.PAGE_COUNT, pageCount);
+                                result.add(AccesVocabulary.PAGE_COUNT, pageCount);
                             }
                             catch (NumberFormatException e) {
                                 // ignore

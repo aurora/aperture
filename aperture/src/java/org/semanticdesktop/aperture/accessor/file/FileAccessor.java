@@ -25,7 +25,7 @@ import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
-import org.semanticdesktop.aperture.accessor.Vocabulary;
+import org.semanticdesktop.aperture.accessor.AccesVocabulary;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
@@ -173,24 +173,24 @@ public class FileAccessor implements DataAccessor {
         // create regular File metadata first
         long lastModified = file.lastModified();
         if (lastModified != 0l) {
-            metadata.put(Vocabulary.DATE, new Date(lastModified));
+            metadata.put(AccesVocabulary.DATE, new Date(lastModified));
         }
 
         String name = file.getName();
         if (name != null) {
-            metadata.put(Vocabulary.NAME, name);
+            metadata.put(AccesVocabulary.NAME, name);
         }
 
         File parent = file.getParentFile();
         if (parent != null) {
-            metadata.put(Vocabulary.PART_OF, toURI(parent));
+            metadata.put(AccesVocabulary.PART_OF, toURI(parent));
         }
 
         // add file-specific metadata
         if (isFile) {
             long length = file.length();
             if (length != 0l) {
-                metadata.put(Vocabulary.BYTE_SIZE, length);
+                metadata.put(AccesVocabulary.BYTE_SIZE, length);
             }
         }
 
@@ -202,7 +202,7 @@ public class FileAccessor implements DataAccessor {
                 for (int i = 0; i < children.length; i++) {
                     File child = children[i];
                     if (child != null) {
-                        metadata.add(new StatementImpl(toURI(child), Vocabulary.PART_OF, id));
+                        metadata.add(new StatementImpl(toURI(child), AccesVocabulary.PART_OF, id));
                     }
                 }
             }

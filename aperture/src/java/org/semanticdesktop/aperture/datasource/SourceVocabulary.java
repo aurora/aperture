@@ -15,7 +15,7 @@ import org.openrdf.model.vocabulary.XMLSchema;
 /**
  * This interface defines a comprehensive list of URIs to be used for modeling DataSource configurations.
  */
-public interface Vocabulary {
+public interface SourceVocabulary {
 
     /* Namespaces */
 

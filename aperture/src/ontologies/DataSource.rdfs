@@ -13,11 +13,6 @@
 	 rdfs:label="DataSource">
 	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
 </rdfs:Class>
-<rdf:Property rdf:about="&source;DataSource_Slot_16"
-	 a:maxCardinality="1"
-	 rdfs:label="DataSource_Slot_16">
-	<rdfs:range rdf:resource="&rdfs;Literal"/>
-</rdf:Property>
 <rdfs:Class rdf:about="&source;FileSystemDataSource"
 	 rdfs:label="FileSystemDataSource">
 	<rdfs:subClassOf rdf:resource="&source;DataSource"/>
@@ -114,5 +109,12 @@
 	 rdfs:label="rootUrl">
 	<rdfs:domain rdf:resource="&source;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&source;type"
+	 a:maxCardinality="1"
+	 rdfs:comment="The type URI of this datasource."
+	 rdfs:label="type">
+	<rdfs:domain rdf:resource="&source;DataSource"/>
+	<rdfs:range rdf:resource="&rdfs;Resource"/>
 </rdf:Property>
 </rdf:RDF>

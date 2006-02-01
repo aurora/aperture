@@ -28,7 +28,7 @@ import org.openrdf.sesame.sailimpl.memory.MemoryStore;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
-import org.semanticdesktop.aperture.accessor.Vocabulary;
+import org.semanticdesktop.aperture.accessor.AccesVocabulary;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
@@ -331,7 +331,7 @@ public class ExampleFileCrawler {
             if (mimeType != null) {
                 // add the mime type to the metadata
                 RDFContainer metadata = object.getMetadata();
-                metadata.put(Vocabulary.MIME_TYPE, mimeType);
+                metadata.put(AccesVocabulary.MIME_TYPE, mimeType);
 
                 // apply an Extractor if available
                 if (extractingContents) {

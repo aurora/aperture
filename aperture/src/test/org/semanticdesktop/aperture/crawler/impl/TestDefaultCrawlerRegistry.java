@@ -7,13 +7,13 @@
 package org.semanticdesktop.aperture.crawler.impl;
 
 import org.semanticdesktop.aperture.ApertureTestBase;
-import org.semanticdesktop.aperture.datasource.Vocabulary;
+import org.semanticdesktop.aperture.datasource.SourceVocabulary;
 
 public class TestDefaultCrawlerRegistry extends ApertureTestBase {
 
     public void testRegistry() {
         DefaultCrawlerRegistry registry = new DefaultCrawlerRegistry();
-        assertEquals(1, registry.get(Vocabulary.FILE_SYSTEM_DATA_SOURCE).size());
+        assertEquals(1, registry.get(SourceVocabulary.FILE_SYSTEM_DATA_SOURCE).size());
     }
 }
 

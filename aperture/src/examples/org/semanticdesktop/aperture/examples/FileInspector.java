@@ -17,7 +17,7 @@ import org.openrdf.model.impl.URIImpl;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.ntriples.NTriplesWriter;
-import org.semanticdesktop.aperture.accessor.Vocabulary;
+import org.semanticdesktop.aperture.accessor.AccesVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
@@ -92,7 +92,7 @@ public class FileInspector {
         }
 
         // add the mime type as an additional statement to the RDF model
-        container.put(Vocabulary.MIME_TYPE, mimeType);
+        container.put(AccesVocabulary.MIME_TYPE, mimeType);
 
         // report the output to System.out
         RDFWriter writer = new NTriplesWriter(System.out);

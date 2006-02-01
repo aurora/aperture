@@ -34,7 +34,7 @@ import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.imap.ImapCrawler;
-import org.semanticdesktop.aperture.datasource.Vocabulary;
+import org.semanticdesktop.aperture.datasource.SourceVocabulary;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.imap.ImapDataSource;
 import org.semanticdesktop.aperture.extractor.Extractor;
@@ -229,7 +229,7 @@ public class ExampleImapCrawler {
         }
 
         if (secureConnection) {
-            ConfigurationUtil.setConnectionSecurity(Vocabulary.SSL.toString(), config);
+            ConfigurationUtil.setConnectionSecurity(SourceVocabulary.SSL.toString(), config);
         }
         
         ImapDataSource dataSource = new ImapDataSource();
@@ -487,9 +487,9 @@ public class ExampleImapCrawler {
             String mimeType = null;
 
             // fetch some constants to make sure the code remains readable
-            final URI mimeTypeProperty = org.semanticdesktop.aperture.accessor.Vocabulary.MIME_TYPE;
-            final URI contentMimeTypeProperty = org.semanticdesktop.aperture.accessor.Vocabulary.CONTENT_MIME_TYPE;
-            final URI charsetProperty = org.semanticdesktop.aperture.accessor.Vocabulary.CHARACTER_SET;
+            final URI mimeTypeProperty = org.semanticdesktop.aperture.accessor.AccesVocabulary.MIME_TYPE;
+            final URI contentMimeTypeProperty = org.semanticdesktop.aperture.accessor.AccesVocabulary.CONTENT_MIME_TYPE;
+            final URI charsetProperty = org.semanticdesktop.aperture.accessor.AccesVocabulary.CHARACTER_SET;
 
             // Create a buffer around the object's stream large enough to be able to reset the stream
             // after MIME type identification has taken place. Add some extra to the minimum array

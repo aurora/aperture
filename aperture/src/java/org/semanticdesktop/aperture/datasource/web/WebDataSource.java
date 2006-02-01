@@ -7,7 +7,7 @@
 package org.semanticdesktop.aperture.datasource.web;
 
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.datasource.Vocabulary;
+import org.semanticdesktop.aperture.datasource.SourceVocabulary;
 import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
 
 /**
@@ -16,6 +16,6 @@ import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
 public class WebDataSource extends DataSourceBase {
 
     public URI getType() {
-        return Vocabulary.WEB_DATA_SOURCE;
+        return SourceVocabulary.WEB_DATA_SOURCE;
     }
 }

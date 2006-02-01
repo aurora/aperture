@@ -12,14 +12,14 @@ import java.util.Set;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.datasource.Vocabulary;
+import org.semanticdesktop.aperture.datasource.SourceVocabulary;
 
 /**
  * Provides instances of FileSystemCrawler.
  */
 public class FileSystemCrawlerFactory implements CrawlerFactory {
 
-    private static final Set SUPPORTED_TYPES = Collections.singleton(Vocabulary.FILE_SYSTEM_DATA_SOURCE);
+    private static final Set SUPPORTED_TYPES = Collections.singleton(SourceVocabulary.FILE_SYSTEM_DATA_SOURCE);
 
     public Set getSupportedTypes() {
         return SUPPORTED_TYPES;

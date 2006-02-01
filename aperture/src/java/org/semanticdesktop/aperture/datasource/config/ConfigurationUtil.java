@@ -22,7 +22,7 @@ import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.Repository;
 import org.openrdf.sesame.sail.SailUpdateException;
 import org.openrdf.util.iterator.CloseableIterator;
-import org.semanticdesktop.aperture.datasource.Vocabulary;
+import org.semanticdesktop.aperture.datasource.SourceVocabulary;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
@@ -44,59 +44,59 @@ public class ConfigurationUtil {
     }
 
     public static void setRootUrl(String url, RDFContainer configuration) {
-        configuration.put(Vocabulary.ROOT_URL, url);
+        configuration.put(SourceVocabulary.ROOT_URL, url);
     }
 
     public static String getRootUrl(RDFContainer configuration) {
-        return configuration.getString(Vocabulary.ROOT_URL);
+        return configuration.getString(SourceVocabulary.ROOT_URL);
     }
 
     public static void setPassword(String password, RDFContainer configuration) {
-        configuration.put(Vocabulary.PASSWORD, password);
+        configuration.put(SourceVocabulary.PASSWORD, password);
     }
 
     public static String getPassword(RDFContainer configuration) {
-        return configuration.getString(Vocabulary.PASSWORD);
+        return configuration.getString(SourceVocabulary.PASSWORD);
     }
 
     public static void setMaximumDepth(int maximumDepth, RDFContainer configuration) {
-        configuration.put(Vocabulary.MAXIMUM_DEPTH, maximumDepth);
+        configuration.put(SourceVocabulary.MAXIMUM_DEPTH, maximumDepth);
     }
 
     public static Integer getMaximumDepth(RDFContainer configuration) {
-        return configuration.getInteger(Vocabulary.MAXIMUM_DEPTH);
+        return configuration.getInteger(SourceVocabulary.MAXIMUM_DEPTH);
     }
 
     public static void setMaximumByteSize(int maximumSize, RDFContainer configuration) {
-        configuration.put(Vocabulary.MAXIMUM_BYTE_SIZE, maximumSize);
+        configuration.put(SourceVocabulary.MAXIMUM_BYTE_SIZE, maximumSize);
     }
 
     public static Integer getMaximumByteSize(RDFContainer configuration) {
-        return configuration.getInteger(Vocabulary.MAXIMUM_BYTE_SIZE);
+        return configuration.getInteger(SourceVocabulary.MAXIMUM_BYTE_SIZE);
     }
 
     public static void setIncludeHiddenResources(boolean value, RDFContainer configuration) {
-        configuration.put(Vocabulary.INCLUDE_HIDDEN_RESOURCES, value);
+        configuration.put(SourceVocabulary.INCLUDE_HIDDEN_RESOURCES, value);
     }
 
     public static Boolean getIncludeHiddenResourceS(RDFContainer configuration) {
-        return configuration.getBoolean(Vocabulary.INCLUDE_HIDDEN_RESOURCES);
+        return configuration.getBoolean(SourceVocabulary.INCLUDE_HIDDEN_RESOURCES);
     }
 
     public static void setIncludeEmbeddedResources(boolean value, RDFContainer configuration) {
-        configuration.put(Vocabulary.INCLUDE_EMBEDDED_RESOURCES, value);
+        configuration.put(SourceVocabulary.INCLUDE_EMBEDDED_RESOURCES, value);
     }
 
     public static Boolean getIncludeEmbeddedResourceS(RDFContainer configuration) {
-        return configuration.getBoolean(Vocabulary.INCLUDE_EMBEDDED_RESOURCES);
+        return configuration.getBoolean(SourceVocabulary.INCLUDE_EMBEDDED_RESOURCES);
     }
 
     public static void setConnectionSecurity(String securityType, RDFContainer configuration) {
-        configuration.put(Vocabulary.CONNECTION_SECURITY, securityType);
+        configuration.put(SourceVocabulary.CONNECTION_SECURITY, securityType);
     }
 
     public static String getConnectionSecurity(RDFContainer configuration) {
-        return configuration.getString(Vocabulary.CONNECTION_SECURITY);
+        return configuration.getString(SourceVocabulary.CONNECTION_SECURITY);
     }
 
     /**
@@ -123,9 +123,9 @@ public class ConfigurationUtil {
 
             // add statements reflecting the specified DomainBoundaries
             if (boundaries != null) {
-                addPatternStatements(id, boundaries.getIncludePatterns(), Vocabulary.INCLUDE_PATTERN,
+                addPatternStatements(id, boundaries.getIncludePatterns(), SourceVocabulary.INCLUDE_PATTERN,
                         context, repository);
-                addPatternStatements(id, boundaries.getExcludePatterns(), Vocabulary.EXCLUDE_PATTERN,
+                addPatternStatements(id, boundaries.getExcludePatterns(), SourceVocabulary.EXCLUDE_PATTERN,
                         context, repository);
             }
         }
@@ -169,8 +169,8 @@ public class ConfigurationUtil {
         Repository repository = (Repository) configuration.getModel();
 
         // fetch all UrlPatterns
-        List includePatterns = getPatterns(id, Vocabulary.INCLUDE_PATTERN, repository);
-        List excludePatterns = getPatterns(id, Vocabulary.EXCLUDE_PATTERN, repository);
+        List includePatterns = getPatterns(id, SourceVocabulary.INCLUDE_PATTERN, repository);
+        List excludePatterns = getPatterns(id, SourceVocabulary.EXCLUDE_PATTERN, repository);
 
         // return the UrlPatterns as a DomainBoundaries instance
         return new DomainBoundaries(includePatterns, excludePatterns);
@@ -202,12 +202,12 @@ public class ConfigurationUtil {
                 String patternString = ((Literal) patternValue).getLabel();
 
                 // create the appropriate UrlPattern
-                if (Vocabulary.REGEXP_PATTERN.equals(typeValue)) {
+                if (SourceVocabulary.REGEXP_PATTERN.equals(typeValue)) {
                     result.add(new RegExpPattern(patternString));
                 }
-                else if (Vocabulary.SUBSTRING_PATTERN.equals(typeValue)) {
+                else if (SourceVocabulary.SUBSTRING_PATTERN.equals(typeValue)) {
                     // also fetch the condition statement
-                    Value conditionValue = getSingleValue(patternResource, Vocabulary.CONDITION, repository);
+                    Value conditionValue = getSingleValue(patternResource, SourceVocabulary.CONDITION, repository);
                     SubstringCondition condition = resolveCondition(conditionValue);
                     if (condition != null) {
                         result.add(new SubstringPattern(patternString, condition));
@@ -239,16 +239,16 @@ public class ConfigurationUtil {
     }
 
     public static SubstringCondition resolveCondition(Value value) {
-        if (Vocabulary.STARTS_WITH.equals(value)) {
+        if (SourceVocabulary.STARTS_WITH.equals(value)) {
             return new SubstringCondition.StartsWith();
         }
-        else if (Vocabulary.ENDS_WITH.equals(value)) {
+        else if (SourceVocabulary.ENDS_WITH.equals(value)) {
             return new SubstringCondition.EndsWith();
         }
-        else if (Vocabulary.CONTAINS.equals(value)) {
+        else if (SourceVocabulary.CONTAINS.equals(value)) {
             return new SubstringCondition.Contains();
         }
-        else if (Vocabulary.DOES_NOT_CONTAIN.equals(value)) {
+        else if (SourceVocabulary.DOES_NOT_CONTAIN.equals(value)) {
             return new SubstringCondition.DoesNotContain();
         }
         else {

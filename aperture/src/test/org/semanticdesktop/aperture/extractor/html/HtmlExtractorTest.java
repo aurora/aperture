@@ -8,7 +8,7 @@ package org.semanticdesktop.aperture.extractor.html;
 
 import java.io.IOException;
 
-import org.semanticdesktop.aperture.accessor.Vocabulary;
+import org.semanticdesktop.aperture.accessor.AccesVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
@@ -31,11 +31,11 @@ public class HtmlExtractorTest extends ExtractorTestBase {
         ExtractorFactory factory = new HtmlExtractorFactory();
         Extractor extractor = factory.get();
         SesameRDFContainer container = extract(resourceName, extractor);
-        checkStatement(Vocabulary.FULL_TEXT, "text", container);
-        checkStatement(Vocabulary.TITLE, "document", container);
-        checkStatement(Vocabulary.CREATOR, "Chris", container);
-        checkStatement(Vocabulary.KEYWORD, "test", container);
-        checkStatement(Vocabulary.KEYWORD, "rdf", container);
-        checkStatement(Vocabulary.DESCRIPTION, "testing", container);
+        checkStatement(AccesVocabulary.FULL_TEXT, "text", container);
+        checkStatement(AccesVocabulary.TITLE, "document", container);
+        checkStatement(AccesVocabulary.CREATOR, "Chris", container);
+        checkStatement(AccesVocabulary.KEYWORD, "test", container);
+        checkStatement(AccesVocabulary.KEYWORD, "rdf", container);
+        checkStatement(AccesVocabulary.DESCRIPTION, "testing", container);
     }
 }
