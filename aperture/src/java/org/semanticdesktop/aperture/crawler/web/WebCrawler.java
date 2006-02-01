@@ -25,7 +25,6 @@ import org.openrdf.sesame.repository.Repository;
 import org.openrdf.sesame.sail.SailUpdateException;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
-import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -58,11 +57,6 @@ import org.semanticdesktop.aperture.util.UrlUtil;
 public class WebCrawler extends CrawlerBase {
 
     private static final Logger LOGGER = Logger.getLogger(WebCrawler.class.getName());
-
-    /**
-     * The DataAccessorRegistry used to fetch DataAccessorFactories for specific URL schemes.
-     */
-    private DataAccessorRegistry accessorRegistry;
 
     /**
      * The MimeTypeIdentifier used to determine the mime type of a DataObject.
@@ -104,14 +98,6 @@ public class WebCrawler extends CrawlerBase {
      * The set of URLs (Strings) that have been crawled so far during this scan.
      */
     private HashSet crawledUrls;
-
-    public void setDataAccessorRegistry(DataAccessorRegistry accessorRegistry) {
-        this.accessorRegistry = accessorRegistry;
-    }
-
-    public DataAccessorRegistry getDataAccessorRegistry() {
-        return accessorRegistry;
-    }
 
     public void setMimeTypeIdentifier(MimeTypeIdentifier mimeTypeIdentifier) {
         this.mimeTypeIdentifier = mimeTypeIdentifier;

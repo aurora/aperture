@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
-import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
@@ -40,8 +39,6 @@ public class FileSystemCrawler extends CrawlerBase {
 
     private static final Logger LOGGER = Logger.getLogger(FileSystemCrawler.class.getName());
 
-    private DataAccessorRegistry accessorRegistry;
-
     private boolean ignoreHiddenFiles;
 
     private int maximumSize;
@@ -49,10 +46,6 @@ public class FileSystemCrawler extends CrawlerBase {
     private DataAccessorFactory accessorFactory;
 
     private HashMap params;
-
-    public void setDataAccessorRegistry(DataAccessorRegistry registry) {
-        accessorRegistry = registry;
-    }
 
     protected ExitCode crawlObjects() {
         // fetch the source and its configuration

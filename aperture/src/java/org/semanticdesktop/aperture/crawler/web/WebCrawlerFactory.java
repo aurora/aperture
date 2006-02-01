@@ -9,7 +9,6 @@ package org.semanticdesktop.aperture.crawler.web;
 import java.util.Collections;
 import java.util.Set;
 
-import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSource;
@@ -21,19 +20,9 @@ public class WebCrawlerFactory implements CrawlerFactory {
 
     private static final Set SUPPORTED_TYPES = Collections.singleton(Vocabulary.WEB_DATA_SOURCE);
 
-    private DataAccessorRegistry dataAccessorRegistry;
-
     private MimeTypeIdentifier mimeTypeIdentifier;
 
     private LinkExtractorRegistry linkExtractorRegistry;
-
-    public DataAccessorRegistry getDataAccessorRegistry() {
-        return dataAccessorRegistry;
-    }
-
-    public void setDataAccessorRegistry(DataAccessorRegistry dataAccessorRegistry) {
-        this.dataAccessorRegistry = dataAccessorRegistry;
-    }
 
     public LinkExtractorRegistry getLinkExtractorRegistry() {
         return linkExtractorRegistry;
@@ -59,7 +48,6 @@ public class WebCrawlerFactory implements CrawlerFactory {
         WebCrawler crawler = new WebCrawler();
 
         crawler.setDataSource(source);
-        crawler.setDataAccessorRegistry(dataAccessorRegistry);
         crawler.setMimeTypeIdentifier(mimeTypeIdentifier);
         crawler.setLinkExtractorRegistry(linkExtractorRegistry);
 

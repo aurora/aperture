@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.semanticdesktop.aperture.accessor.AccessData;
+import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 import org.semanticdesktop.aperture.crawler.CrawlReport;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
@@ -41,6 +42,11 @@ public abstract class CrawlerBase implements Crawler {
      */
     protected DataSource source;
 
+    /**
+     * The current DataAccessorRegistry.
+     */
+    protected DataAccessorRegistry accessorRegistry;
+    
     /**
      * The current AccessData instance.
      */
@@ -87,6 +93,14 @@ public abstract class CrawlerBase implements Crawler {
         return source;
     }
 
+    public void setDataAccessorRegistry(DataAccessorRegistry accessorRegistry) {
+    	this.accessorRegistry = accessorRegistry;
+    }
+    
+    public DataAccessorRegistry getDataAccessorRegistry() {
+    	return accessorRegistry;
+    }
+    
     public void setAccessData(AccessData accessData) {
         this.accessData = accessData;
     }
