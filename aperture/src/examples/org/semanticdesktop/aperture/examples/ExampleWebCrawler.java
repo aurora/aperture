@@ -228,6 +228,7 @@ public class ExampleWebCrawler {
                         exitWithUsageMessage();
                     }
                     else {
+                    	i++;
                         crawler.setDepth(Integer.parseInt(nextArg));
                     }
                 }
@@ -243,6 +244,7 @@ public class ExampleWebCrawler {
                 }
                 else {
                     try {
+                    	i++;
                         boundaries.addIncludePattern(new RegExpPattern(nextArg));
                     }
                     catch (PatternSyntaxException e) {
@@ -258,6 +260,7 @@ public class ExampleWebCrawler {
                 }
                 else {
                     try {
+                    	i++;
                         boundaries.addExcludePattern(new RegExpPattern(nextArg));
                     }
                     catch (PatternSyntaxException e) {
