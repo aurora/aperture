@@ -13,7 +13,7 @@ import java.nio.charset.Charset;
 
 import org.apache.poi.hdf.extractor.WordDocument;
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.accessor.AccesVocabulary;
+import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -28,7 +28,7 @@ public class WordExtractor implements Extractor {
 			document.writeAllText(writer);
 			String text = writer.toString().trim();
 			if (!text.equals("")) {
-				result.put(AccesVocabulary.FULL_TEXT, text);
+				result.put(AccessVocabulary.FULL_TEXT, text);
 			}
 		}
 		catch (IOException e) {

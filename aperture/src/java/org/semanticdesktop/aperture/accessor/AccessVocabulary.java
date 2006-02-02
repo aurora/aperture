@@ -12,7 +12,7 @@ import org.openrdf.model.impl.URIImpl;
 /**
  * This interface defines a comprehensive list of URIs to be used for modeling DataObject metadata.
  */
-public interface AccesVocabulary {
+public interface AccessVocabulary {
 
     public static final String NS = "http://aperture.semanticdesktop.org/ontology/data/";
 

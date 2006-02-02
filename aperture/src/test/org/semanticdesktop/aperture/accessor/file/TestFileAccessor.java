@@ -20,7 +20,7 @@ import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FolderDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
-import org.semanticdesktop.aperture.accessor.AccesVocabulary;
+import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.accessor.base.FileAccessData;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
@@ -65,10 +65,10 @@ public class TestFileAccessor extends ApertureTestBase {
         assertTrue(dataObject instanceof FileDataObject);
 
         // check its metadata
-        checkStatement(AccesVocabulary.NAME, "file-", (SesameRDFContainer) dataObject.getMetadata());
+        checkStatement(AccessVocabulary.NAME, "file-", (SesameRDFContainer) dataObject.getMetadata());
 
         URI parentURI = new URIImpl(tmpDir.toURI().toString());
-        checkStatement(AccesVocabulary.PART_OF, parentURI, (SesameRDFContainer) dataObject.getMetadata());
+        checkStatement(AccessVocabulary.PART_OF, parentURI, (SesameRDFContainer) dataObject.getMetadata());
         
         dataObject.dispose();
     }
@@ -81,7 +81,7 @@ public class TestFileAccessor extends ApertureTestBase {
         assertTrue(dataObject instanceof FolderDataObject);
 
         // check its metadata
-        checkStatement(AccesVocabulary.NAME, "TestFileAccessor", (SesameRDFContainer) dataObject.getMetadata());
+        checkStatement(AccessVocabulary.NAME, "TestFileAccessor", (SesameRDFContainer) dataObject.getMetadata());
         
         dataObject.dispose();
     }

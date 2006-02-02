@@ -110,11 +110,4 @@
 	<rdfs:domain rdf:resource="&source;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&source;type"
-	 a:maxCardinality="1"
-	 rdfs:comment="The type URI of this datasource."
-	 rdfs:label="type">
-	<rdfs:domain rdf:resource="&source;DataSource"/>
-	<rdfs:range rdf:resource="&rdfs;Resource"/>
-</rdf:Property>
 </rdf:RDF>

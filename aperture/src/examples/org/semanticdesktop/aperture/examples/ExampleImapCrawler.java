@@ -487,9 +487,9 @@ public class ExampleImapCrawler {
             String mimeType = null;
 
             // fetch some constants to make sure the code remains readable
-            final URI mimeTypeProperty = org.semanticdesktop.aperture.accessor.AccesVocabulary.MIME_TYPE;
-            final URI contentMimeTypeProperty = org.semanticdesktop.aperture.accessor.AccesVocabulary.CONTENT_MIME_TYPE;
-            final URI charsetProperty = org.semanticdesktop.aperture.accessor.AccesVocabulary.CHARACTER_SET;
+            final URI mimeTypeProperty = org.semanticdesktop.aperture.accessor.AccessVocabulary.MIME_TYPE;
+            final URI contentMimeTypeProperty = org.semanticdesktop.aperture.accessor.AccessVocabulary.CONTENT_MIME_TYPE;
+            final URI charsetProperty = org.semanticdesktop.aperture.accessor.AccessVocabulary.CHARACTER_SET;
 
             // Create a buffer around the object's stream large enough to be able to reset the stream
             // after MIME type identification has taken place. Add some extra to the minimum array

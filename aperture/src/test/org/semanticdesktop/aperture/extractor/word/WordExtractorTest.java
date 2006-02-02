@@ -13,7 +13,7 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.Repository;
 import org.openrdf.util.iterator.CloseableIterator;
-import org.semanticdesktop.aperture.accessor.AccesVocabulary;
+import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
@@ -30,11 +30,11 @@ public class WordExtractorTest extends ExtractorTestBase {
         
         // fetch the full-text property
         String uriString = container.getDescribedUri().toString();
-        CloseableIterator statements = repository.getStatements(valueFactory.createURI(uriString), AccesVocabulary.FULL_TEXT, null);
+        CloseableIterator statements = repository.getStatements(valueFactory.createURI(uriString), AccessVocabulary.FULL_TEXT, null);
 
         // check predicate
         RStatement statement = (RStatement) statements.next();
-        assertTrue(statement.getPredicate().equals(AccesVocabulary.FULL_TEXT));
+        assertTrue(statement.getPredicate().equals(AccessVocabulary.FULL_TEXT));
         
         // check number of statements
         assertFalse(statements.hasNext());

@@ -30,7 +30,7 @@ import org.openrdf.sesame.sailimpl.memory.MemoryStore;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
-import org.semanticdesktop.aperture.accessor.AccesVocabulary;
+import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
@@ -456,7 +456,7 @@ public class ExampleWebCrawler {
 
         private void process(FileDataObject object) throws IOException, ExtractorException {
             URI id = object.getID();
-            String mimeType = object.getMetadata().getString(AccesVocabulary.MIME_TYPE);
+            String mimeType = object.getMetadata().getString(AccessVocabulary.MIME_TYPE);
             if (mimeType != null) {
                 if (extractingContents) {
                     Set extractors = extractorRegistry.get(mimeType);

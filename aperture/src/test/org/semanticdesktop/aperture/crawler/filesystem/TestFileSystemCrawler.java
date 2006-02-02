@@ -22,7 +22,7 @@ import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.FolderDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
-import org.semanticdesktop.aperture.accessor.AccesVocabulary;
+import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.accessor.file.FileAccessorFactory;
 import org.semanticdesktop.aperture.accessor.impl.DataAccessorRegistryImpl;
 import org.semanticdesktop.aperture.crawler.Crawler;
@@ -116,15 +116,15 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
         Repository repository = crawlerHandler.getRepository();
 
-        checkStatement(toURI(tmpFile1), AccesVocabulary.NAME, new LiteralImpl(tmpFile1.getName()), repository);
-        checkStatement(toURI(tmpFile2), AccesVocabulary.NAME, new LiteralImpl(tmpFile2.getName()), repository);
-        checkStatement(toURI(subDir), AccesVocabulary.NAME, new LiteralImpl(subDir.getName()), repository);
+        checkStatement(toURI(tmpFile1), AccessVocabulary.NAME, new LiteralImpl(tmpFile1.getName()), repository);
+        checkStatement(toURI(tmpFile2), AccessVocabulary.NAME, new LiteralImpl(tmpFile2.getName()), repository);
+        checkStatement(toURI(subDir), AccessVocabulary.NAME, new LiteralImpl(subDir.getName()), repository);
 
         // This should not be found because of maximum depth restrictions: this file should not be
         // reached. We deliberately check for a specific property rather than doing getStatements(URI,
         // null, null) as the URI of the skipped file will still be part of the metadata of the
         // containing Folder.
-        CloseableIterator stms = repository.getStatements(toURI(tmpFile3), AccesVocabulary.NAME, null);
+        CloseableIterator stms = repository.getStatements(toURI(tmpFile3), AccessVocabulary.NAME, null);
         assertFalse(stms.hasNext());
         stms.close();
     }

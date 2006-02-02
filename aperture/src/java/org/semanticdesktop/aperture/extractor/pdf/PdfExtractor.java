@@ -21,7 +21,7 @@ import org.pdfbox.pdfparser.PDFParser;
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.pdmodel.PDDocumentInformation;
 import org.pdfbox.util.PDFTextStripper;
-import org.semanticdesktop.aperture.accessor.AccesVocabulary;
+import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -90,7 +90,7 @@ public class PdfExtractor implements Extractor {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
             if (text != null) {
-                result.put(AccesVocabulary.FULL_TEXT, text);
+                result.put(AccessVocabulary.FULL_TEXT, text);
             }
         }
         catch (IOException e) {
@@ -105,49 +105,49 @@ public class PdfExtractor implements Extractor {
         PDDocumentInformation metadata = document.getDocumentInformation();
 
         try {
-            putStringMetadata(AccesVocabulary.CREATOR, metadata.getAuthor(), result);
+            putStringMetadata(AccessVocabulary.CREATOR, metadata.getAuthor(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting author", e);
         }
 
         try {
-            putStringMetadata(AccesVocabulary.TITLE, metadata.getTitle(), result);
+            putStringMetadata(AccessVocabulary.TITLE, metadata.getTitle(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting title", e);
         }
 
         try {
-            putStringMetadata(AccesVocabulary.SUBJECT, metadata.getSubject(), result);
+            putStringMetadata(AccessVocabulary.SUBJECT, metadata.getSubject(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting subject", e);
         }
 
         try {
-            addStringMetadata(AccesVocabulary.GENERATOR, metadata.getCreator(), result);
+            addStringMetadata(AccessVocabulary.GENERATOR, metadata.getCreator(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting creator", e);
         }
 
         try {
-            addStringMetadata(AccesVocabulary.GENERATOR, metadata.getProducer(), result);
+            addStringMetadata(AccessVocabulary.GENERATOR, metadata.getProducer(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting producer", e);
         }
 
         try {
-            putCalendarMetadata(AccesVocabulary.CREATION_DATE, metadata.getCreationDate(), result);
+            putCalendarMetadata(AccessVocabulary.CREATION_DATE, metadata.getCreationDate(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting creation date", e);
         }
 
         try {
-            putCalendarMetadata(AccesVocabulary.DATE, metadata.getModificationDate(), result);
+            putCalendarMetadata(AccessVocabulary.DATE, metadata.getModificationDate(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting modification date", e);
@@ -156,7 +156,7 @@ public class PdfExtractor implements Extractor {
         try {
             int nrPages = document.getNumberOfPages();
             if (nrPages >= 0) {
-                result.put(AccesVocabulary.PAGE_COUNT, nrPages);
+                result.put(AccessVocabulary.PAGE_COUNT, nrPages);
             }
         }
         catch (Exception e) {
@@ -170,7 +170,7 @@ public class PdfExtractor implements Extractor {
                 while (tokenizer.hasMoreTokens()) {
                     String keyword = tokenizer.nextToken();
                     if (keyword != null) {
-                        result.add(AccesVocabulary.KEYWORD, keyword);
+                        result.add(AccessVocabulary.KEYWORD, keyword);
                     }
                 }
             }

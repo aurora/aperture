@@ -15,7 +15,7 @@ import org.openrdf.model.Value;
 import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.Repository;
 import org.openrdf.util.iterator.CloseableIterator;
-import org.semanticdesktop.aperture.accessor.AccesVocabulary;
+import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 
 public class MetadataModel {
 
@@ -47,7 +47,7 @@ public class MetadataModel {
         }
         else {
             StringBuffer buffer = new StringBuffer(10000);
-            CloseableIterator statements = repository.getStatements(null, AccesVocabulary.FULL_TEXT, null);
+            CloseableIterator statements = repository.getStatements(null, AccessVocabulary.FULL_TEXT, null);
             while (statements.hasNext()) {
                 RStatement statement = (RStatement) statements.next();
                 Value value = statement.getObject();

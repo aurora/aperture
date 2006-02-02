@@ -29,7 +29,7 @@ import org.htmlparser.util.ParserFeedback;
 import org.htmlparser.util.Translate;
 import org.htmlparser.visitors.NodeVisitor;
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.accessor.AccesVocabulary;
+import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -270,26 +270,26 @@ public class HtmlExtractor implements Extractor {
 
         public void finishedParsing() {
             // store extracted text
-            container.put(AccesVocabulary.FULL_TEXT, textBuffer.toString());
+            container.put(AccessVocabulary.FULL_TEXT, textBuffer.toString());
 
             // store keywords
             Iterator keywords = keywordBuffer.iterator();
             while (keywords.hasNext()) {
                 String keyword = (String) keywords.next();
                 if (keyword != null) {
-                    container.add(AccesVocabulary.KEYWORD, keyword);
+                    container.add(AccessVocabulary.KEYWORD, keyword);
                 }
             }
 
             // store other metadata
             if (title != null) {
-                container.put(AccesVocabulary.TITLE, title);
+                container.put(AccessVocabulary.TITLE, title);
             }
             if (author != null) {
-                container.put(AccesVocabulary.CREATOR, author);
+                container.put(AccessVocabulary.CREATOR, author);
             }
             if (description != null) {
-                container.put(AccesVocabulary.DESCRIPTION, description);
+                container.put(AccessVocabulary.DESCRIPTION, description);
             }
 
             // cleanup

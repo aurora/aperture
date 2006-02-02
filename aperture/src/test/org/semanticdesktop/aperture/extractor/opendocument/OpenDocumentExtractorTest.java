@@ -8,7 +8,7 @@ package org.semanticdesktop.aperture.extractor.opendocument;
 
 import java.io.IOException;
 
-import org.semanticdesktop.aperture.accessor.AccesVocabulary;
+import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
@@ -46,7 +46,7 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
         for (int i = 0; i < RESOURCES.length; i++) {
             // check of any document text is extracted
             SesameRDFContainer container = getStatements(RESOURCES[i]);
-            checkStatement(AccesVocabulary.FULL_TEXT, "This", container);
+            checkStatement(AccessVocabulary.FULL_TEXT, "This", container);
         }
     }
     
@@ -66,17 +66,17 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
         SesameRDFContainer container = getStatements(resourceName);
 
         // check for all properties that we're sure of exist in this example document
-        checkStatement(AccesVocabulary.TITLE, "Example", container);
-        checkStatement(AccesVocabulary.SUBJECT, "Testing", container);
-        checkStatement(AccesVocabulary.KEYWORD, "rdf", container);
-        checkStatement(AccesVocabulary.KEYWORD, "test", container);
-        checkStatement(AccesVocabulary.DESCRIPTION, "comments", container);
-        checkStatement(AccesVocabulary.CREATOR, "Christiaan Fluit", container);
-        checkStatement(AccesVocabulary.DATE, "2005", container);
-        checkStatement(AccesVocabulary.CREATION_DATE, "2005", container);
-        checkStatement(AccesVocabulary.PRINT_DATE, "2005", container);
-        checkStatement(AccesVocabulary.LANGUAGE, "en-US", container);
-        checkStatement(AccesVocabulary.PAGE_COUNT, "1", container);
-        checkStatement(AccesVocabulary.GENERATOR, "OpenOffice", container);
+        checkStatement(AccessVocabulary.TITLE, "Example", container);
+        checkStatement(AccessVocabulary.SUBJECT, "Testing", container);
+        checkStatement(AccessVocabulary.KEYWORD, "rdf", container);
+        checkStatement(AccessVocabulary.KEYWORD, "test", container);
+        checkStatement(AccessVocabulary.DESCRIPTION, "comments", container);
+        checkStatement(AccessVocabulary.CREATOR, "Christiaan Fluit", container);
+        checkStatement(AccessVocabulary.DATE, "2005", container);
+        checkStatement(AccessVocabulary.CREATION_DATE, "2005", container);
+        checkStatement(AccessVocabulary.PRINT_DATE, "2005", container);
+        checkStatement(AccessVocabulary.LANGUAGE, "en-US", container);
+        checkStatement(AccessVocabulary.PAGE_COUNT, "1", container);
+        checkStatement(AccessVocabulary.GENERATOR, "OpenOffice", container);
     }
 }
