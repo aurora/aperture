@@ -231,7 +231,7 @@ public class ExampleFileCrawler {
             try {
                 Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
                 RDFWriter rdfWriter = Rio.createWriter(RDFFormat.TRIX, writer);
-                repository.extractStatements(rdfWriter);
+                repository.export(rdfWriter);
                 writer.close();
 
                 System.out.println("Crawled " + nrObjects + " files (exit code: " + exitCode + ")");

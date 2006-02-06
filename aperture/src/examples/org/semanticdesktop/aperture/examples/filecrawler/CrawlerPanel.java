@@ -351,7 +351,7 @@ public class CrawlerPanel extends JPanel {
                 File repositoryFile = new File(text);
                 Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
                 RDFWriter rdfWriter = Rio.createWriter(RDFFormat.TRIX, writer);
-                repository.extractStatements(rdfWriter);
+                repository.export(rdfWriter);
                 writer.close();
             }
             catch (Exception e) {

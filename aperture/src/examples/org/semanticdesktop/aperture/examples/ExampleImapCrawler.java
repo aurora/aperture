@@ -389,7 +389,7 @@ public class ExampleImapCrawler {
             try {
                 Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
                 RDFWriter rdfWriter = Rio.createWriter(RDFFormat.TRIX, writer);
-                repository.extractStatements(rdfWriter);
+                repository.export(rdfWriter);
                 writer.close();
                 System.out.println("Saved RDF model to " + repositoryFile);
             }

@@ -97,7 +97,7 @@ public class FileInspector {
         // report the output to System.out
         RDFWriter writer = new NTriplesWriter(System.out);
         try {
-            container.getRepository().extractStatements(writer);
+            container.getRepository().export(writer);
         }
         catch (RDFHandlerException e) {
             // signals an internal error

@@ -132,7 +132,7 @@ public class StatementsPanel extends JPanel {
                 RDFHandler handler = new LiteralClipper(writer);
 
                 // export the statements
-                repository.extractStatements(handler);
+                repository.export(handler);
                 text = buffer.toString();
             }
             catch (RDFHandlerException e) {
