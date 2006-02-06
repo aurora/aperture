@@ -8,11 +8,6 @@ package org.semanticdesktop.aperture.extractor.word;
 
 import java.io.IOException;
 
-import org.openrdf.model.Literal;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.sesame.repository.RStatement;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.util.iterator.CloseableIterator;
 import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
@@ -22,36 +17,20 @@ import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 
 public class WordExtractorTest extends ExtractorTestBase {
 
-    public void testRegularExtraction() throws ExtractorException, IOException {
-        // apply the extractor on a text file
-        SesameRDFContainer container = getStatements(DOCS_PATH + "microsoft-word-2000.doc");
-        Repository repository = container.getRepository();
-        ValueFactory valueFactory = repository.getSail().getValueFactory();
-        
-        // fetch the full-text property
-        String uriString = container.getDescribedUri().toString();
-        CloseableIterator statements = repository.getStatements(valueFactory.createURI(uriString), AccessVocabulary.FULL_TEXT, null);
-
-        // check predicate
-        RStatement statement = (RStatement) statements.next();
-        assertTrue(statement.getPredicate().equals(AccessVocabulary.FULL_TEXT));
-        
-        // check number of statements
-        assertFalse(statements.hasNext());
-        
-        // check value
-        Literal value = (Literal) statement.getObject();
-        String text = value.getLabel();
-        assertTrue((text.indexOf("Microsoft") != -1));
-        
-        statements.close();
-    }
-
-    private SesameRDFContainer getStatements(String resourceName) throws ExtractorException, IOException {
-        // apply the extractor on a text file containing a null character
+    public void testExtraction() throws ExtractorException, IOException {
+        // apply the extractor on an example file
         ExtractorFactory factory = new WordExtractorFactory();
         Extractor extractor = factory.get();
-        SesameRDFContainer container = extract(resourceName, extractor);
-        return container;
-    }
+        SesameRDFContainer container = extract(DOCS_PATH + "microsoft-word-2000.doc", extractor);
+
+        // check the extraction results
+        checkStatement(AccessVocabulary.FULL_TEXT, "Microsoft", container);
+        checkStatement(AccessVocabulary.TITLE, "Word", container);
+        checkStatement(AccessVocabulary.SUBJECT, "document", container);
+        checkStatement(AccessVocabulary.DESCRIPTION, "comments", container);
+        checkStatement(AccessVocabulary.GENERATOR, "Word", container);
+        checkStatement(AccessVocabulary.CREATOR, "Fluit", container);
+        checkStatement(AccessVocabulary.KEYWORD, "test", container);
+        checkStatement(AccessVocabulary.KEYWORD, "rdf", container);
+    }        
 }
