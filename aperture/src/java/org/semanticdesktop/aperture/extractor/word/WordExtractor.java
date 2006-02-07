@@ -53,7 +53,7 @@ public class WordExtractor implements Extractor {
 			throws ExtractorException {
 		// mark the stream with a sufficiently large buffer so that, when POI chokes on a document, there is a
 		// good chance we can reset to the beginning of the buffer and apply a StringExtractor
-		int bufferSize = getBufferSize();
+		int bufferSize = PoiUtil.getBufferSize("aperture.wordExtractor.bufferSize", 4 * 1024 * 1024);
 		if (!stream.markSupported()) {
 			stream = new BufferedInputStream(stream, bufferSize);
 		}
@@ -81,26 +81,6 @@ public class WordExtractor implements Extractor {
 		}
 	}
 
-	private int getBufferSize() {
-		int size = -1;
-
-		String property = System.getProperty("aperture.wordExtractor.bufferSize");
-		if (property != null && !property.equals("")) {
-			try {
-				size = Integer.parseInt(property);
-			}
-			catch (NumberFormatException e) {
-				LOGGER.log(Level.WARNING, "invalid buffer size: " + property);
-			}
-		}
-
-		if (size < 0) {
-			size = 4 * 1024 * 1024;
-		}
-
-		return size;
-	}
-	
 	private void applyPoi(InputStream stream, RDFContainer result) throws IOException {
 		POIFSFileSystem poiFileSystem = new POIFSFileSystem(stream);
 		HWPFDocument doc = new HWPFDocument(poiFileSystem);

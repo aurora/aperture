@@ -8,6 +8,8 @@ package org.semanticdesktop.aperture.extractor.util;
 
 import java.util.Date;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.poi.hpsf.PropertySetFactory;
 import org.apache.poi.hpsf.SummaryInformation;
@@ -21,6 +23,39 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
  * Features Apache POI-specific utility methods for text and metadata extraction purposes.
  */
 public class PoiUtil {
+
+	private static final Logger LOGGER = Logger.getLogger(PoiUtil.class.getName());
+
+	/**
+	 * Returns the buffer size to use when buffering the contents of a document.
+	 * 
+	 * @param systemProperty The system property that contains the buffer size.
+	 * @param defaultSize The default buffer size, in case the system property is not set or does not contain
+	 *            a valid value.
+	 * @return The specified buffer size to use, or the default size when the indicated system property is not
+	 *         set or has an illegal value.
+	 */
+	public static int getBufferSize(String systemProperty, int defaultSize) {
+		int result = -1;
+
+		// see if the system property is set
+		String property = System.getProperty(systemProperty);
+		if (property != null && !property.equals("")) {
+			try {
+				result = Integer.parseInt(property);
+			}
+			catch (NumberFormatException e) {
+				LOGGER.log(Level.WARNING, "invalid buffer size: " + property);
+			}
+		}
+
+		// overrule negative or unspecified values
+		if (result < 0) {
+			result = defaultSize;
+		}
+
+		return result;
+	}
 
 	/**
 	 * Returns the SummaryInformation holding the document metadata from a POIFSFileSystem. Any POI-related or
@@ -86,7 +121,7 @@ public class PoiUtil {
 			}
 		}
 	}
-	
+
 	private static void copyString(String value, URI property, RDFContainer container) {
 		if (value != null) {
 			value = value.trim();
