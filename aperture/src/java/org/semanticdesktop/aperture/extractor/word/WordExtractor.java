@@ -53,36 +53,15 @@ public class WordExtractor implements Extractor {
 
 	private static final Logger LOGGER = Logger.getLogger(WordExtractor.class.getName());
 
-	private static final int BUFFER_SIZE;
-
-	static {
-		int size = -1;
-
-		String property = System.getProperty("aperture.wordExtractor.bufferSize");
-		if (property != null && !property.equals("")) {
-			try {
-				size = Integer.parseInt(property);
-			}
-			catch (NumberFormatException e) {
-				LOGGER.log(Level.WARNING, "invalid buffer size: " + property);
-			}
-		}
-
-		if (size < 0) {
-			size = 4 * 1024 * 1024;
-		}
-
-		BUFFER_SIZE = size;
-	}
-
 	public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
 			throws ExtractorException {
 		// mark the stream with a sufficiently large buffer so that, when POI chokes on a document, there is a
 		// good chance we can reset to the beginning of the buffer and apply a StringExtractor
+		int bufferSize = getBufferSize();
 		if (!stream.markSupported()) {
-			stream = new BufferedInputStream(stream, BUFFER_SIZE);
+			stream = new BufferedInputStream(stream, bufferSize);
 		}
-		stream.mark(BUFFER_SIZE);
+		stream.mark(bufferSize);
 
 		// apply the POI-based extraction code
 		try {
@@ -106,6 +85,26 @@ public class WordExtractor implements Extractor {
 		}
 	}
 
+	private int getBufferSize() {
+		int size = -1;
+
+		String property = System.getProperty("aperture.wordExtractor.bufferSize");
+		if (property != null && !property.equals("")) {
+			try {
+				size = Integer.parseInt(property);
+			}
+			catch (NumberFormatException e) {
+				LOGGER.log(Level.WARNING, "invalid buffer size: " + property);
+			}
+		}
+
+		if (size < 0) {
+			size = 4 * 1024 * 1024;
+		}
+
+		return size;
+	}
+	
 	private void applyPoi(InputStream stream, RDFContainer result) throws IOException {
 		POIFSFileSystem poiFileSystem = new POIFSFileSystem(stream);
 		HWPFDocument doc = new HWPFDocument(poiFileSystem);
