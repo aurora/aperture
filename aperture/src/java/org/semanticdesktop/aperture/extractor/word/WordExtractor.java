@@ -12,22 +12,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.Charset;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.poi.hpsf.PropertySetFactory;
-import org.apache.poi.hpsf.SummaryInformation;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.model.TextPiece;
-import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
+import org.semanticdesktop.aperture.extractor.util.PoiUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.StringExtractor;
 
@@ -142,73 +138,9 @@ public class WordExtractor implements Extractor {
 		}
 
 		// extract all metadata
-		// exceptions occurring here are ignored as we've already successfully handled the
-		// full-text: no need to fall-back to the heuristic StringExtractor
-		SummaryInformation summary = getSummaryInformation(poiFileSystem);
-		if (summary != null) {
-			copyString(summary.getTitle(), AccessVocabulary.TITLE, result);
-			copyString(summary.getSubject(), AccessVocabulary.SUBJECT, result);
-			copyString(summary.getComments(), AccessVocabulary.DESCRIPTION, result);
-			copyString(summary.getApplicationName(), AccessVocabulary.GENERATOR, result);
-			copyString(summary.getAuthor(), AccessVocabulary.CREATOR, result);
-			copyString(summary.getLastAuthor(), AccessVocabulary.CREATOR, result);
-
-			copyDate(summary.getCreateDateTime(), AccessVocabulary.CREATION_DATE, result);
-			copyDate(summary.getLastSaveDateTime(), AccessVocabulary.DATE, result);
-
-			int nrPages = summary.getPageCount();
-			if (nrPages > 1) {
-				// '0' means 'unknown' according to POI's API (<sigh>)
-				// '1' is often erroneously returned and can thus not be trusted
-				// higher values tend to be right (not seen a counter example yet) and are
-				// therefore included
-				System.out.println(nrPages);
-				result.put(AccessVocabulary.PAGE_COUNT, nrPages);
-			}
-
-			String keywords = summary.getKeywords();
-			if (keywords != null) {
-				StringTokenizer tokenizer = new StringTokenizer(keywords, " \t,;", false);
-				while (tokenizer.hasMoreTokens()) {
-					String keyword = tokenizer.nextToken();
-					result.add(AccessVocabulary.KEYWORD, keyword);
-				}
-			}
-		}
+		PoiUtil.extractMetadata(poiFileSystem, result);
 	}
-
-	private SummaryInformation getSummaryInformation(POIFSFileSystem poiFileSystem) {
-		SummaryInformation summary = null;
-
-		try {
-			DocumentInputStream docInputStream = poiFileSystem
-					.createDocumentInputStream(SummaryInformation.DEFAULT_STREAM_NAME);
-			summary = (SummaryInformation) PropertySetFactory.create(docInputStream);
-			docInputStream.close();
-		}
-		catch (Exception e) {
-			// ignore
-		}
-
-		return summary;
-	}
-
-	private void copyString(String value, URI property, RDFContainer container) {
-		if (value != null) {
-			value = value.trim();
-			if (!value.equals("")) {
-				// NOTE: "add", not "put", as some properties will be used multiple times!!
-				container.add(property, value);
-			}
-		}
-	}
-
-	private void copyDate(Date date, URI property, RDFContainer container) {
-		if (date != null) {
-			container.add(property, date);
-		}
-	}
-
+	
 	private void applyStringExtractor(InputStream stream, RDFContainer result) throws IOException {
 		StringExtractor extractor = new StringExtractor();
 		String text = extractor.extract(stream).trim();
