@@ -631,23 +631,26 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         CloseableIterator statements = metadata.getStatements(null,
                 org.semanticdesktop.aperture.accessor.AccessVocabulary.PART_OF, object.getID());
 
-        // queue these URIs
-        while (statements.hasNext()) {
-            RStatement statement = (RStatement) statements.next();
-            Resource resource = statement.getSubject();
-
-            if (resource instanceof URI) {
-                String id = resource.toString();
-                if (!queue.contains(id)) {
-                    queue.add(id);
-                }
-            }
-            else {
-                LOGGER.severe("Internal error: unknown child value type: " + resource.getClass());
-            }
+        try {
+	        // queue these URIs
+	        while (statements.hasNext()) {
+	            RStatement statement = (RStatement) statements.next();
+	            Resource resource = statement.getSubject();
+	
+	            if (resource instanceof URI) {
+	                String id = resource.toString();
+	                if (!queue.contains(id)) {
+	                    queue.add(id);
+	                }
+	            }
+	            else {
+	                LOGGER.severe("Internal error: unknown child value type: " + resource.getClass());
+	            }
+	        }
         }
-
-        statements.close();
+        finally {
+        	statements.close();
+        }
     }
 
     /* ----------------------------- DataAccessor implementation ----------------------------- */

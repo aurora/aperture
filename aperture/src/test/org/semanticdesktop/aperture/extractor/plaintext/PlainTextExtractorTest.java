@@ -31,20 +31,22 @@ public class PlainTextExtractorTest extends ExtractorTestBase {
         // fetch the full-text property
         String uriString = container.getDescribedUri().toString();
         CloseableIterator statements = repository.getStatements(valueFactory.createURI(uriString), AccessVocabulary.FULL_TEXT, null);
-
-        // check predicate
-        RStatement statement = (RStatement) statements.next();
-        assertTrue(statement.getPredicate().equals(AccessVocabulary.FULL_TEXT));
-        
-        // check number of statements
-        assertFalse(statements.hasNext());
-        
-        // check value
-        Literal value = (Literal) statement.getObject();
-        String text = value.getLabel();
-        assertTrue((text.indexOf("plain text") != -1));
-        
-        statements.close();
+        try {
+	        // check predicate
+	        RStatement statement = (RStatement) statements.next();
+	        assertTrue(statement.getPredicate().equals(AccessVocabulary.FULL_TEXT));
+	        
+	        // check number of statements
+	        assertFalse(statements.hasNext());
+	        
+	        // check value
+	        Literal value = (Literal) statement.getObject();
+	        String text = value.getLabel();
+	        assertTrue((text.indexOf("plain text") != -1));
+        }
+        finally {        
+        	statements.close();
+        }
     }
 
     public void testFailingExtraction() throws ExtractorException, IOException {
@@ -55,9 +57,7 @@ public class PlainTextExtractorTest extends ExtractorTestBase {
         
         // check number of statements
         String uriString = container.getDescribedUri().toString();
-        CloseableIterator statements = repository.getStatements(valueFactory.createURI(uriString), AccessVocabulary.FULL_TEXT, null);
-        assertFalse(statements.hasNext());
-        statements.close();
+        assertFalse(repository.hasStatement(valueFactory.createURI(uriString), AccessVocabulary.FULL_TEXT, null));
     }
     
     private SesameRDFContainer getStatements(String resourceName) throws ExtractorException, IOException {

@@ -30,23 +30,26 @@ public class ApertureTestBase extends TestCase {
         
         // loop over all statements that have the specified property uri as predicate
         CloseableIterator statements = repository.getStatements(valueFactory.createURI(uriString), property, null);
-        while (statements.hasNext()) {
-            // check the property type
-            RStatement statement = (RStatement) statements.next();
-            assertTrue(statement.getPredicate().equals(property));
-            
-            // see if it has a Literal containing the specified substring
-            Value object = statement.getObject();
-            if (object instanceof Literal) {
-                String value = ((Literal) object).getLabel();
-                if (value.indexOf(substring) >= 0) {
-                    encounteredSubstring = true;
-                    break;
-                }
-            }
+        try {
+	        while (statements.hasNext()) {
+	            // check the property type
+	            RStatement statement = (RStatement) statements.next();
+	            assertTrue(statement.getPredicate().equals(property));
+	            
+	            // see if it has a Literal containing the specified substring
+	            Value object = statement.getObject();
+	            if (object instanceof Literal) {
+	                String value = ((Literal) object).getLabel();
+	                if (value.indexOf(substring) >= 0) {
+	                    encounteredSubstring = true;
+	                    break;
+	                }
+	            }
+	        }
         }
-        
-        statements.close();
+        finally {
+        	statements.close();
+        }
         
         // see if any of the found properties contains the specified substring
         assertTrue(encounteredSubstring);
@@ -69,20 +72,23 @@ public class ApertureTestBase extends TestCase {
         
         // loop over all statements that have the specified property uri as predicate
         CloseableIterator statements = repository.getStatements(subject, property, null);
-        while (statements.hasNext()) {
-            // check the property type
-            RStatement statement = (RStatement) statements.next();
-            assertTrue(statement.getPredicate().equals(property));
-            
-            // see if it has a Literal containing the specified substring
-            Value object = statement.getObject();
-            if (object.equals(value)) {
-                encounteredValue = true;
-                break;
-            }
+        try {
+	        while (statements.hasNext()) {
+	            // check the property type
+	            RStatement statement = (RStatement) statements.next();
+	            assertTrue(statement.getPredicate().equals(property));
+	            
+	            // see if it has a Literal containing the specified substring
+	            Value object = statement.getObject();
+	            if (object.equals(value)) {
+	                encounteredValue = true;
+	                break;
+	            }
+	        }
         }
-        
-        statements.close();
+        finally {
+        	statements.close();
+        }
         
         // see if any of the found properties contains the specified substring
         assertTrue(encounteredValue);

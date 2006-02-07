@@ -31,20 +31,22 @@ public class RtfExtractorTest extends ExtractorTestBase {
         // fetch the full-text property
         String uriString = container.getDescribedUri().toString();
         CloseableIterator statements = repository.getStatements(valueFactory.createURI(uriString), AccessVocabulary.FULL_TEXT, null);
-
-        // check predicate
-        RStatement statement = (RStatement) statements.next();
-        assertTrue(statement.getPredicate().equals(AccessVocabulary.FULL_TEXT));
-        
-        // check number of statements
-        assertFalse(statements.hasNext());
-        
-        // check value
-        Literal value = (Literal) statement.getObject();
-        String text = value.getLabel();
-        assertTrue((text.indexOf("RTF") != -1));
-        
-        statements.close();
+        try {
+	        // check predicate
+	        RStatement statement = (RStatement) statements.next();
+	        assertTrue(statement.getPredicate().equals(AccessVocabulary.FULL_TEXT));
+	        
+	        // check number of statements
+	        assertFalse(statements.hasNext());
+	        
+	        // check value
+	        Literal value = (Literal) statement.getObject();
+	        String text = value.getLabel();
+	        assertTrue((text.indexOf("RTF") != -1));
+        }
+        finally {
+        	statements.close();
+        }
     }
 
     private SesameRDFContainer getStatements(String resourceName) throws ExtractorException, IOException {

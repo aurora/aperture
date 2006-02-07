@@ -177,65 +177,71 @@ public class ConfigurationUtil {
     }
 
     private static List getPatterns(URI id, URI predicate, Repository repository) {
-        ArrayList result = new ArrayList();
-
         // query for all include or exclude pattern statements
         CloseableIterator statements = repository.getStatements(id, predicate, null);
-        while (statements.hasNext()) {
-            RStatement statement = (RStatement) statements.next();
-            Value value = statement.getObject();
+        try {
+            ArrayList result = new ArrayList();
 
-            // only proceed when the value is a Resource
-            if (value instanceof Resource) {
-                Resource patternResource = (Resource) value;
-
-                // determine its type and value
-                Value typeValue = getSingleValue(patternResource, RDF.TYPE, repository);
-                Value patternValue = getSingleValue(patternResource, RDF.VALUE, repository);
-
-                // skip in case of inappropriate values
-                if (!(typeValue instanceof URI) || !(patternValue instanceof Literal)) {
-                    continue;
-                }
-
-                // convert the pattern Value to a String
-                String patternString = ((Literal) patternValue).getLabel();
-
-                // create the appropriate UrlPattern
-                if (SourceVocabulary.REGEXP_PATTERN.equals(typeValue)) {
-                    result.add(new RegExpPattern(patternString));
-                }
-                else if (SourceVocabulary.SUBSTRING_PATTERN.equals(typeValue)) {
-                    // also fetch the condition statement
-                    Value conditionValue = getSingleValue(patternResource, SourceVocabulary.CONDITION, repository);
-                    SubstringCondition condition = resolveCondition(conditionValue);
-                    if (condition != null) {
-                        result.add(new SubstringPattern(patternString, condition));
-                    }
-                }
-                else {
-                    // unknown type, silently ignore
-                }
-            }
+            while (statements.hasNext()) {
+	            RStatement statement = (RStatement) statements.next();
+	            Value value = statement.getObject();
+	
+	            // only proceed when the value is a Resource
+	            if (value instanceof Resource) {
+	                Resource patternResource = (Resource) value;
+	
+	                // determine its type and value
+	                Value typeValue = getSingleValue(patternResource, RDF.TYPE, repository);
+	                Value patternValue = getSingleValue(patternResource, RDF.VALUE, repository);
+	
+	                // skip in case of inappropriate values
+	                if (!(typeValue instanceof URI) || !(patternValue instanceof Literal)) {
+	                    continue;
+	                }
+	
+	                // convert the pattern Value to a String
+	                String patternString = ((Literal) patternValue).getLabel();
+	
+	                // create the appropriate UrlPattern
+	                if (SourceVocabulary.REGEXP_PATTERN.equals(typeValue)) {
+	                    result.add(new RegExpPattern(patternString));
+	                }
+	                else if (SourceVocabulary.SUBSTRING_PATTERN.equals(typeValue)) {
+	                    // also fetch the condition statement
+	                    Value conditionValue = getSingleValue(patternResource, SourceVocabulary.CONDITION, repository);
+	                    SubstringCondition condition = resolveCondition(conditionValue);
+	                    if (condition != null) {
+	                        result.add(new SubstringPattern(patternString, condition));
+	                    }
+	                }
+	                else {
+	                    // unknown type, silently ignore
+	                }
+	            }
+	        }
+	        
+	        return result;
         }
-
-        statements.close();
-        
-        return result;
+        finally {
+        	statements.close();
+        }
     }
 
     private static Value getSingleValue(Resource resource, URI predicate, Repository repository) {
-        Value result = null;
-        
         CloseableIterator statements = repository.getStatements(resource, predicate, null);
-        if (statements.hasNext()) {
-            RStatement statement = (RStatement) statements.next();
-            result = statement.getObject();
+        try {
+            Value result = null;
+            
+	        if (statements.hasNext()) {
+	            RStatement statement = (RStatement) statements.next();
+	            result = statement.getObject();
+	        }
+	        
+	        return result;
         }
-
-        statements.close();
-        
-        return result;
+        finally {
+        	statements.close();
+        }
     }
 
     public static SubstringCondition resolveCondition(Value value) {

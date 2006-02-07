@@ -283,17 +283,19 @@ public class SesameRDFContainer implements RDFContainer {
     public Collection getAll(URI property) {
         // determine all matching Statements
         CloseableIterator iterator = repository.getStatements(describedUri, property, null);
-
-        // put their values in a new Collection
-        ArrayList result = new ArrayList();
-        while (iterator.hasNext()) {
-            RStatement statement = (RStatement) iterator.next();
-            result.add(statement.getObject());
-        }
         
-        iterator.close();
-
-        return result;
+        try {
+	        // put their values in a new Collection
+	        ArrayList result = new ArrayList();
+	        while (iterator.hasNext()) {
+	            RStatement statement = (RStatement) iterator.next();
+	            result.add(statement.getObject());
+	        }
+	        return result;
+        }
+        finally {
+        	iterator.close();
+        }
     }
 
     public void add(Statement statement) {
@@ -331,16 +333,19 @@ public class SesameRDFContainer implements RDFContainer {
             // remove any existing statements with this property, throw an exception when there is more
             // than one such statement
             CloseableIterator statements = repository.getStatements(describedUri, property, null);
-            if (statements.hasNext()) {
-                RStatement statement = (RStatement) statements.next();
-                if (statements.hasNext()) {
-                    throw new MultipleValuesException(describedUri, property);
-                }
-                
-                repository.remove(statement, context);
+            try {
+	            if (statements.hasNext()) {
+	                RStatement statement = (RStatement) statements.next();
+	                if (statements.hasNext()) {
+	                    throw new MultipleValuesException(describedUri, property);
+	                }
+	                
+	                repository.remove(statement, context);
+	            }
             }
-
-            statements.close();
+            finally {
+            	statements.close();
+            }
             
             // add the new statement
             repository.add(describedUri, property, object, context);
@@ -352,20 +357,23 @@ public class SesameRDFContainer implements RDFContainer {
     }
 
     private Value getInternal(URI property) {
-        Value result = null;
-        
         CloseableIterator statements = repository.getStatements(describedUri, property, null);
-        if (statements.hasNext()) {
-            RStatement firstStatement = (RStatement) statements.next();
-            if (statements.hasNext()) {
-                statements.close();
-                throw new MultipleValuesException(describedUri, property);
-            }
-            result = firstStatement.getObject();
+
+        try {
+            Value result = null;
+            
+	        if (statements.hasNext()) {
+	            RStatement firstStatement = (RStatement) statements.next();
+	            if (statements.hasNext()) {
+	                throw new MultipleValuesException(describedUri, property);
+	            }
+	            result = firstStatement.getObject();
+	        }
+
+	        return result;
         }
-        
-        statements.close();
-        
-        return result;
+        finally {
+        	statements.close();
+        }
     }
 }

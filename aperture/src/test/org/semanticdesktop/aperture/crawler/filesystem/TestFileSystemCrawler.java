@@ -121,12 +121,10 @@ public class TestFileSystemCrawler extends ApertureTestBase {
         checkStatement(toURI(subDir), AccessVocabulary.NAME, new LiteralImpl(subDir.getName()), repository);
 
         // This should not be found because of maximum depth restrictions: this file should not be
-        // reached. We deliberately check for a specific property rather than doing getStatements(URI,
+        // reached. We deliberately check for a specific property rather than doing hasStatement(URI,
         // null, null) as the URI of the skipped file will still be part of the metadata of the
         // containing Folder.
-        CloseableIterator stms = repository.getStatements(toURI(tmpFile3), AccessVocabulary.NAME, null);
-        assertFalse(stms.hasNext());
-        stms.close();
+        assertFalse(repository.hasStatement(toURI(tmpFile3), AccessVocabulary.NAME, null));
     }
 
     private URI toURI(File file) {

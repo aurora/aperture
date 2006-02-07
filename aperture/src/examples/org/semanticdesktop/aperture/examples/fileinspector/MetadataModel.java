@@ -46,25 +46,27 @@ public class MetadataModel {
             fullText = null;
         }
         else {
-            StringBuffer buffer = new StringBuffer(10000);
             CloseableIterator statements = repository.getStatements(null, AccessVocabulary.FULL_TEXT, null);
-            while (statements.hasNext()) {
-                RStatement statement = (RStatement) statements.next();
-                Value value = statement.getObject();
-                if (value instanceof Literal) {
-                    buffer.append(((Literal) value).getLabel());
-                }
+            try {
+                StringBuffer buffer = new StringBuffer(10000);
+	            while (statements.hasNext()) {
+	                RStatement statement = (RStatement) statements.next();
+	                Value value = statement.getObject();
+	                if (value instanceof Literal) {
+	                    buffer.append(((Literal) value).getLabel());
+	                }
+	
+	                if (statements.hasNext()) {
+	                    buffer.append("\n\n=====================================================\n\n");
+	                }
+	            }
 
-                if (statements.hasNext()) {
-                    buffer.append("\n\n=====================================================\n\n");
-                }
+	            fullText = buffer.toString().trim();
             }
-            
-            statements.close();
-
-            fullText = buffer.toString().trim();
+            finally {
+            	statements.close();
+            }
         }
-
 
         // notify listeners
         fireStateChanged();
