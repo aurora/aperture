@@ -9,6 +9,7 @@ package org.semanticdesktop.aperture.extractor;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.semanticdesktop.aperture.extractor.excel.ExcelExtractorTest;
 import org.semanticdesktop.aperture.extractor.html.HtmlExtractorTest;
 import org.semanticdesktop.aperture.extractor.impl.TestDefaultExtractorRegistry;
 import org.semanticdesktop.aperture.extractor.impl.TestExtractorRegistryImpl;
@@ -31,6 +32,7 @@ public class TestExtractors extends TestSuite {
         super("extractors");
         
         // test the various extractors
+        addTest(new TestSuite(ExcelExtractorTest.class));
         addTest(new TestSuite(HtmlExtractorTest.class));
         addTest(new TestSuite(OpenDocumentExtractorTest.class));
         addTest(new TestSuite(PdfExtractorTest.class));

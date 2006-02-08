@@ -2,6 +2,9 @@
 
 <extractorFactories>
 	<extractorFactory>
+		<name>org.semanticdesktop.aperture.extractor.excel.ExcelExtractorFactory</name>
+	</extractorFactory>
+	<extractorFactory>
 		<name>org.semanticdesktop.aperture.extractor.html.HtmlExtractorFactory</name>
 	</extractorFactory>
 	<extractorFactory>
