@@ -83,7 +83,6 @@ public class ExcelExtractor implements Extractor {
 		// setup a HSSFRequest object
 		HSSFRequest request = new HSSFRequest();
 		ExcelEventListener listener = new ExcelEventListener();
-//		request.addListenerForAllRecords(listener);
 
 		// it is vital that the listener is registed as a listener for all Record types that it processes (see
 		// below)
@@ -127,6 +126,7 @@ public class ExcelExtractor implements Extractor {
 		private StringBuffer buffer = new StringBuffer(64 * 1024);
 
 		public void processRecord(Record record) {
+			// implementation note: make sure this HSSFListener is registered for all Record types used below
 			switch (record.getSid()) {
 			case BoundSheetRecord.sid:
 				// append the sheet name
