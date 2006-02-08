@@ -66,7 +66,7 @@ public class FileAccessData implements AccessData {
     /**
      * Creates a new FileAccessData that uses the specified File for persistent storage.
      * 
-     * @param file The data file to be used by this FileAccessData.
+     * @param dataFile The data file to be used by this FileAccessData.
      */
     public FileAccessData(File dataFile) {
         this.dataFile = dataFile;
