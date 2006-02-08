@@ -17,6 +17,9 @@
 		<name>org.semanticdesktop.aperture.extractor.plaintext.PlainTextExtractorFactory</name>
 	</extractorFactory>
 	<extractorFactory>
+		<name>org.semanticdesktop.aperture.extractor.powerpoint.PowerPointExtractorFactory</name>
+	</extractorFactory>
+	<extractorFactory>
 		<name>org.semanticdesktop.aperture.extractor.rtf.RtfExtractorFactory</name>
 	</extractorFactory>
 	<extractorFactory>
