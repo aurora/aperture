@@ -98,6 +98,20 @@ Tip: see http://www.filext.com/ for a reasonably complete database of file forma
 	</condition>
 </description>
 
+<description>
+	<mimeType>application/stuffit</mimeType>
+	<extensions>sit</extensions>
+	<condition>
+		<byteSequence encoding="string">SIT!</byteSequence>
+	</condition>
+</description>
+
+
+<description>
+	<mimeType>application/binhex</mimeType>
+	<extensions>hqx</extensions>
+</description>
+
 <!-- ================== HTML Type ================== -->
 
 <description>
