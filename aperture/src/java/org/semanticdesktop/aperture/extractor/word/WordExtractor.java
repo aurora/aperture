@@ -6,26 +6,22 @@
  */
 package org.semanticdesktop.aperture.extractor.word;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.model.TextPiece;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.PoiUtil;
+import org.semanticdesktop.aperture.extractor.util.PoiUtil.TextExtractor;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.util.StringExtractor;
 
 public class WordExtractor implements Extractor {
 
@@ -47,43 +43,14 @@ public class WordExtractor implements Extractor {
 
 	private static final String END_OF_LINE = System.getProperty("line.separator", "\n");
 
-	private static final Logger LOGGER = Logger.getLogger(WordExtractor.class.getName());
-
 	public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
 			throws ExtractorException {
-		// mark the stream with a sufficiently large buffer so that, when POI chokes on a document, there is a
-		// good chance we can reset to the beginning of the buffer and apply a StringExtractor
-		int bufferSize = PoiUtil.getBufferSize("aperture.wordExtractor.bufferSize", 4 * 1024 * 1024);
-		if (!stream.markSupported()) {
-			stream = new BufferedInputStream(stream, bufferSize);
-		}
-		stream.mark(bufferSize);
-
-		// apply the POI-based extraction code
-		try {
-			applyPoi(stream, result);
-		}
-		catch (Exception e) {
-			// we catch Exception rather than IOException because in our experience POI can sometimes throw
-			// NullPointerExceptions, ArrayIndexOOBExceptions, etc., in which case we can still fall-back on a
-			// StringExtractor
-			LOGGER.log(Level.INFO,
-				"Exception while processing Word document, switching to heuristic string extraction: " + id,
-				e);
-
-			try {
-				stream.reset();
-				applyStringExtractor(stream, result);
-			}
-			catch (IOException exc) {
-				throw new ExtractorException(exc);
-			}
-		}
+		PoiUtil.extractAll(stream, new WordTextExtractor(), result);
 	}
 
-	private void applyPoi(InputStream stream, RDFContainer result) throws IOException {
-		POIFSFileSystem poiFileSystem = new POIFSFileSystem(stream);
-		HWPFDocument doc = new HWPFDocument(poiFileSystem);
+	private static class WordTextExtractor implements TextExtractor {
+	public String getText(POIFSFileSystem fileSystem) throws IOException {
+		HWPFDocument doc = new HWPFDocument(fileSystem);
 
 		StringBuffer buffer = new StringBuffer(4096);
 
@@ -111,21 +78,8 @@ public class WordExtractor implements Extractor {
 			}
 		}
 
-		// store full-text
-		String text = buffer.toString().trim();
-		if (!text.equals("")) {
-			result.put(AccessVocabulary.FULL_TEXT, text);
-		}
-
-		// extract all metadata
-		PoiUtil.extractMetadata(poiFileSystem, result);
+		// return the extracted full-text
+		return buffer.toString().trim();
 	}
-	
-	private void applyStringExtractor(InputStream stream, RDFContainer result) throws IOException {
-		StringExtractor extractor = new StringExtractor();
-		String text = extractor.extract(stream).trim();
-		if (!text.equals("")) {
-			result.put(AccessVocabulary.FULL_TEXT, text);
-		}
 	}
 }

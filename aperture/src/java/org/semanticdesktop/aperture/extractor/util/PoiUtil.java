@@ -6,6 +6,9 @@
  */
 package org.semanticdesktop.aperture.extractor.util;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -18,44 +21,16 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.util.StringExtractor;
 
 /**
  * Features Apache POI-specific utility methods for text and metadata extraction purposes.
+ * 
+ * @see http://jakarta.apache.org/poi/
  */
 public class PoiUtil {
 
 	private static final Logger LOGGER = Logger.getLogger(PoiUtil.class.getName());
-
-	/**
-	 * Returns the buffer size to use when buffering the contents of a document.
-	 * 
-	 * @param systemProperty The system property that contains the buffer size.
-	 * @param defaultSize The default buffer size, in case the system property is not set or does not contain
-	 *            a valid value.
-	 * @return The specified buffer size to use, or the default size when the indicated system property is not
-	 *         set or has an illegal value.
-	 */
-	public static int getBufferSize(String systemProperty, int defaultSize) {
-		int result = -1;
-
-		// see if the system property is set
-		String property = System.getProperty(systemProperty);
-		if (property != null && !property.equals("")) {
-			try {
-				result = Integer.parseInt(property);
-			}
-			catch (NumberFormatException e) {
-				LOGGER.log(Level.WARNING, "invalid buffer size: " + property);
-			}
-		}
-
-		// overrule negative or unspecified values
-		if (result < 0) {
-			result = defaultSize;
-		}
-
-		return result;
-	}
 
 	/**
 	 * Returns the SummaryInformation holding the document metadata from a POIFSFileSystem. Any POI-related or
@@ -136,5 +111,113 @@ public class PoiUtil {
 		if (date != null) {
 			container.add(property, date);
 		}
+	}
+
+	/**
+	 * Extract full-text and metadata from an MS Office document contained in the specified stream. A
+	 * TextExtractor is specified to handle the specifics of full-text extraction for this particular MS
+	 * Office document type.
+	 */
+	public static void extractAll(InputStream stream, TextExtractor textExtractor, RDFContainer container) {
+		// mark the stream with a sufficiently large buffer so that, when POI chokes on a document, there is a
+		// good chance we can reset to the beginning of the buffer and apply a StringExtractor
+		int bufferSize = getBufferSize();
+		if (!stream.markSupported()) {
+			stream = new BufferedInputStream(stream, bufferSize);
+		}
+		stream.mark(bufferSize);
+
+		// apply the POI-based extraction code
+		String text = null;
+
+		try {
+			// try to create a POI file system
+			POIFSFileSystem fileSystem = new POIFSFileSystem(stream);
+
+			// try to extract the text, ignoring any exceptions as metadata extraction may still succeed
+			try {
+				text = textExtractor.getText(fileSystem);
+			}
+			catch (Exception e) {
+				// ignore
+			}
+
+			PoiUtil.extractMetadata(fileSystem, container);
+		}
+		catch (IOException e1) {
+			// ignore
+		}
+
+		// if text extraction was not successfull, try a StringExtractor as a fallback
+		if (text == null) {
+			LOGGER.log(Level.INFO,
+				"regular POI-based processing failed, falling back to heuristic string extraction");
+
+			try {
+				stream.reset();
+				StringExtractor extractor = new StringExtractor();
+				text = extractor.extract(stream);
+			}
+			catch (IOException e) {
+				LOGGER.log(Level.WARNING, "IOException while processing " + container.getDescribedUri(), e);
+			}
+		}
+
+		// store the full-text, if any
+		if (text != null) {
+			text = text.trim();
+			if (!text.equals("")) {
+				container.put(AccessVocabulary.FULL_TEXT, text);
+			}
+		}
+	}
+
+	/**
+	 * Returns the buffer size to use when buffering the contents of a document.
+	 * 
+	 * @param systemProperty The system property that contains the buffer size.
+	 * @param defaultSize The default buffer size, in case the system property is not set or does not contain
+	 *            a valid value.
+	 * @return The specified buffer size to use, or the default size when the indicated system property is not
+	 *         set or has an illegal value.
+	 */
+	private static int getBufferSize() {
+		int result = -1;
+
+		// see if the system property is set
+		String property = System.getProperty("aperture.poiUtil.bufferSize");
+		if (property != null && !property.equals("")) {
+			try {
+				result = Integer.parseInt(property);
+			}
+			catch (NumberFormatException e) {
+				LOGGER.log(Level.WARNING, "invalid buffer size: " + property);
+			}
+		}
+
+		// overrule negative or unspecified values with a 4 MB buffer (yes, I know that's a lot, but we want
+		// quality output, right?)
+		if (result < 0) {
+			result = 4 * 1024 * 1024;
+		}
+
+		return result;
+	}
+
+	/**
+	 * A TextExtractor is a delegate that extracts the full-text from an MS Office document using a
+	 * POIFSFileSystem. Implementations typically support specific MS Office document types, such as Word,
+	 * Excel and PowerPoint.
+	 */
+	public static interface TextExtractor {
+
+		/**
+		 * Extract the full-text from an MS Office document.
+		 * 
+		 * @param fileSystem The POIFSFileSystem providing structural access to the MS Office document.
+		 * @return A String containing the full-text of the document.
+		 * @throws IOException whenever access to the POIFSFileSystem caused an IOException.
+		 */
+		public String getText(POIFSFileSystem fileSystem) throws IOException;
 	}
 }
