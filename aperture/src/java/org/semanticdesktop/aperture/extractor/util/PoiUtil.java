@@ -82,7 +82,6 @@ public class PoiUtil {
 				// '1' is often erroneously returned and can thus not be trusted
 				// higher values tend to be right (not seen a counter example yet) and are
 				// therefore included
-				System.out.println(nrPages);
 				container.put(AccessVocabulary.PAGE_COUNT, nrPages);
 			}
 
@@ -152,8 +151,10 @@ public class PoiUtil {
 
 		// if text extraction was not successfull, try a StringExtractor as a fallback
 		if (text == null) {
-			LOGGER.log(Level.INFO,
-				"regular POI-based processing failed, falling back to heuristic string extraction");
+			if (textExtractor != null) {
+				LOGGER.log(Level.INFO,
+					"regular POI-based processing failed, falling back to heuristic string extraction");
+			}
 
 			try {
 				stream.reset();
