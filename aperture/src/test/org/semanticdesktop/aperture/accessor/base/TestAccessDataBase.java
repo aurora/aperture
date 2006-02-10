@@ -6,21 +6,13 @@
  */
 package org.semanticdesktop.aperture.accessor.base;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.logging.Level;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+
+import junit.framework.TestCase;
 
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.util.FileUtil;
-
-import junit.framework.TestCase;
 
 public class TestAccessDataBase extends TestCase {
 
