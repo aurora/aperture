@@ -22,8 +22,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * An XML parser that generates "simple" SAX-like events. Its purpose is to make streaming processing of
- * simple-structured XML documents easier than is possible with the SAX interfaces.
+ * An XML parser that generates "simple" SAX-like events from a limited subset
+ * of XML documents. The SimpleSAXParser can parse simple XML documents; it
+ * doesn't support processing instructions or elements that contain both
+ * sub-element and character data; character data is only supported in the
+ * "leaves" of the XML element tree.
  * 
  * <h3>Example:</h3>
  * <p>
