@@ -13,6 +13,7 @@ import org.semanticdesktop.aperture.extractor.excel.ExcelExtractorTest;
 import org.semanticdesktop.aperture.extractor.html.HtmlExtractorTest;
 import org.semanticdesktop.aperture.extractor.impl.TestDefaultExtractorRegistry;
 import org.semanticdesktop.aperture.extractor.impl.TestExtractorRegistryImpl;
+import org.semanticdesktop.aperture.extractor.office.OfficeExtractorTest;
 import org.semanticdesktop.aperture.extractor.opendocument.OpenDocumentExtractorTest;
 import org.semanticdesktop.aperture.extractor.pdf.PdfExtractorTest;
 import org.semanticdesktop.aperture.extractor.plaintext.PlainTextExtractorTest;
@@ -36,6 +37,7 @@ public class TestExtractors extends TestSuite {
         // test the various extractors
         addTest(new TestSuite(ExcelExtractorTest.class));
         addTest(new TestSuite(HtmlExtractorTest.class));
+        addTest(new TestSuite(OfficeExtractorTest.class));
         addTest(new TestSuite(OpenDocumentExtractorTest.class));
         addTest(new TestSuite(PdfExtractorTest.class));
         addTest(new TestSuite(PlainTextExtractorTest.class));

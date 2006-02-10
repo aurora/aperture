@@ -136,7 +136,9 @@ public class PoiUtil {
 
 			// try to extract the text, ignoring any exceptions as metadata extraction may still succeed
 			try {
-				text = textExtractor.getText(fileSystem);
+				if (textExtractor != null) {
+					text = textExtractor.getText(fileSystem);
+				}
 			}
 			catch (Exception e) {
 				// ignore
