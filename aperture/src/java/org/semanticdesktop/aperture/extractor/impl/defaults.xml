@@ -29,6 +29,9 @@
 		<name>org.semanticdesktop.aperture.extractor.word.WordExtractorFactory</name>
 	</extractorFactory>
 	<extractorFactory>
+		<name>org.semanticdesktop.aperture.extractor.wordperfect.WordPerfectExtractorFactory</name>
+	</extractorFactory>
+	<extractorFactory>
 		<name>org.semanticdesktop.aperture.extractor.xml.XmlExtractorFactory</name>
 	</extractorFactory>
 </extractorFactories>
