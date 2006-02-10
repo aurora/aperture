@@ -68,7 +68,13 @@ public class StringExtractor {
 				line = postProcessLine(line);
 
 				if (line != null) {
-					if (validLine(line.toLowerCase())) {
+					String lineLowerCase = line.toLowerCase();
+
+					if (isStartLine(lineLowerCase)) {
+						// scrap everything until this start line and continue with the next
+						textBuffer.setLength(0);
+					}
+					else if (isValidLine(lineLowerCase)) {
 						// append the original, non-lowercased line to the end result and continue processing
 						// the stream
 						textBuffer.append(line);
@@ -82,10 +88,20 @@ public class StringExtractor {
 	}
 
 	/**
+	 * Determines whether the supplied line indicates the start of the textual contents. If 'true', all text
+	 * extracted up to this point will be ignored, i.e. text extraction will start again from scratch but at
+	 * the current location in the stream. The specified line is expected to be fully lowercased. This default
+	 * implementation returns 'false'.
+	 */
+	protected boolean isStartLine(String lineLowerCase) {
+		return false;
+	}
+
+	/**
 	 * Determines whether the supplied line should be included in the end result. The specified line is
 	 * expected to be fully lowercased.
 	 */
-	protected boolean validLine(String lineLowerCase) {
+	protected boolean isValidLine(String lineLowerCase) {
 		// Check if line starts with a font name
 		for (int i = 0; i < COMMON_FONT_NAMES.length; i++) {
 			if (lineLowerCase.startsWith(COMMON_FONT_NAMES[i])) {
