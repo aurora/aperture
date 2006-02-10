@@ -26,7 +26,7 @@ import org.semanticdesktop.aperture.util.StringExtractor;
 /**
  * Features Apache POI-specific utility methods for text and metadata extraction purposes.
  * 
- * @see http://jakarta.apache.org/poi/
+ * @link http://jakarta.apache.org/poi/
  */
 public class PoiUtil {
 
