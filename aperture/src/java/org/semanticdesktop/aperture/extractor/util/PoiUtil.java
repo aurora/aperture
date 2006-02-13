@@ -87,7 +87,7 @@ public class PoiUtil {
 
 			String keywords = summary.getKeywords();
 			if (keywords != null) {
-				StringTokenizer tokenizer = new StringTokenizer(keywords, " \t,;", false);
+				StringTokenizer tokenizer = new StringTokenizer(keywords, " \t.,;|/\\", false);
 				while (tokenizer.hasMoreTokens()) {
 					String keyword = tokenizer.nextToken();
 					container.add(AccessVocabulary.KEYWORD, keyword);
