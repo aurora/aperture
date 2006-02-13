@@ -28,6 +28,13 @@ import org.semanticdesktop.aperture.util.StringExtractor;
  * any intrinsic knowledge of the WordPerfect file format(s). Consequently, the extracted full-text may be
  * imperfect, e.g. contain some noise that's not part of the document text. Also, the document metadata is not
  * extracted.
+ * 
+ * <p>
+ * The current status of this implementation is that the complete full-text is extracted from WordPerfect
+ * documents from version 4.2 up to WordPerfect X3 (tested with 4.2, 5.0, 5.1 and X3, all created using
+ * WordPerfect X3), except for the 5.1 Far East format for which our test did not return any text at all. This
+ * is probably due to encoding issues. These tests showed that for WordPerfect 5.0 and 5.1 the document
+ * metadata also ends up at the start of the extracted full-text.
  */
 public class WordPerfectExtractor implements Extractor {
 
