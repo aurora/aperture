@@ -29,6 +29,9 @@
 		<name>org.semanticdesktop.aperture.extractor.rtf.RtfExtractorFactory</name>
 	</extractorFactory>
 	<extractorFactory>
+		<name>org.semanticdesktop.aperture.extractor.visio.VisioExtractorFactory</name>
+	</extractorFactory>
+	<extractorFactory>
 		<name>org.semanticdesktop.aperture.extractor.word.WordExtractorFactory</name>
 	</extractorFactory>
 	<extractorFactory>
