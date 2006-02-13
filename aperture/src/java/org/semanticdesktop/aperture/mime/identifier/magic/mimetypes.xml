@@ -404,13 +404,29 @@ Tip: see http://www.filext.com/ for a reasonably complete database of file forma
 	</condition>
 </description>
 
-<!-- ================== WordPerfect Types ================== -->
+<!-- ================== Corel Types ================== -->
 
 <description>
 	<mimeType>application/vnd.wordperfect</mimeType>
 	<extensions>wp,wpd,wpf,wpt,wpw,wp5,wp51,wp6,w60,w61</extensions>
 	<condition>
 		<byteSequence encoding="hex">ff 57 50 43</byteSequence>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/x-quattropro</mimeType> <!-- user for Quattro Pro 7+ -->
+	<extensions>qpw,wb3</extensions>
+	<condition>
+		<parentType>application/vnd.ms-office</parentType>
+	</condition>
+</description>
+
+<description>
+	<mimeType>application/wb2</mimeType> <!-- used for a.o. Quattro Pro 6 -->
+	<extensions>wb2</extensions>
+	<condition>
+		<byteSequence encoding="hex">00 00 02 00</byteSequence>
 	</condition>
 </description>
 
