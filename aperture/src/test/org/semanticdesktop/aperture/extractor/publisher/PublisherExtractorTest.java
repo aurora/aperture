@@ -1,0 +1,35 @@
+/*
+ * Copyright (c) 2005 Aduna.
+ * All rights reserved.
+ * 
+ * Licensed under the Open Software License version 3.0.
+ */
+package org.semanticdesktop.aperture.extractor.publisher;
+
+import java.io.IOException;
+
+import org.semanticdesktop.aperture.accessor.AccessVocabulary;
+import org.semanticdesktop.aperture.extractor.Extractor;
+import org.semanticdesktop.aperture.extractor.ExtractorException;
+import org.semanticdesktop.aperture.extractor.ExtractorFactory;
+import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
+import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+
+public class PublisherExtractorTest extends ExtractorTestBase {
+
+    public void testExtraction() throws ExtractorException, IOException {
+        // apply the extractor on an example file
+        ExtractorFactory factory = new PublisherExtractorFactory();
+        Extractor extractor = factory.get();
+        SesameRDFContainer container = extract(DOCS_PATH + "microsoft-publisher-2003.pub", extractor);
+
+        // check the extraction results
+        checkStatement(AccessVocabulary.FULL_TEXT, "Example", container);
+        checkStatement(AccessVocabulary.TITLE, "Publisher", container);
+        checkStatement(AccessVocabulary.SUBJECT, "document", container);
+        checkStatement(AccessVocabulary.DESCRIPTION, "comments", container);
+        checkStatement(AccessVocabulary.CREATOR, "Wester", container);
+        checkStatement(AccessVocabulary.KEYWORD, "test", container);
+        checkStatement(AccessVocabulary.KEYWORD, "rdf", container);
+    }        
+}

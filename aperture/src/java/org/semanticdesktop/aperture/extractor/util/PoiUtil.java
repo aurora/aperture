@@ -26,12 +26,18 @@ import org.semanticdesktop.aperture.util.StringExtractor;
 /**
  * Features Apache POI-specific utility methods for text and metadata extraction purposes.
  * 
+ * <p>
+ * Some methods use a buffer to be able to reset the InputStream to its start. The buffer size can be altered
+ * by giving the "aperture.poiUtil.bufferSize" system property a value holding the number of bytes that the buffer may use.
+ * 
  * @link http://jakarta.apache.org/poi/
  */
 public class PoiUtil {
 
 	private static final Logger LOGGER = Logger.getLogger(PoiUtil.class.getName());
 
+	private static final String BUFFER_SIZE_PROPERTY = "aperture.poiUtil.bufferSize";
+	
 	/**
 	 * Returns the SummaryInformation holding the document metadata from a POIFSFileSystem. Any POI-related or
 	 * I/O Exceptions that may occur during this operation are ignored and 'null' is returned in those cases.
@@ -54,6 +60,33 @@ public class PoiUtil {
 		}
 
 		return summary;
+	}
+
+	/**
+	 * Extract all metadata from an OLE document.
+	 * 
+	 * @param stream The stream containing the OLD document.
+	 * @param resetStream Specified whether the stream should be buffered and reset. The buffer size can be
+	 *            determined by the system property described in the class documentation.
+	 * @param container The RDFContainer to store the metadata in.
+	 * @throws IOException When resetting of the buffer resulted in an IOException.
+	 */
+	public static void extractMetadata(InputStream stream, boolean resetStream, RDFContainer container)
+			throws IOException {
+		if (resetStream) {
+			int bufferSize = getBufferSize();
+			if (!stream.markSupported()) {
+				stream = new BufferedInputStream(stream, bufferSize);
+			}
+			stream.mark(bufferSize);
+		}
+
+		POIFSFileSystem fileSystem = new POIFSFileSystem(stream);
+		extractMetadata(fileSystem, container);
+
+		if (resetStream) {
+			stream.reset();
+		}
 	}
 
 	/**
@@ -188,7 +221,7 @@ public class PoiUtil {
 		int result = -1;
 
 		// see if the system property is set
-		String property = System.getProperty("aperture.poiUtil.bufferSize");
+		String property = System.getProperty(BUFFER_SIZE_PROPERTY);
 		if (property != null && !property.equals("")) {
 			try {
 				result = Integer.parseInt(property);

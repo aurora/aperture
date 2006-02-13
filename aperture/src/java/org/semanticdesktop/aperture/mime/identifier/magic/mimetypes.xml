@@ -350,6 +350,14 @@ Tip: see http://www.filext.com/ for a reasonably complete database of file forma
 	</condition>
 </description>
 
+<description>
+	<mimeType>application/x-mspublisher</mimeType>
+	<extensions>pub</extensions>
+	<condition>
+		<parentType>application/vnd.ms-office</parentType>
+	</condition>
+</description>
+
 <!-- ================== StarOffice 5.x Types ================== -->
 <!-- they have the same magic number as MSOffice (can you believe it?) -->
 

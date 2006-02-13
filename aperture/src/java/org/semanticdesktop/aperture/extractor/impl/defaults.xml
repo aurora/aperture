@@ -23,6 +23,9 @@
 		<name>org.semanticdesktop.aperture.extractor.powerpoint.PowerPointExtractorFactory</name>
 	</extractorFactory>
 	<extractorFactory>
+		<name>org.semanticdesktop.aperture.extractor.publisher.PublisherExtractorFactory</name>
+	</extractorFactory>
+	<extractorFactory>
 		<name>org.semanticdesktop.aperture.extractor.quattro.QuattroExtractorFactory</name>
 	</extractorFactory>
 	<extractorFactory>

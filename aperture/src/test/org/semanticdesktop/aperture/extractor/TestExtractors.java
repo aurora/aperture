@@ -18,6 +18,7 @@ import org.semanticdesktop.aperture.extractor.opendocument.OpenDocumentExtractor
 import org.semanticdesktop.aperture.extractor.pdf.PdfExtractorTest;
 import org.semanticdesktop.aperture.extractor.plaintext.PlainTextExtractorTest;
 import org.semanticdesktop.aperture.extractor.powerpoint.PowerPointExtractorTest;
+import org.semanticdesktop.aperture.extractor.publisher.PublisherExtractorTest;
 import org.semanticdesktop.aperture.extractor.quattro.QuattroExtractorTest;
 import org.semanticdesktop.aperture.extractor.rtf.RtfExtractorTest;
 import org.semanticdesktop.aperture.extractor.visio.VisioExtractorTest;
@@ -45,6 +46,7 @@ public class TestExtractors extends TestSuite {
         addTest(new TestSuite(PdfExtractorTest.class));
         addTest(new TestSuite(PlainTextExtractorTest.class));
         addTest(new TestSuite(PowerPointExtractorTest.class));
+        addTest(new TestSuite(PublisherExtractorTest.class));
         addTest(new TestSuite(QuattroExtractorTest.class));
         addTest(new TestSuite(RtfExtractorTest.class));
         addTest(new TestSuite(VisioExtractorTest.class));
