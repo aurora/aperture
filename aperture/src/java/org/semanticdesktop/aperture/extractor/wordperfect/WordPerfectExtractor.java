@@ -31,9 +31,9 @@ import org.semanticdesktop.aperture.util.StringExtractor;
  * 
  * <p>
  * The current status of this implementation is that the complete full-text is extracted from WordPerfect
- * documents from version 4.2 up to WordPerfect X3 (tested with 4.2, 5.0, 5.1 and X3, all created using
- * WordPerfect X3), except for the 5.1 Far East format for which our test did not return any text at all. This
- * is probably due to encoding issues. These tests showed that for WordPerfect 5.0 and 5.1 the document
+ * documents from version 4.2 up to WordPerfect X3 (tested with 4.2, 5.0, 5.1/5.2 and X3, all created using
+ * WordPerfect X3), except for the 5.1/5.2 Far East format for which our test did not return any text at all.
+ * This is probably due to encoding issues. These tests showed that for WordPerfect 5.0 and 5.1 the document
  * metadata also ends up at the start of the extracted full-text.
  */
 public class WordPerfectExtractor implements Extractor {
@@ -49,9 +49,10 @@ public class WordPerfectExtractor implements Extractor {
 	// " style", " roman", "laserJet", "bullet list", "defaults", "typestyle", "land", "landscape", "portrait"
 	};
 
-	private static final String[] EXACT_EXCLUDES = { "nlus.", "initialize technical style", "document style",
-			"pleading", "times", "and", "where", "left", "right", "over", "(k over", "document", "header",
-			"footer", "itemize", "page number", "pages", "body text", "word", "sjablone" };
+	private static final String[] EXACT_EXCLUDES = { "nlus.", "usjp", "initialize technical style",
+			"document style", "pleading", "times", "and", "where", "left", "right", "over", "(k over",
+			"document", "header", "footer", "itemize", "page number", "pages", "body text", "word",
+			"sjablone", "d printer" };
 
 	private static final String[] CONTAIN_EXCLUDES = { "left (", "right )", "right ]", "right par",
 			"default paragraph", };
