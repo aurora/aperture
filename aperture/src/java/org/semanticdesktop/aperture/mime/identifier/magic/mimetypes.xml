@@ -57,7 +57,6 @@ offset: the position in the byte stream where the sequence should occur. Default
 
 parentType: the mime type that should also be detected in order for this condition to match.
 Defaults to no parent type.
-
 -->
 
 <!--
@@ -437,6 +436,18 @@ Tip: see http://www.filext.com/ for a reasonably complete database of file forma
 		<byteSequence encoding="hex">00 00 02 00</byteSequence>
 	</condition>
 </description>
+
+<description>
+	<!-- Presentations files either have the MS Office or WordPerfect magic number -->
+	<mimeType>application/presentations</mimeType>
+	<extensions>shw</extensions>
+	<condition>
+		<parentType>application/vnd.ms-office</parentType>
+	</condition>
+	<condition>
+		<parentType>application/vnd.wordperfect</parentType>
+	</condition>
+</description>	
 
 <!-- ================== E-mail Types ================== -->
 
