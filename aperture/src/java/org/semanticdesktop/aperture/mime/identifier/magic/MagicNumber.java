@@ -1,23 +1,30 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
  */
 package org.semanticdesktop.aperture.mime.identifier.magic;
 
-public class Condition {
+public class MagicNumber {
 
     private byte[] magicBytes;
     
     private int offset;
     
-    private String parentType;
+    private int minimumLength;
     
-    public Condition(byte[] magicBytes, int offset, String parentType) {
+    public MagicNumber(byte[] magicBytes, int offset) {
+    	if (magicBytes == null) {
+    		throw new IllegalArgumentException("magicBytes should not be null");
+    	}
+    	if (offset < 0) {
+    		throw new IllegalArgumentException("offset should be >= 0");
+    	}
+    	
         this.magicBytes = magicBytes;
         this.offset = offset;
-        this.parentType = parentType;
+        this.minimumLength = magicBytes.length + offset;
     }
     
     public byte[] getMagicBytes() {
@@ -29,21 +36,12 @@ public class Condition {
     }
     
     public int getMinimumLength() {
-        return magicBytes == null ? 0 : magicBytes.length + offset;
-    }
-    
-    public String getParentType() {
-        return parentType;
+        return minimumLength;
     }
     
     public boolean matches(byte[] bytes, int skippedLeadingBytes) {
-        // check whether this Condition actually checks for a magic byte sequence 
-        if (magicBytes == null || offset < 0) {
-            return false;
-        }
-        
         // check whether the specified array is long enough to check for the byte sequence
-        if (bytes.length < offset + magicBytes.length + skippedLeadingBytes) {
+        if (bytes.length < minimumLength + skippedLeadingBytes) {
             return false;
         }
         

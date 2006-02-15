@@ -31,9 +31,9 @@ public class TestMagicMimeTypeIdentifier extends ApertureTestBase {
             MimeTypeDescription description = (MimeTypeDescription) descriptions.get(i);
 
             if ("application/x-java-class".equals(description.getMimeType())) {
-                ArrayList conditions = description.getConditions();
-                Condition condition = (Condition) conditions.get(0);
-                byte[] magicBytes = condition.getMagicBytes();
+                ArrayList magicNumbers = description.getMagicNumbers();
+                MagicNumber number = (MagicNumber) magicNumbers.get(0);
+                byte[] magicBytes = number.getMagicBytes();
 
                 assertEquals(requiredBytes.length, magicBytes.length);
 
@@ -54,6 +54,7 @@ public class TestMagicMimeTypeIdentifier extends ApertureTestBase {
         MimeTypeIdentifier identifier = factory.get();
 
         // some regular checks
+        checkMimeType("plain-text.txt", "text/plain", identifier);
         checkMimeType("html-handwritten.html", "text/html", identifier);
         checkMimeType("pdf-openoffice-2.0-writer.pdf", "application/pdf", identifier);
         checkMimeType("openoffice-2.0-writer.odt", "application/vnd.oasis.opendocument.text", identifier);
@@ -61,7 +62,6 @@ public class TestMagicMimeTypeIdentifier extends ApertureTestBase {
         checkMimeType("staroffice-5.2-writer.sdw", "application/vnd.stardivision.writer", identifier);
         checkMimeType("microsoft-word-2000.doc", "application/vnd.ms-word", identifier);
         checkMimeType("microsoft-works-word-processor-7.0.wps", "application/vnd.ms-works", identifier);
-        checkMimeType("plain-text.txt", "text/plain", identifier);
 
         // try throwing some confusing stuff at it, e.g. files with wrong extensions (lacking a
         // Word-specific magic number, it should still be able to see that the word document
