@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
