@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -236,4 +238,32 @@ public class FileSystemCrawler extends CrawlerBase {
             LOGGER.log(Level.WARNING, "I/O error while processing " + url, e);
         }
     }
+
+    /**
+     * this must be overriden here - so that the URLs match those returned to objectNew etc
+     * Those methods call File.getCanonicalFile(), which resolves symlinks, but the 
+     * reportRemoved in CrawlerBase doesnt.
+     * Damn elusive bugs.
+     * @author grimnes 
+     */
+	protected void reportRemoved(Set ids) {
+		Set newset=new HashSet();
+		for (Iterator i=ids.iterator();i.hasNext();) {
+			String url=(String) i.next();
+			try {
+				URI id = new URI(url);
+				//Isn't this pretty?
+				newset.add(new File(id).getCanonicalFile().toURI().toString());
+			} catch (IOException e) {
+				// Let's all hope this doesn't happen.
+				//and add the unchanged url.
+				newset.add(url);
+			} catch (URISyntaxException e) {
+				// Let's all hope this doesn't happen.
+				//and add the unchanged url.
+				newset.add(url);
+			}
+		}
+		super.reportRemoved(newset);
+	}
 }

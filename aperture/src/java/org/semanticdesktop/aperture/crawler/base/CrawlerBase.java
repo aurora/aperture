@@ -262,7 +262,7 @@ public abstract class CrawlerBase implements Crawler {
         return crawlReport;
     }
 
-    private void reportRemoved(Set ids) {
+    protected void reportRemoved(Set ids) {
         Iterator idIter = ids.iterator();
         while (idIter.hasNext()) {
             String url = (String) idIter.next();
