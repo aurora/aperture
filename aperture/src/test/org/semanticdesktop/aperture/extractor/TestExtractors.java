@@ -18,6 +18,7 @@ import org.semanticdesktop.aperture.extractor.opendocument.OpenDocumentExtractor
 import org.semanticdesktop.aperture.extractor.pdf.PdfExtractorTest;
 import org.semanticdesktop.aperture.extractor.plaintext.PlainTextExtractorTest;
 import org.semanticdesktop.aperture.extractor.powerpoint.PowerPointExtractorTest;
+import org.semanticdesktop.aperture.extractor.presentations.PresentationsExtractorTest;
 import org.semanticdesktop.aperture.extractor.publisher.PublisherExtractorTest;
 import org.semanticdesktop.aperture.extractor.quattro.QuattroExtractorTest;
 import org.semanticdesktop.aperture.extractor.rtf.RtfExtractorTest;
@@ -27,7 +28,7 @@ import org.semanticdesktop.aperture.extractor.wordperfect.WordPerfectExtractorTe
 import org.semanticdesktop.aperture.extractor.xml.XmlExtractorTest;
 
 /**
- * Tests all Extractor implelementations and related classes.
+ * Tests all Extractor implementations and related classes.
  */
 public class TestExtractors extends TestSuite {
 
@@ -46,6 +47,7 @@ public class TestExtractors extends TestSuite {
         addTest(new TestSuite(PdfExtractorTest.class));
         addTest(new TestSuite(PlainTextExtractorTest.class));
         addTest(new TestSuite(PowerPointExtractorTest.class));
+        addTest(new TestSuite(PresentationsExtractorTest.class));
         addTest(new TestSuite(PublisherExtractorTest.class));
         addTest(new TestSuite(QuattroExtractorTest.class));
         addTest(new TestSuite(RtfExtractorTest.class));
