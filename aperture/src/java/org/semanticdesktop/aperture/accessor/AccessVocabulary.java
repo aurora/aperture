@@ -14,7 +14,7 @@ import org.openrdf.model.impl.URIImpl;
  */
 public interface AccessVocabulary {
 
-    public static final String NS = "http://aperture.semanticdesktop.org/ontology/data/";
+    public static final String NS = "http://aperture.semanticdesktop.org/ontology/data#";
 
     public static final URI FULL_TEXT = new URIImpl(NS + "fullText");
 
@@ -74,4 +74,11 @@ public interface AccessVocabulary {
     public static final URI PART_OF = new URIImpl(NS + "partOf");
     
     public static final URI EMAIL_ADDRESS = new URIImpl(NS + "emailAddress");
+    
+    // Types
+    
+    public static final URI PERSON = new URIImpl(NS+"Person");
+    public static final URI MESSAGE = new URIImpl(NS+"Message");
+    public static final URI FOLDER = new URIImpl(NS+"Folder");
+    
 }

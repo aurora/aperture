@@ -19,7 +19,7 @@ public interface SourceVocabulary {
 
     /* Namespaces */
 
-    public static final String NS = "http://aperture.semanticdesktop.org/ontology/source/";
+    public static final String NS = "http://aperture.semanticdesktop.org/ontology/source#";
 
     /* Classes */
 

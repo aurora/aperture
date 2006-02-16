@@ -33,6 +33,7 @@ import org.openrdf.model.impl.BNodeImpl;
 import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.model.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.AccessVocabulary;
@@ -613,6 +614,9 @@ public class DataObjectFactory {
             metadata.put(AccessVocabulary.PART_OF, parentUri);
         }
 
+        //Add RDF Type
+        metadata.put(RDF.TYPE,AccessVocabulary.MESSAGE);
+        
         copyString(AccessVocabulary.CHARACTER_SET, map, metadata);
         copyString(AccessVocabulary.MIME_TYPE, map, metadata);
         copyString(AccessVocabulary.CONTENT_MIME_TYPE, map, metadata);
@@ -682,6 +686,15 @@ public class DataObjectFactory {
         }
     }
 
+    private String getPersonURI(String email, String name) {
+    		if (hasRealValue(email)) {
+    			return "email:"+email;
+    		} else {
+    			//Does this ever happen?
+    			return "emailperson:"+name;
+    		}
+    	}
+    
     private void addAddressMetadata(InternetAddress address, URI predicate, RDFContainer metadata) {
         // create a BNode with the name and address and associate it with the container's described URI
         String name = address.getPersonal();
@@ -696,18 +709,19 @@ public class DataObjectFactory {
         }
 
         if (hasRealValue(name) || hasRealValue(emailAddress)) {
-            String identifier = metadata.getDescribedUri().toString() + "-bnode-" + bnodeIndex++;
-            BNodeImpl bnode = new BNodeImpl(identifier);
-            metadata.put(predicate, bnode);
+            URI personnode=new URIImpl(getPersonURI(emailAddress,name));
+            metadata.put(predicate, personnode);
+            
+            metadata.add(new StatementImpl(personnode,RDF.TYPE,AccessVocabulary.PERSON));
 
             if (hasRealValue(name)) {
                 Literal literal = new LiteralImpl(name);
-                metadata.add(new StatementImpl(bnode, AccessVocabulary.NAME, literal));
+                metadata.add(new StatementImpl(personnode, AccessVocabulary.NAME, literal));
             }
 
             if (hasRealValue(emailAddress)) {
                 Literal literal = new LiteralImpl(emailAddress);
-                metadata.add(new StatementImpl(bnode, AccessVocabulary.EMAIL_ADDRESS, literal));
+                metadata.add(new StatementImpl(personnode, AccessVocabulary.EMAIL_ADDRESS, literal));
             }
         }
     }

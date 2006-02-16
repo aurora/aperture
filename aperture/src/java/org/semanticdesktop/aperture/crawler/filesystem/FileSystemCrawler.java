@@ -102,7 +102,7 @@ public class FileSystemCrawler extends CrawlerBase {
         catch (URISyntaxException e) {
             return null;
         }
-
+        System.err.println(uri);
         return new File(uri);
     }
     
