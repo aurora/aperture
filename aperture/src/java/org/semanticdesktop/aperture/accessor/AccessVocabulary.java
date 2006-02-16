@@ -78,7 +78,9 @@ public interface AccessVocabulary {
     // Types
     
     public static final URI PERSON = new URIImpl(NS+"Person");
-    public static final URI MESSAGE = new URIImpl(NS+"Message");
+    public static final URI DATAOBJECT = new URIImpl(NS+"DataObject");
+    public static final URI FILE = new URIImpl(NS+"File");
     public static final URI FOLDER = new URIImpl(NS+"Folder");
+    public static final URI MESSAGE = new URIImpl(NS+"Message");
     
 }

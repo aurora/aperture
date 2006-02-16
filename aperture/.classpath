@@ -13,9 +13,9 @@
 	<classpathentry kind="lib" path="lib/poi-contrib-rev-375241.jar"/>
 	<classpathentry kind="lib" path="lib/poi-rev-375241.jar"/>
 	<classpathentry kind="lib" path="lib/poi-scratchpad-rev-375241.jar"/>
-	<classpathentry exported="true" sourcepath="/openrdf2-alpha3-release" kind="lib" path="lib/openrdf-model-2.0-alpha-3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/openrdf-model-2.0-alpha-3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/openrdf-util-2.0-alpha-3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/rio-2.0-alpha-3.jar"/>
-	<classpathentry exported="true" sourcepath="/openrdf2-alpha3-release/src" kind="lib" path="lib/sesame-2.0-alpha-3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sesame-2.0-alpha-3.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>

@@ -10,6 +10,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openrdf.model.URI;
+import org.openrdf.model.vocabulary.RDF;
+import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -37,6 +39,8 @@ public class DataObjectBase implements DataObject {
         this.dataSource = dataSource;
         this.metadata = metadata;
         disposed = false;
+        // Add the generic RDF Type
+        metadata.put(RDF.TYPE,AccessVocabulary.DATAOBJECT);
     }
 
     public void finalize() throws Throwable {

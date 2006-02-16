@@ -37,10 +37,12 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.Repository;
 import org.openrdf.util.iterator.CloseableIterator;
 import org.semanticdesktop.aperture.accessor.AccessData;
+import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FolderDataObject;
@@ -344,6 +346,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
         try {
             FolderDataObject folderObject = getObject(folder, folderUrl, source, accessData, containerFactory);
+            folderObject.getMetadata().add(RDF.TYPE,AccessVocabulary.FOLDER);
             if (folderObject == null) {
                 // folder was not modified. Do NOT use reportNotModified: we do not want to register all
                 // children as unmodified as well, as they will be investigated independently below

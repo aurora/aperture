@@ -120,7 +120,7 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 	<rdfs:range rdf:resource="&data;Agent"/>
 	<rdfs:domain rdf:resource="&data;Email"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;fulltext"
+<rdf:Property rdf:about="&data;fullText"
 	 a:maxCardinality="1"
 	 rdfs:label="fulltext">
 	<rdfs:comment>Fulltext of the resource. Plain-text representation with all markup removed. This text can be displayed and used to feed search engines.</rdfs:comment>

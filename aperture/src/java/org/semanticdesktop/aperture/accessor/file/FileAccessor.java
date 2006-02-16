@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.model.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -132,12 +133,18 @@ public class FileAccessor implements DataAccessor {
             }
 
             result = new FileDataObjectBase(id, source, metadata, contentStream);
+            //Add type info 
+            // (type, File) cannot be added in the FileDataObject class itself, cause it is also used for things like email Messages with content, 
+            // that are not strictly speaking FILES.
+            result.getMetadata().add(RDF.TYPE,AccessVocabulary.FILE);
         }
         else if (isFolder) {
             result = new FolderDataObjectBase(id, source, metadata);
+            // RDF typing is added in the folderdata object itself.
         }
         else {
             result = new DataObjectBase(id, source, metadata);
+            // This is also rdf  typed to being a dataobjectbase.
         }
 
         // done!

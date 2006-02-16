@@ -129,6 +129,8 @@ public class DataObjectFactory {
         // convert the HashMap representation to a DataObject representation
         ArrayList result = new ArrayList();
         createDataObjects(map, folderUri, result);
+        //The first object is the Message itself, add RDF type to it
+        ((DataObject)result.get(0)).getMetadata().add(RDF.TYPE,AccessVocabulary.MESSAGE);
         return result;
     }
 
@@ -614,8 +616,7 @@ public class DataObjectFactory {
             metadata.put(AccessVocabulary.PART_OF, parentUri);
         }
 
-        //Add RDF Type
-        metadata.put(RDF.TYPE,AccessVocabulary.MESSAGE);
+        
         
         copyString(AccessVocabulary.CHARACTER_SET, map, metadata);
         copyString(AccessVocabulary.MIME_TYPE, map, metadata);
