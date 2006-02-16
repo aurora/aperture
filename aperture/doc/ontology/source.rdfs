@@ -2,7 +2,7 @@
 <!DOCTYPE rdf:RDF [
 	 <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
 	 <!ENTITY a 'http://protege.stanford.edu/system#'>
-	 <!ENTITY source 'http://aperture.semanticdesktop.org/ontology/source/'>
+	 <!ENTITY source 'http://aperture.semanticdesktop.org/ontology/source#'>
 	 <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema#'>
 ]>
 <rdf:RDF xmlns:rdf="&rdf;"
@@ -10,50 +10,50 @@
 	 xmlns:source="&source;"
 	 xmlns:rdfs="&rdfs;">
 <rdfs:Class rdf:about="&source;DataSource"
-	 rdfs:label="DataSource">
+	 rdfs:label="source:DataSource">
 	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
 </rdfs:Class>
 <rdfs:Class rdf:about="&source;FileSystemDataSource"
-	 rdfs:label="FileSystemDataSource">
+	 rdfs:label="source:FileSystemDataSource">
 	<rdfs:subClassOf rdf:resource="&source;DataSource"/>
 </rdfs:Class>
 <rdfs:Class rdf:about="&source;IMAPDataSource"
-	 rdfs:label="IMAPDataSource">
+	 rdfs:label="source:IMAPDataSource">
 	<rdfs:subClassOf rdf:resource="&source;DataSource"/>
 </rdfs:Class>
 <rdfs:Class rdf:about="&source;Pattern"
-	 rdfs:label="Pattern">
+	 rdfs:label="source:Pattern">
 	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
 </rdfs:Class>
 <rdfs:Class rdf:about="&source;RegExpPattern"
-	 rdfs:label="RegExpPattern">
+	 rdfs:label="source:RegExpPattern">
 	<rdfs:subClassOf rdf:resource="&source;Pattern"/>
 </rdfs:Class>
 <rdfs:Class rdf:about="&source;SubstringPattern"
-	 rdfs:label="SubstringPattern">
+	 rdfs:label="source:SubstringPattern">
 	<rdfs:subClassOf rdf:resource="&source;Pattern"/>
 </rdfs:Class>
 <rdfs:Class rdf:about="&source;WebDataSource"
-	 rdfs:label="WebDataSource">
+	 rdfs:label="source:WebDataSource">
 	<rdfs:subClassOf rdf:resource="&source;DataSource"/>
 </rdfs:Class>
 <rdf:Property rdf:about="&source;condition"
 	 a:maxCardinality="1"
 	 rdfs:comment="the condition for this pattern to match"
-	 rdfs:label="condition">
+	 rdfs:label="source:condition">
 	<rdfs:domain rdf:resource="&source;Pattern"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source;connectionSecurity"
 	 a:maxCardinality="1"
-	 rdfs:label="connectionSecurity">
+	 rdfs:label="source:connectionSecurity">
 	<rdfs:domain rdf:resource="&source;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source;excludePatterns"
 	 a:maxCardinality="1"
 	 rdfs:comment="Patterns to exclude from this datasource"
-	 rdfs:label="excludePatterns">
+	 rdfs:label="source:excludePatterns">
 	<rdfs:domain rdf:resource="&source;DataSource"/>
 	<rdfs:range rdf:resource="&source;Pattern"/>
 </rdf:Property>
@@ -61,7 +61,7 @@
 	 a:maxCardinality="1"
 	 a:range="boolean"
 	 rdfs:comment="Include embedded resources when crawling this datasource."
-	 rdfs:label="includeEmbeddedResources">
+	 rdfs:label="source:includeEmbeddedResources">
 	<rdfs:domain rdf:resource="&source;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
@@ -69,14 +69,14 @@
 	 a:maxCardinality="1"
 	 a:range="boolean"
 	 rdfs:comment="Include hidden resources when crawling this datasource"
-	 rdfs:label="includeHiddenResources">
+	 rdfs:label="source:includeHiddenResources">
 	<rdfs:domain rdf:resource="&source;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source;includePattern"
 	 a:maxCardinality="1"
 	 rdfs:comment="patterns to include in this datasource"
-	 rdfs:label="includePattern">
+	 rdfs:label="source:includePattern">
 	<rdfs:domain rdf:resource="&source;DataSource"/>
 	<rdfs:range rdf:resource="&source;Pattern"/>
 </rdf:Property>
@@ -84,14 +84,14 @@
 	 a:maxCardinality="1"
 	 a:range="integer"
 	 rdfs:comment="The maximum depth to crawl to in this datasource."
-	 rdfs:label="maximumDepth">
+	 rdfs:label="source:maximumDepth">
 	<rdfs:domain rdf:resource="&source;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source;maximumSize"
 	 a:maxCardinality="1"
 	 a:range="integer"
-	 rdfs:label="maximumSize">
+	 rdfs:label="source:maximumSize">
 	<rdfs:comment>The maximum size (in bytes) for resources in this datasource.</rdfs:comment>
 	<rdfs:domain rdf:resource="&source;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
@@ -99,14 +99,14 @@
 <rdf:Property rdf:about="&source;password"
 	 a:maxCardinality="1"
 	 rdfs:comment="The Password used to access this datasource."
-	 rdfs:label="password">
+	 rdfs:label="source:password">
 	<rdfs:domain rdf:resource="&source;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source;rootUrl"
 	 a:maxCardinality="1"
 	 rdfs:comment="The root URL of this datasource."
-	 rdfs:label="rootUrl">
+	 rdfs:label="source:rootUrl">
 	<rdfs:domain rdf:resource="&source;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>

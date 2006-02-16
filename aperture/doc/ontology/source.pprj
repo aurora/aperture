@@ -1,4 +1,4 @@
-; Wed Feb 01 14:10:59 CET 2006
+; Thu Feb 16 10:53:36 CET 2006
 ; 
 ;+ (version "3.0")
 ;+ (build "Build 141")
@@ -20,9 +20,9 @@
 ([BROWSER_SLOT_NAMES] of  Property_List
 
 	(properties
-		[DataSource_ProjectKB_Instance_64]
-		[DataSource_ProjectKB_Instance_65]
-		[DataSource_ProjectKB_Instance_66]))
+		[source_ProjectKB_Instance_56]
+		[source_ProjectKB_Instance_57]
+		[source_ProjectKB_Instance_58]))
 
 ([CLSES_TAB] of  Widget
 
@@ -36,11 +36,20 @@
 
 	(name ":CREATOR"))
 
+([DataSource_ProjectKB_Instance_0] of  Widget
+
+	(is_hidden TRUE)
+	(property_list [DataSource_ProjectKB_Instance_1])
+	(widget_class_name "TGViztab.TGVizTab"))
+
+([DataSource_ProjectKB_Instance_1] of  Property_List
+)
+
 ([DataSource_ProjectKB_Instance_10] of  Widget
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_11])
-	(widget_class_name "edu.stanford.smi.protege.widget.ClsesAndInstancesTab"))
+	(widget_class_name "edu.stanford.smi.protege.keywordsearch.StringSearch"))
 
 ([DataSource_ProjectKB_Instance_11] of  Property_List
 )
@@ -49,7 +58,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_13])
-	(widget_class_name "edu.stanford.smi.protege.keywordsearch.StringSearch"))
+	(widget_class_name "edu.stanford.smi.RemoteKBTab.WordNetTab"))
 
 ([DataSource_ProjectKB_Instance_13] of  Property_List
 )
@@ -58,7 +67,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_15])
-	(widget_class_name "edu.stanford.smi.RemoteKBTab.WordNetTab"))
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadatatab.OWLMetadataTab"))
 
 ([DataSource_ProjectKB_Instance_15] of  Property_List
 )
@@ -67,7 +76,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_17])
-	(widget_class_name "edu.stanford.smi.protegex.owl.ui.metadatatab.OWLMetadataTab"))
+	(widget_class_name "edu.stanford.smi.protegex.psm.PSMTab"))
 
 ([DataSource_ProjectKB_Instance_17] of  Property_List
 )
@@ -76,7 +85,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_19])
-	(widget_class_name "edu.stanford.smi.protegex.psm.PSMTab"))
+	(widget_class_name "ezOWLTab"))
 
 ([DataSource_ProjectKB_Instance_19] of  Property_List
 )
@@ -85,13 +94,13 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_3])
-	(widget_class_name "TGViztab.TGVizTab"))
+	(widget_class_name "dfki.protege.ontoviz_tab.OntovizTab"))
 
 ([DataSource_ProjectKB_Instance_20] of  Widget
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_21])
-	(widget_class_name "ezOWLTab"))
+	(widget_class_name "ezpal.EZPalTab"))
 
 ([DataSource_ProjectKB_Instance_21] of  Property_List
 )
@@ -100,7 +109,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_23])
-	(widget_class_name "ezpal.EZPalTab"))
+	(widget_class_name "edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab"))
 
 ([DataSource_ProjectKB_Instance_23] of  Property_List
 )
@@ -109,7 +118,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_25])
-	(widget_class_name "edu.stanford.smi.protegex.owl.swrl.ui.tab.SWRLTab"))
+	(widget_class_name "edu.stanford.smi.protegex.fctab.FacetConstraintsTab"))
 
 ([DataSource_ProjectKB_Instance_25] of  Property_List
 )
@@ -118,7 +127,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_27])
-	(widget_class_name "edu.stanford.smi.protegex.fctab.FacetConstraintsTab"))
+	(widget_class_name "edu.stanford.smi.protegex.xml.tab.XMLTab"))
 
 ([DataSource_ProjectKB_Instance_27] of  Property_List
 )
@@ -127,7 +136,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_29])
-	(widget_class_name "edu.stanford.smi.protegex.xml.tab.XMLTab"))
+	(widget_class_name "edu.stanford.smi.protegex.prompt.PromptTab"))
 
 ([DataSource_ProjectKB_Instance_29] of  Property_List
 )
@@ -139,7 +148,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_31])
-	(widget_class_name "edu.stanford.smi.protegex.prompt.PromptTab"))
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.cls.OWLClsesTab"))
 
 ([DataSource_ProjectKB_Instance_31] of  Property_List
 )
@@ -148,7 +157,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_33])
-	(widget_class_name "edu.stanford.smi.protegex.owl.ui.cls.OWLClsesTab"))
+	(widget_class_name "edu.stanford.smi.protege.widget.KAToolTab"))
 
 ([DataSource_ProjectKB_Instance_33] of  Property_List
 )
@@ -157,7 +166,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_35])
-	(widget_class_name "edu.stanford.smi.protege.widget.KAToolTab"))
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.properties.OWLPropertiesTab"))
 
 ([DataSource_ProjectKB_Instance_35] of  Property_List
 )
@@ -166,7 +175,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_37])
-	(widget_class_name "edu.stanford.smi.protegex.owl.ui.properties.OWLPropertiesTab"))
+	(widget_class_name "edu.stanford.smi.protegex.widget.pal.PalConstraintsTab"))
 
 ([DataSource_ProjectKB_Instance_37] of  Property_List
 )
@@ -175,7 +184,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_39])
-	(widget_class_name "edu.stanford.smi.protegex.widget.pal.PalConstraintsTab"))
+	(widget_class_name "DataGenieTab.DataGenieTab"))
 
 ([DataSource_ProjectKB_Instance_39] of  Property_List
 )
@@ -184,13 +193,13 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_5])
-	(widget_class_name "dfki.protege.ontoviz_tab.OntovizTab"))
+	(widget_class_name "JessTab.JessTab"))
 
 ([DataSource_ProjectKB_Instance_40] of  Widget
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_41])
-	(widget_class_name "DataGenieTab.DataGenieTab"))
+	(widget_class_name "edu.stanford.smi.protege.widget.instance_tree.KnowledgeTreeTab"))
 
 ([DataSource_ProjectKB_Instance_41] of  Property_List
 )
@@ -199,7 +208,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_43])
-	(widget_class_name "edu.stanford.smi.protege.widget.instance_tree.KnowledgeTreeTab"))
+	(widget_class_name "edu.stanford.smi.protege.widget.instance_tree.InstanceTreeTab"))
 
 ([DataSource_ProjectKB_Instance_43] of  Property_List
 )
@@ -208,7 +217,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_45])
-	(widget_class_name "edu.stanford.smi.protege.widget.instance_tree.InstanceTreeTab"))
+	(widget_class_name "ca.uvic.csr.shrimp.protegeTab.JambalayaTab"))
 
 ([DataSource_ProjectKB_Instance_45] of  Property_List
 )
@@ -217,7 +226,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_47])
-	(widget_class_name "ca.uvic.csr.shrimp.protegeTab.JambalayaTab"))
+	(widget_class_name "edu.stanford.smi.protegex.owl.ui.OWLIndividualsTab"))
 
 ([DataSource_ProjectKB_Instance_47] of  Property_List
 )
@@ -226,7 +235,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_49])
-	(widget_class_name "edu.stanford.smi.protegex.owl.ui.OWLIndividualsTab"))
+	(widget_class_name "org.algernon.kb.okbc.protege.plugins.AlgernonTab"))
 
 ([DataSource_ProjectKB_Instance_49] of  Property_List
 )
@@ -238,7 +247,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_51])
-	(widget_class_name "org.algernon.kb.okbc.protege.plugins.AlgernonTab"))
+	(widget_class_name "edu.stanford.smi.protegex.widget.pal.PalQueriesTab"))
 
 ([DataSource_ProjectKB_Instance_51] of  Property_List
 )
@@ -247,7 +256,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_53])
-	(widget_class_name "edu.stanford.smi.protegex.widget.pal.PalQueriesTab"))
+	(widget_class_name "edu.stanford.smi.RemoteKBTab.UMLSTab"))
 
 ([DataSource_ProjectKB_Instance_53] of  Property_List
 )
@@ -256,40 +265,16 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_55])
-	(widget_class_name "edu.stanford.smi.RemoteKBTab.UMLSTab"))
-
-([DataSource_ProjectKB_Instance_55] of  Property_List
-)
-
-([DataSource_ProjectKB_Instance_56] of  Widget
-
-	(is_hidden TRUE)
-	(property_list [DataSource_ProjectKB_Instance_57])
 	(widget_class_name "uk.ac.man.cs.mig.coode.owlviz.ui.OWLVizTab"))
 
-([DataSource_ProjectKB_Instance_57] of  Property_List
+([DataSource_ProjectKB_Instance_55] of  Property_List
 )
 
 ([DataSource_ProjectKB_Instance_6] of  Widget
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_7])
-	(widget_class_name "JessTab.JessTab"))
-
-([DataSource_ProjectKB_Instance_64] of  String
-
-	(name ":META-CLASS")
-	(string_value "%3ANAME"))
-
-([DataSource_ProjectKB_Instance_65] of  String
-
-	(name ":INSTANCE-ANNOTATION")
-	(string_value "%3AANNOTATION-TEXT"))
-
-([DataSource_ProjectKB_Instance_66] of  String
-
-	(name ":PAL-CONSTRAINT")
-	(string_value "%3APAL-NAME"))
+	(widget_class_name "script.ProtegeScriptTab"))
 
 ([DataSource_ProjectKB_Instance_7] of  Property_List
 )
@@ -302,7 +287,7 @@
 
 	(is_hidden TRUE)
 	(property_list [DataSource_ProjectKB_Instance_9])
-	(widget_class_name "script.ProtegeScriptTab"))
+	(widget_class_name "edu.stanford.smi.protege.widget.ClsesAndInstancesTab"))
 
 ([DataSource_ProjectKB_Instance_9] of  Property_List
 )
@@ -400,12 +385,12 @@
 ([KB_129952_Instance_69] of  String
 
 	(name "rdfs_file_name")
-	(string_value "DataSource.rdfs"))
+	(string_value "source.rdfs"))
 
 ([KB_129952_Instance_70] of  String
 
 	(name "rdf_file_name")
-	(string_value "DataSource.rdf"))
+	(string_value "source.rdf"))
 
 ([KB_129952_Instance_71] of  String
 
@@ -424,7 +409,7 @@
 ([KB_914698_Instance_1] of  String
 
 	(name "namespaces")
-	(string_value "rdfs http://www.w3.org/2000/01/rdf-schema# rdf http://www.w3.org/1999/02/22-rdf-syntax-ns# "))
+	(string_value "source http://aperture.semanticdesktop.org/ontology/source# rdfs http://www.w3.org/2000/01/rdf-schema# rdf http://www.w3.org/1999/02/22-rdf-syntax-ns# "))
 
 ([LAYOUT_PROPERTIES] of  Property_List
 
@@ -525,6 +510,21 @@
 ([SLOTS_TAB] of  Widget
 
 	(widget_class_name "edu.stanford.smi.protege.widget.SlotsTab"))
+
+([source_ProjectKB_Instance_56] of  String
+
+	(name ":META-CLASS")
+	(string_value "%3ANAME"))
+
+([source_ProjectKB_Instance_57] of  String
+
+	(name ":INSTANCE-ANNOTATION")
+	(string_value "%3AANNOTATION-TEXT"))
+
+([source_ProjectKB_Instance_58] of  String
+
+	(name ":PAL-CONSTRAINT")
+	(string_value "%3APAL-NAME"))
 
 ([SOURCES] of  Property_List
 
