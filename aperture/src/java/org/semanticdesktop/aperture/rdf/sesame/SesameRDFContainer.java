@@ -282,7 +282,7 @@ public class SesameRDFContainer implements RDFContainer {
 
     public Collection getAll(URI property) {
         // determine all matching Statements
-        CloseableIterator iterator = repository.getStatements(describedUri, property, null);
+        CloseableIterator iterator = repository.getStatements(describedUri, property, null, context);
         
         try {
 	        // put their values in a new Collection
@@ -332,19 +332,24 @@ public class SesameRDFContainer implements RDFContainer {
         try {
             // remove any existing statements with this property, throw an exception when there is more
             // than one such statement
-            CloseableIterator statements = repository.getStatements(describedUri, property, null);
+            CloseableIterator statements = repository.getStatements(describedUri, property, null, context);
+            RStatement statementToRemove = null;
+            
             try {
 	            if (statements.hasNext()) {
-	                RStatement statement = (RStatement) statements.next();
+	                statementToRemove = (RStatement) statements.next();
 	                if (statements.hasNext()) {
 	                    throw new MultipleValuesException(describedUri, property);
 	                }
-	                
-	                repository.remove(statement, context);
 	            }
             }
             finally {
             	statements.close();
+            }
+            
+            // do this after the iterator has closed or the remove may result in a deadlock
+            if (statementToRemove != null) {
+            	repository.remove(statementToRemove, context);
             }
             
             // add the new statement
@@ -357,7 +362,7 @@ public class SesameRDFContainer implements RDFContainer {
     }
 
     private Value getInternal(URI property) {
-        CloseableIterator statements = repository.getStatements(describedUri, property, null);
+        CloseableIterator statements = repository.getStatements(describedUri, property, null, context);
 
         try {
             Value result = null;
