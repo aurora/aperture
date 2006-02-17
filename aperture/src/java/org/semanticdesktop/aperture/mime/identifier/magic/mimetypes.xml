@@ -433,6 +433,7 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 
 <description>
 	<mimeType>application/x-framemaker</mimeType>
+	<extensions>book,fm,mif</extensions>
 	<magicNumber encoding="string">&lt;MakerFile</magicNumber>
 	<magicNumber encoding="string">&lt;MIFFile</magicNumber>
 	<magicNumber encoding="string">&lt;MakerDictionary</magicNumber>
