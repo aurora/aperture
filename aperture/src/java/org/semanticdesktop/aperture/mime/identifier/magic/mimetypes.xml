@@ -474,6 +474,41 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<magicNumber encoding="hex">ca fe ba be</magicNumber>
 </description>
 
+<description>
+	<mimeType>application/x-sh</mimeType>
+	<extensions>sh</extensions>
+	<magicNumber encoding="string">#!/bin/sh</magicNumber>
+	<magicNumber encoding="string">#!/usr/bin/sh</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/x-csh</mimeType>
+	<extensions>csh</extensions>
+	<magicNumber encoding="string">#!/bin/csh</magicNumber>
+	<magicNumber encoding="string">#!/usr/bin/csh</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/x-bash</mimeType>
+	<extensions>bash</extensions>
+	<magicNumber encoding="string">#!/bin/bash</magicNumber>
+	<magicNumber encoding="string">#!/usr/bin/bash</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/x-ksh</mimeType>
+	<extensions>ksh</extensions>
+	<magicNumber encoding="string">#!/bin/ksh</magicNumber>
+	<magicNumber encoding="string">#!/usr/bin/ksh</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/x-tsh</mimeType>
+	<extensions>tsh</extensions>
+	<magicNumber encoding="string">#!/bin/tsh</magicNumber>
+	<magicNumber encoding="string">#!/usr/bin/tsh</magicNumber>
+</description>
+
 <!-- ================== Image Types ================== -->
 
 <description>
