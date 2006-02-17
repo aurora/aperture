@@ -34,7 +34,7 @@ public class PresentationsExtractor implements Extractor {
 
 	private static final byte[] WORDPERFECT_MAGIC_BYTES = new byte[] { (byte) 0xff, (byte) 0x57, (byte) 0x50,
 			(byte) 0x43 };
-	
+
 	public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
 			throws ExtractorException {
 		try {
@@ -43,12 +43,12 @@ public class PresentationsExtractor implements Extractor {
 			stream.mark(length);
 			byte[] bytes = IOUtil.readBytes(stream, length);
 			stream.reset();
-			
+
 			if (hasMagicNumber(bytes, OFFICE_MAGIC_BYTES)) {
 				PoiUtil.extractAll(stream, null, result);
 			}
 			else if (hasMagicNumber(bytes, WORDPERFECT_MAGIC_BYTES)) {
-				WPStringExtractor extractor = new WPStringExtractor();
+				PresentationsWPStringExtractor extractor = new PresentationsWPStringExtractor();
 				String text = extractor.extract(stream).trim();
 				if (text.length() > 0) {
 					result.put(AccessVocabulary.FULL_TEXT, text);
@@ -59,18 +59,39 @@ public class PresentationsExtractor implements Extractor {
 			throw new ExtractorException(e);
 		}
 	}
-	
+
 	private boolean hasMagicNumber(byte[] bytes, byte[] magicNumber) {
 		if (bytes.length < magicNumber.length) {
 			return false;
 		}
-		
+
 		for (int i = 0; i < magicNumber.length; i++) {
 			if (bytes[i] != magicNumber[i]) {
 				return false;
 			}
 		}
-		
+
 		return true;
+	}
+
+	private static class PresentationsWPStringExtractor extends WPStringExtractor {
+
+		private static final String[] EXCLUDES = { "title of show", "subtitle of show", "subitem",
+				"first item", "second item", "third item", "fourth item", "title of slide",
+				"subtitle of slide", "north", "south", "east", "west",
+				"this is the first item.  this is the second item.",
+				"this is the third item.  this is the fourth item.", "click to edit master title style",
+				"click to edit master subtitle", "click to edit master text styles", "footer area",
+				"first level", "second level", "third level", "fourth level", "fifth level" };
+
+		protected boolean isValidLine(String lineLowerCase) {
+			for (int i = 0; i < EXCLUDES.length; i++) {
+				if (lineLowerCase.equals(EXCLUDES[i])) {
+					return false;
+				}
+			}
+
+			return super.isValidLine(lineLowerCase);
+		}
 	}
 }
