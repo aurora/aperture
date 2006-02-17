@@ -346,7 +346,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
         try {
             FolderDataObject folderObject = getObject(folder, folderUrl, source, accessData, containerFactory);
-            folderObject.getMetadata().add(RDF.TYPE,AccessVocabulary.FOLDER);
             if (folderObject == null) {
                 // folder was not modified. Do NOT use reportNotModified: we do not want to register all
                 // children as unmodified as well, as they will be investigated independently below
