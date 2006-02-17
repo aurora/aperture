@@ -91,11 +91,6 @@ public class DataObjectFactory {
     private RDFContainerFactory containerFactory;
 
     /**
-     * Internal counter used to generate BNode identifiers.
-     */
-    private int bnodeIndex;
-
-    /**
      * Returns a list of DataObjects that have been created based on the contents of the specified
      * MimeMessage. The order of the DataObjects reflects the order of the message parts they represent,
      * i.e. the first DataObject represents the entire message, subsequent DataObjects represent
@@ -120,7 +115,6 @@ public class DataObjectFactory {
         // initialize variables
         this.source = source;
         this.containerFactory = containerFactory;
-        this.bnodeIndex = 0;
 
         // create a HashMap representation of this message and all its nested parts
         HashMap map = handleMailPart(message, new URIImpl(messageUri), getDate(message));
