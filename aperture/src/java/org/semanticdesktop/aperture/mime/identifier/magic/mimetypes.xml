@@ -337,15 +337,21 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 <!-- has either MS Office's magic number or its own -->
 
 <description>
-	<mimeType>application/vnd.ms-works</mimeType>
+	<mimeType>application/vnd.ms-works</mimeType> <!-- wps = Works documents, xlr = newer Works spreadsheets -->
 	<parentType>application/vnd.ms-office</parentType>
 	<extensions>wps,xlr</extensions>
 </description>
 
 <description>
-	<mimeType>application/vnd.ms-works</mimeType>
+	<mimeType>application/vnd.ms-works</mimeType>  <!-- older Works Spreadsheets -->
 	<extensions>wks</extensions>
 	<magicNumber encoding="hex">ff 00 02 00 04 04 05 54 02 00</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/vnd.ms-works-db</mimeType>
+	<parentType>application/vnd.ms-office</parentType>
+	<extensions>wdb</extensions>
 </description>
 
 <!-- ================== Corel Types ================== -->
