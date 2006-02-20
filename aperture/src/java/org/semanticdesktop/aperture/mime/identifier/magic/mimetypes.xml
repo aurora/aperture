@@ -387,11 +387,25 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<extensions>shw</extensions>
 </description>	
 
-<!-- ================== E-mail Types ================== -->
+<!-- ================== E-mail and News Types ================== -->
 
 <description>
 	<mimeType>message/rfc822</mimeType>
 	<extensions>eml</extensions>
+	<magicNumber encoding="string">Return-Path:</magicNumber>
+	<magicNumber encoding="string">From:</magicNumber>
+	<magicNumber encoding="string">Forward to</magicNumber>
+	<magicNumber encoding="string">Pipe to</magicNumber>
+	<magicNumber encoding="string">Relay-Version:</magicNumber>
+	<magicNumber encoding="string">#! rnews</magicNumber>
+	<magicNumber encoding="string">N#! rnews</magicNumber>
+</description>
+
+<description>
+	<mimeType>message/news</mimeType>
+	<magicNumber encoding="string">Path:</magicNumber>
+	<magicNumber encoding="string">Xref:</magicNumber>
+	<magicNumber encoding="string">Article</magicNumber>
 </description>
 
 <description>
