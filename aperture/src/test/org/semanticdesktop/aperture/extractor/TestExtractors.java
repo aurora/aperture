@@ -25,6 +25,7 @@ import org.semanticdesktop.aperture.extractor.rtf.RtfExtractorTest;
 import org.semanticdesktop.aperture.extractor.visio.VisioExtractorTest;
 import org.semanticdesktop.aperture.extractor.word.WordExtractorTest;
 import org.semanticdesktop.aperture.extractor.wordperfect.WordPerfectExtractorTest;
+import org.semanticdesktop.aperture.extractor.works.WorksExtractorTest;
 import org.semanticdesktop.aperture.extractor.xml.XmlExtractorTest;
 
 /**
@@ -54,6 +55,7 @@ public class TestExtractors extends TestSuite {
         addTest(new TestSuite(VisioExtractorTest.class));
         addTest(new TestSuite(WordExtractorTest.class));
         addTest(new TestSuite(WordPerfectExtractorTest.class));
+        addTest(new TestSuite(WorksExtractorTest.class));
         addTest(new TestSuite(XmlExtractorTest.class));
         
         // test the registries holding the ExtractorFactories

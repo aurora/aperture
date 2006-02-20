@@ -44,6 +44,9 @@
 		<name>org.semanticdesktop.aperture.extractor.wordperfect.WordPerfectExtractorFactory</name>
 	</extractorFactory>
 	<extractorFactory>
+		<name>org.semanticdesktop.aperture.extractor.works.WorksExtractorFactory</name>
+	</extractorFactory>
+	<extractorFactory>
 		<name>org.semanticdesktop.aperture.extractor.xml.XmlExtractorFactory</name>
 	</extractorFactory>
 </extractorFactories>
