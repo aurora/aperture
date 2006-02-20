@@ -26,13 +26,8 @@ public class XmlExtractorFactory implements ExtractorFactory {
 		MIME_TYPES = Collections.unmodifiableSet(set);
 	}
 
-	public XmlExtractor extractor;
-
 	public Extractor get() {
-		if (extractor == null) {
-			extractor = new XmlExtractor();
-		}
-		return extractor;
+		return new XmlExtractor();
 	}
 
 	public Set getSupportedMimeTypes() {

@@ -27,13 +27,8 @@ public class PresentationsExtractorFactory implements ExtractorFactory {
 		MIME_TYPES = Collections.unmodifiableSet(set);
 	}
 
-	public PresentationsExtractor extractor;
-
 	public Extractor get() {
-		if (extractor == null) {
-			extractor = new PresentationsExtractor();
-		}
-		return extractor;
+		return new PresentationsExtractor();
 	}
 
 	public Set getSupportedMimeTypes() {

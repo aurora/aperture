@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -60,13 +60,8 @@ public class OpenDocumentExtractorFactory implements ExtractorFactory {
         set.add("application/x-" + baseType + "-template");
     }
 
-    public OpenDocumentExtractor extractor;
-
     public Extractor get() {
-        if (extractor == null) {
-            extractor = new OpenDocumentExtractor();
-        }
-        return extractor;
+    	return new OpenDocumentExtractor();
     }
 
     public Set getSupportedMimeTypes() {

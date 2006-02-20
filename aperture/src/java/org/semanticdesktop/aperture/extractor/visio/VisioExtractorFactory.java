@@ -31,13 +31,8 @@ public class VisioExtractorFactory implements ExtractorFactory {
 		MIME_TYPES = Collections.unmodifiableSet(set);
 	}
 
-	public VisioExtractor extractor;
-
 	public Extractor get() {
-		if (extractor == null) {
-			extractor = new VisioExtractor();
-		}
-		return extractor;
+		return new VisioExtractor();
 	}
 
 	public Set getSupportedMimeTypes() {

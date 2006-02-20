@@ -27,13 +27,8 @@ public class WordPerfectExtractorFactory implements ExtractorFactory {
 		MIME_TYPES = Collections.unmodifiableSet(set);
 	}
 
-	public WordPerfectExtractor extractor;
-
 	public Extractor get() {
-		if (extractor == null) {
-			extractor = new WordPerfectExtractor();
-		}
-		return extractor;
+		return new WordPerfectExtractor();
 	}
 
 	public Set getSupportedMimeTypes() {

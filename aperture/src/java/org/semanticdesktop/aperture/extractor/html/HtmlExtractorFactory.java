@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -15,26 +15,21 @@ import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 
 public class HtmlExtractorFactory implements ExtractorFactory {
 
-    private static final Set MIME_TYPES;
+	private static final Set MIME_TYPES;
 
-    static {
-        HashSet set = new HashSet();
-        set.add("text/html");
-        set.add("application/xhtml+xml");  // found at http://www.hixie.ch/advocacy/xhtml
-        
-        MIME_TYPES = Collections.unmodifiableSet(set);
-    }
-    
-    private HtmlExtractor extractor;
-    
-    public Extractor get() {
-        if (extractor == null) {
-            extractor = new HtmlExtractor();
-        }
-        return extractor;
-    }
+	static {
+		HashSet set = new HashSet();
+		set.add("text/html");
+		set.add("application/xhtml+xml"); // found at http://www.hixie.ch/advocacy/xhtml
 
-    public Set getSupportedMimeTypes() {
-        return MIME_TYPES;
-    }
+		MIME_TYPES = Collections.unmodifiableSet(set);
+	}
+
+	public Extractor get() {
+		return new HtmlExtractor();
+	}
+
+	public Set getSupportedMimeTypes() {
+		return MIME_TYPES;
+	}
 }

@@ -16,13 +16,8 @@ public class OfficeExtractorFactory implements ExtractorFactory {
 
 	private static final Set MIME_TYPES = Collections.singleton("application/vnd.ms-office");
 
-	public OfficeExtractor extractor;
-
 	public Extractor get() {
-		if (extractor == null) {
-			extractor = new OfficeExtractor();
-		}
-		return extractor;
+		return new OfficeExtractor();
 	}
 
 	public Set getSupportedMimeTypes() {

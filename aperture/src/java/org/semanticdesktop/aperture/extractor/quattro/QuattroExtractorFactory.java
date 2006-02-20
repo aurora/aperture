@@ -28,13 +28,8 @@ public class QuattroExtractorFactory implements ExtractorFactory {
 		MIME_TYPES = Collections.unmodifiableSet(set);
 	}
 
-	public QuattroExtractor extractor;
-
 	public Extractor get() {
-		if (extractor == null) {
-			extractor = new QuattroExtractor();
-		}
-		return extractor;
+		return new QuattroExtractor();
 	}
 
 	public Set getSupportedMimeTypes() {

@@ -27,13 +27,8 @@ public class RtfExtractorFactory implements ExtractorFactory {
 		MIME_TYPES = Collections.unmodifiableSet(set);
 	}
 
-	public RtfExtractor extractor;
-
 	public Extractor get() {
-		if (extractor == null) {
-			extractor = new RtfExtractor();
-		}
-		return extractor;
+		return new RtfExtractor();
 	}
 
 	public Set getSupportedMimeTypes() {

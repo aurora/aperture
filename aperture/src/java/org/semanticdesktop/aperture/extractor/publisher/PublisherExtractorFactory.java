@@ -16,13 +16,8 @@ public class PublisherExtractorFactory implements ExtractorFactory {
 
 	private static final Set MIME_TYPES = Collections.singleton("application/x-mspublisher");
 
-	public PublisherExtractor extractor;
-
 	public Extractor get() {
-		if (extractor == null) {
-			extractor = new PublisherExtractor();
-		}
-		return extractor;
+		return new PublisherExtractor();
 	}
 
 	public Set getSupportedMimeTypes() {

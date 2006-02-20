@@ -32,13 +32,8 @@ public class ExcelExtractorFactory implements ExtractorFactory {
 		MIME_TYPES = Collections.unmodifiableSet(set);
 	}
 
-	public ExcelExtractor extractor;
-
 	public Extractor get() {
-		if (extractor == null) {
-			extractor = new ExcelExtractor();
-		}
-		return extractor;
+		return new ExcelExtractor();
 	}
 
 	public Set getSupportedMimeTypes() {

@@ -32,13 +32,8 @@ public class WordExtractorFactory implements ExtractorFactory {
 		MIME_TYPES = Collections.unmodifiableSet(set);
 	}
 
-	public WordExtractor extractor;
-
 	public Extractor get() {
-		if (extractor == null) {
-			extractor = new WordExtractor();
-		}
-		return extractor;
+		return new WordExtractor();
 	}
 
 	public Set getSupportedMimeTypes() {

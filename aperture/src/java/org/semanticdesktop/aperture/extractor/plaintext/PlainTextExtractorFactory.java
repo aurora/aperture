@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -33,10 +33,7 @@ public class PlainTextExtractorFactory implements ExtractorFactory {
     public PlainTextExtractor extractor;
     
     public Extractor get() {
-        if (extractor == null) {
-            extractor = new PlainTextExtractor();
-        }
-        return extractor;
+    	return new PlainTextExtractor();
     }
 
     public Set getSupportedMimeTypes() {

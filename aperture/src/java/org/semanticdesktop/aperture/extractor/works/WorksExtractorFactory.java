@@ -27,13 +27,8 @@ public class WorksExtractorFactory implements ExtractorFactory {
 		MIME_TYPES = Collections.unmodifiableSet(set);
 	}
 
-	public WorksExtractor extractor;
-
 	public Extractor get() {
-		if (extractor == null) {
-			extractor = new WorksExtractor();
-		}
-		return extractor;
+		return new WorksExtractor();
 	}
 
 	public Set getSupportedMimeTypes() {

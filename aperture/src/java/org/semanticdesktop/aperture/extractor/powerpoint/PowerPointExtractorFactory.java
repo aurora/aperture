@@ -37,10 +37,7 @@ public class PowerPointExtractorFactory implements ExtractorFactory {
 	public PowerPointExtractor extractor;
 
 	public Extractor get() {
-		if (extractor == null) {
-			extractor = new PowerPointExtractor();
-		}
-		return extractor;
+		return new PowerPointExtractor();
 	}
 
 	public Set getSupportedMimeTypes() {
