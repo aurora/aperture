@@ -33,233 +33,230 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
  */
 public class FileSystemCrawler extends CrawlerBase {
 
-    private static final boolean DEFAULT_IGNORE_HIDDEN_FILES = true;
+	private static final boolean DEFAULT_IGNORE_HIDDEN_FILES = true;
 
-    private static final int DEFAULT_MAX_DEPTH = Integer.MAX_VALUE;
+	private static final int DEFAULT_MAX_DEPTH = Integer.MAX_VALUE;
 
-    private static final int DEFAULT_MAX_SIZE = Integer.MAX_VALUE;
+	private static final int DEFAULT_MAX_SIZE = Integer.MAX_VALUE;
 
-    private static final Logger LOGGER = Logger.getLogger(FileSystemCrawler.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(FileSystemCrawler.class.getName());
 
-    private boolean ignoreHiddenFiles;
+	private boolean ignoreHiddenFiles;
 
-    private int maximumSize;
+	private int maximumSize;
 
-    private DataAccessorFactory accessorFactory;
+	private DataAccessorFactory accessorFactory;
 
-    private HashMap params;
+	private HashMap params;
 
-    protected ExitCode crawlObjects() {
-        // fetch the source and its configuration
-        DataSource source = getDataSource();
-        RDFContainer configuration = source.getConfiguration();
-        
-        // determine the root file
-        File root = getRootFile(configuration);
-        if (root == null) {
-            // treat this as an error rather than an "empty source" to prevent information loss
-            LOGGER.log(Level.SEVERE, "missing root file");
-            return ExitCode.FATAL_ERROR;
-        }
-        root = root.getAbsoluteFile();
+	protected ExitCode crawlObjects() {
+		// fetch the source and its configuration
+		DataSource source = getDataSource();
+		RDFContainer configuration = source.getConfiguration();
 
-        // determine the maximum depth
-        Integer i = ConfigurationUtil.getMaximumDepth(configuration);
-        int maxDepth = i == null ? DEFAULT_MAX_DEPTH : i.intValue();
+		// determine the root file
+		File root = getRootFile(configuration);
+		if (root == null) {
+			// treat this as an error rather than an "empty source" to prevent information loss
+			LOGGER.log(Level.SEVERE, "missing root file");
+			return ExitCode.FATAL_ERROR;
+		}
+		root = root.getAbsoluteFile();
 
-        // determine the maximum byte size
-        i = ConfigurationUtil.getMaximumByteSize(configuration);
-        maximumSize = i == null ? DEFAULT_MAX_SIZE : i.intValue();
+		// determine the maximum depth
+		Integer i = ConfigurationUtil.getMaximumDepth(configuration);
+		int maxDepth = i == null ? DEFAULT_MAX_DEPTH : i.intValue();
 
-        // determine whether we should crawl hidden files and directories
-        Boolean b = ConfigurationUtil.getIncludeHiddenResourceS(configuration);
-        ignoreHiddenFiles = b == null ? DEFAULT_IGNORE_HIDDEN_FILES : b.booleanValue();
+		// determine the maximum byte size
+		i = ConfigurationUtil.getMaximumByteSize(configuration);
+		maximumSize = i == null ? DEFAULT_MAX_SIZE : i.intValue();
 
-        // init some other params
-        params = new HashMap(2);
-        getAccessorFactory();
+		// determine whether we should crawl hidden files and directories
+		Boolean b = ConfigurationUtil.getIncludeHiddenResourceS(configuration);
+		ignoreHiddenFiles = b == null ? DEFAULT_IGNORE_HIDDEN_FILES : b.booleanValue();
 
-        // crawl the file tree
-        boolean crawlCompleted = crawlFileTree(root, maxDepth);
+		// init some other params
+		params = new HashMap(2);
+		getAccessorFactory();
 
-        // clean-up
-        params = null;
+		// crawl the file tree
+		boolean crawlCompleted = crawlFileTree(root, maxDepth);
 
-        // determine the exit code
-        return crawlCompleted ? ExitCode.COMPLETED : ExitCode.STOP_REQUESTED;
-    }
+		// clean-up
+		params = null;
 
-    private File getRootFile(RDFContainer configuration) {
-        String rootUrl = ConfigurationUtil.getRootUrl(configuration);
-        if (rootUrl == null) {
-            return null;
-        }
+		// determine the exit code
+		return crawlCompleted ? ExitCode.COMPLETED : ExitCode.STOP_REQUESTED;
+	}
 
-        URI uri = null;
-        try {
-            uri = new URI(rootUrl);
-        }
-        catch (URISyntaxException e) {
-            return null;
-        }
-        return new File(uri);
-    }
-    
-    /**
-     * Retrieves a DataAccessorFactory for the file scheme and throws an exception when there is no such
-     * factory or when the DataAccessorRegistry has not been set.
-     */
-    private void getAccessorFactory() {
-        if (accessorRegistry == null) {
-            throw new IllegalStateException("DataAccessorRegistry not set");
-        }
+	private File getRootFile(RDFContainer configuration) {
+		String rootUrl = ConfigurationUtil.getRootUrl(configuration);
+		if (rootUrl == null) {
+			return null;
+		}
 
-        Set factories = accessorRegistry.get("file");
+		URI uri = null;
+		try {
+			uri = new URI(rootUrl);
+		}
+		catch (URISyntaxException e) {
+			return null;
+		}
+		return new File(uri);
+	}
 
-        if (factories != null && !factories.isEmpty()) {
-            accessorFactory = (DataAccessorFactory) factories.iterator().next();
-        }
-        else {
-            throw new IllegalStateException("Could not retrieve a file data accessor");
-        }
-    }
+	/**
+	 * Retrieves a DataAccessorFactory for the file scheme and throws an exception when there is no such
+	 * factory or when the DataAccessorRegistry has not been set.
+	 */
+	private void getAccessorFactory() {
+		if (accessorRegistry == null) {
+			throw new IllegalStateException("DataAccessorRegistry not set");
+		}
 
-    /**
-     * Crawls a File tree.
-     * 
-     * @return true if the path has been crawler completely, false if the crawl was aborted.
-     */
-    private boolean crawlFileTree(File file, int depth) {
-        if (file.isFile() && depth >= 0) {
-            // report the File
-            if (inDomain(file) && file.canRead() && file.length() <= maximumSize) {
-                crawlSingleFile(file);
-            }
+		Set factories = accessorRegistry.get("file");
 
-            // by definition we've completed this subtree
-            return true;
-        }
-        else if (file.isDirectory() && depth >= 0) {
-            // report the Folder itself
-            if (inDomain(file)) {
-                crawlSingleFile(file);
-            }
+		if (factories != null && !factories.isEmpty()) {
+			accessorFactory = (DataAccessorFactory) factories.iterator().next();
+		}
+		else {
+			throw new IllegalStateException("Could not retrieve a file data accessor");
+		}
+	}
 
-            // report nested Files
-            if (depth > 0) {
-                File[] nestedFiles = file.listFiles();
+	/**
+	 * Crawls a File tree.
+	 * 
+	 * @return true if the path has been crawler completely, false if the crawl was aborted.
+	 */
+	private boolean crawlFileTree(File file, int depth) {
+		if (file.isFile() && depth >= 0) {
+			// report the File
+			if (inDomain(file) && file.canRead() && file.length() <= maximumSize) {
+				crawlSingleFile(file);
+			}
 
-                if (nestedFiles == null) {
-                    // This happens on certain "special" directories, although the
-                    // API documentation doesn't mention it, see java bug #4803836.
-                    return true;
-                }
+			// by definition we've completed this subtree
+			return true;
+		}
+		else if (file.isDirectory() && depth >= 0) {
+			// report the Folder itself
+			if (inDomain(file)) {
+				crawlSingleFile(file);
+			}
 
-                int i = 0;
-                for (; !stopRequested && i < nestedFiles.length; i++) {
-                    File nestedFile = nestedFiles[i];
+			// report nested Files
+			if (depth > 0) {
+				File[] nestedFiles = file.listFiles();
 
-                    if (ignoreHiddenFiles && nestedFile.isHidden()) {
-                        continue;
-                    }
+				if (nestedFiles == null) {
+					// This happens on certain "special" directories, although the
+					// API documentation doesn't mention it, see java bug #4803836.
+					return true;
+				}
 
-                    boolean scanCompleted = crawlFileTree(nestedFile, depth - 1);
+				int i = 0;
+				for (; !stopRequested && i < nestedFiles.length; i++) {
+					File nestedFile = nestedFiles[i];
 
-                    if (!scanCompleted) {
-                        return false;
-                    }
-                }
+					if (ignoreHiddenFiles && nestedFile.isHidden()) {
+						continue;
+					}
 
-                // scan has been completed when i has reached the end of the array successfully
-                return i == nestedFiles.length;
-            }
-            else {
-                return true;
-            }
-        }
-        else {
-            // Unknown path type (is this possible?) or depth < 0
-            return true;
-        }
-    }
+					boolean scanCompleted = crawlFileTree(nestedFile, depth - 1);
 
-    private boolean inDomain(File file) {
-        // FIXME: properly implement this method as soon as DataSourceBase has support for setting and
-        // retrieving include and exclude patterns
-        return true;
-    }
+					if (!scanCompleted) {
+						return false;
+					}
+				}
 
-    /**
-     * Crawls a single File and reports it to the registered DataSourceListeners.
-     */
-    private void crawlSingleFile(File file) {
-        // create an identifier for the file
-        String url = file.toURI().toString();
+				// scan has been completed when i has reached the end of the array successfully
+				return i == nestedFiles.length;
+			}
+			else {
+				return true;
+			}
+		}
+		else {
+			// Unknown path type (is this possible?) or depth < 0
+			return true;
+		}
+	}
 
-        // register that we're processing this file
-        handler.accessingObject(this, url);
-        deprecatedUrls.remove(url);
+	private boolean inDomain(File file) {
+		// FIXME: properly implement this method as soon as DataSourceBase has support for setting and
+		// retrieving include and exclude patterns
+		return true;
+	}
 
-        // see if this object has been encountered before (we must do this before applying the accessor!)
-        boolean knownObject = accessData == null ? false : accessData.isKnownId(url);
+	/**
+	 * Crawls a single File and reports it to the registered DataSourceListeners.
+	 */
+	private void crawlSingleFile(File file) {
+		// create an identifier for the file
+		String url = file.toURI().toString();
 
-        // fetch a RDFContainer from the handler (note: is done for every
-        RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, url);
+		// register that we're processing this file
+		handler.accessingObject(this, url);
+		deprecatedUrls.remove(url);
 
-        // fetch the DataObject
-        DataAccessor accessor = accessorFactory.get();
-        params.put("file", file);
-        try {
-            DataObject dataObject = accessor.getDataObjectIfModified(url, source, accessData, params,
-                    containerFactory);
+		// see if this object has been encountered before (we must do this before applying the accessor!)
+		boolean knownObject = accessData == null ? false : accessData.isKnownId(url);
 
-            if (dataObject == null) {
-                // the object was not modified
-                handler.objectNotModified(this, url);
-                crawlReport.increaseUnchangedCount();
-            }
-            else {
-                // we scanned a new or changed object
-                if (knownObject) {
-                    handler.objectChanged(this, dataObject);
-                    crawlReport.increaseChangedCount();
-                }
-                else {
-                    handler.objectNew(this, dataObject);
-                    crawlReport.increaseNewCount();
-                }
-            }
-        }
-        catch (UrlNotFoundException e) {
-            LOGGER.log(Level.WARNING, "unable to access " + url, e);
-        }
-        catch (IOException e) {
-            LOGGER.log(Level.WARNING, "I/O error while processing " + url, e);
-        }
-    }
+		// fetch a RDFContainer from the handler (note: is done for every
+		RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, url);
 
-    /**
-     * this must be overriden here - so that the URLs match those returned to objectNew etc
-     * Those methods call File.getCanonicalFile(), which resolves symlinks, but the 
-     * reportRemoved in CrawlerBase doesnt.
-     * Damn elusive bugs.
-     * @author grimnes 
-     */
+		// fetch the DataObject
+		DataAccessor accessor = accessorFactory.get();
+		params.put("file", file);
+		try {
+			DataObject dataObject = accessor.getDataObjectIfModified(url, source, accessData, params,
+				containerFactory);
+
+			if (dataObject == null) {
+				// the object was not modified
+				handler.objectNotModified(this, url);
+				crawlReport.increaseUnchangedCount();
+			}
+			else {
+				// we scanned a new or changed object
+				if (knownObject) {
+					handler.objectChanged(this, dataObject);
+					crawlReport.increaseChangedCount();
+				}
+				else {
+					handler.objectNew(this, dataObject);
+					crawlReport.increaseNewCount();
+				}
+			}
+		}
+		catch (UrlNotFoundException e) {
+			LOGGER.log(Level.WARNING, "unable to access " + url, e);
+		}
+		catch (IOException e) {
+			LOGGER.log(Level.WARNING, "I/O error while processing " + url, e);
+		}
+	}
+
+	/**
+	 * This must be overriden so that the URLs match those returned to objectNew, etc. Those methods call
+	 * File.getCanonicalFile(), which resolves symlinks, but the reportRemoved in CrawlerBase does not.
+	 */
 	protected void reportRemoved(Set ids) {
-		Set newset=new HashSet();
-		for (Iterator i=ids.iterator();i.hasNext();) {
-			String url=(String) i.next();
+		Set newset = new HashSet();
+		for (Iterator i = ids.iterator(); i.hasNext();) {
+			String url = (String) i.next();
 			try {
 				URI id = new URI(url);
-				//Isn't this pretty?
+				// Isn't this pretty?
 				newset.add(new File(id).getCanonicalFile().toURI().toString());
-			} catch (IOException e) {
-				// Let's all hope this doesn't happen.
-				//and add the unchanged url.
+			}
+			catch (IOException e) {
+				// Let's all hope this doesn't happen and add the unchanged url
 				newset.add(url);
-			} catch (URISyntaxException e) {
-				// Let's all hope this doesn't happen.
-				//and add the unchanged url.
+			}
+			catch (URISyntaxException e) {
+				// Let's all hope this doesn't happen and add the unchanged url
 				newset.add(url);
 			}
 		}
