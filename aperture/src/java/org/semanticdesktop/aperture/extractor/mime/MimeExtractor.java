@@ -10,13 +10,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Date;
-import java.util.Properties;
 
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
-import javax.mail.Session;
 import javax.mail.Message.RecipientType;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetAddress;
@@ -44,15 +42,9 @@ public class MimeExtractor implements Extractor {
 
 	public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
 			throws ExtractorException {
-		// initialize a dummy session
-		Properties props = System.getProperties();
-		props.put("mail.host", "dummy.com");
-		props.put("mail.transport.protocol", "smtp");
-		Session mailSession = Session.getDefaultInstance(props, null);
-
-		// parse the stream
 		try {
-			MimeMessage message = new MimeMessage(mailSession, stream);
+			// parse the stream
+			MimeMessage message = new MimeMessage(null, stream);
 
 			// extract the full-text
 			StringBuffer buffer = new StringBuffer(10000);
