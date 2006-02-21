@@ -67,7 +67,7 @@ public class MimeExtractor implements Extractor {
 			copyAddress(message.getRecipients(RecipientType.TO), AccessVocabulary.TO, result);
 			copyAddress(message.getRecipients(RecipientType.CC), AccessVocabulary.CC, result);
 			copyAddress(message.getRecipients(RecipientType.BCC), AccessVocabulary.BCC, result);
-			
+
 			Date date = MailUtil.getDate(message);
 			if (date != null) {
 				result.put(AccessVocabulary.DATE, date);
@@ -82,7 +82,10 @@ public class MimeExtractor implements Extractor {
 	}
 
 	private void extractText(Object content, StringBuffer buffer) throws MessagingException, IOException {
+
 		if (content instanceof Multipart) {
+			// FIXME: recursively search for the first text/plain part, will work better on certain more
+			// complicated mails
 			Multipart multiContent = (Multipart) content;
 			if (isMultipartAlternative(multiContent)) {
 				int idx = getPartWithMimeType(multiContent, "text/plain");
