@@ -72,7 +72,7 @@ public class MailUtil {
 
 			// connect the person resource to the mail resource
 			metadata.put(predicate, person);
-			metadata.add(new StatementImpl(person, RDF.TYPE, AccessVocabulary.PERSON));
+			metadata.add(new StatementImpl(person, RDF.TYPE, AccessVocabulary.AGENT));
 
 			// add name and address details
 			if (hasRealValue(name)) {
