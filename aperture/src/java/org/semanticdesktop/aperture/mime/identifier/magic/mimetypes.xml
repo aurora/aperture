@@ -399,10 +399,11 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<magicNumber encoding="string">Relay-Version:</magicNumber>
 	<magicNumber encoding="string">#! rnews</magicNumber>
 	<magicNumber encoding="string">N#! rnews</magicNumber>
-</description>
 
-<description>
-	<mimeType>message/news</mimeType>
+	<!-- the following could have been a "message/news" description, but we've
+	     decided to label them also as message/rfc822, as the distinction is very
+	     small, apps can typically treat both equally and they are
+	     very hard to differentiate using magic numbers anyway -->
 	<magicNumber encoding="string">Path:</magicNumber>
 	<magicNumber encoding="string">Xref:</magicNumber>
 	<magicNumber encoding="string">Article</magicNumber>
