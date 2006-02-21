@@ -4,7 +4,7 @@
  * 
  * Licensed under the Open Software License version 3.0.
  */
-package org.semanticdesktop.aperture.util;
+package org.semanticdesktop.aperture.extractor.util;
 
 import java.io.IOException;
 import java.io.InputStream;

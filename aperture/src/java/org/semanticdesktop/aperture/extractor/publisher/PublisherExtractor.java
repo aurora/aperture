@@ -15,8 +15,8 @@ import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.PoiUtil;
+import org.semanticdesktop.aperture.extractor.util.StringExtractor;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.util.StringExtractor;
 
 /**
  * An Extractor implementation for MS Publisher documents. This implementation uses heuristic string

@@ -9,7 +9,6 @@ package org.semanticdesktop.aperture.extractor.util;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.semanticdesktop.aperture.util.StringExtractor;
 
 /**
  * A StringExtractor extension optimized for processing WordPerfect document streams.
