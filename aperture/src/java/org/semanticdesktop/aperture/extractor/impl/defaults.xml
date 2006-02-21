@@ -8,6 +8,9 @@
 		<name>org.semanticdesktop.aperture.extractor.html.HtmlExtractorFactory</name>
 	</extractorFactory>
 	<extractorFactory>
+		<name>org.semanticdesktop.aperture.extractor.mime.MimeExtractorFactory</name>
+	</extractorFactory>
+	<extractorFactory>
 		<name>org.semanticdesktop.aperture.extractor.office.OfficeExtractorFactory</name>
 	</extractorFactory>
 	<extractorFactory>
