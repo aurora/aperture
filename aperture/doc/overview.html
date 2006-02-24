@@ -9,12 +9,12 @@
 
 <h1>Overview</h1>
 
-<h2>Goal of the Project</h2>
+<h2>Goals of the Project</h2>
 
 <p>
 Aperture is an open source library and framework for crawling and indexing information
 sources such as file systems, websites and mail boxes. Aperture supports a number of
-common document formats and source types out-of-the-box and provides easy ways to extend
+common source types and document formats out-of-the-box and provides easy ways to extend
 it with custom implementations.
 </p>
 
@@ -46,7 +46,8 @@ Aperture has a strong focus on semantics. For example, a lot of effort is made i
 to let the Extractors also extract as much metadata contained in the file formats as
 possible (e.g., titles, authors, comments, ...) and combine this with source-specific
 metadata (e.g., location, last modification date, ...). All metadata is mapped to
-properties in a global Aperture namespace.
+properties in a global Aperture namespace to allow uniform processing of the crawled
+and extracted information.
 </p>
 
 <p>
@@ -66,11 +67,15 @@ Aperture started as a cooperation between the German DFKI institute
 
 <p>
 Both organizations had already produced software sharing certain characteristics, such as
-targeting desktop search from a Semantic Web perspective. Therefore, they were
-necessarily solving the same technical problems, like incrementally crawling a file
-system, text and metadata extraction and indexing and querying of metadata. This made
-them realize that through cooperation on these issues they could get better code at lower
-individual efforts.
+targeting desktop search using Semantic Web technology. Therefore, they necessarily had to
+solve the same technical problems, like incremental crawling of a file system, text and
+metadata extraction and indexing and querying of metadata.
+</p>
+
+<p>
+This made them realize that through cooperation on these issues they could get better
+code at lower individual efforts. Furthermore, this would enable other people to contribute
+as well.
 </p>
 
 <p>
@@ -89,7 +94,7 @@ that allows the use of Aperture in proprietary applications.
 </p>
 
 <p>
-In short, your own code using Aperture does not have to be open source, with one
+In short, in order to use Aperture your own code does not have to be open source, with one
 exception: if you create a modified version of an Aperture API implementation (i.e., you
 base it on a file published under the OSL license), then you are required to publish that
 part under the same license.
@@ -97,13 +102,13 @@ part under the same license.
 
 <p>
 For example, when you create an improved version of the Excel text and metadata extractor
-using the Aperture code as a starting point, then this derivative code must also be
+using the Aperture implementation as a starting point, then this derivative code must also be
 distributed under the OSL. Your own implementations of Aperture APIs are not required to
 be open sourced, nor is any code using Aperture components.
 </p>
 
 <p>
-See the <a href="license.html">License</a> provided with the library for more details.
+See the <a href="license.html">License</a> distributed with the library for more details.
 </p>
 
 </body>
