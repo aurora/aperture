@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>  
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <meta name="author" content="Leo Sauermann, Christiaan Fluit">
+  <meta name="keywords" content="aperture, rdf, data">
+  <title>Aperture framework</title>
+  <script type="text/javascript"></script>
+</head>
+
+<body>
+
+<h1>Documentation</h1>
+
+<h2>Index</h2>
+<p>
+<ul>
+ <li><a href="#crawlers">Crawlers</a></li>
+ <li><a href="#extractors">Extractors</a></li>
+ <li><a href="#dbandrdf">Database and RDF DataSources</a></li>
+ <li><a href="architecture.html">Architecture</a> (seperate document)</li>
+</ul>
+</p>
+
+<h2>Preface</h2>
+
+<p>
+Aperture is a Java framework for extracting and querying full-text content 
+and metadata from various information systems (file systems, web sites, mail boxes, ...)
+and the file formats (documents, images, ...) occurring in these systems.
+</p>
+
+<p>
+This document provides a global overview of the Aperture framework.
+It is written for programmers that want to use Aperture in their own applications
+to extract information from data sources and file formats.
+</p>
+
+<p>
+In the future this documentation will be extended with information on the featured file
+formats and crawlers, code samples, instructions on how to build and install Aperture, etc.
+</p>
+
+<p>
+If you have questions about the project or need support with using Aperture,
+go to the project homepage at 
+<a href="http://aperture.sourceforge.net/">http://aperture.sourceforge.net/</a>
+and read the Support section.
+</p>
+
+
+
+<h2><a name="crawlers">Crawlers</a></h2>
+
+<p>
+<b><u>WARNING:</u></b> The following text was taken from an Aduna design document and explains
+the crawler architecture and code developed at Aduna that was contributed to Aperture.
+This overview still needs to be adjusted to the current state of the Aperture architecture,
+which is still undergoing heavy changes.
+</p>
+
+<p>
+The central APIs in the crawler architecture are DataSource, DataCrawler,
+DataAccessor and DataObject. Together they are used to access the individual binary
+resources of an information system, such as a file system or web site.
+</p>
+
+<p>
+A DataSource contains all information necessary to locate the information
+items in a source. For example, a FileSystemDataSource contains a set of one or
+more directories on a file system, a set of patterns that describe what files
+to include or exclude, etc. For the rest it is completely passive.
+</p>
+
+<p>
+A DataCrawler is responsible for actually accessing the physical source and
+reporting the individual binary resources found in it as DataObjects.
+Each DataObject contains all the metadata that can be provided by the data source,
+such as a file name, a last modification date, etc., as well as the InputStream that
+provides access to the binary data.
+</p>
+
+<p>
+We have chosen to separate the functionalities offered by DataSource and DataCrawler
+as there may be several alternative crawling strategies possible for a single DataSource type.
+Consider for example a generic FileSystemCrawler that handles any kind of
+file system accessible through java.io.File versus a WindowsFileSystemCrawler
+using OS-native functionality to get notified about file additions, deletions
+and changes. Another possibility is to have various DataCrawler implementations that
+have different trade-offs in speed and accuracy, which may make sense for certain
+web-based sources.
+</p>
+
+<p>
+Currently, A DataSource also contains support for writing its configuration
+to or initializing it from an XML file. We might consider putting this in a
+separate utility class, because the best way to store such information is
+often application dependent.
+</p>
+
+<p>
+The DataObjects created by a DataCrawler are reported to the
+DataCrawlerListeners registered at that DataCrawler. DataObjects are therefore
+short-lived: they typically exist only during the invocation of the
+DataObject-reporting method on the DataCrawlerListeners.
+</p>
+
+<p>
+An abstract base class (DataCrawlerBase) is provided that provides base functionality for
+maintaining information about which files have been reported in the past,
+allowing for the easy construction of incremental crawlers.
+</p>
+
+<p>
+The DataObjects are not directly instantiated by the DataCrawler.
+Instead, this job is delegated to a DataAccessor.
+Whereas DataCrawler implementations are created for a specific DataSource type,
+DataAccessors are specific for the URI scheme that they support, e.g.
+"file" or "http". The rationale for delegating this functionality is:
+</p>
+
+<ul>
+<li>
+There may be several crawlers that can thus reuse the same functionality.<br>
+For example, the FileSystemCrawler and HypertextCrawler can both use the FileDataAccessor,
+providing access to "file:"-based resources, although they use different
+strategies to determine which file to access (by traversing folders or by following
+hyperlinks, respectively). Furthermore, the file accessing functionality may be shared by several
+crawler implementations that all operate on a FileSystemDataSource.
+</li>
+
+<li>This allows some crawlers to be scheme independent, e.g. the HypertextCrawler
+can be used for any kind of hypertext structure, provided that DataAccessor implementations
+are available for the schemes it encounters.
+</li>
+</ul>
+
+<p>
+The DataAccessor is optionally provided a last modified date as to make incremental scanning
+as fast as possible. The DataAccessor can then use scheme-specific optimizations that prevent
+object creation and resource loading when it detects that the physical resource has not been changed
+since the last time it was accessed. The effect of this optimization can be enormous, e.g.
+the HttpDataAccessor can set the HTTP if-modified-since header in its request, effectively letting
+the web server decide whether the web page has changed or not. This prevents downloading of the
+requested page when it has not changed.
+</p>
+
+<h2><a name="extractors">Extractors</a></h2> 
+
+<p>
+Extractors extract information from binary streams, such as document full-text, titles,
+authors and other metadata that may be supported by the format. Extractors are typically
+specific for a single MIME type or a family of closely related MIME types.
+</p>
+
+<p>
+Aperture has an ExtractorFactory interface, which provides methods to create instances 
+of a specific Extractor implementation. As such, it embodies knowledge about whether a
+singleton or unique instances are best returned and for which MIME types the Extractors
+can be used.
+</p>
+
+<p>
+The code to create an Extractor is very simple, here is an specific example for PDF-files:
+<blockquote>
+<pre>
+ExtractorFactory factory = new PdfExtractorFactory();
+Extractor extractor = factory.get();
+</pre>
+</blockquote>
+The Extractor interface provides an <code>
+extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)</code> method to 
+get full-text and metadata from the specified binary stream and stores the extracted
+information as RDF statements in the specified RDFContainer. The optionally specified Charset and
+MIME type can be used to direct how the stream should be parsed. The URI can be used to identify the object
+ (e.g. a file or web page) from which the stream was obtained. The generated statements should describe this URI.
+</p>
+
+<p>
+Here is a simple example that extracts the full-text and metadata from a PDF file on the local file system:
+<blockquote>
+<pre>
+// setup a stream accessing a local file
+File file = new File("c:\document.pdf");
+InputStream stream = new FileInputStream(file);
+BufferedInputStream buffer = new BufferedInputStream(stream);
+
+// create an RDFContainer that will contain the extraction results
+URI uri = new URIImpl(file.toURI().toString());
+RDFContainerSesame container = new RDFContainerSesame(uri);
+
+// apply the extractor
+PdfExtractor extractor = new PdfExtractorFactory().get();
+extractor.extract(uri, buffer, null, "application/pdf", container);
+buffer.close();
+stream.close();
+
+// take care of the output
+Repository repository = container.getRepository();
+// ... do something with the contents of the repository, e.g. store or print it
+</pre>
+</blockquote>
+</p>
+
+<h2><a name="dbandrdf">Database and RDF DataSources</a></h2>
+
+<p>
+For Gnowsis and Aduna Metadata Server we often have special types of
+data sources to be indexed together with files or web pages. These
+datasources can consist of a single big data file or a database.
+</p>
+
+<p>
+For a single RDF file, an RdfDataSource would be needed, with the only
+configuration being the file name or URL of the RDF file. TODO: see if this
+is really something that plays at the DataSource level, perhaps it's only
+something at the InfoSource level. This is where the entire RDF model is hold
+rather than the individual bits delived by the DataObjects and extractors and
+where storage is also of concern.
+See for example RemoteInfoSource, which connects to a Sesame server and which
+has no underlying data source and no local storage. In case of an Rdf<i>Info</i>Source
+it would have its own storage but it would just dump the RDF file in it, no need for a
+dedicated DataSource, DataCrawler, etc.
+</p>
+
+<p>
+When a database is accessed, the server properties, table names and a mapping
+file (for D2RQ or something similar) have to be passed, indicating which resources
+in the database to access. Alternatively, databases could be
+accessed via a dedicated SAIL implementation.
+</p>
+
+</body>
+</html>

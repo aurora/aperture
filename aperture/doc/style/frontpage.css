@@ -35,7 +35,7 @@ code {
 /* You may notice this CSS file has no IE hacks. This is because I think hacks are messy, and I don't care if my page screws up for some people. It's their fault for using Internet Explorer in the first place. If everyone didn't include hacks, more people would not use IE! */
 
 body {
-	background-image: url(img/background.gif);
+	background-image: url(../img/background.gif);
 	font-family: verdana, arial, serif;
 	font-size: 11px;
 	text-align: center;
@@ -57,7 +57,7 @@ h2 {
 	width: 633px;
 	margin: auto;
 	border-top: 1px solid #000;
-	background-image: url(img/containerbackground.gif);
+	background-image: url(../img/containerbackground.gif);
 	text-align: left;
 	padding: 0 0 0 29px;
 	position: relative;
@@ -130,7 +130,7 @@ h2 {
   padding-bottom: 8px;
   text-align:center;
   color: #ffffff;
-  background-image: url(img/bgheader-content.png);
+  background-image: url(../img/bgheader-content.png);
 }
 
 /* one paragraph with headings */
@@ -154,7 +154,7 @@ div.element {
   text-align:center;
   background-color: #f7b356;
   color: #fff;
-  background-image: url(img/bgheader-sidebar.png);
+  background-image: url(../img/bgheader-sidebar.png);
 }
 
 

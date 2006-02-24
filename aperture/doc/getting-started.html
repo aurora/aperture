@@ -1,0 +1,98 @@
+<html>
+
+<head>
+	<title>Aperture - Getting Started</title>
+	<link rel="stylesheet" type="text/css" href="style/documentation.css">
+</head>
+
+<body>
+
+<h1>Getting Started</h1>
+
+<p>
+To obtain Aperture, you can download the latest release at SourceForge.net or checkout
+and compile the latest version from CVS. While the project is still in alpha stage, the
+latter will give you the best code to work with.
+</p>
+
+<h2>Download the latest release</h2>
+
+<p>
+The latest Aperture release can be downloaded at
+<a href=http://sourceforge.net/project/showfiles.php?group_id=150969">http://sourceforge.net/project/showfiles.php?group_id=150969</a>.
+</p>
+
+<p>
+Unzip the zip or tar.gz file to a location of your choice and open the created folder.
+</p>
+
+<p>
+The lib directory contains the Aperture jar files as well as third-party jar files and
+their licenses.
+</p>
+
+<p>
+For running Aperture you will at least need aperture-&lt;version&gt;.jar.
+The aperture- examples-&lt;version&gt;.jar file is only needed when using the Aperture example classes.
+The aperture-test-&lt;version&gt;.jar file is normally not needed. You will also need the
+openrdf-model and openrdf-util jar files, as they are used by the Aperture APIs.
+</p>
+
+<p>
+Most other jar files are used by Extractor and Crawler implementations. If you don't use
+them, you will probably not need them.
+</p>
+
+<p>
+The src.zip file contains all Aperture source code, including examples and JUnit tests.
+</p>
+
+<p>
+The bin directory contains batch files and shell scripts for starting the GUI versions of
+the examples. Note that commandline versions of these examples are also available.
+</p>
+
+<p>
+The minimum Java version is 1.4.2, but Aperture runs fine with Java 5 and 6 as well.
+</p>
+
+<h2>Checkout from CVS</h2>
+
+<p>
+First, you should read
+<a href="http://sourceforge.net/cvs/?group_id=150969">http://sourceforge.net/cvs/?group_id=150969</a>
+about getting the latest Aperture sources.
+</p>
+
+<p>
+Once checked out, you can use the Ant build script in Aperture's root directory to build
+the project. Notable targets are:
+</p>
+
+<ul>
+<li>compile: compiles all classes, excluding unit tests and example classes (use
+compile.examples and compile.test for that).</li>
+<li>jar: creates the core Aperture jar file (likewise, use jar.examples and jar.test for
+the other two).</li>
+<li>dist: creates and gathers all jar files and javadocs in build/dist. All unit tests
+are also applied.</li>
+<li>release: combines the dist results with all other required files (scripts, licenses,
+...) and puts them in build/release.</li>
+<li>package: creates .zip and .tar.gz files of the release results (used to created the
+dowloadable releases).</li>
+<li>test: run all JUnit tests.</li>
+<li>clean: removes all generated files.</li>
+</ul>
+
+<p>
+The minimum Java version is 1.4.2, but Aperture runs fine with Java 5 and 6 as well.
+</p>
+
+<p>
+The precise minimum Ant requirements are currently unknown; the build files have been tested with
+Ant 1.6.5, older versions may or may not work.
+</p>
+
+</body>
+
+</html>

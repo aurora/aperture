@@ -1,0 +1,111 @@
+<html>
+
+<head>
+	<title>Aperture - Overview</title>
+	<link rel="stylesheet" type="text/css" href="style/documentation.css">
+</head>
+
+<body>
+
+<h1>Overview</h1>
+
+<h2>Goal of the Project</h2>
+
+<p>
+Aperture is an open source library and framework for crawling and indexing information
+sources such as file systems, websites and mail boxes. Aperture supports a number of
+common document formats and source types out-of-the-box and provides easy ways to extend
+it with custom implementations.
+</p>
+
+<p>
+The Aperture code consists of a number of related but independently usable parts:
+</p>
+
+<ul>
+<li>Crawling of information sources: file systems, websites, mail boxes</li>
+
+<li>MIME type identification</li>
+
+<li>Full-text and metadata extraction of various file formats</li>
+
+<li>Expansion of archives (to be done)</li>
+
+<li>Indexing and querying of crawled and extracted information (to be done)</li>
+
+<li>Opening of crawled resources (to be done)</li>
+</ul>
+
+<p>
+For each of these parts, a set of APIs has been developed and a number of implementations
+is provided.
+</p>
+
+<p>
+Aperture has a strong focus on semantics. For example, a lot of effort is made in order
+to let the Extractors also extract as much metadata contained in the file formats as
+possible (e.g., titles, authors, comments, ...) and combine this with source-specific
+metadata (e.g., location, last modification date, ...). All metadata is mapped to
+properties in a global Aperture namespace.
+</p>
+
+<p>
+Although the way in which the information is indexed and queried can entirely be decided
+by the integrator, Aperture offers powerful ways to index it in a semantically rich and
+extensible way, using RDF(S)-based indexing mechanisms. This allows for querying using
+Semantic Web query languages such as SPARQL and SeRQL.
+</p>
+
+<h2>Historic Background</h2>
+
+<p>
+Aperture started as a cooperation between the German DFKI institute
+(<a href="http://www.dfki.de/">http://www.dfki.de</a>) and the Dutch software firm Aduna
+(<a href="http://aduna.biz/">http://aduna.biz</a>).
+</p>
+
+<p>
+Both organizations had already produced software sharing certain characteristics, such as
+targeting desktop search from a Semantic Web perspective. Therefore, they were
+necessarily solving the same technical problems, like incrementally crawling a file
+system, text and metadata extraction and indexing and querying of metadata. This made
+them realize that through cooperation on these issues they could get better code at lower
+individual efforts.
+</p>
+
+<p>
+In the summer of 2005 they decided to start a joint open source project that would be
+bootstrapped with the crawling and indexing code already developed in-house and that
+would serve as a basis for future development.
+</p>
+
+<h2>Licensing</h2>
+
+<p>
+The Aperture code is published under an open source license
+(<a href="http://www.opensource.org/licenses/afl-3.0.php">AFL 3.0</a> for APIs and example
+code, <a href="http://www.opensource.org/licenses/osl-3.0.php">OSL 3.0</a> for API implementations)
+that allows the use of Aperture in proprietary applications.
+</p>
+
+<p>
+In short, your own code using Aperture does not have to be open source, with one
+exception: if you create a modified version of an Aperture API implementation (i.e., you
+base it on a file published under the OSL license), then you are required to publish that
+part under the same license.
+</p>
+
+<p>
+For example, when you create an improved version of the Excel text and metadata extractor
+using the Aperture code as a starting point, then this derivative code must also be
+distributed under the OSL. Your own implementations of Aperture APIs are not required to
+be open sourced, nor is any code using Aperture components.
+</p>
+
+<p>
+See the <a href="license.html">License</a> provided with the library for more details.
+</p>
+
+</body>
+
+</html>

@@ -1,0 +1,12 @@
+li {
+	margin-bottom: 1ex;
+}
+
+@media screen {
+	/* only on screen, i.e. do not alter print settings as this usually messes things up */
+	body {
+		font-size: 11pt;
+		margin: 1em;
+		margin-right: 3em;
+	}
+}
