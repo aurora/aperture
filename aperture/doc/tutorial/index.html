@@ -25,27 +25,45 @@ The following topics concern everyone wanting to use one or more Aperture compon
 </ul>
 
 <p>
-Furthermore, a number of component-specific tutorials are available.
-These tutorials are placed in the typical order of operation for applications that use Aperture
-to crawl an information source and extract and index all available information found in it.
+The central APIs for crawling information systems are DataSource, DataObject, DataAccessor and Crawler.
+Together they are used to access the individual binary resources of an
+information system, such as a file system or web site.
 </p>
-
-<p>Component-specific tutorials:</p>
 
 <ul>
 <li><a href="sources.html">DataSources</a></li>
 
-<li><a href="accessors.html">DataAccessors</a></li>
+<li><a href="accessors.html">DataObjects and DataAccessors</a></li>
 
 <li><a href="crawlers.html">Crawlers</a></li>
+</ul>
 
+<p>
+In some cases you will need additional services to perform crawling:
+</p>
+
+<ul>
 <li><a href="link-extractors.html">LinkExtractors</a></li>
 
 <li><a href="security.html">Security</a></li>
+</ul>
 
+<p>
+After crawling, you may want to process the crawled binary resources:
+</p>
+
+<ul>
 <li><a href="mimetypes.html">MIME type identification</a></li>
 
 <li><a href="extractors.html">Extractors</a></li>
+</ul>
+
+<p>
+Finally, all gathered information needs to be stored and be made queryable:
+</p>
+
+<ul>
+<li><a href="storage.html">Full-text and metadata storage</a></li>
 </ul>
 
 </body>

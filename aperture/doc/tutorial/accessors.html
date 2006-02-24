@@ -1,0 +1,91 @@
+<html>
+
+<head>
+	<title>Aperture - Tutorials - DataObjects and DataAccessors</title>
+	<link rel="stylesheet" type="text/css" href="../style/documentation.css">
+</head>
+
+<body>
+
+<h1>DataObjects and DataAccessors</h1>
+
+<h2>DataObject</h2>
+
+<p>
+A DataObject represents an individual resource found in a physical data source, such as a file,
+a web page, a mail or an attachment.
+</p>
+
+<p>
+DataObjects are produced by a URL scheme-specific <a href="accessors.html">DataAccessor</a> on a
+one-by-one basis, based on the URL that you pass to it.
+Alternatively, a stream of all DataObjects in a DataSource can be generated
+using a DataSource type-specific <a href="crawlers.html">Crawler</a>, which on its turn will use
+DataAccessors for accessing every individual resource.
+</p>
+
+<p>
+Each DataObject has a RDFContainer that contains metadata describing the represented resource.
+This RDF model typically uses the RDF scheme defined in AccessVocabulary, although arbitrary RDF
+properties may be used. The RDFContainer is mutable and can therefore be refined with new metadata after
+construction of the DataObject.
+</p>
+
+<p>DataObject has two specializations: FileDataObject is used to represent binary resources and holds a binary
+stream next to its metadata. FolderDataObject represents folder-like resources such as file or mail folders.
+Information about the folder nesting (parent and children) is part of the folder metadata, so there are
+no specialized methods in this interface; it only serves as a marker interface.
+</p>
+
+<h2>DataAccessor</h2>
+
+<p>
+DataObjects are created by DataAccessors. A DataAccessor embeds knowledge of how to
+access a particular URL scheme such as "file" or "http".
+One of the primary use cases for DataAccessors is to be used by Crawlers to handle
+access or the individual resources it encounterd, although they may also be directly invoked.
+</p>
+
+<p>
+An example of a direct invocation of a DataAccessor is shown below:
+</p>
+
+<div class="code">
+<pre>
+RDFContainerFactory factory = ...
+DataAccessor accessor = new FileAccessor();
+DataObject dataObject = accessor.getDataObject("file:///C:/myfile.txt", null, null, containerFactory);
+</pre>
+</div>
+
+<p>
+As you can see, both the DataSource and the params Map are optional. The DataSource
+is only used to register as an origin of the DataObject. The Map is only used to
+communicate extra parameters used for specific implementation (often for optimization purposes),
+which is not necessary here.
+</p>
+
+<p>
+Besides a general method that returns the requested DataObject,
+DataAccessors also have a more specialized method that takes
+an AccessData instance as an argument. This allows for the construction of incremental
+Crawlers that only report new or changed DataObjects when a source is crawled a subsequent time.
+The DataAccessor can then use scheme-specific optimizations
+that prevent object creation and resource loading when it detects that the physical
+resource has not been changed since the last time it was accessed. The effect of this
+optimization can be enormous, e.g. the HttpDataAccessor can set the HTTP if-modified-since
+header in its request, effectively letting the web server decide whether the web
+page has changed or not. This prevents downloading of the requested page when it has not
+changed.
+</p>
+
+<p>
+Both DataAccessor methods require a RDFContainerFactory to be passed. This factory is
+used to fetch a RDFContainer on demand for the new DataObject. Using a factory lets
+an application defer RDFContainer initialization, which may be a costly operation,
+until it is actually needed, as the DataAccessor will return 'null' for unchanges resources.
+</p>
+
+</body>
+
+</html>

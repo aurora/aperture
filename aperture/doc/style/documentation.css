@@ -2,6 +2,12 @@ li {
 	margin-bottom: 1ex;
 }
 
+.code {
+	margin-left: 3em;
+	font-size: 80%;
+	color: blue;
+}
+
 @media screen {
 	/* only on screen, i.e. do not alter print settings as this usually messes things up */
 	body {

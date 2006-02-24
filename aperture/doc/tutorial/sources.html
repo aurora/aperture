@@ -1,17 +1,71 @@
 <html>
 
 <head>
-	<title>Aperture - Tutorials - DataSources</title>
+	<title>Aperture - Tutorials - DataSources and DataObjects</title>
 	<link rel="stylesheet" type="text/css" href="../style/documentation.css">
 </head>
 
 <body>
 
-<h1>DataSources</h1>
+<h1>DataSources and DataObjects</h1>
+
+<h2>DataSource</h2>
 
 <p>
-One of the central components of Aperture is a DataSource.
+One of the central concepts of Aperture is the notion of a DataSource.
+A DataSource contains all information necessary to locate the individual information resources in a
+physical source. For example, a FileSystemDataSource holds a root directory, a set of patterns that describe
+what files to include or exclude, a maximum depth, etc., thereby effectively describing a set of files.
+
+<p>
+One of the main purposes of a DataSource is to hold all data needed by a <a href="crawlers.html">Crawler</a>
+to crawl the physical source and retrieve all the individual resources in it.
 </p>
+
+<p>
+All configuration data except the name and ID of the DataSource are modeled as a RDF model and
+stored in a RDFContainer. Whenever possible, properties from the SourceVocabulary are used
+to model configuration settings, although developers of new DataSource types are free to use
+their own properties when necessary.
+A utility class, ConfigurationUtil, is provided that contains method for editing and
+retrieving configuration data from the RDFContainer. Note that it only knows how to deal with
+configuration properties defined in the SourceVocabulary interface.
+</p>
+
+<p>
+The specific DataSource implementations available at the moment do nothing more than define a
+URI used to identify the data source type in a RDF model, as all configuration settings can be stored
+in the RDF model.
+Once we start to use a DataSource whose configuration cannot entirely be expressed in an RDF
+model, we can use its DataSource implementation class to hold the remaining configuration.
+</p>
+
+<p>
+The following code demonstrates how to create and configure a FileSystemDataSource:
+</p>
+
+<div class="code">
+<pre>
+import org.openrdf.model.URI;
+import org.openrdf.model.impl.URIImpl;
+import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
+import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
+import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+
+...
+
+// create the DataSource instance
+FileSystemDataSource source = new FileSystemDataSource();
+URI sourceID = new URIImpl("urn:test:testsource");
+source.setID(sourceID);
+source.setName("Example file system source");
+
+// configure the root of the represented directory tree
+SesameRDFContainer configuration = new SesameRDFContainer(sourceID);
+ConfigurationUtil.setRootUrl(rootFile.toURI().toString(), configuration);
+source.setConfiguration(configuration);
+</pre>
+</div>
 
 </body>
 
