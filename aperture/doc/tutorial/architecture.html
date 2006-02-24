@@ -1,0 +1,105 @@
+<html>
+
+<head>
+	<title>Aperture - Tutorials - General Structure</title>
+	<link rel="stylesheet" type="text/css" href="../style/documentation.css">
+</head>
+
+<body>
+
+<h1>General Structure of Aperture Components</h1>
+
+<p>
+Aperture consists of a number of APIs that each fulfill a type of service, e.g. text and
+metadata extraction, crawling of an information source or identifying a file's MIME type.
+The code involved in implementing and managing such a service is typically organized
+in a particular way. Once you know this structure, you will be better able to quickly
+find your way around in the Aperture code base.
+</p>
+
+<p>
+We will use the Extractor framework, used for full-text and metadata extraction, as a
+running example.
+</p>
+
+<p>
+The heart of each service is an API, usually a Java interface, whose methods perform the
+embodied service. For example, the Extractor interface defines an extract method that
+performs full-text and metadata extraction on an InputStream accessing a document of
+a specific MIME type. A specific implementation such as HtmlExtractor implements this
+service for HTML documents.
+</p>
+
+<p>
+Each service API is generally accompanied by a factory API, such as ExtractorFactory. Each API
+implementation should come with a factory implementation. The purpose of this factory is
+twofold:
+</p>
+
+<ul>
+<li>It should be able to return the capabilities of that particular service
+implementation, letting you choose the best implementation for a specific job.</li>
+<li>It should be able to return an instance of the service API, fulfulling these
+capabilities.</li>
+</ul>
+
+<p>
+For example, ExtractorFactory defines a getSupportedMimeTypes method that returns the set
+of MIME types supported by a particular Extractor implementation. Also, it defines a get
+method that returns an Extractor instance ready for use. ExtractorFactory does not specify whether a
+new or shared instance is returned, that is up to the implementor to decide.
+HtmlExtractorFactory's getSupportedMimeTypes method returns a set containing "text/html"
+and other known HTML(-like) MIME types and returns a new HtmlExtractor on each get() invocation.
+</p>
+
+<p>
+When implementing, you should take care that implementations of the factory are as light-weight
+as possible. Any expensive initialization operations needed for a service implementation
+should happen during the get operation or in some other kind of lazy way.
+</p>
+
+<p>
+In order to keep track of all available implementations of a service, a registry is used.
+For example, ExtractorRegistry serves as a container for all known ExtractorFactories.
+When asked for all factories supporting a specific MIME type, you will get a set of all
+ExtractorFactories whose supported MIME type contain the specified MIME type. You can then use
+additional measures to select the best one or simply take the first one available.
+</p>
+
+<p>
+This service-factory-registry approach has been inspired by <a href="http://www.osgi.org/">OSGi</a>,
+a platform for using service-oriented architectures inside a Java application.
+In an OSGi application using Aperture, the HtmlExtractor and its factory would be bundled
+as a jar file together with a class implementing OSGi's BundleActivator interface. The latter class contains
+a method that is executed as soon as this bundle is presented to the system.
+This BundleActivator would then lookup the ExtractorRegistry instance of the system and register its factory at
+that registry. That's the reason why factory instantiation should be as cheap as possible, as
+they may all be instantiated during startup.
+</p>
+
+<p>
+For those applications not based on OSGi, a default implementation of a
+registry is also available. For example, DefaultExtractorRegistry contains by default
+an instance of every ExtractorFactory available in Aperture. When you want to
+differentiate from this set, e.g. because you have your own set implementations, you can:
+</p>
+
+<ul>
+<li>create an instance of ExtractorRegistryImpl (the super class of DefaultExtractorRegistry
+that does not automatically populate itself) and populate it manually with ExtractorFactories,</li>
+<li>add extra factories to the DefaultExtractorRegistry, or</li>
+<li>take a look at the XML file that DefaultExtractorRegistry uses to get the ExtractorFactory
+class names and specify your own configuration file instead.</li>
+</ul>
+
+<p>
+The image below shows an overview of the APIs and their dependencies of the Extractor example:
+</p>
+
+<p align="center">
+<img src="component-architecture.png">
+</p>
+
+</body>
+
+</html>
