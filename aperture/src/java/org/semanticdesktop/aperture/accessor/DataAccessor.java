@@ -37,8 +37,7 @@ public interface DataAccessor {
      * @param containerFactory An RDFContainerFactory that delivers the RDFContainer to which the
      *            metadata of the DataObject should be added. The provided RDFContainer can later be
      *            retrieved as the DataObject's metadata container.
-     * @return A DataObject for the specified URI, or null when the binary resource has not been modified
-     *         since the last access.
+     * @return A DataObject for the specified URI.
      * @throws UrlNotFoundException When the specified url did not point to an existing resource.
      * @throws IOException When any kind of I/O error occurs.
      */
