@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -813,13 +813,13 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         // register the folder's name
         URI folderURI = new URIImpl(url);
         RDFContainer metadata = containerFactory.getRDFContainer(folderURI);
-        metadata.put(org.semanticdesktop.aperture.accessor.AccessVocabulary.NAME, folder.getName());
+        metadata.add(org.semanticdesktop.aperture.accessor.AccessVocabulary.NAME, folder.getName());
 
         // register the folder's parent
         Folder parent = folder.getParent();
         URI partOf = org.semanticdesktop.aperture.accessor.AccessVocabulary.PART_OF;
         if (parent != null) {
-            metadata.put(partOf, getURI(parent));
+            metadata.add(partOf, getURI(parent));
         }
 
         // add message URIs as children

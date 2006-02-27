@@ -51,7 +51,7 @@ public class MimeExtractor implements Extractor {
 			extractText(message.getContent(), buffer);
 			String text = buffer.toString().trim();
 			if (text.length() > 0) {
-				result.put(AccessVocabulary.FULL_TEXT, text);
+				result.add(AccessVocabulary.FULL_TEXT, text);
 			}
 
 			// extract other metadata
@@ -59,7 +59,7 @@ public class MimeExtractor implements Extractor {
 			if (title != null) {
 				title = title.trim();
 				if (title.length() > 0) {
-					result.put(AccessVocabulary.TITLE, title);
+					result.add(AccessVocabulary.TITLE, title);
 				}
 			}
 
@@ -70,7 +70,7 @@ public class MimeExtractor implements Extractor {
 
 			Date date = MailUtil.getDate(message);
 			if (date != null) {
-				result.put(AccessVocabulary.DATE, date);
+				result.add(AccessVocabulary.DATE, date);
 			}
 		}
 		catch (MessagingException e) {

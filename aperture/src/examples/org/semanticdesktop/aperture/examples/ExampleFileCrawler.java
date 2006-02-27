@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -331,7 +331,7 @@ public class ExampleFileCrawler {
             if (mimeType != null) {
                 // add the mime type to the metadata
                 RDFContainer metadata = object.getMetadata();
-                metadata.put(AccessVocabulary.MIME_TYPE, mimeType);
+                metadata.add(AccessVocabulary.MIME_TYPE, mimeType);
 
                 // apply an Extractor if available
                 if (extractingContents) {

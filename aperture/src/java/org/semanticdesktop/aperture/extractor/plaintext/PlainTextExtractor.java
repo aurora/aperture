@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -45,7 +45,7 @@ public class PlainTextExtractor implements Extractor {
 
             // everything is ok, read the full document 
             String remainingChars = IOUtil.readString(reader);
-            result.put(AccessVocabulary.FULL_TEXT, firstChars + remainingChars);
+            result.add(AccessVocabulary.FULL_TEXT, firstChars + remainingChars);
         }
         catch (IOException e) {
             throw new ExtractorException(e);

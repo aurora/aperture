@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -270,7 +270,7 @@ public class HtmlExtractor implements Extractor {
 
         public void finishedParsing() {
             // store extracted text
-            container.put(AccessVocabulary.FULL_TEXT, textBuffer.toString());
+            container.add(AccessVocabulary.FULL_TEXT, textBuffer.toString());
 
             // store keywords
             Iterator keywords = keywordBuffer.iterator();
@@ -283,13 +283,13 @@ public class HtmlExtractor implements Extractor {
 
             // store other metadata
             if (title != null) {
-                container.put(AccessVocabulary.TITLE, title);
+                container.add(AccessVocabulary.TITLE, title);
             }
             if (author != null) {
-                container.put(AccessVocabulary.CREATOR, author);
+                container.add(AccessVocabulary.CREATOR, author);
             }
             if (description != null) {
-                container.put(AccessVocabulary.DESCRIPTION, description);
+                container.add(AccessVocabulary.DESCRIPTION, description);
             }
 
             // cleanup

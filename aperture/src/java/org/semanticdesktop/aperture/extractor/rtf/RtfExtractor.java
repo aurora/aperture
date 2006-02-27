@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -42,7 +42,7 @@ public class RtfExtractor implements Extractor {
 		try {
 			rtfParser.read(stream, document, 0);
 			String text = document.getText(0, document.getLength());
-			result.put(AccessVocabulary.FULL_TEXT, text);
+			result.add(AccessVocabulary.FULL_TEXT, text);
 		}
 		catch (BadLocationException e) {
 			// problem relates to the file contents: just log and ignore

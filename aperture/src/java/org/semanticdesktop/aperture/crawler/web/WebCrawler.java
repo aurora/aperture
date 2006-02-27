@@ -397,7 +397,7 @@ public class WebCrawler extends CrawlerBase {
             }
         }
 
-        object.getMetadata().put(AccessVocabulary.MIME_TYPE, mimeType);
+        object.getMetadata().add(AccessVocabulary.MIME_TYPE, mimeType);
 
         // fetch a LinkExtractor for this MIME type and exit when there is none
         LinkExtractor extractor = null;

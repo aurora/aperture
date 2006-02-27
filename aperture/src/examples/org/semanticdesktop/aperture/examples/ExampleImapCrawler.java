@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -509,10 +509,10 @@ public class ExampleImapCrawler {
                     // mime type if any, taking care whether to take the content mime type or the regular
                     // mime type property.
                     if (metadata.getString(contentMimeTypeProperty) != null) {
-                        metadata.put(contentMimeTypeProperty, mimeType);
+                        metadata.add(contentMimeTypeProperty, mimeType);
                     }
                     else {
-                        metadata.put(mimeTypeProperty, mimeType);
+                        metadata.add(mimeTypeProperty, mimeType);
                     }
                 }
             }

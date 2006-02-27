@@ -41,7 +41,7 @@ public class XmlExtractor implements Extractor {
 			// store the extracted text
 			String text = listener.getText();
 			if (!text.equals("")) {
-				result.put(AccessVocabulary.FULL_TEXT, text);
+				result.add(AccessVocabulary.FULL_TEXT, text);
 			}
 		}
 		catch (ParserConfigurationException e) {

@@ -71,7 +71,7 @@ public class MailUtil {
 			URI person = new URIImpl(getPersonURI(emailAddress, name));
 
 			// connect the person resource to the mail resource
-			metadata.put(predicate, person);
+			metadata.add(predicate, person);
 			metadata.add(new StatementImpl(person, RDF.TYPE, AccessVocabulary.AGENT));
 
 			// add name and address details

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -90,7 +90,7 @@ public class PdfExtractor implements Extractor {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
             if (text != null) {
-                result.put(AccessVocabulary.FULL_TEXT, text);
+                result.add(AccessVocabulary.FULL_TEXT, text);
             }
         }
         catch (IOException e) {
@@ -105,21 +105,21 @@ public class PdfExtractor implements Extractor {
         PDDocumentInformation metadata = document.getDocumentInformation();
 
         try {
-            putStringMetadata(AccessVocabulary.CREATOR, metadata.getAuthor(), result);
+            addStringMetadata(AccessVocabulary.CREATOR, metadata.getAuthor(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting author", e);
         }
 
         try {
-            putStringMetadata(AccessVocabulary.TITLE, metadata.getTitle(), result);
+            addStringMetadata(AccessVocabulary.TITLE, metadata.getTitle(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting title", e);
         }
 
         try {
-            putStringMetadata(AccessVocabulary.SUBJECT, metadata.getSubject(), result);
+            addStringMetadata(AccessVocabulary.SUBJECT, metadata.getSubject(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting subject", e);
@@ -140,14 +140,14 @@ public class PdfExtractor implements Extractor {
         }
 
         try {
-            putCalendarMetadata(AccessVocabulary.CREATION_DATE, metadata.getCreationDate(), result);
+            addCalendarMetadata(AccessVocabulary.CREATION_DATE, metadata.getCreationDate(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting creation date", e);
         }
 
         try {
-            putCalendarMetadata(AccessVocabulary.DATE, metadata.getModificationDate(), result);
+            addCalendarMetadata(AccessVocabulary.DATE, metadata.getModificationDate(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting modification date", e);
@@ -156,7 +156,7 @@ public class PdfExtractor implements Extractor {
         try {
             int nrPages = document.getNumberOfPages();
             if (nrPages >= 0) {
-                result.put(AccessVocabulary.PAGE_COUNT, nrPages);
+                result.add(AccessVocabulary.PAGE_COUNT, nrPages);
             }
         }
         catch (Exception e) {
@@ -180,21 +180,15 @@ public class PdfExtractor implements Extractor {
         }
     }
 
-    private void putStringMetadata(org.openrdf.model.URI property, String value, RDFContainer result) {
-        if (value != null) {
-            result.put(property, value);
-        }
-    }
-
     private void addStringMetadata(org.openrdf.model.URI property, String value, RDFContainer result) {
         if (value != null) {
             result.add(property, value);
         }
     }
 
-    private void putCalendarMetadata(org.openrdf.model.URI property, Calendar value, RDFContainer result) {
+    private void addCalendarMetadata(org.openrdf.model.URI property, Calendar value, RDFContainer result) {
         if (value != null) {
-            result.put(property, value);
+            result.add(property, value);
         }
     }
 }

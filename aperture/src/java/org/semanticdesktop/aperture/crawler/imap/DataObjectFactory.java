@@ -604,7 +604,7 @@ public class DataObjectFactory {
 
 		// extend metadata with additional properties
 		if (parentUri != null) {
-			metadata.put(AccessVocabulary.PART_OF, parentUri);
+			metadata.add(AccessVocabulary.PART_OF, parentUri);
 		}
 
 		copyString(AccessVocabulary.CHARACTER_SET, map, metadata);
@@ -641,21 +641,21 @@ public class DataObjectFactory {
 	private void copyString(URI predicate, HashMap map, RDFContainer metadata) {
 		String value = (String) map.get(predicate);
 		if (value != null) {
-			metadata.put(predicate, value);
+			metadata.add(predicate, value);
 		}
 	}
 
 	private void copyInt(URI predicate, HashMap map, RDFContainer metadata) {
 		Integer value = (Integer) map.get(predicate);
 		if (value != null) {
-			metadata.put(predicate, value.intValue());
+			metadata.add(predicate, value.intValue());
 		}
 	}
 
 	private void copyDate(URI predicate, HashMap map, RDFContainer metadata) {
 		Date value = (Date) map.get(predicate);
 		if (value != null) {
-			metadata.put(predicate, value);
+			metadata.add(predicate, value);
 		}
 	}
 

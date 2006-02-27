@@ -114,7 +114,7 @@ public class PoiUtil {
 				// '1' is often erroneously returned and can thus not be trusted
 				// higher values tend to be right (not seen a counter example yet) and are
 				// therefore included
-				container.put(AccessVocabulary.PAGE_COUNT, nrPages);
+				container.add(AccessVocabulary.PAGE_COUNT, nrPages);
 			}
 
 			String keywords = summary.getKeywords();
@@ -202,7 +202,7 @@ public class PoiUtil {
 		if (text != null) {
 			text = text.trim();
 			if (!text.equals("")) {
-				container.put(AccessVocabulary.FULL_TEXT, text);
+				container.add(AccessVocabulary.FULL_TEXT, text);
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2006 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -39,8 +39,7 @@ public class DataObjectBase implements DataObject {
         this.dataSource = dataSource;
         this.metadata = metadata;
         disposed = false;
-        // Add the generic RDF Type
-        metadata.put(RDF.TYPE,AccessVocabulary.DATAOBJECT);
+        metadata.add(RDF.TYPE, AccessVocabulary.DATAOBJECT);
     }
 
     public void finalize() throws Throwable {

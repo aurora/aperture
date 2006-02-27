@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -223,30 +223,30 @@ public class HttpAccessor implements DataAccessor {
             characterSet = "ISO-8859-1";
         }
 
-        metadata.put(AccessVocabulary.CHARACTER_SET, characterSet);
+        metadata.add(AccessVocabulary.CHARACTER_SET, characterSet);
         
         if (mimeType != null) {
-            metadata.put(AccessVocabulary.MIME_TYPE, mimeType);
+            metadata.add(AccessVocabulary.MIME_TYPE, mimeType);
         }
 
         long contentLength = connection.getContentLength();
         if (contentLength >= 0l) {
-            metadata.put(AccessVocabulary.BYTE_SIZE, contentLength);
+            metadata.add(AccessVocabulary.BYTE_SIZE, contentLength);
         }
         
         long retrieved = connection.getDate();
         if (retrieved != 0L) {
-            metadata.put(AccessVocabulary.RETRIEVAL_DATE, new Date(retrieved));
+            metadata.add(AccessVocabulary.RETRIEVAL_DATE, new Date(retrieved));
         }
 
         long lastModified = connection.getLastModified();
         if (lastModified != 0L) {
-            metadata.put(AccessVocabulary.DATE, new Date(lastModified));
+            metadata.add(AccessVocabulary.DATE, new Date(lastModified));
         }
 
         long expires = connection.getExpiration();
         if (expires != 0L) {
-            metadata.put(AccessVocabulary.EXPIRATION_DATE, new Date(expires));
+            metadata.add(AccessVocabulary.EXPIRATION_DATE, new Date(expires));
         }
 
         return object;

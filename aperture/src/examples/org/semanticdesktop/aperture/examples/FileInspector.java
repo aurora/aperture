@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -92,7 +92,7 @@ public class FileInspector {
         }
 
         // add the mime type as an additional statement to the RDF model
-        container.put(AccessVocabulary.MIME_TYPE, mimeType);
+        container.add(AccessVocabulary.MIME_TYPE, mimeType);
 
         // report the output to System.out
         RDFWriter writer = new NTriplesWriter(System.out);

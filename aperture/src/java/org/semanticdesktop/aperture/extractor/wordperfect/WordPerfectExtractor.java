@@ -41,7 +41,7 @@ public class WordPerfectExtractor implements Extractor {
 			WPStringExtractor extractor = new WPStringExtractor();
 			String text = extractor.extract(stream).trim();
 			if (text.length() > 0) {
-				result.put(AccessVocabulary.FULL_TEXT, text);
+				result.add(AccessVocabulary.FULL_TEXT, text);
 			}
 		}
 		catch (IOException e) {

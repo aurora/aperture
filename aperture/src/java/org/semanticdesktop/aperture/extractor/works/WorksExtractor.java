@@ -36,7 +36,7 @@ public class WorksExtractor implements Extractor {
 			WorksStringExtractor extractor = new WorksStringExtractor();
 			String text = extractor.extract(stream).trim();
 			if (text.length() > 0) {
-				result.put(AccessVocabulary.FULL_TEXT, text);
+				result.add(AccessVocabulary.FULL_TEXT, text);
 			}
 		}
 		catch (IOException e) {
