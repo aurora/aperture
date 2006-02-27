@@ -8,11 +8,12 @@ package org.semanticdesktop.aperture.accessor;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * This interface defines a comprehensive list of URIs to be used for modeling DataObject metadata.
  */
-public interface AccessVocabulary {
+public class AccessVocabulary extends DATA {
 
 	public static final String NS = "http://aperture.semanticdesktop.org/ontology/data#";
 
@@ -79,9 +80,9 @@ public interface AccessVocabulary {
 
 	public static final URI DATAOBJECT = new URIImpl(NS + "DataObject");
 
-	public static final URI FILE = new URIImpl(NS + "File");
+	public static final URI FILE = FileDataObject;
 
-	public static final URI FOLDER = new URIImpl(NS + "Folder");
+	public static final URI FOLDER = FolderDataObject;
 
 	public static final URI MESSAGE = new URIImpl(NS + "Message");
 

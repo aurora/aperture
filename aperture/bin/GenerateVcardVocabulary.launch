@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.semanticdesktop.aperture.util.VocabularyWriter"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--package  org.semanticdesktop.aperture.vocabulary -o src/java/org/semanticdesktop/aperture/vocabulary/ -i doc/ontology/vcard.rdfs -a http://www.gnowsis.org/ont/vcard# -n VCARD"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="aperture"/>
+<booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
+</launchConfiguration>

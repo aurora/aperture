@@ -2,215 +2,289 @@
 <!DOCTYPE rdf:RDF [
 	 <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
 	 <!ENTITY a 'http://protege.stanford.edu/system#'>
-	 <!ENTITY data 'http://aperture.semanticdesktop.org/ontology/data#'>
+	 <!ENTITY data_ 'http://aperture.semanticdesktop.org/ontology/data#'>
 	 <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema#'>
 ]>
 <rdf:RDF xmlns:rdf="&rdf;"
 	 xmlns:a="&a;"
-	 xmlns:data="&data;"
+	 xmlns:data_="&data_;"
 	 xmlns:rdfs="&rdfs;">
-<rdfs:Class rdf:about="&data;Agent"
+<rdfs:Class rdf:about="&data_;AddressBookEntry"
+	 rdfs:label="AddressBookEntry">
+	<rdfs:comment>An addressbook-entry, for example from the Apple address book or from Microsoft Outlook.</rdfs:comment>
+	<rdfs:subClassOf rdf:resource="&data_;DataObject"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&data_;Agent"
 	 rdfs:label="Agent">
 	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
 </rdfs:Class>
-<rdfs:Class rdf:about="&data;DataObject"
+<rdfs:Class rdf:about="&data_;DataObject"
 	 rdfs:comment="A resource that contains some information."
 	 rdfs:label="DataObject">
 	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
 </rdfs:Class>
-<rdfs:Class rdf:about="&data;Document"
+<rdfs:Class rdf:about="&data_;Document"
 	 rdfs:label="Document">
-	<rdfs:subClassOf rdf:resource="&data;DataObject"/>
+	<rdfs:subClassOf rdf:resource="&data_;DataObject"/>
 </rdfs:Class>
-<rdfs:Class rdf:about="&data;Email"
+<rdfs:Class rdf:about="&data_;Email"
 	 rdfs:label="Email">
-	<rdfs:subClassOf rdf:resource="&data;DataObject"/>
+	<rdfs:subClassOf rdf:resource="&data_;DataObject"/>
 </rdfs:Class>
-<rdfs:Class rdf:about="&data;FileDataObject"
+<rdfs:Class rdf:about="&data_;FileDataObject"
 	 rdfs:label="FileDataObject">
 	<rdfs:comment>A file-based data object. May be a website, a file from filesystem or any other file representable as a stream. Has a size and some content, that is extracted.</rdfs:comment>
-	<rdfs:subClassOf rdf:resource="&data;DataObject"/>
+	<rdfs:subClassOf rdf:resource="&data_;DataObject"/>
 </rdfs:Class>
-<rdfs:Class rdf:about="&data;FolderDataObject"
+<rdfs:Class rdf:about="&data_;FolderDataObject"
 	 rdfs:label="FolderDataObject">
-	<rdfs:subClassOf rdf:resource="&data;DataObject"/>
+	<rdfs:subClassOf rdf:resource="&data_;DataObject"/>
 </rdfs:Class>
-<rdf:Property rdf:about="&data;bcc"
+<rdfs:Class rdf:about="&data_;MSOLDistList"
+	 rdfs:comment="A distribution list from outlook"
+	 rdfs:label="MSOLDistList">
+	<rdfs:subClassOf rdf:resource="&data_;MSOutlookObject"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&data_;MSOLNote"
+	 rdfs:label="MSOLNote">
+	<rdfs:subClassOf rdf:resource="&data_;Document"/>
+	<rdfs:subClassOf rdf:resource="&data_;MSOutlookObject"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&data_;MSOLTask"
+	 rdfs:label="MSOLTask">
+	<rdfs:subClassOf rdf:resource="&data_;MSOutlookObject"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&data_;MSOutlookObject"
+	 rdfs:label="MSOutlookObject">
+	<rdfs:subClassOf rdf:resource="&data_;DataObject"/>
+</rdfs:Class>
+<rdf:Property rdf:about="&data_;bcc"
 	 a:maxCardinality="1"
 	 rdfs:comment="e-mail: BCC"
 	 rdfs:label="bcc">
-	<rdfs:range rdf:resource="&data;Agent"/>
-	<rdfs:domain rdf:resource="&data;Email"/>
+	<rdfs:range rdf:resource="&data_;Agent"/>
+	<rdfs:domain rdf:resource="&data_;Email"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;byteSize"
+<rdf:Property rdf:about="&data_;byteSize"
 	 a:maxCardinality="1"
 	 a:range="integer"
 	 rdfs:comment="Size of dataobject in bytes."
 	 rdfs:label="byteSize">
-	<rdfs:domain rdf:resource="&data;FileDataObject"/>
+	<rdfs:domain rdf:resource="&data_;FileDataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;cc"
+<rdf:Property rdf:about="&data_;cc"
 	 a:maxCardinality="1"
 	 rdfs:comment="e-mail: CC"
 	 rdfs:label="cc">
-	<rdfs:range rdf:resource="&data;Agent"/>
-	<rdfs:domain rdf:resource="&data;Email"/>
+	<rdfs:range rdf:resource="&data_;Agent"/>
+	<rdfs:domain rdf:resource="&data_;Email"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;characterSet"
+<rdf:Property rdf:about="&data_;characterSet"
 	 a:maxCardinality="1"
 	 rdfs:label="characterSet">
 	<rdfs:comment>Characterset in which the content of the document was created. Example: ISO-8859-1, UTF-8. One of the registered character sets at http://www.iana.org/assignments/character-sets</rdfs:comment>
-	<rdfs:domain rdf:resource="&data;FileDataObject"/>
+	<rdfs:domain rdf:resource="&data_;FileDataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;contentMimeType"
+<rdf:Property rdf:about="&data_;contentMimeType"
 	 a:maxCardinality="1"
 	 rdfs:label="contentMimeType">
 	<rdfs:comment xml:space='preserve'><![CDATA[Key used to store the MIME type of the content of an object when it is different from the object's main MIME type. This value can be used, for example, to model an e-mail message whose mime type is"message/rfc822", but whose content has type "text/html". If not specified, the MIME type of the
 content defaults to the value specified by the 'mimeType' property.]]></rdfs:comment>
-	<rdfs:domain rdf:resource="&data;FileDataObject"/>
+	<rdfs:domain rdf:resource="&data_;FileDataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;created"
+<rdf:Property rdf:about="&data_;created"
 	 a:maxCardinality="1"
 	 rdfs:label="created">
 	<rdfs:comment>DublinCore: Date of creation of the resource. See 'date' for more details.</rdfs:comment>
-	<rdfs:subPropertyOf rdf:resource="&data;date"/>
+	<rdfs:subPropertyOf rdf:resource="&data_;date"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;creator"
+<rdf:Property rdf:about="&data_;creator"
 	 a:maxCardinality="1"
 	 rdfs:label="creator">
 	<rdfs:comment>Dublin Core: An entity primarily responsible for making the content of the resource. Examples of a Creator include a person, an organisation, or a service. Typically, the name of a Creator should be used to indicate the entity.</rdfs:comment>
-	<rdfs:domain rdf:resource="&data;DataObject"/>
+	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;date"
+<rdf:Property rdf:about="&data_;date"
 	 a:maxCardinality="1"
 	 rdfs:label="date">
 	<rdfs:comment xml:space='preserve'><![CDATA[The general "date", typically last modification or publication date. See sub-properties "modified", "created" for more detailed dates. Date on which the resource was changed. Conforms to Xml-Schema dateTime and therefore also ISO 8601. See http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/#dateTime.  See http://www.iso.ch/markete/8601.pdf. To code: SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");]]></rdfs:comment>
-	<rdfs:domain rdf:resource="&data;DataObject"/>
+	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;description"
+<rdf:Property rdf:about="&data_;description"
 	 a:maxCardinality="1"
 	 rdfs:label="description">
 	<rdfs:comment>DublinCore: An account of the content of the resource. Description may include but is not limited to: an abstract, table of contents, reference to a graphical representation of content or a free-text account of the content.</rdfs:comment>
-	<rdfs:domain rdf:resource="&data;DataObject"/>
+	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;emailAddress"
+<rdf:Property rdf:about="&data_;emailAddress"
 	 a:maxCardinality="1"
 	 rdfs:label="emailAddress">
-	<rdfs:domain rdf:resource="&data;Agent"/>
+	<rdfs:domain rdf:resource="&data_;Agent"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;expirationDate"
+<rdf:Property rdf:about="&data_;expirationDate"
 	 a:maxCardinality="1"
 	 rdfs:label="expirationDate">
 	<rdfs:comment>Date the resource expires (especially needed for web-resources). See 'date' for more details.</rdfs:comment>
-	<rdfs:subPropertyOf rdf:resource="&data;date"/>
+	<rdfs:subPropertyOf rdf:resource="&data_;date"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;from"
+<rdf:Property rdf:about="&data_;from"
 	 a:maxCardinality="1"
 	 rdfs:comment="sender of the e-mail"
 	 rdfs:label="from">
-	<rdfs:range rdf:resource="&data;Agent"/>
-	<rdfs:domain rdf:resource="&data;Email"/>
+	<rdfs:range rdf:resource="&data_;Agent"/>
+	<rdfs:domain rdf:resource="&data_;Email"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;fullText"
+<rdf:Property rdf:about="&data_;fullText"
 	 a:maxCardinality="1"
-	 rdfs:label="fulltext">
+	 rdfs:label="fullText">
 	<rdfs:comment>Fulltext of the resource. Plain-text representation with all markup removed. This text can be displayed and used to feed search engines.</rdfs:comment>
-	<rdfs:domain rdf:resource="&data;DataObject"/>
+	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;generator"
+<rdf:Property rdf:about="&data_;generator"
 	 a:maxCardinality="1"
 	 rdfs:comment="The application that created the resource."
 	 rdfs:label="generator">
-	<rdfs:domain rdf:resource="&data;DataObject"/>
+	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;keyword"
+<rdf:Property rdf:about="&data_;homepage"
+	 a:maxCardinality="1"
+	 rdfs:comment="The homepage url of the Agent/Person"
+	 rdfs:label="homepage">
+	<rdfs:domain rdf:resource="&data_;Agent"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&data_;keyword"
 	 a:maxCardinality="1"
 	 rdfs:label="keyword">
 	<rdfs:comment>Adapted DublinCore: The topic of the content of the resource, as keyword. No sentences here. Recommended best practice is to select a value from a controlled vocabulary or formal classification scheme.</rdfs:comment>
-	<rdfs:domain rdf:resource="&data;DataObject"/>
+	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;language"
+<rdf:Property rdf:about="&data_;language"
 	 a:maxCardinality="1"
 	 rdfs:label="language">
 	<rdfs:comment>DublinCore: A language of the intellectual content of the resource. Recommended best practice is to use RFC 3066, which, in conjunction with ISO 639, defines two- and three-letter primary language tags with optional subtags. Examples include "en" or "eng" for English, "akk" for Akkadian, and "en-GB" for English used in the United Kingdom. See also: http://www.ietf.org/rfc/rfc3066.txt</rdfs:comment>
-	<rdfs:domain rdf:resource="&data;DataObject"/>
+	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;mimeType"
+<rdf:Property rdf:about="&data_;mimeType"
 	 a:maxCardinality="1"
 	 rdfs:label="mimeType">
 	<rdfs:comment>The mime type of the resource, if available. Example: "text/plain". See http://www.iana.org/assignments/media-types/</rdfs:comment>
-	<rdfs:domain rdf:resource="&data;FileDataObject"/>
+	<rdfs:domain rdf:resource="&data_;FileDataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;modified"
+<rdf:Property rdf:about="&data_;modified"
 	 a:maxCardinality="1"
 	 rdfs:label="modified">
 	<rdfs:comment>DublinCore: Date on which the resource was changed. See 'date' for more details.</rdfs:comment>
-	<rdfs:subPropertyOf rdf:resource="&data;date"/>
+	<rdfs:subPropertyOf rdf:resource="&data_;date"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;name"
+<rdf:Property rdf:about="&data_;msOLUID"
+	 a:maxCardinality="1"
+	 rdfs:comment="unique identifier created by Microsoft Outlook"
+	 rdfs:label="msOLUID">
+	<rdfs:domain rdf:resource="&data_;MSOutlookObject"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&data_;msolCompletedDate"
+	 a:maxCardinality="1"
+	 rdfs:comment="Task was completed then."
+	 rdfs:label="msolCompletedDate">
+	<rdfs:domain rdf:resource="&data_;MSOLTask"/>
+	<rdfs:subPropertyOf rdf:resource="&data_;date"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&data_;msolDueDate"
+	 a:maxCardinality="1"
+	 rdfs:label="msolDueDate">
+	<rdfs:domain rdf:resource="&data_;MSOLTask"/>
+	<rdfs:subPropertyOf rdf:resource="&data_;date"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&data_;name"
 	 a:maxCardinality="1"
 	 rdfs:label="name">
 	<rdfs:comment>Name of a DataObject or an Agent. File names, folder names, attachment names. In contrast to title, this is the name of the file itself whereas title is the heading inside the content.</rdfs:comment>
-	<rdfs:domain rdf:resource="&data;Agent"/>
-	<rdfs:domain rdf:resource="&data;DataObject"/>
+	<rdfs:domain rdf:resource="&data_;Agent"/>
+	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;pageCount"
+<rdf:Property rdf:about="&data_;pageCount"
 	 a:maxCardinality="1"
 	 rdfs:comment="Number of pages if printed."
 	 rdfs:label="pageCount">
-	<rdfs:domain rdf:resource="&data;Document"/>
+	<rdfs:domain rdf:resource="&data_;Document"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;partOf"
+<rdf:Property rdf:about="&data_;partOf"
 	 a:maxCardinality="1"
 	 rdfs:comment="This file is part-of a folder or other container."
 	 rdfs:label="partOf">
-	<rdfs:domain rdf:resource="&data;FileDataObject"/>
-	<rdfs:range rdf:resource="&data;FolderDataObject"/>
+	<rdfs:domain rdf:resource="&data_;FileDataObject"/>
+	<rdfs:range rdf:resource="&data_;FolderDataObject"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;printDate"
+<rdf:Property rdf:about="&data_;printDate"
 	 a:maxCardinality="1"
 	 rdfs:label="printDate">
 	<rdfs:comment>Date the resource was last printed (only supported by OpenDocument format, candidate for removal here). See 'date' for more details.</rdfs:comment>
-	<rdfs:subPropertyOf rdf:resource="&data;date"/>
+	<rdfs:subPropertyOf rdf:resource="&data_;date"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;retrievalDate"
+<rdf:Property rdf:about="&data_;receivedDate"
+	 a:maxCardinality="1"
+	 rdfs:comment="Daten when this e-mail was received."
+	 rdfs:label="receivedDate">
+	<rdfs:domain rdf:resource="&data_;Email"/>
+	<rdfs:subPropertyOf rdf:resource="&data_;date"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&data_;retrievalDate"
 	 a:maxCardinality="1"
 	 rdfs:label="retrievalDate">
 	<rdfs:comment>Date when the resource was retrieved by Aperture. See 'date' for more details.</rdfs:comment>
-	<rdfs:subPropertyOf rdf:resource="&data;date"/>
+	<rdfs:subPropertyOf rdf:resource="&data_;date"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;subject"
+<rdf:Property rdf:about="&data_;sentDate"
+	 a:maxCardinality="1"
+	 rdfs:comment="Date when this e-mail was sent."
+	 rdfs:label="sentDate">
+	<rdfs:domain rdf:resource="&data_;Email"/>
+	<rdfs:subPropertyOf rdf:resource="&data_;date"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&data_;subject"
 	 a:maxCardinality="1"
 	 rdfs:comment="DublinCore: The topic of the content of the resource."
 	 rdfs:label="subject">
-	<rdfs:domain rdf:resource="&data;DataObject"/>
+	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data;title"
+<rdf:Property rdf:about="&data_;title"
 	 a:maxCardinality="1"
 	 rdfs:label="title">
 	<rdfs:comment>DublinCore: A name given to the resource. Typically, a Title will be a name by which the resource is formally known.
 Difference to name is that title is the human readable title of the resurce whereas name is the filename.</rdfs:comment>
-	<rdfs:domain rdf:resource="&data;DataObject"/>
+	<rdfs:domain rdf:resource="&data_;DataObject"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&data_;to"
+	 a:maxCardinality="1"
+	 rdfs:comment="e-mail: TO"
+	 rdfs:label="to">
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 </rdf:RDF>

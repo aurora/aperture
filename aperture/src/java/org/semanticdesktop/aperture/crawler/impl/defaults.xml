@@ -10,4 +10,7 @@
 	<crawlerFactory>
 		<name>org.semanticdesktop.aperture.crawler.imap.ImapCrawlerFactory</name>
 	</crawlerFactory>
+	<crawlerFactory>
+		<name>org.semanticdesktop.aperture.outlook.OutlookCrawlerFactory</name>
+	</crawlerFactory>
 </crawlerFactories>

@@ -1,0 +1,40 @@
+<html>
+
+
+<body>
+<h1>Microsoft Outlook Crawler</h2>
+<p>This package holds a crawler for Microsoft Outlook. It extracts the information from Outlook and 
+represents it using our Data-Schema plus ICAL and VCARD as RDF. To use the Crawler, you have to:
+<ul>
+  <li>Have Outlook installed. We do not read the binary files</li>
+  <li>Have the Jacob.dll in your exe's path</li>
+  <li>Bonus: Have Outlook Redemption installed. If not, more bug messages will bug you. 
+  	See <a href="http://www.dimastr.com/redemption/">dimastr.com/redemption</a> for a download.
+  </li>
+</ul>
+</p>
+<h2>RDF Representation of Outlook</h2>
+<p>The nifty formats we use for Outlook can be found in the doc/ontology folder.
+we used:
+<ul>
+  <li>Aperture Data Vocabulary</li>
+  <li>ICAL as RDF</li>
+  <li>VCARD as RDF</li>
+</ul>
+If we make extensions, the Aperture Vocabulary is the right place to expand. ICAL and VCARD are 
+pretty fixed and should not be extended.
+</p>
+
+<h2>Known Bugs</h2>
+<p>The outlook nag screen will popup and we cannot remove that. Even using Outlook Redemption,
+which removes this nag screen for many issues does not help when reading the e-mail adresses
+of e-mail recipients. It just doesn't work.<p>
+<p>Not all data of outlook is available. Repeating events are only limited extracted,
+many other data items are missing. This is partly because we don't have the time
+to code all that. You are welcome to improve that!</p>
+<p>Threading and Memory leaks. We see that when crawling Outlook data, Java and Outlook memory
+consumption rises significantly. Both may hang. Although we close all our handles, something
+is wrong. Also, do not use the crawler in more than one thread. Seriously, multithreading 
+over a Java-Com bridge is no fun.</p>
+</body>
+</html>

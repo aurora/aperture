@@ -98,6 +98,7 @@ your copy of ANT at http://ant.apache.org/
 			<include name="**" />
 			<exclude name="**/*.java" />
 			<exclude name="**/CVS, **/.svn/**" />
+			<exclude name="**/*.pst" />
 		</patternset>
 	</target>
 	

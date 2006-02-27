@@ -10,4 +10,7 @@
 	<dataSourceFactory>
 		<name>org.semanticdesktop.aperture.datasource.imap.ImapDataSourceFactory</name>
 	</dataSourceFactory>
+	<dataSourceFactory>
+		<name>org.semanticdesktop.aperture.outlook.OutlookDataSourceFactory</name>
+	</dataSourceFactory>
 </dataSourceFactories>

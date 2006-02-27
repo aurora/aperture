@@ -32,23 +32,9 @@ import org.xml.sax.SAXException;
  * A basic AccessData implementation that stores all its information in main memory and can read it from
  * and write it to a file.
  */
-public class FileAccessData implements AccessData {
+public class FileAccessData extends AccessDataImpl {
 
     private static final Logger LOGGER = Logger.getLogger(FileAccessData.class.getName());
-
-    private static final String REFERRED_ID_TAG = "referredID";
-
-    /**
-     * A Map mapping IDs to another Map that contains the key-value pairs for that ID.
-     */
-    private HashMap idMap;
-
-    /**
-     * A mapping from IDs to Sets of IDs that the former ID refers to. This can be used to model
-     * parent-child relationships or links between IDs. The use of this mapping is typically to register
-     * IDs that need special treatment once the referring ID has been changed or removed.
-     */
-    private HashMap referredIDMap;
 
     /**
      * The File from which previous access data is loaded and to which new data will be written. This may
@@ -61,6 +47,7 @@ public class FileAccessData implements AccessData {
      * is specified.
      */
     public FileAccessData() {
+    	super();
     }
 
     /**
@@ -87,9 +74,9 @@ public class FileAccessData implements AccessData {
     }
 
     public void initialize() throws IOException {
-        idMap = new HashMap(1024);
-        referredIDMap = new HashMap(1024);
-        
+        idMap = null;
+        referredIDMap = null;
+        super.initialize();
         if (dataFile != null && dataFile.exists()) {
             FileInputStream fileStream = new FileInputStream(dataFile);
             BufferedInputStream buffer = new BufferedInputStream(fileStream);
@@ -107,96 +94,15 @@ public class FileAccessData implements AccessData {
             write(zipStream);
             zipStream.close();
         }
-        
         idMap = null;
         referredIDMap = null;
     }
     
     public void clear() throws IOException {
-        idMap = null;
-        referredIDMap = null;
+        super.clear();
         if (dataFile != null && dataFile.exists()) {
             dataFile.delete();
         }
-    }
-    
-    public int getSize() {
-        // warning: this assumes that every ID is at least stored in the idMap, i.e. IDs for which only
-        // parent-child relationships are stored are not counted.
-        return idMap.size();
-    }
-
-    public Set getStoredIDs() {
-        HashSet result = new HashSet(idMap.keySet());
-        result.addAll(referredIDMap.keySet());
-        return result;
-    }
-
-    public boolean isKnownId(String id) {
-        return idMap.containsKey(id) || referredIDMap.containsKey(id);
-    }
-
-    public void put(String id, String key, String value) {
-        // assumption: lots of objects with relative few things to store: use an ArrayMap
-        ArrayMap infoMap = createInfoMap(id);
-        infoMap.put(key, value);
-    }
-
-    public void putReferredID(String id, String referredID) {
-        HashSet ids = (HashSet) referredIDMap.get(id);
-
-        if (ids == null) {
-            ids = new HashSet();
-            referredIDMap.put(id, ids);
-        }
-
-        ids.add(referredID);
-    }
-
-    public String get(String id, String key) {
-        ArrayMap infoMap = (ArrayMap) idMap.get(id);
-        if (infoMap == null) {
-            return null;
-        }
-        else {
-            return (String) infoMap.get(key);
-        }
-    }
-
-    public Set getReferredIDs(String id) {
-        return (Set) referredIDMap.get(id);
-    }
-
-    public void remove(String id, String key) {
-        ArrayMap infoMap = (ArrayMap) idMap.get(id);
-        if (infoMap != null) {
-            infoMap.remove(key);
-        }
-    }
-
-    public void removeReferredID(String id, String referredID) {
-        HashSet ids = (HashSet) referredIDMap.get(id);
-        if (ids != null) {
-            ids.remove(referredID);
-
-            if (ids.isEmpty()) {
-                referredIDMap.remove(id);
-            }
-        }
-    }
-
-    public void remove(String id) {
-        idMap.remove(id);
-        referredIDMap.remove(id);
-    }
-
-    private ArrayMap createInfoMap(String id) {
-        ArrayMap infoMap = (ArrayMap) idMap.get(id);
-        if (infoMap == null) {
-            infoMap = new ArrayMap();
-            idMap.put(id, infoMap);
-        }
-        return infoMap;
     }
 
     private void read(InputStream in) throws IOException {

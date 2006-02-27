@@ -35,6 +35,10 @@ to create zip and tar.gz files containing an entire Aperture release.
 "ant test" will run all unit tests. "ant javadoc" will create javadoc
 documentation.
 
+*) What is Jacob.dll?
+This file is in this directory to make the MS-Outlook crawler work.
+It has to be in the project root, otherwise the linker will not find it.
+
 *) To contribute your own implementations of Aperture APIs:
 
 Please visit the Aperture homepage at http://aperture.sourceforge.net
