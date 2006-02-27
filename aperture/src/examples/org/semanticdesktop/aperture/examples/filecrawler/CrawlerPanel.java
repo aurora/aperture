@@ -391,24 +391,29 @@ public class CrawlerPanel extends JPanel {
             if (object instanceof FileDataObject) {
                 process((FileDataObject) object);
             }
-            commit();
+
+            try {
+                repository.commit();
+            }
+            catch (SailUpdateException e) {
+                // don't continue when this happens
+                throw new RuntimeException(e);
+            }
+            
             object.dispose();
         }
 
         public void objectChanged(Crawler dataCrawler, DataObject object) {
             displayUnexpectedEventWarning("changed");
-            commit();
             object.dispose();
         }
 
         public void objectNotModified(Crawler crawler, String url) {
             displayUnexpectedEventWarning("unmodified");
-            commit();
         }
 
         public void objectRemoved(Crawler dataCrawler, String url) {
             displayUnexpectedEventWarning("removed");
-            commit();
         }
 
         private void process(FileDataObject object) {
@@ -454,16 +459,6 @@ public class CrawlerPanel extends JPanel {
             }
             catch (ExtractorException e) {
                 LOGGER.log(Level.WARNING, "ExtractorException while processing " + id, e);
-            }
-        }
-
-        private void commit() {
-            try {
-                repository.commit();
-            }
-            catch (SailUpdateException e) {
-                // don't continue when this happens
-                throw new RuntimeException(e);
             }
         }
 

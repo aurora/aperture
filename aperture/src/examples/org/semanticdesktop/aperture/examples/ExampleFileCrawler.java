@@ -261,16 +261,10 @@ public class ExampleFileCrawler {
         public void objectNew(Crawler dataCrawler, DataObject object) {
             nrObjects++;
 
-            // Commit the changes to the repository. This needs to happen before processing of the
-            // FileDataObjects as that operation may one day query for certain statements (mimetypes
-            // etc).
-            commit();
-
             // process the contents on an InputStream, if available
             if (object instanceof FileDataObject) {
                 try {
                     process((FileDataObject) object);
-                    commit();
                 }
                 catch (IOException e) {
                     LOGGER.log(Level.WARNING, "IOException while processing " + object.getID(), e);
@@ -278,6 +272,15 @@ public class ExampleFileCrawler {
                 catch (ExtractorException e) {
                     LOGGER.log(Level.WARNING, "ExtractorException while processing " + object.getID(), e);
                 }
+            }
+            
+            // commit all generated statements
+            try {
+            	repository.commit();
+            }
+            catch (SailUpdateException e) {
+                // don't continue when this happens
+                throw new RuntimeException(e);
             }
             
             object.dispose();
@@ -344,18 +347,6 @@ public class ExampleFileCrawler {
                         extractor.extract(id, buffer, null, mimeType, metadata);
                     }
                 }
-            }
-        }
-
-        private void commit() {
-            try {
-                if (repository.isActive()) {
-                    repository.commit();
-                }
-            }
-            catch (SailUpdateException e) {
-                // don't continue when this happens
-                throw new RuntimeException(e);
             }
         }
 

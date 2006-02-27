@@ -415,15 +415,10 @@ public class ExampleImapCrawler {
         public void objectNew(Crawler crawler, DataObject object) {
             nrObjects++;
 
-            // Commit the changes to the repository. This needs to happen before processing of the
-            // FileDataObjects as that operation will query for certain statements (mimetypes etc).
-            commit();
-
             // process the contents on an InputStream, if available
             if (object instanceof FileDataObject) {
                 try {
                     process((FileDataObject) object);
-                    commit();
                 }
                 catch (IOException e) {
                     LOGGER.log(Level.WARNING, "IOException while processing " + object.getID(), e);
@@ -433,20 +428,16 @@ public class ExampleImapCrawler {
                 }
             }
             
-            object.dispose();
-        }
-
-        private void commit() {
+            // commit all generated statements
             try {
-                // commit if any changes have been made
-                if (repository.isActive()) {
-                    repository.commit();
-                }
+            	repository.commit();
             }
             catch (SailUpdateException e) {
                 // don't continue when this happens
                 throw new RuntimeException(e);
             }
+            
+            object.dispose();
         }
 
         public void objectChanged(Crawler crawler, DataObject object) {
