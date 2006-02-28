@@ -1,0 +1,86 @@
+<html>
+
+<head>
+	<title>Aperture - Tutorials - RDF</title>
+	<link rel="stylesheet" type="text/css" href="../style/documentation.css">
+</head>
+
+<body>
+
+<h1>The Use of RDF in Aperture</h1>
+
+<p>
+Aperture makes heavy use of <a href="http://www.w3.org/RDF/">RDF</a> graphs to communicate
+information between components. For example, Extractors return the full-text and metadata
+they extract as an RDF model and Crawlers do the same for the source-specific content and metadata
+they obtain through crawling.
+</p>
+
+<p>
+The rationale for using RDF is that we want an expressive and flexible way to let these
+components communicate their results. Compared to e.g. a Java Map, an RDF model allows
+for much more expressive information models, enabling future API implementations to
+export metadata with a high level of granularity without making any assumptions upfront
+on what it will look like.
+</p>
+
+<p>
+To streamline metadata extraction and communication, we've developed two Aperture namespaces.
+One is meant for modelling data sources, e.g. a root dir on a file system with include and exclude
+patterns. The other namespace is for describing the
+actual set of crawled resources, e.g. their names, content and other properties determined
+through crawling and content extraction.
+</p>
+
+<h2>RDFContainer</h2>
+
+<p>
+The power of RDF is also its main weakness: RDF models can be complex to handle when compared to, e.g.,
+Java Maps. They are also a relatively new standard for the Java community at large, which may
+be a burden for new developers considering to extent and improve Aperture. There is no uniform
+API for handling RDF models, as there are for XML documents (DOM, SAX...). Instead a number of
+competing and developing de facto standards exist that each have their pros and cons. These systems
+also tend to focus on specific use cases, such as ontology engineering or storage and querying,
+leading to a complex and specialized API. For example, Sesame's Repository API deals with concepts
+such as transactions, contexts, etc. For a simple use case like an Extractor implementation 
+you don't want your implementors having to even consider these issues.
+These should be application-level matters, not framework-level matters.
+</p>
+
+<p>
+Therefore we have developed a simple API for RDF models called RDFContainer. It contains a set
+of methods mimicking the Map API to ease understanding while still allowing for addition
+of arbitrary RDF statements in a simple way. We tried to find a balance between what we envisioned we would
+need in our systems without overcomplicating things. RDFContainer instances are passed to
+e.g. Extractor and DataAccessor implementations to put all metadata in.
+</p>
+
+<p>
+A single RDFContainer implementation is currently available, based on a Sesame Repository.
+All matters regarding context and transactions are solved in/behind this implementation.
+We envision a number of RDFContainer implementations tuned for different use cases.
+Furthermore, the application developer can always fully control how
+the generated RDF models are handled by providing a custom RDFContainer implementation.
+</p>
+
+<p>
+RDFContainer has build-in support for a number of Java core types, such as integers, booleans and dates.
+This relieves developers from the burden of having to figure out how to convert such data types
+to their RDF counter parts while also enforcing a uniform way in which these data types are converted
+accross the entire system.
+</p>
+
+<p>
+During development of some Extractors and Crawlers we experienced that the use of the put and get methods,
+which enforce and ensist that a property maximally occurs once for a given subject, may not always be desirable.
+In general, it makes a lot of sense to use them in configuration-like contexts, e.g. the definition of
+a DataSource. Here it can be vital that a property has a single value or else the definition becomes
+ambiguous or unprocessable. However, in the context of Crawlers and Extractors we found that taking
+such a closed world assumption on the RDF graph is less ideal: you never know who else is working
+on the same RDF graph and whether it makes logically sense to allow a property to have multiple values
+or not. Therefore, these classes best use the add methods to populate the RDFContainer.
+</p>
+
+</body>
+
+</html>
