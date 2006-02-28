@@ -94,8 +94,9 @@ public class FileAccessData extends AccessDataImpl {
             write(zipStream);
             zipStream.close();
         }
-        idMap = null;
-        referredIDMap = null;
+        // somehow in practice, setting it null doesn't allow storing twice, which somebody does
+        //idMap = null;
+        //referredIDMap = null;
     }
     
     public void clear() throws IOException {
