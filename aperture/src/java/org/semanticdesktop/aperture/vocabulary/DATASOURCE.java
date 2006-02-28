@@ -4,7 +4,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Feb 28 11:08:27 CET 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Feb 28 13:50:28 CET 2006
  * input file: doc/ontology/source.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/source#
  */
@@ -61,6 +61,7 @@ public class DATASOURCE {
      * Label: basepath 
      * Comment: basepath on the server. For IMAP this is the folder where the e-mails are stored. Some IMAP servers need this. 
      * Domain: IMAPDataSource 
+     * Range: Literal 
      */
     public static final URI basepath = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#basepath");
 
@@ -68,33 +69,38 @@ public class DATASOURCE {
      * Label: condition 
      * Comment: the condition for this pattern to match 
      * Domain: Pattern 
+     * Range: Literal 
      */
     public static final URI condition = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#condition");
 
     /**
      * Label: connectionSecurity 
      * Domain: DataSource 
+     * Range: Literal 
      */
     public static final URI connectionSecurity = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#connectionSecurity");
 
     /**
-     * Label: datasourceComment 
+     * Label: dataSourceComment 
      * Comment: A comment about the datasource. 
      * Domain: DataSourceDescription 
+     * Range: Literal 
      */
-    public static final URI datasourceComment = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#datasourceComment");
+    public static final URI dataSourceComment = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#dataSourceComment");
 
     /**
-     * Label: datasourcename 
+     * Label: dataSourceName 
      * Comment: Name of the type of datasource. For example "Local File System". 
      * Domain: DataSourceDescription 
+     * Range: Literal 
      */
-    public static final URI datasourcename = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#datasourcename");
+    public static final URI dataSourceName = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#dataSourceName");
 
     /**
      * Label: describedDataSourceType 
      * Comment: The datasource described 
      * Domain: DataSourceDescription 
+     * Range: Class 
      */
     public static final URI describedDataSourceType = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#describedDataSourceType");
 
@@ -102,6 +108,7 @@ public class DATASOURCE {
      * Label: excludePattern 
      * Comment: Patterns to exclude from this datasource 
      * Domain: DataSource 
+     * Range: Pattern 
      */
     public static final URI excludePattern = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#excludePattern");
 
@@ -109,6 +116,7 @@ public class DATASOURCE {
      * Label: hostname 
      * Comment: hostname of the server to connect to 
      * Domain: IMAPDataSource 
+     * Range: Literal 
      */
     public static final URI hostname = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#hostname");
 
@@ -116,6 +124,7 @@ public class DATASOURCE {
      * Label: includeEmbeddedResources 
      * Comment: Include embedded resources when crawling this datasource. 
      * Domain: DataSource 
+     * Range: Literal 
      */
     public static final URI includeEmbeddedResources = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#includeEmbeddedResources");
 
@@ -123,6 +132,7 @@ public class DATASOURCE {
      * Label: includeHiddenResources 
      * Comment: Include hidden resources when crawling this datasource 
      * Domain: DataSource 
+     * Range: Literal 
      */
     public static final URI includeHiddenResources = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#includeHiddenResources");
 
@@ -130,6 +140,7 @@ public class DATASOURCE {
      * Label: includePattern 
      * Comment: patterns to include in this datasource 
      * Domain: DataSource 
+     * Range: Pattern 
      */
     public static final URI includePattern = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#includePattern");
 
@@ -137,6 +148,7 @@ public class DATASOURCE {
      * Label: maximumDepth 
      * Comment: The maximum depth to crawl to in this datasource. 
      * Domain: DataSource 
+     * Range: Literal 
      */
     public static final URI maximumDepth = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#maximumDepth");
 
@@ -144,6 +156,7 @@ public class DATASOURCE {
      * Label: maximumSize 
      * Comment: The maximum size (in bytes) for resources in this datasource. 
      * Domain: DataSource 
+     * Range: Literal 
      */
     public static final URI maximumSize = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#maximumSize");
 
@@ -151,6 +164,7 @@ public class DATASOURCE {
      * Label: name 
      * Comment: The readable name of the datasource 
      * Domain: DataSource 
+     * Range: Literal 
      */
     public static final URI name = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#name");
 
@@ -158,6 +172,7 @@ public class DATASOURCE {
      * Label: password 
      * Comment: The Password used to access this datasource. 
      * Domain: DataSource 
+     * Range: Literal 
      */
     public static final URI password = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#password");
 
@@ -165,6 +180,7 @@ public class DATASOURCE {
      * Label: rootFolder 
      * Comment: Root-Folder in the local filesystem. On Windows machines something like "C:\myfiles\" on unix machines like "/Users/paul/" 
      * Domain: FileSystemDataSource 
+     * Range: Literal 
      */
     public static final URI rootFolder = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#rootFolder");
 
@@ -172,12 +188,14 @@ public class DATASOURCE {
      * Label: rootUrl 
      * Comment: The root URL of this datasource. This may also be an indicator of how to create other URIs of this datasource 
      * Domain: DataSource 
+     * Range: Literal 
      */
     public static final URI rootUrl = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#rootUrl");
 
     /**
      * Label: username 
      * Domain: IMAPDataSource 
+     * Range: Literal 
      */
     public static final URI username = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#username");
 

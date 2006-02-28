@@ -66,17 +66,17 @@
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&source_;datasourceComment"
+<rdf:Property rdf:about="&source_;dataSourceComment"
 	 a:maxCardinality="1"
 	 rdfs:comment="A comment about the datasource."
-	 rdfs:label="datasourceComment">
+	 rdfs:label="dataSourceComment">
 	<rdfs:domain rdf:resource="&source_;DataSourceDescription"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&source_;datasourcename"
+<rdf:Property rdf:about="&source_;dataSourceName"
 	 a:maxCardinality="1"
 	 a:minCardinality="1"
-	 rdfs:label="datasourcename">
+	 rdfs:label="dataSourceName">
 	<rdfs:comment>Name of the type of datasource. For example "Local File System".</rdfs:comment>
 	<rdfs:domain rdf:resource="&source_;DataSourceDescription"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>

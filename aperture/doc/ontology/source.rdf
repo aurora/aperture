@@ -1,2 +1,34 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+<!DOCTYPE rdf:RDF [
+	 <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+	 <!ENTITY source_ 'http://aperture.semanticdesktop.org/ontology/source#'>
+	 <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema#'>
+]>
+<rdf:RDF xmlns:rdf="&rdf;"
+	 xmlns:source_="&source_;"
+	 xmlns:rdfs="&rdfs;">
+<source_:DataSourceDescription rdf:about="&source_;FileSystemDataSourcesourceDescription"
+	 source_:dataSourceComment="Datasource to crawl files from your filesystem"
+	 source_:dataSourceName="Filesystem datasource"
+	 rdfs:label="FileSystemDataSourcesourceDescription">
+	<source_:describedDataSourceType rdf:resource="&source_;FileSystemDataSource"/>
+</source_:DataSourceDescription>
+<source_:DataSourceDescription rdf:about="&source_;IMAPDataSourceDescription"
+	 source_:dataSourceComment="Crawl an IMAP e-mail account."
+	 source_:dataSourceName="IMAP email server"
+	 rdfs:label="IMAPDataSourceDescription">
+	<source_:describedDataSourceType rdf:resource="&source_;IMAPDataSource"/>
+</source_:DataSourceDescription>
+<source_:DataSourceDescription rdf:about="&source_;MicrosoftOutlookDataSourceDescription"
+	 source_:dataSourceName="Microsoft Outlook"
+	 rdfs:label="MicrosoftOutlookDataSourceDescription">
+	<source_:dataSourceComment>Data from Microsoft Outlook. Works with Outlook XP and 2003. Install outlook redemption to increase features.</source_:dataSourceComment>
+	<source_:describedDataSourceType rdf:resource="&source_;MicrosoftOutlookDataSource"/>
+</source_:DataSourceDescription>
+<source_:DataSourceDescription rdf:about="&source_;WebDataSourceDescription"
+	 source_:dataSourceComment="Crawl a web-site."
+	 source_:dataSourceName="Web Crawler"
+	 rdfs:label="WebDataSourceDescription">
+	<source_:describedDataSourceType rdf:resource="&source_;WebDataSource"/>
+</source_:DataSourceDescription>
+</rdf:RDF>
