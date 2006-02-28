@@ -4,7 +4,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Feb 26 15:35:00 CET 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Feb 28 11:08:27 CET 2006
  * input file: doc/ontology/source.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/source#
  */
@@ -15,6 +15,12 @@ public class DATASOURCE {
      * Label: DataSource 
      */
     public static final URI DataSource = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#DataSource");
+
+    /**
+     * Label: DataSourceDescription 
+     * Comment: A human description of a datasource. Adds icons, texts etc. 
+     */
+    public static final URI DataSourceDescription = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#DataSourceDescription");
 
     /**
      * Label: FileSystemDataSource 
@@ -52,62 +58,127 @@ public class DATASOURCE {
     public static final URI WebDataSource = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#WebDataSource");
 
     /**
+     * Label: basepath 
+     * Comment: basepath on the server. For IMAP this is the folder where the e-mails are stored. Some IMAP servers need this. 
+     * Domain: IMAPDataSource 
+     */
+    public static final URI basepath = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#basepath");
+
+    /**
      * Label: condition 
      * Comment: the condition for this pattern to match 
+     * Domain: Pattern 
      */
     public static final URI condition = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#condition");
 
     /**
      * Label: connectionSecurity 
+     * Domain: DataSource 
      */
     public static final URI connectionSecurity = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#connectionSecurity");
 
     /**
+     * Label: datasourceComment 
+     * Comment: A comment about the datasource. 
+     * Domain: DataSourceDescription 
+     */
+    public static final URI datasourceComment = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#datasourceComment");
+
+    /**
+     * Label: datasourcename 
+     * Comment: Name of the type of datasource. For example "Local File System". 
+     * Domain: DataSourceDescription 
+     */
+    public static final URI datasourcename = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#datasourcename");
+
+    /**
+     * Label: describedDataSourceType 
+     * Comment: The datasource described 
+     * Domain: DataSourceDescription 
+     */
+    public static final URI describedDataSourceType = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#describedDataSourceType");
+
+    /**
      * Label: excludePattern 
      * Comment: Patterns to exclude from this datasource 
+     * Domain: DataSource 
      */
     public static final URI excludePattern = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#excludePattern");
 
     /**
+     * Label: hostname 
+     * Comment: hostname of the server to connect to 
+     * Domain: IMAPDataSource 
+     */
+    public static final URI hostname = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#hostname");
+
+    /**
      * Label: includeEmbeddedResources 
      * Comment: Include embedded resources when crawling this datasource. 
+     * Domain: DataSource 
      */
     public static final URI includeEmbeddedResources = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#includeEmbeddedResources");
 
     /**
      * Label: includeHiddenResources 
      * Comment: Include hidden resources when crawling this datasource 
+     * Domain: DataSource 
      */
     public static final URI includeHiddenResources = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#includeHiddenResources");
 
     /**
      * Label: includePattern 
      * Comment: patterns to include in this datasource 
+     * Domain: DataSource 
      */
     public static final URI includePattern = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#includePattern");
 
     /**
      * Label: maximumDepth 
      * Comment: The maximum depth to crawl to in this datasource. 
+     * Domain: DataSource 
      */
     public static final URI maximumDepth = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#maximumDepth");
 
     /**
      * Label: maximumSize 
      * Comment: The maximum size (in bytes) for resources in this datasource. 
+     * Domain: DataSource 
      */
     public static final URI maximumSize = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#maximumSize");
 
     /**
+     * Label: name 
+     * Comment: The readable name of the datasource 
+     * Domain: DataSource 
+     */
+    public static final URI name = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#name");
+
+    /**
      * Label: password 
      * Comment: The Password used to access this datasource. 
+     * Domain: DataSource 
      */
     public static final URI password = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#password");
 
     /**
+     * Label: rootFolder 
+     * Comment: Root-Folder in the local filesystem. On Windows machines something like "C:\myfiles\" on unix machines like "/Users/paul/" 
+     * Domain: FileSystemDataSource 
+     */
+    public static final URI rootFolder = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#rootFolder");
+
+    /**
      * Label: rootUrl 
-     * Comment: The root URL of this datasource. 
+     * Comment: The root URL of this datasource. This may also be an indicator of how to create other URIs of this datasource 
+     * Domain: DataSource 
      */
     public static final URI rootUrl = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#rootUrl");
+
+    /**
+     * Label: username 
+     * Domain: IMAPDataSource 
+     */
+    public static final URI username = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#username");
 
 }

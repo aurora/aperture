@@ -13,6 +13,11 @@
 	 rdfs:label="DataSource">
 	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
 </rdfs:Class>
+<rdfs:Class rdf:about="&source_;DataSourceDescription"
+	 rdfs:comment="A human description of a datasource. Adds icons, texts etc."
+	 rdfs:label="DataSourceDescription">
+	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
+</rdfs:Class>
 <rdfs:Class rdf:about="&source_;FileSystemDataSource"
 	 rdfs:label="FileSystemDataSource">
 	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
@@ -41,6 +46,13 @@
 	 rdfs:label="WebDataSource">
 	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
 </rdfs:Class>
+<rdf:Property rdf:about="&source_;basepath"
+	 a:maxCardinality="1"
+	 rdfs:label="basepath">
+	<rdfs:comment>basepath on the server. For IMAP this is the folder where the e-mails are stored. Some IMAP servers need this.</rdfs:comment>
+	<rdfs:domain rdf:resource="&source_;IMAPDataSource"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
 <rdf:Property rdf:about="&source_;condition"
 	 a:maxCardinality="1"
 	 rdfs:comment="the condition for this pattern to match"
@@ -54,12 +66,44 @@
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
+<rdf:Property rdf:about="&source_;datasourceComment"
+	 a:maxCardinality="1"
+	 rdfs:comment="A comment about the datasource."
+	 rdfs:label="datasourceComment">
+	<rdfs:domain rdf:resource="&source_;DataSourceDescription"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&source_;datasourcename"
+	 a:maxCardinality="1"
+	 a:minCardinality="1"
+	 rdfs:label="datasourcename">
+	<rdfs:comment>Name of the type of datasource. For example "Local File System".</rdfs:comment>
+	<rdfs:domain rdf:resource="&source_;DataSourceDescription"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&source_;describedDataSourceType"
+	 a:maxCardinality="1"
+	 a:minCardinality="1"
+	 a:range="cls"
+	 rdfs:comment="The datasource described"
+	 rdfs:label="describedDataSourceType">
+	<a:allowedParents rdf:resource="&source_;DataSource"/>
+	<rdfs:domain rdf:resource="&source_;DataSourceDescription"/>
+	<rdfs:range rdf:resource="&rdfs;Class"/>
+</rdf:Property>
 <rdf:Property rdf:about="&source_;excludePattern"
 	 a:maxCardinality="1"
 	 rdfs:comment="Patterns to exclude from this datasource"
 	 rdfs:label="excludePattern">
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&source_;Pattern"/>
+</rdf:Property>
+<rdf:Property rdf:about="&source_;hostname"
+	 a:maxCardinality="1"
+	 rdfs:comment="hostname of the server to connect to"
+	 rdfs:label="hostname">
+	<rdfs:domain rdf:resource="&source_;IMAPDataSource"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;includeEmbeddedResources"
 	 a:maxCardinality="1"
@@ -100,6 +144,13 @@
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
+<rdf:Property rdf:about="&source_;name"
+	 a:maxCardinality="1"
+	 rdfs:comment="The readable name of the datasource"
+	 rdfs:label="name">
+	<rdfs:domain rdf:resource="&source_;DataSource"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
 <rdf:Property rdf:about="&source_;password"
 	 a:maxCardinality="1"
 	 rdfs:comment="The Password used to access this datasource."
@@ -107,11 +158,25 @@
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
+<rdf:Property rdf:about="&source_;rootFolder"
+	 a:maxCardinality="1"
+	 a:minCardinality="1"
+	 rdfs:label="rootFolder">
+	<rdfs:comment>Root-Folder in the local filesystem. On Windows machines something like "C:\myfiles\" on unix machines like "/Users/paul/"</rdfs:comment>
+	<rdfs:domain rdf:resource="&source_;FileSystemDataSource"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
 <rdf:Property rdf:about="&source_;rootUrl"
 	 a:maxCardinality="1"
-	 rdfs:comment="The root URL of this datasource."
 	 rdfs:label="rootUrl">
+	<rdfs:comment>The root URL of this datasource. This may also be an indicator of how to create other URIs of this datasource</rdfs:comment>
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&source_;username"
+	 a:maxCardinality="1"
+	 rdfs:label="username">
+	<rdfs:domain rdf:resource="&source_;IMAPDataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 </rdf:RDF>

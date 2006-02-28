@@ -178,6 +178,25 @@ public class VocabularyWriter {
 		finally {
 			queryC.close();
 		}
+		queryS = "SELECT d FROM {<"+uri+">} rdfs:domain {d}";
+		queryC = myRepository.evaluateTupleQuery(QueryLanguage.SERQL, queryS);
+		try {
+			String l = "";
+		    while (queryC.hasNext()) {
+		        List answer = (List)queryC.next();
+		        RValue vl = (RValue) answer.get(0);
+		        if (vl instanceof RBNode)
+		        	continue;
+		        RURI vx = (RURI) vl;
+		        l += vx.getLocalName()+" "; 
+		    }
+		    if (l.length() > 0)
+		    	outP.println("     * Domain: "+l);
+		}
+		finally {
+			queryC.close();
+		}
+
 		
 	}
 
