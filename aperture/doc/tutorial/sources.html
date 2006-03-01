@@ -54,15 +54,18 @@ import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 
 ...
 
+// determine the root folder of the source
+File rootFolder = ...;
+
+// determine a URI to identify the DataSource
+URI id = new URIImpl("urn:test:testsource")
+
+// create the DataSource configuration
+SesameRDFContainer configuration = new SesameRDFContainer(id);
+ConfigurationUtil.setRootFolder(rootFolder.getAbsolutePath(), configuration);
+
 // create the DataSource instance
 FileSystemDataSource source = new FileSystemDataSource();
-URI sourceID = new URIImpl("urn:test:testsource");
-source.setID(sourceID);
-source.setName("Example file system source");
-
-// configure the root of the represented directory tree
-SesameRDFContainer configuration = new SesameRDFContainer(sourceID);
-ConfigurationUtil.setRootUrl(rootFile.toURI().toString(), configuration);
 source.setConfiguration(configuration);
 </pre>
 </div>

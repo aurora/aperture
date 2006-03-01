@@ -1,0 +1,198 @@
+<html>
+
+<head>
+	<title>Aperture - Tutorials - Crawlers</title>
+	<link rel="stylesheet" type="text/css" href="../style/documentation.css">
+</head>
+
+<body>
+
+<h1>Crawlers</h1>
+
+<p>
+A Crawler is responsible for accessing the contents of a DataSource and reporting the
+individual resources in it as DataObjects. Each DataObject contains all the
+metadata that can be provided by that source type, such as file names or last
+modification dates, etc., Instances of FileDataObject or FolderDataObject may also
+be returned, adding extra semantics to the type of resource found and possibly extra
+information, such as an InputStream in case of a FileDataObject.
+</p>
+
+<p>
+We have chosen to separate the definition of a data source's domain contained in the DataSource instance
+from the crawling logic embedded in the Crawler as there may be several alternative crawling
+strategies for a single source type.
+Consider for example a generic FileSystemCrawler that handles any file
+system accessible through java.io.File versus a WindowsFileSystemCrawler using native
+functionality to get notified about file additions, deletions and changes. Another
+possibility is to have various Crawler implementations that have different trade-offs
+in speed and accuracy, which may make sense for certain web-based source types.
+<p>
+
+<h2>Incremental Crawling</h2>
+
+<p>
+Crawlers can optionally crawl incrementally. The first time a crawler is invoked, it will 
+simply report all resources. When it is then invoked a subsequent time, it will
+specifically report new, changed, removed and unchanged resources.
+</p>
+
+<p>
+In order for this to work, the Crawler needs to store information about resources names, 
+last modified dates, etc. to perform change detection.
+This is what an AccessData instance is used for: AccessData specifies
+a management interface for storing crawl-related information.
+When no AccessData is set on the Crawler, it will always report all resources as new DataObjects.
+</p>
+
+<p>
+A simple in-memory AccessData implementation has been created, subclassed by an implementation that can also
+write this information to a file. One can create custom AccessData classes though,
+tuned for a specific domain or application. For example, an implementation using some sort
+of database to lower memory requirements or an implementation closely integrated with the
+metadata storage to prevent redundancy; the same metadata that is useful to query may also
+be appropriate for change detection.
+</p>
+
+<h2>Crawling Results</h2>
+
+<p>
+The DataObjects created by a Crawler are reported to a CrawlerHandler
+registered at that Crawler. CrawlerHandler implementations take care of
+processing the reported DataObjects, e.g. by extracting text and metadata from their
+streams and indexing the retrieved information. What to do here is entirely up to
+the application developer.
+</p>
+
+<p>
+Furthermore, CrawlerHandler contains methods that let the Crawler notify that a resource
+has not been changed (when it is crawling incrementally), that a resource has been removed, etc.
+</p>
+
+<p>
+Each produced DataObject contains an RDFContainer instance holding all its metadata as
+determined by the Crawler. Because the choice for
+an appropriate RDFContainer implementation is typically application-dependent, these
+RDFContainers are retrieved by the Crawler from the CrawlerHandler. This brings the decision for a particular
+RDFContainer implementation back to the integrator.
+This retrieval uses an intermediate step to optimize performance. RDFContainer instantiation may be
+a costly procedure and should be delayed until the instance is actually needed,
+i.e. only when a new or changed resource is found. Therefore, the CrawlerHandler returns a
+RDFContainerFactory rather than a RDFContainer. Such a factory will be retrieved
+every time a resource is accessed. However, its getRDFContainer method is only invoked
+when the Crawler (or actually: the DataAccessor used by the Crawler) has detected that
+a resource is new or changed and that a DataObject will be returned.
+</p>
+
+<p>
+The life-time of the reported DataObjects is determined by the CrawlerHandler.
+They remain useable until someone invokes their dispose method.
+However, in order to prevent OutOfMemoryErrors or other resource overloading,
+it is adviseable to process them in the method that reported them and dispose them
+at the end of that method.
+</p>
+
+<h2>DataAccessors</h2>
+
+<p>
+Depending on the Crawler implementation the DataObjects may not be directly instantiated by the
+Crawler. Instead, this job is often delegated to a DataAccessor.
+Whereas Crawler implementations are created for a specific DataSource type,
+DataAccessors are typically specific for the URL scheme they support, e.g. "file" or "http".
+</p>
+
+<p>
+The rationale for delegating this functionality is:
+<p>
+
+<ul>
+<li>There may be several Crawler implementations that can thus reuse the same functionality. For
+example, FileSystemCrawler and WebCrawler can both use the same
+FileAccessor providing access to "file:"-based resources, although they use
+different strategies to determine which file to access (by traversing folders or by
+following hyperlinks, respectively). Furthermore, the file accessing functionality
+may be shared by several crawler implementations that all operate on a
+FileSystemDataSource.</li>
+<li>This allows some crawlers to be scheme independent, e.g. the WebCrawler can
+be used for any kind of hypertext structure, provided that DataAccessor
+implementations are available for the schemes it encounters.</li>
+</ul>
+
+<h2>Example</h2>
+
+<p>
+The following code demonstrates how to setup and use a Crawler. It assumes we have
+defined a FileSystemDataSource (see <a href="sources.html">DataSources</a>) and
+are ready to create and start the Crawler.
+</p>
+
+<div class="code">
+<pre>
+FileSystemDataSource source = ...
+
+// create an AccessData facilitating incremental crawling
+FileAccessData accessData = new FileAccessData();
+accessData.setDataFile(new File(...));
+		
+// create a Crawler
+final FileSystemCrawler crawler = new FileSystemCrawler();
+crawler.setDataSource(source);
+crawler.setAccessData(accessData);
+crawler.setCrawlerHandler(new MyCrawlerHandler());
+crawler.setDataAccessorRegistry(new DefaultDataAccessorRegistry());
+		
+// start a background thread that performs the crawling
+Thread thread = new Thread() {
+	public void run() {
+		crawler.crawl();
+	}
+};
+thread.setPriority(Thread.MIN_PRIORITY);
+thread.start();
+</pre>
+</div>
+
+<p>
+This code uses a DefaultDataAccessorRegistry holding all Aperture DataAccessors.
+Note that a background thread is created that performs the actual crawling.
+Typically, Crawler implementations operate in the thread invoking their crawl method,
+although some Crawlers may necessarily have to create separate threads themselves.
+</p>
+
+<p>
+The code for MyCrawlerHandler can look like this:
+</p>
+
+<div class="code">
+<pre>
+private static class MyCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
+    
+    /* --- CrawlerHandler implementation --- */
+
+    public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
+        return this;
+    }
+
+    public void objectNew(Crawler crawler, DataObject object) {
+        System.out.println("found new file: " + object.getID());
+    }
+
+    public void objectChanged(Crawler crawler, DataObject object) {
+        System.out.println("found changed file: " + object.getID());
+    }
+
+    << remaining methods skipped >>
+
+    /* --- RDFContainerFactory implementation --- */
+
+    public RDFContainer getRDFContainer(URI uri) {
+        // returns an in-memory, auto-committing container (simple but slow)
+        return new SesameRDFContainer(uri);
+    }
+}
+</pre>
+</div>
+
+</body>
+
+</html>
