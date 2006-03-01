@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -55,13 +55,13 @@ public class FileSystemCrawler extends CrawlerBase {
 		RDFContainer configuration = source.getConfiguration();
 
 		// determine the root file
-		File root = getRootFile(configuration);
-		if (root == null) {
+		String rootFolder = ConfigurationUtil.getRootFolder(configuration);
+		if (rootFolder == null) {
 			// treat this as an error rather than an "empty source" to prevent information loss
-			LOGGER.log(Level.SEVERE, "missing root file");
+			LOGGER.log(Level.SEVERE, "missing root folder");
 			return ExitCode.FATAL_ERROR;
 		}
-		root = root.getAbsoluteFile();
+		File root = new File(rootFolder);
 
 		// determine the maximum depth
 		Integer i = ConfigurationUtil.getMaximumDepth(configuration);
@@ -87,22 +87,6 @@ public class FileSystemCrawler extends CrawlerBase {
 
 		// determine the exit code
 		return crawlCompleted ? ExitCode.COMPLETED : ExitCode.STOP_REQUESTED;
-	}
-
-	private File getRootFile(RDFContainer configuration) {
-		String rootUrl = ConfigurationUtil.getRootUrl(configuration);
-		if (rootUrl == null) {
-			return null;
-		}
-
-		URI uri = null;
-		try {
-			uri = new URI(rootUrl);
-		}
-		catch (URISyntaxException e) {
-			return null;
-		}
-		return new File(uri);
 	}
 
 	/**

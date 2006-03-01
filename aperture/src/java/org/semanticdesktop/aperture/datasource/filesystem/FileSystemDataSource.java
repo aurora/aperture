@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -7,8 +7,8 @@
 package org.semanticdesktop.aperture.datasource.filesystem;
 
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.datasource.SourceVocabulary;
 import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 /**
  * A FileSystemDataSource defines a collection of Files residing on a local or shared drive.
@@ -16,6 +16,6 @@ import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
 public class FileSystemDataSource extends DataSourceBase {
 
     public URI getType() {
-        return SourceVocabulary.FILE_SYSTEM_DATA_SOURCE;
+        return DATASOURCE.FileSystemDataSource;
     }
 }

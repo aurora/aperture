@@ -160,26 +160,23 @@ public class ExampleWebCrawler {
             throw new IllegalArgumentException("repository file cannot be null");
         }
 
-        // create a WebDataSource
-        WebDataSource source = new WebDataSource();
-        URI sourceID = new URIImpl("source:testSource");
-        source.setID(sourceID);
-        source.setName("Example web source");
-
-        // configure the URL to crawl
-        SesameRDFContainer configuration = new SesameRDFContainer(sourceID);
-
+        // create a data source configuration
+        SesameRDFContainer configuration = new SesameRDFContainer(new URIImpl("source:testSource"));
         ConfigurationUtil.setRootUrl(startUrl, configuration);
         ConfigurationUtil.setIncludeEmbeddedResources(includeEmbeddedResources, configuration);
+
         if (depth >= 0) {
             ConfigurationUtil.setMaximumDepth(depth, configuration);
         }
+        
         if (boundaries != null) {
             ConfigurationUtil.setDomainBoundaries(boundaries, configuration);
         }
 
+        // create the DataSource
+        WebDataSource source = new WebDataSource();
         source.setConfiguration(configuration);
-
+        
         // setup a crawler that can handle this type of DataSource
         WebCrawler crawler = new WebCrawler();
         crawler.setDataSource(source);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -9,6 +9,7 @@ package org.semanticdesktop.aperture.datasource.base;
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 /**
  * A trivial default implementation of the DataSource interface.
@@ -20,26 +21,26 @@ public abstract class DataSourceBase implements DataSource {
 	// spirit of RDF that it should be possible to make any arbitrary statement, only some statements
 	// cannot be interpreted automatically.
 
-	private URI id;
-
-	private String name;
-
 	private RDFContainer configuration;
 
-	public URI getID() {
-		return id;
+	public DataSourceBase() {
+		// no-op
 	}
-
-	public void setID(URI id) {
-		this.id = id;
+	
+	public DataSourceBase(RDFContainer configuration) {
+		this.configuration = configuration;
+	}
+	
+	public URI getID() {
+		return configuration.getDescribedUri();
 	}
 
 	public String getName() {
-		return name;
+		return configuration.getString(DATASOURCE.name);
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		configuration.put(DATASOURCE.name, name);
 	}
 
 	public RDFContainer getConfiguration() {
@@ -47,18 +48,6 @@ public abstract class DataSourceBase implements DataSource {
 	}
 
 	public void setConfiguration(RDFContainer configuration) {
-		// check whether the described URI matches our ID
-		if (configuration != null) {
-			URI describedURI = configuration.getDescribedUri();
-			if (describedURI == null) {
-				throw new IllegalArgumentException("RDFContainer has no described URI");
-			}
-			else if (!describedURI.equals(id)) {
-				throw new IllegalArgumentException("described URI and ID do not match, ID = " + id
-						+ ", described URI = " + describedURI);
-			}
-		}
-
 		// set the configuration
 		this.configuration = configuration;
 	}

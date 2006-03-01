@@ -53,7 +53,6 @@ public class TestOutlookCrawler extends TestCase {
 	protected void setUp() throws Exception {
 		LogUtil.setFullLogging();
 		olds = new OutlookDataSource();
-		olds.setID(TESTID);
 		SesameRDFContainer config = new SesameRDFContainer(TESTID);
 		ConfigurationUtil.setRootUrl(TESTROOT, config);
 		// exclude leo's normal outlook file

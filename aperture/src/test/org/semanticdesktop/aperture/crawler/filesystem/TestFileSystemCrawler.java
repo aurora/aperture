@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -30,7 +30,6 @@ import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
-import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSourceFactory;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.FileUtil;
@@ -79,22 +78,14 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
     public void testCrawler() {
         // create a DataSource
-        FileSystemDataSourceFactory factory = new FileSystemDataSourceFactory();
-        DataSource dataSource = factory.newInstance();
-
-        // set generic properties
-        dataSource.setID(new URIImpl("urn:test:dummySource"));
-        dataSource.setName("Dummy DataSource");
-
-        // set FileSystemDataSource-specific properties
-        FileSystemDataSource fileSource = (FileSystemDataSource) dataSource;
-
-        RDFContainer configuration = new SesameRDFContainer(dataSource.getID());
-        ConfigurationUtil.setRootUrl(tmpDir.toURI().toString(), configuration);
+        RDFContainer configuration = new SesameRDFContainer(new URIImpl("urn:test:dummySource"));
+        ConfigurationUtil.setRootFolder(tmpDir.getAbsolutePath(), configuration);
         ConfigurationUtil.setMaximumDepth(1, configuration);
-        fileSource.setConfiguration(configuration);
 
-        // create a Crawler for this DataSource (hardcoded for now)
+        DataSource dataSource = new FileSystemDataSource();
+        dataSource.setConfiguration(configuration);
+        
+        // create a Crawler for this DataSource
         FileSystemCrawler crawler = new FileSystemCrawler();
         crawler.setDataSource(dataSource);
 

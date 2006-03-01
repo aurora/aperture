@@ -12,13 +12,13 @@ import java.util.Set;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.datasource.SourceVocabulary;
 import org.semanticdesktop.aperture.hypertext.linkextractor.LinkExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 public class WebCrawlerFactory implements CrawlerFactory {
 
-    private static final Set SUPPORTED_TYPES = Collections.singleton(SourceVocabulary.WEB_DATA_SOURCE);
+    private static final Set SUPPORTED_TYPES = Collections.singleton(DATASOURCE.WebDataSource);
 
     private MimeTypeIdentifier mimeTypeIdentifier;
 

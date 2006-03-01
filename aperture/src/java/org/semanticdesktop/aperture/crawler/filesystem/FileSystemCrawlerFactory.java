@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
- * Licensed under the Academic Free License version 3.0.
+ * Licensed under the Open Software License version 3.0.
  */
 package org.semanticdesktop.aperture.crawler.filesystem;
 
@@ -12,14 +12,14 @@ import java.util.Set;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.datasource.SourceVocabulary;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 /**
  * Provides instances of FileSystemCrawler.
  */
 public class FileSystemCrawlerFactory implements CrawlerFactory {
 
-    private static final Set SUPPORTED_TYPES = Collections.singleton(SourceVocabulary.FILE_SYSTEM_DATA_SOURCE);
+    private static final Set SUPPORTED_TYPES = Collections.singleton(DATASOURCE.FileSystemDataSource);
 
     public Set getSupportedTypes() {
         return SUPPORTED_TYPES;

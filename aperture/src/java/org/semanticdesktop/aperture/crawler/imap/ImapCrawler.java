@@ -64,8 +64,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
     private static final Logger LOGGER = Logger.getLogger(ImapCrawler.class.getName());
 
-    private static final String MANDATORY_URL_PREFIX = "imap://";
-
     private static final String ACCESSED_KEY = "accessed";
 
     private static final String NEXT_UID_KEY = "nextuid";
@@ -164,65 +162,12 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         configuredDataSource = dataSource;
         RDFContainer config = dataSource.getConfiguration();
 
-        // reset all values to to prevent garbage settings when an error occurs below
-        hostName = userName = password = connectionType = folderName = null;
-        maximumByteSize = Integer.MAX_VALUE;
-
-        // fetch the root url
-        String url = ConfigurationUtil.getRootUrl(config);
-
-        // some error checking on this url
-        if (!url.startsWith(MANDATORY_URL_PREFIX)) {
-            throw new IllegalArgumentException("root url does not start with \"" + MANDATORY_URL_PREFIX
-                    + "\": " + url);
-        }
-        if (url.equals(MANDATORY_URL_PREFIX)) {
-            throw new IllegalArgumentException("missing host name: " + url);
-        }
-
-        // extract the host part and folder part of this url
-        int slashIndex = url.indexOf('/', MANDATORY_URL_PREFIX.length());
-        if (slashIndex < 0 || slashIndex == url.length() - 1) {
-            throw new IllegalArgumentException("missing folder name: " + url);
-        }
-
-        String hostPart = url.substring(MANDATORY_URL_PREFIX.length(), slashIndex);
-        String folderPart = url.substring(slashIndex + 1);
-
-        // Split up the host part in a user name and host name. I use lastIndexOf instead of indexOf just
-        // in case the user name contains an '@' and someone forgot to escape it
-        int atIndex = hostPart.lastIndexOf('@');
-        if (atIndex < 0) {
-            hostName = hostPart;
-        }
-        else if (atIndex == 0) {
-            throw new IllegalArgumentException("missing user name: " + url);
-        }
-        else if (atIndex == hostPart.length() - 1) {
-            throw new IllegalArgumentException("missing host name: " + url);
-        }
-        else {
-            hostName = hostPart.substring(atIndex + 1);
-            userName = decode(hostPart.substring(0, atIndex));
-        }
-
-        // determine the folder name
-        folderName = decode(folderPart);
-
-        if (folderName.indexOf('*') >= 0 || folderName.indexOf('%') >= 0) {
-            throw new IllegalArgumentException("wildcards in the folder name are not supported");
-        }
-
-        // Formally a ";TYPE=..." part is required according to RFC 2192. However, since we ignore it
-        // anyway, we simply cut it off.
-        int semiColonIndex = folderName.indexOf(';');
-        if (semiColonIndex >= 0) {
-            folderName = folderName.substring(0, semiColonIndex);
-        }
-
-        // determine the password
+        // fetch some trivial settings
+        hostName = ConfigurationUtil.getHostname(config);
+        userName = ConfigurationUtil.getUsername(config);
         password = ConfigurationUtil.getPassword(config);
-
+        folderName = ConfigurationUtil.getBasepath(config);
+        
         // determine the connection type
         String securityType = ConfigurationUtil.getConnectionSecurity(config);
         if (securityType == null || SourceVocabulary.PLAIN.toString().equals(securityType)) {
@@ -249,32 +194,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             closeConnection();
             store = null;
         }
-    }
-
-    private String decode(String string) {
-        int percentIndex = string.indexOf('%');
-        if (percentIndex < 0) {
-            return string;
-        }
-
-        int startIndex = 0;
-        StringBuffer buffer = new StringBuffer(string.length());
-
-        while (percentIndex >= 0) {
-            buffer.append(string.substring(startIndex, percentIndex));
-
-            // The two character following the '%' contain a hexadecimal
-            // code for the original character, i.e. '%20'
-            String xx = string.substring(percentIndex + 1, percentIndex + 3);
-            buffer.append((char) Integer.parseInt(xx, 16));
-
-            startIndex = percentIndex + 3;
-            percentIndex = string.indexOf('%', startIndex);
-        }
-
-        buffer.append(string.substring(startIndex));
-
-        return buffer.toString();
     }
 
     private void ensureConnectedStore() throws MessagingException {

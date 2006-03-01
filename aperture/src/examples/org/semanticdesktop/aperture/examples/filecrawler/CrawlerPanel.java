@@ -243,16 +243,14 @@ public class CrawlerPanel extends JPanel {
         getStopButton().setEnabled(true);
         getExitButton().setEnabled(false);
 
-        // create a FileSystemDataSource
-        FileSystemDataSource source = new FileSystemDataSource();
-        URI sourceID = new URIImpl("source:testSource");
-        source.setID(sourceID);
-
-        // configure the directory tree to crawl
+        // create a data source configuration
         InputPanel inputPanel = getConfigurationPanel().getInputPanel();
         File rootFile = new File(inputPanel.getFolderField().getText());
-        SesameRDFContainer configuration = new SesameRDFContainer(sourceID);
-        ConfigurationUtil.setRootUrl(rootFile.toURI().toString(), configuration);
+        SesameRDFContainer configuration = new SesameRDFContainer(new URIImpl("source:testSource"));
+        ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
+
+        // create the data source
+        FileSystemDataSource source = new FileSystemDataSource();
         source.setConfiguration(configuration);
 
         // setup a crawler that can handle this type of DataSource

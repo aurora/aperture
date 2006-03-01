@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -24,6 +24,7 @@ import org.openrdf.sesame.sail.SailUpdateException;
 import org.openrdf.util.iterator.CloseableIterator;
 import org.semanticdesktop.aperture.datasource.SourceVocabulary;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 /**
  * ConfigurationUtil provides utility methods for setting and retrieving standard DataSource
@@ -42,61 +43,101 @@ public class ConfigurationUtil {
     private ConfigurationUtil() {
         // prevent instantiation
     }
+    
+    public static void setName(String name, RDFContainer configuration) {
+    	configuration.put(DATASOURCE.name, name);
+    }
+    
+    public static String getName(RDFContainer configuration) {
+    	return configuration.getString(DATASOURCE.name);
+    }
 
     public static void setRootUrl(String url, RDFContainer configuration) {
-        configuration.put(SourceVocabulary.ROOT_URL, url);
+        configuration.put(DATASOURCE.rootUrl, url);
     }
 
     public static String getRootUrl(RDFContainer configuration) {
-        return configuration.getString(SourceVocabulary.ROOT_URL);
+        return configuration.getString(DATASOURCE.rootUrl);
+    }
+    
+    public static void setRootFolder(String folder, RDFContainer configuration) {
+    	configuration.put(DATASOURCE.rootFolder, folder);
+    }
+    
+    public static String getRootFolder(RDFContainer configuration) {
+        return configuration.getString(DATASOURCE.rootFolder);
+    }
+    
+    public static void setHostname(String hostname, RDFContainer configuration) {
+    	configuration.put(DATASOURCE.hostname, hostname);
+    }
+    
+    public static String getHostname(RDFContainer configuration) {
+    	return configuration.getString(DATASOURCE.hostname);
+    }
+    
+    public static void setBasepath(String basepath, RDFContainer configuration) {
+    	configuration.put(DATASOURCE.basepath, basepath);
+    }
+    
+    public static String getBasepath(RDFContainer configuration) {
+    	return configuration.getString(DATASOURCE.basepath);
+    }
+
+    public static void setUsername(String username, RDFContainer configuration) {
+        configuration.put(DATASOURCE.username, username);
+    }
+
+    public static String getUsername(RDFContainer configuration) {
+        return configuration.getString(DATASOURCE.username);
     }
 
     public static void setPassword(String password, RDFContainer configuration) {
-        configuration.put(SourceVocabulary.PASSWORD, password);
+        configuration.put(DATASOURCE.password, password);
     }
 
     public static String getPassword(RDFContainer configuration) {
-        return configuration.getString(SourceVocabulary.PASSWORD);
+        return configuration.getString(DATASOURCE.password);
     }
 
     public static void setMaximumDepth(int maximumDepth, RDFContainer configuration) {
-        configuration.put(SourceVocabulary.MAXIMUM_DEPTH, maximumDepth);
+        configuration.put(DATASOURCE.maximumDepth, maximumDepth);
     }
 
     public static Integer getMaximumDepth(RDFContainer configuration) {
-        return configuration.getInteger(SourceVocabulary.MAXIMUM_DEPTH);
+        return configuration.getInteger(DATASOURCE.maximumDepth);
     }
 
     public static void setMaximumByteSize(int maximumSize, RDFContainer configuration) {
-        configuration.put(SourceVocabulary.MAXIMUM_BYTE_SIZE, maximumSize);
+        configuration.put(DATASOURCE.maximumSize, maximumSize);
     }
 
     public static Integer getMaximumByteSize(RDFContainer configuration) {
-        return configuration.getInteger(SourceVocabulary.MAXIMUM_BYTE_SIZE);
+        return configuration.getInteger(DATASOURCE.maximumSize);
     }
 
     public static void setIncludeHiddenResources(boolean value, RDFContainer configuration) {
-        configuration.put(SourceVocabulary.INCLUDE_HIDDEN_RESOURCES, value);
+        configuration.put(DATASOURCE.includeHiddenResources, value);
     }
 
     public static Boolean getIncludeHiddenResourceS(RDFContainer configuration) {
-        return configuration.getBoolean(SourceVocabulary.INCLUDE_HIDDEN_RESOURCES);
+        return configuration.getBoolean(DATASOURCE.includeHiddenResources);
     }
 
     public static void setIncludeEmbeddedResources(boolean value, RDFContainer configuration) {
-        configuration.put(SourceVocabulary.INCLUDE_EMBEDDED_RESOURCES, value);
+        configuration.put(DATASOURCE.includeEmbeddedResources, value);
     }
 
     public static Boolean getIncludeEmbeddedResourceS(RDFContainer configuration) {
-        return configuration.getBoolean(SourceVocabulary.INCLUDE_EMBEDDED_RESOURCES);
+        return configuration.getBoolean(DATASOURCE.includeEmbeddedResources);
     }
 
     public static void setConnectionSecurity(String securityType, RDFContainer configuration) {
-        configuration.put(SourceVocabulary.CONNECTION_SECURITY, securityType);
+        configuration.put(DATASOURCE.connectionSecurity, securityType);
     }
 
     public static String getConnectionSecurity(RDFContainer configuration) {
-        return configuration.getString(SourceVocabulary.CONNECTION_SECURITY);
+        return configuration.getString(DATASOURCE.connectionSecurity);
     }
 
     /**
@@ -123,9 +164,9 @@ public class ConfigurationUtil {
 
             // add statements reflecting the specified DomainBoundaries
             if (boundaries != null) {
-                addPatternStatements(id, boundaries.getIncludePatterns(), SourceVocabulary.INCLUDE_PATTERN,
+                addPatternStatements(id, boundaries.getIncludePatterns(), DATASOURCE.includePattern,
                         context, repository);
-                addPatternStatements(id, boundaries.getExcludePatterns(), SourceVocabulary.EXCLUDE_PATTERN,
+                addPatternStatements(id, boundaries.getExcludePatterns(), DATASOURCE.excludePattern,
                         context, repository);
             }
         }
@@ -169,8 +210,8 @@ public class ConfigurationUtil {
         Repository repository = (Repository) configuration.getModel();
 
         // fetch all UrlPatterns
-        List includePatterns = getPatterns(id, SourceVocabulary.INCLUDE_PATTERN, repository);
-        List excludePatterns = getPatterns(id, SourceVocabulary.EXCLUDE_PATTERN, repository);
+        List includePatterns = getPatterns(id, DATASOURCE.includePattern, repository);
+        List excludePatterns = getPatterns(id, DATASOURCE.excludePattern, repository);
 
         // return the UrlPatterns as a DomainBoundaries instance
         return new DomainBoundaries(includePatterns, excludePatterns);
@@ -203,12 +244,12 @@ public class ConfigurationUtil {
 	                String patternString = ((Literal) patternValue).getLabel();
 	
 	                // create the appropriate UrlPattern
-	                if (SourceVocabulary.REGEXP_PATTERN.equals(typeValue)) {
+	                if (DATASOURCE.RegExpPattern.equals(typeValue)) {
 	                    result.add(new RegExpPattern(patternString));
 	                }
-	                else if (SourceVocabulary.SUBSTRING_PATTERN.equals(typeValue)) {
+	                else if (DATASOURCE.SubstringPattern.equals(typeValue)) {
 	                    // also fetch the condition statement
-	                    Value conditionValue = getSingleValue(patternResource, SourceVocabulary.CONDITION, repository);
+	                    Value conditionValue = getSingleValue(patternResource, DATASOURCE.condition, repository);
 	                    SubstringCondition condition = resolveCondition(conditionValue);
 	                    if (condition != null) {
 	                        result.add(new SubstringPattern(patternString, condition));

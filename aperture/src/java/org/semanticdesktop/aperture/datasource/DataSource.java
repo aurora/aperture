@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2006 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -21,13 +21,6 @@ public interface DataSource {
 	 * @return A URI identifier for the data source.
 	 */
 	public URI getID();
-
-	/**
-	 * Set the ID of this data source.
-	 * 
-	 * @param id The new ID of this DataSource.
-	 */
-	public void setID(URI id);
 
 	/**
 	 * Gets the name of this data source.

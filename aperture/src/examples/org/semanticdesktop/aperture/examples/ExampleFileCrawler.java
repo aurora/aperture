@@ -118,17 +118,14 @@ public class ExampleFileCrawler {
             throw new IllegalArgumentException("repository file cannot be null");
         }
 
-        // create a FileSystemDataSource
+        // create a data source configuration
+        SesameRDFContainer configuration = new SesameRDFContainer(new URIImpl("source:testSource"));
+        ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
+
+        // create the data source
         FileSystemDataSource source = new FileSystemDataSource();
-        URI sourceID = new URIImpl("source:testSource");
-        source.setID(sourceID);
-        source.setName("Example file system source");
-
-        // configure the directory tree to crawl
-        SesameRDFContainer configuration = new SesameRDFContainer(sourceID);
-        ConfigurationUtil.setRootUrl(rootFile.toURI().toString(), configuration);
         source.setConfiguration(configuration);
-
+        
         // setup a crawler that can handle this type of DataSource
         FileSystemCrawler crawler = new FileSystemCrawler();
         crawler.setDataSource(source);
