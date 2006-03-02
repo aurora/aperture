@@ -8,7 +8,7 @@ package org.semanticdesktop.aperture.outlook;
 
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
  * A microsoft outlook datasource.
@@ -20,7 +20,7 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 public class OutlookDataSource extends DataSourceBase {
 
 	public URI getType() {
-		return DATASOURCE.MicrosoftOutlookDataSource;
+		return DATASOURCE_GEN.MicrosoftOutlookDataSource;
 	}
 
 }

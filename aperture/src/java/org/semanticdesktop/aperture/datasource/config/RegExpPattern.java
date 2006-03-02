@@ -15,7 +15,7 @@ import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.XMLSchema;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
  * A UrlPattern implementation using a regular expression evaluation strategy.
@@ -55,7 +55,7 @@ public class RegExpPattern extends UrlPattern {
     public Collection getStatements(Resource subject) {
         ArrayList result = new ArrayList();
         
-        result.add(new StatementImpl(subject, RDF.TYPE, DATASOURCE.RegExpPattern));
+        result.add(new StatementImpl(subject, RDF.TYPE, DATASOURCE_GEN.RegExpPattern));
         result.add(new StatementImpl(subject, RDF.VALUE,
                 new LiteralImpl(getPatternString(), XMLSchema.STRING)));
         

@@ -12,7 +12,7 @@ import java.util.Set;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 
 /**
@@ -31,7 +31,7 @@ public class OutlookCrawlerFactory implements CrawlerFactory {
 	public OutlookCrawlerFactory() {
 		super();
 		supported = new HashSet();
-		supported.add(DATASOURCE.MicrosoftOutlookDataSource);
+		supported.add(DATASOURCE_GEN.MicrosoftOutlookDataSource);
 	}
 
 	/* (non-Javadoc)

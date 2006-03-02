@@ -8,7 +8,7 @@ package org.semanticdesktop.aperture.datasource.imap;
 
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
  * An ImapDataSource defines a collection of mails residing on an IMAP server.
@@ -16,6 +16,6 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 public class ImapDataSource extends DataSourceBase {
 
     public URI getType() {
-        return DATASOURCE.IMAPDataSource;
+        return DATASOURCE_GEN.IMAPDataSource;
     }
 }

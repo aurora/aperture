@@ -28,7 +28,7 @@ import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DATA_GEN;
 
 import com.jacob.com.Dispatch;
 
@@ -130,7 +130,7 @@ public class OutlookAccessor implements DataAccessor {
         // basic info
         metadata.add(RDF.TYPE, resource.getType());
         if (parent != null)
-        	metadata.add(DATA.partOf, new URIImpl(parent.getUri()));
+        	metadata.add(DATA_GEN.partOf, new URIImpl(parent.getUri()));
         
         // get the details
         resource.addData(metadata);

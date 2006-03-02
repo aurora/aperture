@@ -8,7 +8,7 @@ package org.semanticdesktop.aperture.datasource.filesystem;
 
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
  * A FileSystemDataSource defines a collection of Files residing on a local or shared drive.
@@ -16,6 +16,6 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 public class FileSystemDataSource extends DataSourceBase {
 
     public URI getType() {
-        return DATASOURCE.FileSystemDataSource;
+        return DATASOURCE_GEN.FileSystemDataSource;
     }
 }

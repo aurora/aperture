@@ -13,7 +13,7 @@ import org.openrdf.model.vocabulary.XMLSchema;
 /**
  * This interface defines a comprehensive list of URIs to be used for modeling DataSource configurations.
  */
-public class SourceVocabulary extends org.semanticdesktop.aperture.vocabulary.DATASOURCE {
+public class SourceVocabulary extends org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN {
 
     /* Literals */
 

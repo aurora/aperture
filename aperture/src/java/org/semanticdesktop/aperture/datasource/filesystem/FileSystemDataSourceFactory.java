@@ -9,7 +9,7 @@ package org.semanticdesktop.aperture.datasource.filesystem;
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
  * FileSystemDataSourceFactory returns instances of the FileSystemDataSource class. 
@@ -17,7 +17,7 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 public class FileSystemDataSourceFactory implements DataSourceFactory {
 
     public URI getSupportedType() {
-        return DATASOURCE.FileSystemDataSource;
+        return DATASOURCE_GEN.FileSystemDataSource;
     }
 
     public DataSource newInstance() {

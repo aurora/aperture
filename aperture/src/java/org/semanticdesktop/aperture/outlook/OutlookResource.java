@@ -24,7 +24,7 @@ import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.DateUtil;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DATA_GEN;
 import org.semanticdesktop.aperture.vocabulary.ICAL;
 import org.semanticdesktop.aperture.vocabulary.VCARD;
 
@@ -83,12 +83,12 @@ public abstract class OutlookResource {
 			// type is already added by AccessData.
 
 			// add label
-			addPropertyIfNotNull(rdf, DATA.title, resource, "Subject");
+			addPropertyIfNotNull(rdf, DATA_GEN.title, resource, "Subject");
 			// body
-			addPropertyIfNotNull(rdf, DATA.fullText, resource, "Body");
+			addPropertyIfNotNull(rdf, DATA_GEN.fullText, resource, "Body");
 
 			// uid
-			addPropertyIfNotNull(rdf, DATA.msOLUID, resource, "EntryID");
+			addPropertyIfNotNull(rdf, DATA_GEN.msOLUID, resource, "EntryID");
 
 			// dtstamp, this is UTZ, so no Timezone?
 			addDateIfNotNull(rdf, ICAL.dtstamp, resource, "CreationTime");
@@ -135,13 +135,13 @@ public abstract class OutlookResource {
 			// save dispatch
 			Dispatch resource = getSaveResource();
 			// title
-			addPropertyIfNotNull(rdf, DATA.title, resource, "Subject");
+			addPropertyIfNotNull(rdf, DATA_GEN.title, resource, "Subject");
 
 			// email(s)
-			addPropertyIfNotNull(rdf, DATA.emailAddress, resource, "Email1Address");
-			addPropertyIfNotNull(rdf, DATA.emailAddress, resource, "Email2Address");
-			addPropertyIfNotNull(rdf, DATA.emailAddress, resource, "Email3Address");
-			addPropertyIfNotNull(rdf, DATA.homepage, resource, "WebPage");
+			addPropertyIfNotNull(rdf, DATA_GEN.emailAddress, resource, "Email1Address");
+			addPropertyIfNotNull(rdf, DATA_GEN.emailAddress, resource, "Email2Address");
+			addPropertyIfNotNull(rdf, DATA_GEN.emailAddress, resource, "Email3Address");
+			addPropertyIfNotNull(rdf, DATA_GEN.homepage, resource, "WebPage");
 
 			// VCARD
 			addPropertyIfNotNull(rdf, VCARD.nameFamily, resource, "LastName");
@@ -243,7 +243,7 @@ public abstract class OutlookResource {
 		}
 
 		public URI getType() {
-			return DATA.MSOLDistList;
+			return DATA_GEN.MSOLDistList;
 		}
 	}
 
@@ -257,12 +257,12 @@ public abstract class OutlookResource {
 
 		protected void addData(RDFContainer rdf) throws IOException {
 			Dispatch resource = getResource();
-			addPropertyIfNotNull(rdf, DATA.title, resource, "Subject");
-			addPropertyIfNotNull(rdf, DATA.fullText, resource, "Body");
+			addPropertyIfNotNull(rdf, DATA_GEN.title, resource, "Subject");
+			addPropertyIfNotNull(rdf, DATA_GEN.fullText, resource, "Body");
 		}
 
 		public URI getType() {
-			return DATA.Document;
+			return DATA_GEN.Document;
 		}
 	}
 
@@ -283,7 +283,7 @@ public abstract class OutlookResource {
 		}
 
 		protected void addData(RDFContainer rdf) throws IOException {
-			addPropertyIfNotNull(rdf, DATA.title, getResource(), "Name");
+			addPropertyIfNotNull(rdf, DATA_GEN.title, getResource(), "Name");
 
 		}
 
@@ -292,7 +292,7 @@ public abstract class OutlookResource {
 		}
 
 		public URI getType() {
-			return DATA.FolderDataObject;
+			return DATA_GEN.FolderDataObject;
 		}
 
 		public boolean isFolder() {
@@ -313,23 +313,23 @@ public abstract class OutlookResource {
 		protected void addData(RDFContainer rdf) throws IOException {
 			Dispatch resource = getSaveResource();
 
-			addPropertyIfNotNull(rdf, DATA.subject, resource, "Subject");
-			addPropertyIfNotNull(rdf, DATA.title, resource, "Subject");
-			addDateIfNotNull(rdf, DATA.receivedDate, resource, "ReceivedTime");
-			addDateIfNotNull(rdf, DATA.sentDate, resource, "SentOn");
-			addPropertyIfNotNull(rdf, DATA.fullText, resource, "Body");
+			addPropertyIfNotNull(rdf, DATA_GEN.subject, resource, "Subject");
+			addPropertyIfNotNull(rdf, DATA_GEN.title, resource, "Subject");
+			addDateIfNotNull(rdf, DATA_GEN.receivedDate, resource, "ReceivedTime");
+			addDateIfNotNull(rdf, DATA_GEN.sentDate, resource, "SentOn");
+			addPropertyIfNotNull(rdf, DATA_GEN.fullText, resource, "Body");
 
 			String name = getLiteralOf(getSaveResource(), "SenderName");
 			String mailbox = getLiteralOf(getSaveResource(), "SenderEmailAddress");
 			if (!(name == null && mailbox == null)) {
 				URI from = new URIImpl(getUri() + "_FROM");
-				rdf.add(new StatementImpl(from, RDF.TYPE, DATA.Agent));
+				rdf.add(new StatementImpl(from, RDF.TYPE, DATA_GEN.Agent));
 				if (name != null)
-					rdf.add(new StatementImpl(from, DATA.name, new LiteralImpl(name)));
+					rdf.add(new StatementImpl(from, DATA_GEN.name, new LiteralImpl(name)));
 				if (mailbox != null) {
-					rdf.add(new StatementImpl(from, DATA.emailAddress, new LiteralImpl(mailbox)));
+					rdf.add(new StatementImpl(from, DATA_GEN.emailAddress, new LiteralImpl(mailbox)));
 				}
-				rdf.add(DATA.from, from);
+				rdf.add(DATA_GEN.from, from);
 			}
 
 			// FIXME: Redemption seems to have a bug, so i use getResource() here.
@@ -350,21 +350,21 @@ public abstract class OutlookResource {
 						mailbox = getLiteralOf(recipient, "Address");
 						if (!(name == null && mailbox == null)) {
 							URI rec = new URIImpl(getUri() + "_recipient" + i);
-							rdf.add(new StatementImpl(rec, RDF.TYPE, DATA.Agent));
+							rdf.add(new StatementImpl(rec, RDF.TYPE, DATA_GEN.Agent));
 							if (name != null)
-								rdf.add(new StatementImpl(rec, DATA.name, new LiteralImpl(name)));
+								rdf.add(new StatementImpl(rec, DATA_GEN.name, new LiteralImpl(name)));
 							if (mailbox != null) {
-								rdf.add(new StatementImpl(rec, DATA.emailAddress, new LiteralImpl(mailbox)));
+								rdf.add(new StatementImpl(rec, DATA_GEN.emailAddress, new LiteralImpl(mailbox)));
 							}
 
 							if (type.equals(Integer.toString(OlObjectClass.olTo))) {
-								rdf.add(DATA.to, rec);
+								rdf.add(DATA_GEN.to, rec);
 							}
 							else if (type.equals(Integer.toString(OlObjectClass.olCC))) {
-								rdf.add(DATA.cc, rec);
+								rdf.add(DATA_GEN.cc, rec);
 							}
 							else if (type.equals(Integer.toString(OlObjectClass.olBCC))) {
-								rdf.add(DATA.bcc, rec);
+								rdf.add(DATA_GEN.bcc, rec);
 							}
 						}
 					}
@@ -376,7 +376,7 @@ public abstract class OutlookResource {
 		}
 
 		public URI getType() {
-			return DATA.Email;
+			return DATA_GEN.Email;
 		}
 
 	}
@@ -391,12 +391,12 @@ public abstract class OutlookResource {
 
 		protected void addData(RDFContainer rdf) throws IOException {
 			Dispatch resource = getResource();
-			addPropertyIfNotNull(rdf, DATA.title, resource, "Subject");
-			addPropertyIfNotNull(rdf, DATA.fullText, resource, "Body");
+			addPropertyIfNotNull(rdf, DATA_GEN.title, resource, "Subject");
+			addPropertyIfNotNull(rdf, DATA_GEN.fullText, resource, "Body");
 		}
 
 		public URI getType() {
-			return DATA.MSOLNote;
+			return DATA_GEN.MSOLNote;
 		}
 	}
 
@@ -461,7 +461,7 @@ public abstract class OutlookResource {
 		}
 
 		protected void addData(RDFContainer rdf) throws IOException {
-			rdf.add(DATA.title, "Outlook root folder");
+			rdf.add(DATA_GEN.title, "Outlook root folder");
 		}
 
 		public long getLastModified() {
@@ -469,7 +469,7 @@ public abstract class OutlookResource {
 		}
 
 		public URI getType() {
-			return DATA.FolderDataObject;
+			return DATA_GEN.FolderDataObject;
 		}
 
 		public boolean isFolder() {
@@ -489,16 +489,16 @@ public abstract class OutlookResource {
 
 		protected void addData(RDFContainer rdf) throws IOException {
 			Dispatch resource = getSaveResource();
-			addPropertyIfNotNull(rdf, DATA.title, resource, "Subject");
-			addPropertyIfNotNull(rdf, DATA.fullText, resource, "Body");
+			addPropertyIfNotNull(rdf, DATA_GEN.title, resource, "Subject");
+			addPropertyIfNotNull(rdf, DATA_GEN.fullText, resource, "Body");
 			
 			// task-specific
-			addDateIfNotNull(rdf, DATA.msolCompletedDate, resource, "DateCompleted");
-			addDateIfNotNull(rdf, DATA.msolDueDate, resource, "DueDate");
+			addDateIfNotNull(rdf, DATA_GEN.msolCompletedDate, resource, "DateCompleted");
+			addDateIfNotNull(rdf, DATA_GEN.msolDueDate, resource, "DueDate");
 		}
 
 		public URI getType() {
-			return DATA.MSOLTask;
+			return DATA_GEN.MSOLTask;
 		}
 
 	}
@@ -919,6 +919,9 @@ public abstract class OutlookResource {
 
 /*
  * $Log$
+ * Revision 1.3  2006/03/02 10:42:46  gromgull
+ * Moved generated classes to _GEN and created new classes extending these with additional constants.
+ *
  * Revision 1.2  2006/02/27 14:36:30  leo_sauermann
  * corrected license: (C) DFKI, OSL 3.0
  *

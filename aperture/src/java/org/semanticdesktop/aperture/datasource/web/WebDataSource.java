@@ -8,7 +8,7 @@ package org.semanticdesktop.aperture.datasource.web;
 
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
  * A WebDataSource defines a collection of resources in a web site.
@@ -16,6 +16,6 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 public class WebDataSource extends DataSourceBase {
 
     public URI getType() {
-        return DATASOURCE.WebDataSource;
+        return DATASOURCE_GEN.WebDataSource;
     }
 }

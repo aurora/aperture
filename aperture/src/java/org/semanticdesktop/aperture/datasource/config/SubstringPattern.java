@@ -14,7 +14,7 @@ import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.XMLSchema;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
  * A UrlPattern implementation using a substring test evaluation strategy.
@@ -53,9 +53,9 @@ public class SubstringPattern extends UrlPattern {
     public Collection getStatements(Resource subject) {
         ArrayList result = new ArrayList();
 
-        result.add(new StatementImpl(subject, RDF.TYPE, DATASOURCE.SubstringPattern));
+        result.add(new StatementImpl(subject, RDF.TYPE, DATASOURCE_GEN.SubstringPattern));
         result.add(new StatementImpl(subject, RDF.VALUE, new LiteralImpl(substring, XMLSchema.STRING)));
-        result.add(new StatementImpl(subject, DATASOURCE.condition, condition.toValue()));
+        result.add(new StatementImpl(subject, DATASOURCE_GEN.condition, condition.toValue()));
 
         return result;
     }

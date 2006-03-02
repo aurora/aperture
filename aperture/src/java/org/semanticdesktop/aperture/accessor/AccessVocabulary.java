@@ -8,12 +8,12 @@ package org.semanticdesktop.aperture.accessor;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DATA_GEN;
 
 /**
  * This interface defines a comprehensive list of URIs to be used for modeling DataObject metadata.
  */
-public class AccessVocabulary extends DATA {
+public class AccessVocabulary extends DATA_GEN {
 
 	public static final String NS = "http://aperture.semanticdesktop.org/ontology/data#";
 

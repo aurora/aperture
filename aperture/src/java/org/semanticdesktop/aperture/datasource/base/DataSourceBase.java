@@ -9,7 +9,7 @@ package org.semanticdesktop.aperture.datasource.base;
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
  * A trivial default implementation of the DataSource interface.
@@ -36,11 +36,11 @@ public abstract class DataSourceBase implements DataSource {
 	}
 
 	public String getName() {
-		return configuration.getString(DATASOURCE.name);
+		return configuration.getString(DATASOURCE_GEN.name);
 	}
 
 	public void setName(String name) {
-		configuration.put(DATASOURCE.name, name);
+		configuration.put(DATASOURCE_GEN.name, name);
 	}
 
 	public RDFContainer getConfiguration() {

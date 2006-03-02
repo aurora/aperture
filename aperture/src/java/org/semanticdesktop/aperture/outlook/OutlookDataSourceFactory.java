@@ -9,7 +9,7 @@ package org.semanticdesktop.aperture.outlook;
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 
 /**
@@ -31,7 +31,7 @@ public class OutlookDataSourceFactory implements DataSourceFactory {
 	 * @see org.semanticdesktop.aperture.datasource.DataSourceFactory#getSupportedType()
 	 */
 	public URI getSupportedType() {
-		return DATASOURCE.MicrosoftOutlookDataSource;
+		return DATASOURCE_GEN.MicrosoftOutlookDataSource;
 	}
 
 	/* (non-Javadoc)

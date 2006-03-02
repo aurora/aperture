@@ -9,7 +9,7 @@ package org.semanticdesktop.aperture.datasource.imap;
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
  * ImapDataSourceFactory returns instances of the ImapDataSource class. 
@@ -17,7 +17,7 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 public class ImapDataSourceFactory implements DataSourceFactory {
 
     public URI getSupportedType() {
-        return DATASOURCE.IMAPDataSource;
+        return DATASOURCE_GEN.IMAPDataSource;
     }
 
     public DataSource newInstance() {

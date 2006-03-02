@@ -7,15 +7,15 @@
 package org.semanticdesktop.aperture.datasource.impl;
 
 import org.semanticdesktop.aperture.ApertureTestBase;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 public class TestDefaultDataSourceRegistry extends ApertureTestBase {
 
     public void testRegistry() {
         DefaultDataSourceRegistry registry = new DefaultDataSourceRegistry();
-        assertEquals(1, registry.get(DATASOURCE.FileSystemDataSource).size());
-        assertEquals(1, registry.get(DATASOURCE.WebDataSource).size());
-        assertEquals(1, registry.get(DATASOURCE.IMAPDataSource).size());
+        assertEquals(1, registry.get(DATASOURCE_GEN.FileSystemDataSource).size());
+        assertEquals(1, registry.get(DATASOURCE_GEN.WebDataSource).size());
+        assertEquals(1, registry.get(DATASOURCE_GEN.IMAPDataSource).size());
     }
 }
 

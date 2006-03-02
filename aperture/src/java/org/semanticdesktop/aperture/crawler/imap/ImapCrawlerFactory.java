@@ -14,14 +14,14 @@ import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
  * Manages instances of ImapCrawler. 
  */
 public class ImapCrawlerFactory implements CrawlerFactory, DataAccessorFactory {
 
-    private static final Set SUPPORTED_TYPES = Collections.singleton(DATASOURCE.IMAPDataSource);
+    private static final Set SUPPORTED_TYPES = Collections.singleton(DATASOURCE_GEN.IMAPDataSource);
 
     private static final Set SUPPORTED_SCHEMES = Collections.singleton("imap");
     
