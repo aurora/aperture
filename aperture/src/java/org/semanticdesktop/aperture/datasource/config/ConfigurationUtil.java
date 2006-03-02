@@ -22,8 +22,8 @@ import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.Repository;
 import org.openrdf.sesame.sail.SailUpdateException;
 import org.openrdf.util.iterator.CloseableIterator;
-import org.semanticdesktop.aperture.datasource.SourceVocabulary;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
@@ -286,16 +286,16 @@ public class ConfigurationUtil {
     }
 
     public static SubstringCondition resolveCondition(Value value) {
-        if (SourceVocabulary.STARTS_WITH.equals(value)) {
+        if (DATASOURCE.STARTS_WITH.equals(value)) {
             return new SubstringCondition.StartsWith();
         }
-        else if (SourceVocabulary.ENDS_WITH.equals(value)) {
+        else if (DATASOURCE.ENDS_WITH.equals(value)) {
             return new SubstringCondition.EndsWith();
         }
-        else if (SourceVocabulary.CONTAINS.equals(value)) {
+        else if (DATASOURCE.CONTAINS.equals(value)) {
             return new SubstringCondition.Contains();
         }
-        else if (SourceVocabulary.DOES_NOT_CONTAIN.equals(value)) {
+        else if (DATASOURCE.DOES_NOT_CONTAIN.equals(value)) {
             return new SubstringCondition.DoesNotContain();
         }
         else {

@@ -7,7 +7,7 @@
 package org.semanticdesktop.aperture.datasource.config;
 
 import org.openrdf.model.Value;
-import org.semanticdesktop.aperture.datasource.SourceVocabulary;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 /**
  * Instances of this class indicate how a substring test needs to be performed and are able to evaluate
@@ -50,7 +50,7 @@ public abstract class SubstringCondition {
         }
         
         public Value toValue() {
-            return SourceVocabulary.STARTS_WITH;
+            return DATASOURCE.STARTS_WITH;
         }
     }
     
@@ -65,7 +65,7 @@ public abstract class SubstringCondition {
         }
         
         public Value toValue() {
-            return SourceVocabulary.ENDS_WITH;
+            return DATASOURCE.ENDS_WITH;
         }
     }
     
@@ -80,7 +80,7 @@ public abstract class SubstringCondition {
         }
         
         public Value toValue() {
-            return SourceVocabulary.CONTAINS;
+            return DATASOURCE.CONTAINS;
         }
     }
     
@@ -95,7 +95,7 @@ public abstract class SubstringCondition {
         }
         
         public Value toValue() {
-            return SourceVocabulary.DOES_NOT_CONTAIN;
+            return DATASOURCE.DOES_NOT_CONTAIN;
         }
     }
 }

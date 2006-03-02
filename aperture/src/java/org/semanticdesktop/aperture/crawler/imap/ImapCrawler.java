@@ -50,10 +50,10 @@ import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.datasource.SourceVocabulary;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.HttpClientUtil;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 import com.sun.mail.imap.IMAPFolder;
 
@@ -170,10 +170,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         
         // determine the connection type
         String securityType = ConfigurationUtil.getConnectionSecurity(config);
-        if (securityType == null || SourceVocabulary.PLAIN.toString().equals(securityType)) {
+        if (securityType == null || DATASOURCE.PLAIN.toString().equals(securityType)) {
             connectionType = "imap";
         }
-        else if (SourceVocabulary.SSL.toString().equals(securityType)) {
+        else if (DATASOURCE.SSL.toString().equals(securityType)) {
             connectionType = "imaps";
         }
         else {

@@ -34,7 +34,6 @@ import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.imap.ImapCrawler;
-import org.semanticdesktop.aperture.datasource.SourceVocabulary;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.imap.ImapDataSource;
 import org.semanticdesktop.aperture.extractor.Extractor;
@@ -48,6 +47,7 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.HttpClientUtil;
 import org.semanticdesktop.aperture.util.IOUtil;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 /**
  * Demonstrates how to crawl an IMAP mail folder.
@@ -220,7 +220,7 @@ public class ExampleImapCrawler {
 		}
 
 		if (secureConnection) {
-			ConfigurationUtil.setConnectionSecurity(SourceVocabulary.SSL.toString(), config);
+			ConfigurationUtil.setConnectionSecurity(DATASOURCE.SSL.toString(), config);
 		}
 
 		// create the DataSource

@@ -7,9 +7,9 @@
 package org.semanticdesktop.aperture.datasource.config;
 
 import org.semanticdesktop.aperture.ApertureTestBase;
-import org.semanticdesktop.aperture.datasource.SourceVocabulary;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 public class TestConfigurationUtil extends ApertureTestBase {
 
@@ -59,7 +59,7 @@ public class TestConfigurationUtil extends ApertureTestBase {
     }
 
     public void testConnectionSecurity() {
-        String security1 = SourceVocabulary.SSL.toString();
+        String security1 = DATASOURCE.SSL.toString();
         ConfigurationUtil.setConnectionSecurity(security1, configuration);
         String security2 = ConfigurationUtil.getConnectionSecurity(configuration);
         assertEquals(security1, security2);
