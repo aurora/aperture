@@ -43,14 +43,18 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 	private int minArrayLength;
 
 	public MagicMimeTypeIdentifier() {
-		readDescriptions();
+		this(MIME_TYPES_RESOURCE);
+	}
+	
+	public MagicMimeTypeIdentifier(String definitionsResource) {
+		readDescriptions(definitionsResource);
 		setRequiringTypes();
 		determineMinArrayLength();
 	}
 
-	private void readDescriptions() {
+	private void readDescriptions(String definitionsResource) {
 		// get the mimetypes.xml resource as an input stream
-		InputStream stream = ResourceUtil.getInputStream(MIME_TYPES_RESOURCE);
+		InputStream stream = ResourceUtil.getInputStream(definitionsResource);
 
 		// setup a document builder
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
