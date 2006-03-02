@@ -9,6 +9,209 @@
 
 <h1>Extractors</h1>
 
+<p>
+Extractors extract the full-text and/or metadata of a particular document type
+(one or more MIME types). They operate on an InputStream, optionally accompanied by a
+MIME type and/or a Charset to tune the processing, and produce a set of RDF statements
+describing the full-text and metadata.
+</p>
+
+<p>
+The current set of Extractors focus on typical document-like formats, such as wordprocessor
+documents, spreadsheets and presentations. Future implementations are planned that also
+target images, videos and sound files.
+</p>
+
+<h2>Available Extractors</h2>
+
+<p>
+Below is a list of available Extractors, their external dependencies and remarks.
+</p>
+
+<p>These implementations may vary in performance and extraction quality.
+Some use dedicated external libraries for handing a specific document format or family
+of document formats, others merely use a heuristic algorithm to extract readable text
+from a binary stream.
+</p>
+
+<table>
+<tr>
+<th>Extractor
+<th>Dependencies
+<th>Remarks
+</tr>
+<tr>
+<td>ExcelExtractor
+<td>Poi libraries
+<td>Tests indicate that Excel 97 and higher is supported. Both the full-text and metadata are retrieved.
+</tr>
+<tr>
+<td>HtmlExtractor
+<td>Htmlparser
+<td>--
+</tr>
+<tr>
+<td>MimeExtractor
+<td>JavaMail
+<td>An Extractor for message/rfc822 and message/news documents. Both the most significant headers
+and the body is extracted. Any attachments are ignored.
+</tr>
+<tr>
+<td>OfficeExtractor
+<td>Poi libraries
+<td>An Extractor that can be used as a fall-back when the MIME type identifier
+was able to identify a document as an MS Office document but not able to further specify this.
+Both text and metadata are extracted.
+</tr>
+<tr>
+<td>OpenDocumentExtractor
+<td>--
+<td>Extracts full-text and metadata from OpenDocument files and is backwards compatible with older
+OpenOffice (1.x) and StarOffice (6.x and 7.x) documents.
+</tr>
+<tr>
+<td>PdfExtractor
+<td>PDFBox
+<td>Extracts full-text and metadata from all PDF versions.
+</tr>
+<tr>
+<td>PlainTextExtractor
+<td>--
+<td>--
+</tr>
+<tr>
+<td>PowerPointExtractor
+<td>Poi libraries
+<td>Text extraction is noisy but sufficient for text indexing, if you're willing to accept that
+your index will contain non-word symbols.
+</tr>
+<tr>
+<td>PresentationsExtractor
+<td>Poi libraries
+<td>Apparently Presentations files can have an OLE structure similar to MS Office files or use a document
+structure similar to WordPerfect. In both cases text can be extracted. In the first case document
+metadata is also extracted.
+</tr>
+<tr>
+<td>PublisherExtractor
+<td>Poi libraries
+<td>Poi is only used for document metadata retrieval, text retrieval uses a heuristic string extraction algorithm.
+</tr>
+<tr>
+<td>QuattroExtractor
+<td>Poi libraries
+<td>Only recent Quattro Formats, as used by Quattro Pro 7 and Quattro Pro X3, are supported as these have a
+structure similar to MS Office documents. Older versions are not supported.
+Poi is only used for document metadata retrieval, text retrieval uses a heuristic string extraction algorithm.
+</tr>
+<tr>
+<td>RtfExtractor
+<td>None (uses the JRE's RTFEditorKit)
+<td>Only document test is extracted. Otherwise no known issues.
+</tr>
+<tr>
+<td>VisioExtractor
+<td>Poi libraries
+<td>Poi is only used for document metadata retrieval, text retrieval uses a heuristic string extraction algorithm.
+</tr>
+<tr>
+<td>WordExtractor
+<td>Poi libraries
+<td>Tests indicate that Word 97 and higher is supported. Both the full-text and metadata are retrieved.
+</tr>
+<tr>
+<td>WordPerfectExtractor
+<td>--
+<td>Implementation only extracts full-text. The complete full-text is extracted from WordPerfect
+documents from version 4.2 up to WordPerfect X3 (tested with 4.2, 5.0, 5.1/5.2 and X3, all created using
+WordPerfect X3), except for the 5.1/5.2 Far East format. Tests revealed that for WordPerfect 5.0 and 5.1
+the document metadata also ends up at the start of the extracted full-text.
+</tr>
+<tr>
+<td>WorksExtractor
+<td>--
+<td>Implementation only extracts full-text and apparently only works well on Works 3.0 and 4.0 documents
+and Works 4.0/2000 spreadsheets. Other versions typically produce garbage, if anything at all.
+</tr>
+<tr>
+<td>XmlExtractor
+<td>--
+<td>Extracts all PCDATA and attribute values in the order that they appear in the document.
+</tr>
+</table>
+
+<p>
+Note regarding the Poi libraries: in accidental cases Poi cannot process a document correctly,
+leading to some sort of Exception. In that case the Extractor typically catches the Exception
+and falls back to applying a heuristic string extraction algorithm on the binary stream,
+which works surprisingly well on MS Office formats.
+</p>
+
+<h2>Example</h2>
+
+<p>
+The following code demonstrates how to apply an Extractor on a given File and dump the extraction
+results to System.out (using NTriples encoding):
+</p>
+
+<div class="code">
+<pre>
+// create a MimeTypeIdentifier
+MimeTypeIdentifier identifier = new MagicMimeTypeIdentifier();
+
+// create an ExtractorRegistry containing all available ExtractorFactories
+ExtractorRegistry extractorRegistry = new DefaultExtractorRegistry();
+
+// read as many bytes of the file as desired by the MIME type identifier
+File file = ...
+FileInputStream stream = new FileInputStream(file);
+BufferedInputStream buffer = new BufferedInputStream(stream);
+byte[] bytes = IOUtil.readBytes(buffer, identifier.getMinArrayLength());
+stream.close();
+
+// let the MimeTypeIdentifier determine the MIME type of this file
+String mimeType = identifier.identify(bytes, file.getPath(), null);
+
+// skip when the MIME type could not be determined
+if (mimeType == null) {
+    System.err.println("MIME type could not be established.");
+    return;
+}
+
+// create the RDFContainer that will hold the RDF model
+URI uri = new URIImpl(file.toURI().toString());
+SesameRDFContainer container = new SesameRDFContainer(uri);
+
+// determine and apply an Extractor that can handle this MIME type
+Set factories = extractorRegistry.get(mimeType);
+if (factories != null && !factories.isEmpty()) {
+    // just fetch the first available Extractor
+    ExtractorFactory factory = (ExtractorFactory) factories.iterator().next();
+    Extractor extractor = factory.get();
+
+    // apply the extractor on the specified file
+    // (just open a new stream rather than buffer the previous stream)
+    stream = new FileInputStream(file);
+    buffer = new BufferedInputStream(stream, 8192);
+    extractor.extract(uri, buffer, null, mimeType, container);
+    stream.close();
+}
+
+// add the MIME type as an additional statement to the RDF model
+container.add(AccessVocabulary.MIME_TYPE, mimeType);
+
+// report the output to System.out
+RDFWriter writer = new NTriplesWriter(System.out);
+try {
+    container.getRepository().export(writer);
+}
+catch (RDFHandlerException e) {
+    // signals an internal error
+    throw new RuntimeException(e);
+}
+</pre>
+</div>
+
 </body>
 
 </html>

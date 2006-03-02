@@ -9,6 +9,60 @@
 
 <h1>Security</h1>
 
+<p>
+In order to communicate with certain data sources, some sort of authentication and
+encryption may be needed. SSL is a common mechanism to offer both types of security.
+It can for example be used to authenticate and protect IMAP and HTTP communication.
+</p>
+
+<p>
+We provide several classes that can help create an application that provides this
+level of security. These classes were inspired by code found in the
+<a href="http://java.sun.com/products/javamail/">Javamail</a> package (see the SSLNOTES.TXT
+file) and the code handling certificates found in Java Webstart and the Java plugin.
+</p>
+
+<p>
+More specifically, we provide a SSLSocketFactory implementation that uses a custom
+TrustManager implementation. This StandardTrustManager encapsulates a default TrustManager
+provided by the JRE for validating certificates and adds functionality to permanently accept
+or temporarily accept or deny unvalidatable certificates.
+</p>
+
+<p>
+In case a certificate to be validated cannot be validated by the default TrustManager
+and the StandardTrustManager does not already have the certificate in one of its
+certificates stores for denied or accepted certificates, than the decision is delegated
+to a TrustDecider and recorded afterwards in the appropriate certificate store.
+</p>
+
+<p>
+An implementation of a TrustDecider is available for use in Swing-based GUI application.
+This TrustDecider follows a pattern commonly found in web browsers and mail readers,
+where the certificate is shown to the user through a set of dialogs and the user is
+asked whether the certificate should be trusted and to what extent.
+</p>
+
+<p>
+Clearly, this is only appropriate for Swing-based desktop applications. Therefore,
+other TrustDecider implementations can just as easily be made, e.g. for use in a
+server-based environment.
+</p>
+
+<p>
+In order to see how this needs to be setup, one can best look at the example code.
+The GUI-based ImapCrawler (specifically, the org.semanticdesktop.aperture.examples.imapcrawler.CrawlerFrame class)
+shows how the JRE uses a custom SocketFactory that uses the StandardTrustManager
+instead of the default TrustManager. This code also shows what to do for various Java versions,
+starting from Java 5 a better way to setup the SSLSocketFactory has become available.
+</p>
+
+<p>
+These security classes have only been tested for IMAP communication. They may also
+work transparently for HTTPS, but I currently lack the knowledge to make that judgement
+and have also not tried it out yet.
+</p>
+
 </body>
 
 </html>

@@ -9,6 +9,24 @@
 
 <h1>MIME Type Identification</h1>
 
+one of core tasks of Aperture is full-text and metadata extraction.
+this relies heavily on knowing the correct MIME type of a document.
+Simple heuristics based on file name extension or HTTP result headers break easily.
+
+therefore, developed a MimeTypeIdentifier service
+single implementation available, based on magic numbers and file extensions
+magic numbers overrule all.
+file extensions are used as fallback when a certain document type does not have
+a magic number (e.g. ...) or when the magic number is shared by a number of different
+formats (all MS Office files share the same magic number)
+
+magic numbers are defined in an XML file: same implementation can be used with
+a custom descriptions file. FIXME: files is currently fixed.
+
+example code:
+initialize a MagicMimeTypeIdentifier
+inspect a given document
+
 </body>
 
 </html>

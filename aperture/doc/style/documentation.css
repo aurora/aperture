@@ -8,6 +8,18 @@ li {
 	color: blue;
 }
 
+th {
+	background: #cccccc;
+	text-align: left;
+	padding: 2px;
+}
+
+td {
+	background: #f3f3f3;
+	vertical-align: top;
+	padding: 2px;
+}
+
 @media screen {
 	/* only on screen, i.e. do not alter print settings as this usually messes things up */
 	body {

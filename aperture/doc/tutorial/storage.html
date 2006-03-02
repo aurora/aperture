@@ -1,13 +1,52 @@
 <html>
 
 <head>
-	<title>Aperture - Tutorials - Full-text and Metadata Storage</title>
+	<title>Aperture - Tutorials - Full-text and Metadata Storage and Querying</title>
 	<link rel="stylesheet" type="text/css" href="../style/documentation.css">
 </head>
 
 <body>
 
-<h1>Full-text and Metadata Storage</h1>
+<h1>Full-text and Metadata Storage and Querying</h1>
+
+<p>
+Crawling and extraction results typically need to be stored somewhere and be made queryable.
+We are still working on APIs and implementations that handle this aspect for Aperture.
+</p>
+
+<p>
+For the technically interested: this code will provide a <a href="http://www.openrdf.org/">Sesame</a>
+Sail implementation that combines the use of a standard Sesame storage mechanism
+(e.g. the native store) with a <a href="http://lucene.apache.org/">Lucene</a> index.
+</p>
+
+<p>
+From the outside this Sail will (almost) function as any other Sail: you can add RDF statements to
+it and use any of the available query languages to query it. Below the surface this Sail
+will store some properties in the Sesame store and index others in the Lucene index. In practice
+there may be some overlap: a last modified date of a file is stored in the Sesame store, its
+full-text is indexed in the Lucene index and the title and author are both stored and indexed.
+</p>
+
+<p>
+The properties stored in the Sesame store are directly queryable. The properties that were redirected
+to the Lucene index are queryable through one or more virtual properties in the RDF graph (e.g. a "matches" property)
+that connect a document resource to a Lucene query, embedded as a literal in the RDF query.
+This Lucene query is then evaluated on the index, yielding a list of document URIs. This list
+is joined with the results of the other subqueries. Therefore, this Sail provides a virtual RDF graph,
+as some properties are not physically stored but dynamically map on a Lucene query.
+</p>
+
+<p>
+As we said, this is all still work in progress. However, we do know that this approach
+works and scales, as we have applied it in Aduna AutoFocus, Aduna Metadata Server and
+tailor-made Aduna applications and it will be used in the upcoming Gnowsis release as well.
+</p>
+
+<p>
+At the time of writing it was still unclear whether the final code will become a part
+of Aperture, whether it better fits as a Sesame module or whether it is spread along both.
+</p>
 
 </body>
 
