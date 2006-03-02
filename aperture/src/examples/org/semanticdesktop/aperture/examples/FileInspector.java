@@ -51,7 +51,7 @@ public class FileInspector {
             System.exit(-1);
         }
 
-        // create a MimeTypeIdentifier (fetch the first one provided by the registry)
+        // create a MimeTypeIdentifier
         MimeTypeIdentifier identifier = new MagicMimeTypeIdentifier();
 
         // create an ExtractorRegistry containing all available ExtractorFactories
@@ -81,6 +81,7 @@ public class FileInspector {
         Set factories = extractorRegistry.get(mimeType);
         if (factories != null && !factories.isEmpty()) {
             // just fetch the first available Extractor
+            // (just open a new stream rather than buffer the previous stream)
             ExtractorFactory factory = (ExtractorFactory) factories.iterator().next();
             Extractor extractor = factory.get();
 
@@ -91,7 +92,7 @@ public class FileInspector {
             stream.close();
         }
 
-        // add the mime type as an additional statement to the RDF model
+        // add the MIME type as an additional statement to the RDF model
         container.add(AccessVocabulary.MIME_TYPE, mimeType);
 
         // report the output to System.out
