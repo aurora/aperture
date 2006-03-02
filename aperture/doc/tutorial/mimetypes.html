@@ -9,23 +9,37 @@
 
 <h1>MIME Type Identification</h1>
 
-one of core tasks of Aperture is full-text and metadata extraction.
-this relies heavily on knowing the correct MIME type of a document.
-Simple heuristics based on file name extension or HTTP result headers break easily.
+<p>
+One of the core tasks of Aperture is full-text and metadata extraction.
+To choose the right Extractor for a given document, one must first establish the document's
+MIME type. Therefore, we have designed a MimeTypeIdentifier API that fulfills this task
+and developed a general purpose implementation for it, MagicMimeTypeIdentifier.
+</p>
 
-therefore, developed a MimeTypeIdentifier service
-single implementation available, based on magic numbers and file extensions
-magic numbers overrule all.
-file extensions are used as fallback when a certain document type does not have
-a magic number (e.g. ...) or when the magic number is shared by a number of different
-formats (all MS Office files share the same magic number)
+<p>
+We know from experience that simple heuristics based on for example file name extensions
+or HTTP result headers break rather easily.
+Our implementation is therefore primarily based on magic numbers (the first few bytes
+in a file that often identify the MIME type with great accuracy) and use file
+extensions only as a fall-back when a certain document type does not have
+a magic number (e.g. BinHex files) or when the magic number is shared by a number of different
+formats (e.g. all MS Office files and some other file formats all have the same magic number).
+</p>
 
-magic numbers are defined in an XML file: same implementation can be used with
-a custom descriptions file. FIXME: files is currently fixed.
+<p>
+The MIME types and their magic numbers and extensions are described in an XML file delivered
+with the MagicMimeTypeIdentifier. The XML file to use can be specified though, so the
+same code can also be used with a different set of MIME type descriptions.
+The format of the XML file and the algorithm for applying them is documented in the
+default descriptions XML file.
+</p>
 
-example code:
-initialize a MagicMimeTypeIdentifier
-inspect a given document
+<h2>Example</h2>
+
+<p>
+See the page on <a href="extractors.html">Extractors</a> for a combined example of how to
+use a MimeTypeIdentifier and the Extractor framework.
+</p>
 
 </body>
 
