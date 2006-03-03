@@ -11,9 +11,10 @@
 
 <p>
 A Crawler is responsible for accessing the contents of a DataSource and reporting the
-individual resources in it as DataObjects. Each DataObject contains all the
-metadata that can be provided by that source type, such as file names or last
-modification dates, etc., Instances of FileDataObject or FolderDataObject may also
+individual resources in it as DataObjects. Examples are FileSystemCrawler, WebCrawler, ImapCrawler.
+Each produced DataObject contains all the
+metadata that can be provided by that source type, such as a file name, a last
+modification date, etc. Instances of FileDataObject or FolderDataObject may also
 be returned, adding extra semantics to the type of resource found and possibly extra
 information, such as an InputStream in case of a FileDataObject.
 </p>
@@ -38,15 +39,15 @@ specifically report new, changed, removed and unchanged resources.
 </p>
 
 <p>
-In order for this to work, the Crawler needs to store information about resources names, 
+In order for this to work, the Crawler needs to store information about resource names, 
 last modified dates, etc. to perform change detection.
 This is what an AccessData instance is used for: AccessData specifies
-a management interface for storing crawl-related information.
+a management interface for storing crawling-related information.
 When no AccessData is set on the Crawler, it will always report all resources as new DataObjects.
 </p>
 
 <p>
-A simple in-memory AccessData implementation has been created, subclassed by an implementation that can also
+A simple in-memory AccessData implementation is available, subclassed by an implementation that can also
 write this information to a file. One can create custom AccessData classes though,
 tuned for a specific domain or application. For example, an implementation using some sort
 of database to lower memory requirements or an implementation closely integrated with the
@@ -58,7 +59,7 @@ be appropriate for change detection.
 
 <p>
 The DataObjects created by a Crawler are reported to a CrawlerHandler
-registered at that Crawler. CrawlerHandler implementations take care of
+registered at that Crawler. CrawlerHandler implementations must take care of
 processing the reported DataObjects, e.g. by extracting text and metadata from their
 streams and indexing the retrieved information. What to do here is entirely up to
 the application developer.
@@ -73,9 +74,12 @@ has not been changed (when it is crawling incrementally), that a resource has be
 Each produced DataObject contains an RDFContainer instance holding all its metadata as
 determined by the Crawler. Because the choice for
 an appropriate RDFContainer implementation is typically application-dependent, these
-RDFContainers are retrieved by the Crawler from the CrawlerHandler. This brings the decision for a particular
-RDFContainer implementation back to the integrator.
-This retrieval uses an intermediate step to optimize performance. RDFContainer instantiation may be
+RDFContainers are retrieved by the Crawler from the CrawlerHandler.
+This gives the integrator the ability to choose an appropriate RDFContainer.
+</p>
+
+<p>
+This RDFContainer retrieval uses an intermediate step to optimize performance. RDFContainer instantiation may be
 a costly procedure and should be delayed until the instance is actually needed,
 i.e. only when a new or changed resource is found. Therefore, the CrawlerHandler returns a
 RDFContainerFactory rather than a RDFContainer. Such a factory will be retrieved
@@ -86,9 +90,9 @@ a resource is new or changed and that a DataObject will be returned.
 
 <p>
 The life-time of the reported DataObjects is determined by the CrawlerHandler.
-They remain useable until someone invokes their dispose method.
-However, in order to prevent OutOfMemoryErrors or other resource overloading,
-it is adviseable to process them in the method that reported them and dispose them
+They remain usable until someone invokes their dispose method.
+However, in order to prevent OutOfMemoryErrors or other types of resource overloading,
+it is advisable to process them in the method that reported them and dispose them
 at the end of that method.
 </p>
 
@@ -122,7 +126,7 @@ implementations are available for the schemes it encounters.</li>
 
 <p>
 The following code demonstrates how to setup and use a Crawler. It assumes we have
-defined a FileSystemDataSource (see <a href="sources.html">DataSources</a>) and
+defined a FileSystemDataSource (see <a href="sources.html">DataSources and DataObjects</a>) and
 are ready to create and start the Crawler.
 </p>
 
@@ -153,7 +157,10 @@ thread.start();
 </div>
 
 <p>
-This code uses a DefaultDataAccessorRegistry holding all Aperture DataAccessors.
+This code uses a DefaultDataAccessorRegistry containing all Aperture DataAccessors.
+</p>
+
+<p>
 Note that a background thread is created that performs the actual crawling.
 Typically, Crawler implementations operate in the thread invoking their crawl method,
 although some Crawlers may necessarily have to create separate threads themselves.

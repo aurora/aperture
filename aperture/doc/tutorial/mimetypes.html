@@ -20,18 +20,19 @@ and developed a general purpose implementation for it, MagicMimeTypeIdentifier.
 We know from experience that simple heuristics based on for example file name extensions
 or HTTP result headers break rather easily.
 Our implementation is therefore primarily based on magic numbers (the first few bytes
-in a file that often identify the MIME type with great accuracy) and use file
-extensions only as a fall-back when a certain document type does not have
+in a file that can often be used to recognize the file type with great accuracy) and uses file
+extensions only as a fall-back when a certain file type does not have
 a magic number (e.g. BinHex files) or when the magic number is shared by a number of different
-formats (e.g. all MS Office files and some other file formats all have the same magic number).
+formats (e.g. MS Office files and some other file formats using the OLE structure all have the
+same magic number).
 </p>
 
 <p>
-The MIME types and their magic numbers and extensions are described in an XML file delivered
-with the MagicMimeTypeIdentifier. The XML file to use can be specified though, so the
+The MIME types and their magic numbers and file name extensions are described in an XML file delivered
+with the MagicMimeTypeIdentifier. The XML file to use can be specified, so the
 same code can also be used with a different set of MIME type descriptions.
 The format of the XML file and the algorithm for applying them is documented in the
-default descriptions XML file.
+default XML file.
 </p>
 
 <h2>Example</h2>

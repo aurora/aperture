@@ -24,7 +24,7 @@ Sail implementation that combines the use of a standard Sesame storage mechanism
 From the outside this Sail will (almost) function as any other Sail: you can add RDF statements to
 it and use any of the available query languages to query it. Below the surface this Sail
 will store some properties in the Sesame store and index others in the Lucene index. In practice
-there may be some overlap: a last modified date of a file is stored in the Sesame store, its
+there may be some overlap, e.g. a last modified date of a file is stored in the Sesame store, its
 full-text is indexed in the Lucene index and the title and author are both stored and indexed.
 </p>
 
@@ -39,13 +39,13 @@ as some properties are not physically stored but dynamically map on a Lucene que
 
 <p>
 As we said, this is all still work in progress. However, we do know that this approach
-works and scales, as we have applied it in Aduna AutoFocus, Aduna Metadata Server and
+works and scales: we have applied it in Aduna AutoFocus, Aduna Metadata Server and
 tailor-made Aduna applications and it will be used in the upcoming Gnowsis release as well.
 </p>
 
 <p>
 At the time of writing it was still unclear whether the final code will become a part
-of Aperture, whether it better fits as a Sesame module or whether it is spread along both.
+of Aperture, whether it fits better as a Sesame module or whether it is spread along both.
 </p>
 
 </body>
