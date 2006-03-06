@@ -52,7 +52,7 @@ your copy of ANT at http://ant.apache.org/
 		<property name="release.bin.dir" value="${release.dir}/bin" />
 		<property name="release.doc.dir" value="${release.dir}/doc" />
 		<property name="release.doc.api.dir" value="${release.doc.dir}/api" />
-		<property name="release.src.zip" value="${dist.dir}/src.zip" />
+		<property name="release.src.zip" value="${release.dir}/src.zip" />
 		
 		<!-- package dirs and files -->
 		<property name="package.dir" value="${build.dir}/package" />
@@ -243,7 +243,7 @@ your copy of ANT at http://ant.apache.org/
 			<include name="build.xml" />
 			
 			<!-- this seems to be default behaviour but it doesn't hurt to be explicit -->
-			<exclude name="**/CVS, **/.svn/**" /> <!-- seems to be the default but doesn't hurt to be explicit -->
+			<exclude name="**/CVS, **/.svn/**" />
 			
 			<!-- The following files are exluded while their APIs are still under heavy revision.
 			     Note that this exludes both core code and unit tests. -->
