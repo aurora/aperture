@@ -3,3 +3,38 @@ version 2005.1-alpha-1, 2005-11-10
 ----------------------------------
 
 - First public release of the source code.
+
+----------------------------------
+version 2006.1-alpha-2, 2006-03-06
+----------------------------------
+
+This releases adds a lot of crucial implementations and fixes
+to the previous release, which was mainly focused on establishing a
+number of core APIs. The latest release can be seen as the first release
+for practical, real world use.
+
+Due to the large number of changes and additions, we only list the most
+important functional changes:
+
+- Revised the RDFContainer interface and implementation.
+
+- Extended the number of Extractor implementations from 4 to 17, which
+  adds support for the various MS Office file formats as well as a number of
+  other formats.
+
+- Added the DataSource API and utility classes for configuring them.
+
+- Added the DataAccessor API and associated DataObject interfaces for
+  accessing individual resources, with implementations for the "file",
+  "http", "imap" and "outlook" schemes.
+  
+- Added the Crawler API with implementations for file system crawling,
+  web crawling, IMAP crawling (all stable) and Outlook crawling (alpha).
+
+- added the LinkExtractor API with an implementation for HTML documents,
+  primarily meant to facilitate web crawling.
+
+- Added classes for dealing with non-validatable certificates when using
+  a SSL connection.
+
+- Considerably extended documentation and example code.
