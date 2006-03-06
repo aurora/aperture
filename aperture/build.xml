@@ -212,11 +212,16 @@ your copy of ANT at http://ant.apache.org/
 			</fileset>
 		</copy>
 		
+		<!-- copy jacob.dll to the release's root dir -->
+		<copy todir="${release.dir}" file="jacob.dll" />
+		
 		<!-- copy bin files -->
 		<mkdir dir="${release.bin.dir}" />
 		<copy todir="${release.bin.dir}">
-			<fileset dir="${bin.dir}" />
-		</copy>		
+			<fileset dir="${bin.dir}">
+				<exclude name="Generate*.launch" />  <!-- only used for generated source code -->
+			</fileset>
+		</copy>
 		
 		<!-- copy documentation files -->
 		<mkdir dir="${release.doc.dir}" />
