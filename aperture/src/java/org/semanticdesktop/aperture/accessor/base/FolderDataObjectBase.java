@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2006 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -8,10 +8,10 @@ package org.semanticdesktop.aperture.accessor.base;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.RDF;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.accessor.FolderDataObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * A trivial default implementation of FolderDataObject. 
@@ -23,6 +23,6 @@ public class FolderDataObjectBase extends DataObjectBase implements FolderDataOb
     public FolderDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata) {
         super(id, dataSource, metadata);
         // Add RDF type info
-        metadata.add(RDF.TYPE,AccessVocabulary.FOLDER);
+        metadata.add(RDF.TYPE, DATA.FolderDataObject);
     }
 }

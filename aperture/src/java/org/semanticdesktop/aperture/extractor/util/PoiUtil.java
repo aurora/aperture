@@ -19,8 +19,8 @@ import org.apache.poi.hpsf.SummaryInformation;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * Features Apache POI-specific utility methods for text and metadata extraction purposes.
@@ -98,15 +98,15 @@ public class PoiUtil {
 	public static void extractMetadata(POIFSFileSystem poiFileSystem, RDFContainer container) {
 		SummaryInformation summary = getSummaryInformation(poiFileSystem);
 		if (summary != null) {
-			copyString(summary.getTitle(), AccessVocabulary.TITLE, container);
-			copyString(summary.getSubject(), AccessVocabulary.SUBJECT, container);
-			copyString(summary.getComments(), AccessVocabulary.DESCRIPTION, container);
-			copyString(summary.getApplicationName(), AccessVocabulary.GENERATOR, container);
-			copyString(summary.getAuthor(), AccessVocabulary.CREATOR, container);
-			copyString(summary.getLastAuthor(), AccessVocabulary.CREATOR, container);
+			copyString(summary.getTitle(), DATA.title, container);
+			copyString(summary.getSubject(), DATA.subject, container);
+			copyString(summary.getComments(), DATA.description, container);
+			copyString(summary.getApplicationName(), DATA.generator, container);
+			copyString(summary.getAuthor(), DATA.creator, container);
+			copyString(summary.getLastAuthor(), DATA.creator, container);
 
-			copyDate(summary.getCreateDateTime(), AccessVocabulary.CREATION_DATE, container);
-			copyDate(summary.getLastSaveDateTime(), AccessVocabulary.DATE, container);
+			copyDate(summary.getCreateDateTime(), DATA.created, container);
+			copyDate(summary.getLastSaveDateTime(), DATA.date, container);
 
 			int nrPages = summary.getPageCount();
 			if (nrPages > 1) {
@@ -114,7 +114,7 @@ public class PoiUtil {
 				// '1' is often erroneously returned and can thus not be trusted
 				// higher values tend to be right (not seen a counter example yet) and are
 				// therefore included
-				container.add(AccessVocabulary.PAGE_COUNT, nrPages);
+				container.add(DATA.pageCount, nrPages);
 			}
 
 			String keywords = summary.getKeywords();
@@ -122,7 +122,7 @@ public class PoiUtil {
 				StringTokenizer tokenizer = new StringTokenizer(keywords, " \t.,;|/\\", false);
 				while (tokenizer.hasMoreTokens()) {
 					String keyword = tokenizer.nextToken();
-					container.add(AccessVocabulary.KEYWORD, keyword);
+					container.add(DATA.keyword, keyword);
 				}
 			}
 		}
@@ -202,7 +202,7 @@ public class PoiUtil {
 		if (text != null) {
 			text = text.trim();
 			if (!text.equals("")) {
-				container.add(AccessVocabulary.FULL_TEXT, text);
+				container.add(DATA.fullText, text);
 			}
 		}
 	}

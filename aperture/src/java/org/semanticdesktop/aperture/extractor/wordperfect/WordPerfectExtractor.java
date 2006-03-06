@@ -11,11 +11,11 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.WPStringExtractor;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * An Extractor implementation for WordPerfect documents.
@@ -41,7 +41,7 @@ public class WordPerfectExtractor implements Extractor {
 			WPStringExtractor extractor = new WPStringExtractor();
 			String text = extractor.extract(stream).trim();
 			if (text.length() > 0) {
-				result.add(AccessVocabulary.FULL_TEXT, text);
+				result.add(DATA.fullText, text);
 			}
 		}
 		catch (IOException e) {

@@ -15,10 +15,10 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -41,7 +41,7 @@ public class XmlExtractor implements Extractor {
 			// store the extracted text
 			String text = listener.getText();
 			if (!text.equals("")) {
-				result.add(AccessVocabulary.FULL_TEXT, text);
+				result.add(DATA.fullText, text);
 			}
 		}
 		catch (ParserConfigurationException e) {

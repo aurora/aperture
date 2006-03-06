@@ -23,13 +23,13 @@ import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.HttpClientUtil;
 import org.semanticdesktop.aperture.util.UriUtil;
 import org.semanticdesktop.aperture.util.UrlUtil;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * A DataAccessor implementation for the http and https schemes.
@@ -223,30 +223,30 @@ public class HttpAccessor implements DataAccessor {
             characterSet = "ISO-8859-1";
         }
 
-        metadata.add(AccessVocabulary.CHARACTER_SET, characterSet);
+        metadata.add(DATA.characterSet, characterSet);
         
         if (mimeType != null) {
-            metadata.add(AccessVocabulary.MIME_TYPE, mimeType);
+            metadata.add(DATA.mimeType, mimeType);
         }
 
         long contentLength = connection.getContentLength();
         if (contentLength >= 0l) {
-            metadata.add(AccessVocabulary.BYTE_SIZE, contentLength);
+            metadata.add(DATA.byteSize, contentLength);
         }
         
         long retrieved = connection.getDate();
         if (retrieved != 0L) {
-            metadata.add(AccessVocabulary.RETRIEVAL_DATE, new Date(retrieved));
+            metadata.add(DATA.retrievalDate, new Date(retrieved));
         }
 
         long lastModified = connection.getLastModified();
         if (lastModified != 0L) {
-            metadata.add(AccessVocabulary.DATE, new Date(lastModified));
+            metadata.add(DATA.date, new Date(lastModified));
         }
 
         long expires = connection.getExpiration();
         if (expires != 0L) {
-            metadata.add(AccessVocabulary.EXPIRATION_DATE, new Date(expires));
+            metadata.add(DATA.expirationDate, new Date(expires));
         }
 
         return object;

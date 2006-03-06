@@ -47,6 +47,7 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.HttpClientUtil;
 import org.semanticdesktop.aperture.util.IOUtil;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 /**
@@ -467,11 +468,6 @@ public class ExampleImapCrawler {
 			RDFContainer metadata = object.getMetadata();
 			String mimeType = null;
 
-			// fetch some constants to make sure the code remains readable
-			final URI mimeTypeProperty = org.semanticdesktop.aperture.accessor.AccessVocabulary.MIME_TYPE;
-			final URI contentMimeTypeProperty = org.semanticdesktop.aperture.accessor.AccessVocabulary.CONTENT_MIME_TYPE;
-			final URI charsetProperty = org.semanticdesktop.aperture.accessor.AccessVocabulary.CHARACTER_SET;
-
 			// Create a buffer around the object's stream large enough to be able to reset the stream
 			// after MIME type identification has taken place. Add some extra to the minimum array
 			// length required by the MimeTypeIdentifier for safety.
@@ -489,11 +485,11 @@ public class ExampleImapCrawler {
 					// Add the mime type to the FileDataObject's metadata. This overwrites the current
 					// mime type if any, taking care whether to take the content mime type or the regular
 					// mime type property.
-					if (metadata.getString(contentMimeTypeProperty) != null) {
-						metadata.add(contentMimeTypeProperty, mimeType);
+					if (metadata.getString(DATA.contentMimeType) != null) {
+						metadata.add(DATA.contentMimeType, mimeType);
 					}
 					else {
-						metadata.add(mimeTypeProperty, mimeType);
+						metadata.add(DATA.mimeType, mimeType);
 					}
 				}
 			}
@@ -503,10 +499,10 @@ public class ExampleImapCrawler {
 				// See if a mime type has been determined above based on the magic bytes of the stream.
 				// If not, see if the mail's metadata already contains a mime type.
 				if (mimeType == null) {
-					mimeType = metadata.getString(contentMimeTypeProperty);
+					mimeType = metadata.getString(DATA.contentMimeType);
 				}
 				if (mimeType == null) {
-					mimeType = metadata.getString(mimeTypeProperty);
+					mimeType = metadata.getString(DATA.mimeType);
 				}
 
 				// if we know a MIME type, try to find a matching extractor
@@ -518,7 +514,7 @@ public class ExampleImapCrawler {
 
 						// see if we know the charset
 						Charset charset = null;
-						String charsetStr = metadata.getString(charsetProperty);
+						String charsetStr = metadata.getString(DATA.characterSet);
 						if (charsetStr != null) {
 							try {
 								charset = Charset.forName(charsetStr);

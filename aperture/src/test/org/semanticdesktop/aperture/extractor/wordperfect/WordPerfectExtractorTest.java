@@ -8,12 +8,12 @@ package org.semanticdesktop.aperture.extractor.wordperfect;
 
 import java.io.IOException;
 
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class WordPerfectExtractorTest extends ExtractorTestBase {
 
@@ -35,6 +35,6 @@ public class WordPerfectExtractorTest extends ExtractorTestBase {
 		SesameRDFContainer container = extract(resourceName, extractor);
 
 		// check the extraction results
-		checkStatement(AccessVocabulary.FULL_TEXT, "WordPerfect", container);
+		checkStatement(DATA.fullText, "WordPerfect", container);
 	}
 }

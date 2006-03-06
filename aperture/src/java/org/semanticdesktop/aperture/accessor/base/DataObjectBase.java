@@ -11,10 +11,10 @@ import java.util.logging.Logger;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.vocabulary.RDF;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * A trivial default implementation of DataObject.
@@ -39,7 +39,7 @@ public class DataObjectBase implements DataObject {
         this.dataSource = dataSource;
         this.metadata = metadata;
         disposed = false;
-        metadata.add(RDF.TYPE, AccessVocabulary.DATAOBJECT);
+        metadata.add(RDF.TYPE, DATA.DataObject);
     }
 
     public void finalize() throws Throwable {

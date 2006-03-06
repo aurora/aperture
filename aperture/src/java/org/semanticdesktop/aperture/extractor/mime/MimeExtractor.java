@@ -21,11 +21,11 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.MailUtil;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * An Extractor implementation for message/rfc822-style messages.
@@ -51,7 +51,7 @@ public class MimeExtractor implements Extractor {
 			extractText(message.getContent(), buffer);
 			String text = buffer.toString().trim();
 			if (text.length() > 0) {
-				result.add(AccessVocabulary.FULL_TEXT, text);
+				result.add(DATA.fullText, text);
 			}
 
 			// extract other metadata
@@ -59,18 +59,18 @@ public class MimeExtractor implements Extractor {
 			if (title != null) {
 				title = title.trim();
 				if (title.length() > 0) {
-					result.add(AccessVocabulary.TITLE, title);
+					result.add(DATA.title, title);
 				}
 			}
 
-			copyAddress(message.getFrom(), AccessVocabulary.FROM, result);
-			copyAddress(message.getRecipients(RecipientType.TO), AccessVocabulary.TO, result);
-			copyAddress(message.getRecipients(RecipientType.CC), AccessVocabulary.CC, result);
-			copyAddress(message.getRecipients(RecipientType.BCC), AccessVocabulary.BCC, result);
+			copyAddress(message.getFrom(), DATA.from, result);
+			copyAddress(message.getRecipients(RecipientType.TO), DATA.to, result);
+			copyAddress(message.getRecipients(RecipientType.CC), DATA.cc, result);
+			copyAddress(message.getRecipients(RecipientType.BCC), DATA.bcc, result);
 
 			Date date = MailUtil.getDate(message);
 			if (date != null) {
-				result.add(AccessVocabulary.DATE, date);
+				result.add(DATA.date, date);
 			}
 		}
 		catch (MessagingException e) {

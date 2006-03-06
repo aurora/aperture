@@ -30,7 +30,6 @@ import org.openrdf.sesame.sailimpl.memory.MemoryStore;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
@@ -51,6 +50,7 @@ import org.semanticdesktop.aperture.hypertext.linkextractor.impl.DefaultLinkExtr
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * Example class that crawls a web site or locally stored hypertext graph and puts all extracted metadata
@@ -455,8 +455,11 @@ public class ExampleWebCrawler {
         }
 
         private void process(FileDataObject object) throws IOException, ExtractorException {
+        	// instead of using the MIME type returned by the web server, we could also use the
+        	// MimeTypeIdentifier, as we do in the other examples. We do it this way to demonstrate
+        	// that both are possible.
             URI id = object.getID();
-            String mimeType = object.getMetadata().getString(AccessVocabulary.MIME_TYPE);
+            String mimeType = object.getMetadata().getString(DATA.mimeType);
             if (mimeType != null) {
                 if (extractingContents) {
                     Set extractors = extractorRegistry.get(mimeType);

@@ -11,8 +11,6 @@ import java.io.PrintStream;
 import java.util.Date;
 import java.util.List;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.OWL;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.RDFS;

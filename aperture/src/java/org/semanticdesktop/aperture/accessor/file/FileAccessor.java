@@ -26,12 +26,12 @@ import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * A DataAccessor implementation for the file scheme.
@@ -135,7 +135,7 @@ public class FileAccessor implements DataAccessor {
 			result = new FileDataObjectBase(id, source, metadata, contentStream);
 			// Add type info. (type, File) cannot be added in the FileDataObject class itself because it is
 			// also used for things like email Messages with content, that are strictly speaking not files.
-			result.getMetadata().add(RDF.TYPE, AccessVocabulary.FILE);
+			result.getMetadata().add(RDF.TYPE, DATA.FileDataObject);
 		}
 		else if (isFolder) {
 			result = new FolderDataObjectBase(id, source, metadata);
@@ -179,24 +179,24 @@ public class FileAccessor implements DataAccessor {
 		// create regular File metadata first
 		long lastModified = file.lastModified();
 		if (lastModified != 0l) {
-			metadata.add(AccessVocabulary.DATE, new Date(lastModified));
+			metadata.add(DATA.date, new Date(lastModified));
 		}
 
 		String name = file.getName();
 		if (name != null) {
-			metadata.add(AccessVocabulary.NAME, name);
+			metadata.add(DATA.name, name);
 		}
 
 		File parent = file.getParentFile();
 		if (parent != null) {
-			metadata.add(AccessVocabulary.PART_OF, toURI(parent));
+			metadata.add(DATA.partOf, toURI(parent));
 		}
 
 		// add file-specific metadata
 		if (isFile) {
 			long length = file.length();
 			if (length != 0l) {
-				metadata.add(AccessVocabulary.BYTE_SIZE, length);
+				metadata.add(DATA.byteSize, length);
 			}
 		}
 
@@ -208,7 +208,7 @@ public class FileAccessor implements DataAccessor {
 				for (int i = 0; i < children.length; i++) {
 					File child = children[i];
 					if (child != null) {
-						metadata.add(new StatementImpl(toURI(child), AccessVocabulary.PART_OF, id));
+						metadata.add(new StatementImpl(toURI(child), DATA.partOf, id));
 					}
 				}
 			}

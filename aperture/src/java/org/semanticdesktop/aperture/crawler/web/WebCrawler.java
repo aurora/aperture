@@ -29,7 +29,6 @@ import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
@@ -41,6 +40,7 @@ import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.UrlUtil;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * A Crawler implementation for WebDataSources.
@@ -306,7 +306,7 @@ public class WebCrawler extends CrawlerBase {
         }
         // now check whether the size is below the threshold
         else {
-            Integer integer = dataObject.getMetadata().getInteger(AccessVocabulary.BYTE_SIZE);
+            Integer integer = dataObject.getMetadata().getInteger(DATA.byteSize);
             return integer == null ? true : integer.intValue() <= maxByteSize;
         }
     }
@@ -397,7 +397,7 @@ public class WebCrawler extends CrawlerBase {
             }
         }
 
-        object.getMetadata().add(AccessVocabulary.MIME_TYPE, mimeType);
+        object.getMetadata().add(DATA.mimeType, mimeType);
 
         // fetch a LinkExtractor for this MIME type and exit when there is none
         LinkExtractor extractor = null;

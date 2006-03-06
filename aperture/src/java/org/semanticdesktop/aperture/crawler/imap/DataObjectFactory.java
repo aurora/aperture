@@ -31,7 +31,6 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.RDF;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
@@ -39,6 +38,7 @@ import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.MailUtil;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * Creates a set of DataObjects from a MimeMessage.
@@ -121,7 +121,7 @@ public class DataObjectFactory {
 		ArrayList result = new ArrayList();
 		createDataObjects(map, folderUri, result);
 		// The first object is the Message itself, add RDF type to it
-		((DataObject) result.get(0)).getMetadata().add(RDF.TYPE, AccessVocabulary.MESSAGE);
+		((DataObject) result.get(0)).getMetadata().add(RDF.TYPE, DATA.Email);
 		return result;
 	}
 
@@ -208,43 +208,43 @@ public class DataObjectFactory {
 			result.put(CONTENTS_KEY, mailPart.getInputStream());
 
 			if (charsetStr != null) {
-				result.put(AccessVocabulary.CHARACTER_SET, charsetStr);
+				result.put(DATA.characterSet, charsetStr);
 			}
 
 			String fileName = mailPart.getFileName();
 			if (fileName != null) {
-				result.put(AccessVocabulary.NAME, fileName);
+				result.put(DATA.name, fileName);
 			}
 		}
 
 		// set some generally applicable metadata properties
 		int size = mailPart.getSize();
 		if (size >= 0) {
-			result.put(AccessVocabulary.BYTE_SIZE, new Integer(size));
+			result.put(DATA.byteSize, new Integer(size));
 		}
 
-		result.put(AccessVocabulary.DATE, date);
+		result.put(DATA.date, date);
 
 		// Differentiate between Messages and other types of mail parts. We don't use the Part.getHeader
 		// method as they don't decode non-ASCII 'encoded words' (see RFC 2047).
 		if (mailPart instanceof Message) {
 			// the data object's primary mimetype is message/rfc822. The MIME type of the InputStream
 			// (most often text/plain or text/html) is modeled as a secondary MIME type
-			result.put(AccessVocabulary.MIME_TYPE, "message/rfc822");
-			result.put(AccessVocabulary.CONTENT_MIME_TYPE, mimeType);
+			result.put(DATA.mimeType, "message/rfc822");
+			result.put(DATA.contentMimeType, mimeType);
 
 			// add message metadata
 			Message message = (Message) mailPart;
-			addIfNotNull(AccessVocabulary.SUBJECT, message.getSubject(), result);
-			addIfNotNull(AccessVocabulary.FROM, message.getFrom(), result);
-			addIfNotNull(AccessVocabulary.TO, message.getRecipients(RecipientType.TO), result);
-			addIfNotNull(AccessVocabulary.CC, message.getRecipients(RecipientType.CC), result);
-			addIfNotNull(AccessVocabulary.BCC, message.getRecipients(RecipientType.BCC), result);
+			addIfNotNull(DATA.subject, message.getSubject(), result);
+			addIfNotNull(DATA.from, message.getFrom(), result);
+			addIfNotNull(DATA.to, message.getRecipients(RecipientType.TO), result);
+			addIfNotNull(DATA.cc, message.getRecipients(RecipientType.CC), result);
+			addIfNotNull(DATA.bcc, message.getRecipients(RecipientType.BCC), result);
 		}
 		else {
 			// this is most likely an attachment: set the InputStream's mime type as the data object's
 			// primary MIME type
-			result.put(AccessVocabulary.MIME_TYPE, mimeType);
+			result.put(DATA.mimeType, mimeType);
 		}
 
 		// done!
@@ -325,7 +325,7 @@ public class DataObjectFactory {
 		int nrChildren = children.size();
 		for (int i = 0; i < nrChildren; i++) {
 			HashMap child = (HashMap) children.get(i);
-			Object bodyMimeType = child.get(AccessVocabulary.MIME_TYPE);
+			Object bodyMimeType = child.get(DATA.mimeType);
 
 			if ("text/plain".equals(bodyMimeType) || "text/html".equals(bodyMimeType)) {
 				children.remove(i);
@@ -604,23 +604,23 @@ public class DataObjectFactory {
 
 		// extend metadata with additional properties
 		if (parentUri != null) {
-			metadata.add(AccessVocabulary.PART_OF, parentUri);
+			metadata.add(DATA.partOf, parentUri);
 		}
 
-		copyString(AccessVocabulary.CHARACTER_SET, map, metadata);
-		copyString(AccessVocabulary.MIME_TYPE, map, metadata);
-		copyString(AccessVocabulary.CONTENT_MIME_TYPE, map, metadata);
-		copyString(AccessVocabulary.SUBJECT, map, metadata);
-		copyString(AccessVocabulary.NAME, map, metadata);
+		copyString(DATA.characterSet, map, metadata);
+		copyString(DATA.mimeType, map, metadata);
+		copyString(DATA.contentMimeType, map, metadata);
+		copyString(DATA.subject, map, metadata);
+		copyString(DATA.name, map, metadata);
 
-		copyInt(AccessVocabulary.BYTE_SIZE, map, metadata);
+		copyInt(DATA.byteSize, map, metadata);
 
-		copyDate(AccessVocabulary.DATE, map, metadata);
+		copyDate(DATA.date, map, metadata);
 
-		copyAddresses(AccessVocabulary.FROM, map, metadata);
-		copyAddresses(AccessVocabulary.TO, map, metadata);
-		copyAddresses(AccessVocabulary.CC, map, metadata);
-		copyAddresses(AccessVocabulary.BCC, map, metadata);
+		copyAddresses(DATA.from, map, metadata);
+		copyAddresses(DATA.to, map, metadata);
+		copyAddresses(DATA.cc, map, metadata);
+		copyAddresses(DATA.bcc, map, metadata);
 
 		// repeat recursively on children
 		ArrayList children = (ArrayList) map.get(CHILDREN_KEY);
@@ -631,7 +631,7 @@ public class DataObjectFactory {
 
 				// also register the child in the parent's metadata
 				URI childID = (URI) child.get(ID_KEY);
-				metadata.add(new StatementImpl(childID, AccessVocabulary.PART_OF, id));
+				metadata.add(new StatementImpl(childID, DATA.partOf, id));
 
 				createDataObjects(child, id, result);
 			}
@@ -722,11 +722,10 @@ public class DataObjectFactory {
 		}
 
 		// transfer mime type, carefully placing it as mime type or content mime type
-		Object fromType = fromObject.get(AccessVocabulary.MIME_TYPE);
+		Object fromType = fromObject.get(DATA.mimeType);
 		if (fromType != null) {
-			Object toType = toObject.get(AccessVocabulary.MIME_TYPE);
-			URI predicate = "message/rfc822".equals(toType) ? AccessVocabulary.CONTENT_MIME_TYPE
-					: AccessVocabulary.MIME_TYPE;
+			Object toType = toObject.get(DATA.mimeType);
+			URI predicate = "message/rfc822".equals(toType) ? DATA.contentMimeType : DATA.mimeType;
 			toObject.put(predicate, fromType);
 		}
 

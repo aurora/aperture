@@ -17,10 +17,10 @@ import javax.swing.text.Document;
 import javax.swing.text.rtf.RTFEditorKit;
 
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class RtfExtractor implements Extractor {
 
@@ -42,7 +42,7 @@ public class RtfExtractor implements Extractor {
 		try {
 			rtfParser.read(stream, document, 0);
 			String text = document.getText(0, document.getLength());
-			result.add(AccessVocabulary.FULL_TEXT, text);
+			result.add(DATA.fullText, text);
 		}
 		catch (BadLocationException e) {
 			// problem relates to the file contents: just log and ignore

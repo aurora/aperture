@@ -6,10 +6,7 @@
  */
 package org.semanticdesktop.aperture.outlook;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,19 +15,15 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.AccessData;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
-import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA_GEN;
-
-import com.jacob.com.Dispatch;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 
 /**
@@ -130,7 +123,7 @@ public class OutlookAccessor implements DataAccessor {
         // basic info
         metadata.add(RDF.TYPE, resource.getType());
         if (parent != null)
-        	metadata.add(DATA_GEN.partOf, new URIImpl(parent.getUri()));
+        	metadata.add(DATA.partOf, new URIImpl(parent.getUri()));
         
         // get the details
         resource.addData(metadata);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -15,17 +15,17 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.AccessData;
-import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.DataObject;
+import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.FolderDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.accessor.base.FileAccessData;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.FileUtil;
 import org.semanticdesktop.aperture.util.IOUtil;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class TestFileAccessor extends ApertureTestBase {
 
@@ -65,10 +65,10 @@ public class TestFileAccessor extends ApertureTestBase {
         assertTrue(dataObject instanceof FileDataObject);
 
         // check its metadata
-        checkStatement(AccessVocabulary.NAME, "file-", (SesameRDFContainer) dataObject.getMetadata());
+        checkStatement(DATA.name, "file-", (SesameRDFContainer) dataObject.getMetadata());
 
         URI parentURI = new URIImpl(tmpDir.toURI().toString());
-        checkStatement(AccessVocabulary.PART_OF, parentURI, (SesameRDFContainer) dataObject.getMetadata());
+        checkStatement(DATA.partOf, parentURI, (SesameRDFContainer) dataObject.getMetadata());
         
         dataObject.dispose();
     }
@@ -81,7 +81,7 @@ public class TestFileAccessor extends ApertureTestBase {
         assertTrue(dataObject instanceof FolderDataObject);
 
         // check its metadata
-        checkStatement(AccessVocabulary.NAME, "TestFileAccessor", (SesameRDFContainer) dataObject.getMetadata());
+        checkStatement(DATA.name, "TestFileAccessor", (SesameRDFContainer) dataObject.getMetadata());
         
         dataObject.dispose();
     }

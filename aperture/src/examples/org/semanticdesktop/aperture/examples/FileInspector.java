@@ -17,7 +17,6 @@ import org.openrdf.model.impl.URIImpl;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.ntriples.NTriplesWriter;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
@@ -27,6 +26,7 @@ import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * The source code of this class shows how to use a MimeTypeIdentifier and a collection of Extractors to
@@ -93,7 +93,7 @@ public class FileInspector {
         }
 
         // add the MIME type as an additional statement to the RDF model
-        container.add(AccessVocabulary.MIME_TYPE, mimeType);
+        container.add(DATA.mimeType, mimeType);
 
         // report the output to System.out
         RDFWriter writer = new NTriplesWriter(System.out);

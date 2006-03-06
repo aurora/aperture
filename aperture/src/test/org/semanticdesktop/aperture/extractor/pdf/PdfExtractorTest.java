@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -8,12 +8,12 @@ package org.semanticdesktop.aperture.extractor.pdf;
 
 import java.io.IOException;
 
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class PdfExtractorTest extends ExtractorTestBase {
 
@@ -38,7 +38,7 @@ public class PdfExtractorTest extends ExtractorTestBase {
         // note: document has no date
         SesameRDFContainer container = getStatements(OPEN_OFFICE_2_DOC);
         
-        checkStatement(AccessVocabulary.GENERATOR, "OpenOffice", container);
+        checkStatement(DATA.generator, "OpenOffice", container);
         
         checkOmnipresentStatements(container);
     }
@@ -47,7 +47,7 @@ public class PdfExtractorTest extends ExtractorTestBase {
         // note: document has no date
         SesameRDFContainer container = getStatements(OPEN_OFFICE_1_DOC);
         
-        checkStatement(AccessVocabulary.GENERATOR, "OpenOffice", container);
+        checkStatement(DATA.generator, "OpenOffice", container);
         
         checkOmnipresentStatements(container);
     }
@@ -55,9 +55,9 @@ public class PdfExtractorTest extends ExtractorTestBase {
     public void testPDFCreator() throws ExtractorException, IOException {
         SesameRDFContainer container = getStatements(PDF_CREATOR_DOC);
         
-        checkStatement(AccessVocabulary.GENERATOR, "PDFCreator", container);
-        checkStatement(AccessVocabulary.GENERATOR, "Ghostscript", container);
-        checkStatement(AccessVocabulary.DATE, "2005", container);
+        checkStatement(DATA.generator, "PDFCreator", container);
+        checkStatement(DATA.generator, "Ghostscript", container);
+        checkStatement(DATA.date, "2005", container);
         
         checkOmnipresentStatements(container);
     }
@@ -65,9 +65,9 @@ public class PdfExtractorTest extends ExtractorTestBase {
     public void testPDFMaker() throws ExtractorException, IOException {
         SesameRDFContainer container = getStatements(PDF_MAKER_DOC);
         
-        checkStatement(AccessVocabulary.GENERATOR, "PDFMaker", container);
-        checkStatement(AccessVocabulary.GENERATOR, "Distiller", container);
-        checkStatement(AccessVocabulary.DATE, "2005", container);
+        checkStatement(DATA.generator, "PDFMaker", container);
+        checkStatement(DATA.generator, "Distiller", container);
+        checkStatement(DATA.date, "2005", container);
         
         checkOmnipresentStatements(container);
     }
@@ -75,22 +75,22 @@ public class PdfExtractorTest extends ExtractorTestBase {
     public void testPDFWriter() throws ExtractorException, IOException {
         SesameRDFContainer container = getStatements(PDF_WRITER_DOC);
         
-        checkStatement(AccessVocabulary.TITLE, "Microsoft Word", container);
-        checkStatement(AccessVocabulary.CREATOR, "Christiaan Fluit", container);
-        checkStatement(AccessVocabulary.GENERATOR, "PScript5.dll", container);
-        checkStatement(AccessVocabulary.GENERATOR, "Distiller", container);
-        checkStatement(AccessVocabulary.DATE, "2005", container);
-        checkStatement(AccessVocabulary.CREATION_DATE, "2005", container);
-        checkStatement(AccessVocabulary.PAGE_COUNT, "1", container);
+        checkStatement(DATA.title, "Microsoft Word", container);
+        checkStatement(DATA.creator, "Christiaan Fluit", container);
+        checkStatement(DATA.generator, "PScript5.dll", container);
+        checkStatement(DATA.generator, "Distiller", container);
+        checkStatement(DATA.date, "2005", container);
+        checkStatement(DATA.created, "2005", container);
+        checkStatement(DATA.pageCount, "1", container);
     }
     
     private void checkOmnipresentStatements(SesameRDFContainer container) {
-        checkStatement(AccessVocabulary.CREATOR, "Christiaan Fluit", container);
-        checkStatement(AccessVocabulary.SUBJECT, "Testing", container);
-        checkStatement(AccessVocabulary.TITLE, "Example", container);
-        checkStatement(AccessVocabulary.CREATION_DATE, "2005", container);
-        checkStatement(AccessVocabulary.PAGE_COUNT, "1", container);
-        checkStatement(AccessVocabulary.KEYWORD, "rdf", container);
-        checkStatement(AccessVocabulary.KEYWORD, "test", container);
+        checkStatement(DATA.creator, "Christiaan Fluit", container);
+        checkStatement(DATA.subject, "Testing", container);
+        checkStatement(DATA.title, "Example", container);
+        checkStatement(DATA.created, "2005", container);
+        checkStatement(DATA.pageCount, "1", container);
+        checkStatement(DATA.keyword, "rdf", container);
+        checkStatement(DATA.keyword, "test", container);
     }
 }

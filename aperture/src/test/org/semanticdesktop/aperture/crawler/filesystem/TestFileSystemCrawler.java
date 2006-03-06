@@ -17,7 +17,6 @@ import org.openrdf.sesame.sail.SailInitializationException;
 import org.openrdf.sesame.sail.SailUpdateException;
 import org.openrdf.sesame.sailimpl.memory.MemoryStore;
 import org.semanticdesktop.aperture.ApertureTestBase;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.FolderDataObject;
@@ -34,6 +33,7 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.FileUtil;
 import org.semanticdesktop.aperture.util.IOUtil;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class TestFileSystemCrawler extends ApertureTestBase {
 
@@ -106,15 +106,15 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
         Repository repository = crawlerHandler.getRepository();
 
-        checkStatement(toURI(tmpFile1), AccessVocabulary.NAME, new LiteralImpl(tmpFile1.getName()), repository);
-        checkStatement(toURI(tmpFile2), AccessVocabulary.NAME, new LiteralImpl(tmpFile2.getName()), repository);
-        checkStatement(toURI(subDir), AccessVocabulary.NAME, new LiteralImpl(subDir.getName()), repository);
+        checkStatement(toURI(tmpFile1), DATA.name, new LiteralImpl(tmpFile1.getName()), repository);
+        checkStatement(toURI(tmpFile2), DATA.name, new LiteralImpl(tmpFile2.getName()), repository);
+        checkStatement(toURI(subDir), DATA.name, new LiteralImpl(subDir.getName()), repository);
 
         // This should not be found because of maximum depth restrictions: this file should not be
         // reached. We deliberately check for a specific property rather than doing hasStatement(URI,
         // null, null) as the URI of the skipped file will still be part of the metadata of the
         // containing Folder.
-        assertFalse(repository.hasStatement(toURI(tmpFile3), AccessVocabulary.NAME, null));
+        assertFalse(repository.hasStatement(toURI(tmpFile3), DATA.name, null));
     }
 
     private URI toURI(File file) {

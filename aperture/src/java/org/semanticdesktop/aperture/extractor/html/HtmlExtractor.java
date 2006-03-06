@@ -29,10 +29,10 @@ import org.htmlparser.util.ParserFeedback;
 import org.htmlparser.util.Translate;
 import org.htmlparser.visitors.NodeVisitor;
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * HtmlExtractor extracts full-text and metadata from HTML and XHTML documents.
@@ -270,26 +270,26 @@ public class HtmlExtractor implements Extractor {
 
         public void finishedParsing() {
             // store extracted text
-            container.add(AccessVocabulary.FULL_TEXT, textBuffer.toString());
+            container.add(DATA.fullText, textBuffer.toString());
 
             // store keywords
             Iterator keywords = keywordBuffer.iterator();
             while (keywords.hasNext()) {
                 String keyword = (String) keywords.next();
                 if (keyword != null) {
-                    container.add(AccessVocabulary.KEYWORD, keyword);
+                    container.add(DATA.keyword, keyword);
                 }
             }
 
             // store other metadata
             if (title != null) {
-                container.add(AccessVocabulary.TITLE, title);
+                container.add(DATA.title, title);
             }
             if (author != null) {
-                container.add(AccessVocabulary.CREATOR, author);
+                container.add(DATA.creator, author);
             }
             if (description != null) {
-                container.add(AccessVocabulary.DESCRIPTION, description);
+                container.add(DATA.description, description);
             }
 
             // cleanup

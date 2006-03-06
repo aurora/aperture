@@ -15,11 +15,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class PlainTextExtractor implements Extractor {
 
@@ -45,7 +45,7 @@ public class PlainTextExtractor implements Extractor {
 
             // everything is ok, read the full document 
             String remainingChars = IOUtil.readString(reader);
-            result.add(AccessVocabulary.FULL_TEXT, firstChars + remainingChars);
+            result.add(DATA.fullText, firstChars + remainingChars);
         }
         catch (IOException e) {
             throw new ExtractorException(e);

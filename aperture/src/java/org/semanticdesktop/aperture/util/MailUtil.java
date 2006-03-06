@@ -18,8 +18,8 @@ import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.RDF;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * Utility methods for JavaMail.
@@ -72,17 +72,17 @@ public class MailUtil {
 
 			// connect the person resource to the mail resource
 			metadata.add(predicate, person);
-			metadata.add(new StatementImpl(person, RDF.TYPE, AccessVocabulary.AGENT));
+			metadata.add(new StatementImpl(person, RDF.TYPE, DATA.Agent));
 
 			// add name and address details
 			if (hasRealValue(name)) {
 				Literal literal = new LiteralImpl(name);
-				metadata.add(new StatementImpl(person, AccessVocabulary.NAME, literal));
+				metadata.add(new StatementImpl(person, DATA.name, literal));
 			}
 
 			if (hasRealValue(emailAddress)) {
 				Literal literal = new LiteralImpl(emailAddress);
-				metadata.add(new StatementImpl(person, AccessVocabulary.EMAIL_ADDRESS, literal));
+				metadata.add(new StatementImpl(person, DATA.emailAddress, literal));
 			}
 		}
 	}

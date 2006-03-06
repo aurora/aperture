@@ -11,12 +11,12 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import org.openrdf.model.URI;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.PoiUtil;
 import org.semanticdesktop.aperture.extractor.util.StringExtractor;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * An Extractor implementation for MS Publisher documents. This implementation uses heuristic string
@@ -42,7 +42,7 @@ public class PublisherExtractor implements Extractor {
 		try {
 			String text = extractor.extract(stream).trim();
 			if (text.length() > 0) {
-				result.add(AccessVocabulary.FULL_TEXT, text);
+				result.add(DATA.fullText, text);
 			}
 		}
 		catch (IOException e) {

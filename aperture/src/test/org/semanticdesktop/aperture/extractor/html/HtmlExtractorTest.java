@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -8,12 +8,12 @@ package org.semanticdesktop.aperture.extractor.html;
 
 import java.io.IOException;
 
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class HtmlExtractorTest extends ExtractorTestBase {
     
@@ -31,11 +31,11 @@ public class HtmlExtractorTest extends ExtractorTestBase {
         ExtractorFactory factory = new HtmlExtractorFactory();
         Extractor extractor = factory.get();
         SesameRDFContainer container = extract(resourceName, extractor);
-        checkStatement(AccessVocabulary.FULL_TEXT, "text", container);
-        checkStatement(AccessVocabulary.TITLE, "document", container);
-        checkStatement(AccessVocabulary.CREATOR, "Chris", container);
-        checkStatement(AccessVocabulary.KEYWORD, "test", container);
-        checkStatement(AccessVocabulary.KEYWORD, "rdf", container);
-        checkStatement(AccessVocabulary.DESCRIPTION, "testing", container);
+        checkStatement(DATA.fullText, "text", container);
+        checkStatement(DATA.title, "document", container);
+        checkStatement(DATA.creator, "Chris", container);
+        checkStatement(DATA.keyword, "test", container);
+        checkStatement(DATA.keyword, "rdf", container);
+        checkStatement(DATA.description, "testing", container);
     }
 }

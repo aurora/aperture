@@ -8,12 +8,12 @@ package org.semanticdesktop.aperture.extractor.visio;
 
 import java.io.IOException;
 
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class VisioExtractorTest extends ExtractorTestBase {
 
@@ -24,12 +24,12 @@ public class VisioExtractorTest extends ExtractorTestBase {
         SesameRDFContainer container = extract(DOCS_PATH + "microsoft-visio.vsd", extractor);
 
         // check the extraction results
-        checkStatement(AccessVocabulary.FULL_TEXT, "developers", container);
-        checkStatement(AccessVocabulary.TITLE, "Title", container);
-        checkStatement(AccessVocabulary.SUBJECT, "Topic", container);
-        checkStatement(AccessVocabulary.DESCRIPTION, "abstract", container);
-        checkStatement(AccessVocabulary.CREATOR, "Leo", container);
-        checkStatement(AccessVocabulary.KEYWORD, "visio", container);
-        checkStatement(AccessVocabulary.KEYWORD, "aperture", container);
+        checkStatement(DATA.fullText, "developers", container);
+        checkStatement(DATA.title, "Title", container);
+        checkStatement(DATA.subject, "Topic", container);
+        checkStatement(DATA.description, "abstract", container);
+        checkStatement(DATA.creator, "Leo", container);
+        checkStatement(DATA.keyword, "visio", container);
+        checkStatement(DATA.keyword, "aperture", container);
     }        
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 -2006 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -15,7 +15,7 @@ import org.openrdf.model.Value;
 import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.Repository;
 import org.openrdf.util.iterator.CloseableIterator;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class MetadataModel {
 
@@ -46,7 +46,7 @@ public class MetadataModel {
             fullText = null;
         }
         else {
-            CloseableIterator statements = repository.getStatements(null, AccessVocabulary.FULL_TEXT, null);
+            CloseableIterator statements = repository.getStatements(null, DATA.fullText, null);
             try {
                 StringBuffer buffer = new StringBuffer(10000);
 	            while (statements.hasNext()) {

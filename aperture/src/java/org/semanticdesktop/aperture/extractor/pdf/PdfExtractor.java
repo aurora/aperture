@@ -21,10 +21,10 @@ import org.pdfbox.pdfparser.PDFParser;
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.pdmodel.PDDocumentInformation;
 import org.pdfbox.util.PDFTextStripper;
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * Extracts full-text and metadata from Adobe Acrobat (PDF) files.
@@ -90,7 +90,7 @@ public class PdfExtractor implements Extractor {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
             if (text != null) {
-                result.add(AccessVocabulary.FULL_TEXT, text);
+                result.add(DATA.fullText, text);
             }
         }
         catch (IOException e) {
@@ -105,49 +105,49 @@ public class PdfExtractor implements Extractor {
         PDDocumentInformation metadata = document.getDocumentInformation();
 
         try {
-            addStringMetadata(AccessVocabulary.CREATOR, metadata.getAuthor(), result);
+            addStringMetadata(DATA.creator, metadata.getAuthor(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting author", e);
         }
 
         try {
-            addStringMetadata(AccessVocabulary.TITLE, metadata.getTitle(), result);
+            addStringMetadata(DATA.title, metadata.getTitle(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting title", e);
         }
 
         try {
-            addStringMetadata(AccessVocabulary.SUBJECT, metadata.getSubject(), result);
+            addStringMetadata(DATA.subject, metadata.getSubject(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting subject", e);
         }
 
         try {
-            addStringMetadata(AccessVocabulary.GENERATOR, metadata.getCreator(), result);
+            addStringMetadata(DATA.generator, metadata.getCreator(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting creator", e);
         }
 
         try {
-            addStringMetadata(AccessVocabulary.GENERATOR, metadata.getProducer(), result);
+            addStringMetadata(DATA.generator, metadata.getProducer(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting producer", e);
         }
 
         try {
-            addCalendarMetadata(AccessVocabulary.CREATION_DATE, metadata.getCreationDate(), result);
+            addCalendarMetadata(DATA.created, metadata.getCreationDate(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting creation date", e);
         }
 
         try {
-            addCalendarMetadata(AccessVocabulary.DATE, metadata.getModificationDate(), result);
+            addCalendarMetadata(DATA.date, metadata.getModificationDate(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting modification date", e);
@@ -156,7 +156,7 @@ public class PdfExtractor implements Extractor {
         try {
             int nrPages = document.getNumberOfPages();
             if (nrPages >= 0) {
-                result.add(AccessVocabulary.PAGE_COUNT, nrPages);
+                result.add(DATA.pageCount, nrPages);
             }
         }
         catch (Exception e) {
@@ -170,7 +170,7 @@ public class PdfExtractor implements Extractor {
                 while (tokenizer.hasMoreTokens()) {
                     String keyword = tokenizer.nextToken();
                     if (keyword != null) {
-                        result.add(AccessVocabulary.KEYWORD, keyword);
+                        result.add(DATA.keyword, keyword);
                     }
                 }
             }

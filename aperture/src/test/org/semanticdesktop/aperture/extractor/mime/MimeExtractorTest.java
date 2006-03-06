@@ -8,12 +8,12 @@ package org.semanticdesktop.aperture.extractor.mime;
 
 import java.io.IOException;
 
-import org.semanticdesktop.aperture.accessor.AccessVocabulary;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class MimeExtractorTest extends ExtractorTestBase {
 
@@ -24,11 +24,11 @@ public class MimeExtractorTest extends ExtractorTestBase {
 		SesameRDFContainer container = extract(DOCS_PATH + "mail-thunderbird-1.5.eml", extractor);
 
 		// check the extraction results
-		checkStatement(AccessVocabulary.FULL_TEXT, "test body", container);
-		checkStatement(AccessVocabulary.TITLE, "test subject", container);
-		checkStatement(AccessVocabulary.DATE, "2006", container);
+		checkStatement(DATA.fullText, "test body", container);
+		checkStatement(DATA.title, "test subject", container);
+		checkStatement(DATA.date, "2006", container);
 
-		assertEquals("email:christiaan.fluit@aduna.biz", container.getURI(AccessVocabulary.FROM).toString());
-		assertEquals("email:Christiaan.Fluit@aduna.biz", container.getURI(AccessVocabulary.TO).toString());
+		assertEquals("email:christiaan.fluit@aduna.biz", container.getURI(DATA.from).toString());
+		assertEquals("email:Christiaan.Fluit@aduna.biz", container.getURI(DATA.to).toString());
 	}
 }
