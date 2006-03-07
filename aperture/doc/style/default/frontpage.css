@@ -1,0 +1,122 @@
+/*
+ Parts of this style-sheet are copied from the 
+ css Zen Garden submission 164 - 'Chien', by Alex Miller, http://www.pixul.net/ 
+ http://www.csszengarden.com/?cssfile=/164/164.css&page=2
+ 
+ css released under Creative Commons License - http://creativecommons.org/licenses/by-nc-sa/1.0/ 
+*/
+
+@import url(../w3-html40-recommended.css);
+
+html, body, div, ul, ol, p, li {
+	margin: 0;
+	border: 0;
+	padding: 0;
+}
+
+html {
+	background-image: url(img/background.gif);
+	font-family: verdana, arial, serif;
+	font-size: 82%;
+	line-height: 120%;
+	color: #333;
+}
+
+body {
+	background-image: url(img/containerbackground.gif);
+	background-repeat: repeat-y;
+	width: 590px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 0 38px 0 37px;
+}
+
+ul, ol, p {
+	padding: 0 12px 10px 12px;
+}
+
+ul, ol {
+	list-style-position: outside;
+	padding-left: 16px;
+	margin-left: 0px;
+}
+
+li {
+	margin-left: 15px;
+	margin-bottom: 8px;
+}
+
+h2 {
+	margin: 20px 0 15px 0;
+	padding: 0;
+	text-align: center;
+	font-size: 130%;
+}
+
+a:link {
+	text-decoration: none;
+	color: #CC0000;
+}
+	
+a:visited {
+	text-decoration: none;
+	color: #CC6666;
+}
+	
+a:hover {
+	text-decoration: underline;
+	color: #CC0000;
+}
+
+#header {
+	color: #d88;
+	background-color: rgb(156,26,0);
+	padding: 20px;
+	margin-bottom: 20px;
+}
+
+#header h1 {
+ 	color: #eaa;
+}
+
+#content {
+	float: left;
+	width: 389px;
+}
+
+#content h2 {
+	text-align:center;
+	color: #ffffff;
+	background-image: url(img/bgheader-content.png);
+	background-position: left;
+	height: 28px;
+	padding-top: 6px;
+}
+
+#sideBar {
+	float: right;
+	width: 192px;
+}
+
+#sideBar h2 {
+	background-color: #f7b356;
+	color: #fff;
+	background-image: url(img/bgheader-sidebar.png);
+	background-position: left;
+	height: 28px;
+	padding-top: 6px;
+}
+
+#preamble {
+	font-size: 82%;
+	color: #996666;
+}
+
+#footer {
+	clear: both;
+	border-top: 1px solid #999;
+	padding: 6px 0 6px 0;
+	background-color: #FFF;
+	font-weight: bold;
+	text-align: center;
+}
