@@ -471,15 +471,15 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 </description>
 
 <description>
-	<mimeType>application/x-aduna-license-file</mimeType>
-	<extensions>alf</extensions>
-	<magicNumber encoding="string">ALF</magicNumber>
+	<mimeType>application/winhlp</mimeType>
+	<extensions>hlp</extensions>
+	<magicNumber encoding="string">?_</magicNumber>
 </description>
 
 <description>
-	<mimeType>application/x-ms-registry</mimeType>
-	<extensions>reg</extensions>
-	<magicNumber encoding="string">regf</magicNumber>
+	<mimeType>application/x-chm</mimeType>
+	<extensions>chm</extensions>
+	<magicNumber encoding="string">ITSF</magicNumber>
 </description>
 
 <!-- ================== Executables and similar stuff ================== -->
@@ -636,6 +636,12 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<magicNumber encoding="hex">46 57 53</magicNumber>
 </description>
 
+<description>
+	<mimeType>application/x-ogg</mimeType>
+	<extensions>ogg</extensions>
+	<magicNumber encoding="string">OggS</magicNumber>
+</description>
+
 <!-- ================== RIFF-based Types ================== -->
 <!-- (see http://www.udayton.edu/~cps/faculty/jloomis/cps592B/asgn/asgn1/riff.html        -->
 <!-- and http://www.opensource.apple.com/darwinsource/10.3/file-1/file/magic/Magdir/riff) -->
@@ -662,6 +668,20 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<mimeType>video/x-msvideo</mimeType>
 	<extensions>avi</extensions>
 	<magicNumber encoding="hex" offset="8">41 56 49 20</magicNumber>
+</description>
+
+<!-- ================== Miscellaneous Types ================== -->
+
+<description>
+	<mimeType>application/x-aduna-license-file</mimeType>
+	<extensions>alf</extensions>
+	<magicNumber encoding="string">ALF</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/x-ms-registry</mimeType>
+	<extensions>reg</extensions>
+	<magicNumber encoding="string">regf</magicNumber>
 </description>
 
 </mimeTypes>

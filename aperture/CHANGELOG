@@ -38,3 +38,12 @@ important functional changes:
   a SSL connection.
 
 - Considerably extended documentation and example code.
+
+----------------------------------
+Next version
+----------------------------------
+
+- added MIME type detection for the following formats:
+  - Windows Help files
+  - Compiled HTML Help format (.chm files)
+  - Ogg Vorbis media files
