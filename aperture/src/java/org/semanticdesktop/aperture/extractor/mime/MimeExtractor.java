@@ -11,11 +11,13 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Date;
 
+import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.Message.RecipientType;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -34,6 +36,11 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
  * The main purpose of this class is to process mails that are stored as .eml-files, as mails originating from
  * a mail server are typically already completely processed (i.e., a structured DataObject is returned rather
  * than a FileDataObject whose stream has to be processed).
+ * 
+ * <p>
+ * Furthermore, this class can also handle web archives in MHTML style (.mht files), as created by Internet
+ * Explorer and Mozilla/Firefox (using the Mozilla Archive Format plugin), which have a similar MIME
+ * structure.
  * 
  * <p>
  * Only typical body parts are processed during full-text extraction, (binary) attachments are not handled.
@@ -63,10 +70,16 @@ public class MimeExtractor implements Extractor {
 				}
 			}
 
-			copyAddress(message.getFrom(), DATA.from, result);
-			copyAddress(message.getRecipients(RecipientType.TO), DATA.to, result);
-			copyAddress(message.getRecipients(RecipientType.CC), DATA.cc, result);
-			copyAddress(message.getRecipients(RecipientType.BCC), DATA.bcc, result);
+			try {
+				copyAddress(message.getFrom(), DATA.from, result);
+			}
+			catch (AddressException e) {
+				// ignore
+			}
+
+			copyAddress(getRecipients(message, RecipientType.TO), DATA.to, result);
+			copyAddress(getRecipients(message, RecipientType.CC), DATA.cc, result);
+			copyAddress(getRecipients(message, RecipientType.BCC), DATA.bcc, result);
 
 			Date date = MailUtil.getDate(message);
 			if (date != null) {
@@ -149,6 +162,19 @@ public class MimeExtractor implements Extractor {
 		}
 
 		return null;
+	}
+
+	private Address[] getRecipients(MimeMessage message, RecipientType type) throws MessagingException {
+		Address[] result = null;
+
+		try {
+			result = message.getRecipients(type);
+		}
+		catch (AddressException e) {
+			// ignore
+		}
+
+		return result;
 	}
 
 	private void copyAddress(Object address, URI predicate, RDFContainer result) {

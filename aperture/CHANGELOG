@@ -43,7 +43,11 @@ important functional changes:
 Next version
 ----------------------------------
 
+improvements:
 - added MIME type detection for the following formats:
   - Windows Help files
   - Compiled HTML Help format (.chm files)
   - Ogg Vorbis media files
+  
+bugfixes:
+- [ 1445641 ] MimeExtractors cannot process MHTML files
