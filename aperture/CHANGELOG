@@ -50,4 +50,5 @@ improvements:
   - Ogg Vorbis media files
   
 bugfixes:
+- [ 1444917 ] PlainTextExtractor ignores ByteOrderMarks
 - [ 1445641 ] MimeExtractors cannot process MHTML files
