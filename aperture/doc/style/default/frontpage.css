@@ -53,6 +53,10 @@ h2 {
 	font-size: 130%;
 }
 
+img {
+	border: 0;
+}
+
 a:link {
 	text-decoration: none;
 	color: #CC0000;
