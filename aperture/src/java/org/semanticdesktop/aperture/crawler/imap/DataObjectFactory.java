@@ -213,6 +213,7 @@ public class DataObjectFactory {
 
 			String fileName = mailPart.getFileName();
 			if (fileName != null) {
+				fileName = MimeUtility.decodeWord(fileName);
 				result.put(DATA.name, fileName);
 			}
 		}
