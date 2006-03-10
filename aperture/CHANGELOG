@@ -49,6 +49,9 @@ improvements:
   - Compiled HTML Help format (.chm files)
   - Ogg Vorbis media files
 - improved MIME type detection of MHTML files (web archives)
+- introduced HtmlParserUtil, containing large parts of the HtmlExtractor
+  implementation, as HTML (fragments) may occur in other document types as
+  well (e.g. saved mails, see MimeExtractor)
   
 bugfixes:
 - [ 1444917 ] PlainTextExtractor ignores ByteOrderMarks
