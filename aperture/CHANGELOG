@@ -48,6 +48,7 @@ improvements:
   - Windows Help files
   - Compiled HTML Help format (.chm files)
   - Ogg Vorbis media files
+- improved MIME type detection of MHTML files (web archives)
   
 bugfixes:
 - [ 1444917 ] PlainTextExtractor ignores ByteOrderMarks

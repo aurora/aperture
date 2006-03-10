@@ -391,7 +391,7 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 
 <description>
 	<mimeType>message/rfc822</mimeType>
-	<extensions>eml</extensions>
+	<extensions>eml,mht,mhtml</extensions>
 	<magicNumber encoding="string">Return-Path:</magicNumber>
 	<magicNumber encoding="string">From:</magicNumber>
 	<magicNumber encoding="string">Forward to</magicNumber>
