@@ -213,7 +213,12 @@ public class DataObjectFactory {
 
 			String fileName = mailPart.getFileName();
 			if (fileName != null) {
-				fileName = MimeUtility.decodeWord(fileName);
+				try {
+					fileName = MimeUtility.decodeWord(fileName);
+				}
+				catch (MessagingException e) {
+					// happens on unencoded file names! so just ignore it and leave the file name as it is
+				}
 				result.put(DATA.name, fileName);
 			}
 		}
