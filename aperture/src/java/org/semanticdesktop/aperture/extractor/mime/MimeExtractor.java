@@ -23,6 +23,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeUtility;
 
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.extractor.Extractor;
@@ -100,9 +101,25 @@ public class MimeExtractor implements Extractor {
 	private void processContent(Object content, StringBuffer buffer) throws MessagingException, IOException {
 		if (content instanceof String) {
 			buffer.append(content);
+			buffer.append(' ');
 		}
 		else if (content instanceof BodyPart) {
 			BodyPart bodyPart = (BodyPart) content;
+
+			// append the file name, if any
+			String fileName = bodyPart.getFileName();
+			if (fileName != null) {
+				try {
+					fileName = MimeUtility.decodeWord(fileName);
+				}
+				catch (MessagingException e) {
+					// happens on unencoded file names! so just ignore it and leave the file name as it is
+				}
+				buffer.append(fileName);
+				buffer.append(' ');
+			}
+			
+			// append the content, if any
 			content = bodyPart.getContent();
 
 			// remove any html markup if necessary
