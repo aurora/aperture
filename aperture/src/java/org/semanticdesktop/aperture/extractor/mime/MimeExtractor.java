@@ -6,10 +6,12 @@
  */
 package org.semanticdesktop.aperture.extractor.mime;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.Iterator;
 
 import javax.mail.Address;
 import javax.mail.BodyPart;
@@ -25,6 +27,7 @@ import javax.mail.internet.MimeMessage;
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
+import org.semanticdesktop.aperture.extractor.util.HtmlParserUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.MailUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
@@ -55,7 +58,7 @@ public class MimeExtractor implements Extractor {
 
 			// extract the full-text
 			StringBuffer buffer = new StringBuffer(10000);
-			extractText(message.getContent(), buffer);
+			processContent(message.getContent(), buffer);
 			String text = buffer.toString().trim();
 			if (text.length() > 0) {
 				result.add(DATA.fullText, text);
@@ -94,53 +97,90 @@ public class MimeExtractor implements Extractor {
 		}
 	}
 
-	private void extractText(Object content, StringBuffer buffer) throws MessagingException, IOException {
+	private void processContent(Object content, StringBuffer buffer) throws MessagingException, IOException {
+		if (content instanceof String) {
+			buffer.append(content);
+		}
+		else if (content instanceof BodyPart) {
+			BodyPart bodyPart = (BodyPart) content;
+			content = bodyPart.getContent();
 
-		if (content instanceof Multipart) {
-			// FIXME: recursively search for the first text/plain part, will work better on certain more
-			// complicated mails
-			Multipart multiContent = (Multipart) content;
-			if (isMultipartAlternative(multiContent)) {
-				int idx = getPartWithMimeType(multiContent, "text/plain");
-
-				if (idx < 0) {
-					// FIXME: we should parse this html, perhaps move HtmlExtractor's code to a utility class?
-					idx = getPartWithMimeType(multiContent, "text/html");
-				}
-
-				if (idx >= 0) {
-					content = multiContent.getBodyPart(idx).getContent();
+			// remove any html markup if necessary
+			String contentType = bodyPart.getContentType();
+			if (contentType != null && content instanceof String) {
+				contentType = contentType.toLowerCase();
+				if (contentType.indexOf("text/html") >= 0) {
+					content = extractTextFromHtml((String) content);
 				}
 			}
-		}
 
-		if (content instanceof String) {
-			buffer.append((String) content);
-		}
-		else if (content instanceof InputStream) {
-			// ignore
+			processContent(content, buffer);
 		}
 		else if (content instanceof Multipart) {
-			Multipart multipartContent = (Multipart) content;
-			for (int i = 0; i < multipartContent.getCount(); i++) {
-				BodyPart part = multipartContent.getBodyPart(i);
-				Object partContent = part.getContent();
-				if (partContent instanceof String) {
-					buffer.append((String) partContent);
+			Multipart multipart = (Multipart) content;
+			String subType = null;
+
+			String contentType = multipart.getContentType();
+			if (contentType != null) {
+				ContentType ct = new ContentType(contentType);
+				subType = ct.getSubType();
+				if (subType != null) {
+					subType = subType.trim().toLowerCase();
 				}
+			}
+
+			if ("alternative".equals(subType)) {
+				handleAlternativePart(multipart, buffer);
+			}
+			else if ("signed".equals(subType)) {
+				handleProtectedPart(multipart, 0, buffer);
+			}
+			else if ("encrypted".equals(subType)) {
+				handleProtectedPart(multipart, 1, buffer);
+			}
+			else {
+				// handles multipart/mixed, /digest, /related, /parallel, /report and unknown subtypes
+				handleMixedPart(multipart, buffer);
 			}
 		}
 	}
 
-	private boolean isMultipartAlternative(Multipart multipart) throws MessagingException {
-		String contentType = multipart.getContentType();
-		if (contentType != null) {
-			ContentType ct = new ContentType(contentType);
-			return "multipart".equalsIgnoreCase(ct.getPrimaryType())
-					&& "alternative".equalsIgnoreCase(ct.getSubType());
+	private void handleAlternativePart(Multipart multipart, StringBuffer buffer) throws MessagingException,
+			IOException {
+		// find the first text/plain part or else the first text/html part
+		boolean isHtml = false;
+
+		int idx = getPartWithMimeType(multipart, "text/plain");
+		if (idx < 0) {
+			idx = getPartWithMimeType(multipart, "text/html");
+			isHtml = true;
 		}
 
-		return false;
+		if (idx >= 0) {
+			Object content = multipart.getBodyPart(idx).getContent();
+			if (content != null) {
+				if (content instanceof String && isHtml) {
+					content = extractTextFromHtml((String) content);
+				}
+
+				processContent(content, buffer);
+			}
+		}
+	}
+	
+	private void handleMixedPart(Multipart multipart, StringBuffer buffer) throws MessagingException,
+			IOException {
+		int count = multipart.getCount();
+		for (int i = 0; i < count; i++) {
+			processContent(multipart.getBodyPart(i), buffer);
+		}
+	}
+	
+	private void handleProtectedPart(Multipart multipart, int index, StringBuffer buffer)
+			throws MessagingException, IOException {
+		if (index < multipart.getCount()) {
+			processContent(multipart.getBodyPart(index), buffer);
+		}
 	}
 
 	private int getPartWithMimeType(Multipart multipart, String mimeType) throws MessagingException {
@@ -162,6 +202,39 @@ public class MimeExtractor implements Extractor {
 		}
 
 		return null;
+	}
+
+	private String extractTextFromHtml(String string) {
+		// parse the HTML and extract full-text and metadata
+		HtmlParserUtil.ContentExtractor extractor = new HtmlParserUtil.ContentExtractor();
+		InputStream stream = new ByteArrayInputStream(string.getBytes()); // default encoding, problematic?
+		try {
+			HtmlParserUtil.parse(stream, null, extractor);
+		}
+		catch (ExtractorException e) {
+			return "";
+		}
+
+		// append metadata and full-text to a string buffer
+		StringBuffer buffer = new StringBuffer(32 * 1024);
+		append(buffer, extractor.getTitle());
+		append(buffer, extractor.getAuthor());
+		append(buffer, extractor.getDescription());
+		Iterator keywords = extractor.getKeywords();
+		while (keywords.hasNext()) {
+			append(buffer, (String) keywords.next());
+		}
+		append(buffer, extractor.getText());
+
+		// return the buffer's content
+		return buffer.toString();
+	}
+
+	private void append(StringBuffer buffer, String text) {
+		if (text != null) {
+			buffer.append(text);
+			buffer.append(' ');
+		}
 	}
 
 	private Address[] getRecipients(MimeMessage message, RecipientType type) throws MessagingException {

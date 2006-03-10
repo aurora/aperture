@@ -17,7 +17,7 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class MimeExtractorTest extends ExtractorTestBase {
 
-	public void testExtraction() throws ExtractorException, IOException {
+	public void testMailExtraction() throws ExtractorException, IOException {
 		// apply the extractor on an example file
 		ExtractorFactory factory = new MimeExtractorFactory();
 		Extractor extractor = factory.get();
@@ -30,5 +30,26 @@ public class MimeExtractorTest extends ExtractorTestBase {
 
 		assertEquals("email:christiaan.fluit@aduna.biz", container.getURI(DATA.from).toString());
 		assertEquals("email:Christiaan.Fluit@aduna.biz", container.getURI(DATA.to).toString());
+	}
+	
+	public void testWebArchiveExtraction() throws ExtractorException, IOException {
+		testWebArchiveExtraction("mhtml-firefox.mht");
+		testWebArchiveExtraction("mhtml-internet-explorer.mht");
+	}
+	
+	public void testWebArchiveExtraction(String fileName) throws ExtractorException, IOException {
+		ExtractorFactory factory = new MimeExtractorFactory();
+		Extractor extractor = factory.get();
+		SesameRDFContainer container = extract(DOCS_PATH + fileName, extractor);
+		String fullText = container.getString(DATA.fullText);
+		
+		// check that relevant content was extracted
+		assertTrue(fullText.contains("Project name"));
+		assertTrue(fullText.contains("FAQ"));
+		assertTrue(fullText.contains("mailinglist"));
+
+		// check that HTML markup was removed
+		assertFalse(fullText.contains("<P>"));
+		assertFalse(fullText.contains("<p>"));
 	}
 }
