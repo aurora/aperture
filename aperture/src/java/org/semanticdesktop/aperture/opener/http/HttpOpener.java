@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum f?r K?nstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -24,17 +24,26 @@ public class HttpOpener implements DataOpener {
 			linuxopen(uri);
 		} else if (PlatformUtil.isWindows()) {
 			windowsopen(uri);
-		} else 
+		} else { 
 			//Hmm, so what OS is this then? 
 			throw new IOException("Unsupported OS:"+System.getProperty("os.name"));
 		}
+	}
+	
 	private void windowsopen(URI uri) throws IOException {
 		Runtime.getRuntime().exec( new String [] { "rundll32", "url.dll,FileProtocolHandler",uri.toString() });
 	}
-	private void linuxopen(URI uri) {
-		// TODO Auto-generated method stub
-		
 	
+	private void linuxopen(URI uri) throws IOException {
+		// TODO: I don't know how reliable this is. It's set correctly for kde/gnome on my machine :)
+		if (System.getenv("DESKTOP_SESSION").toLowerCase().contains("kde")) {			
+			//kde:		
+			Runtime.getRuntime().exec(new String [] { "kfmclient","exec",uri.toString()} );
+		} else {
+			//Default to gnome as it complains less if it's not running.
+			//gnome: 
+			Runtime.getRuntime().exec(new String [] { "gnome-open",uri.toString()} );
+		}		
 	}
 
 	private boolean macopen(URI url) {
