@@ -6,8 +6,10 @@
  */
 package org.semanticdesktop.aperture.opener.file;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
@@ -26,8 +28,9 @@ public class FileOpener implements DataOpener {
 			linuxopen(uri);
 		} else if (PlatformUtil.isWindows()) {
 			windowsopen(uri);
-		} else {
+		} else { 
 			//Hmm, so what OS is this then? 
+			throw new IOException("Unsupported OS:"+System.getProperty("os.name"));
 		}
 
 	}
@@ -44,9 +47,23 @@ public class FileOpener implements DataOpener {
 		return true;
 	}
 
-	private void windowsopen(URI uri) {
-		// TODO Auto-generated method stub
-		throw new Error("FileOpener:windowsopen not yet implemented.");
+	private void windowsopen(URI uri) throws IOException {
+		File f;
+		try {
+			f = new File(new java.net.URI(uri.toString()));
+		}
+		catch (URISyntaxException e) {
+			throw new IOException("Could not parse URI: "+uri.toString()+" - "+e);
+		}
+		System.err.println(f.toString());
+		if (f.isDirectory()) {
+			//TODO: 
+			Runtime.getRuntime().exec( new String [] { "cmd","/c","explorer", f.toString() });
+		} else {
+			
+			Runtime.getRuntime().exec(new String [] { "cmd","/c",f.toString() });
+		}
+		
 	}
 
 	private void linuxopen(URI uri) {
@@ -56,8 +73,17 @@ public class FileOpener implements DataOpener {
 	
 	public static void main(String args[]) throws IOException {
 		FileOpener f=new FileOpener();
-		f.open(new URIImpl("http://www.google.com"));
-		f.open(new URIImpl("file:///Users/grimnes/"));
+		if (PlatformUtil.isMac()) {
+			f.open(new URIImpl("file:///Users/"));
+			f.open(new URIImpl("file:///Users/"));
+		} else if (PlatformUtil.isWindows()) {
+			f.open(new URIImpl("file:/c:"));
+			f.open(new URIImpl("file:/c:/windows/win.ini"));
+		} else if (PlatformUtil.isLinux()) {
+			throw new Error("Not yet.");
+		} else {
+			throw new Error("What weirdass OS are you running?");
+		}
 	}
 
 }
