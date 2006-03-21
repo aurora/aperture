@@ -35,16 +35,14 @@ public class FileOpener implements DataOpener {
 
 	}
 	
-	private boolean macopen(URI url) {
+	private void macopen(URI url) throws IOException {
 		try {
 			Class macopener = Class.forName("com.apple.eio.FileManager");
 			Method m = macopener.getMethod("openURL",new Class[] {String.class});
 			m.invoke(null,new Object[] {url.toString()});
 		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
+			throw new IOException("Could not open file: "+url+" - "+e);
 		}
-		return true;
 	}
 
 	private File URI2File(URI uri) throws IOException {

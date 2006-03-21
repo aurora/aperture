@@ -41,21 +41,18 @@ public class HttpOpener implements DataOpener {
 			Runtime.getRuntime().exec(new String [] { "kfmclient","exec",uri.toString()} );
 		} else {
 			//Default to gnome as it complains less if it's not running.
-			//gnome: 
 			Runtime.getRuntime().exec(new String [] { "gnome-open",uri.toString()} );
 		}		
 	}
 
-	private boolean macopen(URI url) {
+	private void macopen(URI url) throws IOException {
 		try {
 			Class macopener = Class.forName("com.apple.eio.FileManager");
 			Method m = macopener.getMethod("openURL",new Class[] {String.class});
 			m.invoke(null,new Object[] {url.toString()});
 		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
+			throw new IOException("Could not open URI: "+url+" - "+e);
 		}
-		return true;
 	}
 	
 	public static void main(String args[]) throws IOException {
