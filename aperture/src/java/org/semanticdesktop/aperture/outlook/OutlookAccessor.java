@@ -102,9 +102,12 @@ public class OutlookAccessor implements DataAccessor {
 
                     // now that we now its previous last modified date, see if it has been modified
                     if (registeredDate == lastModified) {
+                    	log.finest(url+" not modified - reg:"+registeredDate);
                         // the file has not been modified
                         return null;
-                    }
+                    } else
+                    	log.finest(url+" was modified - reg:"+registeredDate+" new:"+lastModified );
+                    		
                 }
                 catch (NumberFormatException e) {
                     log.log(Level.WARNING, "illegal long: " + value, e);

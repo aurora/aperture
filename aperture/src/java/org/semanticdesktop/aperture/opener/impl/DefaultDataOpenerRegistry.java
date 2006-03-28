@@ -16,6 +16,8 @@ import java.util.Vector;
 import org.semanticdesktop.aperture.opener.DataOpenerFactory;
 import org.semanticdesktop.aperture.opener.DataOpenerRegistry;
 import org.semanticdesktop.aperture.opener.file.FileOpenerFactory;
+import org.semanticdesktop.aperture.opener.http.HttpOpener;
+import org.semanticdesktop.aperture.opener.http.HttpOpenerFactory;
 
 
 public class DefaultDataOpenerRegistry implements DataOpenerRegistry {
@@ -25,6 +27,7 @@ public class DefaultDataOpenerRegistry implements DataOpenerRegistry {
 	public DefaultDataOpenerRegistry() { 
 		openers=new HashSet();
 		openers.add(new FileOpenerFactory());
+		openers.add(new HttpOpenerFactory());
 	}
 	
 	public void add(DataOpenerFactory factory) {
