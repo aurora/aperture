@@ -9,6 +9,10 @@
 	 xmlns:a="&a;"
 	 xmlns:source_="&source_;"
 	 xmlns:rdfs="&rdfs;">
+<rdfs:Class rdf:about="&source_;AddressbookDataSource"
+	 rdfs:label="AddressbookDataSource">
+	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
+</rdfs:Class>
 <rdfs:Class rdf:about="&source_;DataSource"
 	 rdfs:label="DataSource">
 	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
@@ -41,6 +45,10 @@
 <rdfs:Class rdf:about="&source_;SubstringPattern"
 	 rdfs:label="SubstringPattern">
 	<rdfs:subClassOf rdf:resource="&source_;Pattern"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&source_;TaggingDataSource"
+	 rdfs:label="TaggingDataSource">
+	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
 </rdfs:Class>
 <rdfs:Class rdf:about="&source_;WebDataSource"
 	 rdfs:label="WebDataSource">
@@ -97,6 +105,13 @@
 	 rdfs:label="excludePattern">
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&source_;Pattern"/>
+</rdf:Property>
+<rdf:Property rdf:about="&source_;flavour"
+	 a:maxCardinality="1"
+	 rdfs:label="flavour">
+	<rdfs:comment>Some datasource have different flavours, for example the AddressbookDataSource has versions for Thunderbird, Mail.app, etc. This property specifies which one to use.</rdfs:comment>
+	<rdfs:domain rdf:resource="&source_;DataSource"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;hostname"
 	 a:maxCardinality="1"

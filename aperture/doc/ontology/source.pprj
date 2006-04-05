@@ -1,4 +1,4 @@
-; Tue Feb 28 13:49:36 CET 2006
+; Wed Apr 05 16:11:06 CEST 2006
 ; 
 ;+ (version "3.0")
 ;+ (build "Build 141")
@@ -20,9 +20,9 @@
 ([BROWSER_SLOT_NAMES] of  Property_List
 
 	(properties
-		[source_ProjectKB_Instance_65]
-		[source_ProjectKB_Instance_66]
-		[source_ProjectKB_Instance_67]))
+		[source_ProjectKB_Instance_56]
+		[source_ProjectKB_Instance_57]
+		[source_ProjectKB_Instance_58]))
 
 ([CLSES_TAB] of  Widget
 
@@ -493,26 +493,26 @@
 ([source_ProjectKB_Instance_55] of  Property_List
 )
 
+([source_ProjectKB_Instance_56] of  String
+
+	(name ":META-CLASS")
+	(string_value "%3ANAME"))
+
+([source_ProjectKB_Instance_57] of  String
+
+	(name ":INSTANCE-ANNOTATION")
+	(string_value "%3AANNOTATION-TEXT"))
+
+([source_ProjectKB_Instance_58] of  String
+
+	(name ":PAL-CONSTRAINT")
+	(string_value "%3APAL-NAME"))
+
 ([source_ProjectKB_Instance_6] of  Widget
 
 	(is_hidden TRUE)
 	(property_list [source_ProjectKB_Instance_7])
 	(widget_class_name "script.ProtegeScriptTab"))
-
-([source_ProjectKB_Instance_65] of  String
-
-	(name ":META-CLASS")
-	(string_value "%3ANAME"))
-
-([source_ProjectKB_Instance_66] of  String
-
-	(name ":INSTANCE-ANNOTATION")
-	(string_value "%3AANNOTATION-TEXT"))
-
-([source_ProjectKB_Instance_67] of  String
-
-	(name ":PAL-CONSTRAINT")
-	(string_value "%3APAL-NAME"))
 
 ([source_ProjectKB_Instance_7] of  Property_List
 )

@@ -62,6 +62,10 @@ public class FileSystemCrawler extends CrawlerBase {
 			return ExitCode.FATAL_ERROR;
 		}
 		File root = new File(rootFolder);
+		if (!root.exists()) {
+			LOGGER.log(Level.SEVERE,"root folder does not exist: '"+root+"'");
+			return ExitCode.FATAL_ERROR;
+		}
 
 		// determine the maximum depth
 		Integer i = ConfigurationUtil.getMaximumDepth(configuration);
@@ -78,7 +82,7 @@ public class FileSystemCrawler extends CrawlerBase {
 		// init some other params
 		params = new HashMap(2);
 		getAccessorFactory();
-
+		
 		// crawl the file tree
 		boolean crawlCompleted = crawlFileTree(root, maxDepth);
 

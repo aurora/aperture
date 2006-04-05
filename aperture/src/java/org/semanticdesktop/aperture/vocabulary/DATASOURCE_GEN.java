@@ -4,12 +4,17 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Feb 28 13:50:28 CET 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Apr 05 16:11:23 CEST 2006
  * input file: doc/ontology/source.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/source#
  */
 public class DATASOURCE_GEN {
 	public static final String NS = "http://aperture.semanticdesktop.org/ontology/source#";
+
+    /**
+     * Label: AddressbookDataSource 
+     */
+    public static final URI AddressbookDataSource = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#AddressbookDataSource");
 
     /**
      * Label: DataSource 
@@ -51,6 +56,11 @@ public class DATASOURCE_GEN {
      * Label: SubstringPattern 
      */
     public static final URI SubstringPattern = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#SubstringPattern");
+
+    /**
+     * Label: TaggingDataSource 
+     */
+    public static final URI TaggingDataSource = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#TaggingDataSource");
 
     /**
      * Label: WebDataSource 
@@ -111,6 +121,14 @@ public class DATASOURCE_GEN {
      * Range: Pattern 
      */
     public static final URI excludePattern = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#excludePattern");
+
+    /**
+     * Label: flavour 
+     * Comment: Some datasource have different flavours, for example the AddressbookDataSource has versions for Thunderbird, Mail.app, etc. This property specifies which one to use. 
+     * Domain: DataSource 
+     * Range: Literal 
+     */
+    public static final URI flavour = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#flavour");
 
     /**
      * Label: hostname 

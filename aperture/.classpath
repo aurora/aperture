@@ -18,5 +18,6 @@
 	<classpathentry kind="lib" path="lib/poi-scratchpad-rev-378471.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/openrdf-util-2.0-alpha-3.jar"/>
 	<classpathentry kind="lib" path="lib/jacob.jar"/>
+	<classpathentry kind="lib" path="lib/Demork.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>
