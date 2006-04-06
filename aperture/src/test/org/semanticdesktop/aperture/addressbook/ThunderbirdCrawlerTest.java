@@ -80,7 +80,7 @@ public class ThunderbirdCrawlerTest extends TestCase implements CrawlerHandler, 
 		
 		repository.export(new N3Writer(System.out));
 		
-		assertEquals(objects,180);
+		assertEquals(objects,179);
 		
 	}
 

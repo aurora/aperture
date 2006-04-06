@@ -15,11 +15,14 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.LiteralImpl;
@@ -41,10 +44,11 @@ import org.semanticdesktop.demork.database.Database;
 import org.semanticdesktop.demork.database.Row;
 import org.semanticdesktop.demork.database.Table;
 
+import sun.security.provider.MD5;
+
 
 /**
  * This is a crawler for the thunderbird address book. 
- * It generates URIs based on name+email
  * 
  * @author grimnes
  * $Id$
@@ -109,7 +113,7 @@ public class ThunderbirdCrawler extends AddressbookCrawler {
 		}
 		if (values.size()==0) return null;
 		
-		String uris=createURI();
+		String uris=createURI(row.id);
 		URI uri=new URIImpl(uris);
 		
 		RDFContainerFactory rdff = handler.getRDFContainerFactory(null,uris);
@@ -218,8 +222,8 @@ public class ThunderbirdCrawler extends AddressbookCrawler {
 		}
 	}
 
-	private String createURI() {
-		return THUNDERBIRD_URI_BASE+"Person:"+UUID.randomUUID();
+	private String createURI(String id) {
+		return THUNDERBIRD_URI_BASE+"Person:"+id;
 	}
 
 	// Private worker as we are trying to force UTF-8. 

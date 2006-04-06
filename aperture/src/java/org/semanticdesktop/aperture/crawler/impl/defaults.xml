@@ -13,4 +13,7 @@
 	<crawlerFactory>
 		<name>org.semanticdesktop.aperture.outlook.OutlookCrawlerFactory</name>
 	</crawlerFactory>
+	<crawlerFactory>
+		<name>org.semanticdesktop.aperture.addressbook.AddressbookCrawlerFactory</name>
+	</crawlerFactory>
 </crawlerFactories>

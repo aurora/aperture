@@ -13,4 +13,7 @@
 	<dataSourceFactory>
 		<name>org.semanticdesktop.aperture.outlook.OutlookDataSourceFactory</name>
 	</dataSourceFactory>
+	<dataSourceFactory>
+		<name>org.semanticdesktop.aperture.addressbook.AddressbookDataSourceFactory</name>
+	</dataSourceFactory>
 </dataSourceFactories>
