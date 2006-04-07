@@ -9,6 +9,7 @@ package org.semanticdesktop.aperture.datasource.config;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
@@ -37,6 +38,8 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
  * mechanism (e.g. TriX files).
  */
 public class ConfigurationUtil {
+	
+	static Logger LOGGER = Logger.getLogger(ConfigurationUtil.class.getName());
 
     private static final String BOUNDARY_CONTEXT_POSTFIX = "-DomainBoundariesContext";
 
@@ -237,6 +240,7 @@ public class ConfigurationUtil {
 	
 	                // skip in case of inappropriate values
 	                if (!(typeValue instanceof URI) || !(patternValue instanceof Literal)) {
+	                	LOGGER.config("type of boundary pattern not valid: "+typeValue);
 	                    continue;
 	                }
 	
@@ -254,9 +258,12 @@ public class ConfigurationUtil {
 	                    if (condition != null) {
 	                        result.add(new SubstringPattern(patternString, condition));
 	                    }
+	                    else
+	                    	LOGGER.config("cannot detect subtring pattern condition: "+conditionValue);
 	                }
 	                else {
-	                    // unknown type, silently ignore
+	                    // unknown type, ignore
+	                	LOGGER.config("type of boundary pattern not known: "+typeValue);
 	                }
 	            }
 	        }
@@ -286,16 +293,17 @@ public class ConfigurationUtil {
     }
 
     public static SubstringCondition resolveCondition(Value value) {
-        if (DATASOURCE.STARTS_WITH.equals(value)) {
+    	String comp = value.toString();
+        if (DATASOURCE.STARTS_WITH.toString().equals(comp)) {
             return new SubstringCondition.StartsWith();
         }
-        else if (DATASOURCE.ENDS_WITH.equals(value)) {
+        else if (DATASOURCE.ENDS_WITH.toString().equals(comp)) {
             return new SubstringCondition.EndsWith();
         }
-        else if (DATASOURCE.CONTAINS.equals(value)) {
+        else if (DATASOURCE.CONTAINS.toString().equals(comp)) {
             return new SubstringCondition.Contains();
         }
-        else if (DATASOURCE.DOES_NOT_CONTAIN.equals(value)) {
+        else if (DATASOURCE.DOES_NOT_CONTAIN.toString().equals(comp)) {
             return new SubstringCondition.DoesNotContain();
         }
         else {

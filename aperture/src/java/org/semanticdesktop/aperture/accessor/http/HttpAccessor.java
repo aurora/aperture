@@ -85,7 +85,14 @@ public class HttpAccessor implements DataAccessor {
             urlString = url.toExternalForm();
 
             // see if a date was registered for this url
-            Date ifModifiedSince = (accessData == null ) ? null : getIfModifiedSince(urlString, accessData);
+            // DO NOT USE ?:  -> will make nullpointer exception
+            Date ifModifiedSince;
+            if (accessData == null )
+            {
+            	ifModifiedSince = null;
+            }
+            else
+            	ifModifiedSince = getIfModifiedSince(urlString, accessData);
 
             // set up a connection (a HttpAccessor always has HttpURLConnections, else it's a bug)
             connection = createConnection(url, ifModifiedSince);

@@ -62,7 +62,7 @@ your copy of ANT at http://ant.apache.org/
 		
 		<!-- compilation flags -->		
 		<property name="compile.debug" value="true" />
-		<property name="compile.debuglevel" value="source,lines" />
+		<property name="compile.debuglevel" value="source,lines,var" />
 		<property name="compile.deprecation" value="false" />
 		<property name="compile.optimize" value="true" />
 		<property name="java.source.version" value="1.4" />
