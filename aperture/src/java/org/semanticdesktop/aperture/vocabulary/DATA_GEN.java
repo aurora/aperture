@@ -4,7 +4,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Feb 28 13:51:45 CET 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Apr 07 15:01:43 CEST 2006
  * input file: doc/ontology/data.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/data#
  */
@@ -125,6 +125,14 @@ content defaults to the value specified by the 'mimeType' property.
      * Range: Literal 
      */
     public static final URI creator = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#creator");
+
+    /**
+     * Label: dataSource 
+     * Comment: The datasource this data-object came from. 
+     * Domain: DataObject 
+     * Range: Resource 
+     */
+    public static final URI dataSource = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#dataSource");
 
     /**
      * Label: date 

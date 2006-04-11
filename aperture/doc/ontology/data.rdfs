@@ -109,6 +109,13 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
+<rdf:Property rdf:about="&data_;dataSource"
+	 a:maxCardinality="1"
+	 rdfs:comment="The datasource this data-object came from."
+	 rdfs:label="dataSource">
+	<rdfs:domain rdf:resource="&data_;DataObject"/>
+	<rdfs:range rdf:resource="&rdfs;Resource"/>
+</rdf:Property>
 <rdf:Property rdf:about="&data_;date"
 	 a:maxCardinality="1"
 	 rdfs:label="date">

@@ -6,45 +6,37 @@
  */
 package org.semanticdesktop.aperture.addressbook;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 import java.util.Vector;
-import java.util.logging.Logger;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.model.vocabulary.RDFS;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
-import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA_GEN;
 import org.semanticdesktop.aperture.vocabulary.VCARD;
 import org.semanticdesktop.demork.Demork;
+import org.semanticdesktop.demork.Utils;
 import org.semanticdesktop.demork.database.Cell;
 import org.semanticdesktop.demork.database.Database;
 import org.semanticdesktop.demork.database.Row;
 import org.semanticdesktop.demork.database.Table;
-
-import sun.security.provider.MD5;
 
 
 /**
@@ -78,13 +70,15 @@ public class ThunderbirdCrawler extends AddressbookCrawler {
 	public List crawlAddressbook() throws Exception {
 	
 		String abookFile=ConfigurationUtil.getBasepath(getDataSource().getConfiguration());
-		InputStream in=new FileInputStream(new File(abookFile));
-		
-		String mab = null;
-		
-		mab = readWholeFile(in);
-		
+
 		Demork demork=new Demork();
+		
+		String encoding=demork.getEncoding(abookFile);
+		
+		System.out.println(encoding);
+		
+		String mab = Utils.readWholeFileAsEncoding(abookFile,encoding);
+		
 		Database d = demork.inputMork(mab);
 		
 		List res=new Vector();
@@ -138,6 +132,8 @@ public class ThunderbirdCrawler extends AddressbookCrawler {
 			} else if (key.equals("LastName")) {
 				rdf.add(VCARD.nameFamily,new LiteralImpl(value));
 			} else if (key.equals("DisplayName")) {
+				// TODO: what if things don't have a fullname?
+				rdf.add(RDFS.LABEL,new LiteralImpl(value));
 				rdf.add(VCARD.fullname,new LiteralImpl(value));
 			} else if (key.equals("NickName")) {
 				rdf.add(VCARD.nameAdditional,new LiteralImpl(value));

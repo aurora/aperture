@@ -1,4 +1,4 @@
-; Sun Feb 26 19:53:27 CET 2006
+; Fri Apr 07 15:01:16 CEST 2006
 ; 
 ;+ (version "3.0")
 ;+ (build "Build 141")
@@ -20,9 +20,9 @@
 ([BROWSER_SLOT_NAMES] of  Property_List
 
 	(properties
-		[data_ProjectKB_Instance_10077]
-		[data_ProjectKB_Instance_10078]
-		[data_ProjectKB_Instance_10079]))
+		[data_ProjectKB_Instance_56]
+		[data_ProjectKB_Instance_57]
+		[data_ProjectKB_Instance_58]))
 
 ([CLSES_TAB] of  Widget
 
@@ -50,21 +50,6 @@
 	(is_hidden TRUE)
 	(property_list [data_ProjectKB_Instance_11])
 	(widget_class_name "edu.stanford.smi.protege.keywordsearch.StringSearch"))
-
-([data_ProjectKB_Instance_10077] of  String
-
-	(name ":META-CLASS")
-	(string_value "%3ANAME"))
-
-([data_ProjectKB_Instance_10078] of  String
-
-	(name ":INSTANCE-ANNOTATION")
-	(string_value "%3AANNOTATION-TEXT"))
-
-([data_ProjectKB_Instance_10079] of  String
-
-	(name ":PAL-CONSTRAINT")
-	(string_value "%3APAL-NAME"))
 
 ([data_ProjectKB_Instance_11] of  Property_List
 )
@@ -284,6 +269,21 @@
 
 ([data_ProjectKB_Instance_55] of  Property_List
 )
+
+([data_ProjectKB_Instance_56] of  String
+
+	(name ":META-CLASS")
+	(string_value "%3ANAME"))
+
+([data_ProjectKB_Instance_57] of  String
+
+	(name ":INSTANCE-ANNOTATION")
+	(string_value "%3AANNOTATION-TEXT"))
+
+([data_ProjectKB_Instance_58] of  String
+
+	(name ":PAL-CONSTRAINT")
+	(string_value "%3APAL-NAME"))
 
 ([data_ProjectKB_Instance_6] of  Widget
 
