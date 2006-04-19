@@ -30,4 +30,8 @@ public class MultipleValuesException extends RuntimeException {
     public URI getProperty() {
         return property;
     }
+
+	public String getMessage() {
+		return "MultipleValuesException, subject <"+subject+"> has multiple values for <"+property+">";
+	}
 }

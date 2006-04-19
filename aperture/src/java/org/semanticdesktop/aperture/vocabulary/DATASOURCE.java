@@ -31,5 +31,7 @@ public class DATASOURCE extends DATASOURCE_GEN {
     public static final Literal PLAIN = new LiteralImpl("plain", XMLSchema.STRING);
     
     public static final Literal SSL = new LiteralImpl("ssl", XMLSchema.STRING);
+    
+    public static final Literal SSL_NO_CERT = new LiteralImpl("ssl-no-cert", XMLSchema.STRING);
 }
 
