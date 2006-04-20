@@ -14,7 +14,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.security.Security;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import javax.net.SocketFactory;
@@ -144,6 +147,12 @@ public class CrawlerFrame extends JFrame {
                         // ignore
                     }
                 }
+                
+                //Give me full console logging.
+                Handler handler = new ConsoleHandler();
+                handler.setLevel(Level.ALL);
+                Logger.global.setLevel(Level.ALL);
+                Logger.getLogger("").addHandler(handler);
 
                 // set up a CrawlerFrame
                 CrawlerFrame frame = new CrawlerFrame();

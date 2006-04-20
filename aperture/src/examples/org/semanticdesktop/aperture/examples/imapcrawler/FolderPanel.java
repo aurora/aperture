@@ -154,7 +154,9 @@ public class FolderPanel extends JPanel {
             DefaultMutableTreeNode rootNode;
 
             try {
-                Folder rootFolder = store.getDefaultFolder();
+            //This is needed on many imap implementations.
+                //Folder rootFolder = store.getFolder("mail");
+                 Folder rootFolder = store.getDefaultFolder();
                 rootNode = createTree(rootFolder);
                 store.close();
 
