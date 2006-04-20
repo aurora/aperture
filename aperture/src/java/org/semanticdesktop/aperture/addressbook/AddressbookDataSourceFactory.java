@@ -6,8 +6,6 @@
  */
 package org.semanticdesktop.aperture.addressbook;
 
-import java.util.Collections;
-
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;

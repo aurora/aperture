@@ -7,16 +7,12 @@
 package org.semanticdesktop.aperture.opener.impl;
 
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.semanticdesktop.aperture.opener.DataOpenerFactory;
 import org.semanticdesktop.aperture.opener.DataOpenerRegistry;
 import org.semanticdesktop.aperture.opener.file.FileOpenerFactory;
-import org.semanticdesktop.aperture.opener.http.HttpOpener;
 import org.semanticdesktop.aperture.opener.http.HttpOpenerFactory;
 
 

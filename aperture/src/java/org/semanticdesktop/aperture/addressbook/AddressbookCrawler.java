@@ -9,33 +9,23 @@ package org.semanticdesktop.aperture.addressbook;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openrdf.model.BNode;
 import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.sesame.repository.Repository;
 import org.openrdf.util.iterator.CloseableIterator;
-import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
-import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
-import org.semanticdesktop.aperture.crawler.impl.DefaultCrawlerRegistry;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
 
 
 /**

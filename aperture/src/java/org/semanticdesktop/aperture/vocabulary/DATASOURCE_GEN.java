@@ -4,7 +4,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Apr 05 16:11:23 CEST 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Apr 19 16:06:16 CEST 2006
  * input file: doc/ontology/source.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/source#
  */
@@ -153,6 +153,14 @@ public class DATASOURCE_GEN {
      * Range: Literal 
      */
     public static final URI includeHiddenResources = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#includeHiddenResources");
+
+    /**
+     * Label: includeInbox 
+     * Comment: if this is true always include the inbox when crawling - regardless of the basepath setting. 
+     * Domain: IMAPDataSource 
+     * Range: Literal 
+     */
+    public static final URI includeInbox = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#includeInbox");
 
     /**
      * Label: includePattern 

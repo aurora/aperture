@@ -136,6 +136,14 @@
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
+<rdf:Property rdf:about="&source_;includeInbox"
+	 a:maxCardinality="1"
+	 a:range="boolean"
+	 rdfs:label="includeInbox">
+	<rdfs:comment>if this is true always include the inbox when crawling - regardless of the basepath setting.</rdfs:comment>
+	<rdfs:domain rdf:resource="&source_;IMAPDataSource"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
 <rdf:Property rdf:about="&source_;includePattern"
 	 a:maxCardinality="1"
 	 rdfs:comment="patterns to include in this datasource"

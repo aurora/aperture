@@ -10,19 +10,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.io.StringWriter;
+
+import junit.framework.TestCase;
 
 import org.openrdf.model.URI;
 import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.n3.N3Writer;
-import org.openrdf.rio.rdfxml.RDFXMLParser;
 import org.openrdf.rio.rdfxml.RDFXMLWriter;
 import org.openrdf.sesame.repository.Repository;
-import org.openrdf.sesame.sail.SailInitializationException;
 import org.openrdf.sesame.sailimpl.memory.MemoryStore;
-import org.openrdf.util.xml.XMLWriter;
-import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
@@ -35,8 +31,6 @@ import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
-
-import junit.framework.TestCase;
 
 
 public class ThunderbirdCrawlerTest extends TestCase implements CrawlerHandler, RDFContainerFactory {
