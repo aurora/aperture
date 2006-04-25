@@ -53,8 +53,9 @@ improvements:
   implementation, as HTML (fragments) may occur in other document types as
   well (e.g. saved mails, see MimeExtractor)
   
-bugfixes:
+bug fixes:
 - [ 1444917 ] PlainTextExtractor ignores ByteOrderMarks
 - [ 1445519 ] mails in non-western languages
 - [ 1445641 ] MimeExtractors cannot process MHTML files
 - [ 1445658 ] MimeExtractor should process HTML body parts
+- [ 1476150 ] ImapCrawler.getDataObject attempts to access a closed folder
