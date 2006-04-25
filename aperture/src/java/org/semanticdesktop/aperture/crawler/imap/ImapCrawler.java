@@ -749,16 +749,27 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			// one mentioned in the url patameter.
 			Folder folder = store.getFolder(baseFolder);
 
+			if (!folder.isOpen()) {
+				folder.open(Folder.READ_ONLY);
+			}
+						
 			// see if we need to process a folder or a message
 			int typeIndex = url.indexOf(";TYPE=");
 			if (typeIndex < 0) {
-				// determine the message UID
-				int separatorIndex = url.lastIndexOf(folder.getSeparator());
+				// determine the message UID: cutoff the ID part
+				int separatorIndex = url.lastIndexOf('/');
 				if (separatorIndex < 0 || separatorIndex >= url.length() - 1) {
 					throw new IllegalArgumentException("unable to get message UID from " + url);
 				}
 				String messageNumberString = url.substring(separatorIndex + 1);
+				
+				// remove the fragment identifier
+				separatorIndex = messageNumberString.indexOf('#');
+				if (separatorIndex > 0 && separatorIndex < messageNumberString.length() - 1) {
+					messageNumberString = messageNumberString.substring(0, separatorIndex);
+				}
 
+				// parse the remaining number string
 				long messageUID;
 				try {
 					messageUID = Long.parseLong(messageNumberString);
@@ -766,16 +777,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 				catch (NumberFormatException e) {
 					throw new IllegalArgumentException("illegal message UID: " + messageNumberString);
 				}
-				
-				// open the folder:
-				if (!folder.isOpen())
-					folder.open(Folder.READ_ONLY);
-				
 
-				// retrieve the message
+				// retrieve the message with this UID
 				MimeMessage message = (MimeMessage) ((UIDFolder) folder).getMessageByUID(messageUID);
 
-				// create a DataObject for this MimeMessage
+				// create a DataObject for the requested message or message part
 				return getObject(message, url, getURI(folder), source, accessData, containerFactory);
 			}
 			else {
