@@ -87,7 +87,7 @@ public class UtfUtil {
 	 * Returns the canonical charset name consistent with the specified Byte Order Mark.
 	 * 
 	 * @param byteOrderMark A Unicode Byte Order Mark.
-	 * @return A canonical charset name, 
+	 * @return A canonical charset name, or null when the Byte Order Mark was not recognized.
 	 */
 	public static String getCharsetName(byte[] byteOrderMark) {
 		if (Arrays.equals(byteOrderMark, UTF8_BOM)) {
