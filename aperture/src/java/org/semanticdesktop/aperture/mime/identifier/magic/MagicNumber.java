@@ -45,7 +45,7 @@ public class MagicNumber {
             return false;
         }
         
-        // chech the magic bytes
+        // check the magic bytes
         int realOffset = offset + skippedLeadingBytes;
         for (int i = 0; i < magicBytes.length; i++) {
             if (magicBytes[i] != bytes[i + realOffset]) {

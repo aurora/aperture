@@ -7,7 +7,7 @@
 COPYRIGHT
 =========
 
-Copyright (c) 2005 Aduna.
+Copyright (c) 2005 - 2006 Aduna.
 All rights reserved.
 
 Licensed under the Open Software License version 3.0.
@@ -50,15 +50,27 @@ Each description element has the following contents:
 
 * magicNumber: a byte sequence that is indicative for the described MIME type. There can be zero
   or more magicNumber elements.
+  
+* magicString: a character sequence that is indicative for the described MIME type. There can be zero
+  or more magicString elelements.
 
 The magicNumber element has the byte sequence as text content. The encoding is specified in the 
 mandatory encoding attribute. Use "hex" as encoding type to indicate that the element content
 contains the byte sequence in hexadecimal encoding, e.g. "ca fe ba be 00" (without the quotes).
 Use "string" as encoding type to indicate that the element content contains the bytes in UTF-8
-encoding, e.g. "PK" (without the quotes).
+encoding, e.g. "PK" (without the quotes) for the application/zip MIME type.
 
-The magicNumber element has an optional offset attribute, indicating the position in the binary
-stream where the sequence should occur. This attribute defaults to "0".
+The magicString element has a character sequence as text content. The difference between a magic
+number and a magic string is that magic numbers are always tested using byte comparisons, whereas
+the MIME type identifier may use some additional encoding interpretation to test for magic strings.
+This makes it possible to classify a file starting with "<html>" as a text/html file, regardless
+of whether the file is saved as ASCII, UTF-8 or UTF-16.
+
+The magicNumber element has an optional offset attribute, indicating the position
+in the binary stream where the sequence should occur. This attribute defaults to "0".
+
+The allowsLeadingWhiteSpace property is probably only meaningful for magic strings. Nevertheless,
+it can also be specified for magic bytes.
 
 It is possible to have multiple descriptions describing the same MIME type. This is for example
 necessary in the application/presentations case, which has multiple, mutually exclusive parent
@@ -68,23 +80,50 @@ types.
 ALGORITHM
 =========
 
+In short:
+
+- find a matching description:
+
+  - determine the list of descriptions without a parent type
+
+  - if UTF BOM detected: convert bytes to chars, loop over descriptions to find matching magic string
+  
+  - if no BOM detected or no match found: loop to find matching magic byte array
+  
+  - if still no match, find a description based on extension
+
+- when a match is found:
+
+  - repeat process on list of child descriptions. If this yields a result, this overrules the
+    previous match, else the previous match is returned.
+
+
+Detailed explanation:
+
 The MIME type of a resource is determined as follows.
 
-First, we determine the list of all descriptions that have no parent type and perform a double
-loop over it:
+First we determine the list of all descriptions that have no parent type, i.e. that are not dependent
+on another description.
 
-- The first loop tries to find a sequence with a matching magic number sequence.
+Then we test whether the specified bytes start with a UTF Byte Order Mark. If so, then the
+bytes are converted to characters according to this encoding, yielding a string. All descriptions
+found in the previous step are looped over to find whether any of them has a magic string that matches
+the constructed string. More precisely, it tests whether the magic string occurs at its specified
+offset in the constructed string.
 
-- In case there is no such description, we do a second loop to see if there is a description
-  with a matching file extension and, if so, return its MIME type. Else we return 'null'.
-  
-In case the first loop was successfull, we see if there are any descriptions whose parent
-type equal the found MIME type. If there are no such descriptions, we return the found MIME type.
-If there are "child descriptions", we recursively repeat the double loop procedure on these children.
-If this yields a MIME type, we return it, else the parent type is the best match and is determined.
+If this did not result in a matching description (either because the byte array did not start with a BOM
+or because there was no matching magic string), we perform the same loop, this time testing for magic
+numbers. Note that magic strings are also tested as magic numbers, the magic byte array used in
+that case is simply the byte representation of the magic string in UTF-8 encoding without a BOM.
 
-In case the second loop found a matching description, we return its MIME type, else we return
-'null'.
+If this also did not result in a matching description, a final loop is performed, testing on file name
+extension.
+
+When no description is found, 'null' is returned.
+
+When this process did find a matching description, the algorithm is recursively repeated on the list
+of descriptions whose parent type equal the found type. If this yields a result, the child type is
+returned, else the parent type is returned.
 
 
 LINKS
@@ -140,19 +179,19 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<mimeType>text/html</mimeType>
 	<extensions>html,htm,shtml,jsp,php,asp,xhtml</extensions>
 	<allowsLeadingWhiteSpace>true</allowsLeadingWhiteSpace>
-	<magicNumber encoding="string">&lt;HEAD</magicNumber>
-	<magicNumber encoding="string">&lt;head</magicNumber>
-	<magicNumber encoding="string">&lt;TITLE</magicNumber>
-	<magicNumber encoding="string">&lt;title</magicNumber>
-	<magicNumber encoding="string">&lt;!doctype HTML</magicNumber>
-	<magicNumber encoding="string">&lt;!DOCTYPE HTML</magicNumber>
-	<magicNumber encoding="string">&lt;!--</magicNumber>
-	<magicNumber encoding="string">&lt;html</magicNumber>
-	<magicNumber encoding="string">&lt;HTML</magicNumber>
-	<magicNumber encoding="string">&lt;BODY</magicNumber>
-	<magicNumber encoding="string">&lt;body</magicNumber>
-	<magicNumber encoding="string">&lt;h1></magicNumber>
-	<magicNumber encoding="string">&lt;H1></magicNumber>
+	<magicString>&lt;HEAD</magicString>
+	<magicString>&lt;head</magicString>
+	<magicString>&lt;TITLE</magicString>
+	<magicString>&lt;title</magicString>
+	<magicString>&lt;!doctype HTML</magicString>
+	<magicString>&lt;!DOCTYPE HTML</magicString>
+	<magicString>&lt;!--</magicString>
+	<magicString>&lt;html</magicString>
+	<magicString>&lt;HTML</magicString>
+	<magicString>&lt;BODY</magicString>
+	<magicString>&lt;body</magicString>
+	<magicString>&lt;h1></magicString>
+	<magicString>&lt;H1></magicString>
 </description>
 
 <!-- ================== OpenOffice 1.x/StarOffice 6.x-7.x Types ================== -->
@@ -392,8 +431,11 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 <description>
 	<mimeType>message/rfc822</mimeType>
 	<extensions>eml,mht,mhtml</extensions>
+	
+	<!-- note: magic numbers, not magic strings: MIME messages are always in US-ASCII -->
 	<magicNumber encoding="string">Return-Path:</magicNumber>
 	<magicNumber encoding="string">From:</magicNumber>
+	<magicNumber encoding="string">Date:</magicNumber>
 	<magicNumber encoding="string">Forward to</magicNumber>
 	<magicNumber encoding="string">Pipe to</magicNumber>
 	<magicNumber encoding="string">Relay-Version:</magicNumber>
@@ -426,7 +468,7 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 
 <description>
 	<mimeType>text/plain</mimeType>
-	<extensions>txt,1st,me,text,ans,asc,csv,faq,c,h,tex,latex,pv,log</extensions>
+	<extensions>txt,1st,me,text,ans,asc,csv,tsv,faq,c,h,tex,latex,pv,log</extensions>
 </description>
 
 <description>
@@ -449,7 +491,7 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 <description>
 	<mimeType>text/xml</mimeType>
 	<extensions>xml,xslt,wml</extensions>
-	<magicNumber encoding="string">&lt;xml</magicNumber>
+	<magicString>&lt;?xml</magicString>
 </description>
 
 <description>
@@ -499,36 +541,36 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 <description>
 	<mimeType>application/x-sh</mimeType>
 	<extensions>sh</extensions>
-	<magicNumber encoding="string">#!/bin/sh</magicNumber>
-	<magicNumber encoding="string">#!/usr/bin/sh</magicNumber>
+	<magicString>#!/bin/sh</magicString>
+	<magicString>#!/usr/bin/sh</magicString>
 </description>
 
 <description>
 	<mimeType>application/x-csh</mimeType>
 	<extensions>csh</extensions>
-	<magicNumber encoding="string">#!/bin/csh</magicNumber>
-	<magicNumber encoding="string">#!/usr/bin/csh</magicNumber>
+	<magicString>#!/bin/csh</magicString>
+	<magicString>#!/usr/bin/csh</magicString>
 </description>
 
 <description>
 	<mimeType>application/x-bash</mimeType>
 	<extensions>bash</extensions>
-	<magicNumber encoding="string">#!/bin/bash</magicNumber>
-	<magicNumber encoding="string">#!/usr/bin/bash</magicNumber>
+	<magicString>#!/bin/bash</magicString>
+	<magicString>#!/usr/bin/bash</magicString>
 </description>
 
 <description>
 	<mimeType>application/x-ksh</mimeType>
 	<extensions>ksh</extensions>
-	<magicNumber encoding="string">#!/bin/ksh</magicNumber>
-	<magicNumber encoding="string">#!/usr/bin/ksh</magicNumber>
+	<magicString>#!/bin/ksh</magicString>
+	<magicString>#!/usr/bin/ksh</magicString>
 </description>
 
 <description>
 	<mimeType>application/x-tsh</mimeType>
 	<extensions>tsh</extensions>
-	<magicNumber encoding="string">#!/bin/tsh</magicNumber>
-	<magicNumber encoding="string">#!/usr/bin/tsh</magicNumber>
+	<magicString>#!/bin/tsh</magicString>
+	<magicString>#!/usr/bin/tsh</magicString>
 </description>
 
 <!-- ================== Image Types ================== -->

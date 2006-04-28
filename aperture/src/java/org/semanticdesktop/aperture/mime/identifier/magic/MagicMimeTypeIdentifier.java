@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -23,6 +23,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.openrdf.model.URI;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.util.ResourceUtil;
+import org.semanticdesktop.aperture.util.UtfUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -45,7 +46,7 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 	public MagicMimeTypeIdentifier() {
 		this(MIME_TYPES_RESOURCE);
 	}
-	
+
 	public MagicMimeTypeIdentifier(String definitionsResource) {
 		readDescriptions(definitionsResource);
 		setRequiringTypes();
@@ -102,6 +103,7 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 		String mimeType = null;
 		String parentType = null;
 		ArrayList extensions = new ArrayList();
+		ArrayList magicStrings = new ArrayList();
 		ArrayList magicNumbers = new ArrayList();
 		boolean allowsLeadingWhiteSpace = false;
 
@@ -145,14 +147,6 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 				}
 			}
 
-			// handle magicNumber elements
-			else if ("magicNumber".equals(tagName)) {
-				MagicNumber number = createMagicNumber((Element) childNode, mimeType);
-				if (number != null) {
-					magicNumbers.add(number);
-				}
-			}
-
 			// handle allowsLeadingWhiteSpace element
 			else if ("allowsLeadingWhiteSpace".equals(tagName)) {
 				Node valueNode = childNode.getFirstChild();
@@ -161,6 +155,16 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 					allowsLeadingWhiteSpace = Boolean.parseBoolean(text);
 				}
 			}
+
+			// handle magicNumber elements
+			else if ("magicNumber".equals(tagName)) {
+				createMagicNumber((Element) childNode, mimeType, magicNumbers);
+			}
+
+			// handle magicString elements
+			else if ("magicString".equals(tagName)) {
+				createMagicString((Element) childNode, mimeType, magicStrings, magicNumbers);
+			}
 		}
 
 		// create the resulting MimeTypeDescription
@@ -168,21 +172,21 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 			return null;
 		}
 		else {
-			return new MimeTypeDescription(mimeType, parentType, extensions, magicNumbers,
+			return new MimeTypeDescription(mimeType, parentType, extensions, magicStrings, magicNumbers,
 					allowsLeadingWhiteSpace);
 		}
 	}
 
-	private MagicNumber createMagicNumber(Element element, String mimeType) {
+	private void createMagicNumber(Element element, String mimeType, ArrayList magicNumbers) {
 		byte[] magicBytes = null;
 
 		// extract info from the specified element
 		Node firstChild = element.getFirstChild();
 		if (firstChild == null) {
-			LOGGER.log(Level.WARNING, "missing element content in " + mimeType + " description");
-			return null;
+			LOGGER.log(Level.WARNING, "missing magicNumber content in " + mimeType + " description");
+			return;
 		}
-		
+
 		String numberString = firstChild.getNodeValue();
 		String encodingString = element.getAttribute("encoding").trim();
 		String offsetString = element.getAttribute("offset").trim();
@@ -194,8 +198,8 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 				offset = Integer.parseInt(offsetString);
 			}
 			catch (NumberFormatException e) {
-				LOGGER.warning("illegal offset: " + offsetString);
-				return null;
+				LOGGER.warning("illegal offset: " + offsetString + ", ignoring magic number");
+				return;
 			}
 		}
 
@@ -236,7 +240,7 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 				}
 				else {
 					LOGGER.warning("illegal hexadecimal char: " + c);
-					return null;
+					return;
 				}
 
 				// take the value of two consecutive hexadecimal chars together to form a byte
@@ -251,11 +255,48 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 		}
 		else {
 			LOGGER.log(Level.WARNING, "unknown or empty encoding: " + encodingString);
-			return null;
+			return;
 		}
 
 		// create the resulting MagicNumber
-		return new MagicNumber(magicBytes, offset);
+		magicNumbers.add(new MagicNumber(magicBytes, offset));
+	}
+
+	private void createMagicString(Element element, String mimeType, ArrayList magicStrings,
+			ArrayList magicNumbers) {
+		// extract info from the specified element
+		Node firstChild = element.getFirstChild();
+		if (firstChild == null) {
+			LOGGER.log(Level.WARNING, "missing magicString content in " + mimeType + " description");
+			return;
+		}
+
+		String magicString = firstChild.getNodeValue();
+
+		// register the magic string
+		magicStrings.add(new MagicString(magicString.toCharArray()));
+
+		// register as magic bytes, to be used as a fallback
+		try {
+			// convert to bytes
+			byte[] bytes = magicString.getBytes("UTF-8");
+
+			// make sure it does not start with a BOM
+			byte[] bom = UtfUtil.findMatchingBOM(bytes);
+			if (bom != null) {
+				int remainingLength = bytes.length - bom.length;
+				byte[] newBytes = new byte[remainingLength];
+				System.arraycopy(bytes, bom.length, newBytes, 0, remainingLength);
+				bytes = newBytes;
+			}
+
+			// register the magic number
+			magicNumbers.add(new MagicNumber(bytes, 0));
+		}
+		catch (UnsupportedEncodingException e) {
+			// no support for UTF-8 is clearly an error: bail out immediately
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void setRequiringTypes() {
@@ -309,6 +350,15 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 				MagicNumber number = (MagicNumber) numbers.get(j);
 				minArrayLength = Math.max(minArrayLength, number.getMinimumLength());
 			}
+
+			// loop over all its MagicStrings
+			ArrayList strings = description.getMagicStrings();
+			int nrStrings = strings.size();
+			for (int j = 0; j < nrStrings; j++) {
+				MagicString string = (MagicString) strings.get(j);
+				// assuming a UTF-16 file, we'd need two bytes per char + 2 for the BOM
+				minArrayLength = Math.max(minArrayLength, string.getMinimumLength() * 2 + 2);
+			}
 		}
 	}
 
@@ -317,6 +367,31 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 	}
 
 	public String identify(byte[] firstBytes, String fileName, URI uri) {
+		// see if the file is some kind of UTF file
+		char[] firstChars = null;
+		byte[] bom = UtfUtil.findMatchingBOM(firstBytes);
+		if (bom != null) {
+			// remove the Byte Order Mark from firstBytes: improves String.toCharArray output and also
+			// improved magic number testing later on, when magic string testing fails
+			int contentLength = firstBytes.length - bom.length;
+			byte[] contentBytes = new byte[contentLength];
+			System.arraycopy(firstBytes, bom.length, contentBytes, 0, contentLength);
+			firstBytes = contentBytes;
+
+			// create a character representation of the bytes
+			String charset = UtfUtil.getCharsetName(bom);
+			if (charset != null) {
+				try {
+					String string = new String(firstBytes, charset);
+					firstChars = string.toCharArray();
+
+				}
+				catch (UnsupportedEncodingException e) {
+					// ignore, just continue
+				}
+			}
+		}
+
 		// determine a file name extension that we can use as a fallback if type detection based on
 		// content cannot be performed or is incomplete (most notably the MS Office file types)
 		String extension = fileName;
@@ -338,7 +413,16 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 		}
 
 		// now traverse the MimeTypeDescription tree to find a matching MIME type
-		return identify(firstBytes, extension, mimeTypeDescriptions);
+		String mimeType = identify(firstChars, firstBytes, extension, mimeTypeDescriptions);
+
+		// if we could not find a matching description but a UTF BOM was found, the least we know is that it's
+		// a textual format
+		if (mimeType == null && bom != null) {
+			return "text/plain";
+		}
+		else {
+			return mimeType;
+		}
 	}
 
 	private String removeFragment(char separatorChar, String input) {
@@ -354,18 +438,35 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 		return result;
 	}
 
-	private String identify(byte[] firstBytes, String extension, ArrayList descriptions) {
+	private String identify(char[] firstChars, byte[] firstBytes, String extension, ArrayList descriptions) {
+		if (firstChars != null) {
+			// loop over the specified list of descriptions
+			int nrDescriptions = descriptions.size();
+			for (int i = 0; i < nrDescriptions; i++) {
+				MimeTypeDescription description = (MimeTypeDescription) descriptions.get(i);
+
+				// see if this description has a matching magic string
+				if (description.matches(firstChars)) {
+					// we found at least one matching mime type.
+					// see if it is overrules by any of the requiring mime type descriptions
+					ArrayList requiringTypes = description.getRequiringTypes();
+					String overrulingResult = identify(firstChars, firstBytes, extension, requiringTypes);
+					return overrulingResult == null ? description.getMimeType() : overrulingResult;
+				}
+			}
+		}
+
 		// loop over the specified list of descriptions
 		int nrDescriptions = descriptions.size();
 		for (int i = 0; i < nrDescriptions; i++) {
 			MimeTypeDescription description = (MimeTypeDescription) descriptions.get(i);
 
 			// see if this description has a matching magic number
-			if (description.hasMatchingMagicNumber(firstBytes)) {
+			if (description.matches(firstBytes)) {
 				// we found at least one matching mime type.
 				// see if it is overrules by any of the requiring mime type descriptions
 				ArrayList requiringTypes = description.getRequiringTypes();
-				String overrulingResult = identify(firstBytes, extension, requiringTypes);
+				String overrulingResult = identify(firstChars, firstBytes, extension, requiringTypes);
 				return overrulingResult == null ? description.getMimeType() : overrulingResult;
 			}
 		}

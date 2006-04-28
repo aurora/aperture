@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -76,6 +76,16 @@ public class TestMagicMimeTypeIdentifier extends ApertureTestBase {
 		checkMimeType("microsoft-word-2000-with-wrong-file-extension.pdf", "application/vnd.ms-office",
 			identifier);
 		checkMimeType("html-handwritten-with-wrong-file-extension.txt", "text/html", identifier);
+
+		// The ultimate test: a HTML file using UTF-16 that starts with white space and has a non-HTML file
+		// extension. Regular magic number checking would fail due to the UTF-16 Byte Order Mark and the 2
+		// byte encoding of the individual chars, meaning that it must use the magic string heuristic to
+		// correctly identify this file.
+		checkMimeType("html-utf16-leading-whitespace-wrong-extension.doc", "text/html", identifier);
+
+		// one more crucial test: check that an xml file with a UTF-8 BOM and a missing file extension is
+		// classified correctly
+		checkMimeType("xml-utf8-bom", "text/xml", identifier);
 	}
 
 	private void checkMimeType(String resourceName, String mimeType, MimeTypeIdentifier identifier)

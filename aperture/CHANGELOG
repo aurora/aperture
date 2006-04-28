@@ -55,6 +55,7 @@ improvements:
   
 bug fixes:
 - [ 1444917 ] PlainTextExtractor ignores ByteOrderMarks
+- [ 1444926 ] MagicMimeTypeIdentifier cannot handle text files with BOMs
 - [ 1445519 ] mails in non-western languages
 - [ 1445641 ] MimeExtractors cannot process MHTML files
 - [ 1445658 ] MimeExtractor should process HTML body parts
