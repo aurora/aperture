@@ -4,7 +4,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Apr 19 16:06:16 CEST 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Apr 28 18:55:08 CEST 2006
  * input file: doc/ontology/source.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/source#
  */

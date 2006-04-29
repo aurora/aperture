@@ -106,6 +106,8 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
         Repository repository = crawlerHandler.getRepository();
 
+        checkStatement(toURI(tmpDir), DATA.rootFolderOf, dataSource.getID(),repository);
+        
         checkStatement(toURI(tmpFile1), DATA.name, new LiteralImpl(tmpFile1.getName()), repository);
         checkStatement(toURI(tmpFile2), DATA.name, new LiteralImpl(tmpFile2.getName()), repository);
         checkStatement(toURI(subDir), DATA.name, new LiteralImpl(subDir.getName()), repository);

@@ -291,14 +291,15 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		DataObject folderObject=null;
 		boolean crawled=false;
 		
-		// skip if the folder is empty
+		// crawl messages if folder contains them
 		if (holdsMessages(folder)) {
 			LOGGER.info("crawling messages in folder \"" + folder.getName() + "\"");
 			folderObject=crawlMessageFolder(folder);
 			crawled=true;
 		}
 		
-		// folders can contain both folders and messages under some imap implementations
+		// folders can contain both folders and messages under some imap implementations 
+		// craw folders if folder contains them
 		if (holdsFolders(folder)) {
 			LOGGER.info("crawling folders in folder \""+folder.getName()+"\"");
 			folderObject=crawlFolderFolder(folder, folderObject, depth);
@@ -972,6 +973,12 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			if (holdsFolders(folder)) accessData.put(url, SUBFOLDERS_KEY, getSubFoldersString(folder));
 		}
 
+		// if this is the base folder add some meta-data
+		// Does this work I wonder? :) 
+		if (folder.getName().equals(baseFolder)) {
+			metadata.add(DATA.rootFolderOf,source.getID());
+		}
+		
 		// create the resulting FolderDataObject instance
 		return new FolderDataObjectBase(folderURI, source, metadata);
 	}

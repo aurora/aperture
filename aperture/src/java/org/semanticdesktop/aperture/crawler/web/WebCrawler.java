@@ -99,6 +99,8 @@ public class WebCrawler extends CrawlerBase {
      */
     private HashSet crawledUrls;
 
+	private int inititalDepth;
+
     public void setMimeTypeIdentifier(MimeTypeIdentifier mimeTypeIdentifier) {
         this.mimeTypeIdentifier = mimeTypeIdentifier;
     }
@@ -139,6 +141,8 @@ public class WebCrawler extends CrawlerBase {
         Integer integer = ConfigurationUtil.getMaximumDepth(configuration);
         int crawlDepth = integer == null ? Integer.MAX_VALUE : integer.intValue();
 
+        inititalDepth=crawlDepth;
+        
         integer = ConfigurationUtil.getMaximumByteSize(configuration);
         maxByteSize = integer == null ? Integer.MAX_VALUE : integer.intValue();
 
@@ -251,6 +255,13 @@ public class WebCrawler extends CrawlerBase {
                     }
                     // we have a new or changed object
                     else {
+                    	
+                    	  // if this is the root URI, add that metadata
+                    	  if (depth == inititalDepth) {
+                    		  dataObject.getMetadata().add(DATA.rootFolderOf,source.getID());
+                    	  }
+                    	
+                    	
                         // Make sure that the URI of the created DataObject is also registered as a
                         // crawled URL, rather than only the original URL we started with. The data
                         // accessor may for example follow redirections and we don't want to report the

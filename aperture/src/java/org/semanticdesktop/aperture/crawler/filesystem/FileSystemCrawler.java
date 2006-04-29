@@ -27,6 +27,7 @@ import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * A Crawler implementation for crawling file system sources modeled by a FileSystemDataSource.
@@ -48,6 +49,8 @@ public class FileSystemCrawler extends CrawlerBase {
 	private DataAccessorFactory accessorFactory;
 
 	private HashMap params;
+	
+	private File root; 
 
 	protected ExitCode crawlObjects() {
 		// fetch the source and its configuration
@@ -61,7 +64,7 @@ public class FileSystemCrawler extends CrawlerBase {
 			LOGGER.log(Level.SEVERE, "missing root folder");
 			return ExitCode.FATAL_ERROR;
 		}
-		File root = new File(rootFolder);
+		root = new File(rootFolder);
 		if (!root.exists()) {
 			LOGGER.log(Level.SEVERE,"root folder does not exist: '"+root+"'");
 			return ExitCode.FATAL_ERROR;
@@ -200,7 +203,10 @@ public class FileSystemCrawler extends CrawlerBase {
 		try {
 			DataObject dataObject = accessor.getDataObjectIfModified(url, source, accessData, params,
 				containerFactory);
-
+			// If this is the root folder, add that info to the metadata
+			if (file.equals(root)) {
+				dataObject.getMetadata().add(DATA.rootFolderOf,source.getID());
+			}
 			if (dataObject == null) {
 				// the object was not modified
 				handler.objectNotModified(this, url);
