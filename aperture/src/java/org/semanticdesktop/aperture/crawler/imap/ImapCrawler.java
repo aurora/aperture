@@ -98,8 +98,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	private String password;
 
 	private String connectionType;
-	
-	private boolean ignoreSSLCertificates=false;
+
+	private boolean ignoreSSLCertificates = false;
 
 	private String baseFolder;
 
@@ -143,11 +143,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		boolean fatalError = false;
 
 		try {
-			crawlFolder(store.getFolder(baseFolder),0);
-			
-			// The inbox is a magic folder - include it if config option set. 
-			if (includeInbox) 
-				crawlFolder(store.getFolder("INBOX"),0);
+			crawlFolder(store.getFolder(baseFolder), 0);
+
+			// The inbox is a magic folder - include it if config option set.
+			if (includeInbox)
+				crawlFolder(store.getFolder("INBOX"), 0);
 		}
 		catch (MessagingException e) {
 			fatalError = true;
@@ -187,27 +187,27 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		userName = ConfigurationUtil.getUsername(config);
 		password = ConfigurationUtil.getPassword(config);
 		baseFolder = ConfigurationUtil.getBasepath(config);
-		
+
 		Boolean includeInboxB = config.getBoolean(DATASOURCE.includeInbox);
-		if (includeInboxB==null) 
-			includeInbox=false;
-		else 
-			includeInbox=includeInboxB.booleanValue();
-		
+		if (includeInboxB == null)
+			includeInbox = false;
+		else
+			includeInbox = includeInboxB.booleanValue();
+
 		Integer maxDepthI = ConfigurationUtil.getMaximumDepth(config);
-		
-		if (maxDepthI==null) 
-			maxDepth=-1;
-		else 
-			maxDepth=maxDepthI.intValue();
-		
+
+		if (maxDepthI == null)
+			maxDepth = -1;
+		else
+			maxDepth = maxDepthI.intValue();
 
 		// determine the connection type
 		String securityType = ConfigurationUtil.getConnectionSecurity(config);
 		if (securityType == null || DATASOURCE.PLAIN.toString().equals(securityType)) {
 			connectionType = "imap";
 		}
-		else if (DATASOURCE.SSL.toString().equals(securityType) || DATASOURCE.SSL_NO_CERT.toString().equals(securityType)) {
+		else if (DATASOURCE.SSL.toString().equals(securityType)
+				|| DATASOURCE.SSL_NO_CERT.toString().equals(securityType)) {
 			connectionType = "imaps";
 		}
 		else {
@@ -215,9 +215,9 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		}
 
 		if (DATASOURCE.SSL_NO_CERT.toString().equals(securityType)) {
-			ignoreSSLCertificates=true;
+			ignoreSSLCertificates = true;
 		}
-		
+
 		// determine the maximum byte size
 		Integer maximumSize = ConfigurationUtil.getMaximumByteSize(config);
 		if (maximumSize == null) {
@@ -242,9 +242,9 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 			if (ignoreSSLCertificates) {
 				properties.setProperty("mail.imaps.socketFactory.class", NaiveSocketFactory.class.getName());
-	            properties.setProperty("mail.imaps.socketFactory.fallback", "false");
+				properties.setProperty("mail.imaps.socketFactory.fallback", "false");
 			}
-			
+
 			// copy all extra registered session properties
 			if (sessionProperties != null) {
 				Enumeration keys = sessionProperties.elements();
@@ -265,7 +265,12 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		}
 	}
 
-	private void closeConnection() {
+	/**
+	 * Closes any connections this ImapCrawler may have to an IMAP server. Afterwards, the InputStream of any
+	 * returned FileDataObjects may no longer be accessible. Invoking this method when no connections are open
+	 * has no effect.
+	 */
+	public void closeConnection() {
 		if (store != null && store.isConnected()) {
 			try {
 				store.close();
@@ -277,8 +282,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	}
 
 	private void crawlFolder(Folder folder, int depth) throws MessagingException {
-			
-
 		// skip if the folder does not exist
 		if (folder == null || !folder.exists()) {
 			LOGGER.info("folder does not exist: \"" + baseFolder + "\"");
@@ -288,26 +291,26 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			LOGGER.info("crawling folder \"" + baseFolder + "\"");
 		}
 
-		DataObject folderObject=null;
-		boolean crawled=false;
-		
+		DataObject folderObject = null;
+		boolean crawled = false;
+
 		// crawl messages if folder contains them
 		if (holdsMessages(folder)) {
 			LOGGER.info("crawling messages in folder \"" + folder.getName() + "\"");
-			folderObject=crawlMessageFolder(folder);
-			crawled=true;
+			folderObject = crawlMessageFolder(folder);
+			crawled = true;
 		}
-		
-		// folders can contain both folders and messages under some imap implementations 
+
+		// folders can contain both folders and messages under some imap implementations
 		// craw folders if folder contains them
 		if (holdsFolders(folder)) {
-			LOGGER.info("crawling folders in folder \""+folder.getName()+"\"");
-			folderObject=crawlFolderFolder(folder, folderObject, depth);
-			crawled=true;
+			LOGGER.info("crawling folders in folder \"" + folder.getName() + "\"");
+			folderObject = crawlFolderFolder(folder, folderObject, depth);
+			crawled = true;
 		}
-		
-		if (!crawled) { 
-			LOGGER.info("Folder container neither folders nor messages: \""+folder.getName()+"\"");
+
+		if (!crawled) {
+			LOGGER.info("Folder container neither folders nor messages: \"" + folder.getName() + "\"");
 		}
 		if (folder.isOpen()) {
 			// close the folder without deleting expunged messages
@@ -317,6 +320,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 	/**
 	 * Does this folder hold messages?
+	 * 
 	 * @param folder
 	 * @return boolean
 	 * @throws MessagingException
@@ -327,6 +331,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 	/**
 	 * Does this folder hold other folders?
+	 * 
 	 * @param folder
 	 * @return boolean
 	 * @throws MessagingException
@@ -337,69 +342,74 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 	/**
 	 * Crawl a folders subfolder
+	 * 
 	 * @param folder - the folder to crawl
 	 * @param folderObject - the DataObject, if this folder already contained messages
-	 * @param depth - the current depth 
+	 * @param depth - the current depth
 	 * @return the dataobject
 	 * @throws MessagingException
 	 */
-	private DataObject crawlFolderFolder(Folder folder, DataObject folderObject,int depth) {
-		
-		if (depth+1 > maxDepth && maxDepth>0) {
-			LOGGER.info("Reached crawling depth limit ("+maxDepth+") - stopping.");
+	private DataObject crawlFolderFolder(Folder folder, DataObject folderObject, int depth) {
+
+		if (depth + 1 > maxDepth && maxDepth > 0) {
+			LOGGER.info("Reached crawling depth limit (" + maxDepth + ") - stopping.");
 			return null;
 		}
-		
+
 		try {
-		
-			if (folderObject==null) {
+
+			if (folderObject == null) {
 				// if this folder wasn't already crawled by message crawling..
-				
+
 				// report the folder's metadata
-				String folderUrl=getURIPrefix(folder) + ";TYPE=LIST";;
+				String folderUrl = getURIPrefix(folder) + ";TYPE=LIST";
+				;
 				RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, folderUrl);
-				try { 
+				try {
 					folderObject = getObject(folder, folderUrl, source, accessData, containerFactory);
-				} catch (MessagingException e) {
+				}
+				catch (MessagingException e) {
 					// just log this exception and continue, perhaps the messages can still be accessed
 					LOGGER.log(Level.WARNING, "Exception while crawling folder " + folderUrl, e);
-				} 
-				
+				}
+
 				if (folderObject == null) {
 					// folder was not modified. Do NOT use reportNotModified: we do not want to register all
 					// children as unmodified as well, as they will be investigated independently below
 					crawlReport.increaseUnchangedCount();
 					handler.objectNotModified(this, folderUrl);
 					deprecatedUrls.remove(folderUrl);
-				} else {
+				}
+				else {
 					// report this object as a new object (assumption: objects are always new, never
 					// changed, since mails are immutable)
 					crawlReport.increaseNewCount();
 					handler.objectNew(this, folderObject);
 				}
 			}
-			
-			Folder[]subFolders=folder.list();
-			LOGGER.fine("Crawling "+subFolders.length+" sub-folders.");
-			for (int i=0;i<subFolders.length;i++) {
-					try {
-						crawlFolder(subFolders[i],depth+1);
-					}
-					catch (MessagingException e) {
-						LOGGER.info("Error crawling subFolder \""+subFolders[i].getName()+"\"");
-						//but continue..
-					}
+
+			Folder[] subFolders = folder.list();
+			LOGGER.fine("Crawling " + subFolders.length + " sub-folders.");
+			for (int i = 0; i < subFolders.length; i++) {
+				try {
+					crawlFolder(subFolders[i], depth + 1);
+				}
+				catch (MessagingException e) {
+					LOGGER.info("Error crawling subFolder \"" + subFolders[i].getName() + "\"");
+					// but continue..
+				}
 			}
 		}
 		catch (MessagingException e) {
-			LOGGER.log(Level.INFO,"Exception while crawling folder for subFolders: ",e);
+			LOGGER.log(Level.INFO, "Exception while crawling folder for subFolders: ", e);
 		}
 		return folderObject;
-				
+
 	}
 
 	/**
 	 * Crawl a folder containing messages
+	 * 
 	 * @param folder
 	 * @return the dataobject created or null
 	 * @throws MessagingException
@@ -420,13 +430,13 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			if (folderObject == null) {
 				// folder was not modified. Do NOT use reportNotModified: we do not want to register all
 				// children as unmodified as well, as they will be investigated independently below
-				//crawlReport.increaseUnchangedCount();
-				//handler.objectNotModified(this, folderUrl);
-				//deprecatedUrls.remove(folderUrl);
-				
-				// This should be ok - it reports all children MESSAGES as unchanged. 
+				// crawlReport.increaseUnchangedCount();
+				// handler.objectNotModified(this, folderUrl);
+				// deprecatedUrls.remove(folderUrl);
+
+				// This should be ok - it reports all children MESSAGES as unchanged.
 				// children folders will be dealt with later, if they exist.
-				reportNotModified(folderUrl); 
+				reportNotModified(folderUrl);
 			}
 			else {
 				// report this object as a new object (assumption: objects are always new, never
@@ -445,7 +455,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		return null;
 
 	}
-	
+
 	private String getURIPrefix(Folder folder) throws MessagingException {
 		StringBuffer buffer = new StringBuffer(100);
 		URLName url = store.getURLName();
@@ -516,8 +526,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		Message[] messages = folder.getMessages();
 		String messagePrefix = getURIPrefix(folder) + "/";
 
-		LOGGER.fine("Crawling "+messages.length+" messages from folder "+folder.getName());
-		
+		LOGGER.fine("Crawling " + messages.length + " messages from folder " + folder.getName());
+
 		// determine the set of messages we haven't seen yet (this will also include all messages skipped
 		// because they were too large, but ok). The getObject method will also perform this check, but
 		// skipping them upfront will let us prevent prefetching the content info for old messages:
@@ -753,7 +763,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			if (!folder.isOpen()) {
 				folder.open(Folder.READ_ONLY);
 			}
-						
+
 			// see if we need to process a folder or a message
 			int typeIndex = url.indexOf(";TYPE=");
 			if (typeIndex < 0) {
@@ -763,7 +773,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 					throw new IllegalArgumentException("unable to get message UID from " + url);
 				}
 				String messageNumberString = url.substring(separatorIndex + 1);
-				
+
 				// remove the fragment identifier
 				separatorIndex = messageNumberString.indexOf('#');
 				if (separatorIndex > 0 && separatorIndex < messageNumberString.length() - 1) {
@@ -794,9 +804,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			IOException ioe = new IOException();
 			ioe.initCause(e);
 			throw ioe;
-		}
-		finally {
-			closeConnection();
 		}
 	}
 
@@ -869,55 +876,61 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 		// check if the folder has changed
 		if (accessData != null) {
-			
-			int unchanged=-1;
-			
+
+			int unchanged = -1;
+
 			if (holdsMessages(folder)) {
-			
+
 				String nextUIDString = accessData.get(url, NEXT_UID_KEY);
 				String sizeString = accessData.get(url, SIZE_KEY);
 				if (nextUIDString != null && sizeString != null) {
-					
+
 					try {
 						// parse stored information
 						long nextUID = Long.parseLong(nextUIDString);
 						long size = Integer.parseInt(sizeString);
-						
+
 						// determine new information
 						messages = folder.getMessages();
-						
+
 						// compare
-						if (nextUID == imapFolder.getUIDNext() && size == messages.length) unchanged=1;
-					} catch (NumberFormatException e) {
-						LOGGER.log(Level.WARNING, "exception while parsing access data, ingoring access data", e);
+						if (nextUID == imapFolder.getUIDNext() && size == messages.length)
+							unchanged = 1;
 					}
-				} else { unchanged=0; }
-						
+					catch (NumberFormatException e) {
+						LOGGER.log(Level.WARNING,
+							"exception while parsing access data, ingoring access data", e);
+					}
+				}
+				else {
+					unchanged = 0;
+				}
+
 			}
-			
-			if (holdsFolders(folder) && unchanged!=0) {
+
+			if (holdsFolders(folder) && unchanged != 0) {
 				String subFolders = accessData.get(url, SUBFOLDERS_KEY);
-				
+
 				if (subFolders != null) {
-					
-					//no need to check this - folder.list returns [] for message-folders.
+
+					// no need to check this - folder.list returns [] for message-folders.
 					String latestSubfolders = getSubFoldersString(folder);
-					if ( subFolders.equals(latestSubfolders)) {
-						unchanged=1;
+					if (subFolders.equals(latestSubfolders)) {
+						unchanged = 1;
 					}
-				} 
+				}
 			}
-			
-			if (unchanged==1) {
+
+			if (unchanged == 1) {
 				// the folder contents have not changed, we can return immediately
-				LOGGER.fine("Folder \""+folder.getName()+"\" is unchanged.");
+				LOGGER.fine("Folder \"" + folder.getName() + "\" is unchanged.");
 				return null;
 			}
-			
+
 		}
 
-		LOGGER.fine("Folder \""+folder.getName()+"\" is new or has changes.");
-		
+		LOGGER.fine("Folder \"" + folder.getName() + "\" is new or has changes.");
+
 		// register the folder's name
 		URI folderURI = new URIImpl(url);
 		RDFContainer metadata = containerFactory.getRDFContainer(folderURI);
@@ -931,22 +944,22 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 		// add message URIs as children
 		String uriPrefix = getURIPrefix(folder) + "/";
-		
+
 		if (holdsMessages(folder)) {
 			if (messages == null) {
 				messages = folder.getMessages();
 			}
-			
+
 			// for faster access, prefetch all message UIDs and flags
 			FetchProfile profile = new FetchProfile();
 			profile.add(UIDFolder.FetchProfileItem.UID); // needed for message.getUID
 			profile.add(FetchProfile.Item.FLAGS); // needed for isAcceptable (DELETED)
 			profile.add(FetchProfile.Item.ENVELOPE); // needed for isAcceptable (size check)
 			folder.fetch(messages, profile);
-			
+
 			for (int i = 0; i < messages.length; i++) {
 				MimeMessage message = (MimeMessage) messages[i];
-				
+
 				if (isAcceptable(message)) {
 					long messageID = imapFolder.getUID(message);
 					URI messageURI = new URIImpl(uriPrefix + messageID);
@@ -970,15 +983,16 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 				accessData.put(url, NEXT_UID_KEY, String.valueOf(imapFolder.getUIDNext()));
 				accessData.put(url, SIZE_KEY, String.valueOf(messages.length));
 			}
-			if (holdsFolders(folder)) accessData.put(url, SUBFOLDERS_KEY, getSubFoldersString(folder));
+			if (holdsFolders(folder))
+				accessData.put(url, SUBFOLDERS_KEY, getSubFoldersString(folder));
 		}
 
 		// if this is the base folder add some meta-data
-		// Does this work I wonder? :) 
+		// Does this work I wonder? :)
 		if (folder.getName().equals(baseFolder)) {
-			metadata.add(DATA.rootFolderOf,source.getID());
+			metadata.add(DATA.rootFolderOf, source.getID());
 		}
-		
+
 		// create the resulting FolderDataObject instance
 		return new FolderDataObjectBase(folderURI, source, metadata);
 	}
@@ -1005,80 +1019,78 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 		return buffer.toString();
 	}
-	
-	
+
 	/**
 	 * This is a socket factory that ignores ssl certificates.
 	 * 
-	 * @author grimnes
-	 * $Id$
+	 * @author grimnes $Id$
 	 */
 	public static class NaiveSocketFactory extends SSLSocketFactory {
 
-        private SSLSocketFactory factory;
+		private SSLSocketFactory factory;
 
-        public NaiveSocketFactory() {
-            try {
-                SSLContext sslcontext = SSLContext.getInstance("TLS");
+		public NaiveSocketFactory() {
+			try {
+				SSLContext sslcontext = SSLContext.getInstance("TLS");
 
-                                
-                sslcontext.init(null, new TrustManager[] { new NaiveTrustManager() }, null);
-                factory = (SSLSocketFactory) sslcontext.getSocketFactory();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+				sslcontext.init(null, new TrustManager[] { new NaiveTrustManager() }, null);
+				factory = (SSLSocketFactory) sslcontext.getSocketFactory();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 
-        public static SocketFactory getDefault() {
-            return new NaiveSocketFactory();
-        }
+		public static SocketFactory getDefault() {
+			return new NaiveSocketFactory();
+		}
 
-        public Socket createSocket(Socket socket, String host, int port, boolean flag) throws IOException {
-            return factory.createSocket(socket, host, port, flag);
-        }
+		public Socket createSocket(Socket socket, String host, int port, boolean flag) throws IOException {
+			return factory.createSocket(socket, host, port, flag);
+		}
 
-        public Socket createSocket(InetAddress address, int port, InetAddress localAddress, int localPort)
-                throws IOException {
-            return factory.createSocket(address, port, localAddress, localPort);
-        }
+		public Socket createSocket(InetAddress address, int port, InetAddress localAddress, int localPort)
+				throws IOException {
+			return factory.createSocket(address, port, localAddress, localPort);
+		}
 
-        public Socket createSocket(InetAddress host, int port) throws IOException {
-            return factory.createSocket(host, port);
-        }
+		public Socket createSocket(InetAddress host, int port) throws IOException {
+			return factory.createSocket(host, port);
+		}
 
-        public Socket createSocket(String host, int port, InetAddress localHost, int localPort)
-                throws IOException {
-            return factory.createSocket(host, port, localHost, localPort);
-        }
+		public Socket createSocket(String host, int port, InetAddress localHost, int localPort)
+				throws IOException {
+			return factory.createSocket(host, port, localHost, localPort);
+		}
 
-        public Socket createSocket(String host, int port) throws IOException {
-            return factory.createSocket(host, port);
-        }
+		public Socket createSocket(String host, int port) throws IOException {
+			return factory.createSocket(host, port);
+		}
 
-        public String[] getDefaultCipherSuites() {
-            return factory.getDefaultCipherSuites();
-        }
+		public String[] getDefaultCipherSuites() {
+			return factory.getDefaultCipherSuites();
+		}
 
-        public String[] getSupportedCipherSuites() {
-            return factory.getSupportedCipherSuites();
-        }
-        private class NaiveTrustManager implements X509TrustManager {
+		public String[] getSupportedCipherSuites() {
+			return factory.getSupportedCipherSuites();
+		}
+
+		private class NaiveTrustManager implements X509TrustManager {
 
 			public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-				//accept everything
+			// accept everything
 			}
 
 			public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-				//accept everything
+			// accept everything
 			}
 
 			public X509Certificate[] getAcceptedIssuers() {
 				// TODO Auto-generated method stub
 				return null;
 			}
-        	
-        }
 
-    }
+		}
+
+	}
 }
