@@ -60,3 +60,4 @@ bug fixes:
 - [ 1445641 ] MimeExtractors cannot process MHTML files
 - [ 1445658 ] MimeExtractor should process HTML body parts
 - [ 1476150 ] ImapCrawler.getDataObject attempts to access a closed folder
+- [ 1480416 ] IOExceptions using ImapCrawler.getDataObject output
