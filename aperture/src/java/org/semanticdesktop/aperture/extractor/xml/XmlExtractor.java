@@ -6,9 +6,14 @@
  */
 package org.semanticdesktop.aperture.extractor.xml;
 
+import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -28,15 +33,62 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class XmlExtractor implements Extractor {
 
+	private static final Logger LOGGER = Logger.getLogger(XmlExtractor.class.getName());
+
+	private static final int BUFFER_SIZE = 8192;
+
 	public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
 			throws ExtractorException {
 		try {
+			// make sure we can reset the stream, in case the initial parse fails on external DTD loading
+			if (!stream.markSupported()) {
+				stream = new BufferedInputStream(stream, BUFFER_SIZE);
+			}
+			stream.mark(BUFFER_SIZE);
+
+			// wrap the stream in a filter that ignores calls to close (see java bug #6354964); the
+			// parser.parse call will attempt to close the stream, meaning that we cannot reset it if we don't
+			// catch that call
+			FilterInputStream filterStream = new FilterInputStream(stream) {
+
+				public void close() {
+				// don't do anything
+				}
+			};
+
 			// setup a parser
 			SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
+
+			// prepare a ContentHandler that gathers all text
 			XmlTextExtractor listener = new XmlTextExtractor();
 
 			// parse the stream
-			parser.parse(stream, listener);
+			try {
+				parser.parse(filterStream, listener);
+			}
+			catch (FileNotFoundException e) {
+				// a FNFE is typically thrown when an external DTD cannot be found. External DTDs are useful
+				// to support resolving of entities but failing to load the DTD should not result in an
+				// aborted text extraction. Now let's assume we use Xerxes or a Xerces-derived parser (e.g.
+				// the one in Java 5), switch off external DTD loading and try again
+				try {
+					// disable external dtd loading
+					parser.getXMLReader().setFeature(
+						"http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+					// reset some data structures
+					listener.clear();
+					stream.reset();
+
+					// try again to parse the document
+					parser.parse(stream, listener);
+				}
+				catch (SAXException se) {
+					// the FNFE is probably more worthy to report than the SAXException
+					LOGGER.log(Level.SEVERE, "FileNotFoundException while parsing document and unable "
+							+ "to disable external dtd loading", e);
+				}
+			}
 
 			// store the extracted text
 			String text = listener.getText();
@@ -61,6 +113,10 @@ public class XmlExtractor implements Extractor {
 
 		public String getText() {
 			return buffer.toString().trim();
+		}
+
+		public void clear() {
+			buffer.setLength(0);
 		}
 
 		public void startElement(String namespaceURI, String localName, String qName, Attributes attributes)
