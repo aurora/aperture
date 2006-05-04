@@ -167,6 +167,11 @@ public class ExampleFileCrawler {
             }
         }
 
+        // check that all required fields are available
+        if (crawler.getRootFile() == null || crawler.getRepositoryFile() == null) {
+        	exitWithUsageMessage();
+        }
+        
         // start crawling and exit afterwards
         crawler.crawl();
     }
