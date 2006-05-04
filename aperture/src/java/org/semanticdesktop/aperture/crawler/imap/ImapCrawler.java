@@ -1045,6 +1045,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			return new NaiveSocketFactory();
 		}
 
+		public Socket createSocket() throws IOException {
+			return factory.createSocket();
+		}
+
 		public Socket createSocket(Socket socket, String host, int port, boolean flag) throws IOException {
 			return factory.createSocket(socket, host, port, flag);
 		}

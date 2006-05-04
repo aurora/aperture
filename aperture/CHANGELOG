@@ -52,7 +52,10 @@ improvements:
 - introduced HtmlParserUtil, containing large parts of the HtmlExtractor
   implementation, as HTML (fragments) may occur in other document types as
   well (e.g. saved mails, see MimeExtractor)
-  
+
+updated dependencies:
+- JavaMail 1.4
+
 bug fixes:
 - [ 1444917 ] PlainTextExtractor ignores ByteOrderMarks
 - [ 1444926 ] MagicMimeTypeIdentifier cannot handle text files with BOMs
@@ -61,3 +64,4 @@ bug fixes:
 - [ 1445658 ] MimeExtractor should process HTML body parts
 - [ 1476150 ] ImapCrawler.getDataObject attempts to access a closed folder
 - [ 1480416 ] IOExceptions using ImapCrawler.getDataObject output
+- [ 1481759 ] Unable to use IMAP over SSL with JavaMail 1.4
