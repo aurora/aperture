@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -66,11 +67,18 @@ public class XmlExtractor implements Extractor {
 			try {
 				parser.parse(filterStream, listener);
 			}
-			catch (FileNotFoundException e) {
-				// a FNFE is typically thrown when an external DTD cannot be found. External DTDs are useful
-				// to support resolving of entities but failing to load the DTD should not result in an
-				// aborted text extraction. Now let's assume we use Xerxes or a Xerces-derived parser (e.g.
-				// the one in Java 5), switch off external DTD loading and try again
+			catch (Exception e) {
+				if (!isFailingDTDException(e)) {
+					return;
+				}
+				
+				// a FNFE is typically thrown when an external DTD cannot be found. An UnknownHostException is
+				// thrown when the user is not online and certain hosts cannot be found.
+
+				// External DTDs are useful to support resolving of entities but failing to load the DTD
+				// should not result in an aborted text extraction. Now let's assume we use Xerxes or a
+				// Xerces-derived parser (e.g. the one in Java 5), switch off external DTD loading and try
+				// again
 				try {
 					// disable external dtd loading
 					parser.getXMLReader().setFeature(
@@ -105,6 +113,10 @@ public class XmlExtractor implements Extractor {
 		catch (IOException e) {
 			throw new ExtractorException(e);
 		}
+	}
+
+	private boolean isFailingDTDException(Exception e) {
+		return e instanceof FileNotFoundException || e instanceof UnknownHostException;
 	}
 
 	private static class XmlTextExtractor extends DefaultHandler {
