@@ -65,4 +65,5 @@ bug fixes:
 - [ 1476150 ] ImapCrawler.getDataObject attempts to access a closed folder
 - [ 1480416 ] IOExceptions using ImapCrawler.getDataObject output
 - [ 1481111 ] XmlExtractor needs improved DTD handling
+- [ 1481132 ] OpenDocumentExtractor unable to load DTDs from jar files
 - [ 1481759 ] Unable to use IMAP over SSL with JavaMail 1.4
