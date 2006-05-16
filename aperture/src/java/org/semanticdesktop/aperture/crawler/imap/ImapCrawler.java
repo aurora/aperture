@@ -143,11 +143,19 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		boolean fatalError = false;
 
 		try {
-			crawlFolder(store.getFolder(baseFolder), 0);
 
-			// The inbox is a magic folder - include it if config option set.
-			if (includeInbox)
-				crawlFolder(store.getFolder("INBOX"), 0);
+			Folder base=null;
+			if (baseFolder!=null && !baseFolder.equals("")) {
+				base=store.getFolder(baseFolder);
+			} else {
+				base=store.getDefaultFolder();
+			}
+			crawlFolder(base,0);
+			
+			// The inbox is a magic folder - include it if config option set. 
+			if (includeInbox) 
+				crawlFolder(store.getFolder("INBOX"),0);
+
 		}
 		catch (MessagingException e) {
 			fatalError = true;

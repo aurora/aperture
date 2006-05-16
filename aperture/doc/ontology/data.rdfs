@@ -185,6 +185,13 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
+<rdf:Property rdf:about="&data_;messageID"
+	 a:maxCardinality="1"
+	 rdfs:comment="The mailbox messageID of this message."
+	 rdfs:label="messageID">
+	<rdfs:domain rdf:resource="&data_;Email"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
 <rdf:Property rdf:about="&data_;mimeType"
 	 a:maxCardinality="1"
 	 rdfs:label="mimeType">
@@ -264,6 +271,13 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 	<rdfs:comment>Date when the resource was retrieved by Aperture. See 'date' for more details.</rdfs:comment>
 	<rdfs:subPropertyOf rdf:resource="&data_;date"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&data_;rootFolderOf"
+	 a:maxCardinality="1"
+	 rdfs:label="rootFolderOf">
+	<rdfs:comment>This property specifies that this folder is the root folder of a particular datasource.</rdfs:comment>
+	<rdfs:domain rdf:resource="&data_;FolderDataObject"/>
+	<rdfs:range rdf:resource="&rdfs;Resource"/>
 </rdf:Property>
 <rdf:Property rdf:about="&data_;sentDate"
 	 a:maxCardinality="1"
