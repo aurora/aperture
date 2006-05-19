@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fŸr KŸnstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fï¿½r Kï¿½nstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -175,7 +175,7 @@ public class ThunderbirdCrawler extends AddressbookCrawler {
 		addAddress(values,rdf,"Home",VCARD.addressHome);
 		addAddress(values,rdf,"Work",VCARD.addressWork);
 		
-		DataObjectBase object = new DataObjectBase(uri,null,rdf);
+		DataObjectBase object = new DataObjectBase(uri,source,rdf);
 		
 		return object;
 	}
