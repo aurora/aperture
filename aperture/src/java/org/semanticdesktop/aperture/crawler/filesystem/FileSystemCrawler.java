@@ -203,16 +203,19 @@ public class FileSystemCrawler extends CrawlerBase {
 		try {
 			DataObject dataObject = accessor.getDataObjectIfModified(url, source, accessData, params,
 				containerFactory);
-			// If this is the root folder, add that info to the metadata
-			if (file.equals(root)) {
-				dataObject.getMetadata().add(DATA.rootFolderOf,source.getID());
-			}
+			
 			if (dataObject == null) {
 				// the object was not modified
 				handler.objectNotModified(this, url);
 				crawlReport.increaseUnchangedCount();
 			}
 			else {
+				
+				// If this is the root folder, add that info to the metadata
+				if (file.equals(root)) {
+					dataObject.getMetadata().add(DATA.rootFolderOf,source.getID());
+				}
+				
 				// we scanned a new or changed object
 				if (knownObject) {
 					handler.objectChanged(this, dataObject);
