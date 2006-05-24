@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import org.openrdf.model.impl.URIImpl;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.util.IOUtil;
@@ -94,5 +95,16 @@ public class TestMagicMimeTypeIdentifier extends ApertureTestBase {
 		byte[] bytes = IOUtil.readBytes(stream, identifier.getMinArrayLength());
 		String determinedType = identifier.identify(bytes, resourceName, null);
 		assertEquals(mimeType, determinedType);
+	}
+	
+	public void testNullArray() {
+		MagicMimeTypeIdentifierFactory factory = new MagicMimeTypeIdentifierFactory();
+		MimeTypeIdentifier identifier = factory.get();
+		
+		String fileType = identifier.identify(null, "test.txt", null);
+		assertEquals("text/plain", fileType);
+		
+		String uriType = identifier.identify(null, null, new URIImpl("file:test.html"));
+		assertEquals("text/html", uriType);
 	}
 }

@@ -369,25 +369,29 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 	public String identify(byte[] firstBytes, String fileName, URI uri) {
 		// see if the file is some kind of UTF file
 		char[] firstChars = null;
-		byte[] bom = UtfUtil.findMatchingBOM(firstBytes);
-		if (bom != null) {
-			// remove the Byte Order Mark from firstBytes: improves String.toCharArray output and also
-			// improved magic number testing later on, when magic string testing fails
-			int contentLength = firstBytes.length - bom.length;
-			byte[] contentBytes = new byte[contentLength];
-			System.arraycopy(firstBytes, bom.length, contentBytes, 0, contentLength);
-			firstBytes = contentBytes;
+		byte[] bom = null;
 
-			// create a character representation of the bytes
-			String charset = UtfUtil.getCharsetName(bom);
-			if (charset != null) {
-				try {
-					String string = new String(firstBytes, charset);
-					firstChars = string.toCharArray();
+		if (firstBytes != null) {
+			bom = UtfUtil.findMatchingBOM(firstBytes);
+			if (bom != null) {
+				// remove the Byte Order Mark from firstBytes: improves String.toCharArray output and also
+				// improved magic number testing later on, when magic string testing fails
+				int contentLength = firstBytes.length - bom.length;
+				byte[] contentBytes = new byte[contentLength];
+				System.arraycopy(firstBytes, bom.length, contentBytes, 0, contentLength);
+				firstBytes = contentBytes;
 
-				}
-				catch (UnsupportedEncodingException e) {
-					// ignore, just continue
+				// create a character representation of the bytes
+				String charset = UtfUtil.getCharsetName(bom);
+				if (charset != null) {
+					try {
+						String string = new String(firstBytes, charset);
+						firstChars = string.toCharArray();
+
+					}
+					catch (UnsupportedEncodingException e) {
+						// ignore, just continue
+					}
 				}
 			}
 		}
@@ -457,25 +461,30 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 		}
 
 		// loop over the specified list of descriptions
-		int nrDescriptions = descriptions.size();
-		for (int i = 0; i < nrDescriptions; i++) {
-			MimeTypeDescription description = (MimeTypeDescription) descriptions.get(i);
+		if (firstBytes != null) {
+			int nrDescriptions = descriptions.size();
+			for (int i = 0; i < nrDescriptions; i++) {
+				MimeTypeDescription description = (MimeTypeDescription) descriptions.get(i);
 
-			// see if this description has a matching magic number
-			if (description.matches(firstBytes)) {
-				// we found at least one matching mime type.
-				// see if it is overrules by any of the requiring mime type descriptions
-				ArrayList requiringTypes = description.getRequiringTypes();
-				String overrulingResult = identify(firstChars, firstBytes, extension, requiringTypes);
-				return overrulingResult == null ? description.getMimeType() : overrulingResult;
+				// see if this description has a matching magic number
+				if (description.matches(firstBytes)) {
+					// we found at least one matching mime type.
+					// see if it is overrules by any of the requiring mime type descriptions
+					ArrayList requiringTypes = description.getRequiringTypes();
+					String overrulingResult = identify(firstChars, firstBytes, extension, requiringTypes);
+					return overrulingResult == null ? description.getMimeType() : overrulingResult;
+				}
 			}
 		}
 
 		// no match based on magic number could be found, now try on file extension
-		for (int i = 0; i < nrDescriptions; i++) {
-			MimeTypeDescription description = (MimeTypeDescription) descriptions.get(i);
-			if (description.containsExtension(extension)) {
-				return description.getMimeType();
+		if (extension != null) {
+			int nrDescriptions = descriptions.size();
+			for (int i = 0; i < nrDescriptions; i++) {
+				MimeTypeDescription description = (MimeTypeDescription) descriptions.get(i);
+				if (description.containsExtension(extension)) {
+					return description.getMimeType();
+				}
 			}
 		}
 
