@@ -222,7 +222,7 @@ public class CrawlReportBase implements CrawlReport {
         try {
             // Parse the document
             SimpleSAXParser parser = new SimpleSAXParser();
-            parser.setListener(new ScanReportParser());
+            parser.setListener(new CrawlReportParser());
             parser.parse(stream);
         }
         catch (ParserConfigurationException e) {
@@ -237,7 +237,7 @@ public class CrawlReportBase implements CrawlReport {
         }
     }
 
-    private class ScanReportParser extends SimpleSAXAdapter {
+    private class CrawlReportParser extends SimpleSAXAdapter {
 
         public void startTag(String tagName, Map atts, String text) throws SAXException {
             if (text != null && !text.equals("")) {
