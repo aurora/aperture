@@ -991,8 +991,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		}
 
 		// if this is the base folder add some meta-data
-		// Does this work I wonder? :)
-		if (folder.getName().equals(baseFolder)) {
+		if (folder.getFullName().equals(baseFolder)) {
 			metadata.add(DATA.rootFolderOf, source.getID());
 		}
 
