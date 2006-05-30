@@ -358,14 +358,12 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	 * @throws MessagingException
 	 */
 	private DataObject crawlFolderFolder(Folder folder, DataObject folderObject, int depth) {
-
 		if (depth + 1 > maxDepth && maxDepth > 0) {
 			LOGGER.info("Reached crawling depth limit (" + maxDepth + ") - stopping.");
 			return null;
 		}
 
 		try {
-
 			if (folderObject == null) {
 				// if this folder wasn't already crawled by message crawling..
 
@@ -411,8 +409,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		catch (MessagingException e) {
 			LOGGER.log(Level.INFO, "Exception while crawling folder for subFolders: ", e);
 		}
-		return folderObject;
 
+		return folderObject;
 	}
 
 	/**
@@ -423,7 +421,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	 * @throws MessagingException
 	 */
 	private DataObject crawlMessageFolder(Folder folder) throws MessagingException {
-
 		// open the folder in read-only mode
 		if (!folder.isOpen()) {
 			folder.open(Folder.READ_ONLY);
@@ -460,8 +457,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			// just log this exception and continue, perhaps the messages can still be accessed
 			LOGGER.log(Level.WARNING, "Exception while crawling folder " + folderUrl, e);
 		}
+		
 		return null;
-
 	}
 
 	private String getURIPrefix(Folder folder) throws MessagingException {
