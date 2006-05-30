@@ -143,19 +143,19 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		boolean fatalError = false;
 
 		try {
-
-			Folder base=null;
-			if (baseFolder!=null && !baseFolder.equals("")) {
-				base=store.getFolder(baseFolder);
-			} else {
-				base=store.getDefaultFolder();
+			Folder base = null;
+			if (baseFolder != null && !baseFolder.equals("")) {
+				base = store.getFolder(baseFolder);
 			}
-			crawlFolder(base,0);
-			
-			// The inbox is a magic folder - include it if config option set. 
-			if (includeInbox) 
-				crawlFolder(store.getFolder("INBOX"),0);
+			else {
+				base = store.getDefaultFolder();
+			}
+			crawlFolder(base, 0);
 
+			// The inbox is a magic folder - include it if config option set.
+			if (includeInbox) {
+				crawlFolder(store.getFolder("INBOX"), 0);
+			}
 		}
 		catch (MessagingException e) {
 			fatalError = true;
@@ -292,11 +292,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	private void crawlFolder(Folder folder, int depth) throws MessagingException {
 		// skip if the folder does not exist
 		if (folder == null || !folder.exists()) {
-			LOGGER.info("folder does not exist: \"" + baseFolder + "\"");
+			LOGGER.info("folder does not exist: \"" + folder.getName() + "\"");
 			return;
 		}
 		else {
-			LOGGER.info("crawling folder \"" + baseFolder + "\"");
+			LOGGER.info("crawling folder \"" + folder.getName() + "\"");
 		}
 
 		DataObject folderObject = null;
@@ -884,7 +884,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 		// check if the folder has changed
 		if (accessData != null) {
-
 			int unchanged = -1;
 
 			if (holdsMessages(folder)) {
@@ -935,9 +934,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 				return null;
 			}
 
+			LOGGER.fine("Folder \"" + folder.getName() + "\" is new or has changes.");
 		}
-
-		LOGGER.fine("Folder \"" + folder.getName() + "\" is new or has changes.");
 
 		// register the folder's name
 		URI folderURI = new URIImpl(url);
