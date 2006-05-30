@@ -318,7 +318,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		}
 
 		if (!crawled) {
-			LOGGER.info("Folder container neither folders nor messages: \"" + folder.getName() + "\"");
+			LOGGER.info("Folder contains neither folders nor messages: \"" + folder.getName() + "\"");
 		}
 		if (folder.isOpen()) {
 			// close the folder without deleting expunged messages
