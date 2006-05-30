@@ -292,11 +292,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	private void crawlFolder(Folder folder, int depth) throws MessagingException {
 		// skip if the folder does not exist
 		if (folder == null || !folder.exists()) {
-			LOGGER.info("folder does not exist: \"" + folder.getName() + "\"");
+			LOGGER.info("folder does not exist: \"" + folder.getFullName() + "\"");
 			return;
 		}
 		else {
-			LOGGER.info("crawling folder \"" + folder.getName() + "\"");
+			LOGGER.info("crawling folder \"" + folder.getFullName() + "\"");
 		}
 
 		DataObject folderObject = null;
@@ -304,7 +304,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 		// crawl messages if folder contains them
 		if (holdsMessages(folder)) {
-			LOGGER.info("crawling messages in folder \"" + folder.getName() + "\"");
+			LOGGER.info("crawling messages in folder \"" + folder.getFullName() + "\"");
 			folderObject = crawlMessageFolder(folder);
 			crawled = true;
 		}
@@ -312,13 +312,13 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		// folders can contain both folders and messages under some imap implementations
 		// craw folders if folder contains them
 		if (holdsFolders(folder)) {
-			LOGGER.info("crawling folders in folder \"" + folder.getName() + "\"");
+			LOGGER.info("crawling folders in folder \"" + folder.getFullName() + "\"");
 			folderObject = crawlFolderFolder(folder, folderObject, depth);
 			crawled = true;
 		}
 
 		if (!crawled) {
-			LOGGER.info("Folder contains neither folders nor messages: \"" + folder.getName() + "\"");
+			LOGGER.info("Folder contains neither folders nor messages: \"" + folder.getFullName() + "\"");
 		}
 		if (folder.isOpen()) {
 			// close the folder without deleting expunged messages
@@ -366,7 +366,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		try {
 			if (folderObject == null) {
 				// if this folder wasn't already crawled by message crawling..
-
 				// report the folder's metadata
 				String folderUrl = getURIPrefix(folder) + ";TYPE=LIST";
 				;
@@ -401,7 +400,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 					crawlFolder(subFolders[i], depth + 1);
 				}
 				catch (MessagingException e) {
-					LOGGER.info("Error crawling subFolder \"" + subFolders[i].getName() + "\"");
+					LOGGER.info("Error crawling subFolder \"" + subFolders[i].getFullName() + "\"");
 					// but continue..
 				}
 			}
@@ -531,7 +530,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		Message[] messages = folder.getMessages();
 		String messagePrefix = getURIPrefix(folder) + "/";
 
-		LOGGER.fine("Crawling " + messages.length + " messages from folder " + folder.getName());
+		LOGGER.fine("Crawling " + messages.length + " messages from folder " + folder.getFullName());
 
 		// determine the set of messages we haven't seen yet (this will also include all messages skipped
 		// because they were too large, but ok). The getObject method will also perform this check, but
@@ -927,11 +926,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 			if (unchanged == 1) {
 				// the folder contents have not changed, we can return immediately
-				LOGGER.fine("Folder \"" + folder.getName() + "\" is unchanged.");
+				LOGGER.fine("Folder \"" + folder.getFullName() + "\" is unchanged.");
 				return null;
 			}
 
-			LOGGER.fine("Folder \"" + folder.getName() + "\" is new or has changes.");
+			LOGGER.fine("Folder \"" + folder.getFullName() + "\" is new or has changes.");
 		}
 
 		// register the folder's name
