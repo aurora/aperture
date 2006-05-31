@@ -196,6 +196,20 @@
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
+<rdf:Property rdf:about="&source_;sslFileName"
+	 a:maxCardinality="1"
+	 rdfs:label="sslFileName">
+	<rdfs:comment>The name of the file to be used for accepted SSL certificates.</rdfs:comment>
+	<rdfs:domain rdf:resource="&source_;IMAPDataSource"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&source_;sslFilePassword"
+	 a:maxCardinality="1"
+	 rdfs:label="sslFilePassword">
+	<rdfs:comment>The password used for encrypting the file with accepted ssl certificates.</rdfs:comment>
+	<rdfs:domain rdf:resource="&source_;IMAPDataSource"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
 <rdf:Property rdf:about="&source_;username"
 	 a:maxCardinality="1"
 	 rdfs:label="username">

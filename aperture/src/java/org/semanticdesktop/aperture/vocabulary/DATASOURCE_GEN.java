@@ -4,7 +4,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Apr 28 18:55:08 CEST 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed May 31 12:06:38 CEST 2006
  * input file: doc/ontology/source.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/source#
  */
@@ -217,6 +217,22 @@ public class DATASOURCE_GEN {
      * Range: Literal 
      */
     public static final URI rootUrl = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#rootUrl");
+
+    /**
+     * Label: sslFileName 
+     * Comment: The name of the file to be used for accepted SSL certificates. 
+     * Domain: IMAPDataSource 
+     * Range: Literal 
+     */
+    public static final URI sslFileName = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#sslFileName");
+
+    /**
+     * Label: sslFilePassword 
+     * Comment: The password used for encrypting the file with accepted ssl certificates. 
+     * Domain: IMAPDataSource 
+     * Range: Literal 
+     */
+    public static final URI sslFilePassword = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#sslFilePassword");
 
     /**
      * Label: username 

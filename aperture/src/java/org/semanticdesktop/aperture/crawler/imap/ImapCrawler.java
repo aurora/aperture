@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.crawler.imap;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -61,6 +62,7 @@ import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.security.trustmanager.standard.StandardTrustManager;
 import org.semanticdesktop.aperture.util.HttpClientUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
@@ -100,6 +102,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	private String connectionType;
 
 	private boolean ignoreSSLCertificates = false;
+	
+	private boolean useSSLCertificateFile = false;
+	
+	private String SSLCertificateFile; 
+	private String SSLCertificatePassword;
 
 	private String baseFolder;
 
@@ -225,6 +232,12 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		if (DATASOURCE.SSL_NO_CERT.toString().equals(securityType)) {
 			ignoreSSLCertificates = true;
 		}
+		
+		if (config.getString(DATASOURCE.sslFileName)!=null) { 
+			useSSLCertificateFile=true;
+			SSLCertificateFile=config.getString(DATASOURCE.sslFileName);
+			SSLCertificatePassword=config.getString(DATASOURCE.sslFilePassword);
+		}
 
 		// determine the maximum byte size
 		Integer maximumSize = ConfigurationUtil.getMaximumByteSize(config);
@@ -249,10 +262,15 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			Properties properties = System.getProperties();
 
 			if (ignoreSSLCertificates) {
-				properties.setProperty("mail.imaps.socketFactory.class", NaiveSocketFactory.class.getName());
+				properties.setProperty("mail.imaps.socketFactory.class", SimpleSocketFactory.class.getName());
 				properties.setProperty("mail.imaps.socketFactory.fallback", "false");
 			}
 
+			if (useSSLCertificateFile) {
+				properties.setProperty("javax.net.ssl.trustStore",SSLCertificateFile);
+				properties.setProperty("javax.net.ssl.trustStorePassword",SSLCertificatePassword);
+			}
+			
 			// copy all extra registered session properties
 			if (sessionProperties != null) {
 				Enumeration keys = sessionProperties.elements();
@@ -1026,14 +1044,18 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	 * 
 	 * @author grimnes $Id$
 	 */
-	public static class NaiveSocketFactory extends SSLSocketFactory {
+	public static class SimpleSocketFactory extends SSLSocketFactory {
 
 		private SSLSocketFactory factory;
 
-		public NaiveSocketFactory() {
+		/**
+		 * Creates a socket factory that will ignore the ssl certificate, and accept any as valid.
+		 *
+		 */
+		public SimpleSocketFactory() {
 			try {
 				SSLContext sslcontext = SSLContext.getInstance("TLS");
-
+				
 				sslcontext.init(null, new TrustManager[] { new NaiveTrustManager() }, null);
 				factory = (SSLSocketFactory) sslcontext.getSocketFactory();
 			}
@@ -1041,9 +1063,25 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 				e.printStackTrace();
 			}
 		}
+		
+		/** 
+		 * Read trusted certificates from the given keyStore
+		 * @param certificateFile
+		 * @param password
+		 */
+		public SimpleSocketFactory(File certificateFile, String password) { 
+			try {
+				SSLContext sslcontext = SSLContext.getInstance("TLS");
+				StandardTrustManager trustManager = new StandardTrustManager(certificateFile,password.toCharArray());
+				sslcontext.init(null, new TrustManager[] { trustManager }, null);
+				factory = (SSLSocketFactory) sslcontext.getSocketFactory();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 
 		public static SocketFactory getDefault() {
-			return new NaiveSocketFactory();
+			return new SimpleSocketFactory();
 		}
 
 		public Socket createSocket() throws IOException {
