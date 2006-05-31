@@ -38,6 +38,8 @@ documentation.
 *) What is Jacob.dll?
 This file is in this directory to make the MS-Outlook crawler work.
 It has to be in the project root, otherwise the linker will not find it.
+The jacob version is 1.10-pre4, you can download current releases at
+http://sourceforge.net/projects/jacob-project/
 
 *) To contribute your own implementations of Aperture APIs:
 
