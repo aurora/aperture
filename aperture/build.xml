@@ -180,6 +180,25 @@ your copy of ANT at http://ant.apache.org/
 		</javadoc>
 	</target>
 	
+	<target name="javadoc_limitedfornepomuk" depends="init" description="create the javadoc for the interfaces, but not the implementations. documentation input for the nepomuk consortium.">
+		<mkdir dir="${javadoc.dir}" />
+		<javadoc destdir="${javadoc.dir}" sourcepath="${src.java.dir}" 
+			author="true" version="true" additionalparam="-breakiterator" use="true" classpathref="classpath" source="${java.src.version}" windowtitle="${project.longname} API release ${project.version.full}" doctitle="${project.longname} API release ${project.version.full}"			>
+			<package name="org.semanticdesktop.aperture.accessor"/>
+			<package name="org.semanticdesktop.aperture.crawler"/>
+			<package name="org.semanticdesktop.aperture.datasource"/>
+			<package name="org.semanticdesktop.aperture.extractor"/>
+			<package name="org.semanticdesktop.aperture.mime.identifier"/>
+			<package name="org.semanticdesktop.aperture.rdf"/>
+			<package name="org.semanticdesktop.aperture.vocabulary"/>
+			<link href="http://www.openrdf.org/doc/sesame2/api/" />
+			<link href="http://jena.sourceforge.net/javadoc/" />
+			<link href="http://java.sun.com/j2se/1.4.2/docs/api" />
+		</javadoc>
+	</target>
+	
+	
+	
 	<target name="dist" description="build the jar and javadoc files" depends="build, test, javadoc" />
 
 	<target name="release" depends="clean, dist" description="builds a directory tree containing a complete Aperture distro">
