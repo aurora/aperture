@@ -143,6 +143,32 @@ public class ConfigurationUtil {
         return configuration.getString(DATASOURCE_GEN.connectionSecurity);
     }
 
+    public static void setSSLFileName(String sslfilename, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.sslFileName, sslfilename);
+    }
+
+    public static String getSSLFileName(RDFContainer configuration) {
+        return configuration.getString(DATASOURCE_GEN.sslFileName);
+    }
+    
+    public static void setSSLPassword(String sslpword, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.sslFilePassword, sslpword);
+    }
+
+    public static String getSSLPassword(RDFContainer configuration) {
+        return configuration.getString(DATASOURCE_GEN.sslFilePassword);
+    }
+    
+    public static Boolean getIncludeInbox(RDFContainer configuration) {
+        return configuration.getBoolean(DATASOURCE_GEN.includeInbox);
+    }
+
+    public static void setIncludeInbox(boolean value, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.includeInbox, value);
+    }
+
+    
+    
     /**
      * Stores the specified DomainBoundaries in the specified configuration. This method will overwrite a
      * previously set DomainBoundaries but this is only guaranteed to work correctly when it has also
