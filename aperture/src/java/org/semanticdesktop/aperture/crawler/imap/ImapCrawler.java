@@ -380,13 +380,19 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			LOGGER.info("Reached crawling depth limit (" + maxDepth + ") - stopping.");
 			return null;
 		}
+		
 
 		try {
-			if (folderObject == null) {
+			String folderUrl = getURIPrefix(folder) + ";TYPE=LIST";
+			
+			if (!inDomain(folderUrl))
+				//see comment below in CrawlFolderMessages
+				return null;
+			
+			if (folderObject == null ) {
 				// if this folder wasn't already crawled by message crawling..
 				// report the folder's metadata
-				String folderUrl = getURIPrefix(folder) + ";TYPE=LIST";
-				;
+				
 				RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, folderUrl);
 				try {
 					folderObject = getObject(folder, folderUrl, source, accessData, containerFactory);
@@ -413,7 +419,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 			Folder[] subFolders = folder.list();
 			LOGGER.fine("Crawling " + subFolders.length + " sub-folders.");
-			for (int i = 0; i < subFolders.length; i++) {
+			for (int i = 0; !isStopRequested() && i < subFolders.length; i++) {
 				try {
 					crawlFolder(subFolders[i], depth + 1);
 				}
@@ -445,6 +451,13 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 		// report the folder's metadata
 		String folderUrl = getURIPrefix(folder) + ";TYPE=LIST";
+		
+		if (!inDomain(folderUrl))
+			// This gives us different semantics to domainboundaries than the filecrawler, 
+			//which will still process sub-folder/files when something is not in the domain, 
+			// however, i think that's wrong :) - (says Gunnar)
+			return null;
+		
 		RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, folderUrl);
 
 		try {
@@ -583,7 +596,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			String uri = messagePrefix + messageID;
 
 			try {
-				crawlMessage(message, uri, folderUri);
+				if (inDomain(uri)) 
+					crawlMessage(message, uri, folderUri);
 			}
 			catch (Exception e) {
 				// just log these exceptions; as they only affect a single message, they are

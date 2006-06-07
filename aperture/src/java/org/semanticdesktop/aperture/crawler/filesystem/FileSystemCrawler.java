@@ -123,8 +123,10 @@ public class FileSystemCrawler extends CrawlerBase {
 	private boolean crawlFileTree(File file, int depth) {
 		if (file.isFile() && depth >= 0) {
 			// report the File
-			if (inDomain(file) && file.canRead() && file.length() <= maximumSize) {
+			if (inDomain(file.toURI().toString()) && file.canRead() && file.length() <= maximumSize) {
 				crawlSingleFile(file);
+			} else { 
+				LOGGER.fine("File "+file.toURI()+" is not in domain. Skipping.");
 			}
 
 			// by definition we've completed this subtree
@@ -132,8 +134,10 @@ public class FileSystemCrawler extends CrawlerBase {
 		}
 		else if (file.isDirectory() && depth >= 0) {
 			// report the Folder itself
-			if (inDomain(file)) {
+			if (inDomain(file.toURI().toString())) {
 				crawlSingleFile(file);
+			} else { 
+				LOGGER.fine("Directory "+file.toURI()+" is not in domain. Skipping.");
 			}
 
 			// report nested Files
@@ -172,12 +176,6 @@ public class FileSystemCrawler extends CrawlerBase {
 			// Unknown path type (is this possible?) or depth < 0
 			return true;
 		}
-	}
-
-	private boolean inDomain(File file) {
-		// FIXME: properly implement this method as soon as DataSourceBase has support for setting and
-		// retrieving include and exclude patterns
-		return true;
 	}
 
 	/**

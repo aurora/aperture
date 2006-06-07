@@ -28,6 +28,8 @@ import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.datasource.DataSource;
+import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
+import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;
 
 /**
  * An implementation of the Crawler interface that offers generic implementations for some of its
@@ -81,6 +83,8 @@ public abstract class CrawlerBase implements Crawler {
      */
     protected Set deprecatedUrls;
 
+	private DomainBoundaries domain;
+
     public CrawlerBase() {
         this.stopRequested = false;
     }
@@ -122,6 +126,8 @@ public abstract class CrawlerBase implements Crawler {
         crawlReport = new CrawlReportBase();
         crawlReport.setCrawlStarted(System.currentTimeMillis());
 
+        domain=ConfigurationUtil.getDomainBoundaries(source.getConfiguration());
+        
         // initialize flags
         stopRequested = false;
         ExitCode exitCode = null;
@@ -291,5 +297,9 @@ public abstract class CrawlerBase implements Crawler {
                 LOGGER.log(Level.SEVERE, "Unable to write scan report file", e);
             }
         }
+    }
+    
+    protected boolean inDomain(String uri) {
+    		return domain.inDomain(uri);
     }
 }

@@ -47,6 +47,9 @@ public class DomainBoundaries {
 		includePatterns.clear();
 	}
 
+	/**
+	 * @return a read-only version of the internal include-list
+	 */
 	public List getIncludePatterns() {
 		return Collections.unmodifiableList(includePatterns);
 	}
@@ -67,6 +70,9 @@ public class DomainBoundaries {
 		excludePatterns.clear();
 	}
 
+	/** 
+	 * @return a read-only version of the internal exclude-list
+	 */
 	public List getExcludePatterns() {
 		return Collections.unmodifiableList(excludePatterns);
 	}

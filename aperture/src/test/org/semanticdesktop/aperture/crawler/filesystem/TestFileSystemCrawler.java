@@ -28,6 +28,9 @@ import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
+import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;
+import org.semanticdesktop.aperture.datasource.config.SubstringCondition;
+import org.semanticdesktop.aperture.datasource.config.SubstringPattern;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
@@ -49,6 +52,8 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
     private File tmpFile3;
 
+	private File tmpFile4;
+
     public void setUp() throws IOException {
         // create a temporary folder containing a temporary file
         // unfortunately there is no File.createTempDir
@@ -63,12 +68,17 @@ public class TestFileSystemCrawler extends ApertureTestBase {
         tmpFile2 = File.createTempFile("file-", ".txt", tmpDir);
         IOUtil.writeString("test file 2", tmpFile2);
 
+        tmpFile4 = File.createTempFile("file-skipme-",".txt", tmpDir);
+        IOUtil.writeString("test file 4",tmpFile4);
+        
         // put another folder containing another file in it
         subDir = new File(tmpDir, "dir");
         subDir.mkdir();
 
         tmpFile3 = File.createTempFile("file-", ".txt", subDir);
         IOUtil.writeString("test file 3", tmpFile3);
+        
+        
     }
 
     public void tearDown() {
@@ -81,6 +91,9 @@ public class TestFileSystemCrawler extends ApertureTestBase {
         RDFContainer configuration = new SesameRDFContainer(new URIImpl("urn:test:dummySource"));
         ConfigurationUtil.setRootFolder(tmpDir.getAbsolutePath(), configuration);
         ConfigurationUtil.setMaximumDepth(1, configuration);
+        DomainBoundaries domain = ConfigurationUtil.getDomainBoundaries(configuration);
+        domain.addExcludePattern(new SubstringPattern("skipme",SubstringCondition.CONTAINS));
+        ConfigurationUtil.setDomainBoundaries(domain,configuration);
 
         DataSource dataSource = new FileSystemDataSource();
         dataSource.setConfiguration(configuration);
@@ -117,6 +130,9 @@ public class TestFileSystemCrawler extends ApertureTestBase {
         // null, null) as the URI of the skipped file will still be part of the metadata of the
         // containing Folder.
         assertFalse(repository.hasStatement(toURI(tmpFile3), DATA.name, null));
+        
+        //This should no be found as it is excluded by the domain boundaries
+        assertFalse(repository.hasStatement(toURI(tmpFile4),DATA.name,null));
     }
 
     private URI toURI(File file) {
