@@ -6,6 +6,9 @@
  */
 package org.semanticdesktop.aperture.datasource.config;
 
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.n3.N3Writer;
+import org.openrdf.sesame.repository.Repository;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
@@ -65,7 +68,7 @@ public class TestConfigurationUtil extends ApertureTestBase {
         assertEquals(security1, security2);
     }
 
-    public void testDomainBoundaries() {
+    public void testDomainBoundaries() throws RDFHandlerException {
         String javaString = ".java";
         String cvsString = ".*/CVS/.*";
 
@@ -91,10 +94,12 @@ public class TestConfigurationUtil extends ApertureTestBase {
          * http://www.openrdf.org/issues/browse/SES-221).
          */
 
-        // // check that the boundaries can also be completely removed
-        // ConfigurationUtil.setDomainBoundaries(null, configuration);
-        // DomainBoundaries boundaries3 = ConfigurationUtil.getDomainBoundaries(configuration);
-        // assertEquals(0, boundaries3.getIncludePatterns().size());
-        // assertEquals(0, boundaries3.getExcludePatterns().size());
+         // check that the boundaries can also be completely removed
+         ConfigurationUtil.setDomainBoundaries(null, configuration);
+         DomainBoundaries boundaries3 = ConfigurationUtil.getDomainBoundaries(configuration);
+         assertEquals(0, boundaries3.getIncludePatterns().size());
+         assertEquals(0, boundaries3.getExcludePatterns().size());
+         
+         assertEquals(0,((Repository)configuration.getModel()).size());
     }
 }

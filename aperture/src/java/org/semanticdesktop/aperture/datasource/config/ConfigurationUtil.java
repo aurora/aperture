@@ -9,6 +9,7 @@ package org.semanticdesktop.aperture.datasource.config;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openrdf.model.BNode;
@@ -19,6 +20,8 @@ import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.sesame.query.MalformedQueryException;
+import org.openrdf.sesame.query.QueryLanguage;
 import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.Repository;
 import org.openrdf.sesame.sail.SailUpdateException;
@@ -40,8 +43,6 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 public class ConfigurationUtil {
 	
 	static Logger LOGGER = Logger.getLogger(ConfigurationUtil.class.getName());
-
-    private static final String BOUNDARY_CONTEXT_POSTFIX = "-DomainBoundariesContext";
 
     private ConfigurationUtil() {
         // prevent instantiation
@@ -184,28 +185,41 @@ public class ConfigurationUtil {
         URI id = configuration.getDescribedUri();
         Repository repository = (Repository) configuration.getModel();
 
-        // determine the URI to use as the context of the domain boundary statements
-        URI context = new URIImpl(id.toString() + BOUNDARY_CONTEXT_POSTFIX);
-
         try {
-            // remove all existing domain boundary statements
-            repository.clearContext(context);
+        	   deletePatternStatements(id,DATASOURCE.includePattern, repository);
+        	   deletePatternStatements(id,DATASOURCE.excludePattern, repository);
 
             // add statements reflecting the specified DomainBoundaries
             if (boundaries != null) {
-                addPatternStatements(id, boundaries.getIncludePatterns(), DATASOURCE_GEN.includePattern,
-                        context, repository);
-                addPatternStatements(id, boundaries.getExcludePatterns(), DATASOURCE_GEN.excludePattern,
-                        context, repository);
+                addPatternStatements(id, boundaries.getIncludePatterns(), DATASOURCE_GEN.includePattern, repository);
+                addPatternStatements(id, boundaries.getExcludePatterns(), DATASOURCE_GEN.excludePattern, repository);
             }
         }
         catch (SailUpdateException e) {
             throw new RuntimeException(e);
         }
     }
+    
+    private static void deletePatternStatements(URI id, URI predicate, Repository repository) throws SailUpdateException {
+    	
+    		try {
+    			String query="construct * from {<"+id.toString()+">} <"+predicate.toString()+"> {p},"+
+    			"{p} rdf:type {t},"+
+    			"{p} rdf:value {v},"+
+    			"[{p} data:condition {c}] "+    			
+    			"USING NAMESPACE rdf = <http://www.w3.org/1999/02/22-rdf-syntax-ns#>,"+ 
+    			"rdfs = <http://www.w3.org/2000/01/rdf-schema#>,"+
+    			"data = <"+DATASOURCE.NS+">";
+    			//LOGGER.info(query);
+    			repository.remove(QueryLanguage.SERQL,query);
+    		}
+    		catch (MalformedQueryException e) {
+    			LOGGER.log(Level.WARNING,"Query failed. Very odd. ",e);
+    		}
+    	
+    }
 
-    private static void addPatternStatements(URI sourceID, List patterns, URI predicate, URI context,
-            Repository repository) throws SailUpdateException {
+	private static void addPatternStatements(URI sourceID, List patterns, URI predicate, Repository repository) throws SailUpdateException {
         // a ValueFactory will be used to create BNodes
         ValueFactory factory = repository.getSail().getValueFactory();
 
@@ -218,10 +232,10 @@ public class ConfigurationUtil {
             BNode patternResource = factory.createBNode();
 
             // store the statements modeling the pattern contents
-            repository.add(pattern.getStatements(patternResource), context);
+            repository.add(pattern.getStatements(patternResource));
 
             // connect it to the DataSource's Resource using the appropriate pattern predicate
-            repository.add(sourceID, predicate, patternResource, context);
+            repository.add(sourceID, predicate, patternResource);
         }
     }
 
