@@ -7,6 +7,7 @@
 package org.semanticdesktop.aperture.datasource.config;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -18,7 +19,8 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
-import org.openrdf.model.impl.URIImpl;
+import org.openrdf.model.impl.LiteralImpl;
+import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.sesame.query.MalformedQueryException;
 import org.openrdf.sesame.query.QueryLanguage;
@@ -87,7 +89,41 @@ public class ConfigurationUtil {
     public static String getBasepath(RDFContainer configuration) {
     	return configuration.getString(DATASOURCE_GEN.basepath);
     }
+    
+    public static void setBasepaths(Collection basepaths, RDFContainer configuration) {
+    	// first remove all old base paths
+    	Collection oldPaths = getBasepaths(configuration);
+    	Iterator iterator = oldPaths.iterator();
+    	URI id = configuration.getDescribedUri();
+    	
+    	while (iterator.hasNext()) {
+    		String oldPath = (String) iterator.next();
+    		configuration.remove(new StatementImpl(id, DATASOURCE_GEN.basepath, new LiteralImpl(oldPath)));
+    	}
+    	
+    	// now add the new paths
+    	iterator = basepaths.iterator();
+    	while (iterator.hasNext()) {
+    		Literal path = (Literal) iterator.next();
+    		configuration.add(DATASOURCE_GEN.basepath, path);
+    	}
+    }
 
+    public static Collection getBasepaths(RDFContainer configuration) {
+    	ArrayList result = new ArrayList();
+    	
+    	Collection values = configuration.getAll(DATASOURCE_GEN.basepath);
+    	Iterator iterator = values.iterator();
+    	while (iterator.hasNext()) {
+    		Value value = (Value) iterator.next();
+    		if (value instanceof Literal) {
+    			result.add(((Literal) value).getLabel());
+    		}
+    	}
+    	
+    	return result;
+    }
+    
     public static void setUsername(String username, RDFContainer configuration) {
         configuration.put(DATASOURCE_GEN.username, username);
     }

@@ -8,8 +8,10 @@ package org.semanticdesktop.aperture.crawler.imap;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.URLDecoder;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -102,13 +104,14 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	private String connectionType;
 
 	private boolean ignoreSSLCertificates = false;
-	
+
 	private boolean useSSLCertificateFile = false;
-	
-	private String SSLCertificateFile; 
+
+	private String SSLCertificateFile;
+
 	private String SSLCertificatePassword;
 
-	private String baseFolder;
+	private ArrayList baseFolders = new ArrayList();
 
 	private int maximumByteSize;
 
@@ -150,14 +153,18 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		boolean fatalError = false;
 
 		try {
-			Folder base = null;
-			if (baseFolder != null && !baseFolder.equals("")) {
-				base = store.getFolder(baseFolder);
+			// crawl all specified base folders
+			int nrFolders = baseFolders.size();
+			if (nrFolders == 0) {
+				crawlFolder(store.getDefaultFolder(), 0);
 			}
 			else {
-				base = store.getDefaultFolder();
+				for (int i = 0; i < nrFolders; i++) {
+					String baseFolderName = (String) baseFolders.get(i);
+					Folder baseFolder = store.getFolder(baseFolderName);
+					crawlFolder(baseFolder, 0);
+				}
 			}
-			crawlFolder(base, 0);
 
 			// The inbox is a magic folder - include it if config option set.
 			if (includeInbox) {
@@ -201,20 +208,26 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		hostName = ConfigurationUtil.getHostname(config);
 		userName = ConfigurationUtil.getUsername(config);
 		password = ConfigurationUtil.getPassword(config);
-		baseFolder = ConfigurationUtil.getBasepath(config);
+		
+		baseFolders.clear();
+		baseFolders.addAll(ConfigurationUtil.getBasepaths(config));
 
 		Boolean includeInboxB = config.getBoolean(DATASOURCE.includeInbox);
-		if (includeInboxB == null)
+		if (includeInboxB == null) {
 			includeInbox = false;
-		else
+		}
+		else {
 			includeInbox = includeInboxB.booleanValue();
+		}
 
 		Integer maxDepthI = ConfigurationUtil.getMaximumDepth(config);
 
-		if (maxDepthI == null)
+		if (maxDepthI == null) {
 			maxDepth = -1;
-		else
+		}
+		else {
 			maxDepth = maxDepthI.intValue();
+		}
 
 		// determine the connection type
 		String securityType = ConfigurationUtil.getConnectionSecurity(config);
@@ -232,11 +245,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		if (DATASOURCE.SSL_NO_CERT.toString().equals(securityType)) {
 			ignoreSSLCertificates = true;
 		}
-		
-		if (config.getString(DATASOURCE.sslFileName)!=null) { 
-			useSSLCertificateFile=true;
-			SSLCertificateFile=config.getString(DATASOURCE.sslFileName);
-			SSLCertificatePassword=config.getString(DATASOURCE.sslFilePassword);
+
+		if (config.getString(DATASOURCE.sslFileName) != null) {
+			useSSLCertificateFile = true;
+			SSLCertificateFile = config.getString(DATASOURCE.sslFileName);
+			SSLCertificatePassword = config.getString(DATASOURCE.sslFilePassword);
 		}
 
 		// determine the maximum byte size
@@ -267,10 +280,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			}
 
 			if (useSSLCertificateFile) {
-				properties.setProperty("javax.net.ssl.trustStore",SSLCertificateFile);
-				properties.setProperty("javax.net.ssl.trustStorePassword",SSLCertificatePassword);
+				properties.setProperty("javax.net.ssl.trustStore", SSLCertificateFile);
+				properties.setProperty("javax.net.ssl.trustStorePassword", SSLCertificatePassword);
 			}
-			
+
 			// copy all extra registered session properties
 			if (sessionProperties != null) {
 				Enumeration keys = sessionProperties.elements();
@@ -309,7 +322,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 	private void crawlFolder(Folder folder, int depth) throws MessagingException {
 		// skip if the folder does not exist
-		if (folder == null || !folder.exists()) {
+		if (folder == null) {
+			LOGGER.info("passed null folder, ignoring");
+			return;
+		}
+		else if (!folder.exists()) {
 			LOGGER.info("folder does not exist: \"" + folder.getFullName() + "\"");
 			return;
 		}
@@ -380,19 +397,18 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			LOGGER.info("Reached crawling depth limit (" + maxDepth + ") - stopping.");
 			return null;
 		}
-		
 
 		try {
 			String folderUrl = getURIPrefix(folder) + ";TYPE=LIST";
-			
+
 			if (!inDomain(folderUrl))
-				//see comment below in CrawlFolderMessages
+				// see comment below in CrawlFolderMessages
 				return null;
-			
-			if (folderObject == null ) {
+
+			if (folderObject == null) {
 				// if this folder wasn't already crawled by message crawling..
 				// report the folder's metadata
-				
+
 				RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, folderUrl);
 				try {
 					folderObject = getObject(folder, folderUrl, source, accessData, containerFactory);
@@ -451,13 +467,13 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 		// report the folder's metadata
 		String folderUrl = getURIPrefix(folder) + ";TYPE=LIST";
-		
+
 		if (!inDomain(folderUrl))
-			// This gives us different semantics to domainboundaries than the filecrawler, 
-			//which will still process sub-folder/files when something is not in the domain, 
+			// This gives us different semantics to domainboundaries than the filecrawler,
+			// which will still process sub-folder/files when something is not in the domain,
 			// however, i think that's wrong :) - (says Gunnar)
 			return null;
-		
+
 		RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, folderUrl);
 
 		try {
@@ -487,7 +503,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			// just log this exception and continue, perhaps the messages can still be accessed
 			LOGGER.log(Level.WARNING, "Exception while crawling folder " + folderUrl, e);
 		}
-		
+
 		return null;
 	}
 
@@ -513,6 +529,28 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		buffer.append(encodeFolderName(folder.getFullName()));
 
 		return buffer.toString();
+	}
+	
+	private String getFolderName(String url) {
+		if (!url.startsWith("imap://")) {
+			return null;
+		}
+		
+		int firstIndex = url.indexOf('/', 7);
+		int lastIndex = url.lastIndexOf('/');
+		
+		if (firstIndex >= 0 && lastIndex > firstIndex) {
+			String substring = url.substring(firstIndex + 1, lastIndex);
+			try {
+				return URLDecoder.decode(substring, "UTF-8");
+			}
+			catch (UnsupportedEncodingException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		else {
+			return null;
+		}
 	}
 
 	// does the same as HttpClientUtil.formUrlEncode (i.e. RFC 1738) except for encoding the slash,
@@ -596,7 +634,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			String uri = messagePrefix + messageID;
 
 			try {
-				if (inDomain(uri)) 
+				if (inDomain(uri))
 					crawlMessage(message, uri, folderUri);
 			}
 			catch (Exception e) {
@@ -790,11 +828,16 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			// make sure we have a connection to the mail store
 			ensureConnectedStore();
 
-			// retrieve the configured folder
-			// NOTE: no check is made whether the root folder specified in the data source is actually
-			// the same as the
-			// one mentioned in the url patameter.
-			Folder folder = store.getFolder(baseFolder);
+			// retrieve the specified folder
+			String folderName = getFolderName(url);
+			if (folderName == null) {
+				throw new UrlNotFoundException(url, "invalid or missing folder name");
+			}
+			
+			Folder folder = store.getFolder(folderName);
+			if (!folder.exists()) {
+				throw new UrlNotFoundException(url, "unknown folder");
+			}
 
 			if (!folder.isOpen()) {
 				folder.open(Folder.READ_ONLY);
@@ -1021,8 +1064,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 				accessData.put(url, SUBFOLDERS_KEY, getSubFoldersString(folder));
 		}
 
-		// if this is the base folder add some meta-data
-		if (folder.getFullName().equals(baseFolder)) {
+		// if this is a base folder then add some metadata
+		if (baseFolders.contains(folder.getFullName())) {
 			metadata.add(DATA.rootFolderOf, source.getID());
 		}
 
@@ -1064,12 +1107,12 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 		/**
 		 * Creates a socket factory that will ignore the ssl certificate, and accept any as valid.
-		 *
+		 * 
 		 */
 		public SimpleSocketFactory() {
 			try {
 				SSLContext sslcontext = SSLContext.getInstance("TLS");
-				
+
 				sslcontext.init(null, new TrustManager[] { new NaiveTrustManager() }, null);
 				factory = (SSLSocketFactory) sslcontext.getSocketFactory();
 			}
@@ -1077,19 +1120,22 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 				e.printStackTrace();
 			}
 		}
-		
-		/** 
+
+		/**
 		 * Read trusted certificates from the given keyStore
+		 * 
 		 * @param certificateFile
 		 * @param password
 		 */
-		public SimpleSocketFactory(File certificateFile, String password) { 
+		public SimpleSocketFactory(File certificateFile, String password) {
 			try {
 				SSLContext sslcontext = SSLContext.getInstance("TLS");
-				StandardTrustManager trustManager = new StandardTrustManager(certificateFile,password.toCharArray());
+				StandardTrustManager trustManager = new StandardTrustManager(certificateFile, password
+						.toCharArray());
 				sslcontext.init(null, new TrustManager[] { trustManager }, null);
 				factory = (SSLSocketFactory) sslcontext.getSocketFactory();
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -1143,7 +1189,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			}
 
 			public X509Certificate[] getAcceptedIssuers() {
-				// TODO Auto-generated method stub
 				return null;
 			}
 
