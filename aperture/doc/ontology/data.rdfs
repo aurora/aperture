@@ -279,6 +279,14 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 	<rdfs:domain rdf:resource="&data_;FolderDataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Resource"/>
 </rdf:Property>
+<rdf:Property rdf:about="&data_;sender"
+	 a:maxCardinality="1"
+	 rdfs:label="sender">
+	<rdfs:comment>(from RFC 822)
+This field contains the authenticated identity  of  the  AGENT (person,  system  or  process)  that sends the message.  It is intended for use when the sender is not the author of the message,  or  to  indicate  who among a group of authors actually sent the message.  If the contents of the "Sender" field would be  completely  redundant  with  the  "From"  field,  then the "Sender" field need not be present and its use is  discouraged (though  still legal).</rdfs:comment>
+	<rdfs:range rdf:resource="&data_;Agent"/>
+	<rdfs:domain rdf:resource="&data_;Email"/>
+</rdf:Property>
 <rdf:Property rdf:about="&data_;sentDate"
 	 a:maxCardinality="1"
 	 rdfs:comment="Date when this e-mail was sent."

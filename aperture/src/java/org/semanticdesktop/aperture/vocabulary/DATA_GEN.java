@@ -4,7 +4,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sat May 13 21:15:24 CEST 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Jun 09 10:43:08 CEST 2006
  * input file: doc/ontology/data.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/data#
  */
@@ -311,6 +311,15 @@ content defaults to the value specified by the 'mimeType' property.
      * Range: Resource 
      */
     public static final URI rootFolderOf = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#rootFolderOf");
+
+    /**
+     * Label: sender 
+     * Comment: (from RFC 822)
+This field contains the authenticated identity  of  the  AGENT (person,  system  or  process)  that sends the message.  It is intended for use when the sender is not the author of the message,  or  to  indicate  who among a group of authors actually sent the message.  If the contents of the "Sender" field would be  completely  redundant  with  the  "From"  field,  then the "Sender" field need not be present and its use is  discouraged (though  still legal). 
+     * Domain: Email 
+     * Range: Agent 
+     */
+    public static final URI sender = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#sender");
 
     /**
      * Label: sentDate 

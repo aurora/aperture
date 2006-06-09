@@ -13,14 +13,32 @@
 Aperture consists of a number of APIs that each fulfill a type of service, e.g. text and
 metadata extraction, crawling of an information source or identifying a file's MIME type.
 The code involved in implementing and managing such a service is typically organized
-in a particular way. Once you know this structure, you will be better able to quickly
-find your way around in the Aperture code base.
-</p>
+in a particular way. Once you know how this structure works,&nbsp; you will be better able to quickly
+find your way around using Aperture or extending Aperture. The following image 
+shows how the components work together in a typical application:</p>
+<p align="center">
+<img border="0" src="aperture-architecture.png" width="952" height="537"></p>
+<p align="left">
+Aperture starts with the existing data sources of you, a file-system with files, 
+am IMAP server or other sources. For each of this sources, Aperture provides a 
+crawler, which reads data from the source and converts it to a standardized 
+format - RDF. RDF is like a Java Hashset, but with more possibilities, see here. 
+Once the data is converted by the crawler, it is passed to a crawler handler. 
+The crawler handler is the component you will write to use Aperture. You, as 
+Aperture user, decide now what happens with the data. If the crawler found a 
+binary file (like a HTML document), you can use Aperture to extract metadata and 
+the fulltext of this file. To do this, the MimeTypeIdentifier helps you to 
+detect of which mimetype the file is. Based on the mimetype (for example, text/html), 
+Aperture provides you with various Extractors, these are objects that can 
+extract metadata from a binary file. For HTML, the HtmlExtractor does this task, 
+Aperture knows how to find the right Extractor, you use the ExtractorRegistry 
+for that. Finally, you have all metadata of&nbsp; the file that was crawled from 
+the filesystem, you can store this now in your search engine. We used the 
+LuceneSail search engine, you can use Lucene, MySQL, or whatever storage you 
+want.</p>
 
-<p>
-We will use the Extractor framework, used for full-text and metadata extraction, as a
-running example.
-</p>
+<h2>
+The APIs</h2>
 
 <p>
 The heart of each service is an API, usually a Java interface, whose methods perform the
