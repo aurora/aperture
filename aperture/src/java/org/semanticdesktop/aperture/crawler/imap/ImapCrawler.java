@@ -830,11 +830,15 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 			// retrieve the specified folder
 			String folderName = getFolderName(url);
-			if (folderName == null) {
-				throw new UrlNotFoundException(url, "invalid or missing folder name");
+
+			Folder folder;
+			if (folderName == null || folderName.equals("")) {
+				folder = store.getDefaultFolder();
+			}
+			else {
+				folder = store.getFolder(folderName);
 			}
 			
-			Folder folder = store.getFolder(folderName);
 			if (!folder.exists()) {
 				throw new UrlNotFoundException(url, "unknown folder");
 			}
