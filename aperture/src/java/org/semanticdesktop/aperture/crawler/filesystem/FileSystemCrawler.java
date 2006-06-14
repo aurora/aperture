@@ -38,13 +38,13 @@ public class FileSystemCrawler extends CrawlerBase {
 
 	private static final int DEFAULT_MAX_DEPTH = Integer.MAX_VALUE;
 
-	private static final int DEFAULT_MAX_SIZE = Integer.MAX_VALUE;
+	private static final long DEFAULT_MAX_SIZE = Long.MAX_VALUE;
 
 	private static final Logger LOGGER = Logger.getLogger(FileSystemCrawler.class.getName());
 
 	private boolean ignoreHiddenFiles;
 
-	private int maximumSize;
+	private long maximumSize;
 
 	private DataAccessorFactory accessorFactory;
 
@@ -75,8 +75,8 @@ public class FileSystemCrawler extends CrawlerBase {
 		int maxDepth = i == null ? DEFAULT_MAX_DEPTH : i.intValue();
 
 		// determine the maximum byte size
-		i = ConfigurationUtil.getMaximumByteSize(configuration);
-		maximumSize = i == null ? DEFAULT_MAX_SIZE : i.intValue();
+		Long l = ConfigurationUtil.getMaximumByteSize(configuration);
+		maximumSize = l == null ? DEFAULT_MAX_SIZE : l.longValue();
 
 		// determine whether we should crawl hidden files and directories
 		Boolean b = ConfigurationUtil.getIncludeHiddenResourceS(configuration);

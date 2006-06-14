@@ -71,7 +71,7 @@ public class WebCrawler extends CrawlerBase {
     /**
      * The DataSource's byte size limit.
      */
-    private int maxByteSize;
+    private long maxByteSize;
 
     /**
      * A Boolean indicating the preference for crawling embedded, not-hyperlinked resources (images,
@@ -99,7 +99,7 @@ public class WebCrawler extends CrawlerBase {
      */
     private HashSet crawledUrls;
 
-	private int inititalDepth;
+	private int initialDepth;
 
     public void setMimeTypeIdentifier(MimeTypeIdentifier mimeTypeIdentifier) {
         this.mimeTypeIdentifier = mimeTypeIdentifier;
@@ -141,10 +141,10 @@ public class WebCrawler extends CrawlerBase {
         Integer integer = ConfigurationUtil.getMaximumDepth(configuration);
         int crawlDepth = integer == null ? Integer.MAX_VALUE : integer.intValue();
 
-        inititalDepth=crawlDepth;
+        initialDepth = crawlDepth;
         
-        integer = ConfigurationUtil.getMaximumByteSize(configuration);
-        maxByteSize = integer == null ? Integer.MAX_VALUE : integer.intValue();
+        Long l = ConfigurationUtil.getMaximumByteSize(configuration);
+        maxByteSize = l == null ? Long.MAX_VALUE : l.longValue();
 
         // schedule the start URL
         schedule(startUrl, crawlDepth, false);
@@ -257,7 +257,7 @@ public class WebCrawler extends CrawlerBase {
                     else {
                     	
                     	  // if this is the root URI, add that metadata
-                    	  if (depth == inititalDepth) {
+                    	  if (depth == initialDepth) {
                     		  dataObject.getMetadata().add(DATA.rootFolderOf,source.getID());
                     	  }
                     	
@@ -312,13 +312,13 @@ public class WebCrawler extends CrawlerBase {
     private boolean hasAcceptableByteSize(DataObject dataObject) {
         // first test if it makes sense to determine acceptability (retrieving the metadata may be a
         // relatively slow operation)
-        if (maxByteSize == Integer.MAX_VALUE) {
+        if (maxByteSize == Long.MAX_VALUE) {
             return true;
         }
         // now check whether the size is below the threshold
         else {
-            Integer integer = dataObject.getMetadata().getInteger(DATA.byteSize);
-            return integer == null ? true : integer.intValue() <= maxByteSize;
+            Long l = dataObject.getMetadata().getLong(DATA.byteSize);
+            return l == null ? true : l.longValue() <= maxByteSize;
         }
     }
 

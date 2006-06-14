@@ -44,7 +44,7 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
  */
 public class ConfigurationUtil {
 	
-	static Logger LOGGER = Logger.getLogger(ConfigurationUtil.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(ConfigurationUtil.class.getName());
 
     private ConfigurationUtil() {
         // prevent instantiation
@@ -148,12 +148,12 @@ public class ConfigurationUtil {
         return configuration.getInteger(DATASOURCE_GEN.maximumDepth);
     }
 
-    public static void setMaximumByteSize(int maximumSize, RDFContainer configuration) {
+    public static void setMaximumByteSize(long maximumSize, RDFContainer configuration) {
         configuration.put(DATASOURCE_GEN.maximumSize, maximumSize);
     }
 
-    public static Integer getMaximumByteSize(RDFContainer configuration) {
-        return configuration.getInteger(DATASOURCE_GEN.maximumSize);
+    public static Long getMaximumByteSize(RDFContainer configuration) {
+        return configuration.getLong(DATASOURCE_GEN.maximumSize);
     }
 
     public static void setIncludeHiddenResources(boolean value, RDFContainer configuration) {

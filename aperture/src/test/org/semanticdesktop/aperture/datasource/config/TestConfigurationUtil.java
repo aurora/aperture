@@ -7,7 +7,6 @@
 package org.semanticdesktop.aperture.datasource.config;
 
 import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.n3.N3Writer;
 import org.openrdf.sesame.repository.Repository;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -48,10 +47,10 @@ public class TestConfigurationUtil extends ApertureTestBase {
     }
 
     public void testMaximumByteSize() {
-        int size1 = 8192;
+        long size1 = 8192L;
         ConfigurationUtil.setMaximumByteSize(size1, configuration);
-        Integer size2 = ConfigurationUtil.getMaximumByteSize(configuration);
-        assertEquals(size1, size2.intValue());
+        Long size2 = ConfigurationUtil.getMaximumByteSize(configuration);
+        assertEquals(size1, size2.longValue());
     }
 
     public void testIncludeHiddenResources() {

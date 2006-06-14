@@ -113,7 +113,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 	private ArrayList baseFolders = new ArrayList();
 
-	private int maximumByteSize;
+	private long maximumByteSize;
 
 	private Store store;
 
@@ -253,12 +253,12 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		}
 
 		// determine the maximum byte size
-		Integer maximumSize = ConfigurationUtil.getMaximumByteSize(config);
+		Long maximumSize = ConfigurationUtil.getMaximumByteSize(config);
 		if (maximumSize == null) {
-			maximumByteSize = Integer.MAX_VALUE;
+			maximumByteSize = Long.MAX_VALUE;
 		}
 		else {
-			maximumByteSize = maximumSize.intValue();
+			maximumByteSize = maximumSize.longValue();
 		}
 
 		// make sure we get rid of any store that may relate to an older configuration
