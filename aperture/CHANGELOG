@@ -52,6 +52,9 @@ improvements:
 - introduced HtmlParserUtil, containing large parts of the HtmlExtractor
   implementation, as HTML (fragments) may occur in other document types as
   well (e.g. saved mails, see MimeExtractor)
+- the maximumSize property is now a long instead of an int
+- added ThreadedExtractorWrapper class, for catching and interrupting hanging
+  Extractors
 
 updated dependencies:
 - JavaMail 1.4
