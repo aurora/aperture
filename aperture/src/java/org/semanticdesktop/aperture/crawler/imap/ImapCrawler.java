@@ -208,7 +208,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		hostName = ConfigurationUtil.getHostname(config);
 		userName = ConfigurationUtil.getUsername(config);
 		password = ConfigurationUtil.getPassword(config);
-		
+
 		baseFolders.clear();
 		baseFolders.addAll(ConfigurationUtil.getBasepaths(config));
 
@@ -530,15 +530,15 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 		return buffer.toString();
 	}
-	
+
 	private String getFolderName(String url) {
 		if (!url.startsWith("imap://")) {
 			return null;
 		}
-		
+
 		int firstIndex = url.indexOf('/', 7);
-		int lastIndex = url.lastIndexOf('/');
-		
+		int lastIndex = url.endsWith(";TYPE=LIST") ? url.lastIndexOf(';') : url.lastIndexOf('/');
+
 		if (firstIndex >= 0 && lastIndex > firstIndex) {
 			String substring = url.substring(firstIndex + 1, lastIndex);
 			try {
@@ -838,7 +838,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			else {
 				folder = store.getFolder(folderName);
 			}
-			
+
 			if (!folder.exists()) {
 				throw new UrlNotFoundException(url, "unknown folder");
 			}
