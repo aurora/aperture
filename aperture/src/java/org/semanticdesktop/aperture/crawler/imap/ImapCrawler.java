@@ -368,7 +368,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	 * @return boolean
 	 * @throws MessagingException
 	 */
-	private boolean holdsFolders(Folder folder) throws MessagingException {
+	public static boolean holdsFolders(Folder folder) throws MessagingException {
 		return (folder.getType() & Folder.HOLDS_FOLDERS) == Folder.HOLDS_FOLDERS;
 	}
 
@@ -379,7 +379,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	 * @return boolean
 	 * @throws MessagingException
 	 */
-	private boolean holdsMessages(Folder folder) throws MessagingException {
+	public static boolean holdsMessages(Folder folder) throws MessagingException {
 		return (folder.getType() & Folder.HOLDS_MESSAGES) == Folder.HOLDS_MESSAGES;
 	}
 
@@ -531,7 +531,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		return buffer.toString();
 	}
 
-	private String getFolderName(String url) {
+	public static String getFolderName(String url) {
 		if (!url.startsWith("imap://")) {
 			return null;
 		}
@@ -555,7 +555,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 	// does the same as HttpClientUtil.formUrlEncode (i.e. RFC 1738) except for encoding the slash,
 	// which should not be encoded according to RFC 2192.
-	private String encodeFolderName(String string) {
+	public static String encodeFolderName(String string) {
 		int length = string.length();
 		StringBuffer buffer = new StringBuffer(length + 10);
 
