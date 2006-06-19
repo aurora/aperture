@@ -104,7 +104,7 @@ public class ConfigurationUtil {
     	// now add the new paths
     	iterator = basepaths.iterator();
     	while (iterator.hasNext()) {
-    		Literal path = (Literal) iterator.next();
+    		String path = (String) iterator.next();
     		configuration.add(DATASOURCE_GEN.basepath, path);
     	}
     }
