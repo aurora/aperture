@@ -843,7 +843,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 				throw new UrlNotFoundException(url, "unknown folder");
 			}
 
-			if (!folder.isOpen()) {
+			if (!folder.isOpen() && holdsMessages(folder)) {
 				folder.open(Folder.READ_ONLY);
 			}
 
