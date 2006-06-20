@@ -393,7 +393,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	 * @throws MessagingException
 	 */
 	private DataObject crawlFolderFolder(Folder folder, DataObject folderObject, int depth) {
-		if (depth + 1 > maxDepth && maxDepth > 0) {
+		if (depth + 1 > maxDepth && maxDepth >= 0) {
 			LOGGER.info("Reached crawling depth limit (" + maxDepth + ") - stopping.");
 			return null;
 		}
