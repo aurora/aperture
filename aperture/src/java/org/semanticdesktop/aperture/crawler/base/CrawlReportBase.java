@@ -162,7 +162,7 @@ public class CrawlReportBase implements CrawlReport {
     }
 
     public String toString() {
-        return "CrawlReport[crawlStarted=" + crawlStarted + ", crawlStopped=" + crawlStopped + ", exitCode ="
+        return "CrawlReport[crawlStarted=" + crawlStarted + ", crawlStopped=" + crawlStopped + ", exitCode="
                 + exitCode + ", newCount=" + newCount + ", changedCount=" + changedCount + ", removedCount="
                 + removedCount + ", unchangedCount=" + unchangedCount + "]";
     }
