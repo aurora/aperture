@@ -26,7 +26,7 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class PlainTextExtractor implements Extractor {
 
-	// Every developer should real Joel Spolsky's "The Absolute Minimum Every Software Developer Absolutely,
+	// Every developer should read Joel Spolsky's "The Absolute Minimum Every Software Developer Absolutely,
 	// Positively Must Know About Unicode and Character Sets (No Excuses!)"
 	// See: http://www.joelonsoftware.com/articles/Unicode.html
 
