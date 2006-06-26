@@ -120,11 +120,16 @@ public class DataObjectFactory {
 		// convert the HashMap representation to a DataObject representation
 		ArrayList result = new ArrayList();
 		createDataObjects(map, folderUri, result);
+
 		// The first object is the Message itself, add RDF type to it
-		// TODO: Is this ok? Can we guarantee that getMetaData returns the SAME store as before?
 		RDFContainer msgObject=((DataObject) result.get(0)).getMetadata();
 		msgObject.add(RDF.TYPE, DATA.Email);
-		msgObject.add(DATA.messageID,message.getMessageID());
+		
+		String messageID = message.getMessageID();
+		if (messageID != null) {
+			msgObject.add(DATA.messageID, messageID);
+		}
+		
 		return result;
 	}
 
