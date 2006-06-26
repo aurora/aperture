@@ -70,3 +70,4 @@ bug fixes:
 - [ 1481111 ] XmlExtractor needs improved DTD handling
 - [ 1481132 ] OpenDocumentExtractor unable to load DTDs from jar files
 - [ 1481759 ] Unable to use IMAP over SSL with JavaMail 1.4
+- many bugfixes in ImapCrawler's incremental crawling

@@ -16,6 +16,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -321,7 +322,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	}
 
 	private void crawlFolder(Folder folder, int depth) throws MessagingException {
-		// skip if the folder does not exist
+		// skip if there is a problem
 		if (folder == null) {
 			LOGGER.info("passed null folder, ignoring");
 			return;
@@ -330,31 +331,17 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			LOGGER.info("folder does not exist: \"" + folder.getFullName() + "\"");
 			return;
 		}
-		else {
-			LOGGER.info("crawling folder \"" + folder.getFullName() + "\"");
-		}
 
-		DataObject folderObject = null;
-		boolean crawled = false;
+		// crawl the folder and its messages, if any
+		LOGGER.info("crawling folder \"" + folder.getFullName() + "\"");
+		crawlSingleFolder(folder);
 
-		// crawl messages if folder contains them
-		if (holdsMessages(folder)) {
-			LOGGER.info("crawling messages in folder \"" + folder.getFullName() + "\"");
-			folderObject = crawlMessageFolder(folder);
-			crawled = true;
-		}
-
-		// folders can contain both folders and messages under some imap implementations
-		// craw folders if folder contains them
+		// crawl its subfolders, if any and when allowed
 		if (holdsFolders(folder)) {
-			LOGGER.info("crawling folders in folder \"" + folder.getFullName() + "\"");
-			folderObject = crawlFolderFolder(folder, folderObject, depth);
-			crawled = true;
+			LOGGER.info("crawling subfolders in folder \"" + folder.getFullName() + "\"");
+			crawlSubFolders(folder, depth);
 		}
 
-		if (!crawled) {
-			LOGGER.info("Folder contains neither folders nor messages: \"" + folder.getFullName() + "\"");
-		}
 		if (folder.isOpen()) {
 			// close the folder without deleting expunged messages
 			folder.close(false);
@@ -362,104 +349,20 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	}
 
 	/**
-	 * Does this folder hold messages?
-	 * 
-	 * @param folder
-	 * @return boolean
-	 * @throws MessagingException
+	 * Does this folder hold any subfolders?
 	 */
 	public static boolean holdsFolders(Folder folder) throws MessagingException {
 		return (folder.getType() & Folder.HOLDS_FOLDERS) == Folder.HOLDS_FOLDERS;
 	}
 
 	/**
-	 * Does this folder hold other folders?
-	 * 
-	 * @param folder
-	 * @return boolean
-	 * @throws MessagingException
+	 * Does this folder hold any messages?
 	 */
 	public static boolean holdsMessages(Folder folder) throws MessagingException {
 		return (folder.getType() & Folder.HOLDS_MESSAGES) == Folder.HOLDS_MESSAGES;
 	}
 
-	/**
-	 * Crawl a folders subfolder
-	 * 
-	 * @param folder - the folder to crawl
-	 * @param folderObject - the DataObject, if this folder already contained messages
-	 * @param depth - the current depth
-	 * @return the dataobject
-	 * @throws MessagingException
-	 */
-	private DataObject crawlFolderFolder(Folder folder, DataObject folderObject, int depth) {
-		if (depth + 1 > maxDepth && maxDepth >= 0) {
-			LOGGER.info("Reached crawling depth limit (" + maxDepth + ") - stopping.");
-			return null;
-		}
-
-		try {
-			String folderUrl = getURIPrefix(folder) + ";TYPE=LIST";
-
-			if (!inDomain(folderUrl))
-				// see comment below in CrawlFolderMessages
-				return null;
-
-			if (folderObject == null) {
-				// if this folder wasn't already crawled by message crawling..
-				// report the folder's metadata
-
-				RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, folderUrl);
-				try {
-					folderObject = getObject(folder, folderUrl, source, accessData, containerFactory);
-				}
-				catch (MessagingException e) {
-					// just log this exception and continue, perhaps the messages can still be accessed
-					LOGGER.log(Level.WARNING, "Exception while crawling folder " + folderUrl, e);
-				}
-
-				if (folderObject == null) {
-					// folder was not modified. Do NOT use reportNotModified: we do not want to register all
-					// children as unmodified as well, as they will be investigated independently below
-					crawlReport.increaseUnchangedCount();
-					handler.objectNotModified(this, folderUrl);
-					deprecatedUrls.remove(folderUrl);
-				}
-				else {
-					// report this object as a new object (assumption: objects are always new, never
-					// changed, since mails are immutable)
-					crawlReport.increaseNewCount();
-					handler.objectNew(this, folderObject);
-				}
-			}
-
-			Folder[] subFolders = folder.list();
-			LOGGER.fine("Crawling " + subFolders.length + " sub-folders.");
-			for (int i = 0; !isStopRequested() && i < subFolders.length; i++) {
-				try {
-					crawlFolder(subFolders[i], depth + 1);
-				}
-				catch (MessagingException e) {
-					LOGGER.info("Error crawling subFolder \"" + subFolders[i].getFullName() + "\"");
-					// but continue..
-				}
-			}
-		}
-		catch (MessagingException e) {
-			LOGGER.log(Level.INFO, "Exception while crawling folder for subFolders: ", e);
-		}
-
-		return folderObject;
-	}
-
-	/**
-	 * Crawl a folder containing messages
-	 * 
-	 * @param folder
-	 * @return the dataobject created or null
-	 * @throws MessagingException
-	 */
-	private DataObject crawlMessageFolder(Folder folder) throws MessagingException {
+	private void crawlSingleFolder(Folder folder) throws MessagingException {
 		// open the folder in read-only mode
 		if (!folder.isOpen()) {
 			folder.open(Folder.READ_ONLY);
@@ -468,43 +371,71 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		// report the folder's metadata
 		String folderUrl = getURIPrefix(folder) + ";TYPE=LIST";
 
-		if (!inDomain(folderUrl))
+		if (!inDomain(folderUrl)) {
 			// This gives us different semantics to domainboundaries than the filecrawler,
 			// which will still process sub-folder/files when something is not in the domain,
 			// however, i think that's wrong :) - (says Gunnar)
-			return null;
+			return;
+		}
+
+		// see if this object has been encountered before (we must do this before applying the accessor!)
+		boolean knownObject = accessData == null ? false : accessData.isKnownId(folderUrl);
+		deprecatedUrls.remove(folderUrl);
 
 		RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, folderUrl);
 
 		try {
 			FolderDataObject folderObject = getObject(folder, folderUrl, source, accessData, containerFactory);
 			if (folderObject == null) {
-				// folder was not modified. Do NOT use reportNotModified: we do not want to register all
-				// children as unmodified as well, as they will be investigated independently below
-				// crawlReport.increaseUnchangedCount();
-				// handler.objectNotModified(this, folderUrl);
-				// deprecatedUrls.remove(folderUrl);
-
-				// This should be ok - it reports all children MESSAGES as unchanged.
-				// children folders will be dealt with later, if they exist.
+				// report this folder and all its messages as unchanged
 				reportNotModified(folderUrl);
 			}
 			else {
-				// report this object as a new object (assumption: objects are always new, never
-				// changed, since mails are immutable)
-				crawlReport.increaseNewCount();
-				handler.objectNew(this, folderObject);
-				// crawl its messages
-				crawlMessages((IMAPFolder) folder, folderObject.getID());
-				return folderObject;
+				// report this new or changed folder
+				if (knownObject) {
+					handler.objectChanged(this, folderObject);
+					crawlReport.increaseChangedCount();
+				}
+				else {
+					handler.objectNew(this, folderObject);
+					crawlReport.increaseNewCount();
+				}
+
+				// (re-)crawl its messages
+				if (holdsMessages(folder)) {
+					crawlMessages((IMAPFolder) folder, folderObject.getID());
+				}
 			}
 		}
 		catch (MessagingException e) {
 			// just log this exception and continue, perhaps the messages can still be accessed
 			LOGGER.log(Level.WARNING, "Exception while crawling folder " + folderUrl, e);
 		}
+	}
 
-		return null;
+	private void crawlSubFolders(Folder folder, int depth) {
+		if (depth + 1 > maxDepth && maxDepth >= 0) {
+			LOGGER.info("Reached crawling depth limit (" + maxDepth + ") - stopping.");
+			return;
+		}
+
+		try {
+			Folder[] subFolders = folder.list();
+			LOGGER.fine("Crawling " + subFolders.length + " sub-folders.");
+			for (int i = 0; !isStopRequested() && i < subFolders.length; i++) {
+				try {
+					crawlFolder(subFolders[i], depth + 1);
+				}
+				catch (MessagingException e) {
+					LOGGER.info("Error crawling subfolder \"" + subFolders[i].getFullName() + "\"");
+					// but continue..
+				}
+			}
+		}
+		catch (MessagingException e) {
+			LOGGER.log(Level.INFO, "Exception while crawling subFolders of \"" + folder.getFullName() + "\"",
+				e);
+		}
 	}
 
 	private String getURIPrefix(Folder folder) throws MessagingException {
@@ -595,30 +526,67 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	}
 
 	private void crawlMessages(IMAPFolder folder, URI folderUri) throws MessagingException {
-		// fetch all messages
+		LOGGER.fine("Crawling messages in folder " + folder.getFullName());
+
+		// determine the set of messages we haven't seen yet, to prevent prefetching the content info for old
+		// messages: especially handy when only a few mails were added to a large folder.
 		Message[] messages = folder.getMessages();
 		String messagePrefix = getURIPrefix(folder) + "/";
 
-		LOGGER.fine("Crawling " + messages.length + " messages from folder " + folder.getFullName());
-
-		// determine the set of messages we haven't seen yet (this will also include all messages skipped
-		// because they were too large, but ok). The getObject method will also perform this check, but
-		// skipping them upfront will let us prevent prefetching the content info for old messages:
-		// especially handy when only a few mails were added to a large folder.
 		if (accessData != null) {
 			ArrayList filteredMessages = new ArrayList(messages.length);
 
+			// when messages disappear from the array, we must make sure they are removed from the list of
+			// child IDs of the folder
+			String folderUriString = folderUri.toString();
+			Set deprecatedChildren = accessData.getReferredIDs(folderUriString);
+			if (deprecatedChildren == null) {
+				deprecatedChildren = Collections.EMPTY_SET;
+			}
+			else {
+				deprecatedChildren = new HashSet(deprecatedChildren);
+			}
+
+			// loop over all messages
 			for (int i = 0; i < messages.length; i++) {
 				MimeMessage message = (MimeMessage) messages[i];
 				long messageID = folder.getUID(message);
+
+				// determine the uri
 				String uri = messagePrefix + messageID;
 
+				// remove this URI from the set of deprecated children
+				deprecatedChildren.remove(uri);
+
+				// see if we've seen this message before
 				if (accessData.get(uri, ACCESSED_KEY) == null) {
-					filteredMessages.add(message);
+					// we haven't: register it for processing if it's not deleted/marked for deletion, etc.
+					if (isAcceptable(message)) {
+						filteredMessages.add(message);
+					}
+				}
+				else {
+					// we've seen this before: if it's not a removed message, it must be an unmodified message
+					if (isRemoved(message)) {
+						// this message models a deleted or expunged mail: make sure it does no longer appear
+						// as a child data object of the folder
+						accessData.removeReferredID(folderUriString, uri);
+					}
+					else {
+						reportNotModified(messagePrefix + messageID);
+					}
 				}
 			}
 
+			// create the subset of messages that we will process
 			messages = (Message[]) filteredMessages.toArray(new Message[filteredMessages.size()]);
+
+			// remove all child IDs that we did not encounter in the above loop
+			Iterator iterator = deprecatedChildren.iterator();
+			while (iterator.hasNext()) {
+				String childUri = (String) iterator.next();
+				accessData.removeReferredID(folderUriString, childUri);
+			}
 		}
 
 		// pre-fetch content info for the selected messages (assumption: all other info has already been
@@ -634,8 +602,9 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			String uri = messagePrefix + messageID;
 
 			try {
-				if (inDomain(uri))
+				if (inDomain(uri)) {
 					crawlMessage(message, uri, folderUri);
+				}
 			}
 			catch (Exception e) {
 				// just log these exceptions; as they only affect a single message, they are
@@ -701,8 +670,29 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		}
 	}
 
+	private boolean isRemoved(Message message) throws MessagingException {
+		return message.isExpunged() || message.isSet(Flags.Flag.DELETED);
+	}
+
+	private boolean isTooLarge(Message message) throws MessagingException {
+		return message.getSize() > maximumByteSize;
+	}
+
 	private boolean isAcceptable(Message message) throws MessagingException {
-		return !(message.isExpunged() || message.isSet(Flags.Flag.DELETED) || message.getSize() > maximumByteSize);
+		return !(isRemoved(message) || isTooLarge(message));
+	}
+
+	private int getMessageCount(Message[] messages) throws MessagingException {
+		int result = 0;
+
+		for (int i = 0; i < messages.length; i++) {
+			Message message = messages[i];
+			if (!isRemoved(message)) {
+				result++;
+			}
+		}
+
+		return result;
 	}
 
 	private void reportNotModified(String uri) {
@@ -959,53 +949,58 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 		// check if the folder has changed
 		if (accessData != null) {
-			int unchanged = -1;
+			// the results default to 'true'; unless we can find complete evidence that the folder has not
+			// changed, we will always access the folder
+			boolean messagesChanged = true;
+			boolean foldersChanged = true;
 
 			if (holdsMessages(folder)) {
-
 				String nextUIDString = accessData.get(url, NEXT_UID_KEY);
 				String sizeString = accessData.get(url, SIZE_KEY);
-				if (nextUIDString != null && sizeString != null) {
 
+				// note: this is -1 for servers that don't support retrieval of a next UID, meaning that the
+				// folder will always be reported as changed when it should have been unmodified
+				long nextUID = imapFolder.getUIDNext();
+
+				if (nextUIDString != null && sizeString != null && nextUID != -1L) {
 					try {
 						// parse stored information
-						long nextUID = Long.parseLong(nextUIDString);
-						long size = Integer.parseInt(sizeString);
+						long previousNextUID = Long.parseLong(nextUIDString);
+						long previousSize = Integer.parseInt(sizeString);
 
-						// determine new information
+						// determine the new folder size, excluding all deleted/deletion-marked messages
 						messages = folder.getMessages();
+						FetchProfile profile = new FetchProfile();
+						profile.add(FetchProfile.Item.FLAGS); // needed for DELETED flag
+						folder.fetch(messages, profile);
+						int messageCount = getMessageCount(messages);
 
-						// compare
-						if (nextUID == imapFolder.getUIDNext() && size == messages.length)
-							unchanged = 1;
+						// compare the folder status with what we've stored in the AccessData
+						if (previousNextUID == nextUID && previousSize == messageCount) {
+							messagesChanged = false;
+						}
 					}
 					catch (NumberFormatException e) {
 						LOGGER.log(Level.WARNING,
 							"exception while parsing access data, ingoring access data", e);
 					}
 				}
-				else {
-					unchanged = 0;
-				}
-
 			}
 
-			if (holdsFolders(folder) && unchanged != 0) {
-				String subFolders = accessData.get(url, SUBFOLDERS_KEY);
+			if (holdsFolders(folder)) {
+				String registeredSubFolders = accessData.get(url, SUBFOLDERS_KEY);
 
-				if (subFolders != null) {
-
-					// no need to check this - folder.list returns [] for message-folders.
-					String latestSubfolders = getSubFoldersString(folder);
-					if (subFolders.equals(latestSubfolders)) {
-						unchanged = 1;
+				if (registeredSubFolders != null) {
+					String subfolders = getSubFoldersString(folder);
+					if (registeredSubFolders.equals(subfolders)) {
+						foldersChanged = false;
 					}
 				}
 			}
 
-			if (unchanged == 1) {
+			if (!messagesChanged && !foldersChanged) {
 				// the folder contents have not changed, we can return immediately
-				LOGGER.fine("Folder \"" + folder.getFullName() + "\" is unchanged.");
+				LOGGER.fine("Folder \"" + folder.getFullName() + "\" has not changed.");
 				return null;
 			}
 
@@ -1061,11 +1056,18 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		// register the access data of this url
 		if (accessData != null) {
 			if (holdsMessages(folder)) {
-				accessData.put(url, NEXT_UID_KEY, String.valueOf(imapFolder.getUIDNext()));
-				accessData.put(url, SIZE_KEY, String.valueOf(messages.length));
+				// getUIDNext may return -1 (unknown), be careful not to store that
+				long uidNext = imapFolder.getUIDNext();
+				if (uidNext != -1L) {
+					accessData.put(url, NEXT_UID_KEY, String.valueOf(imapFolder.getUIDNext()));
+				}
+
+				int messageCount = getMessageCount(messages);
+				accessData.put(url, SIZE_KEY, String.valueOf(messageCount));
 			}
-			if (holdsFolders(folder))
+			if (holdsFolders(folder)) {
 				accessData.put(url, SUBFOLDERS_KEY, getSubFoldersString(folder));
+			}
 		}
 
 		// if this is a base folder then add some metadata
@@ -1094,7 +1096,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 					buffer.append('@');
 				}
 			}
-
 		}
 
 		return buffer.toString();
@@ -1102,8 +1103,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 	/**
 	 * This is a socket factory that ignores ssl certificates.
-	 * 
-	 * @author grimnes $Id$
 	 */
 	public static class SimpleSocketFactory extends SSLSocketFactory {
 
