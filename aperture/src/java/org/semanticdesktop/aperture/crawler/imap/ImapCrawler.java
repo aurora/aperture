@@ -322,6 +322,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	}
 
 	private void crawlFolder(Folder folder, int depth) throws MessagingException {
+		if (isStopRequested()) {
+			return;
+		}
+		
 		// skip if there is a problem
 		if (folder == null) {
 			LOGGER.info("passed null folder, ignoring");
@@ -386,6 +390,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 		try {
 			FolderDataObject folderObject = getObject(folder, folderUrl, source, accessData, containerFactory);
+			
+			if (isStopRequested()) {
+				return;
+			}
+			
 			if (folderObject == null) {
 				// report this folder and all its messages as unchanged
 				reportNotModified(folderUrl);
@@ -526,6 +535,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	}
 
 	private void crawlMessages(IMAPFolder folder, URI folderUri) throws MessagingException {
+		if (isStopRequested()) {
+			return;
+		}
+		
 		LOGGER.fine("Crawling messages in folder " + folder.getFullName());
 
 		// determine the set of messages we haven't seen yet, to prevent prefetching the content info for old
@@ -548,7 +561,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			}
 
 			// loop over all messages
-			for (int i = 0; i < messages.length; i++) {
+			for (int i = 0; i < messages.length && !isStopRequested(); i++) {
 				MimeMessage message = (MimeMessage) messages[i];
 				long messageID = folder.getUID(message);
 
@@ -589,6 +602,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			}
 		}
 
+		if (isStopRequested()) {
+			return;
+		}
+		
 		// pre-fetch content info for the selected messages (assumption: all other info has already been
 		// pre-fetched when determining the folder's metadata, no need to prefetch it again)
 		FetchProfile profile = new FetchProfile();
@@ -596,7 +613,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		folder.fetch(messages, profile);
 
 		// crawl every selected message
-		for (int i = 0; !isStopRequested() && i < messages.length; i++) {
+		for (int i = 0; i < messages.length && !isStopRequested(); i++) {
 			MimeMessage message = (MimeMessage) messages[i];
 			long messageID = folder.getUID(message);
 			String uri = messagePrefix + messageID;
