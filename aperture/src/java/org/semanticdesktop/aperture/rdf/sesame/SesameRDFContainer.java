@@ -225,7 +225,13 @@ public class SesameRDFContainer implements RDFContainer {
 	}
 
 	public Boolean getBoolean(URI property) {
-		return new Boolean(getString(property));
+		String value = getString(property);
+		if (value == null) {
+			return null;
+		}
+		else {
+			return new Boolean(value);
+		}
 	}
 
 	public Integer getInteger(URI property) {

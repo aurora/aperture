@@ -112,6 +112,9 @@ public class TestSesameRDFContainer extends TestCase {
 		// check that a MultipleValuesException is thrown when "add" is used instead of "put"
 		container.add(PROP_STRING_URI, valFac.createLiteral("label3"));
 		
+		// check that you get null back for a missing boolean property
+		assertNull(container.getBoolean(PROP_BOOL_URI));
+		
 		try {
 			container.getString(PROP_STRING_URI);
 			fail();
