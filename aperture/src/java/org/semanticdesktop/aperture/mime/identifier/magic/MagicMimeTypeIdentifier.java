@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -494,5 +495,37 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 
 	public int getMinArrayLength() {
 		return minArrayLength;
+	}
+	
+	/**
+	 * Utility method for listing all known file extensions of the specified MIME type.
+	 * 
+	 * @return A List of file name extensions known to be used for the specified MIME type, or null when the
+	 *         MIME type was not recognized.
+	 */
+	public List getExtensionsFor(String mimeType) {
+		return getExtensionsFor(mimeType, mimeTypeDescriptions);
+	}
+
+	private List getExtensionsFor(String mimeType, ArrayList descriptions) {
+		// loop over the specified description
+		int nrExtensions = descriptions.size();
+		for (int i = 0; i < nrExtensions; i++) {
+			MimeTypeDescription description = (MimeTypeDescription) descriptions.get(i);
+			
+			// see if this description matches the required MIME type
+			if (description.getMimeType().equals(mimeType)) {
+				return description.getExtensions();
+			}
+			
+			// it doesn't, repeat recursively on dependent descriptions
+			List result = getExtensionsFor(mimeType, description.getRequiringTypes());
+			if (result != null) {
+				return result;
+			}
+		}
+
+		// the MIME type was not found in this branch
+		return null;
 	}
 }
