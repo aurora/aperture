@@ -382,6 +382,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			return;
 		}
 
+		handler.accessingObject(this, folderUrl);
+		
 		// see if this object has been encountered before (we must do this before applying the accessor!)
 		boolean knownObject = accessData == null ? false : accessData.isKnownId(folderUrl);
 		deprecatedUrls.remove(folderUrl);
