@@ -13,7 +13,7 @@ import org.semanticdesktop.aperture.rdf.RDFContainerFactory;
 /**
  * Creates SesameRDFContainer instances. 
  */
-public class SesameRDFContainerFactory implements RDFContainerFactory {
+public class SesameRDFContainerFactory implements RDFContainerFactory, org.semanticdesktop.aperture.accessor.RDFContainerFactory {
 
     public RDFContainer newInstance(String uri) {
         return new SesameRDFContainer(uri);
@@ -22,4 +22,10 @@ public class SesameRDFContainerFactory implements RDFContainerFactory {
     public RDFContainer newInstance(URI uri) {
         return new SesameRDFContainer(uri);
     }
+
+	public RDFContainer getRDFContainer(URI uri) {
+		return new SesameRDFContainer(uri);
+	}
+	
+	public static final SesameRDFContainerFactory DEFAULTFACTORY = new SesameRDFContainerFactory();
 }

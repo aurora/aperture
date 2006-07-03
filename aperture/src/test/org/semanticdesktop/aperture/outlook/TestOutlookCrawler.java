@@ -6,6 +6,8 @@
  */
 package org.semanticdesktop.aperture.outlook;
 
+import java.io.IOException;
+
 import junit.framework.TestCase;
 
 import org.openrdf.model.URI;
@@ -18,6 +20,7 @@ import org.openrdf.sesame.sail.SailUpdateException;
 import org.openrdf.sesame.sailimpl.memory.MemoryStore;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
+import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
@@ -30,26 +33,36 @@ import org.semanticdesktop.aperture.outlook.OutlookCrawler;
 import org.semanticdesktop.aperture.outlook.OutlookDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainerFactory;
 import org.semanticdesktop.aperture.util.LogUtil;
+import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DATA_GEN;
 
 /**
  * crawl through the locally installed outlook.
  * 
- * Note that this test is pretty useless when you are not running Outlook and have not included
- * the testdata file.
+ * Note that this test is pretty useless when you are not running Outlook and have not included the testdata
+ * file.
  * 
  * 
- * @author sauermann
- * $Id$
+ * @author sauermann $Id$
  */
 public class TestOutlookCrawler extends TestCase {
-	
+
 	public static URIImpl TESTID = new URIImpl("urn:test:outlookdatasource");
+
 	public static String TESTROOT = "test:local:outlook:";
 
+	public static String TESTAPPOINTMENTURI = TESTROOT + OutlookResource.Appointment.ITEMTYPE
+			+ "/00000000B2CDC30BFF2EED4ABA9C61436A07FE3384002000";
+
+	public static String TESTTASKURI = TESTROOT + OutlookResource.Task.ITEMTYPE
+			+ "/00000000B2CDC30BFF2EED4ABA9C61436A07FE33C4002000";
+
 	OutlookDataSource olds;
+
 	OutlookCrawler crawler;
-	
+
 	protected void setUp() throws Exception {
 		LogUtil.setFullLogging();
 		olds = new OutlookDataSource();
@@ -60,15 +73,15 @@ public class TestOutlookCrawler extends TestCase {
 		// 
 		// this is the test: folder/00000000B2CDC30BFF2EED4ABA9C61436A07FE3322800000
 		// exclude this: folder/00000000ECD4B99358B9814B9DAFE2255CD8AE9A22800000
-		bound.addExcludePattern(new SubstringPattern(TESTROOT+"folder/00000000ECD4B99358B9814B9DAFE2255CD8AE9A22800000", SubstringCondition.STARTS_WITH));
+		bound.addExcludePattern(new SubstringPattern(TESTROOT
+				+ "folder/00000000ECD4B99358B9814B9DAFE2255CD8AE9A22800000", SubstringCondition.STARTS_WITH));
 		ConfigurationUtil.setDomainBoundaries(bound, config);
 		olds.setConfiguration(config);
-		
-		//		 create a Crawler for this DataSource (hardcoded for now)
+
+		// create a Crawler for this DataSource (hardcoded for now)
 		crawler = new OutlookCrawler();
-		
+
 		crawler.setDataSource(olds);
-		
 
 	}
 
@@ -76,198 +89,236 @@ public class TestOutlookCrawler extends TestCase {
 		olds = null;
 		crawler = null;
 	}
-	
+
 	public void testCrawl() throws Exception {
-        // setup a CrawlerHandler
-        SimpleCrawlerHandler crawlerHandler = new SimpleCrawlerHandler();
-        crawler.setCrawlerHandler(crawlerHandler);
-        
-        crawler.crawl();
-        
-        // dump the repo
-        crawlerHandler.getRepository().export(new N3Writer(System.out));
-	}
-	
-	public void testCrawlWithDataAccess() throws Exception {
-		
-        // setup a CrawlerHandler
-		UpdatingCrawlerHandler crawlerHandler = new UpdatingCrawlerHandler();
-        crawler.setCrawlerHandler(crawlerHandler);
-        
-        AccessDataImpl access = new AccessDataImpl();
-		
-		crawler.setAccessData(access);
-		
+		// setup a CrawlerHandler
+		SimpleCrawlerHandler crawlerHandler = new SimpleCrawlerHandler();
+		crawler.setCrawlerHandler(crawlerHandler);
+
 		crawler.crawl();
-		int found = crawlerHandler.newCount;
-		
-		 // dump the repo
-		System.out.println("fist run: ");
-		dumpRepo(crawlerHandler.getRepository());
-       
-		
-        // second run
-        crawlerHandler = new UpdatingCrawlerHandler();
-        crawler.setCrawlerHandler(crawlerHandler);
-        crawler.crawl();
-        assertEquals("changed", 7, crawlerHandler.changedCount);
-        assertEquals("not modified", 7, crawlerHandler.notModifiedCount);
-        assertEquals("removed", 0, crawlerHandler.removedCount);
-        assertEquals("new objects", 0, crawlerHandler.newCount);
-	}
-	
-	
-    private void dumpRepo(Repository repository) throws RDFHandlerException, SailUpdateException {
-    	repository.changeNamespacePrefix("http://www.gnowsis.org/ont/vcard#", "vcard");
-       	repository.changeNamespacePrefix("http://www.w3.org/2002/12/cal/ical#", "ical");
-    	repository.changeNamespacePrefix("http://aperture.semanticdesktop.org/ontology/data#", "data");
-    	N3Writer w = new N3Writer(System.out);
-    	repository.export(w);
-		
+
+		// dump the repo
+		crawlerHandler.getRepository().export(new N3Writer(System.out));
 	}
 
+	public void testCrawlWithDataAccess() throws Exception {
+
+		// setup a CrawlerHandler
+		UpdatingCrawlerHandler crawlerHandler = new UpdatingCrawlerHandler();
+		crawler.setCrawlerHandler(crawlerHandler);
+
+		AccessDataImpl access = new AccessDataImpl();
+
+		crawler.setAccessData(access);
+
+		crawler.crawl();
+		int found = crawlerHandler.newCount;
+
+		// dump the repo
+		System.out.println("fist run: ");
+		dumpRepo(crawlerHandler.getRepository());
+
+		// second run
+		crawlerHandler = new UpdatingCrawlerHandler();
+		crawler.setCrawlerHandler(crawlerHandler);
+		crawler.crawl();
+		assertEquals("changed", 7, crawlerHandler.changedCount);
+		assertEquals("not modified", 7, crawlerHandler.notModifiedCount);
+		assertEquals("removed", 0, crawlerHandler.removedCount);
+		assertEquals("new objects", 0, crawlerHandler.newCount);
+	}
+
+	public void testAccessor() throws UrlNotFoundException, IOException {
+		OutlookAccessor access = new OutlookAccessor();
+		DataObject o = access.getDataObject(TESTAPPOINTMENTURI, olds, null,
+			SesameRDFContainerFactory.DEFAULTFACTORY);
+		RDFContainer rdf = o.getMetadata();
+		String s = rdf.getString(DATA.title);
+		assertEquals("title wrong", "Test Termin", s);
+		o.dispose();
+	}
+
+	public void testAccessorMoreAccess() throws UrlNotFoundException, IOException {
+		OutlookAccessor access = new OutlookAccessor();
+		{
+			DataObject o = access.getDataObject(TESTAPPOINTMENTURI, olds, null,
+				SesameRDFContainerFactory.DEFAULTFACTORY);
+			RDFContainer rdf = o.getMetadata();
+			String s = rdf.getString(DATA.title);
+			assertEquals("title wrong", "Test Termin", s);
+			o.dispose();
+		}
+		{
+			DataObject o = access.getDataObject(TESTTASKURI, olds, null,
+				SesameRDFContainerFactory.DEFAULTFACTORY);
+			RDFContainer rdf = o.getMetadata();
+			String s = rdf.getString(DATA.title);
+			assertEquals("title wrong", "Test this stuff now", s);
+			o.dispose();
+		}
+		{
+			DataObject o = access.getDataObject(TESTAPPOINTMENTURI, olds, null,
+				SesameRDFContainerFactory.DEFAULTFACTORY);
+			RDFContainer rdf = o.getMetadata();
+			String s = rdf.getString(DATA.title);
+			assertEquals("title wrong", "Test Termin", s);
+			o.dispose();
+		}
+		
+
+	}
+
+	private void dumpRepo(Repository repository) throws RDFHandlerException, SailUpdateException {
+		repository.changeNamespacePrefix("http://www.gnowsis.org/ont/vcard#", "vcard");
+		repository.changeNamespacePrefix("http://www.w3.org/2002/12/cal/ical#", "ical");
+		repository.changeNamespacePrefix("http://aperture.semanticdesktop.org/ontology/data#", "data");
+		N3Writer w = new N3Writer(System.out);
+		repository.export(w);
+
+	}
 
 	private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
-        private Repository repository;
+		private Repository repository;
 
-        int newCount;
+		int newCount;
 
-        private SesameRDFContainer lastContainer;
-        
-        public SimpleCrawlerHandler() {
-            // create a Repository
-            repository = new Repository(new MemoryStore());
+		private SesameRDFContainer lastContainer;
 
-            try {
-                repository.initialize();
-            }
-            catch (SailInitializationException e) {
-                // we cannot effectively continue
-                throw new RuntimeException(e);
-            }
+		public SimpleCrawlerHandler() {
+			// create a Repository
+			repository = new Repository(new MemoryStore());
 
-            // set auto-commit off so that all additions and deletions between two commits become a
-            // single transaction
-            try {
-                repository.setAutoCommit(false);
-            }
-            catch (SailUpdateException e) {
-                // we could theoretically continue (although much slower), but as this is a unit test,
-                // exit anyway
-                throw new RuntimeException(e);
-            }
+			try {
+				repository.initialize();
+			}
+			catch (SailInitializationException e) {
+				// we cannot effectively continue
+				throw new RuntimeException(e);
+			}
 
-            newCount = 0;
-        }
+			// set auto-commit off so that all additions and deletions between two commits become a
+			// single transaction
+			try {
+				repository.setAutoCommit(false);
+			}
+			catch (SailUpdateException e) {
+				// we could theoretically continue (although much slower), but as this is a unit test,
+				// exit anyway
+				throw new RuntimeException(e);
+			}
 
-        public Repository getRepository() {
-            return repository;
-        }
-        
-        public void crawlStarted(Crawler crawler) {
-            // no-op
-        }
+			newCount = 0;
+		}
 
-        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-            assertEquals(ExitCode.COMPLETED, exitCode);
-        }
+		public Repository getRepository() {
+			return repository;
+		}
 
-        public void accessingObject(Crawler crawler, String url) {
-            // no-op
-        }
+		public void crawlStarted(Crawler crawler) {
+		// no-op
+		}
 
-        public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
-            return this;
-        }
+		public void crawlStopped(Crawler crawler, ExitCode exitCode) {
+			assertEquals(ExitCode.COMPLETED, exitCode);
+		}
 
-        public RDFContainer getRDFContainer(URI uri) {
-            SesameRDFContainer container = new SesameRDFContainer(repository, uri);
-            container.setContext(uri);
-            
-            lastContainer = container;
-            
-            return container;
-        }
+		public void accessingObject(Crawler crawler, String url) {
+		// no-op
+		}
 
-        public void objectNew(Crawler dataCrawler, DataObject object) {
-        	newCount++;
+		public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
+			return this;
+		}
 
-            assertNotNull(object);
-            assertSame(lastContainer, object.getMetadata());
+		public RDFContainer getRDFContainer(URI uri) {
+			SesameRDFContainer container = new SesameRDFContainer(repository, uri);
+			container.setContext(uri);
 
-            String uri = object.getID().toString();
-            
-            object.dispose();
-            
-            try {
-                repository.commit();
-            }
-            catch (SailUpdateException e) {
-                fail();
-            }
-        }
+			lastContainer = container;
 
-        public void objectChanged(Crawler dataCrawler, DataObject object) {
-            object.dispose();
-            fail();
-        }
+			return container;
+		}
 
-        public void objectNotModified(Crawler crawler, String url) {
-            fail();
-        }
+		public void objectNew(Crawler dataCrawler, DataObject object) {
+			newCount++;
 
-        public void objectRemoved(Crawler dataCrawler, String url) {
-            fail();
-        }
+			assertNotNull(object);
+			assertSame(lastContainer, object.getMetadata());
 
-        public void clearStarted(Crawler crawler) {
-            fail();
-        }
+			String uri = object.getID().toString();
 
-        public void clearingObject(Crawler crawler, String url) {
-            fail();
-        }
+			object.dispose();
 
-        public void clearFinished(Crawler crawler, ExitCode exitCode) {
-            fail();
-        }
-    }
-    
-    private class UpdatingCrawlerHandler extends SimpleCrawlerHandler
-    {
-    	int changedCount = 0;
-    	int notModifiedCount = 0;
-    	int removedCount = 0;
-    	int cleared = 0;
-    	
-        public void objectChanged(Crawler dataCrawler, DataObject object) {
-        	changedCount++;
-            object.dispose();
-        }
+			try {
+				repository.commit();
+			}
+			catch (SailUpdateException e) {
+				fail();
+			}
+		}
 
-        public void objectNotModified(Crawler crawler, String url) {
-        	notModifiedCount++;
-        }
+		public void objectChanged(Crawler dataCrawler, DataObject object) {
+			object.dispose();
+			fail();
+		}
 
-        public void objectRemoved(Crawler dataCrawler, String url) {
-            removedCount++;
-        }
+		public void objectNotModified(Crawler crawler, String url) {
+			fail();
+		}
 
-        public void clearStarted(Crawler crawler) {
-            // no-op
-        }
+		public void objectRemoved(Crawler dataCrawler, String url) {
+			fail();
+		}
 
-        public void clearingObject(Crawler crawler, String url) {
-        	cleared++;
-        }
+		public void clearStarted(Crawler crawler) {
+			fail();
+		}
 
-        public void clearFinished(Crawler crawler, ExitCode exitCode) {
-            // no-op
-        }
-    	
-    }
+		public void clearingObject(Crawler crawler, String url) {
+			fail();
+		}
 
+		public void clearFinished(Crawler crawler, ExitCode exitCode) {
+			fail();
+		}
+	}
+
+	private class UpdatingCrawlerHandler extends SimpleCrawlerHandler {
+
+		int changedCount = 0;
+
+		int notModifiedCount = 0;
+
+		int removedCount = 0;
+
+		int cleared = 0;
+
+		public void objectChanged(Crawler dataCrawler, DataObject object) {
+			changedCount++;
+			object.dispose();
+		}
+
+		public void objectNotModified(Crawler crawler, String url) {
+			notModifiedCount++;
+		}
+
+		public void objectRemoved(Crawler dataCrawler, String url) {
+			removedCount++;
+		}
+
+		public void clearStarted(Crawler crawler) {
+		// no-op
+		}
+
+		public void clearingObject(Crawler crawler, String url) {
+			cleared++;
+		}
+
+		public void clearFinished(Crawler crawler, ExitCode exitCode) {
+		// no-op
+		}
+
+	}
 
 }
-

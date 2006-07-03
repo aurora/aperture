@@ -140,7 +140,7 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 	 * 
 	 * @see org.gnowsis.data.adapter.Adapter#beginCall()
 	 */
-	private void beginCall() {
+	protected void beginCall() {
 		if (source == null)
 			throw new RuntimeException("cannot prepare crawler, datasource not set");
 		
@@ -437,7 +437,7 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 	 * 
 	 * @see org.gnowsis.data.adapter.Adapter#endCall()
 	 */
-	private void endCall() {
+	protected void endCall() {
 		outlookMapi.safeRelease();
 		outlookMapi = null;
 		outlookApp.safeRelease();
@@ -457,7 +457,7 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 	 */
 	protected Dispatch getOutlookMapi() {
 		if (outlookMapi == null)
-			throw new RuntimeException("accessor is null, call to beginCall() missing.");
+			throw new RuntimeException("outlook MAPI is null, call to beginCall() missing.");
 		return outlookMapi;
 	}
 
