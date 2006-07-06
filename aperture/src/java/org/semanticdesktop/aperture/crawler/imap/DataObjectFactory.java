@@ -254,6 +254,11 @@ public class DataObjectFactory {
 			addIfNotNull(DATA.to, message.getRecipients(RecipientType.TO), result);
 			addIfNotNull(DATA.cc, message.getRecipients(RecipientType.CC), result);
 			addIfNotNull(DATA.bcc, message.getRecipients(RecipientType.BCC), result);
+			
+			if (message instanceof MimeMessage) {
+				MimeMessage mimeMessage = (MimeMessage) message;
+				addIfNotNull(DATA.sender, mimeMessage.getSender(), result);
+			}
 		}
 		else {
 			// this is most likely an attachment: set the InputStream's mime type as the data object's
@@ -632,6 +637,7 @@ public class DataObjectFactory {
 		copyDate(DATA.date, map, metadata);
 
 		copyAddresses(DATA.from, map, metadata);
+		copyAddresses(DATA.sender, map, metadata);
 		copyAddresses(DATA.to, map, metadata);
 		copyAddresses(DATA.cc, map, metadata);
 		copyAddresses(DATA.bcc, map, metadata);
