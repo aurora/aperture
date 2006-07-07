@@ -6,9 +6,15 @@
  */
 package org.semanticdesktop.aperture.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.StringTokenizer;
 
@@ -269,4 +275,47 @@ public class FileUtil {
         }
         return result;
     }
+    
+    /** Read a whole file as UTF-8
+     * @param filename
+     * @return String
+     * @throws IOException
+     * Stolen from Jena 
+     **/
+	public static String readWholeFileAsUTF8(String filename) throws IOException {
+        return readWholeFileAsEncoding(filename,"utf-8") ;
+    }
+	public static String readStreamAsUTF8(InputStream in) throws IOException { 
+		return readStreamAsEncoding(in,"utf-8");
+	}
+	public static String readStreamAsEncoding(InputStream in, String encoding) throws IOException { 
+		Reader r = new BufferedReader(asEncoding(in,encoding),1024) ;
+		StringWriter sw = new StringWriter(1024);
+		char buff[] = new char[1024];
+		while (r.ready()) {
+			int l = r.read(buff);
+			if (l <= 0)
+				break;
+			sw.write(buff, 0, l);
+		}
+		r.close();
+		sw.close();
+		return sw.toString();  
+	}
+	
+	public static String readWholeFileAsEncoding(String filename, String encoding) throws IOException { 
+		InputStream in = new FileInputStream(filename) ;
+		return readStreamAsEncoding(in,encoding);
+	}
+	
+	 /**
+	 * @param in
+	 * @param encoding
+	 * @return
+	 */
+	private static Reader asEncoding(InputStream in, String encoding) {
+		Charset charset=Charset.forName(encoding);
+		
+		return new InputStreamReader(in, charset.newDecoder());
+	}
 }

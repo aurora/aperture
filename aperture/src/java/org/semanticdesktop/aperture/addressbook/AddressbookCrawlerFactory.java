@@ -42,9 +42,11 @@ public class AddressbookCrawlerFactory implements CrawlerFactory {
 		RDFContainer config=dataSource.getConfiguration();
 		String type=config.getString(DATASOURCE.flavour);
 		
-		if (type.equalsIgnoreCase("thunderbird")) {
+		if (type.equalsIgnoreCase(ThunderbirdCrawler.TYPE)) {
 			return new ThunderbirdCrawler(dataSource);
-		} else { 
+		} else if (type.equalsIgnoreCase(AppleAddressbookCrawler.TYPE)) {
+			return new AppleAddressbookCrawler(dataSource);
+		} else {
 			LOGGER.severe("Unknown AddressbookDataSource flavour: "+type);
 			return null;
 		}

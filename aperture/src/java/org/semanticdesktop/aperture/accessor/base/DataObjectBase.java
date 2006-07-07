@@ -47,7 +47,7 @@ public class DataObjectBase implements DataObject {
         // implementation error on the side of the integrator. Issue a warning, as especially in the case
         // of FileDataObjectBase this may lead to unclosed streams. This is a trick learned from PDFBox.
         if (!disposed) {
-            LOGGER.log(Level.WARNING, "DataObject has not been disposed");
+            LOGGER.log(Level.WARNING, "DataObject has not been disposed. URI: "+id+" From DataSource: "+dataSource.getName()+" ["+dataSource.getID()+"]");
             
             // try to dispose of it now
             try {

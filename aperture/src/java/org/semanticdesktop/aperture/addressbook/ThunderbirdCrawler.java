@@ -47,6 +47,8 @@ import org.semanticdesktop.demork.database.Table;
  */
 public class ThunderbirdCrawler extends AddressbookCrawler {
 
+	public final static String TYPE="thunderbird";
+	
 	private final static String THUNDERBIRD_URI_BASE="urn:thunderbird:";
 	
 	static private List skipProperties=new Vector(); 

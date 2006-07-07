@@ -4,7 +4,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed May 31 12:06:38 CEST 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Thu Jul 06 13:37:34 CEST 2006
  * input file: doc/ontology/source.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/source#
  */
@@ -113,6 +113,14 @@ public class DATASOURCE_GEN {
      * Range: Class 
      */
     public static final URI describedDataSourceType = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#describedDataSourceType");
+
+    /**
+     * Label: encryptedPassword 
+     * Comment: This is a utility field that implementations can use to store encrypted password for added security. Note that aperture does not make use of this, and no restrictions on what encryption can be used are implied... ROT13 if you want. 
+     * Domain: DataSource 
+     * Range: Literal 
+     */
+    public static final URI encryptedPassword = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#encryptedPassword");
 
     /**
      * Label: excludePattern 

@@ -79,8 +79,10 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 			before.removeAll(current);
 			deprecatedUrls.addAll(before);
 			
+			crawlCompleted=true;
+			
 		} catch (Exception e) {
-			LOGGER.log(Level.INFO,"Could not crawl tag-datasource.",e);
+			LOGGER.log(Level.INFO,"Could not crawl addressbook-datasource.",e);
 			return ExitCode.FATAL_ERROR;
 		} 
 
