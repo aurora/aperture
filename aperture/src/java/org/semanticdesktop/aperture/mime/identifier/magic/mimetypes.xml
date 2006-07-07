@@ -145,7 +145,7 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 
 <description>
 	<mimeType>application/gzip</mimeType>
-	<extensions>gz,tgz</extensions>
+	<extensions>gz,tgz,z</extensions>
 	<magicNumber encoding="hex">1f 8b 08</magicNumber>
 </description>
 
@@ -173,7 +173,7 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<extensions>hqx</extensions>
 </description>
 
-<!-- ================== HTML Type ================== -->
+<!-- ================== Web Types ================== -->
 
 <description>
 	<mimeType>text/html</mimeType>
@@ -192,6 +192,22 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<magicString>&lt;body</magicString>
 	<magicString>&lt;h1></magicString>
 	<magicString>&lt;H1></magicString>
+</description>
+
+<description>
+	<mimeType>text/xml</mimeType>
+	<extensions>xml,xslt,wml</extensions>
+	<magicString>&lt;?xml</magicString>
+</description>
+
+<description>
+	<mimeType>text/css</mimeType>
+	<extensions>css</extensions>
+</description>
+
+<description>
+	<mimeType>text/javascript</mimeType>
+	<extensions>js</extensions>
 </description>
 
 <!-- ================== OpenOffice 1.x/StarOffice 6.x-7.x Types ================== -->
@@ -489,12 +505,6 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 </description>
 
 <description>
-	<mimeType>text/xml</mimeType>
-	<extensions>xml,xslt,wml</extensions>
-	<magicString>&lt;?xml</magicString>
-</description>
-
-<description>
 	<mimeType>application/x-framemaker</mimeType>
 	<extensions>book,fm,mif</extensions>
 	<magicNumber encoding="string">&lt;MakerFile</magicNumber>
@@ -530,6 +540,11 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<mimeType>application/x-ms-dos-executable</mimeType>
 	<extensions>exe</extensions>
 	<magicNumber encoding="string">MZ</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/bat</mimeType>
+	<extensions>bat</extensions>
 </description>
 
 <description>
@@ -645,6 +660,30 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<magicNumber encoding="string" offset="8">CDRA</magicNumber>
 </description>
 
+<description>
+	<mimeType>image/x-xfig</mimeType>
+	<extensions>fig</extensions>
+	<magicNumber encoding="string">#FIG</magicNumber>
+</description>
+
+<description>
+	<mimeType>image/wmf</mimeType>
+	<extensions>wmf</extensions>
+	<magicNumber encoding="hex">d7 cd c6 9a 00 00</magicNumber>
+	<magicNumber encoding="hex">01 00 09 00 00 03</magicNumber>
+</description>
+
+<description>
+	<mimeType>image/x-xbitmap</mimeType>
+	<extensions>xbm</extensions>
+</description>
+
+<description>
+	<mimeType>image/xpm</mimeType>
+	<extensions>xpm</extensions>
+	<magicNumber encoding="hex">2f 2a 20 58 50 4d 20 2a 2f 0a</magicNumber>
+</description>
+
 <!-- ================== Video and Multimedia Types ================== -->
 
 <description>
@@ -682,6 +721,13 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<mimeType>application/x-ogg</mimeType>
 	<extensions>ogg</extensions>
 	<magicNumber encoding="string">OggS</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/vnd.rn-realmedia</mimeType>
+	<extensions>rm,ram</extensions>
+	<magicNumber encoding="string">.RMF</magicNumber>
+	<magicNumber encoding="string">rtsp://</magicNumber>
 </description>
 
 <!-- ================== RIFF-based Types ================== -->
