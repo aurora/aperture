@@ -43,7 +43,7 @@ on trim_line(this_text, trim_chars, trim_indicator)
 end trim_line
 
 -- my own
-on myxmlescape(txt)
+on xmlescape(txt)
     set txt to replace_chars(txt,"&","&amp;")
 	set txt to replace_chars(txt,"<","&lt;")
 	set txt to replace_chars(txt,">","&gt;")
@@ -90,15 +90,19 @@ tell application "Address Book"
 	set out to "<rdf:RDF xmlns:data='http://aperture.semanticdesktop.org/ontology/data#' xmlns:foaf='http://xmlns.com/foaf/0.1/' xmlns:vcard='http://www.gnowsis.org/ont/vcard#' xmlns:rdfs='http://www.w3.org/2000/01/rdf-schema#' xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>" & return
 	repeat with p in people
 		set out to out & "<vcard:vCard rdf:about='urn:mac:addressbook:" & my urlencode(name of p) & "'>" & return 
-		set person_name to my myxmlescape(name of p)
+		set person_name to my xmlescape(name of p)
 		set out to out & "  <vcard:fullname>" & (person_name) & "</vcard:fullname>" & return 
 		set out to out & "  <rdfs:label>" & (person_name) & "</rdfs:label>" & return 
 		
 		repeat with e in emails of p
-			set em to my trim_line(my myxmlescape(value of e)," ",2)
+			set em to my trim_line(my xmlescape(value of e)," ",2)
 			set out to out & "  <vcard:email>" & em & "</vcard:email>" & return 
 			set out to out & "  <data:emailAddress>" & em & "</data:emailAddress>" & return 
 		end repeat
+		repeat with g in groups of p 
+			set gt to my trim_line(my xmlescape(name of g), " ", 2)
+		 	set out to out & "  <data:group>" & gt & "</data:group>" & return 
+		end repeat 
 		set out to out & "</vcard:vCard>" & return 
 	end repeat
 	set out to out & "</rdf:RDF>"

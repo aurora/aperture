@@ -4,7 +4,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Jun 09 10:43:08 CEST 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Jul 12 10:42:13 CEST 2006
  * input file: doc/ontology/data.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/data#
  */
@@ -187,6 +187,14 @@ content defaults to the value specified by the 'mimeType' property.
      * Range: Literal 
      */
     public static final URI generator = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#generator");
+
+    /**
+     * Label: group 
+     * Comment: The group of this entry, most address books lets you organize entries by groups "work", "personal", etc. This property is for representing this group. 
+     * Domain: AddressBookEntry 
+     * Range: Literal 
+     */
+    public static final URI group = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#group");
 
     /**
      * Label: homepage 

@@ -41,7 +41,7 @@ public class AppleAddressbookCrawlerTest extends TestCase implements CrawlerHand
 	public void testCrawl() throws Exception { 
 		DataSource ds=new AddressbookDataSource();
 		
-		ds.setConfiguration(new SesameRDFContainer("urn:TestThunderBirdDataSource"));
+		ds.setConfiguration(new SesameRDFContainer("urn:TestTAddressbookDataSource"));
 		ds.getConfiguration().put(DATASOURCE.flavour,AppleAddressbookCrawler.TYPE);
 		
 		CrawlerFactory cf=new AddressbookCrawlerFactory();
@@ -54,6 +54,7 @@ public class AppleAddressbookCrawlerTest extends TestCase implements CrawlerHand
 		repository=new Repository(new MemoryStore());
 		repository.initialize();
 		
+		System.err.println("Crawling addressbook... ");
 		c.crawl();
 		assertEquals("Crawling must have succeeded.",code,ExitCode.COMPLETED);
 		

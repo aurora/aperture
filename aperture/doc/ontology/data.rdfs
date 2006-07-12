@@ -164,6 +164,12 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
+<rdf:Property rdf:about="&data_;group"
+	 rdfs:label="group">
+	<rdfs:comment>The group of this entry, most address books lets you organize entries by groups "work", "personal", etc. This property is for representing this group.</rdfs:comment>
+	<rdfs:domain rdf:resource="&data_;AddressBookEntry"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
 <rdf:Property rdf:about="&data_;homepage"
 	 a:maxCardinality="1"
 	 rdfs:comment="The homepage url of the Agent/Person"
