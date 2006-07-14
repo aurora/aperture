@@ -70,7 +70,23 @@ public class TestMagicMimeTypeIdentifier extends ApertureTestBase {
 		checkMimeType("microsoft-visio.vsd", "application/vnd.visio", identifier);
 		checkMimeType("microsoft-publisher-2003.pub", "application/x-mspublisher", identifier);
 		checkMimeType("microsoft-works-word-processor-7.0.wps", "application/vnd.ms-works", identifier);
-
+		checkMimeType("microsoft-word-2007beta2.docm", "application/vnd.openxmlformats-officedocument.wordprocessingml", identifier);
+		checkMimeType("microsoft-word-2007beta2.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml", identifier);
+		checkMimeType("microsoft-word-2007beta2.dotm", "application/vnd.openxmlformats-officedocument.wordprocessingml", identifier);
+		checkMimeType("microsoft-word-2007beta2.dotx", "application/vnd.openxmlformats-officedocument.wordprocessingml", identifier);
+		checkMimeType("microsoft-excel-2007beta2.xlam", "application/vnd.openxmlformats-officedocument.spreadsheetml", identifier);
+		checkMimeType("microsoft-excel-2007beta2.xlsb", "application/vnd.openxmlformats-officedocument.spreadsheetml", identifier);
+		checkMimeType("microsoft-excel-2007beta2.xlsm", "application/vnd.openxmlformats-officedocument.spreadsheetml", identifier);
+		checkMimeType("microsoft-excel-2007beta2.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml", identifier);
+		checkMimeType("microsoft-excel-2007beta2.xltm", "application/vnd.openxmlformats-officedocument.spreadsheetml", identifier);
+		checkMimeType("microsoft-excel-2007beta2.xltx", "application/vnd.openxmlformats-officedocument.spreadsheetml", identifier);
+		checkMimeType("microsoft-powerpoint-2007beta2.potm", "application/vnd.openxmlformats-officedocument.presentationml", identifier);
+		checkMimeType("microsoft-powerpoint-2007beta2.potx", "application/vnd.openxmlformats-officedocument.presentationml", identifier);
+		checkMimeType("microsoft-powerpoint-2007beta2.ppsm", "application/vnd.openxmlformats-officedocument.presentationml", identifier);
+		checkMimeType("microsoft-powerpoint-2007beta2.ppsx", "application/vnd.openxmlformats-officedocument.presentationml", identifier);
+		checkMimeType("microsoft-powerpoint-2007beta2.pptm", "application/vnd.openxmlformats-officedocument.presentationml", identifier);
+		checkMimeType("microsoft-powerpoint-2007beta2.pptx", "application/vnd.openxmlformats-officedocument.presentationml", identifier);
+		
 		// try throwing some confusing stuff at it, e.g. files with wrong extensions (lacking a
 		// Word-specific magic number, it should still be able to see that the word document
 		// is an MS office document)

@@ -196,7 +196,7 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 
 <description>
 	<mimeType>text/xml</mimeType>
-	<extensions>xml,xslt,wml</extensions>
+	<extensions>xml,xsl,xslt,wml</extensions>
 	<magicString>&lt;?xml</magicString>
 </description>
 
@@ -322,7 +322,7 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<extensions>ott</extensions>
 </description>
 
-<!-- ================== MS Office Types ================== -->
+<!-- ================== MS Office Types (up to MS Office 2003, excluding the XML-based ones) ================== -->
 <!-- some research with xvi32 seems to indicate that actually the first 32 -->
 <!-- bytes of MS Office files are always the same -->
 
@@ -359,6 +359,26 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<mimeType>application/x-mspublisher</mimeType>
 	<parentType>application/vnd.ms-office</parentType>
 	<extensions>pub</extensions>
+</description>
+
+<!-- ================== MS Office 2007/OpenXML Types ================== -->
+
+<description>
+	<mimeType>application/vnd.openxmlformats-officedocument.wordprocessingml</mimeType>
+	<parentType>application/zip</parentType>
+	<extensions>docx,docm,dotx,dotm</extensions>
+</description>
+
+<description>
+	<mimeType>application/vnd.openxmlformats-officedocument.spreadsheetml</mimeType>
+	<parentType>application/zip</parentType>
+	<extensions>xlsx,xlsm,xltx,xltm,xlsb,xlam</extensions>
+</description>
+
+<description>
+	<mimeType>application/vnd.openxmlformats-officedocument.presentationml</mimeType>
+	<parentType>application/zip</parentType>
+	<extensions>pptx,pptm,potx,potm,ppam,ppsx,ppsm</extensions>
 </description>
 
 <!-- ================== StarOffice 5.x Types ================== -->
