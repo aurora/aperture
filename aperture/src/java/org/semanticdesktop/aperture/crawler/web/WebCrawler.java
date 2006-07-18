@@ -21,8 +21,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.sesame.sail.SailUpdateException;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -263,7 +261,6 @@ public class WebCrawler extends CrawlerBase {
 					}
 					// we have a new or changed object
 					else {
-
 						// if this is the root URI, add that metadata
 						if (depth == initialDepth) {
 							dataObject.getMetadata().add(DATA.rootFolderOf, source.getID());
@@ -392,30 +389,20 @@ public class WebCrawler extends CrawlerBase {
 			return;
 		}
 
-		// bail out if MIME type determination was unsuccesful
+		// fall-back to what the server returned
+		if (mimeType == null) {
+			mimeType = object.getMetadata().getString(DATA.mimeType);
+		}
+		else {
+			// overrule the DataObject's MIME type: magic-number based determination is much more reliable
+			// than what web servers return, especially for non-web formats
+			object.getMetadata().put(DATA.mimeType, mimeType);
+		}
+
+		// bail out if MIME type determination has still not produced anything
 		if (mimeType == null) {
 			return;
 		}
-
-		// overrule the DataObject's MIME type: magic-number based determination is much more reliable
-		// than what web servers return, especially for non-web formats
-		// FIXME: terrible hack to commit any open transactions or else the put method will not be able
-		// to overwrite the current MIME type as it has not been committed yet, leading to two MIME types
-		// and a consequential MultipleValuesException once the commit finally takes place
-		Object model = object.getMetadata().getModel();
-		if (model instanceof Repository) {
-			Repository repository = (Repository) model;
-			if (repository.isActive()) {
-				try {
-					repository.commit();
-				}
-				catch (SailUpdateException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		}
-
-		object.getMetadata().add(DATA.mimeType, mimeType);
 
 		// fetch a LinkExtractor for this MIME type and exit when there is none
 		LinkExtractor extractor = null;
