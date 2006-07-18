@@ -185,6 +185,8 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<magicString>&lt;title</magicString>
 	<magicString>&lt;!doctype HTML</magicString>
 	<magicString>&lt;!DOCTYPE HTML</magicString>
+	<magicString>&lt;!doctype html</magicString>
+	<magicString>&lt;!DOCTYPE html</magicString>
 	<magicString>&lt;!--</magicString>
 	<magicString>&lt;html</magicString>
 	<magicString>&lt;HTML</magicString>
