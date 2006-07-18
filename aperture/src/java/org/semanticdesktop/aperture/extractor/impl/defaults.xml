@@ -17,6 +17,9 @@
 		<name>org.semanticdesktop.aperture.extractor.opendocument.OpenDocumentExtractorFactory</name>
 	</extractorFactory>
 	<extractorFactory>
+		<name>org.semanticdesktop.aperture.extractor.openxml.OpenXmlExtractorFactory</name>
+	</extractorFactory>
+	<extractorFactory>
 		<name>org.semanticdesktop.aperture.extractor.pdf.PdfExtractorFactory</name>
 	</extractorFactory>
 	<extractorFactory>
