@@ -333,8 +333,6 @@ public class OpenXmlExtractor implements Extractor {
 			metadata.add(DATA.generator, value);
 		}
 		else if ("Pages".equals(localName) || "Slides".equals(localName)) {
-			System.out.println(localName + ": adding page count: " + value);
-
 			try {
 				metadata.add(DATA.pageCount, Integer.parseInt(value));
 			}
