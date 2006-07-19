@@ -267,15 +267,18 @@ public class WebCrawler extends CrawlerBase {
 						}
 
 						// as the url may have lead to redirections, the ID of the resulting DataObject may be
-						// different. Make sure this ID is never scheduled nor accessed again.
-						String idUrl = dataObject.getID().toString();
-						crawledUrls.add(idUrl);
-						
-						CrawlJob idUrlJob = (CrawlJob) jobsMap.remove(idUrl);
-						if (idUrlJob != null) {
-							jobsQueue.remove(idUrlJob);
+						// different. Make sure this ID is never scheduled, accessed again or reported anymore.
+						String finalUrl = dataObject.getID().toString();
+						if (!finalUrl.equals(url)) {
+							crawledUrls.add(finalUrl);
+							deprecatedUrls.remove(finalUrl);
+
+							CrawlJob idUrlJob = (CrawlJob) jobsMap.remove(finalUrl);
+							if (idUrlJob != null) {
+								jobsQueue.remove(idUrlJob);
+							}
 						}
-						
+
 						// only report the object when it does not exceed the size limit
 						if (hasAcceptableByteSize(dataObject)) {
 							// extract and schedule links
