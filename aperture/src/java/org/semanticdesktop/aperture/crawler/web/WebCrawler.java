@@ -266,13 +266,16 @@ public class WebCrawler extends CrawlerBase {
 							dataObject.getMetadata().add(DATA.rootFolderOf, source.getID());
 						}
 
-						// Make sure that the URI of the created DataObject is also registered as a
-						// crawled URL, rather than only the original URL we started with. The data
-						// accessor may for example follow redirections and we don't want to report the
-						// redirected URLs later on as changed objects when a page links to the
-						// redirected version of the URL directly.
-						crawledUrls.add(dataObject.getID().toString());
-
+						// as the url may have lead to redirections, the ID of the resulting DataObject may be
+						// different. Make sure this ID is never scheduled nor accessed again.
+						String idUrl = dataObject.getID().toString();
+						crawledUrls.add(idUrl);
+						
+						CrawlJob idUrlJob = (CrawlJob) jobsMap.remove(idUrl);
+						if (idUrlJob != null) {
+							jobsQueue.remove(idUrlJob);
+						}
+						
 						// only report the object when it does not exceed the size limit
 						if (hasAcceptableByteSize(dataObject)) {
 							// extract and schedule links
