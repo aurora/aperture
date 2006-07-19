@@ -46,4 +46,8 @@ public class CrawlJob {
     public void setDepth(int depth) {
         this.depth = depth;
     }
+    
+    public String toString() {
+    	return "{" + url + "," + depth + "}";
+    }
 }
