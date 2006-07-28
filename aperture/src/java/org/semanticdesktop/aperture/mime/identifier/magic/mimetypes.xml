@@ -363,7 +363,7 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<extensions>pub</extensions>
 </description>
 
-<!-- ================== MS Office 2007/OpenXML Types ================== -->
+<!-- ================== MS Office 2007/OpenXML/XPS Types ================== -->
 
 <description>
 	<mimeType>application/vnd.openxmlformats-officedocument.wordprocessingml</mimeType>
@@ -381,6 +381,12 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<mimeType>application/vnd.openxmlformats-officedocument.presentationml</mimeType>
 	<parentType>application/zip</parentType>
 	<extensions>pptx,pptm,potx,potm,ppam,ppsx,ppsm</extensions>
+</description>
+
+<description>
+	<mimeType>application/vnd.ms-xpsdocument</mimeType>
+	<parentType>application/zip</parentType>
+	<extensions>xps</extensions>
 </description>
 
 <!-- ================== StarOffice 5.x Types ================== -->
@@ -783,15 +789,15 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 <!-- ================== Miscellaneous Types ================== -->
 
 <description>
-	<mimeType>application/x-aduna-license-file</mimeType>
-	<extensions>alf</extensions>
-	<magicNumber encoding="string">ALF</magicNumber>
-</description>
-
-<description>
 	<mimeType>application/x-ms-registry</mimeType>
 	<extensions>reg</extensions>
 	<magicNumber encoding="string">regf</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/x-bittorrent</mimeType>
+	<extensions>torrent</extensions>
+	<magicNumber encoding="string">d8:announce</magicNumber>
 </description>
 
 </mimeTypes>
