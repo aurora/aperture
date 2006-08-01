@@ -339,9 +339,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 		// crawl the folder and its messages, if any
 		LOGGER.info("crawling folder \"" + folder.getFullName() + "\"");
-		if (holdsMessages(folder)) { 
-			crawlSingleFolder(folder);
-		}
+		crawlSingleFolder(folder);
 		
 		// crawl its subfolders, if any and when allowed
 		if (holdsFolders(folder)) {
@@ -371,7 +369,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 	private void crawlSingleFolder(Folder folder) throws MessagingException {
 		// open the folder in read-only mode
-		if (!folder.isOpen()) {
+		if (holdsMessages(folder) && !folder.isOpen()) {
 			folder.open(Folder.READ_ONLY);
 		}
 
