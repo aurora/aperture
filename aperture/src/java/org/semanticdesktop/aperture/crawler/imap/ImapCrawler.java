@@ -173,6 +173,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			}
 		}
 		catch (MessagingException e) {
+			LOGGER.log(Level.WARNING, "Exception while crawling. ", e);
 			fatalError = true;
 		}
 
@@ -338,8 +339,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 		// crawl the folder and its messages, if any
 		LOGGER.info("crawling folder \"" + folder.getFullName() + "\"");
-		crawlSingleFolder(folder);
-
+		if (holdsMessages(folder)) { 
+			crawlSingleFolder(folder);
+		}
+		
 		// crawl its subfolders, if any and when allowed
 		if (holdsFolders(folder)) {
 			LOGGER.info("crawling subfolders in folder \"" + folder.getFullName() + "\"");
