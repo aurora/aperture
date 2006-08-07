@@ -58,6 +58,7 @@ improvements:
 
 updated dependencies:
 - JavaMail 1.4
+- POI 3.0 alpha 2
 
 bug fixes:
 - [ 1444917 ] PlainTextExtractor ignores ByteOrderMarks
