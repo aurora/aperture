@@ -27,6 +27,7 @@ import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.util.OSUtils;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
@@ -139,7 +140,10 @@ public class FileSystemCrawler extends CrawlerBase {
 			} else { 
 				LOGGER.fine("Directory "+file.toURI()+" is not in domain. Skipping.");
 			}
-
+			
+			// Dont crawl into MacOSX bundles.
+			if (OSUtils.isMac() && OSUtils.isMacOSXBundle(file)) return true;
+			
 			// report nested Files
 			if (depth > 0) {
 				File[] nestedFiles = file.listFiles();
