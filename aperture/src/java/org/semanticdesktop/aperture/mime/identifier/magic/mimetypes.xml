@@ -712,6 +712,23 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<magicNumber encoding="hex">2f 2a 20 58 50 4d 20 2a 2f 0a</magicNumber>
 </description>
 
+<description>
+	<mimeType>image/x-dwf</mimeType>
+	<extensions>dwf</extensions>
+	<magicNumber encoding="string">(DWF</magicNumber>
+</description>
+
+<description>
+	<mimeType>image/x-dwg</mimeType>
+	<extensions>dwg</extensions>
+	<magicNumber encoding="string">AC</magicNumber>
+</description>
+
+<description>
+	<mimeType>image/x-dxf</mimeType>
+	<extensions>dxf</extensions>
+</description>
+
 <!-- ================== Video and Multimedia Types ================== -->
 
 <description>
