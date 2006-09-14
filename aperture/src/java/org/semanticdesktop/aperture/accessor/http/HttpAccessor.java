@@ -48,7 +48,27 @@ public class HttpAccessor implements DataAccessor {
     private static final String DATE_KEY = "date";
 
     private static final int MAX_REDIRECTIONS = 20;
+    
+    private int connectTimeout = 20000;
+    
+    private int readTimeout = 20000;
 
+    public void setConnectTimeout(int timeout) {
+    	this.connectTimeout = timeout;
+    }
+    
+    public int getConnectTimeout() {
+    	return connectTimeout;
+    }
+    
+    public void setReadTimeout(int timeout) {
+    	this.readTimeout = timeout;
+    }
+    
+    public int getReadTimeout() {
+    	return readTimeout;
+    }
+    
     public DataObject getDataObject(String url, DataSource source, Map params,
             RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException {
         return get(url, source, null, params, containerFactory);
@@ -175,6 +195,8 @@ public class HttpAccessor implements DataAccessor {
 
     private HttpURLConnection createConnection(URL url, Date ifModifiedSince) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setConnectTimeout(connectTimeout);
+        connection.setReadTimeout(readTimeout);
         HttpClientUtil.setAcceptGZIPEncoding(connection);
         connection.setInstanceFollowRedirects(false);
         if (ifModifiedSince != null) {
