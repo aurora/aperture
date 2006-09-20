@@ -14,7 +14,7 @@ import junit.framework.TestCase;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.util.FileUtil;
 
-public class TestAccessDataBase extends TestCase {
+public class TestFileAccessData extends TestCase {
 
 	private static final String TMP_SUBDIR = "TestFileAccessor.tmpDir";
 
