@@ -51,9 +51,7 @@ public class AccessDataImpl implements AccessData {
 	}
 
 	public int getSize() {
-		// warning: this assumes that every ID is at least stored in the idMap, i.e. IDs for which only
-		// parent-child relationships are stored are not counted.
-		return idMap.size();
+		return getStoredIDs().size();
 	}
 
 	public Set getStoredIDs() {
