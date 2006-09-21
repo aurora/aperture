@@ -26,6 +26,7 @@ import org.openrdf.sesame.repository.Repository;
 import org.openrdf.sesame.sail.SailUpdateException;
 import org.openrdf.util.iterator.CloseableIterator;
 import org.semanticdesktop.aperture.accessor.AccessData;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * RepositoryAccessData provides an AccessData implementation storing its information to and retrieving it
@@ -53,11 +54,6 @@ public class RepositoryAccessData implements AccessData {
 	 * URI modeling AccessData.BYTE_SIZE_KEY.
 	 */
 	public static final URI BYTE_SIZE_URI = new URIImpl(URI_PREFIX + BYTE_SIZE_KEY);
-
-	/**
-	 * URI modeling a referred ID relationship between two IDs.
-	 */
-	public static final URI REFERRED_ID_URI = new URIImpl(URI_PREFIX + "refersTo");
 
 	/**
 	 * The Repository holding the context information.
@@ -132,7 +128,7 @@ public class RepositoryAccessData implements AccessData {
 		HashSet<String> result = null;
 
 		try {
-			iterator = repository.getStatements(idURI, REFERRED_ID_URI, null, context);
+			iterator = repository.getStatements(idURI, DATA.linksTo, null, context);
 			while (iterator.hasNext()) {
 				RStatement statement = iterator.next();
 				RValue value = statement.getObject();
@@ -207,7 +203,7 @@ public class RepositoryAccessData implements AccessData {
 	public void putReferredID(String id, String referredID) {
 		URI subject = new URIImpl(id);
 		URI object = new URIImpl(referredID);
-		add(new StatementImpl(subject, REFERRED_ID_URI, object));
+		add(new StatementImpl(subject, DATA.linksTo, object));
 	}
 
 	public void remove(String id, String key) {
@@ -221,7 +217,7 @@ public class RepositoryAccessData implements AccessData {
 	public void removeReferredID(String id, String referredID) {
 		URI subject = new URIImpl(id);
 		URI object = new URIImpl(referredID);
-		Statement statement = new StatementImpl(subject, REFERRED_ID_URI, object);
+		Statement statement = new StatementImpl(subject, DATA.linksTo, object);
 
 		try {
 			repository.remove(statement, context);
