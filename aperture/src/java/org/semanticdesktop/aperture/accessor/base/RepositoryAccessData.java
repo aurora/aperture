@@ -20,6 +20,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.RValue;
 import org.openrdf.sesame.repository.Repository;
@@ -35,6 +36,10 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
  * <p>
  * This implementation assumes that IDs used to store data are valid URIs and that keys contain only
  * characters that can be used in URIs.
+ * 
+ * <p>
+ * The AccessData.DATE_KEY and AccessData.BYTE_SITE_KEY keys are mapped to Aperture DATA predicates. In that
+ * case the value must be a long encoded as a String.
  */
 public class RepositoryAccessData implements AccessData {
 
@@ -44,16 +49,6 @@ public class RepositoryAccessData implements AccessData {
 	 * Used as a prefix to derive URIs from AccessData key names.
 	 */
 	public static final String URI_PREFIX = "urn:accessdata:";
-
-	/**
-	 * URI modeling AccessData.DATE_KEY.
-	 */
-	public static final URI DATE_URI = new URIImpl(URI_PREFIX + DATE_KEY);
-
-	/**
-	 * URI modeling AccessData.BYTE_SIZE_KEY.
-	 */
-	public static final URI BYTE_SIZE_URI = new URIImpl(URI_PREFIX + BYTE_SIZE_KEY);
 
 	/**
 	 * The Repository holding the context information.
@@ -196,7 +191,9 @@ public class RepositoryAccessData implements AccessData {
 	public void put(String id, String key, String value) {
 		URI subject = new URIImpl(id);
 		URI predicate = toURI(key);
-		Literal object = new LiteralImpl(value);
+		URI dataType = (predicate == DATA.dateAsNumber || predicate == DATA.byteSize) ? XMLSchema.LONG
+				: XMLSchema.STRING;
+		Literal object = new LiteralImpl(value, dataType);
 		add(new StatementImpl(subject, predicate, object));
 	}
 
@@ -242,10 +239,10 @@ public class RepositoryAccessData implements AccessData {
 
 	private URI toURI(String key) {
 		if (key == AccessData.DATE_KEY) {
-			return DATE_URI;
+			return DATA.dateAsNumber;
 		}
 		else if (key == AccessData.BYTE_SIZE_KEY) {
-			return BYTE_SIZE_URI;
+			return DATA.byteSize;
 		}
 		else {
 			return new URIImpl(URI_PREFIX + key);
