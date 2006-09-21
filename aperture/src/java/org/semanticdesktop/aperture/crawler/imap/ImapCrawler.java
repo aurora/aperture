@@ -1140,7 +1140,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 				factory = (SSLSocketFactory) sslcontext.getSocketFactory();
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Exception while setting up SimpleSocketFactory", e);
 			}
 		}
 
@@ -1159,7 +1159,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 				factory = (SSLSocketFactory) sslcontext.getSocketFactory();
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Exception while setting up SimpleSocketFactory", e);
 			}
 		}
 
