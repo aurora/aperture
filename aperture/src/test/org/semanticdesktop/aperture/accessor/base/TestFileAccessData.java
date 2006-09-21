@@ -2,7 +2,7 @@
  * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
- * Licensed under the Academic Free License version 3.0.
+ * Licensed under the Open Software License version 3.0.
  */
 package org.semanticdesktop.aperture.accessor.base;
 
@@ -36,18 +36,22 @@ public class TestFileAccessData extends TestCase {
         FileUtil.deltree(tmpDir);
     }
 
+    public void testInputOutput() throws IOException {
+    	FileAccessData accessData = new FileAccessData(null);
+    	AccessDataTest.test(accessData);
+    }
+    
 	public void testFillStoreAndLoad() throws IOException {
 		// new object
-		FileAccessData accessDataBase = new FileAccessData(accessDataFile);
-		accessDataBase.initialize();
-		accessDataBase.put("urn:test", AccessData.DATE_KEY, "12");
-		accessDataBase.store();
+		FileAccessData accessData = new FileAccessData(accessDataFile);
+		accessData.initialize();
+		accessData.put("urn:test", AccessData.DATE_KEY, "12");
+		accessData.store();
 
 		// load
-		accessDataBase = new FileAccessData(accessDataFile);
-		accessDataBase.initialize();
-		String value = accessDataBase.get("urn:test", AccessData.DATE_KEY);
+		accessData = new FileAccessData(accessDataFile);
+		accessData.initialize();
+		String value = accessData.get("urn:test", AccessData.DATE_KEY);
 		assertEquals("12", value);
 	}
-
 }
