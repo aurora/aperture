@@ -34,8 +34,8 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
     
     public void finalize() throws Throwable {
         try {
-            // just try to close the InputStream once more: can remedy nasty programming errors
-            // not documented in the Javadoc as programmers shouldn't rely on this
+            // Just try to close the InputStream once more: can remedy nasty programming errors.
+            // Not documented in the Javadoc as programmers shouldn't rely on this.
             if (content != null) {
                 content.close();
             }
@@ -58,7 +58,9 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
     
     public void dispose() {
         try {
-            content.close();
+        	if (content != null) {
+        		content.close();
+        	}
         }
         catch (IOException e) {
             LOGGER.log(Level.WARNING, "IOException while closing stream", e);
