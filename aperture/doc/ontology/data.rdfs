@@ -191,6 +191,13 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
+<rdf:Property rdf:about="&data_;linksTo"
+	 a:maxCardinality="1"
+	 rdfs:label="linksTo">
+	<rdfs:comment>this document links to another - for example links on webpages</rdfs:comment>
+	<rdfs:range rdf:resource="&data_;FileDataObject"/>
+	<rdfs:domain rdf:resource="&data_;FileDataObject"/>
+</rdf:Property>
 <rdf:Property rdf:about="&data_;messageID"
 	 a:maxCardinality="1"
 	 rdfs:comment="The mailbox messageID of this message."
