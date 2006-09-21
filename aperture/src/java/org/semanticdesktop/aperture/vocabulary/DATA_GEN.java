@@ -4,7 +4,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Thu Sep 21 11:33:55 CEST 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Thu Sep 21 15:16:42 CEST 2006
  * input file: doc/ontology/data.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/data#
  */
@@ -143,6 +143,14 @@ content defaults to the value specified by the 'mimeType' property.
     public static final URI date = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#date");
 
     /**
+     * Label: dateAsNumber 
+     * Comment: The date expressed as a number, measured in milliseconds since the epoch (00:00:00 GMT, January 1, 1970). 
+     * Domain: DataObject 
+     * Range: Literal 
+     */
+    public static final URI dateAsNumber = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#dateAsNumber");
+
+    /**
      * Label: description 
      * Comment: DublinCore: An account of the content of the resource. Description may include but is not limited to: an abstract, table of contents, reference to a graphical representation of content or a free-text account of the content. 
      * Domain: DataObject 
@@ -224,7 +232,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Label: linksTo 
      * Comment: this document links to another - for example links on webpages 
      * Domain: FileDataObject 
-     * Range: FileDataObject 
+     * Range: DataObject 
      */
     public static final URI linksTo = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#linksTo");
 

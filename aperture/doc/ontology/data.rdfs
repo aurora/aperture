@@ -123,7 +123,13 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data_;description"
+<rdf:Property rdf:about="&data_;dateAsNumber"
+	 a:maxCardinality="1"
+	 rdfs:label="dateAsNumber">
+	<rdfs:comment xml:space='preserve'><![CDATA[The date expressed as a number, measured in milliseconds since the epoch (00:00:00 GMT, January 1, 1970).]]></rdfs:comment>
+	<rdfs:domain rdf:resource="&data_;DataObject"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property><rdf:Property rdf:about="&data_;description"
 	 a:maxCardinality="1"
 	 rdfs:label="description">
 	<rdfs:comment>DublinCore: An account of the content of the resource. Description may include but is not limited to: an abstract, table of contents, reference to a graphical representation of content or a free-text account of the content.</rdfs:comment>
@@ -195,7 +201,7 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 	 a:maxCardinality="1"
 	 rdfs:label="linksTo">
 	<rdfs:comment>this document links to another - for example links on webpages</rdfs:comment>
-	<rdfs:range rdf:resource="&data_;FileDataObject"/>
+	<rdfs:range rdf:resource="&data_;DataObject"/>
 	<rdfs:domain rdf:resource="&data_;FileDataObject"/>
 </rdf:Property>
 <rdf:Property rdf:about="&data_;messageID"
