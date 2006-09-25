@@ -775,30 +775,6 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<magicNumber encoding="string">rtsp://</magicNumber>
 </description>
 
-<!-- ================== Play List Types ================== -->
-
-<description>
-	<mimeType>application/x-winamp-playlist</mimeType>
-	<extensions>m3u</extensions>
-	<magicNumber encoding="string">#EXTM3U</magicNumber>
-</description>
-
-<description>
-	<mimeType>audio/x-scpls</mimeType>
-	<extensions>pls</extensions>
-	<magicNumber encoding="string">[playlist]</magicNumber>
-</description>
-
-<description>
-	<mimeType>application/asx</mimeType>
-	<extensions>asx</extensions>
-	<magicNumber encoding="string">&lt;ASX</magicNumber>
-</description>
-
-<!-- ================== RIFF-based Types ================== -->
-<!-- (see http://www.udayton.edu/~cps/faculty/jloomis/cps592B/asgn/asgn1/riff.html        -->
-<!-- and http://www.opensource.apple.com/darwinsource/10.3/file-1/file/magic/Magdir/riff) -->
-
 <description>
 	<mimeType>audio/x-wav</mimeType>
 	<extensions>wav</extensions>
@@ -821,6 +797,41 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<mimeType>video/x-msvideo</mimeType>
 	<extensions>avi</extensions>
 	<magicNumber encoding="hex" offset="8">41 56 49 20</magicNumber>
+</description>
+
+<description>
+	<mimeType>video/mp4</mimeType>
+	<extensions>mp4,mpg4,m4v,mp4v,divx,xvid,264</extensions>
+</description>
+
+<description>
+	<mimeType>audio/mp4</mimeType>
+	<extensions>m4a,m4p</extensions>
+</description>
+
+<description>
+	<mimeType>video/3gpp</mimeType>
+	<extensions>3gp,3g2</extensions>
+</description>
+
+<!-- ================== Play List Types ================== -->
+
+<description>
+	<mimeType>application/x-winamp-playlist</mimeType>
+	<extensions>m3u</extensions>
+	<magicNumber encoding="string">#EXTM3U</magicNumber>
+</description>
+
+<description>
+	<mimeType>audio/x-scpls</mimeType>
+	<extensions>pls</extensions>
+	<magicNumber encoding="string">[playlist]</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/asx</mimeType>
+	<extensions>asx</extensions>
+	<magicNumber encoding="string">&lt;ASX</magicNumber>
 </description>
 
 <!-- ================== Miscellaneous Types ================== -->
