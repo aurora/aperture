@@ -189,8 +189,12 @@ public class RepositoryAccessData implements AccessData {
 	}
 
 	public void put(String id, String key, String value) {
+		// remove any previous statements with different values
 		URI subject = new URIImpl(id);
 		URI predicate = toURI(key);
+		remove(subject, predicate);
+		
+		// add the new statement
 		URI dataType = (predicate == DATA.dateAsNumber || predicate == DATA.byteSize) ? XMLSchema.LONG
 				: XMLSchema.STRING;
 		Literal object = new LiteralImpl(value, dataType);
