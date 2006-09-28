@@ -4,7 +4,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Thu Sep 21 15:16:42 CEST 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Thu Sep 28 15:57:50 CEST 2006
  * input file: doc/ontology/data.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/data#
  */
@@ -315,11 +315,19 @@ content defaults to the value specified by the 'mimeType' property.
 
     /**
      * Label: receivedDate 
-     * Comment: Daten when this e-mail was received. 
+     * Comment: Date when this e-mail was received. 
      * Domain: Email 
      * Range: Literal 
      */
     public static final URI receivedDate = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#receivedDate");
+
+    /**
+     * Label: redirectsTo 
+     * Comment: this URI redirects to another - for example redirecting HTTP URLs 
+     * Domain: DataObject 
+     * Range: DataObject 
+     */
+    public static final URI redirectsTo = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#redirectsTo");
 
     /**
      * Label: retrievalDate 

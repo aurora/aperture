@@ -278,11 +278,18 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 </rdf:Property>
 <rdf:Property rdf:about="&data_;receivedDate"
 	 a:maxCardinality="1"
-	 rdfs:comment="Daten when this e-mail was received."
+	 rdfs:comment="Date when this e-mail was received."
 	 rdfs:label="receivedDate">
 	<rdfs:domain rdf:resource="&data_;Email"/>
 	<rdfs:subPropertyOf rdf:resource="&data_;date"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&data_;redirectsTo"
+	 a:maxCardinality="1"
+	 rdfs:label="redirectsTo">
+	<rdfs:comment>this URI redirects to another - for example redirecting HTTP URLs</rdfs:comment>
+	<rdfs:range rdf:resource="&data_;DataObject"/>
+	<rdfs:domain rdf:resource="&data_;DataObject"/>
 </rdf:Property>
 <rdf:Property rdf:about="&data_;retrievalDate"
 	 a:maxCardinality="1"
