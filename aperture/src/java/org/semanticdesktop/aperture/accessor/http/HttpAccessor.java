@@ -109,8 +109,9 @@ public class HttpAccessor implements DataAccessor {
 			if (accessData == null) {
 				ifModifiedSince = null;
 			}
-			else
+			else {
 				ifModifiedSince = getIfModifiedSince(urlString, accessData);
+			}
 
 			try {
 				// set up a connection (a HttpAccessor always has HttpURLConnections, else it's a bug)
@@ -162,21 +163,23 @@ public class HttpAccessor implements DataAccessor {
 
 		// register it in the access data
 		if (accessData != null) {
-			// make sure we always store something about this url, so that accessData.isKnownId will
-			// return true
-			accessData.put(urlString, ACCESSED_KEY, "");
-
-			// also store this for the original url, so that crawlers can detect that they have accessed
-			// a redirected url before (it won't be considered as being a new object, every time it is
-			// accessed)
+			// In case of redirections, store that the original url was redirected to this URL. This also
+			// makes sure that accessData.isKnownId returns true on this URL.
 			if (nrRedirections > 0) {
-				accessData.put(originalUrlString, ACCESSED_KEY, "");
+				// TODO: in case you use a RepositoryAccessData, urlString gets stored as a Literal rather
+				// than a URI. Perhaps AccessData should be more RDF-like?
+				accessData.put(originalUrlString, AccessData.REDIRECTS_TO_KEY, urlString);
 			}
 
 			// store the date with which we can check in the next access whether the object was modified
 			long date = connection.getDate();
 			if (date != 0L) {
 				accessData.put(urlString, DATE_KEY, String.valueOf(date));
+			}
+			else {
+				// make sure we always store something about this url, so that accessData.isKnownId will
+				// return true
+				accessData.put(urlString, ACCESSED_KEY, "");
 			}
 		}
 
