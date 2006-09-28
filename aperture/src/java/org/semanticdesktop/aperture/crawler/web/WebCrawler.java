@@ -284,8 +284,8 @@ public class WebCrawler extends CrawlerBase {
 							// extract and schedule links
 							// do this before reporting: you never know what the handler will do to the
 							// DataObject's stream (e.g. reading it without resetting it, closing it)
-							if (depth > 0 && dataObject instanceof FileDataObject) {
-								scheduleLinks((FileDataObject) dataObject, url, depth - 1);
+							if (dataObject instanceof FileDataObject) {
+								processLinks((FileDataObject) dataObject, url, depth - 1);
 							}
 
 							// report the object
@@ -368,7 +368,7 @@ public class WebCrawler extends CrawlerBase {
 		}
 	}
 
-	private void scheduleLinks(FileDataObject object, String url, int depth) {
+	private void processLinks(FileDataObject object, String url, int depth) {
 		InputStream content = null;
 
 		// determine the MIME type
@@ -488,8 +488,11 @@ public class WebCrawler extends CrawlerBase {
 				}
 
 				if (!url.equals(link) && !scheduledLinks.contains(link)) {
-					schedule(link, depth, true);
-					scheduledLinks.add(link);
+					if (depth >= 0) {
+						schedule(link, depth, true);
+						scheduledLinks.add(link);
+					}
+					
 					if (accessData != null) {
 						accessData.putReferredID(url, link);
 					}
