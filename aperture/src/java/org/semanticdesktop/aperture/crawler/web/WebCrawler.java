@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -285,7 +286,7 @@ public class WebCrawler extends CrawlerBase {
 							// do this before reporting: you never know what the handler will do to the
 							// DataObject's stream (e.g. reading it without resetting it, closing it)
 							if (dataObject instanceof FileDataObject) {
-								processLinks((FileDataObject) dataObject, url, depth - 1);
+								processLinks((FileDataObject) dataObject, depth - 1);
 							}
 
 							// report the object
@@ -356,6 +357,12 @@ public class WebCrawler extends CrawlerBase {
 						+ url);
 		}
 		else {
+			// see if this is a final URL or one that has redirected to another URL in the past
+			String redirectedUrl = accessData.get(url, AccessData.REDIRECTS_TO_KEY);
+			if (redirectedUrl != null) {
+				url = redirectedUrl;
+			}
+			
 			Set links = accessData.getReferredIDs(url);
 
 			if (links != null) {
@@ -368,7 +375,7 @@ public class WebCrawler extends CrawlerBase {
 		}
 	}
 
-	private void processLinks(FileDataObject object, String url, int depth) {
+	private void processLinks(FileDataObject object, int depth) {
 		InputStream content = null;
 
 		// determine the MIME type
@@ -441,7 +448,9 @@ public class WebCrawler extends CrawlerBase {
 		}
 
 		// extract the links
+		String url = object.getID().toString();
 		List links = null;
+
 		try {
 			// as it's a ByteArrayInputStream, its read limit actually has no effect
 			content.mark(Integer.MAX_VALUE);
