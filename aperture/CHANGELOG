@@ -72,5 +72,6 @@ bug fixes:
 - [ 1481132 ] OpenDocumentExtractor unable to load DTDs from jar files
 - [ 1481759 ] Unable to use IMAP over SSL with JavaMail 1.4
 - [ 1558484 ] HttpAccessor should use timeouts on connection
+- [ 1567288 ] Incorrect link data by WebCrawler
 - many bugfixes in ImapCrawler's incremental crawling
 - prevent NullPointerException in FileDataObjectBase.dispose
