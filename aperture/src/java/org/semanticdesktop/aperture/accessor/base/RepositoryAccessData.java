@@ -38,8 +38,9 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
  * characters that can be used in URIs.
  * 
  * <p>
- * The AccessData.DATE_KEY and AccessData.BYTE_SITE_KEY keys are mapped to Aperture DATA predicates. In that
- * case the value must be a long encoded as a String.
+ * The AccessData.DATE_KEY, AccessData.BYTE_SITE_KEY and AccessData.REDIRECTS_TO_KEY keys are mapped to
+ * Aperture DATA predicates. In that case the value must be a long encoded as a String or, in the last case, a
+ * URL encoded as a String.
  */
 public class RepositoryAccessData implements AccessData {
 
@@ -104,6 +105,9 @@ public class RepositoryAccessData implements AccessData {
 					RValue value = statement.getObject();
 					if (value instanceof Literal) {
 						return ((Literal) value).getLabel();
+					}
+					else if (value instanceof URI) {
+						return value.toString();
 					}
 				}
 			}
@@ -193,12 +197,17 @@ public class RepositoryAccessData implements AccessData {
 		URI subject = new URIImpl(id);
 		URI predicate = toURI(key);
 		remove(subject, predicate);
-		
+
 		// add the new statement
-		URI dataType = (predicate == DATA.dateAsNumber || predicate == DATA.byteSize) ? XMLSchema.LONG
-				: XMLSchema.STRING;
-		Literal object = new LiteralImpl(value, dataType);
-		add(new StatementImpl(subject, predicate, object));
+		if (predicate == DATA.redirectsTo) {
+			add(new StatementImpl(subject, predicate, new URIImpl(value)));
+		}
+		else {
+			URI dataType = (predicate == DATA.dateAsNumber || predicate == DATA.byteSize) ? XMLSchema.LONG
+					: XMLSchema.STRING;
+			Literal object = new LiteralImpl(value, dataType);
+			add(new StatementImpl(subject, predicate, object));
+		}
 	}
 
 	public void putReferredID(String id, String referredID) {
@@ -247,6 +256,9 @@ public class RepositoryAccessData implements AccessData {
 		}
 		else if (key == AccessData.BYTE_SIZE_KEY) {
 			return DATA.byteSize;
+		}
+		else if (key == AccessData.REDIRECTS_TO_KEY) {
+			return DATA.redirectsTo;
 		}
 		else {
 			return new URIImpl(URI_PREFIX + key);
