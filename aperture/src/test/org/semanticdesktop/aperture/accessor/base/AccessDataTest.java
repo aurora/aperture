@@ -97,6 +97,21 @@ public class AccessDataTest extends ApertureTestBase {
 		// check
 		assertEquals(value2, accessData.get(id1, key1));
 		
+		// alter data
+		accessData.putReferredID(id1, id2);
+		accessData.putReferredID(id1, id3);
+		
+		// check
+		assertEquals(2, accessData.getReferredIDs(id1).size());
+		
+		// alter data
+		accessData.put(id1, key1, value1);
+		accessData.removeReferredIDs(id1);
+		
+		// check
+		assertTrue(accessData.isKnownId(id1));
+		assertNull(accessData.getReferredIDs(id1));
+		
 		accessData.store();
 	}
 }

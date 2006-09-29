@@ -113,6 +113,10 @@ public class AccessDataImpl implements AccessData {
 		}
 	}
 
+	public void removeReferredIDs(String id) {
+		referredIDMap.remove(id);
+	}
+	
 	public void remove(String id) {
 		idMap.remove(id);
 		referredIDMap.remove(id);

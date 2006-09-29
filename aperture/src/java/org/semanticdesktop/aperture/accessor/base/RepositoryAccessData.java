@@ -225,6 +225,8 @@ public class RepositoryAccessData implements AccessData {
 	}
 
 	public void removeReferredID(String id, String referredID) {
+		commit();
+		
 		URI subject = new URIImpl(id);
 		URI object = new URIImpl(referredID);
 		Statement statement = new StatementImpl(subject, DATA.linksTo, object);
@@ -237,6 +239,10 @@ public class RepositoryAccessData implements AccessData {
 		}
 	}
 
+	public void removeReferredIDs(String id) {
+		remove(new URIImpl(id), DATA.linksTo);
+	}
+	
 	public void store() throws IOException {
 		commit();
 	}

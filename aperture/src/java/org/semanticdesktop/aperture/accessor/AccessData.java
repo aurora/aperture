@@ -127,6 +127,13 @@ public interface AccessData {
 	public void removeReferredID(String id, String referredID);
 
 	/**
+	 * Removes all referred IDs of a resource.
+	 * 
+	 * @param id The referring resource's ID.
+	 */
+	public void removeReferredIDs(String id);
+	
+	/**
 	 * Removes all information about the resource with the specified ID.
 	 * 
 	 * @param id A resource ID.
