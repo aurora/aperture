@@ -45,6 +45,11 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
  * A Crawler implementation for WebDataSources.
  * 
  * <p>
+ * Due to the large amount of information needed to be stored for incremental crawling, the use of a
+ * RepositoryAccessData or similar on-disk AccessData implementation is advised. Please note that the entire
+ * hypertext graph will be stored in this AccessData.
+ * 
+ * <p>
  * Implementation note: this WebCrawler fetches URLs one-by-one in a single-threaded manner. Previous
  * implementations used a configurable number of threads to fetch the URLs. However, it turned out that even
  * when running with a single thread, the bandwidth was by far the biggest bottle-neck for crawling websites,
@@ -54,6 +59,12 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
  * this implementation simple and single-threaded.
  */
 public class WebCrawler extends CrawlerBase {
+
+	// TODO: replace crawledUrls with a lookup on the AccessData (using the start time of crawling as a key),
+	// as this administration requires a lot of main memory. For example:
+	// 100,000 URLs x 100 chars average length x 2 bytes per char = 19+ MB, assuming the arrays do not contain
+	// emptry trailing parts and not counting the object overhead of the char array, String object and HashSet
+	// overhead.
 
 	private static final Logger LOGGER = Logger.getLogger(WebCrawler.class.getName());
 
@@ -267,10 +278,16 @@ public class WebCrawler extends CrawlerBase {
 							dataObject.getMetadata().add(DATA.rootFolderOf, source.getID());
 						}
 
-						// as the url may have lead to redirections, the ID of the resulting DataObject may be
-						// different. Make sure this ID is never scheduled, accessed again or reported anymore.
+						// As the url may have lead to redirections, the ID of the resulting DataObject may be
+						// different. Make sure this ID is never scheduled or reported.
 						String finalUrl = dataObject.getID().toString();
 						if (!finalUrl.equals(url)) {
+							// TODO: check if crawlerUrls already contains the final URL. this may happen when
+							// you first access URL A which redirects to B which redirects to C (so A and C
+							// are in the crawledUrls) and later you schedule URL B. If this is the case, the
+							// object should completely be disregarded. Alternatively, HttpAccessor could
+							// register the intermediate redirections instead of only the last one.
+
 							crawledUrls.add(finalUrl);
 							deprecatedUrls.remove(finalUrl);
 
@@ -300,18 +317,12 @@ public class WebCrawler extends CrawlerBase {
 							}
 						}
 						else {
-							// if we've accessed this object in the past, we should re-add it to
-							// deprecatedIDs, so that it will be reported as removed
-							if (knownUrl) {
-								deprecatedUrls.add(url);
-							}
+							unregisterUrl(url, knownUrl);
 						}
 					}
 				}
 				catch (UrlNotFoundException e) {
-					// this happens a lot for hypertext graphs, it does not reflect an internal error in
-					// the crawler, so we choose to ignore it. Perhaps create a separate method for it in
-					// CrawlerHandler?
+					unregisterUrl(url, knownUrl);
 				}
 				catch (IOException e) {
 					LOGGER.log(Level.INFO, "I/O error while accessing " + url, e);
@@ -331,6 +342,18 @@ public class WebCrawler extends CrawlerBase {
 			Long l = dataObject.getMetadata().getLong(DATA.byteSize);
 			return l == null ? true : l.longValue() <= maxByteSize;
 		}
+	}
+
+	private void unregisterUrl(String url, boolean knownUrl) {
+		// if we've accessed this object in the past, we should re-add it to deprecatedIDs, so that it will be
+		// reported as removed
+		if (knownUrl) {
+			deprecatedUrls.add(url);
+		}
+
+		// furthermore we should not list this object as accessed any longer; when it can be accessed normally
+		// in the next crawl, it should be reported as a new object
+		accessData.remove(url);
 	}
 
 	private DataAccessor getDataAccessor(String url) {
@@ -362,7 +385,7 @@ public class WebCrawler extends CrawlerBase {
 			if (redirectedUrl != null) {
 				url = redirectedUrl;
 			}
-			
+
 			Set links = accessData.getReferredIDs(url);
 
 			if (links != null) {
@@ -377,6 +400,12 @@ public class WebCrawler extends CrawlerBase {
 
 	private void processLinks(FileDataObject object, int depth) {
 		InputStream content = null;
+
+		// remove any previously registered links
+		String url = object.getID().toString();
+		if (accessData != null) {
+			accessData.removeReferredIDs(url);
+		}
 
 		// determine the MIME type
 		String mimeType = null;
@@ -448,7 +477,6 @@ public class WebCrawler extends CrawlerBase {
 		}
 
 		// extract the links
-		String url = object.getID().toString();
 		List links = null;
 
 		try {
@@ -501,7 +529,7 @@ public class WebCrawler extends CrawlerBase {
 						schedule(link, depth, true);
 						scheduledLinks.add(link);
 					}
-					
+
 					if (accessData != null) {
 						accessData.putReferredID(url, link);
 					}

@@ -104,14 +104,7 @@ public class HttpAccessor implements DataAccessor {
 			urlString = url.toExternalForm();
 
 			// see if a date was registered for this url
-			// DO NOT USE ?: -> will make nullpointer exception
-			Date ifModifiedSince;
-			if (accessData == null) {
-				ifModifiedSince = null;
-			}
-			else {
-				ifModifiedSince = getIfModifiedSince(urlString, accessData);
-			}
+			Date ifModifiedSince = accessData == null ? null : getIfModifiedSince(urlString, accessData);
 
 			try {
 				// set up a connection (a HttpAccessor always has HttpURLConnections, else it's a bug)
@@ -122,7 +115,7 @@ public class HttpAccessor implements DataAccessor {
 			}
 			catch (Exception e) {
 				// I've seen IllegalArgumentExceptions in the sun.net classes here because of some freaky URLs
-				// that did not generate MalformedUrlExceptions
+				// that did not generate MalformedUrlExceptions, so therefore a "catch "Exception" to be sure
 				if (e instanceof IOException) {
 					throw (IOException) e;
 				}
@@ -162,26 +155,7 @@ public class HttpAccessor implements DataAccessor {
 		DataObject result = createDataObject(urlString, source, connection, containerFactory);
 
 		// register it in the access data
-		if (accessData != null) {
-			// In case of redirections, store that the original url was redirected to this URL. This also
-			// makes sure that accessData.isKnownId returns true on this URL.
-			if (nrRedirections > 0) {
-				// TODO: in case you use a RepositoryAccessData, urlString gets stored as a Literal rather
-				// than a URI. Perhaps AccessData should be more RDF-like?
-				accessData.put(originalUrlString, AccessData.REDIRECTS_TO_KEY, urlString);
-			}
-
-			// store the date with which we can check in the next access whether the object was modified
-			long date = connection.getDate();
-			if (date != 0L) {
-				accessData.put(urlString, DATE_KEY, String.valueOf(date));
-			}
-			else {
-				// make sure we always store something about this url, so that accessData.isKnownId will
-				// return true
-				accessData.put(urlString, ACCESSED_KEY, "");
-			}
-		}
+		updateAccessData(accessData, nrRedirections, urlString, originalUrlString, connection.getDate());
 
 		return result;
 	}
@@ -293,5 +267,51 @@ public class HttpAccessor implements DataAccessor {
 		}
 
 		return object;
+	}
+
+	private void updateAccessData(AccessData accessData, int nrRedirections, String urlString,
+			String originalUrlString, long date) {
+		if (accessData != null) {
+			// clean up old information
+			accessData.remove(urlString, ACCESSED_KEY);
+			accessData.remove(urlString, DATE_KEY);
+			accessData.remove(urlString, AccessData.REDIRECTS_TO_KEY);
+
+			// In case of redirections, store that the original url was redirected to this URL. This also
+			// makes sure that accessData.isKnownId returns true on this URL.
+			if (nrRedirections > 0) {
+				// this is very unlikely but I just want to make sure
+				if (originalUrlString.equals(urlString)) {
+					LOGGER.log(Level.SEVERE, "internal error, originalUrlString equals urlString: "
+							+ urlString);
+				}
+				else {
+					// remove any unnecessary or invalid information from a previous crawl
+					accessData.remove(originalUrlString, ACCESSED_KEY);
+					accessData.remove(originalUrlString, DATE_KEY);
+
+					// store the redirection relationship, overwriting any existing redirections
+					accessData.put(originalUrlString, AccessData.REDIRECTS_TO_KEY, urlString);
+				}
+			}
+
+			if (date == 0L) {
+				// remove any invalid information from a previous crawl
+				accessData.remove(urlString, DATE_KEY);
+				accessData.remove(urlString, AccessData.REDIRECTS_TO_KEY);
+
+				// make sure we always store something about this url, so that accessData.isKnownId will
+				// return true
+				accessData.put(urlString, ACCESSED_KEY, "");
+			}
+			else {
+				// remove any unnecessary or invalid information from a previous crawl
+				accessData.remove(urlString, ACCESSED_KEY);
+				accessData.remove(urlString, AccessData.REDIRECTS_TO_KEY);
+
+				// store the date with which we can check in the next access whether the object was modified
+				accessData.put(urlString, DATE_KEY, String.valueOf(date));
+			}
+		}
 	}
 }
