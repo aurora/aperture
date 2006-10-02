@@ -30,7 +30,6 @@ import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.HttpClientUtil;
-import org.semanticdesktop.aperture.util.UriUtil;
 import org.semanticdesktop.aperture.util.UrlUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
@@ -97,13 +96,11 @@ public class HttpAccessor implements DataAccessor {
 						+ originalUrlString);
 			}
 
-			// create an encoded URL instance
-			URL url = new URL(UriUtil.encodeUri(urlString));
-
 			// normalize the URL
+			URL url = new URL(urlString);
 			url = UrlUtil.normalizeURL(url);
 			urlString = url.toExternalForm();
-
+			
 			// see if a date was registered for this url
 			Date ifModifiedSince = accessData == null ? null : getIfModifiedSince(urlString, accessData);
 
