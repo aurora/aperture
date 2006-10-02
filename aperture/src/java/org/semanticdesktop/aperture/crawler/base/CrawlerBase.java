@@ -32,274 +32,273 @@ import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;
 
 /**
- * An implementation of the Crawler interface that offers generic implementations for some of its
- * methods.
+ * An implementation of the Crawler interface that offers generic implementations for some of its methods.
  */
 public abstract class CrawlerBase implements Crawler {
 
-    private static final Logger LOGGER = Logger.getLogger(CrawlerBase.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(CrawlerBase.class.getName());
 
-    /**
-     * The DataSource representing the physical source of information.
-     */
-    protected DataSource source;
+	/**
+	 * The DataSource representing the physical source of information.
+	 */
+	protected DataSource source;
 
-    /**
-     * The current DataAccessorRegistry.
-     */
-    protected DataAccessorRegistry accessorRegistry;
-    
-    /**
-     * The current AccessData instance.
-     */
-    protected AccessData accessData;
+	/**
+	 * The current DataAccessorRegistry.
+	 */
+	protected DataAccessorRegistry accessorRegistry;
 
-    /**
-     * The file for persistent storage of CrawlReports.
-     */
-    protected File crawlReportFile;
+	/**
+	 * The current AccessData instance.
+	 */
+	protected AccessData accessData;
 
-    /**
-     * The CrawlReport containing statistics about the last or ongoing crawl. Created by the crawl method
-     * or sometimes lazily created by the getLastCrawlReport method when trying to retrieve the last
-     * report of a previous session.
-     */
-    protected CrawlReportBase crawlReport;
+	/**
+	 * The file for persistent storage of CrawlReports.
+	 */
+	protected File crawlReportFile;
 
-    /**
-     * The CrawlerHandler that gets notified about crawling progress and that delivers RDFContainers on
-     * demand.
-     */
-    protected CrawlerHandler handler;
+	/**
+	 * The CrawlReport containing statistics about the last or ongoing crawl. Created by the crawl method or
+	 * sometimes lazily created by the getLastCrawlReport method when trying to retrieve the last report of a
+	 * previous session.
+	 */
+	protected CrawlReportBase crawlReport;
 
-    /**
-     * Flag indicating that this Crawler should stop scanning or clearing as soon as possible.
-     */
-    protected boolean stopRequested;
+	/**
+	 * The CrawlerHandler that gets notified about crawling progress and that delivers RDFContainers on
+	 * demand.
+	 */
+	protected CrawlerHandler handler;
 
-    /**
-     * A set that is used to temporary record all urls that do no longer point to existing resources, so
-     * that we can report them as removed.
-     */
-    protected Set deprecatedUrls;
+	/**
+	 * Flag indicating that this Crawler should stop scanning or clearing as soon as possible.
+	 */
+	protected boolean stopRequested;
+
+	/**
+	 * A set that is used to temporary record all urls that do no longer point to existing resources, so that
+	 * we can report them as removed.
+	 */
+	protected Set<String> deprecatedUrls;
 
 	private DomainBoundaries domain;
 
-    public CrawlerBase() {
-        this.stopRequested = false;
-    }
+	public CrawlerBase() {
+		this.stopRequested = false;
+	}
 
-    public void setDataSource(DataSource source) {
-        this.source = source;
-    }
+	public void setDataSource(DataSource source) {
+		this.source = source;
+	}
 
-    public DataSource getDataSource() {
-        return source;
-    }
+	public DataSource getDataSource() {
+		return source;
+	}
 
-    public void setDataAccessorRegistry(DataAccessorRegistry accessorRegistry) {
-    	this.accessorRegistry = accessorRegistry;
-    }
-    
-    public DataAccessorRegistry getDataAccessorRegistry() {
-    	return accessorRegistry;
-    }
-    
-    public void setAccessData(AccessData accessData) {
-        this.accessData = accessData;
-    }
+	public void setDataAccessorRegistry(DataAccessorRegistry accessorRegistry) {
+		this.accessorRegistry = accessorRegistry;
+	}
 
-    public AccessData getAccessData() {
-        return accessData;
-    }
+	public DataAccessorRegistry getDataAccessorRegistry() {
+		return accessorRegistry;
+	}
 
-    public void setCrawlerHandler(CrawlerHandler handler) {
-        this.handler = handler;
-    }
+	public void setAccessData(AccessData accessData) {
+		this.accessData = accessData;
+	}
 
-    public CrawlerHandler getCrawlerHandler() {
-        return handler;
-    }
+	public AccessData getAccessData() {
+		return accessData;
+	}
 
-    public synchronized void crawl() {
-        // set up a new CrawlReport
-        crawlReport = new CrawlReportBase();
-        crawlReport.setCrawlStarted(System.currentTimeMillis());
+	public void setCrawlerHandler(CrawlerHandler handler) {
+		this.handler = handler;
+	}
 
-        domain=ConfigurationUtil.getDomainBoundaries(source.getConfiguration());
-        
-        // initialize flags
-        stopRequested = false;
-        ExitCode exitCode = null;
+	public CrawlerHandler getCrawlerHandler() {
+		return handler;
+	}
 
-        // we do all this before notifying the CrawlerHandler as its implementation may depend on this
-        // initialization
-        handler.crawlStarted(this);
+	@SuppressWarnings("unchecked")
+	public synchronized void crawl() {
+		// set up a new CrawlReport
+		crawlReport = new CrawlReportBase();
+		crawlReport.setCrawlStarted(System.currentTimeMillis());
 
-        try {
-            // read the access data from the previous crawl
-            deprecatedUrls = Collections.EMPTY_SET;
-            
-            if (accessData != null) {
-                accessData.initialize();
+		domain = ConfigurationUtil.getDomainBoundaries(source.getConfiguration());
 
-                // this set will at the end of the crawl prodecure hold the urls of resources found in a
-                // previous crawl that can no longer be found
-                deprecatedUrls = new HashSet(accessData.getStoredIDs());
-            }
+		// initialize flags
+		stopRequested = false;
+		ExitCode exitCode = null;
 
-            // start crawling
-            exitCode = crawlObjects();
+		// we do all this before notifying the CrawlerHandler as its implementation may depend on this
+		// initialization
+		handler.crawlStarted(this);
 
-            // only when the scan was completed succesfully will we report removed resources,
-            // else we might indirectly destroy information that may still be up-to-date
-            if (exitCode.equals(ExitCode.COMPLETED)) {
-                crawlReport.setRemovedCount(deprecatedUrls.size());
-                reportRemoved(deprecatedUrls);
-            }
+		try {
+			// read the access data from the previous crawl
+			deprecatedUrls = Collections.emptySet();
 
-            // this set *can* be very large, get rid of it ASAP
-            deprecatedUrls = null;
+			if (accessData != null) {
+				accessData.initialize();
 
-            // store the access data
-            if (accessData != null) {
-                accessData.store();
-            }
-        }
-        catch (IOException e) {
-            LOGGER.log(Level.WARNING, "IOException while accessing AccessData", e);
-            exitCode = ExitCode.FATAL_ERROR;
-        }
+				// this set will at the end of the crawl prodecure hold the urls of resources found in a
+				// previous crawl that can no longer be found
+				deprecatedUrls = new HashSet<String>(accessData.getStoredIDs());
+			}
 
-        // wrap up and store the CrawlReport
-        crawlReport.setExitCode(exitCode);
-        crawlReport.setCrawlStopped(System.currentTimeMillis());
-        storeCrawlReport();
+			// start crawling
+			exitCode = crawlObjects();
 
-        // notify the CrawlerHandler
-        handler.crawlStopped(this, exitCode);
-    }
+			// only when the scan was completed succesfully will we report removed resources,
+			// else we might indirectly destroy information that may still be up-to-date
+			if (exitCode.equals(ExitCode.COMPLETED)) {
+				crawlReport.setRemovedCount(deprecatedUrls.size());
+				reportRemoved(deprecatedUrls);
+			}
 
-    /**
-     * Method called by crawl() that should implement the actual crawling of the DataSource. The return
-     * value of this method should indicate whether the scanning was completed successfully (i.e. it
-     * wasn't interrupted or anything). Also this method is expected to update the deprecatedUrls set, as
-     * any remaining URLs in this set will be removed as being removed after this method completes.
-     * 
-     * @return An ExitCode indicating how the crawl procedure terminated.
-     */
-    protected abstract ExitCode crawlObjects();
+			// this set *can* be very large, get rid of it ASAP
+			deprecatedUrls = null;
 
-    public void stop() {
-        stopRequested = true;
-    }
+			// store the access data
+			if (accessData != null) {
+				accessData.store();
+			}
+		}
+		catch (IOException e) {
+			LOGGER.log(Level.WARNING, "IOException while accessing AccessData", e);
+			exitCode = ExitCode.FATAL_ERROR;
+		}
 
-    public boolean isStopRequested() {
-        return stopRequested;
-    }
+		// wrap up and store the CrawlReport
+		crawlReport.setExitCode(exitCode);
+		crawlReport.setCrawlStopped(System.currentTimeMillis());
+		storeCrawlReport();
 
-    /**
-     * Reports all IDs stored in the AccessData as being cleared to the CrawlerHandler and then gets rid
-     * of the AccessData instance.
-     */
-    public void clear() {
-        handler.clearStarted(this);
+		// notify the CrawlerHandler
+		handler.crawlStopped(this, exitCode);
+	}
 
-        ExitCode exitCode = ExitCode.COMPLETED;
+	/**
+	 * Method called by crawl() that should implement the actual crawling of the DataSource. The return value
+	 * of this method should indicate whether the scanning was completed successfully (i.e. it wasn't
+	 * interrupted or anything). Also this method is expected to update the deprecatedUrls set, as any
+	 * remaining URLs in this set will be removed as being removed after this method completes.
+	 * 
+	 * @return An ExitCode indicating how the crawl procedure terminated.
+	 */
+	protected abstract ExitCode crawlObjects();
 
-        try {
-            if (accessData != null) {
-                // read the persistent access data
-                accessData.initialize();
+	public void stop() {
+		stopRequested = true;
+	}
 
-                // Report removal of data objects
-                Iterator iterator = accessData.getStoredIDs().iterator();
-                while (!stopRequested && iterator.hasNext()) {
-                    clear((String) iterator.next());
-                }
+	public boolean isStopRequested() {
+		return stopRequested;
+	}
 
-                // remove persistent access data registration
-                accessData.clear();
+	/**
+	 * Reports all IDs stored in the AccessData as being cleared to the CrawlerHandler and then gets rid of
+	 * the AccessData instance.
+	 */
+	@SuppressWarnings("unchecked")
+	public void clear() {
+		handler.clearStarted(this);
 
-                if (stopRequested) {
-                    exitCode = ExitCode.STOP_REQUESTED;
-                }
-            }
-        }
-        catch (IOException e) {
-            LOGGER.log(Level.WARNING, "IOException while accessing AccessData", e);
-            exitCode = ExitCode.FATAL_ERROR;
-        }
+		ExitCode exitCode = ExitCode.COMPLETED;
 
-        handler.clearFinished(this, exitCode);
-    }
+		try {
+			if (accessData != null) {
+				// read the persistent access data
+				accessData.initialize();
 
-    protected void clear(String url) {
-        handler.clearingObject(this, url);
-    }
+				// Report removal of data objects
+				Iterator<String> iterator = accessData.getStoredIDs().iterator();
+				while (!stopRequested && iterator.hasNext()) {
+					clear(iterator.next());
+				}
 
-    public void setCrawlReportFile(File file) {
-        this.crawlReportFile = file;
-    }
+				// remove persistent access data registration
+				accessData.clear();
 
-    public File getCrawlReportFile() {
-        return crawlReportFile;
-    }
+				if (stopRequested) {
+					exitCode = ExitCode.STOP_REQUESTED;
+				}
+			}
+		}
+		catch (IOException e) {
+			LOGGER.log(Level.WARNING, "IOException while accessing AccessData", e);
+			exitCode = ExitCode.FATAL_ERROR;
+		}
 
-    public CrawlReport getCrawlReport() {
-        if (crawlReport == null && crawlReportFile != null && crawlReportFile.exists()) {
-            try {
-                CrawlReportBase tmp = new CrawlReportBase();
+		handler.clearFinished(this, exitCode);
+	}
 
-                InputStream stream = new BufferedInputStream(new FileInputStream(crawlReportFile));
-                try {
-                    tmp.read(stream);
-                    crawlReport = tmp;
-                }
-                finally {
-                    stream.close();
-                }
-            }
-            catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "IOException while loading crawl report file", e);
-            }
-        }
+	protected void clear(String url) {
+		handler.clearingObject(this, url);
+	}
 
-        return crawlReport;
-    }
+	public void setCrawlReportFile(File file) {
+		this.crawlReportFile = file;
+	}
 
-    protected void reportRemoved(Set ids) {
-        Iterator idIter = ids.iterator();
-        while (idIter.hasNext()) {
-            String url = (String) idIter.next();
-            if (accessData != null) {
-                accessData.remove(url);
-            }
-            handler.objectRemoved(this, url);
-        }
-    }
+	public File getCrawlReportFile() {
+		return crawlReportFile;
+	}
 
-    /**
-     * Stores the current CrawlReport, if any, to the crawl report file, is set.
-     */
-    protected void storeCrawlReport() {
-        if (crawlReport != null && crawlReportFile != null) {
-            try {
-                OutputStream stream = new BufferedOutputStream(new FileOutputStream(crawlReportFile));
-                try {
-                    crawlReport.write(stream);
-                }
-                finally {
-                    stream.close();
-                }
-            }
-            catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Unable to write scan report file", e);
-            }
-        }
-    }
-    
-    protected boolean inDomain(String uri) {
-    		return domain.inDomain(uri);
-    }
+	public CrawlReport getCrawlReport() {
+		if (crawlReport == null && crawlReportFile != null && crawlReportFile.exists()) {
+			try {
+				CrawlReportBase tmp = new CrawlReportBase();
+
+				InputStream stream = new BufferedInputStream(new FileInputStream(crawlReportFile));
+				try {
+					tmp.read(stream);
+					crawlReport = tmp;
+				}
+				finally {
+					stream.close();
+				}
+			}
+			catch (IOException e) {
+				LOGGER.log(Level.SEVERE, "IOException while loading crawl report file", e);
+			}
+		}
+
+		return crawlReport;
+	}
+
+	protected void reportRemoved(Set<String> ids) {
+		for (String url : ids) {
+			if (accessData != null) {
+				accessData.remove(url);
+			}
+			handler.objectRemoved(this, url);
+		}
+	}
+
+	/**
+	 * Stores the current CrawlReport, if any, to the crawl report file, is set.
+	 */
+	protected void storeCrawlReport() {
+		if (crawlReport != null && crawlReportFile != null) {
+			try {
+				OutputStream stream = new BufferedOutputStream(new FileOutputStream(crawlReportFile));
+				try {
+					crawlReport.write(stream);
+				}
+				finally {
+					stream.close();
+				}
+			}
+			catch (IOException e) {
+				LOGGER.log(Level.SEVERE, "Unable to write scan report file", e);
+			}
+		}
+	}
+
+	protected boolean inDomain(String uri) {
+		return domain.inDomain(uri);
+	}
 }

@@ -13,7 +13,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -97,17 +96,17 @@ public class WebCrawler extends CrawlerBase {
 	/**
 	 * A sorted list of CrawlJobs. The jobs are ordered so that jobs with the largest depths come first.
 	 */
-	private LinkedList jobsQueue;
+	private LinkedList<CrawlJob> jobsQueue;
 
 	/**
-	 * Additional registration of CrawlJobs, indexed by URL (a String), for fast retrieval.
+	 * Additional registration of CrawlJobs, indexed by URL, for fast retrieval.
 	 */
-	private HashMap jobsMap;
+	private HashMap<String, CrawlJob> jobsMap;
 
 	/**
-	 * The set of URLs (Strings) that have been crawled so far during this scan.
+	 * The set of URLs that have been crawled so far during this scan.
 	 */
-	private HashSet crawledUrls;
+	private HashSet<String> crawledUrls;
 
 	private int initialDepth;
 
@@ -146,9 +145,9 @@ public class WebCrawler extends CrawlerBase {
 		}
 
 		// initialize variables
-		jobsQueue = new LinkedList();
-		jobsMap = new HashMap(1024);
-		crawledUrls = new HashSet(1024);
+		jobsQueue = new LinkedList<CrawlJob>();
+		jobsMap = new HashMap<String, CrawlJob>(1024);
+		crawledUrls = new HashSet<String>(1024);
 
 		// fetch crawl instructions from the RDF configuration model
 		RDFContainer configuration = getDataSource().getConfiguration();
@@ -190,7 +189,7 @@ public class WebCrawler extends CrawlerBase {
 		}
 
 		// check if it is already in the queue
-		CrawlJob job = (CrawlJob) jobsMap.get(url);
+		CrawlJob job = jobsMap.get(url);
 		if (job == null) {
 			// the url has not been queued yet: schedule it now
 			// note that it will be inserted in the jobsQueue later in this method
@@ -216,9 +215,9 @@ public class WebCrawler extends CrawlerBase {
 		// higher or equal depth, if any. It is assumed that most of these jobs
 		// should be inserted at or near the end of the jobsQueue so we iterate
 		// through the jobsQueue backwards to find the place to insert the job.
-		ListIterator iterator = jobsQueue.listIterator(jobsQueue.size());
+		ListIterator<CrawlJob> iterator = jobsQueue.listIterator(jobsQueue.size());
 		while (iterator.hasPrevious()) {
-			CrawlJob scheduledJob = (CrawlJob) iterator.previous();
+			CrawlJob scheduledJob = iterator.previous();
 
 			if (scheduledJob.getDepth() >= crawlDepth) {
 				// The new job needs to be inserted after this job
@@ -234,7 +233,7 @@ public class WebCrawler extends CrawlerBase {
 		// loop over all queued jobs
 		while (!jobsQueue.isEmpty() && !isStopRequested()) {
 			// fetch the job and its properties
-			CrawlJob job = (CrawlJob) jobsQueue.removeFirst();
+			CrawlJob job = jobsQueue.removeFirst();
 			String url = job.getURL();
 			int depth = job.getDepth();
 
@@ -291,7 +290,7 @@ public class WebCrawler extends CrawlerBase {
 							crawledUrls.add(finalUrl);
 							deprecatedUrls.remove(finalUrl);
 
-							CrawlJob idUrlJob = (CrawlJob) jobsMap.remove(finalUrl);
+							CrawlJob idUrlJob = jobsMap.remove(finalUrl);
 							if (idUrlJob != null) {
 								jobsQueue.remove(idUrlJob);
 							}
@@ -373,6 +372,7 @@ public class WebCrawler extends CrawlerBase {
 		return factory.get();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void scheduleCachedLinks(String url, int depth) {
 		if (accessData == null) {
 			LOGGER.log(Level.SEVERE,
@@ -386,18 +386,16 @@ public class WebCrawler extends CrawlerBase {
 				url = redirectedUrl;
 			}
 
-			Set links = accessData.getReferredIDs(url);
-
+			Set<String> links = accessData.getReferredIDs(url);
 			if (links != null) {
-				Iterator iterator = links.iterator();
-				while (iterator.hasNext()) {
-					String link = (String) iterator.next();
+				for (String link : links) {
 					schedule(link, depth, true);
 				}
 			}
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void processLinks(FileDataObject object, int depth) {
 		InputStream content = null;
 
@@ -477,14 +475,14 @@ public class WebCrawler extends CrawlerBase {
 		}
 
 		// extract the links
-		List links = null;
+		List<String> links = null;
 
 		try {
 			// as it's a ByteArrayInputStream, its read limit actually has no effect
 			content.mark(Integer.MAX_VALUE);
 
 			// create parameters to direct the LinkExtractor
-			HashMap params = new HashMap();
+			HashMap<Object, Object> params = new HashMap<Object, Object>();
 			params.put(LinkExtractor.BASE_URL_KEY, url);
 			if (includeEmbeddedResources != null) {
 				params.put(LinkExtractor.INCLUDE_EMBEDDED_RESOURCES_KEY, includeEmbeddedResources);
@@ -513,12 +511,9 @@ public class WebCrawler extends CrawlerBase {
 			// method will take care of normalization and reconsider the issue afterwards). We don't use
 			// crawledUrls or jobsMap for this purpose as, regardless of whether the crawling status of
 			// the link, we must register it in accessData.
-			HashSet scheduledLinks = new HashSet(links.size());
+			HashSet<String> scheduledLinks = new HashSet<String>(links.size());
 
-			Iterator iterator = links.iterator();
-			while (iterator.hasNext()) {
-				String link = (String) iterator.next();
-
+			for (String link: links) {
 				link = normalizeURL(link);
 				if (link == null) {
 					continue;
