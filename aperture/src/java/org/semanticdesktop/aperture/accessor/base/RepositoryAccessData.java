@@ -2,7 +2,7 @@
  * Copyright (c) 2006 Aduna.
  * All rights reserved.
  * 
- * Licensed under the Open Software License version 3.0.
+ * Licensed under the Academic Free License version 3.0.
  */
 package org.semanticdesktop.aperture.accessor.base;
 
