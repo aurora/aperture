@@ -6,6 +6,9 @@
  */
 package org.semanticdesktop.aperture.accessor.http;
 
+import static org.semanticdesktop.aperture.accessor.AccessData.DATE_KEY;
+import static org.semanticdesktop.aperture.accessor.AccessData.REDIRECTS_TO_KEY;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,8 +46,6 @@ public class HttpAccessor implements DataAccessor {
 	 * stored and we still have to separate undated urls from known urls. This key has no corresponding value.
 	 */
 	private static final String ACCESSED_KEY = "accessed";
-
-	private static final String DATE_KEY = "date";
 
 	private static final int MAX_REDIRECTIONS = 20;
 
@@ -130,8 +131,19 @@ public class HttpAccessor implements DataAccessor {
 
 			if (isRedirected(responseCode)) {
 				// follow the redirected url
+				String lastUrl = urlString;
 				urlString = getRedirectedUrl(url, connection);
 				nrRedirections++;
+
+				// update access data
+				accessData.remove(lastUrl, DATE_KEY);
+				accessData.remove(lastUrl, ACCESSED_KEY);
+				accessData.put(lastUrl, REDIRECTS_TO_KEY, urlString);
+
+				// check for urls that redirect to themselves
+				if (urlString.equals(lastUrl)) {
+					throw new UrlNotFoundException("url redirects to itself: " + urlString);
+				}
 			}
 			else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
 				throw new UrlNotFoundException(urlString);
@@ -155,7 +167,7 @@ public class HttpAccessor implements DataAccessor {
 		DataObject result = createDataObject(urlString, source, connection, containerFactory);
 
 		// register it in the access data
-		updateAccessData(accessData, nrRedirections, urlString, originalUrlString, connection.getDate());
+		updateAccessData(accessData, urlString, connection.getDate());
 
 		return result;
 	}
@@ -269,36 +281,17 @@ public class HttpAccessor implements DataAccessor {
 		return object;
 	}
 
-	private void updateAccessData(AccessData accessData, int nrRedirections, String urlString,
-			String originalUrlString, long date) {
+	private void updateAccessData(AccessData accessData, String urlString, long date) {
 		if (accessData != null) {
 			// clean up old information
 			accessData.remove(urlString, ACCESSED_KEY);
 			accessData.remove(urlString, DATE_KEY);
-			accessData.remove(urlString, AccessData.REDIRECTS_TO_KEY);
-
-			// In case of redirections, store that the original url was redirected to this URL. This also
-			// makes sure that accessData.isKnownId returns true on this URL.
-			if (nrRedirections > 0) {
-				// this is very unlikely but I just want to make sure
-				if (originalUrlString.equals(urlString)) {
-					LOGGER.log(Level.SEVERE, "internal error, originalUrlString equals urlString: "
-							+ urlString);
-				}
-				else {
-					// remove any unnecessary or invalid information from a previous crawl
-					accessData.remove(originalUrlString, ACCESSED_KEY);
-					accessData.remove(originalUrlString, DATE_KEY);
-
-					// store the redirection relationship, overwriting any existing redirections
-					accessData.put(originalUrlString, AccessData.REDIRECTS_TO_KEY, urlString);
-				}
-			}
+			accessData.remove(urlString, REDIRECTS_TO_KEY);
 
 			if (date == 0L) {
 				// remove any invalid information from a previous crawl
 				accessData.remove(urlString, DATE_KEY);
-				accessData.remove(urlString, AccessData.REDIRECTS_TO_KEY);
+				accessData.remove(urlString, REDIRECTS_TO_KEY);
 
 				// make sure we always store something about this url, so that accessData.isKnownId will
 				// return true
@@ -307,7 +300,7 @@ public class HttpAccessor implements DataAccessor {
 			else {
 				// remove any unnecessary or invalid information from a previous crawl
 				accessData.remove(urlString, ACCESSED_KEY);
-				accessData.remove(urlString, AccessData.REDIRECTS_TO_KEY);
+				accessData.remove(urlString, REDIRECTS_TO_KEY);
 
 				// store the date with which we can check in the next access whether the object was modified
 				accessData.put(urlString, DATE_KEY, String.valueOf(date));

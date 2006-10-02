@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -27,6 +28,7 @@ import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
+import org.semanticdesktop.aperture.accessor.base.FilterAccessData;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
@@ -129,6 +131,7 @@ public class WebCrawler extends CrawlerBase {
 	protected ExitCode crawlObjects() {
 		initialize();
 		processQueue();
+		removeDeprecatedRedirections();
 		boolean completed = jobsQueue.isEmpty();
 		cleanUp();
 
@@ -231,12 +234,12 @@ public class WebCrawler extends CrawlerBase {
 
 	private void processQueue() {
 		// loop over all queued jobs
-		while (!jobsQueue.isEmpty() && !isStopRequested()) {
+		loop: while (!jobsQueue.isEmpty() && !isStopRequested()) {
 			// fetch the job and its properties
 			CrawlJob job = jobsQueue.removeFirst();
 			String url = job.getURL();
 			int depth = job.getDepth();
-
+			
 			// notify that we're processing this URL
 			handler.accessingObject(this, url);
 
@@ -251,10 +254,11 @@ public class WebCrawler extends CrawlerBase {
 			DataAccessor accessor = getDataAccessor(url);
 			if (accessor != null) {
 				try {
-					// fetch the data object
+					// Fetch the data object. Wrap the AccessData in a WebAccessData to get notified when a
+					// URL redirects to another URL.
 					RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, url);
-					DataObject dataObject = accessor.getDataObjectIfModified(url, source, accessData, null,
-						containerFactory);
+					DataObject dataObject = accessor.getDataObjectIfModified(url, source, new WebAccessData(
+							accessData), null, containerFactory);
 
 					// register that this data object has successfully been processed
 					deprecatedUrls.remove(url);
@@ -277,22 +281,26 @@ public class WebCrawler extends CrawlerBase {
 							dataObject.getMetadata().add(DATA.rootFolderOf, source.getID());
 						}
 
-						// As the url may have lead to redirections, the ID of the resulting DataObject may be
-						// different. Make sure this ID is never scheduled or reported.
+						// As the URL may have lead to redirections, the ID of the resulting DataObject may be
+						// different. Make sure this URL is never scheduled or reported during this crawl.
 						String finalUrl = dataObject.getID().toString();
 						if (!finalUrl.equals(url)) {
-							// TODO: check if crawlerUrls already contains the final URL. this may happen when
-							// you first access URL A which redirects to B which redirects to C (so A and C
-							// are in the crawledUrls) and later you schedule URL B. If this is the case, the
-							// object should completely be disregarded. Alternatively, HttpAccessor could
-							// register the intermediate redirections instead of only the last one.
-
-							crawledUrls.add(finalUrl);
 							deprecatedUrls.remove(finalUrl);
 
-							CrawlJob idUrlJob = jobsMap.remove(finalUrl);
-							if (idUrlJob != null) {
-								jobsQueue.remove(idUrlJob);
+							CrawlJob redundantJob = jobsMap.remove(finalUrl);
+							if (redundantJob != null) {
+								jobsQueue.remove(redundantJob);
+							}
+
+							// If this is the case, the resulting DataObject may have been reported already.
+							// In that case the DataObject should be ignored, rather than reporting it
+							// multiple times.
+							if (crawledUrls.contains(finalUrl)) {
+								dataObject.dispose();
+								continue loop;
+							}
+							else {
+								crawledUrls.add(finalUrl);
 							}
 						}
 
@@ -513,7 +521,7 @@ public class WebCrawler extends CrawlerBase {
 			// the link, we must register it in accessData.
 			HashSet<String> scheduledLinks = new HashSet<String>(links.size());
 
-			for (String link: links) {
+			for (String link : links) {
 				link = normalizeURL(link);
 				if (link == null) {
 					continue;
@@ -550,11 +558,53 @@ public class WebCrawler extends CrawlerBase {
 		return url;
 	}
 
+	private void removeDeprecatedRedirections() {
+		// the access data may get populated with "orphaned redirections", URLs that redirect to other URLs
+		// but that themselves are never used as links. This may for example happen due to session IDs in the
+		// URLs. These URLs should not be removed from the access data and not be reported as removed.
+		if (accessData != null) {
+			Iterator<String> iterator = deprecatedUrls.iterator();
+			while (iterator.hasNext()) {
+				String url = iterator.next();
+				if (accessData.get(url, AccessData.REDIRECTS_TO_KEY) != null) {
+					accessData.remove(url, AccessData.REDIRECTS_TO_KEY);
+					iterator.remove();
+				}
+			}
+		}
+	}
+
 	private void cleanUp() {
 		domainBoundaries = null;
 		jobsQueue = null;
 		jobsMap = null;
 		crawledUrls = null;
 		includeEmbeddedResources = null;
+	}
+
+	private class WebAccessData extends FilterAccessData {
+
+		public WebAccessData(AccessData accessData) {
+			super(accessData);
+		}
+
+		public void put(String id, String key, String value) {
+			// Make sure the original URL is not accessed anymore. We need to do this using such a complicated
+			// approach (using a wrapped AccessData instance) because there may be several redirection steps
+			// between the URL passed to the DataAccessor and the URL of the final DataObject.
+			if (REDIRECTS_TO_KEY.equals(key)) {
+				// do this with the id rather than the value: processingQueue depends on this in order to be
+				// able to do a crawledUrls.contains on the last URL in the redirection chain
+				crawledUrls.add(id);
+				deprecatedUrls.remove(id);
+
+				CrawlJob job = jobsMap.remove(id);
+				if (job != null) {
+					jobsQueue.remove(job);
+				}
+			}
+
+			super.put(id, key, value);
+		}
 	}
 }
