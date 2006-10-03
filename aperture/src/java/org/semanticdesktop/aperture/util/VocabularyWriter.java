@@ -280,7 +280,7 @@ public class VocabularyWriter {
      * this method is copied from jena code.
      * */
     protected String asLegalJavaID( String s, boolean cap ) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         int i = 0;
 
         // treat the first character specially - must be able to start a Java ID, may have to upcase

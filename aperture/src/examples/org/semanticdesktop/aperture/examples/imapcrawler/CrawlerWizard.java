@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -334,7 +334,7 @@ public class CrawlerWizard extends JPanel {
         File repositoryFile = outputPanel.getRepositoryFile();
 
         // set a summary text in the summary panel
-        StringBuffer buffer = new StringBuffer(300);
+        StringBuilder buffer = new StringBuilder(300);
 
         buffer.append("Mail server:  ");
         buffer.append(server);

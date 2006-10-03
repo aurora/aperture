@@ -58,7 +58,7 @@ public class MimeExtractor implements Extractor {
 			MimeMessage message = new MimeMessage(null, stream);
 
 			// extract the full-text
-			StringBuffer buffer = new StringBuffer(10000);
+			StringBuilder buffer = new StringBuilder(10000);
 			processContent(message.getContent(), buffer);
 			String text = buffer.toString().trim();
 			if (text.length() > 0) {
@@ -98,7 +98,7 @@ public class MimeExtractor implements Extractor {
 		}
 	}
 
-	private void processContent(Object content, StringBuffer buffer) throws MessagingException, IOException {
+	private void processContent(Object content, StringBuilder buffer) throws MessagingException, IOException {
 		if (content instanceof String) {
 			buffer.append(content);
 			buffer.append(' ');
@@ -118,7 +118,7 @@ public class MimeExtractor implements Extractor {
 				buffer.append(fileName);
 				buffer.append(' ');
 			}
-			
+
 			// append the content, if any
 			content = bodyPart.getContent();
 
@@ -162,7 +162,7 @@ public class MimeExtractor implements Extractor {
 		}
 	}
 
-	private void handleAlternativePart(Multipart multipart, StringBuffer buffer) throws MessagingException,
+	private void handleAlternativePart(Multipart multipart, StringBuilder buffer) throws MessagingException,
 			IOException {
 		// find the first text/plain part or else the first text/html part
 		boolean isHtml = false;
@@ -184,16 +184,16 @@ public class MimeExtractor implements Extractor {
 			}
 		}
 	}
-	
-	private void handleMixedPart(Multipart multipart, StringBuffer buffer) throws MessagingException,
+
+	private void handleMixedPart(Multipart multipart, StringBuilder buffer) throws MessagingException,
 			IOException {
 		int count = multipart.getCount();
 		for (int i = 0; i < count; i++) {
 			processContent(multipart.getBodyPart(i), buffer);
 		}
 	}
-	
-	private void handleProtectedPart(Multipart multipart, int index, StringBuffer buffer)
+
+	private void handleProtectedPart(Multipart multipart, int index, StringBuilder buffer)
 			throws MessagingException, IOException {
 		if (index < multipart.getCount()) {
 			processContent(multipart.getBodyPart(index), buffer);
@@ -233,7 +233,7 @@ public class MimeExtractor implements Extractor {
 		}
 
 		// append metadata and full-text to a string buffer
-		StringBuffer buffer = new StringBuffer(32 * 1024);
+		StringBuilder buffer = new StringBuilder(32 * 1024);
 		append(buffer, extractor.getTitle());
 		append(buffer, extractor.getAuthor());
 		append(buffer, extractor.getDescription());
@@ -247,7 +247,7 @@ public class MimeExtractor implements Extractor {
 		return buffer.toString();
 	}
 
-	private void append(StringBuffer buffer, String text) {
+	private void append(StringBuilder buffer, String text) {
 		if (text != null) {
 			buffer.append(text);
 			buffer.append(' ');

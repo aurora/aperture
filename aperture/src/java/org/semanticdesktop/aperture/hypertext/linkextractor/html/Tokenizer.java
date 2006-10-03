@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2005 - 2006 Aduna.
+ * All rights reserved.
+ * 
+ * Licensed under the Open Software License version 3.0.
+ */
 package org.semanticdesktop.aperture.hypertext.linkextractor.html;
 
 import java.io.IOException;
@@ -109,7 +115,7 @@ public class Tokenizer {
      * @exception IOException If an I/O error occurs.
      */
     private int readStartTag(InputStream input, int firstByte) throws IOException {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         int b = firstByte;
         while (b != GREATER_THEN && b != -1 && !Character.isWhitespace((char) b)) {
@@ -190,19 +196,19 @@ public class Tokenizer {
             b = input.read();
 
             // read name
-            StringBuffer nameBuffer = new StringBuffer();
+            StringBuilder nameBuffer = new StringBuilder();
             b = readWord(nameBuffer, input, b, false);
 
             // read id
-            StringBuffer sysIdBuffer = new StringBuffer();
+            StringBuilder sysIdBuffer = new StringBuilder();
             b = readWord(sysIdBuffer, input, b, false);
 
             // read FPI
-            StringBuffer fpiBuffer = new StringBuffer();
+            StringBuilder fpiBuffer = new StringBuilder();
             b = readWord(fpiBuffer, input, b, false);
 
             // read URI
-            StringBuffer uriBuffer = new StringBuffer();
+            StringBuilder uriBuffer = new StringBuilder();
             b = readWord(uriBuffer, input, b, false);
 
             tokenHandler.docType(nameBuffer.toString(), sysIdBuffer.toString(), fpiBuffer.toString(),
@@ -285,12 +291,12 @@ public class Tokenizer {
      * @exception IOException If an I/O error occurs.
      */
     private int readAttributes(InputStream input, int firstByte) throws IOException {
-        StringBuffer nameBuffer;
-        StringBuffer valueBuffer;
+        StringBuilder nameBuffer;
+        StringBuilder valueBuffer;
 
         int b = firstByte;
         while (b != GREATER_THEN && b != -1) {
-            nameBuffer = new StringBuffer();
+            nameBuffer = new StringBuilder();
 
             b = readWord(nameBuffer, input, b, true);
 
@@ -298,7 +304,7 @@ public class Tokenizer {
                 b = skipWhitespace(input, b);
 
                 if (b == EQUALS) {
-                    valueBuffer = new StringBuffer();
+                    valueBuffer = new StringBuilder();
 
                     b = input.read();
                     b = readWord(valueBuffer, input, b, false);
@@ -308,7 +314,7 @@ public class Tokenizer {
                 else {
                     tokenHandler.attribute(nameBuffer.toString());
                 }
-                valueBuffer = new StringBuffer();
+                valueBuffer = new StringBuilder();
             }
             else {
                 if (b == EQUALS) {
@@ -336,7 +342,7 @@ public class Tokenizer {
      * @exception IOException If an I/O error occurs.
      */
     private int readText(InputStream input, int firstByte) throws IOException {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         int b = firstByte;
         while (b != LESS_THEN && b != -1) {
@@ -383,7 +389,7 @@ public class Tokenizer {
      * @return The byte directly after the read word or -1 if the end of the stream has been reached.
      * @exception IOException If an I/O error occurs.
      */
-    private int readWord(StringBuffer word, InputStream input, int firstByte, boolean stopOnEquals)
+    private int readWord(StringBuilder word, InputStream input, int firstByte, boolean stopOnEquals)
             throws IOException {
         int b = firstByte;
 

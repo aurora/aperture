@@ -298,7 +298,7 @@ public class ExampleImapCrawler {
 	}
 
 	private static void exitWithUsageMessage() {
-		StringBuffer message = new StringBuffer(100);
+		StringBuilder message = new StringBuilder(100);
 		message.append("Usage: java ");
 		message.append(ExampleImapCrawler.class.getName());
 		append(SERVER_OPTION, "server", false, message);
@@ -313,7 +313,7 @@ public class ExampleImapCrawler {
 		System.exit(-1);
 	}
 
-	private static void append(String option, String var, boolean optional, StringBuffer message) {
+	private static void append(String option, String var, boolean optional, StringBuilder message) {
 		message.append(' ');
 		if (optional) {
 			message.append('[');

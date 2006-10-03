@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -24,7 +24,7 @@ public final class UriUtil {
      * @return The encoded URI.
      */
 	public static String encodeUri(String uri) {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		encodeUri(uri, result);
 		return result.toString();
 	}
@@ -36,7 +36,7 @@ public final class UriUtil {
      * @param buffer The StringBuilder that the encoded URI will be appended to.
      * @see #encodeUri(java.lang.String)
      */
-	public static void encodeUri(String uri, StringBuffer buffer) {
+	public static void encodeUri(String uri, StringBuilder buffer) {
 		int length = uri.length();
 		char c;
 		int cInt;
@@ -73,7 +73,7 @@ public final class UriUtil {
      * @return The decoded URI.
      */
 	public static String decodeUri(String uri) {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		decodeUri(uri, result);
 		return result.toString();
 	}
@@ -85,7 +85,7 @@ public final class UriUtil {
      * @param buffer The StringBuilder that the decoded URI will be appended to.
      * @see #decodeUri(java.lang.String)
      */
-	public static void decodeUri(String uri, StringBuffer buffer) {
+	public static void decodeUri(String uri, StringBuilder buffer) {
 		int percentIdx = uri.indexOf('%');
 		int startIdx = 0;
 

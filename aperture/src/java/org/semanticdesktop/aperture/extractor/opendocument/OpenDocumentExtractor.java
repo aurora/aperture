@@ -272,7 +272,7 @@ public class OpenDocumentExtractor implements Extractor {
 
 		private static final String TEXT_H = "text:h";
 
-		private StringBuffer contents = new StringBuffer(4096);
+		private StringBuilder contents = new StringBuilder(4096);
 
 		private boolean insideBody = false;
 

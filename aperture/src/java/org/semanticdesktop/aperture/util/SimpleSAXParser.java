@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -151,9 +151,9 @@ public class SimpleSAXParser {
     private class SimpleSAXDefaultHandler extends DefaultHandler {
 
         /**
-         * StringBuffer used to collect text during parsing.
+         * StringBuilder used to collect text during parsing.
          */
-        private StringBuffer charBuf = new StringBuffer(512);
+        private StringBuilder charBuf = new StringBuilder(512);
 
         /**
          * The tag name of a deferred start tag.

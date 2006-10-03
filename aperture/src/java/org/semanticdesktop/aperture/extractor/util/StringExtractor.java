@@ -48,8 +48,8 @@ public class StringExtractor {
 	 */
 	public String extract(InputStream stream) throws IOException {
 		// read all bytes and extract readable characters
-		StringBuffer lineBuffer = new StringBuffer(512);
-		StringBuffer textBuffer = new StringBuffer(64 * 1024);
+		StringBuilder lineBuffer = new StringBuilder(512);
+		StringBuilder textBuffer = new StringBuilder(64 * 1024);
 
 		int b = -1;
 		while ((b = stream.read()) != -1) {

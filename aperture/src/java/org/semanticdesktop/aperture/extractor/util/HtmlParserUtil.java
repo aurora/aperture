@@ -152,7 +152,7 @@ public class HtmlParserUtil {
         /**
          * Buffer that temporarily contains the extracted text.
          */
-        private StringBuffer textBuffer = new StringBuffer(32 * 1024);
+        private StringBuilder textBuffer = new StringBuilder(32 * 1024);
 
         /**
          * Buffer that temporarily contains keywords found in the meta element.

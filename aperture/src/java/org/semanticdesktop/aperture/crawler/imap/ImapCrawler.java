@@ -451,7 +451,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	}
 
 	private String getURIPrefix(Folder folder) throws MessagingException {
-		StringBuffer buffer = new StringBuffer(100);
+		StringBuilder buffer = new StringBuilder(100);
 		URLName url = store.getURLName();
 
 		// start with protocol
@@ -500,7 +500,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	// which should not be encoded according to RFC 2192.
 	public static String encodeFolderName(String string) {
 		int length = string.length();
-		StringBuffer buffer = new StringBuffer(length + 10);
+		StringBuilder buffer = new StringBuilder(length + 10);
 
 		for (int i = 0; i < length; i++) {
 			char c = string.charAt(i);
@@ -1104,7 +1104,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	}
 
 	private String getSubFoldersString(Folder folder) throws MessagingException {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 
 		Folder[] subFolders = folder.list();
 		for (int i = 0; i < subFolders.length; i++) {

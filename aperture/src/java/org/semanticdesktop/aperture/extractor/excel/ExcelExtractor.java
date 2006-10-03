@@ -78,7 +78,7 @@ public class ExcelExtractor implements Extractor {
 
 		private SSTRecord sstrec;
 
-		private StringBuffer buffer = new StringBuffer(64 * 1024);
+		private StringBuilder buffer = new StringBuilder(64 * 1024);
 
 		public void processRecord(Record record) {
 			// implementation note: make sure this HSSFListener is registered for all Record types used below
@@ -147,7 +147,7 @@ public class ExcelExtractor implements Extractor {
 			}
 		}
 
-		private void append(String string, StringBuffer buffer) {
+		private void append(String string, StringBuilder buffer) {
 			if (string != null) {
 				buffer.append(string);
 				buffer.append(' ');

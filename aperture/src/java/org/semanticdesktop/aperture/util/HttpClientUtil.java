@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -26,7 +26,7 @@ public class HttpClientUtil {
      * @param s The String to encode.
      * @param buffer The buffer to store the encoded String in.
      */
-    public static void formUrlEncode(String s, StringBuffer buffer) {
+    public static void formUrlEncode(String s, StringBuilder buffer) {
         int length = s.length();
         for (int i = 0; i < length; i++) {
             char c = s.charAt(i);
@@ -71,7 +71,7 @@ public class HttpClientUtil {
      * @return An encoded version of the specified String.
      */
     public static String formUrlEncode(String s) {
-        StringBuffer result = new StringBuffer(s.length() + 10);
+        StringBuilder result = new StringBuilder(s.length() + 10);
         formUrlEncode(s, result);
         return result.toString();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -37,7 +37,7 @@ public class StringUtil {
         }
 
         // we're going to do some substitutions.
-        StringBuffer buffer = new StringBuffer(text.length());
+        StringBuilder buffer = new StringBuilder(text.length());
         int prevIndex = 0;
 
         while (oldsIndex >= 0) {

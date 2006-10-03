@@ -121,7 +121,7 @@ public class XmlExtractor implements Extractor {
 
 	private static class XmlTextExtractor extends DefaultHandler {
 
-		private StringBuffer buffer = new StringBuffer(64 * 1024);
+		private StringBuilder buffer = new StringBuilder(64 * 1024);
 
 		public String getText() {
 			return buffer.toString().trim();

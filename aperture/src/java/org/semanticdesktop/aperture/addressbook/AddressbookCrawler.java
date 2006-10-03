@@ -135,7 +135,7 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 		for (Iterator it=predValues.iterator();it.hasNext();)
 			md.update(((String)it.next()).getBytes());	
 		
-		StringBuffer digest=new StringBuffer("");
+		StringBuilder digest=new StringBuilder("");
 		byte[] dig=md.digest();
 		for (int j=0;j<dig.length;j++) {
 			digest.append(Integer.toHexString(dig[j]));

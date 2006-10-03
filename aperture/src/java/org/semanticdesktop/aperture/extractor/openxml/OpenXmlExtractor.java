@@ -54,7 +54,7 @@ public class OpenXmlExtractor implements Extractor {
 
 	private ContentTypes contentTypes;
 
-	private StringBuffer fullText = new StringBuffer(256 * 1024);
+	private StringBuilder fullText = new StringBuilder(256 * 1024);
 
 	public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
 			throws ExtractorException {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2006 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -98,7 +98,7 @@ public class UrlUtil {
 		}
 
 		// reconstruct query string
-		StringBuffer result = new StringBuffer(query.length());
+		StringBuilder result = new StringBuilder(query.length());
         
 		Iterator iterator = sortedSet.iterator();
 		while (iterator.hasNext()) {
