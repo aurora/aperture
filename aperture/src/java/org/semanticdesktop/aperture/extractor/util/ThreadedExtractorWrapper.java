@@ -17,10 +17,16 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
- * A ThreadedExtractorWrapper wraps an Extractor and executes it with a certain timeout, bailing out if the
+ * A ThreadedExtractorWrapper wraps an Extractor and executes it on a separate thread, bailing out if the
  * wrapped Extractor appears to be hanging. The heuristic for determining whether the Extractor is hanging is
- * by looking at whether the InputStream is regularly accessed. This has proven to be a good heuristic. It for
- * example catches the case of a web server that hangs while uploading a requested file.
+ * by looking at whether the InputStream is regularly accessed.
+ * 
+ * <p>
+ * Furthermore, a ThreadedExtractorWrapper can be requested to stop processing, causing it to throw an
+ * IOException on the InputStream the next time it is accessed by the wrapped Extractor. This allows for
+ * interrupting an extraction process upon user request, for example because it has been processing a single
+ * file for a very long time (especially large PDF documents are notorious). This implementation strategy is
+ * preferred over interrupting the Thread as that should only be used as a last resort to stop a thread.
  */
 public class ThreadedExtractorWrapper implements Extractor {
 
@@ -48,12 +54,25 @@ public class ThreadedExtractorWrapper implements Extractor {
 	private Extractor extractor;
 
 	/**
+	 * Flag that indicates that a request to stop extracting has been issued.
+	 */
+	private boolean stopRequested;
+
+	/**
 	 * Creates a new wrapper for the specified Extractor.
 	 * 
 	 * @param extractor The Extractor to wrap.
 	 */
 	public ThreadedExtractorWrapper(Extractor extractor) {
 		this.extractor = extractor;
+		stopRequested = false;
+	}
+
+	/**
+	 * Interrupts processing of the wrapped extractor as soon as possible.
+	 */
+	public void stop() {
+		stopRequested = true;
 	}
 
 	/**
@@ -62,7 +81,7 @@ public class ThreadedExtractorWrapper implements Extractor {
 	 */
 	public void extract(URI id, InputStream input, Charset charset, String mimeType, RDFContainer result)
 			throws ExtractorException {
-		MonitoringInputStream monitoredStream = new MonitoringInputStream(input);
+		ExtractionStream monitoredStream = new ExtractionStream(input);
 
 		ExtractionThread thread = new ExtractionThread(id, monitoredStream, charset, mimeType, result);
 		thread.start();
@@ -118,7 +137,7 @@ public class ThreadedExtractorWrapper implements Extractor {
 		private RDFContainer result;
 
 		private ExtractorException exception;
-		
+
 		public ExtractionThread(URI id, InputStream input, Charset charset, String mimeType,
 				RDFContainer result) {
 			this.id = id;
@@ -140,13 +159,13 @@ public class ThreadedExtractorWrapper implements Extractor {
 		public void abortExtraction() {
 			interrupt();
 		}
-		
+
 		public ExtractorException getException() {
 			return exception;
 		}
 	}
 
-	private static class MonitoringInputStream extends FilterInputStream {
+	private class ExtractionStream extends FilterInputStream {
 
 		private long lastAccessTime;
 
@@ -154,7 +173,7 @@ public class ThreadedExtractorWrapper implements Extractor {
 
 		private int totalBytesRead;
 
-		public MonitoringInputStream(InputStream in) {
+		public ExtractionStream(InputStream in) {
 			super(in);
 
 			lastAccessTime = System.currentTimeMillis();
@@ -175,6 +194,8 @@ public class ThreadedExtractorWrapper implements Extractor {
 		}
 
 		public int read() throws IOException {
+			checkStopRequested();
+
 			int result = super.read();
 
 			if (result >= 0) {
@@ -189,6 +210,8 @@ public class ThreadedExtractorWrapper implements Extractor {
 		}
 
 		public int read(byte[] b) throws IOException {
+			checkStopRequested();
+
 			int result = super.read(b);
 
 			if (result >= 0) {
@@ -203,6 +226,8 @@ public class ThreadedExtractorWrapper implements Extractor {
 		}
 
 		public int read(byte[] b, int off, int len) throws IOException {
+			checkStopRequested();
+
 			int result = super.read(b, off, len);
 
 			if (result >= 0) {
@@ -219,6 +244,19 @@ public class ThreadedExtractorWrapper implements Extractor {
 		public void close() throws IOException {
 			super.close();
 			allBytesRead = true;
+		}
+
+		private void checkStopRequested() throws ExtractionInterruptedException {
+			if (stopRequested) {
+				throw new ExtractionInterruptedException();
+			}
+		}
+	}
+
+	public static class ExtractionInterruptedException extends IOException {
+
+		public ExtractionInterruptedException() {
+			super("Extraction interrupted upon request");
 		}
 	}
 }
