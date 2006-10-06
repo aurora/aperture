@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<body>
+A crawler implementation for Ical calendar files.
+<p>
+This implementation is a simple one. It assumes that all calendar objects are new.
+They are reported to the CrawlerHandler as new ones. Future version may implement
+some way to monitor the current state of calendar knowledge and report modified,
+unmodified and removed objects.
+<p>
+There is no IcalAcessor. All knowledge-extraction logic is implemented within the
+crawler itself. An accessor would be difficult to implement, because in order
+to extract a single component from a calendar it would have to parse the whole
+file, and to search it linearly. The second question would be to implement a
+URI system for calendar components. We can't assume the existence of a UID
+field in every component.
+</body>
+</html>
