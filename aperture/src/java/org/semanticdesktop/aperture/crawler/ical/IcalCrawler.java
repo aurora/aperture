@@ -115,7 +115,7 @@ public class IcalCrawler extends CrawlerBase {
                     "missing iCalendar file path specification");
             return ExitCode.FATAL_ERROR;
         }
-        baseuri = icalFilePath + "#";
+        
         icalFile = new File(icalFilePath);
         if (!icalFile.exists()) {
             LOGGER.log(Level.SEVERE, "iCalendar file does not exist: '"
@@ -128,6 +128,15 @@ public class IcalCrawler extends CrawlerBase {
                     + icalFile + "'");
             return ExitCode.FATAL_ERROR;
         }
+        
+        try {
+            baseuri = icalFile.getCanonicalPath() + "#";
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Couldn't get the canonical path " +
+                    "for the iCalFile",e);
+            return ExitCode.FATAL_ERROR;
+        }
+        
 
         // crawl the ical file
         return crawlIcalFile(icalFile);
@@ -188,7 +197,7 @@ public class IcalCrawler extends CrawlerBase {
      * @see generateExtendedNamespace(String prodid)
      */
     private void crawlCalendar(Calendar calendar) {
-        String uri = generateCalendarUri();
+        URI uri = generateCalendarUri();
         RDFContainer rdfContainer = prepareDataObjectRDFContainer(uri);
         rdfContainer.add(RDF.TYPE, ICALTZD.Vcalendar);
 
@@ -197,7 +206,6 @@ public class IcalCrawler extends CrawlerBase {
 
         ProdId prodId = calendar.getProductId();
         if (prodId != null) {
-            rdfContainer.add(ICALTZD.prodid, prodId.getValue());
             generateExtendedNameSpace(prodId.getValue());
             extendedNameSpace = generateExtendedNameSpace(prodId.getValue());
         }
@@ -305,6 +313,8 @@ public class IcalCrawler extends CrawlerBase {
             crawlGeoProperty(property, parentNode, rdfContainer);
         } else if (propertyName.startsWith(Property.LAST_MODIFIED)) {
             crawlLastModifiedProperty(property, parentNode, rdfContainer);
+        } else if (propertyName.startsWith(Property.LOCATION)) {
+            crawlLocationProperty(property, parentNode, rdfContainer);
         } else if (propertyName.startsWith(Property.METHOD)) {
             crawlMethodProperty(property, parentNode, rdfContainer);
         } else if (propertyName.startsWith(Property.ORGANIZER)) {
@@ -477,20 +487,61 @@ public class IcalCrawler extends CrawlerBase {
     }
     
     /**
-     * Crawls the parameter list of a given property.
+     * Crawls the parameter list of a given property. Note that there is
+     * specific treatment for the VALUE parameter. 
+     * 
+     * @see convertValueTypeToURI
      * 
      * @param property
      *            The property whose parameter list we would like to crawl.
      * @param parentNode
      *            The node to which the generated RDF subtree should be
      *            attached.
-     * @param parametersRDFContainer
-     *            The RDFContainer to store the triples in.
+     * @param propsedValueURI
+     *            The default URI for the link that will connect the
+     *            generated blank node with the actual value of the property.
+     *            It is used if there is no VALUE parameter. If it is NULL and
+     *            the VALUE parameter is unspecified - the property value will
+     *            be attached to the blank node with a default ICALTZD.value
+     *            link.
      */
-    private void crawlParameterList(Property property,
-            Resource parentNode, RDFContainer parametersRDFContainer) {
+    private Value crawlParameterList(Property property,
+            RDFContainer rdfContainer, URI proposedValueURI) {
         ParameterList parameterList = property.getParameters();
-        crawlParameterList(parameterList,parentNode,parametersRDFContainer);
+        if (parameterList.size() == 0) {
+            return valueFactory.createLiteral(property.getValue()); 
+        } else {
+            String propertyValue = property.getValue();
+            URI propertyBlankNode = generateAnonymousNode();
+            if (propertyValue != null) {
+                Parameter valueParameter = property
+                        .getParameter(Parameter.VALUE);
+                URI valuePropertyURI = null;
+                if (valueParameter != null) {
+                    String valueString = valueParameter.getValue();
+                    if (valueString.equalsIgnoreCase("TEXT")) {
+                        // special case: if the VALUE:TEXT is the only parameter
+                        // we don't introduce an intermediary blank node for
+                        property.getParameters().remove(valueParameter);
+                        if (property.getParameters().size() == 0) {
+                            return valueFactory
+                                    .createLiteral(property.getValue());
+                        } 
+                    }
+                    valuePropertyURI = convertValueTypeToURI(valueString);
+                } else if (proposedValueURI != null) {
+                    valuePropertyURI = proposedValueURI;
+                } else {
+                    valuePropertyURI = ICALTZD.value;
+                }
+                addStatement(rdfContainer, propertyBlankNode, valuePropertyURI,
+                        propertyValue);            
+            }
+            // at the end we may crawl the parameter list to add the remaining
+            // parameters
+            crawlParameterList(parameterList, propertyBlankNode, rdfContainer);
+            return propertyBlankNode;
+        }
     }
     
     /**
@@ -517,7 +568,8 @@ public class IcalCrawler extends CrawlerBase {
     ////////////////////////// COMPONENTS //////////////////////////////////
 
     /**
-     * Crawls a single VAlarm component.
+     * Crawls a single VAlarm component. Attaches it to the parent vevent with
+     * a ical:component link.
      * 
      * @param component
      * @param rdfContainer
@@ -525,9 +577,9 @@ public class IcalCrawler extends CrawlerBase {
     private void crawlVAlarmComponent(Component component, Resource parentNode,
             RDFContainer rdfContainer) {
         VAlarm valarm = (VAlarm) component;
-        URI valarmParentNode = generateAnonymousNode();
+        URI valarmParentNode = generateAnonymousComponentUri(component);
         crawlPropertyList(valarm, valarmParentNode,rdfContainer);
-        addStatement(rdfContainer,parentNode,ICALTZD.Valarm,valarmParentNode);
+        addStatement(rdfContainer,parentNode,ICALTZD.component,valarmParentNode);
     }
 
     private void crawlVEventComponent(Component component, 
@@ -618,7 +670,20 @@ public class IcalCrawler extends CrawlerBase {
     }
     
     /////////////////////////// PROPERTIES /////////////////////////////////
-    
+
+    /**
+     * Crawls the ACTION property.
+     * Only non-standard parameters can be specified on this property. This
+     * method introduces a single triple.
+     * <pre>
+     * ical:
+     * ACTION:AUDIO
+     * 
+     * n3:
+     * _:ValarmNode icaltzd:action AUDIO
+     * 
+     * </pre>
+     */
     private void crawlActionProperty(Property property,Resource parentNode,
             RDFContainer rdfContainer) {
         addStatement(rdfContainer, parentNode, ICALTZD.action, 
@@ -631,41 +696,124 @@ public class IcalCrawler extends CrawlerBase {
                 property.getValue());
     }
     
+    /**
+     * This property may contain parameters. It introduces a blank node. The
+     * value of this property is connected to the blank node with the
+     * icaltzd:caladdress link. This blank node is connected to the parent
+     * node with the icaltzd:attendee link.
+     * 
+     * <pre>
+     * ical:
+     * ATTENDEE;RSVP=TRUE;ROLE=REQ-PARTICIPANT:MAILTO:jsmith@host.com
+     * 
+     * n3:
+     * <#Vevent-URI> icaltzd:attendee _:anon .
+     * _:anon icaltzd:rsvp TRUE;
+     *        icaltzd:role REQ-PARTICIPANT;
+     *        icaltzd:caladdress MAILTO:jsmith@jhost.com
+     * 
+     * </pre>
+     * 
+     * @param property
+     * @param parentNode
+     * @param rdfContainer
+     */
     private void crawlAttendeeProperty(Property property,Resource parentNode,
             RDFContainer rdfContainer) {
-        //  TODO implement the attendee property crawling
+       Value value = crawlParameterList(property, rdfContainer, 
+               ICALTZD.calAddress);
+       addStatement(rdfContainer,parentNode,ICALTZD.attendee,value);
     }
     
+    /**
+     * Crawls the CALSCALE property.
+     * Only non-standard parameters can be specified on this property. This
+     * method introduces a single triple.
+     * <pre>
+     * ical:
+     * CALSCALE:GREGORIAN
+     * 
+     * n3:
+     * _:VcalendarNode icaltzd:calscale GREGORIAN
+     * </pre>
+     */
     private void crawlCalScaleProperty(Property property,Resource parentNode,
             RDFContainer rdfContainer) {
         addStatement(rdfContainer, parentNode, ICALTZD.calscale,
                 property.getValue());
     }
     
+    /**
+     * Crawls the CATEGORIES property.
+     * The LANGUAGE parameter may be specified on this property.
+     * We DISREGARD this parameter and introduce a single triple.
+     * 
+     * <pre>
+     * ical:
+     * CATEGORIES:APPOINTMENT,EDUCATION
+     * 
+     * n3:
+     * _:VeventNode icaltzd:categories APPOINTMENT,EDUCATION
+     * </pre>
+     * @param property
+     * @param parentNode
+     * @param rdfContainer
+     */
     private void crawlCategoriesProperty(Property property,Resource parentNode,
             RDFContainer rdfContainer) {
         addStatement(rdfContainer, parentNode, ICALTZD.categories,
                 property.getValue());
     }
     
+    /**
+     * Crawls the CLASS property.
+     * Only non-standard parameters can be specified on this property. This
+     * method introduces a single triple.
+     * <pre>
+     * ical:
+     * CLASS:PUBLIC
+     * 
+     * n3:
+     * _:VcalendarNode icaltzd:class PUBLIC
+     * </pre>
+     */
     private void crawlClassProperty(Property property,Resource parentNode,
             RDFContainer rdfContainer) {
         addStatement(rdfContainer, parentNode, ICALTZD.class_,
                 property.getValue());
-
     }
     
+    /**
+     * Crawls the COMMENT property.
+     * Possible parameters: ALTREP, LANGUAGE (DISREGARDED)<br>
+     * Treatment: direct link
+     * 1st link: icaltzd:comment
+     * 
+     * <pre>
+     * ical:
+     * COMMENT:The meeting really needs to include both ourselves
+     *   and the customer. We can't hold this  meeting without them.
+     *   As a matter of fact\, the venue for the meeting ought to be at
+     *   their site. - - John
+     * 
+     * n3:
+     * _:VeventNode icaltzd:comment 
+     *   """The meeting really needs to include both ourselves
+     *   and the customer. We can't hold this  meeting without them.
+     *   As a matter of fact\, the venue for the meeting ought to be at
+     *   their site. - - John""" 
+     * </pre>
+     */
     private void crawlCommentProperty(Property property,Resource parentNode,
             RDFContainer rdfContainer) {
         addStatement(rdfContainer, parentNode, ICALTZD.comment,
                 property.getValue());
-
     }
     
     private void crawlCompletedProperty(Property property,Resource parentNode,
             RDFContainer rdfContainer) {
         Literal literal = valueFactory.createLiteral(property.getValue(),
-                ICALTZD_ADD_VOCABULARY.Value_DATETIME);
+                ICALTZD.Value_DATETIME);
         addStatement(rdfContainer, parentNode, ICALTZD.comment,literal);
     }
     
@@ -678,7 +826,7 @@ public class IcalCrawler extends CrawlerBase {
     private void crawlCreatedProperty(Property property,Resource parentNode,
             RDFContainer rdfContainer) {
         Literal literal = valueFactory.createLiteral(property.getValue(),
-                ICALTZD_ADD_VOCABULARY.Value_DATETIME);
+                ICALTZD.Value_DATETIME);
         addStatement(rdfContainer, parentNode, ICALTZD.created, literal);
     }
     
@@ -696,7 +844,7 @@ public class IcalCrawler extends CrawlerBase {
     private void crawlDtStampProperty(Property property,Resource parentNode,
             RDFContainer rdfContainer) {
         Literal literal = valueFactory.createLiteral(property.getValue(),
-                ICALTZD_ADD_VOCABULARY.Value_DATETIME);
+                ICALTZD.Value_DATETIME);
         addStatement(rdfContainer, parentNode, ICALTZD.dtstamp, literal);
     }
     
@@ -738,7 +886,7 @@ public class IcalCrawler extends CrawlerBase {
     private void crawlLastModifiedProperty(Property property,
             Resource parentNode, RDFContainer rdfContainer) {
         Literal literal = valueFactory.createLiteral(property.getValue(),
-                ICALTZD_ADD_VOCABULARY.Value_DATETIME);
+                ICALTZD.Value_DATETIME);
         addStatement(rdfContainer, parentNode, ICALTZD.lastModified, literal);
     }
     
@@ -931,128 +1079,165 @@ public class IcalCrawler extends CrawlerBase {
             RDFContainer rdfContainer) {
         URI extendedPropertyURI = new URIImpl(extendedNameSpace + "#"
                 + property.getName());
-        ParameterList parameterList = property.getParameters();
-        if (parameterList.size() == 0) {
-            addStatement(rdfContainer, parentNode, extendedPropertyURI,
-                    property.getValue());
-        } else {
-            URI propertyBlankNode = generateAnonymousNode();
-            crawlParameterList(parameterList, propertyBlankNode, rdfContainer);
-            String propertyValue = property.getValue();
-            if (propertyValue != null) {
-                Parameter valueParameter = property
-                        .getParameter(Parameter.VALUE);
-                URI valuePropertyURI = null;
-                if (valueParameter != null) {
-                    // TODO implement the switch that would choose the correct
-                    // URI for the property value
-                    valuePropertyURI = new URIImpl(ICALTZD.value + "_"
-                            + valueParameter.getValue());
-                } else {
-                    valuePropertyURI = ICALTZD.value;
-                }
-                addStatement(rdfContainer, propertyBlankNode, valuePropertyURI,
-                        propertyValue);
-            }
-            addStatement(rdfContainer, parentNode, extendedPropertyURI,
-                    propertyBlankNode);
-        }
+        Value propertyValue = crawlParameterList(property,rdfContainer,
+                ICALTZD.value);
+        addStatement(rdfContainer, parentNode, extendedPropertyURI,
+                    propertyValue);
     }
     
     //////////////////////////// PARAMETERS ////////////////////////////////
     
     private void crawlAltRepParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the AltRep parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.altrep,
+                parameter.getValue());
     }
     
+    /**
+     * Crawls the CN parameter.
+     * All parameters introduce a single triple attached to the blank node for
+     * the property in question.
+     * 
+     * <pre>
+     * ical:
+     * ORGANIZER;CN="John Smith":MAILTO:jsmith@host.com
+     * 
+     * n3:
+     * _:VeventNode icaltzd:organizer _:organizerBNode .
+     * _:organizerBNode icaltzd:cn John Smith ;
+     *                  icaltzd:calAddress MAILTO:jsmith@host.com
+     * </pre>
+     * @param property
+     * @param parentNode
+     * @param rdfContainer
+     */
     private void crawlCnParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the cn parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.cn,parameter.getValue());
     }
     
+    /**
+     * Crawls the CUTYPE parameter.
+     * All parameters introduce a single triple attached to the blank node for
+     * the property in question.
+     * 
+     * <pre>
+     * ical:
+     * ATTENDEE;CUTYPE=GROUP:MAILTO:ietf-calsch@imc.org
+     * 
+     * n3:
+     * _:VeventNode icaltzd:attendee _:attendeeBNode .
+     * _:attendeeBNode icaltzd:cutype GROUP ;
+     *                 icaltzd:calAddress MAILTO:ietf-calsch@imc.org
+     * </pre>
+     * @param property
+     * @param parentNode
+     * @param rdfContainer
+     */
     private void crawlCuTypeParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the cutype parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.cutype,
+                parameter.getValue());
     }
     
     private void crawlDelegatedFromParameter(Parameter parameter,
             Resource parentNode, RDFContainer rdfContainer) {
-        // TODO implement the delegatedfrom parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.delegatedFrom,
+                parameter.getValue());
     }
     
     private void crawlDelegatedToParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the delegatedto parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.delegatedTo,
+                parameter.getValue());
     }
     
     private void crawlDirParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the dir parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.dir,
+                parameter.getValue());
     }
     
     private void crawlEncodingParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the encoding parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.encoding,
+                parameter.getValue());
     }
     
     private void crawlFbTypeParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the fbtype parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.fbtype,
+                parameter.getValue());
     }
     
     private void crawlFmtTypeParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the fmttype parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.fmttype,
+                parameter.getValue());
     }
     
     private void crawlLanguageParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the language parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.language,
+                parameter.getValue());
     }
     
     private void crawlMemberParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the member parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.member,
+                parameter.getValue());
     }
     
     private void crawlPartStatParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the partstat parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.partstat,
+                parameter.getValue());
     }
     
     private void crawlRangeParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the range parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.range,
+                parameter.getValue());
     }
     
     private void crawlRelatedParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the related parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.related,
+                parameter.getValue());
     }
     
     private void crawlRelTypeParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the reltype parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.reltype,
+                parameter.getValue());
     }
     
     private void crawlRoleParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the role parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.role,
+                parameter.getValue());
     }
     
     private void crawlRsvpParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the rsvp parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.role,
+                parameter.getValue());
     }
     
     private void crawlSentByParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the sentby parameter crawling
+        addStatement(rdfContainer,parentNode,ICALTZD.role,
+                parameter.getValue());
     }
     
     /**
-     * Note that this parameter is ignored. In the tzid ontology
+     * Note that this parameter is ignored in the icaltzd ontology. It is
+     * treated differently. If a DATE-TIME property (like DTSTART) has this
+     * parameter it receives a datatype, whose uri points to the VTimezone
+     * object in Dan Connoly's timezone resource.
+     * 
+     * @seeAlso http://www.w3.org/2002/12/cal/tzd/
+     * 
      * @param parameter
      * @param parentNode
      * @param rdfContainer
@@ -1062,9 +1247,43 @@ public class IcalCrawler extends CrawlerBase {
         // TODO implement the tzid parameter crawling
     }
     
+    /**
+     * Note that this parameter is ignored in the icaltzd ontology. It is 
+     * treated differently. The algorithm is as follows: 
+     * <p>
+     * <ul>
+     *      <li>if the parameter value is equal to TEXT
+     *          <ul>
+     *          <li>if this is the only parameter for this property
+     *              <ul>
+     *              <li>we don't introduce any blank nodes, the value of the
+     *                  property is attached to the parent node with a direct
+     *                  link
+     *              </ul>
+     *          <li>else
+     *              <ul>
+     *              <li>we introduce a blank node and attach the value of the
+     *                  property to that blank node with a ICALTZD.value link
+     *              </ul>
+     *          </ul>
+     *       <li>else
+     *           <ul>
+     *           <li> we introduce a blank node, attach the remaining parameters
+     *                to that blank node, then we attach the actual property
+     *                value (if it exists) with a link, whose URI is returned
+     *                by the convertValueTypeToURI method
+     *           </ul>
+     * </ul>  
+     * @param parameter
+     * @param parentNode
+     * @param rdfContainer
+     */
     private void crawlValueParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        addStatement(rdfContainer,parentNode,ICALTZD.value,parameter.getValue());
+        // we don't add any statements, the value parameter is expressed by
+        // various Value_... properties
+        // addStatement(rdfContainer,parentNode,
+        //        ICALTZD.value,parameter.getValue());
     }
     
     private void crawlXParameter(Parameter parameter, Resource parentNode,
@@ -1081,12 +1300,10 @@ public class IcalCrawler extends CrawlerBase {
      * particular components to add the triple, that binds the component with
      * the calendar.
      * 
-     * 
-     * @param calendar
      * @return the URI of the current calendar
      */
-    private String generateCalendarUri() {
-        return "VCalendar:" + icalFile.getAbsolutePath();
+    private URI generateCalendarUri() {
+        return new URIImpl(baseuri + "VCalendar");
     }
     
     
@@ -1100,7 +1317,7 @@ public class IcalCrawler extends CrawlerBase {
      *         stored
      */
     private RDFContainer prepareDataObjectRDFContainer(Component component) {
-        String uri = generateComponentUri(component);
+        URI uri = generateComponentUri(component);
         return prepareDataObjectRDFContainer(uri);
     }
 
@@ -1115,9 +1332,9 @@ public class IcalCrawler extends CrawlerBase {
      * @return the container, where the statements about the given uri should be
      *         stored
      */
-    private RDFContainer prepareDataObjectRDFContainer(String uri) {
+    private RDFContainer prepareDataObjectRDFContainer(URI uri) {
         // register that we're processing this calendar component
-        handler.accessingObject(this, uri);
+        handler.accessingObject(this, uri.toString());
         return prepareRDFContainer(uri);
     }
 
@@ -1133,13 +1350,13 @@ public class IcalCrawler extends CrawlerBase {
      * @return the container where the statements about the given uri should be
      *         stored
      */
-    private RDFContainer prepareRDFContainer(String uri) {
+    private RDFContainer prepareRDFContainer(URI uri) {
         // fetch a RDFContainerFactory from the handler (note: this is done for
         // every component)
-        RDFContainerFactory containerFactory = handler.getRDFContainerFactory(
-                this, uri);
+        RDFContainerFactory containerFactory 
+                = handler.getRDFContainerFactory(this, uri.toString());
         RDFContainer rdfContainer = containerFactory
-                .getRDFContainer(new URIImpl(uri));
+                .getRDFContainer(uri);
         return rdfContainer;
     }
     
@@ -1209,11 +1426,11 @@ public class IcalCrawler extends CrawlerBase {
      *            the component, for which the URI should be generated.
      * @return the string with the URI.
      */
-    private String generateComponentUri(Component component) {
+    private URI generateComponentUri(Component component) {
         Property uidProperty = component.getProperty(Property.UID);
+        String result = null;
         if (uidProperty != null) {
-            String result = baseuri + component.getName() + "-" + uidProperty.getValue();
-            return result; 
+            result = baseuri + component.getName() + "-" + uidProperty.getValue(); 
         } else {
             String sumOfAllProperties = "";
             PropertyList propertyList = component.getProperties();
@@ -1222,9 +1439,22 @@ public class IcalCrawler extends CrawlerBase {
                 Property property = (Property) it.next();
                 sumOfAllProperties += property.getValue();
             }
-            return baseuri + component.getName() + "-"
+            result = baseuri + component.getName() + "-"
                     + sha1Hash(sumOfAllProperties);
         }
+        return new URIImpl(result);
+    }
+    
+    /**
+     * Generates a URI for an anonymous component. This one is used for embedded
+     * components - like valarms. 
+     * @param component
+     * @return
+     */
+    private URI generateAnonymousComponentUri(Component component) {
+        String result = baseuri + component.getName() + "-" 
+                + java.util.UUID.randomUUID().toString();
+        return new URIImpl(result);
     }
     
     private URI generateAnonymousNode() {
@@ -1307,5 +1537,76 @@ public class IcalCrawler extends CrawlerBase {
         } catch (Exception e) {
             return null;
         }
+    }
+    
+    /**
+     * Converts the ical date (YYYYMMDD) to an XSD Date (YYYY-MM-DD)
+     * @param icalDate The ical date to convert.
+     * @return The XSD date.
+     */
+    private String convertIcalDateToXSDDate(String icalDate) {
+        if (icalDate.length() != 8) {
+            throw new IllegalArgumentException("Invalid ical date: " + icalDate);
+        }
+        String year = icalDate.substring(0,4);
+        String month = icalDate.substring(4,6);
+        String day = icalDate.substring(6,8);
+        return year + "-" + month + "-" + day;
+    }
+    
+    /**
+     * Converts the ical date (YYYYMMDD) to an XSD Date (YYYY-MM-DD)
+     * @param icalDate The ical date to convert.
+     * @return The XSD date.
+     */
+    
+    private String convertIcalDateTimeToXSDDateTime(String icalDateTime) {
+        if (icalDateTime.length() < 15 || icalDateTime.length() > 16) {
+            throw new IllegalArgumentException("Invalid ical date: " + 
+                    icalDateTime);
+        }
+        String date = convertIcalDateToXSDDate(icalDateTime.substring(0,8));
+        // we omit the 'T' letter in the middle
+        String hour = icalDateTime.substring(9,11);
+        String minute = icalDateTime.substring(11,13);
+        String second = icalDateTime.substring(13,15);
+        String z = (icalDateTime.length() == 16) ? "Z" : "";
+        return date + "T" + hour + ":" + minute + ":" + second + z;
+    }
+    
+    private URI convertValueTypeToURI(String valueString) {
+        URI valuePropertyURI = null;
+        if (valueString.equalsIgnoreCase("TEXT")) {
+            valuePropertyURI = ICALTZD.value;
+        } else if (valueString.equalsIgnoreCase("BINARY")) {
+            valuePropertyURI = ICALTZD.value;
+        } else if (valueString.equalsIgnoreCase("BOOLEAN")) {
+            valuePropertyURI = ICALTZD.value;
+        } else if (valueString.equalsIgnoreCase("CAL-ADDRESS")) {
+            valuePropertyURI = ICALTZD.calAddress;
+        } else if (valueString.equalsIgnoreCase("DATE")) {
+            valuePropertyURI = ICALTZD.Value_DATE;
+        } else if (valueString.equalsIgnoreCase("DATE-TIME")) {
+            valuePropertyURI = ICALTZD.Value_DATETIME;
+        } else if (valueString.equalsIgnoreCase("DURATION")) {
+            valuePropertyURI = ICALTZD.Value_DURATION;
+        } else if (valueString.equalsIgnoreCase("FLOAT")) {
+            valuePropertyURI = ICALTZD.value;
+        } else if (valueString.equals("INTEGER")) {
+            valuePropertyURI = ICALTZD.value;
+        } else if (valueString.equalsIgnoreCase("PERIOD")) {
+            valuePropertyURI = ICALTZD.Value_PERIOD;
+        } else if (valueString.equalsIgnoreCase("RECUR")) {
+            valuePropertyURI = ICALTZD.Value_RECUR;
+        } else if (valueString.equalsIgnoreCase("TIME")) {
+            valuePropertyURI = ICALTZD.value;
+        } else if (valueString.equalsIgnoreCase("URI")) {
+            valuePropertyURI = ICALTZD.value;
+        } else if (valueString.equalsIgnoreCase("UTC-OFFSET")) {
+            valuePropertyURI = ICALTZD.value;
+        } else {
+            LOGGER.severe("Unknown value parameter: " + valueString);
+        }
+        return valuePropertyURI;
     }
 }
