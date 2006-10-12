@@ -9,6 +9,7 @@ package org.semanticdesktop.aperture.crawler.ical;
 import java.io.File;
 import java.net.URL;
 
+import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -16,6 +17,7 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.Repository;
 import org.openrdf.util.iterator.CloseableIterator;
@@ -142,6 +144,52 @@ public class TestIcalCrawler extends ApertureTestBase {
         assertNotNull(veventWithComment);
         assertSingleValueProperty(repository,veventWithComment,ICALTZD.comment,
                 "from G.Klyne - iCalendarExample.txt");
+    }
+    
+    public void testTriggerPropertyWithDefinedDateTimeType() throws Exception {
+        Repository repository = readIcalFile("simplevevent.ics");
+        Resource calendarNode 
+                = findMainCalendarNode(repository);
+        Resource veventNode 
+                = findSingleNode(repository,calendarNode,ICALTZD.component);
+        Resource valarmNode
+                = findSingleNode(repository,veventNode,ICALTZD.component);
+        Resource triggerBlankNode
+                = findSingleNode(repository,valarmNode,ICALTZD.trigger);
+        assertSingleValueProperty(repository,triggerBlankNode,ICALTZD.value,
+                "2006-04-12T23:00:00Z",XMLSchema.DATETIME);
+    }
+    
+    public void testTriggerPropertyWithSomeParams() throws Exception {
+        Repository repository = readIcalFile("cal01.ics");
+        Resource veventNode 
+                = findComponentByUid(repository, 
+                  "20020630T230600Z-3895-69-1-16@jammer");
+        Resource valarmNode
+                = findSingleNode(repository,veventNode,ICALTZD.component);
+        Resource triggerBlankNode
+                = findSingleNode(repository,valarmNode,ICALTZD.trigger);
+        assertSingleValueProperty(repository,triggerBlankNode,ICALTZD.value,
+                "-PT15M",XMLSchema.DURATION);
+        assertSingleValueProperty(repository,triggerBlankNode,ICALTZD.related,
+                "START");
+        assertEquals(countOutgoingTriples(repository, triggerBlankNode),2);
+    }
+    
+    public void testTriggerPropertyWithoutDefinedType() throws Exception {
+        Repository repository = readIcalFile("cal01.ics");
+        Resource veventNode 
+                = findComponentByUid(repository, 
+                  "20020630T230445Z-3895-69-1-7@jammer");
+        Resource valarmNode
+                = findSingleNode(repository,veventNode,ICALTZD.component);
+        Resource triggerBlankNode
+                = findSingleNode(repository,valarmNode,ICALTZD.trigger);
+        assertSingleValueProperty(repository,triggerBlankNode,ICALTZD.value,
+                "-PT30M",XMLSchema.DURATION);
+        assertSingleValueProperty(repository,triggerBlankNode,ICALTZD.related,
+                "START");
+        assertEquals(countOutgoingTriples(repository, triggerBlankNode),2);
     }
     
     ////////////////////////////////////////////////////////////////////////
@@ -337,6 +385,34 @@ public class TestIcalCrawler extends ApertureTestBase {
         assertFalse(iterator.hasNext());
         assertEquals(statement.getObject().toString(),object.toString());
         iterator.close();
+    }
+    
+    /**
+     * Asserts that a given triple in the repository exists AND that it is the
+     * only one with the given subject and predicate AND that the object is
+     * a literal with a given XSD datatype.
+     * 
+     * @param repository
+     * @param subject
+     * @param predicate
+     * @param objectLabel
+     * @param xsdDatatype
+     */
+    private void assertSingleValueProperty(Repository repository,
+            Resource subject, URI predicate, String objectLabel, 
+            URI xsdDatatype) {
+        CloseableIterator<RStatement> iterator
+                = repository.getStatements(subject, predicate, null);
+        assertTrue(iterator.hasNext()); // statement exists
+        RStatement statement = iterator.next();
+        assertFalse(iterator.hasNext()); // it is the only one
+        iterator.close();
+        
+        Value object = statement.getObject();
+        assertTrue(object instanceof Literal); // the object is a literal
+        Literal literal = (Literal)object;
+        assertEquals(literal.getLabel(),objectLabel); // it's label is as given
+        assertEquals(literal.getDatatype(),xsdDatatype); // and datatype as well
     }
     
     private void assertMultiValueProperty(Repository repository, 

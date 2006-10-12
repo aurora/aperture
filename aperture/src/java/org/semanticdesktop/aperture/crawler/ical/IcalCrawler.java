@@ -130,7 +130,7 @@ public class IcalCrawler extends CrawlerBase {
         }
         
         try {
-            baseuri = icalFile.getCanonicalPath() + "#";
+            baseuri = "file://" + icalFile.getCanonicalPath() + "#";
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Couldn't get the canonical path " +
                     "for the iCalFile",e);
@@ -497,51 +497,15 @@ public class IcalCrawler extends CrawlerBase {
      * @param parentNode
      *            The node to which the generated RDF subtree should be
      *            attached.
-     * @param propsedValueURI
-     *            The default URI for the link that will connect the
-     *            generated blank node with the actual value of the property.
-     *            It is used if there is no VALUE parameter. If it is NULL and
-     *            the VALUE parameter is unspecified - the property value will
-     *            be attached to the blank node with a default ICALTZD.value
-     *            link.
+     * @param defaultValueType
+     *            The default ical type for the property value.
      */
-    private Value crawlParameterList(Property property,
-            RDFContainer rdfContainer, URI proposedValueURI) {
+    private Resource crawlParameterList(Property property,
+            RDFContainer rdfContainer) {
+        URI propertyBlankNode = generateAnonymousNode();
         ParameterList parameterList = property.getParameters();
-        if (parameterList.size() == 0) {
-            return valueFactory.createLiteral(property.getValue()); 
-        } else {
-            String propertyValue = property.getValue();
-            URI propertyBlankNode = generateAnonymousNode();
-            if (propertyValue != null) {
-                Parameter valueParameter = property
-                        .getParameter(Parameter.VALUE);
-                URI valuePropertyURI = null;
-                if (valueParameter != null) {
-                    String valueString = valueParameter.getValue();
-                    if (valueString.equalsIgnoreCase("TEXT")) {
-                        // special case: if the VALUE:TEXT is the only parameter
-                        // we don't introduce an intermediary blank node for
-                        property.getParameters().remove(valueParameter);
-                        if (property.getParameters().size() == 0) {
-                            return valueFactory
-                                    .createLiteral(property.getValue());
-                        } 
-                    }
-                    valuePropertyURI = convertValueTypeToURI(valueString);
-                } else if (proposedValueURI != null) {
-                    valuePropertyURI = proposedValueURI;
-                } else {
-                    valuePropertyURI = ICALTZD.value;
-                }
-                addStatement(rdfContainer, propertyBlankNode, valuePropertyURI,
-                        propertyValue);            
-            }
-            // at the end we may crawl the parameter list to add the remaining
-            // parameters
-            crawlParameterList(parameterList, propertyBlankNode, rdfContainer);
-            return propertyBlankNode;
-        }
+        crawlParameterList(parameterList, propertyBlankNode, rdfContainer);
+        return propertyBlankNode;
     }
     
     /**
@@ -720,9 +684,10 @@ public class IcalCrawler extends CrawlerBase {
      */
     private void crawlAttendeeProperty(Property property,Resource parentNode,
             RDFContainer rdfContainer) {
-       Value value = crawlParameterList(property, rdfContainer, 
-               ICALTZD.calAddress);
-       addStatement(rdfContainer,parentNode,ICALTZD.attendee,value);
+       Resource blankNode = crawlParameterList(property, rdfContainer);
+       addStatement(rdfContainer,parentNode,ICALTZD.attendee,blankNode);
+       addStatement(rdfContainer,blankNode,ICALTZD.calAddress,
+               property.getValue());
     }
     
     /**
@@ -1018,16 +983,64 @@ public class IcalCrawler extends CrawlerBase {
                 property.getValue());
     }
     
-    /** Trigger - Multityped property. */
+    /**
+     * Crawls the TRIGGER property.
+     * Possible parameters: numerous<br>
+     * Treatment: blank node (always)
+     * 1st link: icaltzd:trigger
+     * 
+     * This is a multi-valued property. Possible types are DURATION (default)
+     * and DATE-TIME
+     * 
+     * <pre>
+     * ical:
+     * TRIGGER;RELATED=START:-PT30M
+     * 
+     * n3:
+     * _:ValarmNode icaltzd:trigger _:triggerNode . 
+     * _:triggerNode icaltzd:related START .
+     * _:triggerNode icaltzd:value "-PT30M"^^<"&xsd;#duration">
+     * 
+     * ical:
+     * TRIGGER;VALUE=DATE-TIME:20060412T230000Z
+     * 
+     * n3:
+     * _:ValarmNode icaltzd:trigger _:triggerNode . 
+     * _:triggerNode icaltzd:value "2006-04-12T23:00:00Z"^^<"&xsd;#datetime">
+     * </pre>
+     * Note that the date-time value is converted from the ical form, to the
+     * form defined in the xsd datetime datatype specification.
+     */
     private void crawlTriggerProperty(Property property, Resource parentNode,
             RDFContainer rdfContainer) {
-        URI triggerBNode = generateAnonymousNode();
-        URI valueURI = 
-            new URIImpl(ICALTZD.NS + property.getParameter(Parameter.VALUE));
-        addStatement(rdfContainer,triggerBNode,valueURI,property.getValue());
-        addStatement(rdfContainer,parentNode,ICALTZD.trigger,triggerBNode);
+        Resource triggerValue = crawlParameterList(property,rdfContainer);
+        addStatement(rdfContainer,parentNode,ICALTZD.trigger,triggerValue);
+        
+        Parameter valueParameter = property.getParameter(Parameter.VALUE);
+        Literal literal = null;
+        URI datatypeURI = null;
+        String rdfPropertyValue = null;
+        if (valueParameter != null) {
+            String valueParameterString 
+                    = valueParameter.getValue();
+            datatypeURI
+                    = convertValueParameterToXSDDatatype(valueParameterString);
+            rdfPropertyValue 
+                    = convertIcalValueToXSDValue(property.getValue(),
+                      valueParameterString);
+        } else {
+            datatypeURI 
+                    = convertValueParameterToXSDDatatype(IcalDataType.DURATION);
+            rdfPropertyValue 
+                    = convertIcalValueToXSDValue(property.getValue(),
+                      IcalDataType.DURATION);
+        }
+        literal = valueFactory.createLiteral(rdfPropertyValue,datatypeURI);
+        addStatement(rdfContainer,triggerValue,ICALTZD.value,literal);
     }
     
+    
+
     private void crawlTzidProperty(Property property, Resource parentNode,
             RDFContainer rdfContainer) {
         addStatement(rdfContainer, parentNode, ICALTZD.tzid,
@@ -1077,12 +1090,12 @@ public class IcalCrawler extends CrawlerBase {
     
     private void crawlXtendedProperty(Property property, Resource parentNode,
             RDFContainer rdfContainer) {
-        URI extendedPropertyURI = new URIImpl(extendedNameSpace + "#"
+        /*URI extendedPropertyURI = new URIImpl(extendedNameSpace + "#"
                 + property.getName());
-        Value propertyValue = crawlParameterList(property,rdfContainer,
-                ICALTZD.value);
+        Value propertyBlankNode = crawlParameterList(property,rdfContainer);
+        
         addStatement(rdfContainer, parentNode, extendedPropertyURI,
-                    propertyValue);
+                    propertyValue);*/
     }
     
     //////////////////////////// PARAMETERS ////////////////////////////////
@@ -1539,6 +1552,19 @@ public class IcalCrawler extends CrawlerBase {
         }
     }
     
+    private String convertIcalValueToXSDValue(String value, 
+            String icalDataType) {
+        if (icalDataType == null) {
+            return value;
+        } else if (icalDataType.equals(IcalDataType.DATE_TIME)) {
+            return convertIcalDateTimeToXSDDateTime(value);
+        } else if (icalDataType.equals(IcalDataType.DATE)) {
+            return convertIcalDateToXSDDate(value);
+        } else {
+            return value;
+        }
+    }
+    
     /**
      * Converts the ical date (YYYYMMDD) to an XSD Date (YYYY-MM-DD)
      * @param icalDate The ical date to convert.
@@ -1574,7 +1600,43 @@ public class IcalCrawler extends CrawlerBase {
         return date + "T" + hour + ":" + minute + ":" + second + z;
     }
     
-    private URI convertValueTypeToURI(String valueString) {
+    private URI convertValueParameterToXSDDatatype(String valueString) {
+        URI datatypeURI = null;
+        if (valueString.equalsIgnoreCase("TEXT")) {
+            datatypeURI = null;
+        } else if (valueString.equalsIgnoreCase("BINARY")) {
+            datatypeURI = null;
+        } else if (valueString.equalsIgnoreCase("BOOLEAN")) {
+            datatypeURI = null;
+        } else if (valueString.equalsIgnoreCase("CAL-ADDRESS")) {
+            datatypeURI = null;
+        } else if (valueString.equalsIgnoreCase("DATE")) {
+            datatypeURI = XMLSchema.DATE;
+        } else if (valueString.equalsIgnoreCase("DATE-TIME")) {
+            datatypeURI = XMLSchema.DATETIME;
+        } else if (valueString.equalsIgnoreCase("DURATION")) {
+            datatypeURI = XMLSchema.DURATION;
+        } else if (valueString.equalsIgnoreCase("FLOAT")) {
+            datatypeURI = XMLSchema.FLOAT;
+        } else if (valueString.equals("INTEGER")) {
+            datatypeURI = XMLSchema.INTEGER;
+        } else if (valueString.equalsIgnoreCase("PERIOD")) {
+            datatypeURI = null;
+        } else if (valueString.equalsIgnoreCase("RECUR")) {
+            datatypeURI = null;
+        } else if (valueString.equalsIgnoreCase("TIME")) {
+            datatypeURI = XMLSchema.TIME;
+        } else if (valueString.equalsIgnoreCase("URI")) {
+            datatypeURI = XMLSchema.ANYURI;
+        } else if (valueString.equalsIgnoreCase("UTC-OFFSET")) {
+            datatypeURI = null;
+        } else {
+            LOGGER.severe("Unknown value parameter: " + valueString);
+        }
+        return datatypeURI;
+    }
+    
+    private URI convertValueParameterToURI(String valueString) {
         URI valuePropertyURI = null;
         if (valueString.equalsIgnoreCase("TEXT")) {
             valuePropertyURI = ICALTZD.value;
@@ -1589,7 +1651,7 @@ public class IcalCrawler extends CrawlerBase {
         } else if (valueString.equalsIgnoreCase("DATE-TIME")) {
             valuePropertyURI = ICALTZD.Value_DATETIME;
         } else if (valueString.equalsIgnoreCase("DURATION")) {
-            valuePropertyURI = ICALTZD.Value_DURATION;
+            valuePropertyURI = ICALTZD.value;
         } else if (valueString.equalsIgnoreCase("FLOAT")) {
             valuePropertyURI = ICALTZD.value;
         } else if (valueString.equals("INTEGER")) {
