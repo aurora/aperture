@@ -12,4 +12,10 @@ public class ICALTZD extends ICALTZD_GEN {
      */
     public static URI Value_DATETIME 
             = new URIImpl("" + ICALTZD.NS + "Value_DATE-TIME");
+    
+    public static final URI bymonthday 
+            = new URIImpl("" + ICALTZD.NS + "bymonthday");
+    
+    public static final URI realBlankNodes 
+            = new URIImpl(DATASOURCE_GEN.NS + "realBlankNodes");
 }

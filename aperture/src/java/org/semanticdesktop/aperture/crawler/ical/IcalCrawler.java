@@ -21,10 +21,13 @@ import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ComponentList;
+import net.fortuna.ical4j.model.NumberList;
 import net.fortuna.ical4j.model.Parameter;
 import net.fortuna.ical4j.model.ParameterList;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.PropertyList;
+import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.WeekDayList;
 import net.fortuna.ical4j.model.component.Observance;
 import net.fortuna.ical4j.model.component.VAlarm;
 import net.fortuna.ical4j.model.component.VEvent;
@@ -33,6 +36,8 @@ import net.fortuna.ical4j.model.component.VJournal;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.component.VToDo;
 import net.fortuna.ical4j.model.property.ProdId;
+import net.fortuna.ical4j.model.property.RRule;
+import net.fortuna.ical4j.model.property.RecurrenceId;
 
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
@@ -53,6 +58,7 @@ import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 import org.semanticdesktop.aperture.vocabulary.ICALTZD;
 
 /**
@@ -67,14 +73,22 @@ public class IcalCrawler extends CrawlerBase {
     /** The file from which we read. */
     private File icalFile;
 
+    /** A flag that indicates if we want to introduce real blank nodes (true),
+     * or anonymous random uris (false);
+     */
+    private boolean realBlankNodes;
+    
     /**
      * The prefix, common to all ical product namespaces. Forms the basis from
      * which the extendedNamespaceIsGenerated
      * 
      * @see IcalCrawler#generateExtendedNamespace(String)
      */
-    private static final String productNamespacePrefix = 
-            "http://www.w3.org/2002/12/cal/prod";
+    private static final String productNamespacePrefix 
+            = "http://www.w3.org/2002/12/cal/prod";
+    
+    private static final String timezoneNamespacePrefix 
+            = "http://www.w3.org/2002/12/cal/tzd";
     
     /**
      * The actual namespace for extended properties. The default value is simply
@@ -108,6 +122,7 @@ public class IcalCrawler extends CrawlerBase {
 
         // determine the root file
         String icalFilePath = ConfigurationUtil.getRootUrl(configuration);
+        realBlankNodes = checkRealBlankNodes(configuration);
         if (icalFilePath == null) {
             // treat this as an error rather than an "empty source" to prevent
             // information loss
@@ -142,6 +157,15 @@ public class IcalCrawler extends CrawlerBase {
         return crawlIcalFile(icalFile);
     }
     
+    private boolean checkRealBlankNodes(RDFContainer configuration) {
+        Boolean bool = configuration.getBoolean(ICALTZD.realBlankNodes);
+        if (bool == null || bool.booleanValue() == false) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     /**
      * Crawls the ical file.
      * Parses the file, creates the calendar object and proceeds to crawl it.
@@ -502,7 +526,7 @@ public class IcalCrawler extends CrawlerBase {
      */
     private Resource crawlParameterList(Property property,
             RDFContainer rdfContainer) {
-        URI propertyBlankNode = generateAnonymousNode();
+        Resource propertyBlankNode = generateAnonymousNode();
         ParameterList parameterList = property.getParameters();
         crawlParameterList(parameterList, propertyBlankNode, rdfContainer);
         return propertyBlankNode;
@@ -619,7 +643,7 @@ public class IcalCrawler extends CrawlerBase {
     
     private void crawlStandardObservance(Component component,
             Resource parentNode, RDFContainer rdfContainer) {
-        URI standardParentNode = generateAnonymousNode();
+        Resource standardParentNode = generateAnonymousNode();
         crawlPropertyList(component, standardParentNode, rdfContainer);
         addStatement(rdfContainer, parentNode, ICALTZD.standard,
                 standardParentNode);
@@ -627,7 +651,7 @@ public class IcalCrawler extends CrawlerBase {
     
     private void crawlDaylightObservance(Component component,
             Resource parentNode, RDFContainer rdfContainer) {
-        URI daylightParentNode = generateAnonymousNode();
+        Resource daylightParentNode = generateAnonymousNode();
         crawlPropertyList(component, daylightParentNode, rdfContainer);
         addStatement(rdfContainer, parentNode, ICALTZD.daylight,
                 daylightParentNode);
@@ -636,9 +660,10 @@ public class IcalCrawler extends CrawlerBase {
     /////////////////////////// PROPERTIES /////////////////////////////////
 
     /**
-     * Crawls the ACTION property.
-     * Only non-standard parameters can be specified on this property. This
-     * method introduces a single triple.
+     * Crawls the ACTION property.<br>
+     * Possible parameters: none<br>
+     * Treatment: direct link<br>
+     * 1st link: icaltzd:calscale<br>
      * <pre>
      * ical:
      * ACTION:AUDIO
@@ -654,17 +679,22 @@ public class IcalCrawler extends CrawlerBase {
                 property.getValue());
     }
     
+    /**
+     * Crawls the ATTACH property.<br>
+     * 
+     * THIS PROPERTY IS OFFICIALY DISREGARDED BY THE RDF SCHEMA
+     */
     private void crawlAttachProperty(Property property,Resource parentNode,
             RDFContainer rdfContainer) {
-        addStatement(rdfContainer, parentNode, ICALTZD.attach, 
-                property.getValue());
+        
     }
     
     /**
-     * This property may contain parameters. It introduces a blank node. The
-     * value of this property is connected to the blank node with the
-     * icaltzd:caladdress link. This blank node is connected to the parent
-     * node with the icaltzd:attendee link.
+     * Crawls the ATTENDEE property.<br>
+     * Possible parameters: numerous<br>
+     * Treatment: blank node<br>
+     * 1st link: icaltzd:attendee<br>
+     * 2nd link: icaltzd:valaddress<br>
      * 
      * <pre>
      * ical:
@@ -690,10 +720,12 @@ public class IcalCrawler extends CrawlerBase {
                property.getValue());
     }
     
-    /**
-     * Crawls the CALSCALE property.
-     * Only non-standard parameters can be specified on this property. This
-     * method introduces a single triple.
+    /** 
+     * Crawls the CALSCALE property.<br>
+     * Possible parameters: none<br>
+     * Treatment: direct link<br>
+     * 1st link: icaltzd:calscale<br>
+     * 
      * <pre>
      * ical:
      * CALSCALE:GREGORIAN
@@ -709,9 +741,10 @@ public class IcalCrawler extends CrawlerBase {
     }
     
     /**
-     * Crawls the CATEGORIES property.
-     * The LANGUAGE parameter may be specified on this property.
-     * We DISREGARD this parameter and introduce a single triple.
+     * Crawls the CATEGORIES property.<br>
+     * Possible parameters: LANGUAGE (DISGREGARDED)<br>
+     * Treatment: direct link<br>
+     * 1st link: icaltzd:categories<br>
      * 
      * <pre>
      * ical:
@@ -731,9 +764,10 @@ public class IcalCrawler extends CrawlerBase {
     }
     
     /**
-     * Crawls the CLASS property.
-     * Only non-standard parameters can be specified on this property. This
-     * method introduces a single triple.
+     * Crawls the CLASS property.<br>
+     * Possible parameters: none<br>
+     * Treatment: direct link<br>
+     * 1st link: icaltzd:class_<br>
      * <pre>
      * ical:
      * CLASS:PUBLIC
@@ -749,10 +783,10 @@ public class IcalCrawler extends CrawlerBase {
     }
     
     /**
-     * Crawls the COMMENT property.
+     * Crawls the COMMENT property.<br>
      * Possible parameters: ALTREP, LANGUAGE (DISREGARDED)<br>
-     * Treatment: direct link
-     * 1st link: icaltzd:comment
+     * Treatment: direct link<br>
+     * 1st link: icaltzd:comment<br>
      * 
      * <pre>
      * ical:
@@ -775,6 +809,7 @@ public class IcalCrawler extends CrawlerBase {
                 property.getValue());
     }
     
+    
     private void crawlCompletedProperty(Property property,Resource parentNode,
             RDFContainer rdfContainer) {
         Literal literal = valueFactory.createLiteral(property.getValue(),
@@ -795,27 +830,136 @@ public class IcalCrawler extends CrawlerBase {
         addStatement(rdfContainer, parentNode, ICALTZD.created, literal);
     }
     
+    /**
+     * Crawls the DESCRIPTION property.
+     * Possible parameters: ALTREP, LANGUAGE (DISREGARDED)<br>
+     * Treatment: direct link
+     * 1st link: icaltzd:description
+     * 
+     * <pre>
+     * ical:
+     * DESCRIPTION:Meeting to provide technical review for "Phoenix"
+     *  design.\n Happy Face Conference Room. Phoenix design team
+     *  MUST attend this meeting.\n RSVP to team leader.
+     * 
+     * n3:
+     * _:VeventNode icaltzd:description 
+     *   """Meeting to provide technical review for "Phoenix"
+     *  design.\n Happy Face Conference Room. Phoenix design team
+     *  MUST attend this meeting.\n RSVP to team leader.""" 
+     * </pre>
+     */
     private void crawlDescriptionProperty(Property property,Resource parentNode,
             RDFContainer rdfContainer) {
         addStatement(rdfContainer, parentNode, ICALTZD.description,
                 property.getValue());
     }
     
+    /**
+     * Crawls the DTEND property.
+     * Possible parameters: VALUE, TZID, extended<br>
+     * Treatment: direct link
+     * 1st link: icaltzd:dtstamp
+     * 
+     * The dates and date-times are converted to xmlschema form. The timezones
+     * are expressed in datatypes. The value literal gets a datatype, whose
+     * URI points to the VTimezone object defined in the timezone database
+     * under http://www.w3.org/2002/12/cal/tzd/
+     * 
+     * @see http://www.w3.org/2002/12/cal/tzd/
+     * 
+     * <pre>
+     * ical:
+     * DTEND:19980118T073000Z
+     * 
+     * n3:
+     * _:VeventNode icaltzd:dtend "1998-01-18T07:30:00Z"^^<"&xsd;#datetime">
+     * 
+     * ical:
+     * DTEND:VALUE=DATE;20020703
+     * 
+     * n3:
+     * _:VeventNode icaltzd:dtend "2002-07-03"^^<"&xsd;#date">
+     * 
+     * ical:
+     * DTEND;TZID=/softwarestudio.org/Olson_20011030_5/America/New_York:
+     *  20020630T090000
+     *  
+     * n3:
+     * _:VeventNode icaltzd:dtend
+     *  "2002-06-30T09:00:00"^^<"&tzd;/America/New_York#tz">
+     * <pre>
+     */
     private void crawlDtEndProperty(Property property,Resource parentNode,
             RDFContainer rdfContainer) {
-        //  TODO implement the dtend property crawling
+        Value propertyValue 
+                = getRdfPropertyValue(property, IcalDataType.DATE_TIME);
+        addStatement(rdfContainer, parentNode, ICALTZD.dtend, propertyValue);
     }
     
+    /**
+     * Crawls the DTSTAMP property.
+     * Possible parameters: extended (DISREGARDED)<br>
+     * Treatment: direct link
+     * 1st link: icaltzd:dtstamp
+     * 
+     * <pre>
+     * ical:
+     * DTSTAMP:19971210T080000Z
+     * 
+     * n3:
+     * _:VeventNode icaltzd:dtstamp "1997-12-10T08:00:00Z"^^<"&xsd;#datetime">
+     * </pre>
+     * 
+     * Note the conversion to the XSD time format
+     */
     private void crawlDtStampProperty(Property property,Resource parentNode,
             RDFContainer rdfContainer) {
-        Literal literal = valueFactory.createLiteral(property.getValue(),
-                ICALTZD.Value_DATETIME);
-        addStatement(rdfContainer, parentNode, ICALTZD.dtstamp, literal);
+        Value propertyValue 
+                = getRdfPropertyValue(property, IcalDataType.DATE_TIME);
+        addStatement(rdfContainer, parentNode, ICALTZD.dtstamp, propertyValue);
     }
     
+    /**
+     * Crawls the DTSTART property.
+     * Possible parameters: VALUE, TZID, extended<br>
+     * Treatment: direct link
+     * 1st link: icaltzd:dtstamp
+     * 
+     * The dates and date-times are converted to xmlschema form. The timezones
+     * are expressed in datatypes. The value literal gets a datatype, whose
+     * URI points to the VTimezone object defined in the timezone database
+     * under http://www.w3.org/2002/12/cal/tzd/
+     * 
+     * @see http://www.w3.org/2002/12/cal/tzd/
+     * 
+     * <pre>
+     * ical:
+     * DTSTART:19980118T073000Z
+     * 
+     * n3:
+     * _:VeventNode icaltzd:dtstart "1998-01-18T07:30:00Z"^^<"&xsd;#datetime">
+     * 
+     * ical:
+     * DTSTART:VALUE=DATE;20020703
+     * 
+     * n3:
+     * _:VeventNode icaltzd:dtstart "2002-07-03"^^<"&xsd;#date">
+     * 
+     * ical:
+     * DTSTART;TZID=/softwarestudio.org/Olson_20011030_5/America/New_York:
+     *  20020630T090000
+     *  
+     * n3:
+     * _:VeventNode icaltzd:dtstart
+     *  "2002-06-30T09:00:00"^^<"&tzd;/America/New_York#tz">
+     * <pre>
+     */
     private void crawlDtStartProperty(Property property,Resource parentNode,
             RDFContainer rdfContainer) {
-        //  TODO implement the date property crawling
+        Value propertyValue 
+            = getRdfPropertyValue(property, IcalDataType.DATE_TIME);
+        addStatement(rdfContainer, parentNode, ICALTZD.dtstart, propertyValue);
     }
     
     private void crawlDueProperty(Property property,Resource parentNode,
@@ -873,19 +1017,27 @@ public class IcalCrawler extends CrawlerBase {
     }
     
     /**
-     * Crawls the percentComplete property. The RFC states that the type
-     * of the property is INTEGER, and allowed values are between 0 and 100
-     * inclusive. The ontology doesn't define the range for this property.
-     * We leave it as an untyped literal.
+     * Crawls the PERCENT-COMPLETE property.
+     * Possible parameters: extended (DISREGARDED)<br>
+     * Treatment: direct link
+     * 1st link: icaltzd:percentComplete
      * 
-     * @param property
-     * @param parentNode
-     * @param rdfContainer
+     * <pre>
+     * ical:
+     * PERCENT-COMPLETE:39
+     * 
+     * n3:
+     * _:VtodoNode icaltzd:percentComplete "39"^^<"&xsd;#integer">
+     * </pre>
+     * 
+     * Note the conversion to the XSD time format
      */
     private void crawlPercentCompleteProperty(Property property,
             Resource parentNode, RDFContainer rdfContainer) {
-        addStatementUntyped(rdfContainer,parentNode,ICALTZD.percentComplete, 
-                property.getValue());
+        Value propertyValue 
+                = getRdfPropertyValue(property, IcalDataType.INTEGER);
+        addStatement(rdfContainer,parentNode,ICALTZD.percentComplete, 
+                propertyValue);
     }
     
     /**
@@ -943,11 +1095,40 @@ public class IcalCrawler extends CrawlerBase {
                 property.getValue());
     }
     
+    /**
+     * Crawls the RRULE property.
+     * Possible parameters: experimental<br>
+     * Treatment: blank node<br>
+     * 1st link: icaltzd:rrule<br>
+     * <p>
+     * 
+     * This property has RECUR value type. This neccessitates an introduction
+     * of an intermediate blank node. The reccurrence parameters are attached
+     * to this intermediate blank node (as literals with appropriate datatype)
+     * 
+     * <pre>
+     * 
+     * ical:
+     * RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10
+     * 
+     * n3:
+     * _:VeventNode icaltzd:rrule _:rruleNode
+     * _:rruleNode icaltzd:bymonth 10;
+     *             icaltzd:freq    YEARLY;
+     *             icaltzd:interval 1^^<"&xsd;integer">
+     *             icaltzd:bymonth -1SU
+     * </pre>
+     * 
+     * @see crawlRecur()
+     */
     private void crawlRRuleProperty(Property property, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the rrule property crawling
+        RRule rrule = (RRule)property;
+        Resource rruleBlankNode = generateAnonymousNode();
+        crawlRecur(rrule.getValue(),rruleBlankNode,rdfContainer);
+        addStatement(rdfContainer,parentNode,ICALTZD.rrule,rruleBlankNode);
     }
-    
+
     /**
      * Crawls the priority property. The RFC states that the type
      * of the property is a non-negative INTEGER. The ontology doesn't define
@@ -1015,32 +1196,11 @@ public class IcalCrawler extends CrawlerBase {
             RDFContainer rdfContainer) {
         Resource triggerValue = crawlParameterList(property,rdfContainer);
         addStatement(rdfContainer,parentNode,ICALTZD.trigger,triggerValue);
-        
-        Parameter valueParameter = property.getParameter(Parameter.VALUE);
-        Literal literal = null;
-        URI datatypeURI = null;
-        String rdfPropertyValue = null;
-        if (valueParameter != null) {
-            String valueParameterString 
-                    = valueParameter.getValue();
-            datatypeURI
-                    = convertValueParameterToXSDDatatype(valueParameterString);
-            rdfPropertyValue 
-                    = convertIcalValueToXSDValue(property.getValue(),
-                      valueParameterString);
-        } else {
-            datatypeURI 
-                    = convertValueParameterToXSDDatatype(IcalDataType.DURATION);
-            rdfPropertyValue 
-                    = convertIcalValueToXSDValue(property.getValue(),
-                      IcalDataType.DURATION);
-        }
-        literal = valueFactory.createLiteral(rdfPropertyValue,datatypeURI);
-        addStatement(rdfContainer,triggerValue,ICALTZD.value,literal);
+        Value propertyValue 
+                = getRdfPropertyValue(property,IcalDataType.DURATION);
+        addStatement(rdfContainer,triggerValue,ICALTZD.value,propertyValue);
     }
-    
-    
-
+   
     private void crawlTzidProperty(Property property, Resource parentNode,
             RDFContainer rdfContainer) {
         addStatement(rdfContainer, parentNode, ICALTZD.tzid,
@@ -1257,46 +1417,21 @@ public class IcalCrawler extends CrawlerBase {
      */
     private void crawlTzidParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // TODO implement the tzid parameter crawling
+        // do nothing
     }
     
     /**
      * Note that this parameter is ignored in the icaltzd ontology. It is 
-     * treated differently. The algorithm is as follows: 
-     * <p>
-     * <ul>
-     *      <li>if the parameter value is equal to TEXT
-     *          <ul>
-     *          <li>if this is the only parameter for this property
-     *              <ul>
-     *              <li>we don't introduce any blank nodes, the value of the
-     *                  property is attached to the parent node with a direct
-     *                  link
-     *              </ul>
-     *          <li>else
-     *              <ul>
-     *              <li>we introduce a blank node and attach the value of the
-     *                  property to that blank node with a ICALTZD.value link
-     *              </ul>
-     *          </ul>
-     *       <li>else
-     *           <ul>
-     *           <li> we introduce a blank node, attach the remaining parameters
-     *                to that blank node, then we attach the actual property
-     *                value (if it exists) with a link, whose URI is returned
-     *                by the convertValueTypeToURI method
-     *           </ul>
-     * </ul>  
+     * treated differently.
+     * 
+     * @see getRdfPropertyValue
      * @param parameter
      * @param parentNode
      * @param rdfContainer
      */
     private void crawlValueParameter(Parameter parameter, Resource parentNode,
             RDFContainer rdfContainer) {
-        // we don't add any statements, the value parameter is expressed by
-        // various Value_... properties
-        // addStatement(rdfContainer,parentNode,
-        //        ICALTZD.value,parameter.getValue());
+        // do nothing
     }
     
     private void crawlXParameter(Parameter parameter, Resource parentNode,
@@ -1304,6 +1439,117 @@ public class IcalCrawler extends CrawlerBase {
         // TODO implement the extended parameter crawling
     }
     
+    ////////////////////////////////////////////////////////////////////////
+    ///////////////////////// RECURRENCE RULES /////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+    
+    private void crawlRecur(String recurString, Resource rruleBlankNode, 
+            RDFContainer rdfContainer) {
+        String[] recurTokens = recurString.split("[=;]");
+        for (int i = 0; i<recurTokens.length; i += 2) {
+            crawlRecurrenceParam(recurTokens[i],recurTokens[i+1],rruleBlankNode,
+                    rdfContainer);
+        }
+    }
+    
+    private void crawlRecurrenceParam(String name, String value, 
+            Resource parentNode, RDFContainer rdfContainer) {
+        if (name.equals("FREQ")) {
+            crawlFreqRecurrenceParam(name,value,parentNode,rdfContainer);
+        } else if (name.equals("UNTIL")) {
+            crawlUntilRecurrenceParam(name,value,parentNode,rdfContainer);
+        } else if (name.equals("INTERVAL")) {
+            crawlIntervalRecurrenceParam(name,value,parentNode,rdfContainer);
+        } else if (name.equals("BYSECOND")) {
+            crawlBySecondRecurrenceParam(name,value,parentNode,rdfContainer);
+        } else if (name.equals("BYMINUTE")) {
+            crawlByMinuteRecurrenceParam(name,value,parentNode,rdfContainer);
+        } else if (name.equals("BYHOUR")) {
+            crawlByHourRecurrenceParam(name,value,parentNode,rdfContainer);
+        } else if (name.equals("BYDAY")) {
+            crawlByDayRecurrenceParam(name,value,parentNode,rdfContainer);
+        } else if (name.equals("BYMONTHDAY")) {
+            crawlByMonthdayRecurrenceParam(name,value,parentNode,rdfContainer);
+        } else if (name.equals("BYYEARDAY")) {
+            crawlByYeardayRecurrenceParam(name,value,parentNode,rdfContainer);
+        } else if (name.equals("BYWEEKNO")) {
+            crawlByWeeknoRecurrenceParam(name,value,parentNode,rdfContainer);
+        } else if (name.equals("BYMONTH")) {
+            crawlByMonthRecurrenceParam(name,value,parentNode,rdfContainer);
+        } else if (name.equals("BYSETPOS")) {
+            crawlBySetposRecurrenceParam(name,value,parentNode,rdfContainer);
+        } else if (name.equals("WKST")) {
+            crawlWkstRecurrenceParam(name,value,parentNode,rdfContainer);
+        }
+    }
+    
+    private void crawlFreqRecurrenceParam(String name, String value, 
+            Resource parentNode, RDFContainer rdfContainer) {
+        addStatement(rdfContainer,parentNode,ICALTZD.freq,value);
+    }
+    
+    private void crawlUntilRecurrenceParam(String name, String value, 
+            Resource parentNode, RDFContainer rdfContainer) {
+        addStatement(rdfContainer,parentNode,ICALTZD.until,value);
+    }
+
+    private void crawlIntervalRecurrenceParam(String name, String value, 
+            Resource parentNode, RDFContainer rdfContainer) {
+        Literal literal = valueFactory.createLiteral(value, XMLSchema.INTEGER);
+        addStatement(rdfContainer,parentNode,ICALTZD.interval,literal);
+    }
+
+    private void crawlBySecondRecurrenceParam(String name, String value, 
+            Resource parentNode, RDFContainer rdfContainer) {
+        addStatement(rdfContainer,parentNode,ICALTZD.bysecond,value);
+    }
+
+    private void crawlByMinuteRecurrenceParam(String name, String value, 
+            Resource parentNode, RDFContainer rdfContainer) {
+        addStatement(rdfContainer,parentNode,ICALTZD.byminute,value);
+    }
+
+    private void crawlByHourRecurrenceParam(String name, String value, 
+            Resource parentNode, RDFContainer rdfContainer) {
+        addStatement(rdfContainer,parentNode,ICALTZD.byhour,value);
+        
+    }
+
+    private void crawlByDayRecurrenceParam(String name, String value, 
+            Resource parentNode, RDFContainer rdfContainer) {
+        addStatement(rdfContainer,parentNode,ICALTZD.byday,value);
+    }
+
+    private void crawlByMonthdayRecurrenceParam(String name, String value, 
+            Resource parentNode, RDFContainer rdfContainer) {
+        addStatement(rdfContainer,parentNode,ICALTZD.bymonthday,value);
+    }
+
+    private void crawlByYeardayRecurrenceParam(String name, String value, 
+            Resource parentNode, RDFContainer rdfContainer) {
+        addStatement(rdfContainer,parentNode,ICALTZD.byyearday,value);        
+    }
+
+    private void crawlByWeeknoRecurrenceParam(String name, String value, 
+            Resource parentNode, RDFContainer rdfContainer) {
+        addStatement(rdfContainer,parentNode,ICALTZD.byweekno,value);
+    }
+
+    private void crawlByMonthRecurrenceParam(String name, String value, 
+            Resource parentNode, RDFContainer rdfContainer) {
+        addStatement(rdfContainer,parentNode,ICALTZD.bymonth,value);   
+    }
+
+    private void crawlBySetposRecurrenceParam(String name, String value, 
+            Resource parentNode, RDFContainer rdfContainer) {
+        addStatement(rdfContainer,parentNode,ICALTZD.bysetpos,value);
+    }
+
+    private void crawlWkstRecurrenceParam(String name, String value, 
+            Resource parentNode, RDFContainer rdfContainer) {
+        addStatement(rdfContainer,parentNode,ICALTZD.wkst,value);        
+    }
+
     ////////////////////////////////////////////////////////////////////////
     /////////////////////// CONVENIENCE METHODS ////////////////////////////
     ////////////////////////////////////////////////////////////////////////
@@ -1388,8 +1634,7 @@ public class IcalCrawler extends CrawlerBase {
     
     /**
      * Builds a statement from the provided ingredients and adds it to the
-     * given rdfContainer. Treats the given string as an typed string literal.
-     * Uses the appropriate XMLSchema String datatype.
+     * given rdfContainer. Treats the given string as an untyped string literal.
      * @param rdfContainer
      * @param subject
      * @param predicate
@@ -1398,7 +1643,7 @@ public class IcalCrawler extends CrawlerBase {
     private void addStatement(RDFContainer rdfContainer, 
             Resource subject, URI predicate, String object) {
         addStatement(rdfContainer,subject,predicate,
-                valueFactory.createLiteral(object,XMLSchema.STRING));
+                valueFactory.createLiteral(object));
     }
     
     /**
@@ -1470,8 +1715,15 @@ public class IcalCrawler extends CrawlerBase {
         return new URIImpl(result);
     }
     
-    private URI generateAnonymousNode() {
-        return new URIImpl(baseuri + java.util.UUID.randomUUID().toString());
+    private Resource generateAnonymousNode() {
+        if (realBlankNodes) {
+            return valueFactory.createBNode(
+                   java.util.UUID.randomUUID().toString());
+        } else {
+            return valueFactory.createURI(
+                   baseuri + java.util.UUID.randomUUID().toString());
+        }
+        
     }
     
     /**
@@ -1552,6 +1804,67 @@ public class IcalCrawler extends CrawlerBase {
         }
     }
     
+    private Value getRdfPropertyValue(Property property,String defaultType) {
+        // I hope we're not oversimplyfing. If there is a time zone identifier
+        // we assume that the value of the property is a DATE-TIME. We convert
+        // it to the XMLSchema form and attach a datatype that indicates the
+        // timezone
+        Parameter tzidParameter = property.getParameter(Parameter.TZID);
+        if (tzidParameter != null) {
+            return getDateTimeWithTimeZone(property,tzidParameter);
+        }
+                
+        Parameter valueParameter = property.getParameter(Parameter.VALUE);        
+        Literal literal = null;
+        URI datatypeURI = null;
+        String rdfPropertyValue = null;
+        if (valueParameter != null) {
+            String valueParameterString 
+                    = valueParameter.getValue();
+            datatypeURI
+                    = convertValueParameterToXSDDatatype(valueParameterString);
+            rdfPropertyValue 
+                    = convertIcalValueToXSDValue(property.getValue(),
+                      valueParameterString);
+            literal = valueFactory.createLiteral(rdfPropertyValue,datatypeURI);
+        } else if (defaultType != null) {
+            datatypeURI 
+                    = convertValueParameterToXSDDatatype(defaultType);
+            rdfPropertyValue 
+                    = convertIcalValueToXSDValue(property.getValue(),
+                      defaultType);
+            literal = valueFactory.createLiteral(rdfPropertyValue,datatypeURI);
+        } else {
+            literal = valueFactory.createLiteral(property.getValue());
+        }   
+        return literal;
+    }
+    
+    private Value getDateTimeWithTimeZone(Property property, 
+            Parameter tzidParameter) {
+        String rdfPropertyValue 
+                = convertIcalDateTimeToXSDDateTime(property.getValue());
+        URI timezoneDatatypeURI 
+                = createTimeZoneDatatypeURI(tzidParameter.getValue());
+        Value result 
+                = valueFactory.createLiteral(rdfPropertyValue, 
+                  timezoneDatatypeURI);
+        return result;
+    }
+
+    private URI createTimeZoneDatatypeURI(String value) {
+        int lastSlashPosition 
+                = value.lastIndexOf("/");
+        int oneBeforeLastSlashPosition 
+                = value.lastIndexOf("/", lastSlashPosition - 1);
+        String timezoneName 
+                = value.substring(oneBeforeLastSlashPosition);
+        URI result 
+                = valueFactory.createURI(timezoneNamespacePrefix 
+                  + timezoneName + "#tz"); 
+        return result;
+    }
+
     private String convertIcalValueToXSDValue(String value, 
             String icalDataType) {
         if (icalDataType == null) {
@@ -1608,17 +1921,17 @@ public class IcalCrawler extends CrawlerBase {
             datatypeURI = null;
         } else if (valueString.equalsIgnoreCase("BOOLEAN")) {
             datatypeURI = null;
-        } else if (valueString.equalsIgnoreCase("CAL-ADDRESS")) {
+        } else if (valueString.equalsIgnoreCase(IcalDataType.CAL_ADDRESS)) {
             datatypeURI = null;
-        } else if (valueString.equalsIgnoreCase("DATE")) {
+        } else if (valueString.equalsIgnoreCase(IcalDataType.DATE)) {
             datatypeURI = XMLSchema.DATE;
-        } else if (valueString.equalsIgnoreCase("DATE-TIME")) {
+        } else if (valueString.equalsIgnoreCase(IcalDataType.DATE_TIME)) {
             datatypeURI = XMLSchema.DATETIME;
-        } else if (valueString.equalsIgnoreCase("DURATION")) {
+        } else if (valueString.equalsIgnoreCase(IcalDataType.DURATION)) {
             datatypeURI = XMLSchema.DURATION;
         } else if (valueString.equalsIgnoreCase("FLOAT")) {
             datatypeURI = XMLSchema.FLOAT;
-        } else if (valueString.equals("INTEGER")) {
+        } else if (valueString.equals(IcalDataType.INTEGER)) {
             datatypeURI = XMLSchema.INTEGER;
         } else if (valueString.equalsIgnoreCase("PERIOD")) {
             datatypeURI = null;
@@ -1634,41 +1947,5 @@ public class IcalCrawler extends CrawlerBase {
             LOGGER.severe("Unknown value parameter: " + valueString);
         }
         return datatypeURI;
-    }
-    
-    private URI convertValueParameterToURI(String valueString) {
-        URI valuePropertyURI = null;
-        if (valueString.equalsIgnoreCase("TEXT")) {
-            valuePropertyURI = ICALTZD.value;
-        } else if (valueString.equalsIgnoreCase("BINARY")) {
-            valuePropertyURI = ICALTZD.value;
-        } else if (valueString.equalsIgnoreCase("BOOLEAN")) {
-            valuePropertyURI = ICALTZD.value;
-        } else if (valueString.equalsIgnoreCase("CAL-ADDRESS")) {
-            valuePropertyURI = ICALTZD.calAddress;
-        } else if (valueString.equalsIgnoreCase("DATE")) {
-            valuePropertyURI = ICALTZD.Value_DATE;
-        } else if (valueString.equalsIgnoreCase("DATE-TIME")) {
-            valuePropertyURI = ICALTZD.Value_DATETIME;
-        } else if (valueString.equalsIgnoreCase("DURATION")) {
-            valuePropertyURI = ICALTZD.value;
-        } else if (valueString.equalsIgnoreCase("FLOAT")) {
-            valuePropertyURI = ICALTZD.value;
-        } else if (valueString.equals("INTEGER")) {
-            valuePropertyURI = ICALTZD.value;
-        } else if (valueString.equalsIgnoreCase("PERIOD")) {
-            valuePropertyURI = ICALTZD.Value_PERIOD;
-        } else if (valueString.equalsIgnoreCase("RECUR")) {
-            valuePropertyURI = ICALTZD.Value_RECUR;
-        } else if (valueString.equalsIgnoreCase("TIME")) {
-            valuePropertyURI = ICALTZD.value;
-        } else if (valueString.equalsIgnoreCase("URI")) {
-            valuePropertyURI = ICALTZD.value;
-        } else if (valueString.equalsIgnoreCase("UTC-OFFSET")) {
-            valuePropertyURI = ICALTZD.value;
-        } else {
-            LOGGER.severe("Unknown value parameter: " + valueString);
-        }
-        return valuePropertyURI;
     }
 }

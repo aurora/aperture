@@ -146,6 +146,130 @@ public class TestIcalCrawler extends ApertureTestBase {
                 "from G.Klyne - iCalendarExample.txt");
     }
     
+    public void testDescriptionProperty() throws Exception {
+        Repository repository = readIcalFile("cal01.ics");
+        Resource veventNode = findComponentByUid(repository,
+                "20020630T230445Z-3895-69-1-7@jammer");
+        Resource valarmNode = findSingleNode(repository, veventNode, 
+                ICALTZD.component);
+        assertSingleValueProperty(repository,valarmNode,ICALTZD.description,
+                "Federal Reserve Board Meeting");
+    }
+    
+    public void testDtEndPropertyUTCTimeNoValueParameter() throws Exception {
+        Repository repository = readIcalFile("gkexample.ics");
+        Resource veventWithDtStart = null;
+        CloseableIterator<RStatement> iterator
+                = repository.getStatements(null, RDF.TYPE, ICALTZD.Vevent);
+        RStatement statement = null;
+        while (iterator.hasNext()) {
+            // we rely on the fact, that the first node returned by this iterator
+            // will be the second one defined in the file
+            statement = iterator.next();
+            veventWithDtStart = statement.getSubject();
+        }
+        iterator.close();
+        assertSingleValueProperty(repository,veventWithDtStart,ICALTZD.dtend,
+                "2002-12-01T22:00:00Z",XMLSchema.DATETIME);
+    }
+    
+    public void testDtEndPropertyDateValueParameter() throws Exception {
+        Repository repository = readIcalFile("cal01.ics");
+        Resource veventNode = findComponentByUid(repository,
+                "20020630T230445Z-3895-69-1-7@jammer");
+        assertSingleValueProperty(repository, veventNode, ICALTZD.dtend, 
+                "2002-07-06", XMLSchema.DATE);
+    }
+    
+    public void testDtEndPropertyWithTimeZoneId() throws Exception {
+        Repository repository = readIcalFile("cal01.ics");
+        Resource veventNode = findComponentByUid(repository,
+                "20020630T230353Z-3895-69-1-0@jammer");
+        assertSingleValueProperty(repository, veventNode, ICALTZD.dtend, 
+                "2002-06-30T10:30:00", new URIImpl(
+                "http://www.w3.org/2002/12/cal/tzd/America/New_York#tz"));
+    }
+    
+    public void testDtStampProperty() throws Exception {
+        Repository repository = readIcalFile("cal01.ics");
+        Resource veventNode = findComponentByUid(repository,
+                "20020630T230445Z-3895-69-1-7@jammer");
+        assertSingleValueProperty(repository, veventNode, ICALTZD.dtstamp, 
+                "2002-06-30T23:04:45Z", XMLSchema.DATETIME);
+    }
+    
+    public void testDtStartPropertyUTCTimeNoValueParameter() throws Exception {
+        Repository repository = readIcalFile("gkexample.ics");
+        Resource veventWithDtStart = null;
+        CloseableIterator<RStatement> iterator
+                = repository.getStatements(null, RDF.TYPE, ICALTZD.Vevent);
+        RStatement statement = null;
+        while (iterator.hasNext()) {
+            // we rely on the fact, that the nodes returned by this iterator
+            // will have the same order as their definitions in the file
+            statement = iterator.next();
+            veventWithDtStart = statement.getSubject();
+        }
+        iterator.close();
+        assertSingleValueProperty(repository,veventWithDtStart,ICALTZD.dtstart,
+                "2002-12-01T16:00:00Z",XMLSchema.DATETIME);
+    }
+    
+    public void testDtStartPropertyDateValueParameter() throws Exception {
+        Repository repository = readIcalFile("cal01.ics");
+        Resource veventNode = findComponentByUid(repository,
+                "20020630T230445Z-3895-69-1-7@jammer");
+        assertSingleValueProperty(repository, veventNode, ICALTZD.dtstart, 
+                "2002-07-03", XMLSchema.DATE);
+    }
+    
+    public void testDtStartPropertyWithTimeZoneId() throws Exception {
+        Repository repository = readIcalFile("cal01.ics");
+        Resource veventNode = findComponentByUid(repository,
+                "20020630T230353Z-3895-69-1-0@jammer");
+        assertSingleValueProperty(repository, veventNode, ICALTZD.dtstart, 
+                "2002-06-30T09:00:00", new URIImpl(
+                "http://www.w3.org/2002/12/cal/tzd/America/New_York#tz"));
+    }
+    
+    public void testPercentCompleteProperty() throws Exception {
+        Repository repository = readIcalFile("korganizer-jicaltest.ics");
+        Resource veventNode = findComponentByUid(repository,
+                "KOrganizer-1573136895.534");
+        assertSingleValueProperty(repository,veventNode,ICALTZD.percentComplete,
+                "0",XMLSchema.INTEGER);
+    }
+    
+    public void testRecurrenceRule1() throws Exception {
+        Repository repository = readIcalFile("cal01.ics");
+        Resource veventNode
+                = findComponentByUid(repository, 
+                  "20020630T230353Z-3895-69-1-0@jammer");
+        Resource recurrenceNode
+                = findSingleNode(repository, veventNode, ICALTZD.rrule);
+        assertSingleValueProperty(repository, recurrenceNode,
+                ICALTZD.freq, "WEEKLY");
+        assertSingleValueProperty(repository, recurrenceNode,
+                ICALTZD.interval, "1", XMLSchema.INTEGER);
+        assertSingleValueProperty(repository, recurrenceNode,
+                ICALTZD.byday, "SU");
+        assertEquals(countOutgoingTriples(repository, recurrenceNode),3);
+    }
+    
+    public void testRecurrenceRule2() throws Exception {
+        Repository repository = readIcalFile("gkexample.ics");
+        Resource veventNode
+                = findComponentByUid(repository, 
+                  "20020630T230353Z-3895-69-1-0@antoni");
+        Resource recurrenceNode
+                = findSingleNode(repository, veventNode, ICALTZD.rrule);
+        assertSingleValueProperty(repository, recurrenceNode,
+                ICALTZD.freq, "WEEKLY");
+        assertSingleValueProperty(repository, recurrenceNode,
+                ICALTZD.byday, "SA,SU");
+        assertEquals(countOutgoingTriples(repository, recurrenceNode),2);
+    }
+    
     public void testTriggerPropertyWithDefinedDateTimeType() throws Exception {
         Repository repository = readIcalFile("simplevevent.ics");
         Resource calendarNode 

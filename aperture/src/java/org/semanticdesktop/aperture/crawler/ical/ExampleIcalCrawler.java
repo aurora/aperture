@@ -66,6 +66,8 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 
+import org.semanticdesktop.aperture.vocabulary.ICALTZD;
+
 
 
 /**
@@ -206,6 +208,8 @@ public class ExampleIcalCrawler {
 
         ConfigurationUtil.setRootUrl(icalFile.getAbsolutePath(), configuration);
 
+        configuration.put(ICALTZD.realBlankNodes, true);
+
 
 
         // create the data source
@@ -323,8 +327,6 @@ public class ExampleIcalCrawler {
                 repository.export(rdfWriter);
 
                 writer.close();
-
-
 
                 System.out.println("Crawled " + nrObjects
 
