@@ -1,6 +1,6 @@
 /*
 
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
 
  * All rights reserved.
 
@@ -10,7 +10,7 @@
 
  */
 
-package org.semanticdesktop.aperture.crawler.ical;
+package org.semanticdesktop.aperture.examples;
 
 
 
@@ -57,6 +57,8 @@ import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 
 import org.semanticdesktop.aperture.crawler.ExitCode;
+
+import org.semanticdesktop.aperture.crawler.ical.IcalCrawler;
 
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 
