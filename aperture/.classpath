@@ -17,11 +17,11 @@
 	<classpathentry kind="lib" path="lib/mail-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/jacob-1.10-pre4.jar"/>
 	<classpathentry kind="lib" path="lib/applewrapper-0.1.jar"/>
-	<classpathentry kind="lib" path="lib/ical4j-cvs20061017.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/poi-3.0-alpha2-20060616.jar"/>
 	<classpathentry kind="lib" path="lib/poi-contrib-3.0-alpha2-20060616.jar"/>
 	<classpathentry kind="lib" path="lib/poi-scratchpad-3.0-alpha2-20060616.jar"/>
+	<classpathentry kind="lib" path="lib/ical4j-cvs20061019.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>
