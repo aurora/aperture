@@ -15,6 +15,7 @@ public class IcalDataType {
     public static final String INTEGER = "INTEGER";
     public static final String TEXT = "TEXT";
     public static final String PERIOD = "PERIOD";
+    public static final String URI = "URI";
     
 }
 

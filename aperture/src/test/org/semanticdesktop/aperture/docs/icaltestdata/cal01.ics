@@ -4,6 +4,7 @@ PRODID:-//Ximian//NONSGML Evolution Calendar//EN
 VERSION:2.0
 BEGIN:VTIMEZONE
 TZID:/softwarestudio.org/Olson_20011030_5/America/New_York
+TZURL:http://timezones.r.us.net/tz/US-California-Los_Angeles
 X-LIC-LOCATION:America/New_York
 BEGIN:STANDARD
 TZOFFSETFROM:-0400

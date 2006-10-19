@@ -62,8 +62,24 @@ public class TestIcalCrawler extends ApertureTestBase {
         
         assertMultiValueProperty(repository,calendarNode,RDF.TYPE,
                 DATA.DataObject);
+        assertMultiValueProperty(repository,calendarNode,RDF.TYPE,
+                ICALTZD.Vcalendar);
+        assertEquals(countOutgoingTriples(repository, calendarNode, RDF.TYPE),2);
         
         assertEquals(countStatements(repository),6);   
+    }
+    
+    public void testVeventComponent() throws Exception {
+        Repository repository = readIcalFile("cal01.ics");
+        
+        Resource veventNode = findComponentByUid(repository, 
+                "20020630T230445Z-3895-69-1-7@jammer");
+        
+        assertMultiValueProperty(repository, veventNode,RDF.TYPE,
+                DATA.DataObject);
+        assertMultiValueProperty(repository, veventNode,RDF.TYPE,
+                ICALTZD.Vevent);
+        assertEquals(countOutgoingTriples(repository, veventNode, RDF.TYPE),2);
     }
     
     ////////////////////////////////////////////////////////////////////////
@@ -80,6 +96,18 @@ public class TestIcalCrawler extends ApertureTestBase {
         Resource valarmNode
                 = findSingleNode(repository,veventNode,ICALTZD.component);
         assertSingleValueProperty(repository,valarmNode,ICALTZD.action,"AUDIO");
+    }
+    
+    public void testAttachProperty() throws Exception {
+        Repository repository 
+                = readIcalFile("simplevevent.ics");
+        Resource veventNode 
+                = findComponentByUid(repository, 
+                  "EB825E41-23CE-11D7-B93D-003065B0C95E");
+        Resource valarmNode
+                = findSingleNode(repository, veventNode, ICALTZD.component);
+        assertSingleValueURIProperty(repository,valarmNode,ICALTZD.attach,
+                "uri://Ping");
     }
     
     public void testAttendeeProperty() throws Exception {
@@ -122,28 +150,11 @@ public class TestIcalCrawler extends ApertureTestBase {
     }
     
     public void testCommentProperty() throws Exception {
-        Repository repository = readIcalFile("gkexample.ics");
-        // the events in this file don't contain UID's, we will have
-        // to find them by hand
-        Resource veventWithComment = null;
-        CloseableIterator<RStatement> iterator
-                = repository.getStatements(null, RDF.TYPE, ICALTZD.Vevent);
-        RStatement statement = null;
-        while (iterator.hasNext()) {
-            statement = iterator.next();
-            Resource currentVevent = statement.getSubject();
-            CloseableIterator commentIterator 
-                    = repository
-                      .getStatements(currentVevent, ICALTZD.comment, null);
-            if (commentIterator.hasNext()) {
-                veventWithComment = currentVevent;
-            }
-            commentIterator.close();
-        }
-        iterator.close();
-        assertNotNull(veventWithComment);
-        assertSingleValueProperty(repository,veventWithComment,ICALTZD.comment,
-                "from G.Klyne - iCalendarExample.txt");
+        Repository repository = readIcalFile("calconnect7.ics");
+        Resource veventNode = findComponentByUid(repository,
+                "6BA1ECA4D58B306C85256FDB0071B664-Lotus_Notes_Generated");
+        assertSingleValueProperty(repository,veventNode,ICALTZD.comment,
+                "Another single instance reschedule - time only (+2 hrs)");
     }
     
     public void testCompletedProperty() throws Exception {
@@ -293,10 +304,9 @@ public class TestIcalCrawler extends ApertureTestBase {
                 "PT1H", XMLSchema.DURATION);
     }
     
-    /*
-     * This test should also be repeated three times (like the tests for 
-     * DUE and DTSTART) with varying types and VALUE parameters.
-     */
+    
+    // This test should also be repeated three times (like the tests for 
+    // DUE and DTSTART) with varying types and VALUE parameters.
     public void testExDate() throws Exception {
         Repository repository = readIcalFile("tag-bug.ics");
         Resource veventNode = findComponentByUid(repository,
@@ -464,6 +474,91 @@ public class TestIcalCrawler extends ApertureTestBase {
                 countOutgoingTriples(repository, veventNode,ICALTZD.rdate),5);
     }
     
+    public void testRecurrenceIdProperty() throws Exception {
+        Repository repository = readIcalFile("calconnect7.ics");
+        Resource veventNode
+                = findComponentByUid(repository,
+                  "6BA1ECA4D58B306C85256FDB0071B664-Lotus_Notes_Generated");
+        Resource recurrenceBlankNode 
+                = findSingleNode(repository, veventNode, ICALTZD.recurrenceId);
+        assertSingleValueProperty(repository, recurrenceBlankNode, 
+                ICALTZD.value,"2005-04-28T13:00:00Z",XMLSchema.DATETIME);
+    }
+    
+    public void testRelatedToProperty() throws Exception {
+        Repository repository = readIcalFile("calconnect7.ics");
+        Resource veventNode
+                = findComponentByUid(repository,
+                  "6BA1ECA4D58B306C85256FDB0071B664-Lotus_Notes_Generated");
+        assertSingleValueProperty(repository, veventNode, 
+                ICALTZD.relatedTo,
+                "<jsmith.part7.19960817T083000.xyzMail@host3.com>");
+    }
+    
+    public void testRepeatProperty() throws Exception {
+        Repository repository = readIcalFile("php-flp.ics");
+        Resource veventNode
+                = findComponentByUid(repository,"TPACTIDSTREAMTASKID");
+        Resource valarmNode
+                = findSingleNode(repository, veventNode, ICALTZD.component);
+        assertSingleValueProperty(repository, valarmNode, ICALTZD.repeat,
+                "3",XMLSchema.INTEGER);
+    }
+    
+    public void testRequestStatusProperty() throws Exception {
+        Repository repository = readIcalFile("incoming.ics");
+        Resource calendarNode
+                = findMainCalendarNode(repository);
+        Resource veventNode
+                = findSingleNode(repository,calendarNode,ICALTZD.component);
+        assertSingleValueProperty(repository, veventNode, ICALTZD.requestStatus,
+                "2.0;Success");
+    }
+    
+    public void testResourcesProperty() throws Exception {
+        Repository repository = readIcalFile("php-flp.ics");
+        Resource veventNode
+                = findComponentByUid(repository,"TPACTIDSTREAMTASKID");
+        assertSingleValueProperty(repository, veventNode, ICALTZD.resources,
+                "EASEL,PROJECTOR,VCR");
+    }
+    
+    public void testSequenceProperty() throws Exception {
+        Repository repository = readIcalFile("cal01.ics");
+        Resource veventNode
+                = findComponentByUid(repository,
+                  "20020630T230445Z-3895-69-1-7@jammer");
+        assertSingleValueProperty(repository,veventNode,ICALTZD.sequence,"2",
+                XMLSchema.INTEGER);
+    }
+    
+    public void testStatusProperty() throws Exception {
+        Repository repository = readIcalFile("Todos1.ics");
+        Resource vtodoNode
+                = findComponentByUid(repository,
+                  "76116BB6-5338-11D8-A876-000A958826AA");
+        assertSingleValueProperty(repository,vtodoNode,ICALTZD.status,
+                "COMPLETED");
+    }
+    
+    public void testSummaryProperty() throws Exception {
+        // we deliberately chose an example with disregarded params
+        Repository repository = readIcalFile("php-flp.ics");
+        Resource veventNode 
+                = findComponentByUid(repository,"TPACTIDSTREAMTASKID");
+        assertSingleValueProperty(repository,veventNode,ICALTZD.summary,
+                "TP for Act ID XXXXX -- Not important : Stream -- Task ID");
+    }
+    
+    public void testTranspProperty() throws Exception {
+        Repository repository = readIcalFile("cal01.ics");
+        Resource veventNode
+                = findComponentByUid(repository,
+                  "20020630T230445Z-3895-69-1-7@jammer");
+        assertSingleValueProperty(repository,veventNode,ICALTZD.transp,
+                "OPAQUE");
+    }
+
     public void testTriggerPropertyWithDefinedDateTimeType() throws Exception {
         Repository repository = readIcalFile("simplevevent.ics");
         Resource calendarNode 
@@ -508,6 +603,82 @@ public class TestIcalCrawler extends ApertureTestBase {
         assertSingleValueProperty(repository,triggerBlankNode,ICALTZD.related,
                 "START");
         assertEquals(countOutgoingTriples(repository, triggerBlankNode),2);
+    }
+    
+    public void testTzidProperty() throws Exception {
+        Repository repository = readIcalFile("cal01.ics");
+        Resource vtimezoneNode = findSingleTimezone(repository);
+        assertSingleValueProperty(repository,vtimezoneNode,ICALTZD.tzid,
+                "/softwarestudio.org/Olson_20011030_5/America/New_York");
+    }
+    
+    public void testTzNameProperty() throws Exception {
+        Repository repository 
+                = readIcalFile("cal01.ics");
+        Resource vtimezoneNode 
+                = findSingleTimezone(repository);
+        Resource daylightNode 
+                = findSingleNode(repository,vtimezoneNode,ICALTZD.daylight);
+        assertSingleValueProperty(repository,daylightNode,ICALTZD.tzname,"EDT");
+    }
+    
+    public void testTzOffsetFromProperty() throws Exception {
+        Repository repository 
+                = readIcalFile("cal01.ics");
+        Resource vtimezoneNode 
+                = findSingleTimezone(repository);
+        Resource daylightNode 
+                = findSingleNode(repository,vtimezoneNode,ICALTZD.daylight);
+        assertSingleValueProperty(repository,daylightNode,ICALTZD.tzoffsetfrom,
+                "-0500");
+    }
+    
+    public void testTzOffsetToProperty() throws Exception {
+        Repository repository 
+                = readIcalFile("cal01.ics");
+        Resource vtimezoneNode 
+                = findSingleTimezone(repository);
+        Resource daylightNode 
+                = findSingleNode(repository,vtimezoneNode,ICALTZD.daylight);
+        assertSingleValueProperty(repository,daylightNode,ICALTZD.tzoffsetto,
+                "-0400");
+    }
+    
+    public void testTzUrlProperty() throws Exception {
+        Repository repository
+                = readIcalFile("cal01.ics");
+        Resource vtimezoneNode
+                = findSingleTimezone(repository);
+        assertSingleValueURIProperty(repository,vtimezoneNode,ICALTZD.tzurl,
+                "http://timezones.r.us.net/tz/US-California-Los_Angeles");
+    }
+    
+    public void testUidProperty() throws Exception {
+        Repository repository
+                = readIcalFile("cal01.ics");
+        Resource veventNode
+                = findComponentByUid(repository, 
+                  "20020630T230445Z-3895-69-1-7@jammer");
+        assertSingleValueProperty(repository,veventNode,ICALTZD.uid,
+                "20020630T230445Z-3895-69-1-7@jammer");
+    }
+    
+    public void testUrlProperty() throws Exception {
+        Repository repository
+                = readIcalFile("geo1.ics");
+        Resource veventNode
+                = findComponentByUid(repository,
+                  "CDC474D4-1393-11D7-9A2C-000393914268");
+        assertSingleValueURIProperty(repository,veventNode,ICALTZD.url,
+                "http://kanzaki.com/works/2004/cal/0406vocab.html");
+    }
+    
+    public void testVersionProperty() throws Exception {
+        Repository repository
+                = readIcalFile("geo1.ics");
+        Resource calendarNode
+                = findMainCalendarNode(repository);
+        assertSingleValueProperty(repository,calendarNode,ICALTZD.version,"2.0");
     }
     
     ////////////////////////////////////////////////////////////////////////
@@ -575,23 +746,6 @@ public class TestIcalCrawler extends ApertureTestBase {
         return testCrawlerHandler.getRepository();
     }
     
-    /**
-     * Prints all triples in the repository onto the standard output.
-     * 
-     * @param repository
-     *            The repository that contains the statements to be printed.
-     */
-    /*
-    private void printStatements(Repository repository) {
-        CloseableIterator<RStatement> iterator 
-                = repository.extractStatements();
-        while (iterator.hasNext()) {
-            RStatement rstatement = iterator.next();
-            System.out.println(rstatement.toString());
-        }
-        iterator.close();
-    }
-    */
     /**
      * Counts the triples in the repository.
      * 
@@ -676,6 +830,16 @@ public class TestIcalCrawler extends ApertureTestBase {
         return statement.getSubject();
     }
     
+    private Resource findSingleTimezone(Repository repository) {
+        CloseableIterator<RStatement> iterator
+                = repository.getStatements(null, RDF.TYPE, ICALTZD.Vtimezone);
+        assertTrue(iterator.hasNext());
+        RStatement statement = iterator.next();
+        assertFalse(iterator.hasNext());
+        iterator.close();
+        return statement.getSubject();
+    }
+    
     private Resource findComponentByUid(Repository repository, String uid) {
         CloseableIterator<RStatement> iterator
                 = repository.getStatements(null, ICALTZD.uid, null);
@@ -745,6 +909,15 @@ public class TestIcalCrawler extends ApertureTestBase {
         Literal literal = (Literal)object;
         assertEquals(literal.getLabel(),objectLabel); // it's label is as given
         assertEquals(literal.getDatatype(),xsdDatatype); // and datatype as well
+    }
+    
+    private void assertSingleValueURIProperty(Repository repository,
+            Resource parentNode, URI predicate, String label) {
+        Resource attachedUri
+                = findSingleNode(repository,parentNode,predicate);
+        assertTrue(attachedUri instanceof URI);
+        assertEquals(attachedUri.toString(),label);
+        assertEquals(countOutgoingTriples(repository, attachedUri),0);
     }
     
     /**
