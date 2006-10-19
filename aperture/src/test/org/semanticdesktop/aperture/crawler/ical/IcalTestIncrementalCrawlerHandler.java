@@ -6,6 +6,9 @@
  */
 package org.semanticdesktop.aperture.crawler.ical;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.openrdf.model.URI;
 import org.openrdf.sesame.repository.Repository;
 import org.openrdf.sesame.sail.SailInitializationException;
@@ -19,18 +22,27 @@ import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 
-class IcalTestSimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
+class IcalTestIncrementalCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
     
     private Repository repository;
 
     private int numberOfObjects;
     
+    private Set<String> newObjects;
+    private Set<String> changedObjects;
+    private Set<String> unchangedObjects;
+    private Set<String> deletedObjects;
+    
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////// CONSTRUCTOR /////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    public IcalTestSimpleCrawlerHandler() {
+    public IcalTestIncrementalCrawlerHandler() {
         repository = new Repository(new MemoryStore());
+        newObjects = new HashSet<String>();
+        changedObjects = new HashSet<String>();
+        unchangedObjects = new HashSet<String>();
+        deletedObjects = new HashSet<String>();
         
         try {
             repository.initialize();
@@ -49,25 +61,17 @@ class IcalTestSimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactor
             // (slow).
         }
     }
-    
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////// GETTERS AND SETTERS ///////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    public Repository getRepository() {
-        return repository;
-    }
-    
-    public int getNumberOfObjects() {
-        return numberOfObjects;
-    }
-    
+   
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////// CRAWLER HANDLER METHODS //////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     
     public void crawlStarted(Crawler crawler) {
         numberOfObjects = 0;
+        newObjects.clear();
+        changedObjects.clear();
+        unchangedObjects.clear();
+        deletedObjects.clear();
     }
     
     public void crawlStopped(Crawler crawler, ExitCode exitCode) {
@@ -91,11 +95,22 @@ class IcalTestSimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactor
     }
 
     public void objectChanged(Crawler crawler, DataObject object) {
-        // we don't need to do anything
+        changedObjects.add(object.getID().toString());
+        // commit all generated statements
+        try {
+            repository.commit();
+        } catch (SailUpdateException e) {
+            // don't continue when this happens
+            throw new RuntimeException(e);
+        }
+        
+        // free any resources contained by this DataObject
+        object.dispose();
     }
 
     public void objectNew(Crawler crawler, DataObject object) {
         numberOfObjects++;
+        newObjects.add(object.getID().toString());
         // commit all generated statements
         try {
             repository.commit();
@@ -109,11 +124,12 @@ class IcalTestSimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactor
     }
 
     public void objectNotModified(Crawler crawler, String url) {
-        // we don't need to do anything
+    	numberOfObjects++;
+        unchangedObjects.add(url);
     }
 
     public void objectRemoved(Crawler crawler, String url) {
-        // we don't need to do anything
+        deletedObjects.add(url);
     }
     
     public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
@@ -130,5 +146,33 @@ class IcalTestSimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactor
         container.setContext(uri);
         return container;
     }
+    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////// GETTERS AND SETTERS ///////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    public Repository getRepository() {
+        return repository;
+    }
+    
+    public int getNumberOfObjects() {
+        return numberOfObjects;
+    }
+    
+	public Set<String> getChangedObjects() {
+		return changedObjects;
+	}
+	
+	public Set<String> getDeletedObjects() {
+		return deletedObjects;
+	}
+	
+	public Set<String> getNewObjects() {
+		return newObjects;
+	}
+
+	public Set<String> getUnchangedObjects() {
+		return unchangedObjects;
+	}
 }
 
