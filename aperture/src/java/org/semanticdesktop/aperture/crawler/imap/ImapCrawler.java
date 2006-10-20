@@ -98,6 +98,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 	private String hostName;
 
+	private int port;
+	
 	private String userName;
 
 	private String password;
@@ -211,6 +213,12 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		userName = ConfigurationUtil.getUsername(config);
 		password = ConfigurationUtil.getPassword(config);
 
+		port = -1;
+		Integer configuredPort = ConfigurationUtil.getPort(config);
+		if (configuredPort != null) {
+			port = configuredPort.intValue();
+		}
+		
 		baseFolders.clear();
 		baseFolders.addAll(ConfigurationUtil.getBasepaths(config));
 
@@ -302,7 +310,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 		// make sure it is connected
 		if (!store.isConnected()) {
-			store.connect(hostName, userName, password);
+			store.connect(hostName, port, userName, password);
 		}
 	}
 

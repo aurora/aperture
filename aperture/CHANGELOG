@@ -54,6 +54,7 @@ improvements:
   Extractors
 - added RepositoryAccessData, an AccessData implementation storing its
   information in a Repository
+- added ability to specify a port number for an IMAP source
 - set target platform to Java 5
 
 updated dependencies:
