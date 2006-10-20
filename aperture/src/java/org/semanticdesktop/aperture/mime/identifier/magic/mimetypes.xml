@@ -131,6 +131,9 @@ LINKS
 
 See http://www.filext.com/ for an online database of MIME types and magic numbers.
 
+See also http://www.garykessler.net/library/file_sigs.html for magic numbers
+(still need to merge this info with our list).
+
 See http://www.wotsit.org/ for an online database of file format descriptions.
 
 -->
