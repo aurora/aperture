@@ -62,7 +62,7 @@ updated dependencies:
 - Ical (from trunk, not the official release)
 - JavaMail 1.4
 - POI 3.0 alpha 2
-- PDFBox 0.7.3 (+ added FontBox 0.1.0, required by PDFBox)
+- PDFBox 0.7.3 (+ added FontBox, bcmail and bcprov, now required by PDFBox)
 
 bug fixes:
 - [ 1444917 ] PlainTextExtractor ignores ByteOrderMarks
