@@ -56,12 +56,12 @@ import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
+import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.ICALTZD;
 
 /**
- * A Crawler implementation for crawling ical calendar sources modeled by a FileSystemDataSource. This version
- * reports all objects as new.
+ * A Crawler implementation for crawling ical calendar sources modeled by a FileSystemDataSource. 
  */
 public class IcalCrawler extends CrawlerBase {
 
@@ -83,7 +83,13 @@ public class IcalCrawler extends CrawlerBase {
 	 * @see IcalCrawler#generateExtendedNamespace(String)
 	 */
 	private static final String productNamespacePrefix = "http://www.w3.org/2002/12/cal/prod";
-
+	
+	
+	/**
+	 * Address of Dan Connoly's timezone database. Used in all properties with the TZID parameter. The name of
+	 * the timezone (e.g. Europe/Warsaw) is added to this prefix to form the datatype of a value (e.g.
+	 * &lt;dtstart rdf:datatype="http://www.w3.org/2002/12/cal/tzd"&gt;2006-10-20T10:21:00&lt;/dtstart&gt;)
+	 */
 	private static final String timezoneNamespacePrefix = "http://www.w3.org/2002/12/cal/tzd";
 
 	/**
@@ -99,6 +105,9 @@ public class IcalCrawler extends CrawlerBase {
 	 */
 	private ValueFactory valueFactory;
 
+	/**
+	 * The base URI of current calendar instance.
+	 */
 	private String baseuri;
 
 	public IcalCrawler() {
@@ -113,7 +122,15 @@ public class IcalCrawler extends CrawlerBase {
 	protected ExitCode crawlObjects() {
 		// fetch the source and its configuration
 		DataSource source = getDataSource();
-		RDFContainer configuration = source.getConfiguration();
+		IcalDataSource icalDataSource = null;
+		try {
+			icalDataSource = (IcalDataSource)source;
+		} catch (ClassCastException e) {
+			LOGGER.log(Level.SEVERE, "unsupported data source type",e);
+			return ExitCode.FATAL_ERROR;
+		}
+		
+		RDFContainer configuration = icalDataSource.getConfiguration();
 
 		// determine the root file
 		String icalFilePath = ConfigurationUtil.getRootUrl(configuration);
@@ -242,7 +259,8 @@ public class IcalCrawler extends CrawlerBase {
 	}
 
 	/**
-	 * Crawls a single calendar component.
+	 * Crawls a single calendar component. Checks the name of the component and dispatches it to the proper
+	 * component-handling method.
 	 * 
 	 * @param component The component to crawl.
 	 * @param parentNode The root node of the generated subtree.
@@ -287,8 +305,8 @@ public class IcalCrawler extends CrawlerBase {
 	 * Crawls a single property. Checks the name of the property and dispatches it to an appropriate
 	 * property-handling method.
 	 * 
-	 * @param property
-	 * @param rdfContainer
+	 * @param property The property to be crawled.
+	 * @param rdfContainer The rdfContainer to store the generated statements in.
 	 */
 	private void crawlSingleProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
 		String propertyName = property.getName();
@@ -442,6 +460,13 @@ public class IcalCrawler extends CrawlerBase {
 		}
 	}
 
+	/**
+	 * Crawls a single parameter. Checks the name of the parameter and dispatches it to an appropriate
+	 * parameter-handling method.
+	 * 
+	 * @param property The parameter to be crawled.
+	 * @param rdfContainer The rdfContainer to store the generated statement in.
+	 */
 	private void crawlSingleParameter(Parameter parameter, Resource parentNode, RDFContainer rdfContainer) {
 		String parameterName = parameter.getName();
 		if (parameterName.equals(Parameter.ALTREP)) {
@@ -530,9 +555,10 @@ public class IcalCrawler extends CrawlerBase {
 
 	/**
 	 * Iterates over the properties of a given component and adds those properties to a given container.
+	 * The properties are attached to the root URI of the container.
 	 * 
-	 * @param component
-	 * @param rdfContainer
+	 * @param component The component, whose properties are to be crawled.
+	 * @param rdfContainer The rdfContainer to store the generated statements in.
 	 */
 	private void crawlPropertyList(Component component, RDFContainer rdfContainer) {
 		crawlPropertyList(component, rdfContainer.getDescribedUri(), rdfContainer);
@@ -542,9 +568,9 @@ public class IcalCrawler extends CrawlerBase {
 	 * Iterates over the properties of a given component, and adds those properties to a given RDFContainer.
 	 * The properties are attached to a given parent node.
 	 * 
-	 * @param propertyList
-	 * @param parentNode
-	 * @param rdfContainer
+	 * @param component The component, whose properties are to be crawled.
+	 * @param parentNode The node, the property values should be attached to.
+	 * @param rdfContainer The container to store the generated statements in.
 	 */
 	private void crawlPropertyList(Component component, Resource parentNode, RDFContainer rdfContainer) {
 		PropertyList propertyList = component.getProperties();
@@ -555,9 +581,9 @@ public class IcalCrawler extends CrawlerBase {
 	 * Iterates over a propertyList, attaches those properties to a given parentNode, add stores the resulting
 	 * triples in a given RDFContainer.
 	 * 
-	 * @param propertyList
-	 * @param parentNode
-	 * @param rdfContainer
+	 * @param propertyList The property list to be crawled.
+	 * @param parentNode The node, the property values should be attached to.
+	 * @param rdfContainer The container to store the generated statements in.
 	 */
 	private void crawlPropertyList(PropertyList propertyList, Resource parentNode, RDFContainer rdfContainer) {
 		Iterator it = propertyList.iterator();
@@ -568,14 +594,10 @@ public class IcalCrawler extends CrawlerBase {
 	}
 
 	/**
-	 * Crawls the parameter list of a given property. Note that there is specific treatment for the VALUE
-	 * parameter.
-	 * 
-	 * @see convertValueTypeToURI
+	 * Crawls the parameter list of a given property. 
 	 * 
 	 * @param property The property whose parameter list we would like to crawl.
-	 * @param parentNode The node to which the generated RDF subtree should be attached.
-	 * @param defaultValueType The default ical type for the property value.
+	 * @param rdfContainer The container to store the generated statements in.
 	 */
 	private Resource crawlParameterList(Property property, RDFContainer rdfContainer) {
 		Resource propertyBlankNode = generateAnonymousNode();
@@ -585,18 +607,18 @@ public class IcalCrawler extends CrawlerBase {
 	}
 
 	/**
-	 * Iterates over a parameter list and adds those parameters to a given RDFContainer.
+	 * Crawls the given parameter list.
 	 * 
-	 * @param parameterList
-	 * @param parentNode
-	 * @param parametersRDFContainer
+	 * @param parameterList The list of parameters to be crawled.
+	 * @param parentNode The node, the property values should be attached to.
+	 * @param rdfContainer The container to store the generated statements in.
 	 */
 	private void crawlParameterList(ParameterList parameterList, Resource parentNode,
-			RDFContainer parametersRDFContainer) {
+			RDFContainer rdfContainer) {
 		Iterator it = parameterList.iterator();
 		while (it.hasNext()) {
 			Parameter parameter = (Parameter) it.next();
-			crawlSingleParameter(parameter, parentNode, parametersRDFContainer);
+			crawlSingleParameter(parameter, parentNode, rdfContainer);
 		}
 	}
 
@@ -607,18 +629,66 @@ public class IcalCrawler extends CrawlerBase {
 	//////////////////////////////////////////// COMPONENTS //////////////////////////////////////////////
 
 	/**
-	 * Crawls a single VAlarm component. Attaches it to the parent vevent with a ical:component link.
+	 * Crawls a single VAlarm component. Attaches it to the parent vevent or vtodo with a ical:component link.
 	 * 
-	 * @param component
-	 * @param rdfContainer
+	 * <pre>
+	 * ical:
+	 * BEGIN:VALARM
+     * TRIGGER;RELATED=START:-PT30M
+     * ACTION:DISPLAY
+     * DESCRIPTION:Federal Reserve Board Meeting
+     * END:VALARM
+     * 
+     * n3:
+     * _:VeventNode icaltzd:component _:ValarmBNode .
+     * _:ValarmBNode rdf:type icaltzd:valarm .
+     * _:ValarmBNode property1 property1Value ;
+     *               ... ;
+     *               propertyN propertyNValue .
+	 * </pre>
+	 * 
+	 * @param component The Valarm to be crawled.
+	 * @param rdfContainer The container to store the generated statements in.
 	 */
 	private void crawlVAlarmComponent(Component component, Resource parentNode, RDFContainer rdfContainer) {
 		VAlarm valarm = (VAlarm) component;
 		URI valarmParentNode = generateAnonymousComponentUri(component);
 		crawlPropertyList(valarm, valarmParentNode, rdfContainer);
 		addStatement(rdfContainer, parentNode, ICALTZD.component, valarmParentNode);
+		addStatement(rdfContainer, valarmParentNode, RDF.TYPE, ICALTZD.Valarm);
 	}
 
+	/**
+	 * Crawls the vevent component. Attaches it to the givent parent node with an ical:component link.
+	 * 
+	 * <pre>
+	 * ical:
+	 * BEGIN:VEVENT
+	 * UID:20020630T230353Z-3895-69-1-0@jammer
+     * DTSTAMP:20020630T230353Z
+     * DTSTART;TZID=/softwarestudio.org/Olson_20011030_5/America/New_York:
+     *  20020630T090000
+     * DTEND;TZID=/softwarestudio.org/Olson_20011030_5/America/New_York:
+     *  20020630T103000  
+     * TRANSP:OPAQUE
+     * SEQUENCE:2
+     * SUMMARY:Church
+     * CLASS:PRIVATE
+     * RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=SU
+     * END:VEVENT
+     * 
+     * n3:
+     * <"&baseuri;VCalendar"> icaltzd:component <"&baseuri;20020630T230353Z-3895-69-1-0@jammer">
+     * <"&baseuri;20020630T230353Z-3895-69-1-0@jammer"> rdf:type icaltzd:Vevent
+     * <"&baseuri;20020630T230353Z-3895-69-1-0@jammer"> property1 property1value ; 
+     *                                                  ... ; 
+     *                                                  propertyN propertyNValue ;
+     *                                                  icalzdt:component _:ValarmBNode
+     * </pre>
+     * 
+	 * @param component
+	 * @param parentNode
+	 */
 	private void crawlVEventComponent(Component component, Resource parentNode) {
 		RDFContainer rdfContainer = prepareDataObjectRDFContainer(component);
 		rdfContainer.add(RDF.TYPE, ICALTZD.Vevent);
@@ -635,6 +705,31 @@ public class IcalCrawler extends CrawlerBase {
 	 * 
 	 * <p>
 	 * Unsupported by fromIcal.py at the time of writing (2006-10-17)
+	 * 
+	 * <pre>
+	 * ical:
+	 * BEGIN:VFREEBUSY
+	 * ORGANIZER:MAILTO:jane_doe@host1.com
+	 * ATTENDEE:MAILTO:john_public@host2.com
+	 * DTSTAMP:19970901T100000Z
+	 * FREEBUSY;VALUE=PERIOD:19971015T050000Z/PT8H30M,
+	 *  19971015T160000Z/PT5H30M,19971015T223000Z/PT6H30M
+	 * URL:http://host2.com/pub/busy/jpublic-01.ifb
+	 * COMMENT:This iCalendar file contains busy time information for
+	 *  the next three months.
+	 * END:VFREEBUSY
+	 * 
+	 * (note that there is no UID in this component, so the URI has to be generated otherwise)
+	 * 
+	 * n3:
+	 * <"&baseuri;VCalendar"> icaltzd:component <"&baseuri;hashOfAllProperties">
+	 * <"&baseuri;hashOfAllProperties"> rdf:type icaltzd:vfreebusy ;
+	 *                                  property1 property1Value ;
+	 *                                  ... ;
+	 *                                  propertyN propertyNValue .
+	 * </pre>
+	 * 
+	 * @see generateComponentURI
 	 */
 	private void crawlVFreebusyComponent(Component component, Resource parentNode) {
 		RDFContainer rdfContainer = prepareDataObjectRDFContainer(component);
@@ -645,6 +740,50 @@ public class IcalCrawler extends CrawlerBase {
 		passComponentToHandler(rdfContainer);
 	}
 
+	/**
+	 * Crawls a single VJournal component.
+	 * 
+	 * <p>
+	 * Unsupported by fromIcal.py at the time of writing (2006-10-17)
+	 * 
+	 * <pre>
+	 * ical:
+	 * BEGIN:VJOURNAL
+	 * CREATED
+	 *  :20030227T110715Z
+	 * UID
+	 *  :KOrganizer-948365006.348
+	 * SEQUENCE
+ 	 * :0
+	 * LAST-MODIFIED
+	 *  :20030227T110715Z
+	 * DTSTAMP
+ 	 *  :20030227T110715Z
+	 * ORGANIZER
+ 	 *  :MAILTO:nobody@nowhere
+	 * DESCRIPTION
+ 	 *  :journal\n
+	 * CLASS
+ 	 *  :PUBLIC
+	 * PRIORITY
+ 	 *  :3
+	 * DTSTART
+	 *  ;VALUE=DATE
+	 *  :20030224
+	 * END:VJOURNAL
+	 * 
+	 * (note that there is no UID in this component, so the URI has to be generated otherwise)
+	 * 
+	 * n3:
+	 * <"&baseuri;VCalendar"> icaltzd:component <"&baseuri;KOrganizer-948365006.348">
+	 * <"&baseuri;KOrganizer-948365006.348"> rdf:type icaltzd:vjournal ;
+	 *                                       property1 property1Value ;
+	 *                                       ... ;
+	 *                                       propertyN propertyNValue .
+	 * </pre>
+	 * 
+	 * @see generateComponentURI
+	 */
 	private void crawlVJournalComponent(Component component, Resource parentNode) {
 		RDFContainer rdfContainer = prepareDataObjectRDFContainer(component);
 		rdfContainer.add(RDF.TYPE, ICALTZD.Vjournal);
@@ -653,7 +792,44 @@ public class IcalCrawler extends CrawlerBase {
 		addStatement(rdfContainer, parentNode, ICALTZD.component, rdfContainer.getDescribedUri());
 		passComponentToHandler(rdfContainer);
 	}
-
+	
+	/**
+	 * Crawls a single VTimezone component.
+	 * 
+	 * <p>
+	 * Note the the URI for this component.
+	 * 
+	 * <pre>
+	 * ical:
+	 * BEGIN:VTIMEZONE
+	 * TZID:/softwarestudio.org/Olson_20011030_5/America/New_York
+	 * TZURL:http://timezones.r.us.net/tz/US-California-Los_Angeles
+	 * BEGIN:STANDARD
+	 * TZOFFSETFROM:-0400
+	 * TZOFFSETTO:-0500
+	 * TZNAME:EST
+	 * DTSTART:19701025T020000
+	 * RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10
+	 * END:STANDARD
+	 * BEGIN:DAYLIGHT
+	 * TZOFFSETFROM:-0500
+	 * TZOFFSETTO:-0400
+	 * TZNAME:EDT
+	 * DTSTART:19700405T020000
+	 * RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=1SU;BYMONTH=4
+	 * END:DAYLIGHT
+	 * END:VTIMEZONE
+	 * 
+	 * n3:
+	 * <"&baseuri;VCalendar"> icaltzd:component <"http://www.w3.org/2002/12/cal/tzd/America/New_York#tz">
+	 * <"&baseuri;KOrganizer-948365006.348"> rdf:type icaltzd:vjournal ;
+	 *                                       property1 property1Value ;
+	 *                                       ... ;
+	 *                                       propertyN propertyNValue .
+	 * </pre>
+	 * 
+	 * @see generateComponentURI
+	 */
 	private void crawlVTimezoneComponent(Component component, Resource parentNode) {
 		RDFContainer rdfContainer = prepareDataObjectRDFContainer(component);
 		rdfContainer.add(RDF.TYPE, ICALTZD.Vtimezone);
@@ -665,6 +841,40 @@ public class IcalCrawler extends CrawlerBase {
 		passComponentToHandler(rdfContainer);
 	}
 
+	/**
+	 * Crawls a single VTodo component.
+	 * 
+	 * <pre>
+	 * ical:
+	 * BEGIN:VTIMEZONE
+	 * TZID:/softwarestudio.org/Olson_20011030_5/America/New_York
+	 * TZURL:http://timezones.r.us.net/tz/US-California-Los_Angeles
+	 * BEGIN:STANDARD
+	 * TZOFFSETFROM:-0400
+	 * TZOFFSETTO:-0500
+	 * TZNAME:EST
+	 * DTSTART:19701025T020000
+	 * RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10
+	 * END:STANDARD
+	 * BEGIN:DAYLIGHT
+	 * TZOFFSETFROM:-0500
+	 * TZOFFSETTO:-0400
+	 * TZNAME:EDT
+	 * DTSTART:19700405T020000
+	 * RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=1SU;BYMONTH=4
+	 * END:DAYLIGHT
+	 * END:VTIMEZONE
+	 * 
+	 * n3:
+	 * <"&baseuri;VCalendar"> icaltzd:component <"&baseuri;KOrganizer-948365006.348">
+	 * <"&baseuri;KOrganizer-948365006.348"> rdf:type icaltzd:vjournal ;
+	 *                                       property1 property1Value ;
+	 *                                       ... ;
+	 *                                       propertyN propertyNValue .
+	 * </pre>
+	 * 
+	 * @see generateComponentURI
+	 */
 	private void crawlVTodoComponent(Component component, Resource parentNode) {
 		RDFContainer rdfContainer = prepareDataObjectRDFContainer(component);
 		rdfContainer.add(RDF.TYPE, ICALTZD.Vtodo);
@@ -676,20 +886,31 @@ public class IcalCrawler extends CrawlerBase {
 		passComponentToHandler(rdfContainer);
 	}
 
+	/** experimental components are unsupported at the moment */
 	private void crawlExperimentalComponent(Component component, Resource parentNode) {
-		RDFContainer rdfContainer = prepareDataObjectRDFContainer(component);
-		rdfContainer.add(RDF.TYPE, extendedNameSpace + component.getName());
-		crawlPropertyList(component, rdfContainer);
-		addStatement(rdfContainer, parentNode, ICALTZD.component, rdfContainer.getDescribedUri());
-		passComponentToHandler(rdfContainer);
+		// RDFContainer rdfContainer = prepareDataObjectRDFContainer(component);
+		// rdfContainer.add(RDF.TYPE, extendedNameSpace + component.getName());
+		// crawlPropertyList(component, rdfContainer);
+		// addStatement(rdfContainer, parentNode, ICALTZD.component, rdfContainer.getDescribedUri());
+		// passComponentToHandler(rdfContainer);
 	}
 
+	/**
+	 * Crawls a single Standard timezone observance component.
+	 * 
+	 * @see crawlVTimezoneComponent()
+	 */
 	private void crawlStandardObservance(Component component, Resource parentNode, RDFContainer rdfContainer) {
 		Resource standardParentNode = generateAnonymousNode();
 		crawlPropertyList(component, standardParentNode, rdfContainer);
 		addStatement(rdfContainer, parentNode, ICALTZD.standard, standardParentNode);
 	}
 
+	/**
+	 * Crawls a single daylight timezone observance component.
+	 * 
+	 * @see crawlVTimezoneComponent()
+	 */
 	private void crawlDaylightObservance(Component component, Resource parentNode, RDFContainer rdfContainer) {
 		Resource daylightParentNode = generateAnonymousNode();
 		crawlPropertyList(component, daylightParentNode, rdfContainer);
@@ -1177,9 +1398,15 @@ public class IcalCrawler extends CrawlerBase {
 	}
 
 	/**
-	 * Crawls the FREEBUSY property. Possible parameters: FBTYPE, VALUE<br>
-	 * Treatment: blank node 1st link: icaltzd:freebusy 2nd link: icaltzd:value
+	 * Crawls the FREEBUSY property. <br>
+	 * Possible parameters: FBTYPE (DISREGARDED), VALUE<br>
+	 * Treatment: direct link <br>
+	 * 1st link: icaltzd:freebusy<br>
 	 * 
+	 * <p>
+	 * Note that this property supports multiple values.
+	 * 
+	 * <p>
 	 * This mapping has been 'borrowed' from ical2rdf.pl since fromIcal.py doesn't support the VFreebusy
 	 * component and the FREEBUSY property at the time of writing (2006-10-17).
 	 * 
@@ -1189,15 +1416,14 @@ public class IcalCrawler extends CrawlerBase {
 	 *   19971015T160000Z/PT5H30M,19971015T223000Z/PT6H30M
 	 *  
 	 *  n3:
-	 *  _:VFreebusyComponentNode icaltzd:freebusy _:freebusyPropertyNode
-	 *  _:freebusyPropertyComponent icaltzd:value 
-	 *   """19971015T050000Z/PT8H30M,19971015T160000Z/PT5H30M,
-	 *   19971015T223000Z/PT6H30M"""
+	 *  _:VFreebusyComponentNode icaltzd:freebusy "19971015T050000Z/PT8H30M" .
+	 *  _:VFreebusyComponentNode icaltzd:freebusy "19971015T160000Z/PT5H30M" .
+	 *  _:VFreebusyComponentNode icaltzd:freebusy "19971015T223000Z/PT6H30M" .
 	 * </pre>
 	 */
 	private void crawlFreeBusyProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
-		Value propertyValue = getRdfPropertyValue(property, IcalDataType.PERIOD);
-		addStatement(rdfContainer, parentNode, ICALTZD.freebusy, propertyValue);
+		List<Value> valueList = getMultipleRdfPropertyValues(property, IcalDataType.PERIOD);
+		addMultipleStatements(rdfContainer, parentNode, ICALTZD.freebusy, valueList);
 	}
 
 	/**
@@ -1984,7 +2210,7 @@ public class IcalCrawler extends CrawlerBase {
 	}
 
 	/**
-	 * Note that this parameter is ignored in the icaltzd ontology. It is treated differently.
+	 * This parameter is ignored in the icaltzd ontology. It is treated differently.
 	 * 
 	 * @see getRdfPropertyValue
 	 * @param parameter
@@ -2230,6 +2456,11 @@ public class IcalCrawler extends CrawlerBase {
 		accessData.put(id, "hash", hashOfAllLiteralProperties);
 	}
 	
+	/**
+	 * Computes a hash value of all properties of the central URI of the given RDF container.
+	 * I know it's inefficient but the RDFContainer interface doesn't have any search functionality :-) 
+	 * (Antoni Mylka 20.10.2006)
+	 */
 	private String hashOfProperties(RDFContainer metadata) {
 		StringBuffer sumOfAllProperties = new StringBuffer("");
 		appendPropertyValue(sumOfAllProperties,metadata,ICALTZD.action);
@@ -2334,29 +2565,57 @@ public class IcalCrawler extends CrawlerBase {
 	}
 
 	/**
-	 * Generates an appropriate URI for the component. Uses the UID field if present. If not, generates a
-	 * hash-value from existing fields.
+	 * Generates an appropriate URI for the component. Timezones received an URI that points to the 
+	 * Dan Connolly timezone database. For other components it uses the UID field if present. If not, 
+	 * generates a hash-value from existing field values.
 	 * 
-	 * @param component the component, for which the URI should be generated.
-	 * @return the string with the URI.
+	 * @param component The component, for which the URI should be generated.
+	 * @return The generated URI.
 	 */
 	private URI generateComponentUri(Component component) {
+		// special treatment of timezones:
+		if (component instanceof VTimeZone) {
+			return generateTimeZoneURI(component);
+		}
 		Property uidProperty = component.getProperty(Property.UID);
-		String result = null;
 		if (uidProperty != null) {
-			result = baseuri + uidProperty.getValue();
+			return valueFactory.createURI(baseuri + uidProperty.getValue());
 		}
 		else {
-			String sumOfAllProperties = "";
-			PropertyList propertyList = component.getProperties();
-			Iterator it = propertyList.iterator();
-			while (it.hasNext()) {
-				Property property = (Property) it.next();
-				sumOfAllProperties += property.getValue();
-			}
-			result = baseuri + sha1Hash(sumOfAllProperties);
+			return generateSumOfAllPropertiesURI(component);
 		}
-		return new URIImpl(result);
+	}
+	
+	/**
+	 * Generated the URI for a timezone component. Uses the TZID property to compute a URI for the timezone
+	 * component in the Timezone database of Dan Connoly.
+	 * @param component The VTimezone component for which the URI should be generated.
+	 * @return The generated URI. 
+	 */
+	private URI generateTimeZoneURI(Component component) {
+		Property tzidProperty = component.getProperty(Property.TZID);
+		if (tzidProperty != null) {
+			return createTimeZoneDatatypeURI(tzidProperty.getValue());
+		} else {
+			return generateSumOfAllPropertiesURI(component);
+		}
+	}
+	
+	/**
+	 * Generates a URI for the component as a hash value of the sum of all existing property values.
+	 * @param component The component for which the URI should be generated.
+	 * @return The generated URI.
+	 */
+	private URI generateSumOfAllPropertiesURI (Component component) {
+		StringBuffer sumOfAllProperties = new StringBuffer("");
+		PropertyList propertyList = component.getProperties();
+		Iterator it = propertyList.iterator();
+		while (it.hasNext()) {
+			Property property = (Property) it.next();
+			sumOfAllProperties.append(property.getValue());
+		}
+		String result = baseuri + sha1Hash(sumOfAllProperties.toString());
+		return valueFactory.createURI(result);
 	}
 
 	/**
