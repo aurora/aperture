@@ -124,7 +124,14 @@
 	 a:maxCardinality="1"
 	 rdfs:comment="hostname of the server to connect to"
 	 rdfs:label="hostname">
-	<rdfs:domain rdf:resource="&source_;IMAPDataSource"/>
+	<rdfs:domain rdf:resource="&source_;DataSource"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&source_;port"
+	 a:maxCardinality="1"
+	 rdfs:comment="port of the server to connect to"
+	 rdfs:label="port">
+	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;includeEmbeddedResources"

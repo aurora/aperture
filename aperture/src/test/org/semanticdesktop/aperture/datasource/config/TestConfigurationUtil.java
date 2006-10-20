@@ -32,6 +32,14 @@ public class TestConfigurationUtil extends ApertureTestBase {
         assertEquals(url1, url2);
     }
 
+    public void testPort() {
+    	assertNull(ConfigurationUtil.getPort(configuration));
+    	ConfigurationUtil.setPort(2, configuration);
+    	assertEquals(2, ConfigurationUtil.getPort(configuration).intValue());
+    	ConfigurationUtil.setPort(3, configuration);
+    	assertEquals(3, ConfigurationUtil.getPort(configuration).intValue());
+    }
+    
     public void testPassword() {
         String password1 = "p@ssw0rd";
         ConfigurationUtil.setPassword(password1, configuration);

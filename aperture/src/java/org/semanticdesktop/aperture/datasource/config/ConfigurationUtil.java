@@ -82,6 +82,14 @@ public class ConfigurationUtil {
     	return configuration.getString(DATASOURCE_GEN.hostname);
     }
     
+    public static void setPort(int port, RDFContainer configuration) {
+    	configuration.put(DATASOURCE_GEN.port, port);
+    }
+    
+    public static Integer getPort(RDFContainer configuration) {
+    	return configuration.getInteger(DATASOURCE_GEN.port);
+    }
+    
     public static void setBasepath(String basepath, RDFContainer configuration) {
     	configuration.put(DATASOURCE_GEN.basepath, basepath);
     }

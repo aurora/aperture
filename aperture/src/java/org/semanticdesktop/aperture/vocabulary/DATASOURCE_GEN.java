@@ -4,7 +4,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Thu Jul 06 13:37:34 CEST 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Oct 20 14:19:11 CEST 2006
  * input file: doc/ontology/source.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/source#
  */
@@ -141,10 +141,18 @@ public class DATASOURCE_GEN {
     /**
      * Label: hostname 
      * Comment: hostname of the server to connect to 
-     * Domain: IMAPDataSource 
+     * Domain: DataSource 
      * Range: Literal 
      */
     public static final URI hostname = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#hostname");
+
+    /**
+     * Label: port 
+     * Comment: port of the server to connect to 
+     * Domain: DataSource 
+     * Range: Literal 
+     */
+    public static final URI port = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#port");
 
     /**
      * Label: includeEmbeddedResources 
