@@ -11,6 +11,7 @@ import junit.framework.TestSuite;
 
 import org.semanticdesktop.aperture.crawler.filesystem.TestFileSystemCrawler;
 import org.semanticdesktop.aperture.crawler.ical.TestIcalCrawler;
+import org.semanticdesktop.aperture.crawler.ical.TestIcalCrawlerIncremental;
 import org.semanticdesktop.aperture.crawler.impl.TestDefaultCrawlerRegistry;
 
 /**
@@ -27,5 +28,6 @@ public class TestCrawlers extends TestSuite {
         addTest(new TestSuite(TestFileSystemCrawler.class));
         addTest(new TestSuite(TestDefaultCrawlerRegistry.class));
         addTest(new TestSuite(TestIcalCrawler.class));
+        addTest(new TestSuite(TestIcalCrawlerIncremental.class));
     }
 }
