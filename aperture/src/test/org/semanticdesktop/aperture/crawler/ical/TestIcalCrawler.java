@@ -7,6 +7,8 @@
 package org.semanticdesktop.aperture.crawler.ical;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 
 import org.openrdf.model.Literal;
@@ -32,6 +34,7 @@ import org.semanticdesktop.aperture.vocabulary.ICALTZD;
 public class TestIcalCrawler extends ApertureTestBase {
 
 	public static final String ICAL_TESTDATA_PATH = DOCS_PATH + "icaltestdata/";
+	public static final String TEMP_FILE_NAME = "temp-calendar.ics";
 
 	private ValueFactory valueFactory;
 
@@ -671,10 +674,10 @@ public class TestIcalCrawler extends ApertureTestBase {
 	 * 
 	 * @return Repository with generated RDF triples
 	 */
-	private Repository readIcalFile(String fileName) {
-		URL fileURL = ClassLoader.getSystemResource(ICAL_TESTDATA_PATH + fileName);
-		assertNotNull(fileURL);
-		File file = new File(fileURL.getFile());
+	private Repository readIcalFile(String fileName) throws Exception {
+		InputStream fileStream = ClassLoader.getSystemResourceAsStream(ICAL_TESTDATA_PATH + fileName);
+		assertNotNull(fileStream);
+		File file = createTempFile(fileStream);
 		assertTrue(file.canRead());
 		SesameRDFContainer configurationContainer = new SesameRDFContainer(new URIImpl("source:testsource"));
 		ConfigurationUtil.setRootUrl(file.getAbsolutePath(), configurationContainer);
@@ -690,6 +693,8 @@ public class TestIcalCrawler extends ApertureTestBase {
 		icalCrawler.setCrawlerHandler(testCrawlerHandler);
 
 		icalCrawler.crawl();
+		
+		assertTrue(file.delete());
 		return testCrawlerHandler.getRepository();
 	}
 
@@ -877,5 +882,19 @@ public class TestIcalCrawler extends ApertureTestBase {
 		CloseableIterator<RStatement> iterator = repository.getStatements(subject, predicate, value);
 		assertTrue(iterator.hasNext());
 		iterator.close();
+	}
+	
+	public File createTempFile(InputStream fis) throws Exception {
+		URL tempFileDirectory = ClassLoader.getSystemResource(".");
+		File outFile = new File(tempFileDirectory.getFile() + TEMP_FILE_NAME);
+		FileOutputStream fos = new FileOutputStream(outFile);
+		byte[] buf = new byte[1024];
+		int i = 0;
+		while ((i = fis.read(buf)) != -1) {
+			fos.write(buf, 0, i);
+		}
+		fis.close();
+		fos.close();
+		return outFile;
 	}
 }

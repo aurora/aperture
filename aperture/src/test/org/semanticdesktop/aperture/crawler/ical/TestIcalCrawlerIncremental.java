@@ -9,6 +9,7 @@ package org.semanticdesktop.aperture.crawler.ical;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 
 import org.openrdf.model.impl.URIImpl;
@@ -73,11 +74,9 @@ public class TestIcalCrawlerIncremental extends ApertureTestBase {
 	 */
 	private IcalTestIncrementalCrawlerHandler readIcalFile(String fileName, AccessData accessData)
 			throws Exception {
-		URL fileURL = ClassLoader.getSystemResource(ICAL_TESTDATA_PATH + fileName);
-		assertNotNull(fileURL);
-		File file = new File(fileURL.getFile());
-		File tempFile = createTempFile(file);
-		assertTrue(file.canRead());
+		InputStream fileStream = ClassLoader.getSystemResourceAsStream(ICAL_TESTDATA_PATH + fileName);
+		assertNotNull(fileStream);
+		File tempFile = createTempFile(fileStream);
 		SesameRDFContainer configurationContainer = new SesameRDFContainer(new URIImpl("source:testsource"));
 		ConfigurationUtil.setRootUrl(tempFile.getAbsolutePath(), configurationContainer);
 
@@ -109,10 +108,9 @@ public class TestIcalCrawlerIncremental extends ApertureTestBase {
 		assertEquals(handler.getDeletedObjects().size(), deletedObjects);
 	}
 	
-	public File createTempFile(File inFile) throws Exception {
+	public File createTempFile(InputStream fis) throws Exception {
 		URL tempFileDirectory = ClassLoader.getSystemResource(".");
 		File outFile = new File(tempFileDirectory.getFile() + TEMP_FILE_NAME);
-		FileInputStream fis = new FileInputStream(inFile);
 		FileOutputStream fos = new FileOutputStream(outFile);
 		byte[] buf = new byte[1024];
 		int i = 0;
