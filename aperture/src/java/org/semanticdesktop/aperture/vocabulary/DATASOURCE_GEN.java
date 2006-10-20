@@ -4,7 +4,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Oct 20 14:19:11 CEST 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Oct 20 11:09:41 CEST 2006
  * input file: doc/ontology/source.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/source#
  */
@@ -66,6 +66,11 @@ public class DATASOURCE_GEN {
      * Label: WebDataSource 
      */
     public static final URI WebDataSource = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#WebDataSource");
+
+    /**
+     * Label: IcalDataSource 
+     */
+    public static final URI IcalDataSource = new URIImpl("http://aperture.semanticdesktop.org/ontology/source#IcalDataSource");
 
     /**
      * Label: basepath 
