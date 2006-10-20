@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2006 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -919,6 +919,9 @@ public abstract class OutlookResource {
 
 /*
  * $Log$
+ * Revision 1.4  2006/10/20 17:43:00  mylka
+ * removed the umlauts from the copyright message.
+ *
  * Revision 1.3  2006/03/02 10:42:46  gromgull
  * Moved generated classes to _GEN and created new classes extending these with additional constants.
  *

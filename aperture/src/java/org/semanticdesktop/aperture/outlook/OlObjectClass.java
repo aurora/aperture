@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2006 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -110,6 +110,9 @@ public interface OlObjectClass
 
 /*
  * $Log$
+ * Revision 1.3  2006/10/20 17:43:00  mylka
+ * removed the umlauts from the copyright message.
+ *
  * Revision 1.2  2006/02/27 14:36:30  leo_sauermann
  * corrected license: (C) DFKI, OSL 3.0
  *
