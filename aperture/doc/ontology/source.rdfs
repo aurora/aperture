@@ -54,6 +54,10 @@
 	 rdfs:label="WebDataSource">
 	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
 </rdfs:Class>
+<rdfs:Class rdf:about="&source_;IcalDataSource"
+	 rdfs:label="IcalDataSource">
+	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
+</rdfs:Class>
 <rdf:Property rdf:about="&source_;basepath"
 	 a:maxCardinality="1"
 	 rdfs:label="basepath">

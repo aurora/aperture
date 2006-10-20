@@ -31,4 +31,12 @@
 	 rdfs:label="WebDataSourceDescription">
 	<source_:describedDataSourceType rdf:resource="&source_;WebDataSource"/>
 </source_:DataSourceDescription>
+<source_:DataSourceDescription rdf:about="&source_;IcalDataSourceDescription"
+	 source_:dataSourceComment="ICalendar file."
+	 source_:dataSourceName="ICalendar"
+	 rdfs:label="IcalDataSourceDescription">
+	<source_:describedDataSourceType rdf:resource="&source_;IcalDataSource"/>
+</source_:DataSourceDescription>
+
+
 </rdf:RDF>
