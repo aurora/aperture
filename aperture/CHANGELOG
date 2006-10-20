@@ -58,6 +58,7 @@ improvements:
 - set target platform to Java 5
 
 updated dependencies:
+- HTMLParser 1.6
 - Ical (from trunk, not the official release)
 - JavaMail 1.4
 - POI 3.0 alpha 2

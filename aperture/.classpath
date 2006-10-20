@@ -7,7 +7,7 @@
 	<classpathentry kind="lib" path="lib/junit-3.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/pdfbox-0.7.3.jar"/>
 	<classpathentry kind="lib" path="lib/fontbox-0.1.0-dev.jar"/>
-	<classpathentry kind="lib" path="lib/htmlparser-1.5.jar"/>
+	<classpathentry kind="lib" path="lib/htmlparser-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/winlaf-0.5.1.jar"/>
 	<classpathentry kind="lib" path="lib/activation-1.0.2-upd2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/openrdf-model-2.0-alpha-3.jar"/>
