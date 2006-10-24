@@ -13,7 +13,6 @@ import java.util.Date;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
-import org.semanticdesktop.aperture.rdf.sesame.UpdateException;
 
 /**
  * RDFContainer defines a simple interface for RDF stores. Its purpose is to make populating an model as

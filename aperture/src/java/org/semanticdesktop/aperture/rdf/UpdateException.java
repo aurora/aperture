@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.rdf.sesame;
+package org.semanticdesktop.aperture.rdf;
 
 /**
  * An UpdateException is thrown by a RDFContainer when a state-changing method cannot alter the state for

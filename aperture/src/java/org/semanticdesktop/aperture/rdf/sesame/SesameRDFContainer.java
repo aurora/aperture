@@ -29,6 +29,7 @@ import org.openrdf.sesame.sailimpl.memory.MemoryStore;
 import org.openrdf.util.iterator.CloseableIterator;
 import org.semanticdesktop.aperture.rdf.MultipleValuesException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.UpdateException;
 import org.semanticdesktop.aperture.util.DateUtil;
 
 /**
