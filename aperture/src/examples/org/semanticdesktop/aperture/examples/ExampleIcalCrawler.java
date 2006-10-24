@@ -64,6 +64,8 @@ import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 
+import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
+
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
@@ -216,7 +218,7 @@ public class ExampleIcalCrawler {
 
         // create the data source
 
-        FileSystemDataSource source = new FileSystemDataSource();
+        IcalDataSource source = new IcalDataSource();
 
         source.setConfiguration(configuration);
 
