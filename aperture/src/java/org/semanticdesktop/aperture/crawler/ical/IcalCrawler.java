@@ -205,6 +205,7 @@ public class IcalCrawler extends CrawlerBase {
 			fin = new FileReader(icalFile);
 			builder = new CalendarBuilder();
 			calendar = builder.build(fin);
+			fin.close();
 		}
 		catch (FileNotFoundException fnfe) {
 			LOGGER.log(Level.SEVERE, "Couldn't find the calendar file", fnfe);
