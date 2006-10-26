@@ -205,7 +205,8 @@ public class IcalCrawler extends CrawlerBase {
 			fin = new FileReader(icalFile);
 			builder = new CalendarBuilder();
 			calendar = builder.build(fin);
-			fin.close();
+			crawlCalendar(calendar);
+			return ExitCode.COMPLETED;
 		}
 		catch (FileNotFoundException fnfe) {
 			LOGGER.log(Level.SEVERE, "Couldn't find the calendar file", fnfe);
@@ -219,10 +220,15 @@ public class IcalCrawler extends CrawlerBase {
 			LOGGER.log(Level.SEVERE, "Input/Output error while parsing " + "the calendar file", ioe);
 			return ExitCode.FATAL_ERROR;
 		}
-
-		crawlCalendar(calendar);
-
-		return ExitCode.COMPLETED;
+		finally {
+			if (fin != null) {
+				try {
+					fin.close();
+				} catch (Exception e) {
+					// we can't do anything...
+				}
+			}
+		}
 	}
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////////
