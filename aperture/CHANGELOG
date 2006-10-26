@@ -80,3 +80,4 @@ bug fixes:
 - many bugfixes in ImapCrawler's incremental crawling
 - same for WebCrawler and HttpAccessor
 - prevent NullPointerException in FileDataObjectBase.dispose
+- made sure ThreadedExtractorWrapper redirects all Exceptions of the wrapped Extractor

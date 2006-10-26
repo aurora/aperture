@@ -19,7 +19,8 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 /**
  * A ThreadedExtractorWrapper wraps an Extractor and executes it on a separate thread, bailing out if the
  * wrapped Extractor appears to be hanging. The heuristic for determining whether the Extractor is hanging is
- * by looking at whether the InputStream is regularly accessed.
+ * by looking at whether the InputStream is regularly accessed. Any Exceptions thrown by the wrapped Extractor
+ * are eventually thrown by the ThreadedExtractorWrapper.
  * 
  * <p>
  * Furthermore, a ThreadedExtractorWrapper can be requested to stop processing, causing it to throw an
@@ -117,9 +118,14 @@ public class ThreadedExtractorWrapper implements Extractor {
 		}
 		else {
 			// throw any exceptions that may have been thrown during the operation of the Extractor
-			ExtractorException e = thread.getException();
+			Exception e = thread.getException();
 			if (e != null) {
-				throw e;
+				if (e instanceof ExtractorException) {
+					throw (ExtractorException) e;
+				}
+				else {
+					throw (RuntimeException) e;
+				}
 			}
 		}
 	}
@@ -136,7 +142,7 @@ public class ThreadedExtractorWrapper implements Extractor {
 
 		private RDFContainer result;
 
-		private ExtractorException exception;
+		private Exception exception;
 
 		public ExtractionThread(URI id, InputStream input, Charset charset, String mimeType,
 				RDFContainer result) {
@@ -151,7 +157,7 @@ public class ThreadedExtractorWrapper implements Extractor {
 			try {
 				extractor.extract(id, input, charset, mimeType, result);
 			}
-			catch (ExtractorException e) {
+			catch (Exception e) {
 				exception = e;
 			}
 		}
@@ -160,7 +166,7 @@ public class ThreadedExtractorWrapper implements Extractor {
 			interrupt();
 		}
 
-		public ExtractorException getException() {
+		public Exception getException() {
 			return exception;
 		}
 	}

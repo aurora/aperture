@@ -23,6 +23,7 @@ import org.semanticdesktop.aperture.extractor.presentations.PresentationsExtract
 import org.semanticdesktop.aperture.extractor.publisher.PublisherExtractorTest;
 import org.semanticdesktop.aperture.extractor.quattro.QuattroExtractorTest;
 import org.semanticdesktop.aperture.extractor.rtf.RtfExtractorTest;
+import org.semanticdesktop.aperture.extractor.util.ThreadedExtractorWrapperTest;
 import org.semanticdesktop.aperture.extractor.visio.VisioExtractorTest;
 import org.semanticdesktop.aperture.extractor.word.WordExtractorTest;
 import org.semanticdesktop.aperture.extractor.wordperfect.WordPerfectExtractorTest;
@@ -63,5 +64,8 @@ public class TestExtractors extends TestSuite {
         // test the registries holding the ExtractorFactories
         addTest(new TestSuite(TestExtractorRegistryImpl.class));
         addTest(new TestSuite(TestDefaultExtractorRegistry.class));
+        
+        // misc unit tests
+        addTest(new TestSuite(ThreadedExtractorWrapperTest.class));
     }
 }
