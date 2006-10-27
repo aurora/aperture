@@ -54,7 +54,7 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 		
 			List people = crawlAddressbook();
 			
-			Set current=new HashSet();
+			Set<String> current=new HashSet<String>();
 			for (Iterator it=people.iterator(); it.hasNext();) {
 				DataObject o=(DataObject) it.next();
 				String sum=computeChecksum(o);
@@ -69,10 +69,10 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 					accessData.put(o.getID().toString(),ADDRESSBOOK_CHECKSUM_KEY,sum);
 					handler.objectNew(this,o);
 				}
-				current.add(o);
+				current.add(o.getID().toString());
 			}			
 			
-			//Blah - crawl objects, friends etc. 			
+			//TODO: crawl groups, friends etc. 			
 			
 			//remove found tags from list of tags to be deleted
 			deprecatedUrls.removeAll(current);
@@ -115,7 +115,7 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 		Repository rep=(Repository)rdf.getModel();
 		
 		// List all properties
-		List predValues=new Vector();
+		List<String> predValues=new Vector<String>();
 		CloseableIterator i = rep.getStatements(rdf.getDescribedUri(),null,null);
 		while(i.hasNext()) {
 			Statement s=(Statement) i.next();
@@ -129,9 +129,8 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 		// sort them...
 		Collections.sort(predValues);
 		
-		//DAMN java 1.4
-		for (Iterator it=predValues.iterator();it.hasNext();)
-			md.update(((String)it.next()).getBytes());	
+		for (String s: predValues)
+			md.update(s.getBytes());	
 		
 		StringBuilder digest=new StringBuilder("");
 		byte[] dig=md.digest();
@@ -142,7 +141,7 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 		
 		return digest.toString();
 	}
-	public abstract List crawlAddressbook() throws Exception; 
+	public abstract List<DataObject> crawlAddressbook() throws Exception; 
 
 }
 

@@ -23,6 +23,7 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.Repository;
 import org.openrdf.util.iterator.CloseableIterator;
+import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -52,7 +53,7 @@ public class AppleAddressbookCrawler extends AddressbookCrawler {
 	/* (non-Javadoc)
 	 * @see org.semanticdesktop.aperture.addressbook.AddressbookCrawler#crawlAddressbook()
 	 */
-	public List crawlAddressbook() throws Exception {
+	public List<DataObject> crawlAddressbook() throws Exception {
 		
 		Object appleutils;
 		Method m;
@@ -88,7 +89,7 @@ public class AppleAddressbookCrawler extends AddressbookCrawler {
 		Repository rep=RepositoryUtil.createSimpleRepository();
 		rep.add(new StringReader(rdfxml),"urn:mac:addressbook",RDFFormat.RDFXML);
 		
-		List res=new Vector();
+		List<DataObject> res=new Vector<DataObject>();
 		
 		CloseableIterator i;
 		for (i=rep.getStatements(null,RDF.TYPE,VCARD.VCard); i.hasNext(); ) {
