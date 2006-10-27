@@ -54,7 +54,6 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 		
 			List people = crawlAddressbook();
 			
-			Set before=accessData.getStoredIDs();
 			Set current=new HashSet();
 			for (Iterator it=people.iterator(); it.hasNext();) {
 				DataObject o=(DataObject) it.next();
@@ -75,9 +74,8 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 			
 			//Blah - crawl objects, friends etc. 			
 			
-			//report deleted tags
-			before.removeAll(current);
-			deprecatedUrls.addAll(before);
+			//remove found tags from list of tags to be deleted
+			deprecatedUrls.removeAll(current);
 			
 			crawlCompleted=true;
 			
