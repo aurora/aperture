@@ -95,7 +95,7 @@ public class PdfExtractor implements Extractor {
         }
         catch (IOException e) {
             // exception ends here, maybe we can still extract metadata
-            LOGGER.log(Level.WARNING, "IOException while extracting full-text", e);
+            LOGGER.log(Level.WARNING, "IOException while extracting full-text of " + id, e);
         }
 
         // extract the metadata
@@ -108,49 +108,49 @@ public class PdfExtractor implements Extractor {
             addStringMetadata(DATA.creator, metadata.getAuthor(), result);
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting author", e);
+            LOGGER.log(Level.WARNING, "Exception while extracting author of " + id, e);
         }
 
         try {
             addStringMetadata(DATA.title, metadata.getTitle(), result);
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting title", e);
+            LOGGER.log(Level.WARNING, "Exception while extracting title of " + id, e);
         }
 
         try {
             addStringMetadata(DATA.subject, metadata.getSubject(), result);
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting subject", e);
+            LOGGER.log(Level.WARNING, "Exception while extracting subject of " + id, e);
         }
 
         try {
             addStringMetadata(DATA.generator, metadata.getCreator(), result);
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting creator", e);
+            LOGGER.log(Level.WARNING, "Exception while extracting creator of " + id, e);
         }
 
         try {
             addStringMetadata(DATA.generator, metadata.getProducer(), result);
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting producer", e);
+            LOGGER.log(Level.WARNING, "Exception while extracting producer of " + id, e);
         }
 
         try {
             addCalendarMetadata(DATA.created, metadata.getCreationDate(), result);
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting creation date", e);
+            LOGGER.log(Level.WARNING, "Exception while extracting creation date of " + id, e);
         }
 
         try {
             addCalendarMetadata(DATA.date, metadata.getModificationDate(), result);
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting modification date", e);
+            LOGGER.log(Level.WARNING, "Exception while extracting modification date of " + id, e);
         }
 
         try {
@@ -160,7 +160,7 @@ public class PdfExtractor implements Extractor {
             }
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting number of pages", e);
+            LOGGER.log(Level.WARNING, "Exception while extracting number of pages of " + id, e);
         }
 
         try {
@@ -176,7 +176,7 @@ public class PdfExtractor implements Extractor {
             }
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting keywords", e);
+            LOGGER.log(Level.WARNING, "Exception while extracting keywords of " + id, e);
         }
     }
 

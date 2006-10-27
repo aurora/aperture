@@ -27,7 +27,8 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
  * 
  * <p>
  * Some methods use a buffer to be able to reset the InputStream to its start. The buffer size can be altered
- * by giving the "aperture.poiUtil.bufferSize" system property a value holding the number of bytes that the buffer may use.
+ * by giving the "aperture.poiUtil.bufferSize" system property a value holding the number of bytes that the
+ * buffer may use.
  * 
  * @link http://jakarta.apache.org/poi/
  */
@@ -36,7 +37,7 @@ public class PoiUtil {
 	private static final Logger LOGGER = Logger.getLogger(PoiUtil.class.getName());
 
 	private static final String BUFFER_SIZE_PROPERTY = "aperture.poiUtil.bufferSize";
-	
+
 	/**
 	 * Returns the SummaryInformation holding the document metadata from a POIFSFileSystem. Any POI-related or
 	 * I/O Exceptions that may occur during this operation are ignored and 'null' is returned in those cases.
@@ -185,7 +186,8 @@ public class PoiUtil {
 		if (text == null) {
 			if (textExtractor != null) {
 				LOGGER.log(Level.INFO,
-					"regular POI-based processing failed, falling back to heuristic string extraction");
+					"regular POI-based processing failed, falling back to heuristic string extraction for "
+							+ container.getDescribedUri());
 			}
 
 			try {
