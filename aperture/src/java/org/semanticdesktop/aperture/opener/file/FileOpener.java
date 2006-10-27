@@ -14,7 +14,7 @@ import java.net.URISyntaxException;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.semanticdesktop.aperture.opener.DataOpener;
-import org.semanticdesktop.aperture.util.PlatformUtil;
+import org.semanticdesktop.aperture.util.OSUtils;
 
 
 public class FileOpener implements DataOpener {
@@ -22,11 +22,11 @@ public class FileOpener implements DataOpener {
 	
 	
 	public void open(URI uri) throws IOException {
-		if (PlatformUtil.isMac()) {
+		if (OSUtils.isMac()) {
 			macopen(uri);
-		} else if (PlatformUtil.isLinux()) {
+		} else if (OSUtils.isLinux()) {
 			linuxopen(uri);
-		} else if (PlatformUtil.isWindows()) {
+		} else if (OSUtils.isWindows()) {
 			windowsopen(uri);
 		} else { 
 			//Hmm, so what OS is this then? 
@@ -85,13 +85,13 @@ public class FileOpener implements DataOpener {
 	
 	public static void main(String args[]) throws IOException {
 		FileOpener f=new FileOpener();
-		if (PlatformUtil.isMac()) {
+		if (OSUtils.isMac()) {
 			f.open(new URIImpl("file:///Users/"));
 			f.open(new URIImpl("file:///Users/"));
-		} else if (PlatformUtil.isWindows()) {
+		} else if (OSUtils.isWindows()) {
 			f.open(new URIImpl("file:/c:"));
 			f.open(new URIImpl("file:/c:/windows/win.ini"));
-		} else if (PlatformUtil.isLinux()) {
+		} else if (OSUtils.isLinux()) {
 			f.open(new URIImpl("file:///tmp"));
 			f.open(new URIImpl("file:///etc/bash.bashrc"));
 		} else {

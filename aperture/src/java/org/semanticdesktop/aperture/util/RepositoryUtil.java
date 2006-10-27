@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import org.openrdf.model.BNode;
 import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
 import org.openrdf.sesame.repository.RStatement;
 import org.openrdf.sesame.repository.Repository;
 import org.openrdf.sesame.sail.SailInitializationException;
@@ -33,9 +34,9 @@ public class RepositoryUtil {
 	 * @param backwards - if this is true we will also traverse nodes (null,null,RESOURCE)
 	 * @return a list of statements
 	 */
-	public static List getCBD(Resource node, Repository rep, boolean backwards) {
-		List res;
-		res=new Vector();
+	public static List<Statement> getCBD(Resource node, Repository rep, boolean backwards) {
+		List<Statement> res;
+		res=new Vector<Statement>();
 		CloseableIterator i;
 		for (i = rep.getStatements(node,null,null);i.hasNext();) {
 			RStatement s = (RStatement) i.next();
@@ -50,7 +51,7 @@ public class RepositoryUtil {
 				RStatement s = (RStatement) i.next();
 				res.add(s);
 				if (s.getSubject() instanceof BNode) 
-					res.addAll(getCBD( (Resource) s.getObject(),rep,backwards));
+					res.addAll(getCBD( (Resource) s.getSubject(),rep,backwards));
 			}
 			i.close();
 		}

@@ -12,17 +12,17 @@ import java.lang.reflect.Method;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.semanticdesktop.aperture.opener.DataOpener;
-import org.semanticdesktop.aperture.util.PlatformUtil;
+import org.semanticdesktop.aperture.util.OSUtils;
 
 
 public class HttpOpener implements DataOpener {
 
 	public void open(URI uri) throws IOException {
-		if (PlatformUtil.isMac()) {
+		if (OSUtils.isMac()) {
 			macopen(uri);
-		} else if (PlatformUtil.isLinux()) {
+		} else if (OSUtils.isLinux()) {
 			linuxopen(uri);
-		} else if (PlatformUtil.isWindows()) {
+		} else if (OSUtils.isWindows()) {
 			windowsopen(uri);
 		} else { 
 			//Hmm, so what OS is this then? 
