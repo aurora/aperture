@@ -203,7 +203,7 @@ public class RepositoryAccessData implements AccessData {
 			add(new StatementImpl(subject, predicate, new URIImpl(value)));
 		}
 		else {
-			URI dataType = (predicate == DATA.dateAsNumber || predicate == DATA.byteSize) ? XMLSchema.LONG
+			URI dataType = (predicate == DATA.date || predicate == DATA.byteSize) ? XMLSchema.LONG
 					: XMLSchema.STRING;
 			Literal object = new LiteralImpl(value, dataType);
 			add(new StatementImpl(subject, predicate, object));
@@ -226,7 +226,7 @@ public class RepositoryAccessData implements AccessData {
 
 	public void removeReferredID(String id, String referredID) {
 		commit();
-		
+
 		URI subject = new URIImpl(id);
 		URI object = new URIImpl(referredID);
 		Statement statement = new StatementImpl(subject, DATA.linksTo, object);
@@ -242,7 +242,7 @@ public class RepositoryAccessData implements AccessData {
 	public void removeReferredIDs(String id) {
 		remove(new URIImpl(id), DATA.linksTo);
 	}
-	
+
 	public void store() throws IOException {
 		commit();
 	}
@@ -258,7 +258,7 @@ public class RepositoryAccessData implements AccessData {
 
 	private URI toURI(String key) {
 		if (key == AccessData.DATE_KEY) {
-			return DATA.dateAsNumber;
+			return DATA.date;
 		}
 		else if (key == AccessData.BYTE_SIZE_KEY) {
 			return DATA.byteSize;
