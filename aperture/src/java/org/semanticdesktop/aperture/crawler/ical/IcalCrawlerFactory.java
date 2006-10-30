@@ -19,7 +19,7 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
  */
 public class IcalCrawlerFactory implements CrawlerFactory {
 
-    private static final Set SUPPORTED_TYPES = Collections.singleton(DATASOURCE_GEN.FileSystemDataSource);
+    private static final Set SUPPORTED_TYPES = Collections.singleton(DATASOURCE_GEN.IcalDataSource);
 
     public Set getSupportedTypes() {
         return SUPPORTED_TYPES;
