@@ -694,7 +694,7 @@ public class TestIcalCrawler extends ApertureTestBase {
 
 		icalCrawler.crawl();
 		
-		assertTrue(file.delete());
+		//assertTrue(file.delete());
 		return testCrawlerHandler.getRepository();
 	}
 
@@ -885,8 +885,8 @@ public class TestIcalCrawler extends ApertureTestBase {
 	}
 	
 	public File createTempFile(InputStream fis) throws Exception {
-		URL tempFileDirectory = ClassLoader.getSystemResource(".");
-		File outFile = new File(tempFileDirectory.getFile() + TEMP_FILE_NAME);
+		File outFile = File.createTempFile("temp", ".ics");
+		outFile.deleteOnExit();
 		FileOutputStream fos = new FileOutputStream(outFile);
 		byte[] buf = new byte[1024];
 		int i = 0;

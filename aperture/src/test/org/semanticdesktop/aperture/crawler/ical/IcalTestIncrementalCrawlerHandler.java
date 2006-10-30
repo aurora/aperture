@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.crawler.ical;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +26,8 @@ import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 class IcalTestIncrementalCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
     
     private Repository repository;
+    
+    private File file;
 
     private int numberOfObjects;
     
@@ -37,12 +40,13 @@ class IcalTestIncrementalCrawlerHandler implements CrawlerHandler, RDFContainerF
     //////////////////////////////////////////// CONSTRUCTOR /////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    public IcalTestIncrementalCrawlerHandler() {
+    public IcalTestIncrementalCrawlerHandler(File file) {
         repository = new Repository(new MemoryStore());
         newObjects = new HashSet<String>();
         changedObjects = new HashSet<String>();
         unchangedObjects = new HashSet<String>();
         deletedObjects = new HashSet<String>();
+        this.file = file;
         
         try {
             repository.initialize();
@@ -173,6 +177,10 @@ class IcalTestIncrementalCrawlerHandler implements CrawlerHandler, RDFContainerF
 
 	public Set<String> getUnchangedObjects() {
 		return unchangedObjects;
+	}
+	
+	public File getFile() {
+		return file;
 	}
 }
 
