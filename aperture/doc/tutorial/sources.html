@@ -7,9 +7,7 @@
 
 <body>
 
-<h1>DataSources and DataObjects</h1>
-
-<h2>DataSource</h2>
+<h1>DataSources</h1>
 
 <p>
 One of the central concepts of Aperture is the notion of a DataSource.
@@ -23,21 +21,37 @@ to crawl the physical source and retrieve all the individual resources in it.
 </p>
 
 <p>
-All configuration data except the name and ID of the DataSource are modeled as a RDF model and
-stored in a RDFContainer. Whenever possible, properties from the SourceVocabulary are used
-to model configuration settings, although developers of new DataSource types are free to use
-their own properties when necessary.
-A utility class, ConfigurationUtil, is provided that contains method for editing and
-retrieving configuration data from the RDFContainer. Note that it only knows how to deal with
-configuration properties defined in the SourceVocabulary interface.
+The current data source hierarchy looks as follows:
 </p>
+
+<img src="../uml/DataSourceHierarchy.png">
 
 <p>
 The specific DataSource implementations available at the moment do nothing more than define a
-URI used to identify the data source type in a RDF model, as all configuration settings can be stored
-in the RDF model.
+URI used to identify the data source type in a RDF model.
+All configuration data except the name and ID of the DataSource are modeled as a RDF model and
+stored in a RDFContainer. Whenever possible, properties from the SourceVocabulary are used
+to model configuration settings, Although developers of new DataSource types are free to use
+their own properties when necessary. 
+The configuration RDFContainer is the intended place to store the configuration data. That's why the classes
+don't contain any additional fields. Such additional fields should be added only if there is no possibility
+to represent the needed information in RDF.
 Once we start to use a DataSource whose configuration cannot entirely be expressed in an RDF
 model, we can use its DataSource implementation class to hold the remaining configuration.
+</p>
+
+<p>
+
+A utility class, ConfigurationUtil, is provided that contains method for editing and
+retrieving configuration data from the RDFContainer. Note that it only knows how to deal with
+configuration properties defined in the SourceVocabulary interface. 
+</p>
+
+<p>
+It is worth mentioning, that DataSource classes only DESCRIBE a data source. They don't contain any resources
+that would enable direct access to the source (such as InputStreams, or Readers, whatever...). (At least
+it was not the intention of the designers). Any such resource may be encapsulated in a DataObject returned
+by an Accessor.
 </p>
 
 <p>

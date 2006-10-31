@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:jns="http://www.smith.com/John#">
+
+<rdf:Description rdf:about="http://www.smith.com/John#John">
+	<rdf:type rdf:resource="http://www.humans.org/human#Human"/>
+	<rdf:type rdf:resource="http://www.humans.org/human#Man"/>
+	<jns:name>John Smith</jns:name>
+	<jns:address>14 Blue Ridge Circle, Beverly Hills,USA</jns:address>
+	<jns:weightInKg>85</jns:weightInKg>
+	<jns:dateOfBirth>1984-01-19</jns:dateOfBirth>
+	<jns:hasACarWhoseNameIs>Ford</jns:hasACarWhoseNameIs>
+	<jns:hasACarWhoseColorIs>green</jns:hasACarWhoseColorIs>
+</rdf:Description>
+
+</rdf:RDF>

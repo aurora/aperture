@@ -28,32 +28,14 @@ system accessible through java.io.File versus a WindowsFileSystemCrawler using n
 functionality to get notified about file additions, deletions and changes. Another
 possibility is to have various Crawler implementations that have different trade-offs
 in speed and accuracy, which may make sense for certain web-based source types.
-<p>
-
-<h2>Incremental Crawling</h2>
-
-<p>
-Crawlers can optionally crawl incrementally. The first time a crawler is invoked, it will 
-simply report all resources. When it is then invoked a subsequent time, it will
-specifically report new, changed, removed and unchanged resources.
 </p>
 
 <p>
-In order for this to work, the Crawler needs to store information about resource names, 
-last modified dates, etc. to perform change detection.
-This is what an AccessData instance is used for: AccessData specifies
-a management interface for storing crawling-related information.
-When no AccessData is set on the Crawler, it will always report all resources as new DataObjects.
+The relationships between classes that are directly involved in the crawling process are depicted on the
+following diagram.
 </p>
 
-<p>
-A simple in-memory AccessData implementation is available, subclassed by an implementation that can also
-write this information to a file. One can create custom AccessData classes though,
-tuned for a specific domain or application. For example, an implementation using some sort
-of database to lower memory requirements or an implementation closely integrated with the
-metadata storage to prevent redundancy; the same metadata that is useful to query may also
-be appropriate for change detection.
-</p>
+<img src="../uml/CrawlingClasses.png">
 
 <h2>Crawling Results</h2>
 
@@ -95,32 +77,6 @@ However, in order to prevent OutOfMemoryErrors or other types of resource overlo
 it is advisable to process them in the method that reported them and dispose them
 at the end of that method.
 </p>
-
-<h2>DataAccessors</h2>
-
-<p>
-Depending on the Crawler implementation the DataObjects may not be directly instantiated by the
-Crawler. Instead, this job is often delegated to a DataAccessor.
-Whereas Crawler implementations are created for a specific DataSource type,
-DataAccessors are typically specific for the URL scheme they support, e.g. "file" or "http".
-</p>
-
-<p>
-The rationale for delegating this functionality is:
-<p>
-
-<ul>
-<li>There may be several Crawler implementations that can thus reuse the same functionality. For
-example, FileSystemCrawler and WebCrawler can both use the same
-FileAccessor providing access to "file:"-based resources, although they use
-different strategies to determine which file to access (by traversing folders or by
-following hyperlinks, respectively). Furthermore, the file accessing functionality
-may be shared by several crawler implementations that all operate on a
-FileSystemDataSource.</li>
-<li>This allows some crawlers to be scheme independent, e.g. the WebCrawler can
-be used for any kind of hypertext structure, provided that DataAccessor
-implementations are available for the schemes it encounters.</li>
-</ul>
 
 <h2>Example</h2>
 
@@ -199,6 +155,107 @@ private static class MyCrawlerHandler implements CrawlerHandler, RDFContainerFac
 }
 </pre>
 </div>
+
+<h2>DataAccessors</h2>
+
+<p>
+Depending on the Crawler implementation the DataObjects may not be directly instantiated by the
+Crawler. Instead, this job is often delegated to a DataAccessor.
+Whereas Crawler implementations are created for a specific DataSource type,
+DataAccessors are typically specific for the URL scheme they support, e.g. "file" or "http".
+</p>
+
+<p>
+The rationale for delegating this functionality is:
+</p>
+<p>
+<ul>
+<li>There may be several Crawler implementations that can thus reuse the same functionality. For
+example, FileSystemCrawler and WebCrawler can both use the same
+FileAccessor providing access to "file:"-based resources, although they use
+different strategies to determine which file to access (by traversing folders or by
+following hyperlinks, respectively). Furthermore, the file accessing functionality
+may be shared by several crawler implementations that all operate on a
+FileSystemDataSource.</li>
+<li>This allows some crawlers to be scheme independent, e.g. the WebCrawler can
+be used for any kind of hypertext structure, provided that DataAccessor
+implementations are available for the schemes it encounters.</li>
+</ul>
+</p>
+
+<p>
+Here's an example how to use this functionality:
+</p>
+
+<div class="code">
+<pre>
+...
+DataAccessorFactory accessorFactory;
+Set factories = accessorRegistry.get(fileURL.getProtocol());
+if (factories != null && !factories.isEmpty()) {
+	accessorFactory = (DataAccessorFactory) factories.iterator().next();
+}
+DataObject dataObject = accessor.getDataObjectIfModified(url, source, accessData, params,
+			containerFactory);
+</pre>
+</div>
+<p>
+This would enable us to get a dataObject from anything, that's available with a fileURL, provided the registry
+contains an appropriate DataAccessorFactory implementation.
+</p>
+<h2>Incremental Crawling</h2>
+
+<p>
+Crawlers can optionally crawl incrementally. The first time a crawler is invoked, it will 
+simply report all resources. When it is then invoked a subsequent time, it will
+specifically report new, changed, removed and unchanged resources.
+</p>
+
+<p>
+In order for this to work, the Crawler needs to store information about resource names, 
+last modified dates, etc. to perform change detection.
+This is what an AccessData instance is used for: AccessData specifies
+a management interface for storing crawling-related information.
+When no AccessData is set on the Crawler, it will always report all resources as new DataObjects.
+</p>
+
+<p>
+A simple in-memory AccessData implementation is available, subclassed by an implementation that can also
+write this information to a file. One can create custom AccessData classes though,
+tuned for a specific domain or application. For example, an implementation using some sort
+of database to lower memory requirements or an implementation closely integrated with the
+metadata storage to prevent redundancy; the same metadata that is useful to query may also
+be appropriate for change detection.
+</p>
+
+<p>
+An example of this functionality is contained in the implementation of FileSystemAccessor class. It takes
+a file and compares the actual date of last modification with the date stored within the access data instance.
+If they are the same, this method returns null, if they aren't the method returns a new data object. The code
+that's responsible for this decision looks as follows:
+</p>
+
+<div class="code">
+<pre>
+// determine when the file was last modified
+long lastModified = file.lastModified();
+
+// check whether it has been modified
+String value = accessData.get(url, AccessData.DATE_KEY);
+if (value != null) {
+	long registeredDate = Long.parseLong(value);
+
+	// now that we now its previous last modified date, see if it has been modified
+	if (registeredDate == lastModified) {
+		// the file has not been modified
+		return null;
+	}
+	// It has been modified; register the new modification date.
+	accessData.put(url, AccessData.DATE_KEY, String.valueOf(lastModified));
+}
+</pre>
+</div>
+
 
 </body>
 

@@ -56,18 +56,126 @@ e.g. Extractor and DataAccessor implementations to put all metadata in.
 </p>
 
 <p>
-A single RDFContainer implementation is currently available, based on a Sesame Repository.
-All matters regarding context and transactions are solved in/behind this implementation.
-We envision a number of RDFContainer implementations tuned for different use cases.
-Furthermore, the application developer can always fully control how
-the generated RDF models are handled by providing a custom RDFContainer implementation.
-</p>
-
-<p>
 RDFContainer has build-in support for a number of Java core types, such as integers, booleans and dates.
 This relieves developers from the burden of having to figure out how to convert such data types
 to their RDF counter parts while also enforcing a uniform way in which these data types are converted
 accross the entire system.
+</p>
+
+<h3>Simple add methods</h3>
+
+<p>
+Often we don't need to store complicated graphs to express necessary information.
+In many cases what we really need is a functionality of a simple hash-map, that would enable us to store
+simple name-value pairs that describe a central resource. This is exactly what the RDFContainer is all about.
+Conceptually it is a star-like data structure. It has a central point - a universal resource identifier (URI),
+that identifies what we want to describe. Around this central point there are other points, representing 
+property values. They are connected to the central uri with links, that are labeled with appropriate property
+names. A visualisation of a typical, simple RDFContainer might look like this.
+</p>
+
+<center>
+<img src="rdfstar.png">
+</center>
+
+<p>
+Here we have information about a guy named John. We know, that he is a human, more specifically a man.  We 
+know that his full name is John Smith. We also know, that he lives in USA, at 3 Red Ridge Circle, 60010 
+S.Barrington. What's more, he's been born on the 19.01.1984.
+</p>
+
+The code that would create an RDFContainer, that would enable us to store such information in an RDF store,
+might look as follows.
+
+<div class="code">
+<pre>
+import org.openrdf.model.impl.URIImpl;
+import org.openrdf.model.vocabulary.RDF;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+
+RDFContainer container = new SesameRDFContainer(MY_NS + "John");
+<b>container.add(RDF.TYPE,new URIImpl(MY_NS + "human"));</b>
+<b>container.add(RDF.TYPE,new URIImpl(MY_NS + "man"));</b>
+<b>container.add(new URIImpl(MY_NS +  "name"), "John Smith");</b>
+Calendar dateOfBirth = new GregorianCalendar();
+dateOfBirth.add(Calendar.YEAR, 1984);
+dateOfBirth.add(Calendar.MONTH, 1);
+dateOfBirth.add(Calendar.DAY_OF_MONTH, 19);
+<b>container.add(new URIImpl(MY_NS + "dateOfBirth"), dateOfBirth);</b>
+<b>container.add(new URIImpl(MY_NS + "weightInKg"), 85);</b>
+<b>container.add(new URIImpl(MY_NS + "address"), "14 Blue Ridge Circle, Beverly Hills, USA");</b>
+</pre>
+</div>
+<p>
+Every variant of add method has two arguments. The first one is the URI of the property. The second one is
+the value. Usually property URI's are taken from some predefined vocabulary class (like RDF.TYPE in this
+example) but nothing can stop us from devising our own. In this example we made the URI's belong to our
+own namespace (the MY_NS constant). The second argument can be of one of many types.
+The container implementation will take care of any conversions. You don't need to care about XSD datatypes,
+date formats etc. The transaction and context handling is also done behind the scenes. If you're new to
+RDF and those concepts hardly ring the bell at all - don't worry. You don't need to know them to use aperture
+in your applications. 
+</p>
+
+<p>
+The information in a RDFContainer can be accessed with get... methods. They come up in many flavours. One 
+for every datatype supported by add... . An example that would extract information about John would look
+as follows:
+</p>
+<div class="code">
+<pre>
+import org.semanticdesktop.aperture.rdf.RDFContainer;
+
+...
+
+System.out.println(container.getString(new URIImpl(MY_NS + "name")));
+System.out.println(container.getString(new URIImpl(MY_NS + "dateOfBirth")));
+System.out.println(container.getString(new URIImpl(MY_NS + "weightInKg")));
+System.out.println(container.getString(new URIImpl(MY_NS + "address")));
+</pre>
+</div>
+<p>
+Notice how we used a single getString method. It worked even though we inserted many different datatypes.
+The conversions are done automatically. (If they are possible, if not, you will have to deal with an exception).
+Even aperture wouldn't know how to convert 'true' to a date :-).
+</p>
+
+<h2>Hash map functionality with put methods</h2>
+
+<p>
+The RDFContainer contains a second set of methods whose names start with put... They differ from the add...
+methods in one important respect. They enforce the hash-map semantics, that is every property can have
+at most one value. Storing a second value with put will replace the existing one.
+</p>
+
+<p>
+On the other hand, there is a problem with multiple values. If we specify that a property should have more
+values (like RDF.TYPE in the previous example) and try to get one, the RDFContainer would have to decide 
+which one to return. The designers of aperture decided that it is up to the user to know that such a situation
+could occur, and stated, that get methods will throw a MultipleValuesException in such case. If you need
+to work with properties that have multiple values, you need to use the getAll() method. It works as follows:
+</p>
+<div class="code">
+<pre>
+import org.openrdf.model.Value;
+import org.openrdf.model.vocabulary.RDF;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
+
+...
+
+Collection types = container.getAll(RDF.TYPE);
+for (Iterator iterator = types.iterator(); iterator.hasNext(); ) {
+	Value value = (Value)iterator.next();
+	System.out.println(value);
+}
+</pre>
+</div>
+<p>
+This collection contains Value objects. Value is a superinterface, that encompasses all datatypes that can
+occur in an RDF store - URIS, Literals and Blank Nodes. Unfortunately you will have to dig a bit deeper into
+the RDF documentation and the javadocs for org.openrdf.model package to get to know how to work with them. The
+container won't aid you in this aspect.
 </p>
 
 <p>
@@ -78,7 +186,85 @@ a DataSource. Here it can be vital that a property has a single value or else th
 ambiguous or unprocessable. However, in the context of Crawlers and Extractors we found that taking
 such a closed world assumption on the RDF graph is less ideal: you never know who else is working
 on the same RDF graph and whether it makes logically sense to allow a property to have multiple values
-or not. Therefore, these classes best use the add methods to populate the RDFContainer.
+or not. It is up to you to decide which approach to use in your particular application.
+</p>
+
+<h2>Direct access to statements</h2>
+<p>
+Even though the abstraction of RDFContainer is enough to perform many tasks, sometimes you simply have to
+resort to the full expressive power of RDF and model the knowledge with a fully-fledged graph. Let's imagine
+a simple case that John has a car. This car is a green Ford. Trying to express it in a simple RDFContainer
+with a 'star' of properties would be unnatural. It would have to look somehow like this:
+</p>
+
+<center>
+<img src="rdfstar2.png">
+</center>
+
+<p>
+A much more natural way to express this fact would be to have a separate node that would represent a car.
+It could have it's own identifier and it's own properties. In such case, it would be much easier to update
+our knowledge base when John buys himself another car :-). Let's try to build a following structure:
+</p>
+
+<center>
+<img src="rdfstar3.png">
+</center>
+
+<p>
+The first stage would be to describe John using 'normal' methods, as already described in previous chapters.
+The link that states that John has a Car, can also be inserted with 'normal' rdfContainer method. For the
+description of the car itself, we'll have to do everything by ourselves.
+</p>
+
+<p>
+Every statement represents a single link in the knowledge graph. It consists of three parts - subject,
+predicate and object. RDFContainer in itself does nothing more than setting the subject to the central URI.
+It would be possible not to use the add/put methods at all. Everything could be expressed with Statements, 
+albeit in a less readable and more complicated way. Nevertheless, if we want to describe an URI that is not 
+the central one - we have no other option.
+</p>
+
+<p>
+Here's an example how it can be accomplished.
+</p>
+<div class="code">
+<pre>
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.model.impl.LiteralImpl;
+import org.openrdf.model.impl.StatementImpl;
+import org.openrdf.model.impl.URIImpl;
+import org.openrdf.model.vocabulary.RDF;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
+
+URI carURI = new URIImpl(MY_NS + "GreenFord");
+container.add(new URIImpl(MY_NS + "hasACar"),carURI);
+Statement statement1 = new StatementImpl(
+	carURI,
+	RDF.TYPE,
+	new URIImpl(MY_NS + "Car"));
+Statement statement2 = new StatementImpl(
+	carURI,
+	new URIImpl(MY_NS + "brand"), 
+	new LiteralImpl("Ford"));
+Statement statement3 = new StatementImpl(
+	carURI,
+	new URIImpl(MY_NS + "color"),
+	new LiteralImpl("green"));
+container.add(statement1);
+container.add(statement2);
+container.add(statement3);
+</pre>
+</div>
+<h2>Implementation</h2>
+
+<p>
+A single RDFContainer implementation is currently available, based on a Sesame Repository.
+All matters regarding context and transactions are solved in/behind this implementation.
+We envision a number of RDFContainer implementations tuned for different use cases.
+Furthermore, the application developer can always fully control how
+the generated RDF models are handled by providing a custom RDFContainer implementation.
 </p>
 
 </body>
