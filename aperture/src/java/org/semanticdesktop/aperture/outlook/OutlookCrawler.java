@@ -38,10 +38,11 @@ import com.jacob.com.Variant;
  * 
  * Endless history of outlook adapter crashes:
  * 
- * 
- * @WORKAROUND : what about the threading and objects issues. I create hundreds of ActiveX Objects but never
+ * <p>
+ * WORKAROUND : what about the threading and objects issues. I create hundreds of ActiveX Objects but never
  *             release() them. This might be dangerous. So i did something with the jacob thread, we will see
  *             what happens...
+ * </p>
  * 
  * 17.8.2004: I had many creahsed during a presenta ComThread.doCoInitialize(0); This didn't help much, now i
  * have a EXCEPTION_ACCESS_VIOLATION anbd the VM crrahses.
@@ -221,7 +222,9 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 	/**
 	 * crawling outlook. Each call/thread gets its own Outlook-Mapi object, which is passed around.
 	 * 
-	 * @return
+	 * @see CrawlerBase#crawlObjects()
+	 * 
+	 * @return the ExitCode.
 	 */
 	protected ExitCode crawlObjects() {
 		beginCall();

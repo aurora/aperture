@@ -699,7 +699,7 @@ public abstract class OutlookResource {
 	 * 
 	 * @param crawler crawler
 	 * @param resource Outlook resource that has to implement "EntryID" for identifier
-	 * @param itemtype itemtype for path
+	 * @param itemType itemType for path
 	 * @throws Exception
 	 */
 	protected OutlookResource(OutlookCrawler crawler, Dispatch resource, String itemType) {
@@ -710,8 +710,9 @@ public abstract class OutlookResource {
 	 * Normal constructor with url and resource. Subclasses have to build the url themselves
 	 * 
 	 * @param crawler Crawlercrawler
-	 * @param url url of the resource
+	 * @param uri url of the resource
 	 * @param resource object of the resource
+	 * @param itemType itemType for path
 	 * @throws Exception
 	 */
 	protected OutlookResource(OutlookCrawler crawler, String uri, Dispatch resource, String itemType) {
@@ -749,9 +750,10 @@ public abstract class OutlookResource {
 
 	/**
 	 * finalizer for releasing the activeX
-	 * 
-	 * @TODO This one runs in its own thread and is therefore dangerous to COM. I had to comment out the
+	 * <p>
+	 * TODO This one runs in its own thread and is therefore dangerous to COM. I had to comment out the
 	 *       release method. Perhaps I will come up with a solution sometime
+	 * </p>
 	 */
 	protected void finalize() throws Throwable {
 		if (resource != null) {
@@ -879,7 +881,7 @@ public abstract class OutlookResource {
 	/**
 	 * get the crawler that hosts this resource
 	 * 
-	 * @return
+	 * @return The OutlookCrawler
 	 */
 	public OutlookCrawler getOLCrawler() {
 		return crawler;
@@ -919,6 +921,9 @@ public abstract class OutlookResource {
 
 /*
  * $Log$
+ * Revision 1.5  2006/10/31 16:53:47  mylka
+ * The javadoc creation doesn't make any warnings
+ *
  * Revision 1.4  2006/10/20 17:43:00  mylka
  * removed the umlauts from the copyright message.
  *

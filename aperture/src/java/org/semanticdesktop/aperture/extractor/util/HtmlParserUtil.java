@@ -63,7 +63,7 @@ public class HtmlParserUtil {
 	 * 
 	 * @param stream The stream containing the HTML document.
 	 * @param charset The charset of the HTML document (optional);
-	 * @param visitor The node visitor that is informed about encountered document parts.
+	 * @param extractor The extractor that is informed about encountered document parts.
 	 * @throws ExtractorException
 	 */
 	public static void parse(InputStream stream, Charset charset, ContentExtractor extractor)
