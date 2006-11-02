@@ -19,34 +19,34 @@
         <path d="M-3 -3 L127 -3 L127 47 L-3 47 L-3 -3 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath5">
-        <path d="M0 0 L124 0 L124 30 L0 30 L0 0 Z" />
-      </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath6">
         <path d="M0 0 L174 0 L174 70 L0 70 L0 0 Z" />
       </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath7">
-        <path d="M0 0 L154 0 L154 30 L0 30 L0 0 Z" />
-      </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath8">
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath6">
         <path d="M0 0 L114 0 L114 30 L0 30 L0 0 Z" />
       </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath9">
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath7">
         <path d="M0 0 L114 0 L114 16 L0 16 L0 0 Z" />
       </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath10">
-        <path d="M0 0 L114 0 L114 18 L0 18 L0 0 Z" />
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath8">
+        <path d="M0 0 L124 0 L124 30 L0 30 L0 0 Z" />
       </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath11">
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath9">
+        <path d="M0 0 L154 0 L154 30 L0 30 L0 0 Z" />
+      </clipPath>
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath10">
         <path d="M0 0 L114 0 L114 32 L0 32 L0 0 Z" />
       </clipPath>
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath11">
+        <path d="M0 0 L114 0 L114 18 L0 18 L0 0 Z" />
+      </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath12">
-        <path d="M0 0 L124 0 L124 18 L0 18 L0 0 Z" />
+        <path d="M0 0 L174 0 L174 18 L0 18 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath13">
         <path d="M0 0 L154 0 L154 18 L0 18 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath14">
-        <path d="M0 0 L174 0 L174 18 L0 18 L0 0 Z" />
+        <path d="M0 0 L124 0 L124 18 L0 18 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath15">
         <path d="M0 0 L154 0 L154 144 L0 144 L0 0 Z" />
@@ -107,29 +107,29 @@
       <line x1="0" x2="120" y1="14" style="clip-path:url(#clipPath4); fill:none;" y2="14" />
     </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(172,86)">
-      <text x="2" y="13" style="clip-path:url(#clipPath6); stroke:none;" xml:space="preserve">-id : URI</text>
-      <text x="2" y="27" style="clip-path:url(#clipPath6); stroke:none;" xml:space="preserve">-name : String</text>
-      <text x="2" y="41" style="clip-path:url(#clipPath6); stroke:none;" xml:space="preserve">-type : URI</text>
-      <text x="2" y="55" style="clip-path:url(#clipPath6); stroke:none;" xml:space="preserve">-configuration : RDFContainer</text>
-    </g>
-    <g transform="translate(252,192)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="12" y="11" style="clip-path:url(#clipPath10); stroke:none;" xml:space="preserve">WebDataSource</text>
+      <text x="2" y="13" style="clip-path:url(#clipPath5); stroke:none;" xml:space="preserve">-id : URI</text>
+      <text x="2" y="27" style="clip-path:url(#clipPath5); stroke:none;" xml:space="preserve">-name : String</text>
+      <text x="2" y="41" style="clip-path:url(#clipPath5); stroke:none;" xml:space="preserve">-type : URI</text>
+      <text x="2" y="55" style="clip-path:url(#clipPath5); stroke:none;" xml:space="preserve">-configuration : RDFContainer</text>
     </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(202,12)">
-      <text x="13" y="11" style="clip-path:url(#clipPath11); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
-      <text x="24" y="25" style="clip-path:url(#clipPath11); stroke:none; font-weight:bold;" xml:space="preserve">DataSource</text>
+      <text x="13" y="11" style="clip-path:url(#clipPath10); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
+      <text x="24" y="25" style="clip-path:url(#clipPath10); stroke:none; font-weight:bold;" xml:space="preserve">DataSource</text>
+    </g>
+    <g transform="translate(252,192)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
+      <text x="12" y="11" style="clip-path:url(#clipPath11); stroke:none;" xml:space="preserve">WebDataSource</text>
+    </g>
+    <g transform="translate(172,72)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
+      <text x="41" y="11" style="clip-path:url(#clipPath12); stroke:none;" xml:space="preserve">DataSourceBase</text>
     </g>
     <g transform="translate(132,192)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="14" y="11" style="clip-path:url(#clipPath10); stroke:none;" xml:space="preserve">IcalDataSource</text>
-    </g>
-    <g transform="translate(2,192)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="15" y="11" style="clip-path:url(#clipPath12); stroke:none;" xml:space="preserve">ImapDataSource</text>
+      <text x="14" y="11" style="clip-path:url(#clipPath11); stroke:none;" xml:space="preserve">IcalDataSource</text>
     </g>
     <g transform="translate(372,192)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
       <text x="14" y="11" style="clip-path:url(#clipPath13); stroke:none;" xml:space="preserve">FileSystemDataSource</text>
     </g>
-    <g transform="translate(172,72)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="41" y="11" style="clip-path:url(#clipPath14); stroke:none;" xml:space="preserve">DataSourceBase</text>
+    <g transform="translate(2,192)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
+      <text x="15" y="11" style="clip-path:url(#clipPath14); stroke:none;" xml:space="preserve">ImapDataSource</text>
     </g>
     <g transform="translate(72,102)" style="stroke-linecap:butt; font-size:11; fill-opacity:0.9961; fill:rgb(0,0,0); text-rendering:optimizeLegibility; stroke-linejoin:round; font-family:sans-serif; stroke:rgb(0,0,0); stroke-opacity:0.9961;">
       <line x1="100" x2="50" y1="50" style="clip-path:url(#clipPath15); fill:none;" y2="90" />
