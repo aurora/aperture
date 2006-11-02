@@ -19,7 +19,7 @@
         <path d="M-3 -3 L177 -3 L177 47 L-3 47 L-3 -3 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath5">
-        <path d="M0 0 L174 0 L174 30 L0 30 L0 0 Z" />
+        <path d="M0 0 L334 0 L334 26 L0 26 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath6">
         <path d="M0 0 L334 0 L334 76 L0 76 L0 0 Z" />
@@ -28,7 +28,7 @@
         <path d="M0 0 L334 0 L334 46 L0 46 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath8">
-        <path d="M0 0 L334 0 L334 26 L0 26 L0 0 Z" />
+        <path d="M0 0 L174 0 L174 30 L0 30 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath9">
         <path d="M0 0 L334 0 L334 32 L0 32 L0 0 Z" />
@@ -37,7 +37,7 @@
         <path d="M0 0 L174 0 L174 18 L0 18 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath11">
-        <path d="M0 0 L87 0 L87 18 L0 18 L0 0 Z" />
+        <path d="M0 0 L88 0 L88 18 L0 18 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath12">
         <path d="M0 0 L104 0 L104 173 L0 173 L0 0 Z" />
@@ -87,6 +87,9 @@
       <rect x="0" y="0" width="170" style="clip-path:url(#clipPath4); fill:none;" height="40" />
       <line x1="0" x2="170" y1="14" style="clip-path:url(#clipPath4); fill:none;" y2="14" />
     </g>
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,60)">
+      <text x="2" y="13" style="clip-path:url(#clipPath5); stroke:none;" xml:space="preserve">+extractLinks(stream : InputStream, params : Map) : List</text>
+    </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,260)">
       <text x="2" y="13" style="clip-path:url(#clipPath6); stroke:none;" xml:space="preserve">+add(factory : LinkExtractorFactory)</text>
       <text x="2" y="27" style="clip-path:url(#clipPath6); stroke:none;" xml:space="preserve">+remove(factory : LinkExtractorFactory)</text>
@@ -97,32 +100,29 @@
       <text x="2" y="13" style="clip-path:url(#clipPath7); stroke:none;" xml:space="preserve">+getSupportedMimeTypes() : Set</text>
       <text x="2" y="27" style="clip-path:url(#clipPath7); stroke:none;" xml:space="preserve">+get() : LinkExtractor</text>
     </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,60)">
-      <text x="2" y="13" style="clip-path:url(#clipPath8); stroke:none;" xml:space="preserve">+extractLinks(stream : InputStream, params : Map) : List</text>
-    </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,32)">
       <text x="123" y="11" style="clip-path:url(#clipPath9); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
       <text x="127" y="25" style="clip-path:url(#clipPath9); stroke:none; font-weight:bold;" xml:space="preserve">LinkExtractor</text>
-    </g>
-    <g transform="translate(362,142)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="13" y="11" style="clip-path:url(#clipPath10); stroke:none;" xml:space="preserve">HtmlLinkExtractorFactory</text>
-    </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(447,101)">
-      <text x="9" y="11" style="clip-path:url(#clipPath11); stroke:none;" xml:space="preserve">producedBy</text>
     </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,122)">
       <text x="123" y="11" style="clip-path:url(#clipPath9); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
       <text x="107" y="25" style="clip-path:url(#clipPath9); stroke:none; font-weight:bold;" xml:space="preserve">LinkExtractorFactory</text>
     </g>
-    <g transform="translate(362,32)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="33" y="11" style="clip-path:url(#clipPath10); stroke:none;" xml:space="preserve">HtmlLinkExtractor</text>
-    </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,232)">
       <text x="123" y="11" style="clip-path:url(#clipPath9); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
       <text x="101" y="25" style="clip-path:url(#clipPath9); stroke:none; font-weight:bold;" xml:space="preserve">LinkExtractoryRegistry</text>
     </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(147,101)">
-      <text x="9" y="11" style="clip-path:url(#clipPath11); stroke:none;" xml:space="preserve">producedBy</text>
+    <g transform="translate(362,32)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
+      <text x="33" y="11" style="clip-path:url(#clipPath10); stroke:none;" xml:space="preserve">HtmlLinkExtractor</text>
+    </g>
+    <g transform="translate(362,142)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
+      <text x="13" y="11" style="clip-path:url(#clipPath10); stroke:none;" xml:space="preserve">HtmlLinkExtractorFactory</text>
+    </g>
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(446,100)">
+      <text x="10" y="11" style="clip-path:url(#clipPath11); stroke:none;" xml:space="preserve">producedBy</text>
+    </g>
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(146,100)">
+      <text x="10" y="11" style="clip-path:url(#clipPath11); stroke:none;" xml:space="preserve">producedBy</text>
     </g>
     <g transform="translate(402,22)" style="stroke-linecap:butt; font-size:11; fill-opacity:0.9961; fill:rgb(0,0,0); text-rendering:optimizeLegibility; stroke-linejoin:round; font-family:sans-serif; stroke:rgb(0,0,0); stroke-opacity:0.9961;">
       <line x1="50" x2="50" y1="50" style="clip-path:url(#clipPath12); fill:none;" y2="119" />

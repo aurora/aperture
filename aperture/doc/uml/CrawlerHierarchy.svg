@@ -37,64 +37,64 @@
         <path d="M-3 -3 L157 -3 L157 47 L-3 47 L-3 -3 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath11">
-        <path d="M0 0 L154 0 L154 30 L0 30 L0 0 Z" />
-      </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath12">
-        <path d="M0 0 L184 0 L184 30 L0 30 L0 0 Z" />
-      </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath13">
-        <path d="M0 0 L254 0 L254 66 L0 66 L0 0 Z" />
-      </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath14">
-        <path d="M0 0 L124 0 L124 30 L0 30 L0 0 Z" />
-      </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath15">
-        <path d="M0 0 L94 0 L94 30 L0 30 L0 0 Z" />
-      </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath16">
-        <path d="M0 0 L144 0 L144 30 L0 30 L0 0 Z" />
-      </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath17">
-        <path d="M0 0 L114 0 L114 30 L0 30 L0 0 Z" />
-      </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath18">
-        <path d="M0 0 L194 0 L194 136 L0 136 L0 0 Z" />
-      </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath19">
         <path d="M0 0 L194 0 L194 50 L0 50 L0 0 Z" />
       </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath20">
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath12">
+        <path d="M0 0 L114 0 L114 30 L0 30 L0 0 Z" />
+      </clipPath>
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath13">
+        <path d="M0 0 L94 0 L94 30 L0 30 L0 0 Z" />
+      </clipPath>
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath14">
+        <path d="M0 0 L184 0 L184 30 L0 30 L0 0 Z" />
+      </clipPath>
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath15">
+        <path d="M0 0 L124 0 L124 30 L0 30 L0 0 Z" />
+      </clipPath>
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath16">
+        <path d="M0 0 L194 0 L194 136 L0 136 L0 0 Z" />
+      </clipPath>
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath17">
         <path d="M0 0 L254 0 L254 46 L0 46 L0 0 Z" />
+      </clipPath>
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath18">
+        <path d="M0 0 L144 0 L144 30 L0 30 L0 0 Z" />
+      </clipPath>
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath19">
+        <path d="M0 0 L154 0 L154 30 L0 30 L0 0 Z" />
+      </clipPath>
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath20">
+        <path d="M0 0 L254 0 L254 66 L0 66 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath21">
         <path d="M0 0 L194 0 L194 32 L0 32 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath22">
-        <path d="M0 0 L124 0 L124 18 L0 18 L0 0 Z" />
+        <path d="M0 0 L194 0 L194 18 L0 18 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath23">
-        <path d="M0 0 L194 0 L194 18 L0 18 L0 0 Z" />
+        <path d="M0 0 L124 0 L124 18 L0 18 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath24">
         <path d="M0 0 L94 0 L94 18 L0 18 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath25">
-        <path d="M0 0 L184 0 L184 18 L0 18 L0 0 Z" />
-      </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath26">
         <path d="M0 0 L144 0 L144 18 L0 18 L0 0 Z" />
       </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath27">
-        <path d="M0 0 L154 0 L154 18 L0 18 L0 0 Z" />
-      </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath28">
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath26">
         <path d="M0 0 L114 0 L114 18 L0 18 L0 0 Z" />
       </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath29">
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath27">
         <path d="M0 0 L254 0 L254 32 L0 32 L0 0 Z" />
       </clipPath>
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath28">
+        <path d="M0 0 L184 0 L184 18 L0 18 L0 0 Z" />
+      </clipPath>
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath29">
+        <path d="M0 0 L154 0 L154 18 L0 18 L0 0 Z" />
+      </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath30">
-        <path d="M0 0 L87 0 L87 18 L0 18 L0 0 Z" />
+        <path d="M0 0 L88 0 L88 18 L0 18 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath31">
         <path d="M0 0 L314 0 L314 253 L0 253 L0 0 Z" />
@@ -201,68 +201,68 @@
       <rect x="0" y="0" width="150" style="clip-path:url(#clipPath10); fill:none;" height="40" />
       <line x1="0" x2="150" y1="14" style="clip-path:url(#clipPath10); fill:none;" y2="14" />
     </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(272,140)">
-      <text x="2" y="13" style="clip-path:url(#clipPath13); stroke:none;" xml:space="preserve">+add(factory : CrawlerFactory)</text>
-      <text x="2" y="27" style="clip-path:url(#clipPath13); stroke:none;" xml:space="preserve">+remove(factory : CrawlerFactory)</text>
-      <text x="2" y="41" style="clip-path:url(#clipPath13); stroke:none;" xml:space="preserve">+get(type URI) : Set</text>
-      <text x="2" y="55" style="clip-path:url(#clipPath13); stroke:none;" xml:space="preserve">+getAll() : Set</text>
+    <g transform="translate(2,206)" style="font-style:italic; text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;">
+      <text x="2" y="13" style="clip-path:url(#clipPath11); stroke:none;" xml:space="preserve">#crawlObjects()</text>
     </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,30)">
-      <text x="2" y="13" style="clip-path:url(#clipPath18); stroke:none;" xml:space="preserve">-registry : DataAccessorRegistry</text>
-      <text x="2" y="27" style="clip-path:url(#clipPath18); stroke:none;" xml:space="preserve">-accessData : AccessData</text>
-      <text x="2" y="41" style="clip-path:url(#clipPath18); stroke:none;" xml:space="preserve">-handler : CrawlerHandler</text>
-      <text x="2" y="55" style="clip-path:url(#clipPath18); stroke:none;" xml:space="preserve">-dataSource : DataSource</text>
-      <line x1="0" x2="190" y1="60" style="stroke-linecap:butt; clip-path:url(#clipPath18); fill:none; stroke-linejoin:bevel; stroke-miterlimit:0;" y2="60" />
-      <text x="2" y="73" style="clip-path:url(#clipPath18); stroke:none;" xml:space="preserve">+crawl()</text>
-      <text x="2" y="87" style="clip-path:url(#clipPath18); stroke:none;" xml:space="preserve">+clear()</text>
-      <text x="2" y="101" style="clip-path:url(#clipPath18); stroke:none;" xml:space="preserve">+stop()</text>
-      <text x="2" y="115" style="clip-path:url(#clipPath18); stroke:none;" xml:space="preserve">+getCrawlReport() : CrawlReport</text>
-    </g>
-    <g transform="translate(2,206)" style="font-style:italic; text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;">
-      <text x="2" y="13" style="clip-path:url(#clipPath19); stroke:none;" xml:space="preserve">#crawlObjects()</text>
+      <text x="2" y="13" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">-registry : DataAccessorRegistry</text>
+      <text x="2" y="27" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">-accessData : AccessData</text>
+      <text x="2" y="41" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">-handler : CrawlerHandler</text>
+      <text x="2" y="55" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">-dataSource : DataSource</text>
+      <line x1="0" x2="190" y1="60" style="stroke-linecap:butt; clip-path:url(#clipPath16); fill:none; stroke-linejoin:bevel; stroke-miterlimit:0;" y2="60" />
+      <text x="2" y="73" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">+crawl()</text>
+      <text x="2" y="87" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">+clear()</text>
+      <text x="2" y="101" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">+stop()</text>
+      <text x="2" y="115" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">+getCrawlReport() : CrawlReport</text>
     </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(272,30)">
-      <text x="2" y="13" style="clip-path:url(#clipPath20); stroke:none;" xml:space="preserve">+getSupportedTypes() : Set</text>
-      <text x="2" y="27" style="clip-path:url(#clipPath20); stroke:none;" xml:space="preserve">+getCrawler(source : DataSource) : Crawler</text>
+      <text x="2" y="13" style="clip-path:url(#clipPath17); stroke:none;" xml:space="preserve">+getSupportedTypes() : Set</text>
+      <text x="2" y="27" style="clip-path:url(#clipPath17); stroke:none;" xml:space="preserve">+getCrawler(source : DataSource) : Crawler</text>
+    </g>
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(272,140)">
+      <text x="2" y="13" style="clip-path:url(#clipPath20); stroke:none;" xml:space="preserve">+add(factory : CrawlerFactory)</text>
+      <text x="2" y="27" style="clip-path:url(#clipPath20); stroke:none;" xml:space="preserve">+remove(factory : CrawlerFactory)</text>
+      <text x="2" y="41" style="clip-path:url(#clipPath20); stroke:none;" xml:space="preserve">+get(type URI) : Set</text>
+      <text x="2" y="55" style="clip-path:url(#clipPath20); stroke:none;" xml:space="preserve">+getAll() : Set</text>
     </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,2)">
       <text x="53" y="11" style="clip-path:url(#clipPath21); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
       <text x="73" y="25" style="clip-path:url(#clipPath21); stroke:none; font-weight:bold;" xml:space="preserve">Crawler</text>
     </g>
-    <g transform="translate(2,292)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="9" y="11" style="clip-path:url(#clipPath22); stroke:none;" xml:space="preserve">FileSystemCrawler</text>
-    </g>
     <g transform="translate(2,192)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="61" y="11" style="clip-path:url(#clipPath23); stroke:none;" xml:space="preserve">CrawlerBase</text>
+      <text x="61" y="11" style="clip-path:url(#clipPath22); stroke:none;" xml:space="preserve">CrawlerBase</text>
+    </g>
+    <g transform="translate(2,292)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
+      <text x="9" y="11" style="clip-path:url(#clipPath23); stroke:none;" xml:space="preserve">FileSystemCrawler</text>
     </g>
     <g transform="translate(142,292)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
       <text x="9" y="11" style="clip-path:url(#clipPath24); stroke:none;" xml:space="preserve">ImapCrawler</text>
     </g>
-    <g transform="translate(2,362)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="16" y="11" style="clip-path:url(#clipPath25); stroke:none;" xml:space="preserve">AppleAddressbookCrawler</text>
-    </g>
     <g transform="translate(252,292)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="19" y="11" style="clip-path:url(#clipPath26); stroke:none;" xml:space="preserve">FileSystemCrawler</text>
-    </g>
-    <g transform="translate(202,362)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="31" y="11" style="clip-path:url(#clipPath27); stroke:none;" xml:space="preserve">OutlookCrawler</text>
+      <text x="19" y="11" style="clip-path:url(#clipPath25); stroke:none;" xml:space="preserve">FileSystemCrawler</text>
     </g>
     <g transform="translate(412,292)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="23" y="11" style="clip-path:url(#clipPath28); stroke:none;" xml:space="preserve">IcalCrawler</text>
+      <text x="23" y="11" style="clip-path:url(#clipPath26); stroke:none;" xml:space="preserve">IcalCrawler</text>
     </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(272,2)">
-      <text x="83" y="11" style="clip-path:url(#clipPath29); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
-      <text x="83" y="25" style="clip-path:url(#clipPath29); stroke:none; font-weight:bold;" xml:space="preserve">CrawlerFactory</text>
+      <text x="83" y="11" style="clip-path:url(#clipPath27); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
+      <text x="83" y="25" style="clip-path:url(#clipPath27); stroke:none; font-weight:bold;" xml:space="preserve">CrawlerFactory</text>
     </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(272,112)">
-      <text x="83" y="11" style="clip-path:url(#clipPath29); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
-      <text x="80" y="25" style="clip-path:url(#clipPath29); stroke:none; font-weight:bold;" xml:space="preserve">CrawlerRegistry</text>
+      <text x="83" y="11" style="clip-path:url(#clipPath27); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
+      <text x="80" y="25" style="clip-path:url(#clipPath27); stroke:none; font-weight:bold;" xml:space="preserve">CrawlerRegistry</text>
     </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(196,32)">
-      <text x="9" y="11" style="clip-path:url(#clipPath30); stroke:none;" xml:space="preserve">producedBy</text>
+    <g transform="translate(2,362)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
+      <text x="16" y="11" style="clip-path:url(#clipPath28); stroke:none;" xml:space="preserve">AppleAddressbookCrawler</text>
+    </g>
+    <g transform="translate(202,362)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
+      <text x="31" y="11" style="clip-path:url(#clipPath29); stroke:none;" xml:space="preserve">OutlookCrawler</text>
     </g>
     <g transform="translate(372,362)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="18" y="11" style="clip-path:url(#clipPath27); stroke:none;" xml:space="preserve">ThunderbirdCrawler</text>
+      <text x="18" y="11" style="clip-path:url(#clipPath29); stroke:none;" xml:space="preserve">ThunderbirdCrawler</text>
+    </g>
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(195,32)">
+      <text x="10" y="11" style="clip-path:url(#clipPath30); stroke:none;" xml:space="preserve">producedBy</text>
     </g>
     <g transform="translate(142,162)" style="stroke-linecap:butt; font-size:11; fill-opacity:0.9961; fill:rgb(0,0,0); text-rendering:optimizeLegibility; stroke-linejoin:round; font-family:sans-serif; stroke:rgb(0,0,0); stroke-opacity:0.9961;">
       <line x1="50" x2="80" y1="50" style="clip-path:url(#clipPath31); fill:none;" y2="50" />

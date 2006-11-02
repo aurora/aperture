@@ -19,10 +19,10 @@
         <path d="M0 0 L79 0 L79 32 L0 32 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath5">
-        <path d="M0 0 L61 0 L61 18 L0 18 L0 0 Z" />
+        <path d="M0 0 L49 0 L49 18 L0 18 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath6">
-        <path d="M0 0 L49 0 L49 18 L0 18 L0 0 Z" />
+        <path d="M0 0 L61 0 L61 18 L0 18 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath7">
         <path d="M0 0 L77 0 L77 18 L0 18 L0 0 Z" />
@@ -91,10 +91,6 @@
       <text x="13" y="11" style="clip-path:url(#clipPath3); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
       <text x="24" y="25" style="clip-path:url(#clipPath3); stroke:none; font-weight:bold;" xml:space="preserve">DataSource</text>
     </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(182,132)">
-      <text x="13" y="11" style="clip-path:url(#clipPath3); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
-      <text x="23" y="25" style="clip-path:url(#clipPath3); stroke:none; font-weight:bold;" xml:space="preserve">AccessData</text>
-    </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(182,32)">
       <text x="13" y="11" style="clip-path:url(#clipPath3); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
       <text x="33" y="25" style="clip-path:url(#clipPath3); stroke:none; font-weight:bold;" xml:space="preserve">Crawler</text>
@@ -102,10 +98,6 @@
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(352,132)">
       <text x="13" y="11" style="clip-path:url(#clipPath3); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
       <text x="24" y="25" style="clip-path:url(#clipPath3); stroke:none; font-weight:bold;" xml:space="preserve">DataObject</text>
-    </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,132)">
-      <text x="13" y="11" style="clip-path:url(#clipPath3); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
-      <text x="17" y="25" style="clip-path:url(#clipPath3); stroke:none; font-weight:bold;" xml:space="preserve">DataAccessor</text>
     </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(352,32)">
       <text x="13" y="11" style="clip-path:url(#clipPath3); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
@@ -115,13 +107,21 @@
       <text x="10" y="11" style="clip-path:url(#clipPath4); stroke:none;" xml:space="preserve">&lt;&lt;use&gt;&gt;</text>
       <text x="11" y="25" style="clip-path:url(#clipPath4); stroke:none;" xml:space="preserve">(optional)</text>
     </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(296,32)">
-      <text x="10" y="11" style="clip-path:url(#clipPath5); stroke:none;" xml:space="preserve">passes</text>
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(182,132)">
+      <text x="13" y="11" style="clip-path:url(#clipPath3); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
+      <text x="23" y="25" style="clip-path:url(#clipPath3); stroke:none; font-weight:bold;" xml:space="preserve">AccessData</text>
     </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(192,96)">
-      <text x="10" y="11" style="clip-path:url(#clipPath6); stroke:none;" xml:space="preserve">uses</text>
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,132)">
+      <text x="13" y="11" style="clip-path:url(#clipPath3); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
+      <text x="17" y="25" style="clip-path:url(#clipPath3); stroke:none; font-weight:bold;" xml:space="preserve">DataAccessor</text>
     </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(106,32)">
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(192,95)">
+      <text x="10" y="11" style="clip-path:url(#clipPath5); stroke:none;" xml:space="preserve">uses</text>
+    </g>
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(295,32)">
+      <text x="10" y="11" style="clip-path:url(#clipPath6); stroke:none;" xml:space="preserve">passes</text>
+    </g>
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(105,32)">
       <text x="10" y="11" style="clip-path:url(#clipPath7); stroke:none;" xml:space="preserve">crawledBy</text>
     </g>
     <g style="fill-opacity:0.9961; text-rendering:optimizeLegibility; stroke:rgb(0,0,0); stroke-linecap:butt; stroke-opacity:0.9961; fill:rgb(0,0,0); stroke-dasharray:5; font-family:sans-serif; stroke-linejoin:round; font-size:11; stroke-dashoffset:1;" transform="translate(62,22)">

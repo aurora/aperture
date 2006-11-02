@@ -28,31 +28,31 @@
         <path d="M0 0 L0 40 L280 40 L280 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath8">
-        <path d="M0 0 L114 0 L114 30 L0 30 L0 0 Z" />
-      </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath9">
         <path d="M0 0 L154 0 L154 30 L0 30 L0 0 Z" />
       </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath10">
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath9">
         <path d="M0 0 L214 0 L214 76 L0 76 L0 0 Z" />
       </clipPath>
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath10">
+        <path d="M0 0 L614 0 L614 26 L0 26 L0 0 Z" />
+      </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath11">
-        <path d="M0 0 L214 0 L214 46 L0 46 L0 0 Z" />
+        <path d="M0 0 L114 0 L114 30 L0 30 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath12">
-        <path d="M0 0 L614 0 L614 26 L0 26 L0 0 Z" />
+        <path d="M0 0 L214 0 L214 46 L0 46 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath13">
         <path d="M0 0 L614 0 L614 32 L0 32 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath14">
-        <path d="M0 0 L154 0 L154 18 L0 18 L0 0 Z" />
+        <path d="M0 0 L214 0 L214 32 L0 32 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath15">
         <path d="M0 0 L114 0 L114 18 L0 18 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath16">
-        <path d="M0 0 L214 0 L214 32 L0 32 L0 0 Z" />
+        <path d="M0 0 L154 0 L154 18 L0 18 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath17">
         <path d="M0 0 L124 0 L124 354 L0 354 L0 0 Z" />
@@ -198,47 +198,47 @@
       <text x="3" y="15" style="clip-path:url(#clipPath7); stroke:none;" xml:space="preserve">... and all other extractor implementations...</text>
     </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,320)">
-      <text x="2" y="13" style="clip-path:url(#clipPath10); stroke:none;" xml:space="preserve">+add(factory : ExtractorFactory)</text>
-      <text x="2" y="27" style="clip-path:url(#clipPath10); stroke:none;" xml:space="preserve">+remove(factory : ExtractorFactory)</text>
-      <text x="2" y="41" style="clip-path:url(#clipPath10); stroke:none;" xml:space="preserve">+getAll() : Set</text>
-      <text x="2" y="55" style="clip-path:url(#clipPath10); stroke:none;" xml:space="preserve">+get(mimeType : String)</text>
-    </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,180)">
-      <text x="2" y="13" style="clip-path:url(#clipPath11); stroke:none;" xml:space="preserve">+get() : Extractor</text>
-      <text x="2" y="27" style="clip-path:url(#clipPath11); stroke:none;" xml:space="preserve">+getSupportedMimeTypes() : Set</text>
+      <text x="2" y="13" style="clip-path:url(#clipPath9); stroke:none;" xml:space="preserve">+add(factory : ExtractorFactory)</text>
+      <text x="2" y="27" style="clip-path:url(#clipPath9); stroke:none;" xml:space="preserve">+remove(factory : ExtractorFactory)</text>
+      <text x="2" y="41" style="clip-path:url(#clipPath9); stroke:none;" xml:space="preserve">+getAll() : Set</text>
+      <text x="2" y="55" style="clip-path:url(#clipPath9); stroke:none;" xml:space="preserve">+get(mimeType : String)</text>
     </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,30)">
-      <text x="2" y="13" style="clip-path:url(#clipPath12); stroke:none;" xml:space="preserve">+extract(id : URI, stream : InputStream, charset : Charset, mimeType : String, result : RDFContainer)</text>
+      <text x="2" y="13" style="clip-path:url(#clipPath10); stroke:none;" xml:space="preserve">+extract(id : URI, stream : InputStream, charset : Charset, mimeType : String, result : RDFContainer)</text>
+    </g>
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,180)">
+      <text x="2" y="13" style="clip-path:url(#clipPath12); stroke:none;" xml:space="preserve">+get() : Extractor</text>
+      <text x="2" y="27" style="clip-path:url(#clipPath12); stroke:none;" xml:space="preserve">+getSupportedMimeTypes() : Set</text>
     </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,2)">
       <text x="263" y="11" style="clip-path:url(#clipPath13); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
       <text x="279" y="25" style="clip-path:url(#clipPath13); stroke:none; font-weight:bold;" xml:space="preserve">Extractor</text>
     </g>
-    <g transform="translate(292,132)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="15" y="11" style="clip-path:url(#clipPath14); stroke:none;" xml:space="preserve">HtmlExtractorFactory</text>
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,152)">
+      <text x="63" y="11" style="clip-path:url(#clipPath14); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
+      <text x="59" y="25" style="clip-path:url(#clipPath14); stroke:none; font-weight:bold;" xml:space="preserve">ExtractorFactory</text>
     </g>
-    <g transform="translate(292,82)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="17" y="11" style="clip-path:url(#clipPath14); stroke:none;" xml:space="preserve">ExcelExtratorFactory</text>
-    </g>
-    <g transform="translate(292,182)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="14" y="11" style="clip-path:url(#clipPath14); stroke:none;" xml:space="preserve">MimeExtractorFactory</text>
-    </g>
-    <g transform="translate(292,232)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="12" y="11" style="clip-path:url(#clipPath14); stroke:none;" xml:space="preserve">OfficeExtractorFactory</text>
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,292)">
+      <text x="63" y="11" style="clip-path:url(#clipPath14); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
+      <text x="56" y="25" style="clip-path:url(#clipPath14); stroke:none; font-weight:bold;" xml:space="preserve">ExtractorRegistry</text>
     </g>
     <g transform="translate(462,82)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
       <text x="17" y="11" style="clip-path:url(#clipPath15); stroke:none;" xml:space="preserve">ExcelExtrator</text>
     </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,152)">
-      <text x="63" y="11" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
-      <text x="59" y="25" style="clip-path:url(#clipPath16); stroke:none; font-weight:bold;" xml:space="preserve">ExtractorFactory</text>
+    <g transform="translate(292,82)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
+      <text x="17" y="11" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">ExcelExtratorFactory</text>
+    </g>
+    <g transform="translate(292,132)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
+      <text x="15" y="11" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">HtmlExtractorFactory</text>
+    </g>
+    <g transform="translate(292,182)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
+      <text x="14" y="11" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">MimeExtractorFactory</text>
+    </g>
+    <g transform="translate(292,232)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
+      <text x="12" y="11" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">OfficeExtractorFactory</text>
     </g>
     <g transform="translate(292,282)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="20" y="11" style="clip-path:url(#clipPath14); stroke:none;" xml:space="preserve">PdfExtractorFactory</text>
-    </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,292)">
-      <text x="63" y="11" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
-      <text x="56" y="25" style="clip-path:url(#clipPath16); stroke:none; font-weight:bold;" xml:space="preserve">ExtractorRegistry</text>
+      <text x="20" y="11" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">PdfExtractorFactory</text>
     </g>
     <g transform="translate(462,132)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
       <text x="15" y="11" style="clip-path:url(#clipPath15); stroke:none;" xml:space="preserve">HtmlExtractor</text>

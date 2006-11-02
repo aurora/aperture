@@ -31,16 +31,16 @@
         <path d="M0 0 L104 0 L104 30 L0 30 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath9">
-        <path d="M0 0 L294 0 L294 76 L0 76 L0 0 Z" />
-      </clipPath>
-      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath10">
         <path d="M0 0 L194 0 L194 46 L0 46 L0 0 Z" />
       </clipPath>
+      <clipPath clipPathUnits="userSpaceOnUse" id="clipPath10">
+        <path d="M0 0 L154 0 L154 30 L0 30 L0 0 Z" />
+      </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath11">
-        <path d="M0 0 L164 0 L164 30 L0 30 L0 0 Z" />
+        <path d="M0 0 L294 0 L294 76 L0 76 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath12">
-        <path d="M0 0 L154 0 L154 30 L0 30 L0 0 Z" />
+        <path d="M0 0 L164 0 L164 30 L0 30 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath13">
         <path d="M0 0 L824 0 L824 32 L0 32 L0 0 Z" />
@@ -52,10 +52,10 @@
         <path d="M0 0 L194 0 L194 32 L0 32 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath16">
-        <path d="M0 0 L154 0 L154 18 L0 18 L0 0 Z" />
+        <path d="M0 0 L88 0 L88 18 L0 18 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath17">
-        <path d="M0 0 L88 0 L88 18 L0 18 L0 0 Z" />
+        <path d="M0 0 L154 0 L154 18 L0 18 L0 0 Z" />
       </clipPath>
       <clipPath clipPathUnits="userSpaceOnUse" id="clipPath18">
         <path d="M0 0 L164 0 L164 18 L0 18 L0 0 Z" />
@@ -144,15 +144,15 @@
       <text x="2" y="13" style="clip-path:url(#clipPath7); stroke:none;" xml:space="preserve">+getDataObject(url : String, source : DataSource, params : Map, containerFactory : RDFContainerFactory) : DataObject</text>
       <text x="2" y="27" style="clip-path:url(#clipPath7); stroke:none;" xml:space="preserve">+getDataObject(url : String, source : DataSource, accessData : AccessData, params : Map, containerFactory : RDFContainerFactory) : DataObject</text>
     </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(532,240)">
-      <text x="2" y="13" style="clip-path:url(#clipPath9); stroke:none;" xml:space="preserve">+add(factory : DataAccessorFactory)</text>
-      <text x="2" y="27" style="clip-path:url(#clipPath9); stroke:none;" xml:space="preserve">+remove(factory : DataAccessorFactory)</text>
-      <text x="2" y="41" style="clip-path:url(#clipPath9); stroke:none;" xml:space="preserve">+getAll() : Set</text>
-      <text x="2" y="55" style="clip-path:url(#clipPath9); stroke:none;" xml:space="preserve">+get(scheme : String) : DataAccessorFactory</text>
-    </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(542,130)">
-      <text x="2" y="13" style="clip-path:url(#clipPath10); stroke:none;" xml:space="preserve">+getSupportedSchemes() : Set</text>
-      <text x="2" y="27" style="clip-path:url(#clipPath10); stroke:none;" xml:space="preserve">+get() : DataAccessor</text>
+      <text x="2" y="13" style="clip-path:url(#clipPath9); stroke:none;" xml:space="preserve">+getSupportedSchemes() : Set</text>
+      <text x="2" y="27" style="clip-path:url(#clipPath9); stroke:none;" xml:space="preserve">+get() : DataAccessor</text>
+    </g>
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(532,240)">
+      <text x="2" y="13" style="clip-path:url(#clipPath11); stroke:none;" xml:space="preserve">+add(factory : DataAccessorFactory)</text>
+      <text x="2" y="27" style="clip-path:url(#clipPath11); stroke:none;" xml:space="preserve">+remove(factory : DataAccessorFactory)</text>
+      <text x="2" y="41" style="clip-path:url(#clipPath11); stroke:none;" xml:space="preserve">+getAll() : Set</text>
+      <text x="2" y="55" style="clip-path:url(#clipPath11); stroke:none;" xml:space="preserve">+get(scheme : String) : DataAccessorFactory</text>
     </g>
     <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(2,2)">
       <text x="368" y="11" style="clip-path:url(#clipPath13); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
@@ -168,14 +168,14 @@
       <text x="53" y="11" style="clip-path:url(#clipPath15); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
       <text x="37" y="25" style="clip-path:url(#clipPath15); stroke:none; font-weight:bold;" xml:space="preserve">DataAccessorFactory</text>
     </g>
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(201,122)">
+      <text x="10" y="11" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">producedBy</text>
+    </g>
     <g transform="translate(292,122)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
-      <text x="20" y="11" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">FileAccessorFactory</text>
+      <text x="20" y="11" style="clip-path:url(#clipPath17); stroke:none;" xml:space="preserve">FileAccessorFactory</text>
     </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(149,242)">
-      <text x="10" y="11" style="clip-path:url(#clipPath17); stroke:none;" xml:space="preserve">producedBy</text>
-    </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(202,122)">
-      <text x="10" y="11" style="clip-path:url(#clipPath17); stroke:none;" xml:space="preserve">producedBy</text>
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(148,242)">
+      <text x="10" y="11" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">producedBy</text>
     </g>
     <g transform="translate(292,242)" style="text-rendering:optimizeLegibility; font-size:11; font-weight:bold; font-family:sans-serif;">
       <text x="23" y="11" style="clip-path:url(#clipPath18); stroke:none;" xml:space="preserve">HttpAccessorFactory</text>
@@ -184,8 +184,8 @@
       <text x="103" y="11" style="clip-path:url(#clipPath19); stroke:none;" xml:space="preserve">&lt;&lt;interface&gt;&gt;</text>
       <text x="84" y="25" style="clip-path:url(#clipPath19); stroke:none; font-weight:bold;" xml:space="preserve">DataAccessorRegistry</text>
     </g>
-    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(631,79)">
-      <text x="10" y="11" style="clip-path:url(#clipPath17); stroke:none;" xml:space="preserve">producedBy</text>
+    <g style="text-rendering:optimizeLegibility; font-size:11; font-family:sans-serif;" transform="translate(631,78)">
+      <text x="10" y="11" style="clip-path:url(#clipPath16); stroke:none;" xml:space="preserve">producedBy</text>
     </g>
     <g transform="translate(582,122)" style="stroke-linecap:butt; font-size:11; fill-opacity:0.9961; fill:rgb(0,0,0); text-rendering:optimizeLegibility; stroke-linejoin:round; font-family:sans-serif; stroke:rgb(0,0,0); stroke-opacity:0.9961;">
       <line x1="50" x2="50" y1="65" style="clip-path:url(#clipPath20); fill:none;" y2="50" />

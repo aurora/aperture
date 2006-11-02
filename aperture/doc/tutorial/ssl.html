@@ -31,12 +31,36 @@ certificates.
 </p>
 
 <p>
+The classes reponsible for this functionality are summarized on the following diagram:
+</p>
+
+<img src="../uml/SecurityClasses.png">
+
+<p>
 When a certificate cannot be validated by the default TrustManager
 and the StandardTrustManager does not already have the certificate in one of its
 certificates stores for denied or accepted certificates, than the decision is delegated
 to a TrustDecider and recorded afterwards in the appropriate certificate store of the
 StandardTrustManager.
 </p>
+
+<p>
+The CertificateStore interface and it's implementations are used by StandardTrustManager.
+They enable the user to use multiple sources of certificate information in making trust
+decisions. These classes are presented on the following diagram:
+</p>
+
+<img src="../uml/CertificateStoreClasses.png">
+
+<p>
+As already said. If a Standard trust manager cannot make a decision, it delegates it to 
+a TrustDecider. This interface is conceived as means to provide some interface for the 
+user to make a decision by himself. Related classes are summarized on the following diagram.
+</p>
+
+<img src="../uml/TrustDeciderClasses.png">
+
+
 
 <p>
 An implementation of a TrustDecider is available for use in Swing-based GUI application.
