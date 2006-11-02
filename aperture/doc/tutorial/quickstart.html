@@ -1,0 +1,141 @@
+<html>
+
+<head>
+	<title>Aperture - Tutorials - Quickstart</title>
+	<link rel="stylesheet" type="text/css" href="../style/default/documentation.css">
+</head>
+
+<body>
+
+<h1>Quickstart tutorial</h1>
+
+<p>
+This guide is dedicated to all those that would simply like to do what aperture is for - that is to crawl
+a filesystem and extract everything there is to be extracted: file metadata and contents. All of this can
+be accomplished in a single class. This class is available in src/examples folder. It is called 
+TutorialCrawlingExample.
+</p>
+
+<p>
+Basically in order to extract some rdf information from a data source we need a ... well a data source, that is
+an instance of a DataSource class. DataSources come in many flavours. (see <a href="sources.html">DataSources</a>).
+The one we'll be interested in is a FileSystemDataSource. The configuration of a data source is stored in an
+RDFContainer. It is an interface that makes access to the RDF store easy. It works more or less like a hash
+map. We can operate on it directly, or through a convenience class called ConfigurationUtil... (for details
+see <a href="rdf.html">RDF usage in Aperture</a>) We'll choose the second approach. The configuration of a 
+data source boils down to four lines of code:
+</p>
+
+<div class="code">
+<pre>
+RDFContainer configuration = new SesameRDFContainer(new URIImpl("source:testSource"));
+ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
+DataSource source = new FileSystemDataSource();
+source.setConfiguration(configuration);
+</pre>
+</div>
+
+<p>
+This snippet does following things
+<ol>
+	<li>Instantiate the RDFContainer using the available implementation. The given uri is more or less 
+	    irrelevant in this case. (Provided it is syntactically correct)</li>
+	<li>Set the rootFolder option to the absolute path of the rootFile (which is a java.io.File instance)</li>
+	<li>Instantiate the DataSource itself as a FileSystemDataSource</li>
+	<li>Set the configuration of the data source to the one from the provided container</li>	
+</ol>
+</p>
+
+<p>
+The second stage: the setting up and firing a crawler is done in another five lines:
+</p>
+
+<div class="code">
+<pre>
+FileSystemCrawler crawler = new FileSystemCrawler();
+crawler.setDataSource(source);
+crawler.setDataAccessorRegistry(new DefaultDataAccessorRegistry());
+crawler.setCrawlerHandler(new TutorialCrawlerHandler());
+crawler.crawl();
+</pre>
+</div>
+
+<p>
+This piece of code has following meaning
+<ol>
+	<li>Instantiation of a crawler</li>
+	<li>Set the crawler to crawl this particular DataSource</li>
+	<li>Part of aperture magic: if you're interested see <a href="accessors.html">DataObjects 
+	    and DataAccessors</a> for details</li>
+	<li>Set the object that will be notified of new DataObjects. This is the part that we will have to provide
+	    by ourselves, since we are the ones, who know best what to do with the data :-). See below </li>
+	<li>Fire the crawling (might as well be done in a separate thread...) </li>
+</ol>
+</p>
+
+<p>
+The crawler handler is actually very simple. Aperture provides a class called CrawlerHandlerBase. It 
+encapsulates the default methods. The simplest use case of a crawler needs only three methods to be provided.
+They are summarized in this snippet:
+</p>
+
+<div class="code">
+<pre>
+private class TutorialCrawlerHandler extends CrawlerHandlerBase {
+		
+	Repository repository;
+	
+	public TutorialCrawlerHandler() throws Exception {
+		repository = new Repository(new MemoryStore());
+		repository.initialize();
+		repository.setAutoCommit(false);
+	}
+	// let's dump the contents onto the standard output	
+	public void crawlStopped(Crawler crawler, ExitCode exitCode) {
+		try {
+			repository.commit();
+			RDFWriter rdfWriter = Rio.createWriter(RDFFormat.TRIX, new PrintWriter(System.out));
+			repository.export(rdfWriter);
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public RDFContainer getRDFContainer(URI uri) {
+		SesameRDFContainer container = new SesameRDFContainer(repository,uri);
+		return container;
+	}
+}
+</pre>
+</div>
+
+<p>
+This class consists of following elements:
+<ol>
+	<li>Constructor - initializes the underlying repository - the rdf store that will contain all generated
+	    RDF statements</li>
+	<li>crawlStopped - the method called by the crawler, when it has finished the crawling process. At that
+	    point the Repository will contain all data that has been extracted from a file system, that is
+	    the file metadata (names, sizes, dates of last modification etc...) and contents (extracted from
+	    files that have been recognized as being of one of the supported file types. See <a 
+	    href="extractors.html">extractors</a> for details on this process</li>
+	<li>getRDFContainer - every time a new data object (in this case a file) is encountered, the crawler
+	    has to store the rdf data in some rdf container. He asks the handler to provide him with one. This
+	    approach gives us some flexibility. In this particular program we use this flexibility to make
+	    all containers work on the same repository. In this case we have all data in a single place.</li>
+</ol>
+</p>
+
+<p>
+This implementation dumps the data onto the screen, but it is clear that an addition of two or three lines 
+of code (e.g. overriding  the objectNew method, or doing something more interesting in crawlStopped method). 
+Will enable the user to do anyting he or she wants. If this got you interested - see the entire working
+example in org.semanticdesktop.aperture.examples.TutorialCrawlingExample. There are also numerous other
+examples in this package. Apart from examples, there is still plenty to read in the rest of this documentation.
+Enjoy aperture!
+</p>
+
+</body>
+
+</html>
