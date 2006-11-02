@@ -40,21 +40,33 @@ important functional changes:
 - Considerably extended documentation and example code.
 
 ----------------------------------
-Next version
+version 2006.1-alpha-3, 2006-11-02
 ----------------------------------
 
-improvements:
+The most notable feature of this release is the IcalCrawler. It can crawl
+files in the popular iCalendar format. Many calendaring applications use
+this format either natively, or via some export/import functionality. It
+uses the rdf-mapping developed by the w3c Rdf Calendaring group. (With some
+improvements - see javadoc). Additional improvements include: 
+
 - added MIME type detection for many formats:
+
 - improved MIME type detection of MHTML files (web archives)
+
 - introduced HtmlParserUtil, containing large parts of the HtmlExtractor
   implementation, as HTML (fragments) may occur in other document types as
   well (e.g. saved mails, see MimeExtractor)
+
 - the maximumSize property is now a long instead of an int
+
 - added ThreadedExtractorWrapper class, for catching and interrupting hanging
   Extractors
+
 - added RepositoryAccessData, an AccessData implementation storing its
   information in a Repository
+
 - added ability to specify a port number for an IMAP source
+
 - set target platform to Java 5
 
 updated dependencies:
