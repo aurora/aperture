@@ -75,7 +75,7 @@ This piece of code has following meaning
 
 <p>
 The crawler handler is actually very simple. Aperture provides a class called CrawlerHandlerBase. It 
-encapsulates the default methods. The simplest use case of a crawler needs only three methods to be provided.
+encapsulates the default methods. The simplest use case of a crawler needs only five methods to be provided.
 They are summarized in this snippet:
 </p>
 
@@ -83,54 +83,116 @@ They are summarized in this snippet:
 <pre>
 private class TutorialCrawlerHandler extends CrawlerHandlerBase {
 		
-	Repository repository;
-	
-	public TutorialCrawlerHandler() throws Exception {
-		repository = new Repository(new MemoryStore());
-		repository.initialize();
-		repository.setAutoCommit(false);
-	}
-	// let's dump the contents onto the standard output	
-	public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-		try {
-			repository.commit();
-			RDFWriter rdfWriter = Rio.createWriter(RDFFormat.TRIX, new PrintWriter(System.out));
-			repository.export(rdfWriter);
+		Repository repository;
+		RDFContainerFactory factory;
+</pre>
+</div>
+<div class="code">
+<pre>		
+		public TutorialCrawlerHandler() throws Exception {
+			repository = new Repository(new MemoryStore());
+			repository.initialize();
+			repository.setAutoCommit(false);
+			factory = new SesameRDFContainerFactory();
 		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public RDFContainer getRDFContainer(URI uri) {
-		SesameRDFContainer container = new SesameRDFContainer(repository,uri);
-		return container;
-	}
-}
 </pre>
 </div>
 
 <p>
-This class consists of following elements:
-<ol>
-	<li>Constructor - initializes the underlying repository - the rdf store that will contain all generated
-	    RDF statements</li>
-	<li>crawlStopped - the method called by the crawler, when it has finished the crawling process. At that
-	    point the Repository will contain all data that has been extracted from a file system, that is
-	    the file metadata (names, sizes, dates of last modification etc...) and contents (extracted from
-	    files that have been recognized as being of one of the supported file types. See <a 
-	    href="extractors.html">extractors</a> for details on this process</li>
-	<li>getRDFContainer - every time a new data object (in this case a file) is encountered, the crawler
-	    has to store the rdf data in some rdf container. He asks the handler to provide him with one. This
-	    approach gives us some flexibility. In this particular program we use this flexibility to make
-	    all containers work on the same repository. In this case we have all data in a single place.</li>
-</ol>
+Constructor - initializes the underlying repository - the rdf store that will contain all generated
+RDF statements.
 </p>
 
+<div class="code">
+<pre>
+		// let's dump the contents onto the standard output	
+		public void crawlStopped(Crawler crawler, ExitCode exitCode) {
+			try {
+				repository.commit();
+				RDFWriter rdfWriter = Rio.createWriter(RDFFormat.TRIX, new PrintWriter(System.out));
+				repository.export(rdfWriter);
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+</pre>
+</div>
+
 <p>
-This implementation dumps the data onto the screen, but it is clear that an addition of two or three lines 
-of code (e.g. overriding  the objectNew method, or doing something more interesting in crawlStopped method). 
-Will enable the user to do anyting he or she wants. If this got you interested - see the entire working
+crawlStopped - the method called by the crawler, when it has finished the crawling process. At that
+point the Repository will contain all data that has been extracted from a file system, that is
+the file metadata (names, sizes, dates of last modification etc...) and contents (extracted from
+files that have been recognized as being of one of the supported file types. See <a 
+href="extractors.html">extractors</a> for details on this process
+</p>
+
+<div class="code">
+<pre>
+		public RDFContainer getRDFContainer(URI uri) {
+			return factory.getRDFContainer(uri);
+		}
+</pre>
+</div>
+
+getRDFContainer - every time a new data object (in this case a file) is encountered, the crawler
+has to store the rdf data in some rdf container. He asks the handler to provide him with one. This
+approach gives us some flexibility. In this particular program we use this flexibility to make
+every container a new fresh one. As such we will have the information about different DataObject
+nicely divided. They won't interfere with each other, and we will be able to decide by ourselves
+what to do with each DataObject.
+
+<div class="code">
+<pre>		
+		public void objectChanged(Crawler crawler, DataObject object) {
+			processBinary(object);
+			try {
+				repository.remove(null, null, null, object.getID());
+				CloseableIterator&lt;RStatement&gt; iterator 
+						= ((Repository)object.getMetadata().getModel()).extractStatements();
+				repository.add(iterator,object.getID());
+				iterator.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			object.dispose();
+		}
+</pre>
+</div>
+
+<p>
+Here we see the aperture at it's full potential. This method is called when the crawler has finished
+crawling a single DataObject (i.e. a file) and would like to pass the information to us. We decide
+to store it in one central repository, but we could just as well do with it whatever pleases us. 
+Since this object has been changed, we assume that some information on this object had already been
+stored in the repository, so we delete all previous statements concerning this object.
+</p>
+
+<div class="code">
+<pre>		
+		public void objectNew(Crawler crawler, DataObject object) {
+			processBinary(object);
+			try {
+				CloseableIterator&lt;RStatement&gt; iterator 
+						= ((Repository)object.getMetadata().getModel()).extractStatements();
+				repository.add(iterator,object.getID());
+				iterator.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			object.dispose();
+		}
+	}
+</pre>
+</div>
+
+<p>
+This method is quite similar to the previous one, with the exception, that we don't have to delete
+any previous information since this object is reported as new, so most probably there should be nothing
+do delete...
+</p>
+
+<p> If this short demonstration got you interested - see the entire working
 example in org.semanticdesktop.aperture.examples.TutorialCrawlingExample. There are also numerous other
 examples in this package. Apart from examples, there is still plenty to read in the rest of this documentation.
 Enjoy aperture!
