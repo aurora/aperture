@@ -19,7 +19,7 @@ your copy of ANT at http://ant.apache.org/
 		<!-- versions -->
 		<property name="project.version.major" value="2006" />
 		<property name="project.version.minor" value="1" />
-		<property name="version-status" value="-alpha-2" />
+		<property name="version-status" value="-alpha-3" />
 		<property name="project.version.full" value="${project.version.major}.${project.version.minor}${version-status}" />
 	
 		<!-- input dirs -->
