@@ -17,9 +17,12 @@ The junit jar file is only needed when you want to run unit tests
 Finally, read doc/documentation.html for instructions on how to use the
 provided APIs.
 
+The Aperture APIs are compatible with Java 1.4.2 but some API implementations
+may require Java 5.
+
 *) To create your own jar files:
 
-Install Java 1.4 or higher and Ant 1.6.x or higher.
+Install Java 5 or higher and Ant 1.6.x or higher.
 
 Add the junit-<version>.jar file to the $ANT_HOME\lib directory or make sure
 in another way that it is added to the Ant classpath. See 
