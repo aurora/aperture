@@ -23,8 +23,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
+import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -293,7 +292,7 @@ public class OpenXmlExtractor implements Extractor {
 					// if it has a namespace URI, we can easily create an RDF property from it
 					String nameSpace = childElement.getNamespaceURI();
 					if (nameSpace != null) {
-						URI predicate = new URIImpl(nameSpace, childElement.getLocalName());
+						URI predicate = metadata.getValueFactory().createURI(nameSpace, childElement.getLocalName());
 						metadata.add(predicate, text);
 					}
 

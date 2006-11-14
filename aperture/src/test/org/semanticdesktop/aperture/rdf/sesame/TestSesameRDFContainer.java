@@ -7,24 +7,25 @@
 package org.semanticdesktop.aperture.rdf.sesame;
 
 import java.util.Date;
+import java.util.Properties;
 
 import junit.framework.TestCase;
 
-import org.openrdf.model.Resource;
-import org.openrdf.model.URI;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.model.impl.ValueFactoryImpl;
-import org.openrdf.model.vocabulary.RDFS;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.sesame.sailimpl.memory.MemoryStore;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.node.Resource;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.ontoware.rdf2go.vocabulary.RDFS;
+import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.rdf.MultipleValuesException;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.ValueFactory;
 
-public class TestSesameRDFContainer extends TestCase {
+public class TestSesameRDFContainer extends ApertureTestBase {
 
-	public static final String TEST_OBJECT_URI = "urn:test:dataobject";
+	public static final String TEST_OBJECT_URI = "urn://test/dataobject";
 
-	public static final String TEST_RESOURCE_URI = "urn:test:objectresource";
+	public static final String TEST_RESOURCE_URI = "urn://test/objectresource";
 
 	public static final String PROP_BOOL = "http://example.com/ont/bool";
 
@@ -46,21 +47,19 @@ public class TestSesameRDFContainer extends TestCase {
 
 	private Date MYDATE = new Date();
 
-	static ValueFactoryImpl val = new ValueFactoryImpl();
-
 	static {
-		PROP_STRING_URI = val.createURI(RDFS.LABEL.toString());
-		PROP_RESOURCE_URI = val.createURI(RDFS.SEEALSO.toString());
-		PROP_BOOL_URI = val.createURI(PROP_BOOL);
-		PROP_DATE_URI = val.createURI(PROP_DATE);
-		PROP_INT_URI = val.createURI(PROP_INT);
-		TEST_RESOURCE = val.createURI(TEST_RESOURCE_URI);
+		PROP_STRING_URI = RDFS.label;
+		PROP_RESOURCE_URI = RDFS.seeAlso;
+		PROP_BOOL_URI = URIImpl.createURIWithoutChecking(PROP_BOOL);
+		PROP_DATE_URI = URIImpl.createURIWithoutChecking(PROP_DATE);
+		PROP_INT_URI = URIImpl.createURIWithoutChecking(PROP_INT);
+		TEST_RESOURCE = URIImpl.createURIWithoutChecking(TEST_RESOURCE_URI);
 	}
 
 	public void testPutBasicTypes() throws Exception {
-		SesameRDFContainer container = (SesameRDFContainer) new SesameRDFContainerFactory()
-				.newInstance(TEST_OBJECT_URI);
-		Repository repository = container.getRepository();
+		RDFContainer container = createSesameRDFContainer(TEST_OBJECT_URI);
+		Model model = (Model)container.getModel();
+		ValueFactory val = container.getValueFactory();
 		Resource subject = container.getDescribedUri();
 
 		container.put(PROP_STRING_URI, "label");
@@ -69,36 +68,17 @@ public class TestSesameRDFContainer extends TestCase {
 		container.put(PROP_INT_URI, 23);
 		container.put(PROP_RESOURCE_URI, TEST_RESOURCE);
 		// check
-		assertTrue(repository.hasStatement(subject, PROP_STRING_URI, val.createLiteral("label")));
-		assertTrue(repository.hasStatement(subject, PROP_STRING_URI, val.createLiteral("label")));
-		assertTrue(repository.hasStatement(subject, PROP_STRING_URI, val.createLiteral("label")));
-		assertTrue(repository.hasStatement(subject, PROP_STRING_URI, val.createLiteral("label")));
+		assertTrue(model.contains(subject, PROP_STRING_URI, val.createLiteral("label")));
+		assertTrue(model.contains(subject, PROP_STRING_URI, val.createLiteral("label")));
+		assertTrue(model.contains(subject, PROP_STRING_URI, val.createLiteral("label")));
+		assertTrue(model.contains(subject, PROP_STRING_URI, val.createLiteral("label")));
+		container.dispose();
 	}
 
-	// The following tests test whether SesameRDFContainer properly applies its map semantics, i.e. whether
-	// the put really overwrites previous values, whether the get immediately returns results, regardless of
-	// whether the Repository is auto-committing, etc.
-
-	public void testAutoCommittingRepository() throws Exception {
-		testMapSemantics(true);
-	}
-
-	public void testNonAutoCommittingRepository() throws Exception {
-		testMapSemantics(false);
-	}
-
-	private void testMapSemantics(boolean autoCommitting) throws Exception {
-		MemoryStore memoryStore = new MemoryStore();
-		Repository repository = new Repository(memoryStore);
-		repository.initialize();
-		repository.setAutoCommit(autoCommitting);
-		testPutSemantics(repository);
-	}
-
-	private void testPutSemantics(Repository repository) {
-		URI subject = new URIImpl("urn:test:dummy");
-		SesameRDFContainer container = new SesameRDFContainer(repository, subject);
-		ValueFactory valFac = repository.getSail().getValueFactory();
+	public void testPutSemantics() {
+		URI subject = URIImpl.createURIWithoutChecking("urn:test:dummy");
+		RDFContainer container = new SesameRDFContainer(subject);
+		ValueFactory valFac = container.getValueFactory();
 		
 		// check whether the current value is propertly overwritten
 		assertEquals(null, container.getString(PROP_STRING_URI));
@@ -131,5 +111,6 @@ public class TestSesameRDFContainer extends TestCase {
 		catch (MultipleValuesException e) {
 			// this is the required behaviour
 		}
+		container.dispose();
 	}
 }

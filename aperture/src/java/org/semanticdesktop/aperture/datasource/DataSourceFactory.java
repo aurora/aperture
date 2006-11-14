@@ -6,7 +6,7 @@
  */
 package org.semanticdesktop.aperture.datasource;
 
-import org.openrdf.model.URI;
+import org.ontoware.rdf2go.model.node.URI;
 
 /**
  * DataSourceFactories create instances of DataSources.

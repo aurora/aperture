@@ -8,16 +8,17 @@ package org.semanticdesktop.aperture.extractor.wordperfect;
 
 import java.io.IOException;
 
+import org.ontoware.rdf2go.exception.ModelException;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class WordPerfectExtractorTest extends ExtractorTestBase {
 
-	public void testExtraction() throws ExtractorException, IOException {
+	public void testExtraction() throws ExtractorException, IOException, ModelException {
 		testExtraction(DOCS_PATH + "corel-wordperfect-4.2.wp");
 		testExtraction(DOCS_PATH + "corel-wordperfect-5.0.wp");
 		testExtraction(DOCS_PATH + "corel-wordperfect-5.1.wp");
@@ -28,13 +29,15 @@ public class WordPerfectExtractorTest extends ExtractorTestBase {
 		// testExtraction(DOCS_PATH + "corel-wordperfect-5.1-far-east.wpd");
 	}
 
-	public void testExtraction(String resourceName) throws ExtractorException, IOException {
+	public void testExtraction(String resourceName) throws ExtractorException, IOException, ModelException {
 		// apply the extractor on an example file
 		ExtractorFactory factory = new WordPerfectExtractorFactory();
 		Extractor extractor = factory.get();
-		SesameRDFContainer container = extract(resourceName, extractor);
+		RDF2GoRDFContainer container = extract(resourceName, extractor);
 
 		// check the extraction results
 		checkStatement(DATA.fullText, "WordPerfect", container);
+		
+		container.dispose();
 	}
 }

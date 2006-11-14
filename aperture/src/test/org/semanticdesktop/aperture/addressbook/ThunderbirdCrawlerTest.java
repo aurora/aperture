@@ -8,17 +8,19 @@ package org.semanticdesktop.aperture.addressbook;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 
 import junit.framework.TestCase;
 
-import org.openrdf.model.URI;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.rdfxml.RDFXMLWriter;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.sesame.sailimpl.memory.MemoryStore;
+import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Syntax;
+import org.ontoware.rdf2go.model.node.URI;
+import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
@@ -29,14 +31,14 @@ import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 
-public class ThunderbirdCrawlerTest extends TestCase implements CrawlerHandler, RDFContainerFactory {
+public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerHandler, RDFContainerFactory {
 
 	private static String data="/org/semanticdesktop/aperture/docs/thunderbird-addressbook.mab";
-	private Repository repository;
+	private Model model;
 	private int objects;
 	
 	private String makeFileFromResource(String path) throws IOException {
@@ -62,7 +64,7 @@ public class ThunderbirdCrawlerTest extends TestCase implements CrawlerHandler, 
 		
 		DataSource ds=new AddressbookDataSource();
 		
-		ds.setConfiguration(new SesameRDFContainer("urn:TestThunderBirdDataSource"));
+		ds.setConfiguration(createSesameRDFContainer("urn:TestThunderBirdDataSource"));
 		ConfigurationUtil.setBasepath(makeFileFromResource(data),ds.getConfiguration());
 		ds.getConfiguration().put(DATASOURCE.flavour,"thunderbird");
 		
@@ -73,8 +75,7 @@ public class ThunderbirdCrawlerTest extends TestCase implements CrawlerHandler, 
 		c.setAccessData(new AccessDataImpl());
 		c.setCrawlerHandler(this);
 		
-		repository=new Repository(new MemoryStore());
-		repository.initialize();
+		model = new ModelImplSesame(false);
 		
 		c.crawl();
 
@@ -84,22 +85,27 @@ public class ThunderbirdCrawlerTest extends TestCase implements CrawlerHandler, 
 		
 		//test serialisation and parsing
 		StringWriter xml=new StringWriter();
-		repository.export(new RDFXMLWriter(xml));
+		model.writeTo(xml,Syntax.RdfXml);
 
 		File tmpfile=File.createTempFile("abook",".rdfxml");
 		
-		repository.export(new RDFXMLWriter(new FileOutputStream(tmpfile)));
+		FileWriter writer = new FileWriter(tmpfile);
+		model.writeTo(writer,Syntax.RdfXml);
+		writer.close();
 		
-		Repository rep2=new Repository(new MemoryStore());
-		rep2.initialize();
-		rep2.add(tmpfile,"",RDFFormat.RDFXML);
+		Model model2 = new ModelImplSesame(false);
+		
+		FileReader reader = new FileReader(tmpfile);
+		assertTrue(reader.ready());
+		model2.readFrom(reader,Syntax.RdfXml);
+		reader.close();
 
 		//tmpfile.deleteOnExit();
-
+		model.close();
 	}
 
 	public RDFContainer getRDFContainer(URI uri) {
-		return new SesameRDFContainer(repository,uri);
+		return new RDF2GoRDFContainer(model,uri);
 	}
 
 	public void crawlStarted(Crawler crawler) {

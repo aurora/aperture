@@ -6,92 +6,125 @@
  */
 package org.semanticdesktop.aperture;
 
-import junit.framework.TestCase;
+import org.ontoware.aifbcommons.collection.ClosableIterable;
+import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
+import org.ontoware.rdf2go.model.node.Literal;
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.Variable;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Statement;
+import org.semanticdesktop.aperture.accessor.DataObject;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.ValueFactory;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 
-import org.openrdf.model.Literal;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.sesame.repository.RStatement;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.util.iterator.CloseableIterator;
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import junit.framework.TestCase;
 
 public class ApertureTestBase extends TestCase {
 
-    public static final String DOCS_PATH = "org/semanticdesktop/aperture/docs/";
+	public static final String DOCS_PATH = "org/semanticdesktop/aperture/docs/";
 
-    public void checkStatement(URI property, String substring, SesameRDFContainer container) {
-        // setup some info
-        String uriString = container.getDescribedUri().toString();
-        Repository repository = container.getRepository();
-        ValueFactory valueFactory = repository.getSail().getValueFactory();
-        boolean encounteredSubstring = false;
-        
-        // loop over all statements that have the specified property uri as predicate
-        CloseableIterator statements = repository.getStatements(valueFactory.createURI(uriString), property, null);
-        try {
-	        while (statements.hasNext()) {
-	            // check the property type
-	            RStatement statement = (RStatement) statements.next();
-	            assertTrue(statement.getPredicate().equals(property));
-	            
-	            // see if it has a Literal containing the specified substring
-	            Value object = statement.getObject();
-	            if (object instanceof Literal) {
-	                String value = ((Literal) object).getLabel();
-	                if (value.indexOf(substring) >= 0) {
-	                    encounteredSubstring = true;
-	                    break;
-	                }
-	            }
-	        }
-        }
-        finally {
-        	statements.close();
-        }
-        
-        // see if any of the found properties contains the specified substring
-        assertTrue(encounteredSubstring);
-    }
-    
-    public void checkStatement(URI property, URI value, SesameRDFContainer container) {
-        Repository repository = container.getRepository();
-        ValueFactory valueFactory = repository.getSail().getValueFactory();
-        String uriString = container.getDescribedUri().toString();
-        URI subject = valueFactory.createURI(uriString);
-        checkStatement(subject, property, value, container);
-    }
-    
-    public void checkStatement(URI subject, URI property, Value value, SesameRDFContainer container) {
-        checkStatement(subject, property, value, container.getRepository());
-    }
-    
-    public void checkStatement(URI subject, URI property, Value value, Repository repository) {
-        boolean encounteredValue = false;
-        
-        // loop over all statements that have the specified property uri as predicate
-        CloseableIterator statements = repository.getStatements(subject, property, null);
-        try {
-	        while (statements.hasNext()) {
-	            // check the property type
-	            RStatement statement = (RStatement) statements.next();
-	            assertTrue(statement.getPredicate().equals(property));
-	            
-	            // see if it has a Literal containing the specified substring
-	            Value object = statement.getObject();
-	            if (object.equals(value)) {
-	                encounteredValue = true;
-	                break;
-	            }
-	        }
-        }
-        finally {
-        	statements.close();
-        }
-        
-        // see if any of the found properties contains the specified substring
-        assertTrue(encounteredValue);
-    }
+	// TODO fix this
+
+	public Model createModel() {
+		try {
+			return new ModelImplSesame(false);
+		}
+		catch (ModelException me) {
+			return null;
+		}
+	}
+
+	public void checkStatement(URI property, String substring, RDF2GoRDFContainer container) 
+			throws ModelException {
+		// setup some info
+		String uriString = container.getDescribedUri().toString();
+		Model model = container.getModel();
+		ValueFactory valueFactory = container.getValueFactory();
+		boolean encounteredSubstring = false;
+
+		// loop over all statements that have the specified property uri as predicate
+		ClosableIterable<Statement> iterable = model.findStatements(valueFactory.createURI(uriString), property,
+			Variable.ANY);
+		ClosableIterator<Statement> statements = iterable.iterator();
+		try {
+			while (statements.hasNext()) {
+				// check the property type
+				Statement statement = (Statement) statements.next();
+				assertTrue(statement.getPredicate().equals(property));
+
+				// see if it has a Literal containing the specified substring
+				Node object = statement.getObject();
+				if (object instanceof Literal) {
+					String value = ((Literal) object).getValue();
+					if (value.indexOf(substring) >= 0) {
+						encounteredSubstring = true;
+						break;
+					}
+				}
+			}
+		}
+		finally {
+			statements.close();
+		}
+
+		// see if any of the found properties contains the specified substring
+		assertTrue(encounteredSubstring);
+	}
+
+	public void checkStatement(URI property, URI value, RDF2GoRDFContainer container) 
+			throws ModelException {
+		URI subject = container.getDescribedUri(); 
+		checkStatement(subject, property, value, container);
+	}
+
+	public void checkStatement(URI subject, URI property, Node value, RDF2GoRDFContainer container) 
+			throws ModelException {
+		checkStatement(subject, property, value, container.getModel());
+	}
+
+	public void checkStatement(URI subject, URI property, Node value, Model model) throws ModelException {
+		boolean encounteredValue = false;
+
+		// loop over all statements that have the specified property uri as predicate
+		ClosableIterable<Statement> iterable = model.findStatements(subject,property,Variable.ANY);
+		ClosableIterator<Statement> statements = iterable.iterator();
+		try {
+			while (statements.hasNext()) {
+				// check the property type
+				Statement statement = (Statement) statements.next();
+				assertTrue(statement.getPredicate().equals(property));
+
+				// see if it has a Literal containing the specified substring
+				Node object = statement.getObject();
+				if (object.equals(value)) {
+					encounteredValue = true;
+					break;
+				}
+			}
+		}
+		finally {
+			statements.close();
+		}
+
+		// see if any of the found properties contains the specified substring
+		assertTrue(encounteredValue);
+	}
+	
+	protected RDFContainer createSesameRDFContainer(String uri) {
+		return createSesameRDFContainer(URIImpl.createURIWithoutChecking(uri));
+	}
+	
+	protected RDFContainer createSesameRDFContainer(URI uri) {
+		try {
+			Model newModel = new ModelImplSesame(false);
+			return new RDF2GoRDFContainer(newModel,uri);
+		} catch (ModelException me) {
+			throw new RuntimeException(me);
+		}		
+	}
 }
-

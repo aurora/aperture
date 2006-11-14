@@ -19,8 +19,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -223,7 +223,7 @@ public class HttpAccessor implements DataAccessor {
 	private DataObject createDataObject(String url, DataSource source, HttpURLConnection connection,
 			RDFContainerFactory containerFactory) throws IOException {
 		// create the resulting instance
-		URI uri = new URIImpl(url);
+		URI uri = URIImpl.createURIWithoutChecking(url);
 		RDFContainer metadata = containerFactory.getRDFContainer(uri);
 
 		InputStream stream = HttpClientUtil.getInputStream(connection);

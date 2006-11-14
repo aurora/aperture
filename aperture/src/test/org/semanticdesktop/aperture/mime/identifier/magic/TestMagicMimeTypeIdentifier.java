@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import org.openrdf.model.impl.URIImpl;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.util.IOUtil;
@@ -120,7 +120,7 @@ public class TestMagicMimeTypeIdentifier extends ApertureTestBase {
 		String fileType = identifier.identify(null, "test.txt", null);
 		assertEquals("text/plain", fileType);
 		
-		String uriType = identifier.identify(null, null, new URIImpl("file:test.html"));
+		String uriType = identifier.identify(null, null, URIImpl.createURIWithoutChecking("file:test.html"));
 		assertEquals("text/html", uriType);
 	}
 }

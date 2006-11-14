@@ -28,9 +28,12 @@ import javax.swing.TransferHandler;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
+import org.ontoware.rdf2go.model.Model;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.sesame.repository.Repository;
+import org.openrdf.repository.Repository;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
@@ -38,6 +41,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
 import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 
@@ -166,31 +170,38 @@ public class FileInspectorPanel extends JPanel {
             stream.close();
 
             // extract the full-text and metadata
-            SesameRDFContainer container = null;
+            RDF2GoRDFContainer container = null;
 
             Set factories = extractorRegistry.get(mimeType);
             if (factories != null && !factories.isEmpty()) {
                 ExtractorFactory factory = (ExtractorFactory) factories.iterator().next();
                 currentExtractor = factory.get();
                 URI uri = new URIImpl(file.toURI().toString());
-                container = new SesameRDFContainer(uri);
+                Model model = new ModelImplSesame(false);
+                org.ontoware.rdf2go.model.node.URI rdf2goUri = model.createURI(uri.toString());
+                container = new RDF2GoRDFContainer(model,rdf2goUri);
                 
                 // Somehow I couldn't get this working with a single stream and buffer and the use
                 // of mark() and reset(). I probably misunderstood something in the API. For now I'll
                 // just open a second stream.
                 stream = new FileInputStream(file);
                 buffer = new BufferedInputStream(stream, 8192);
-                currentExtractor.extract(uri, buffer, null, mimeType, container);
+                rdf2goUri = container.getModel().createURI(uri.toString());
+                currentExtractor.extract(rdf2goUri, buffer, null, mimeType, container);
                 stream.close();
             }
 
             // update the UI
-            final Repository repository = container == null ? null : container.getRepository();
+            final Repository repository = container == null ? null : (Repository)container.getModel().getUnderlyingModelImplementation();
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     metadataPanel.getModel().setMetadata(mimeType, repository);
                 }
             });
+        }
+        catch (ModelException me) {
+        	me.printStackTrace();
+        	JOptionPane.showMessageDialog(this, "ModelException","ModelException",JOptionPane.ERROR_MESSAGE);
         }
         catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(this, "File not found: " + file.getPath(), "File not found",

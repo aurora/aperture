@@ -6,7 +6,7 @@
  */
 package org.semanticdesktop.aperture.datasource.config;
 
-import org.openrdf.model.Value;
+import org.ontoware.rdf2go.model.node.Node;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 /**
@@ -37,7 +37,7 @@ public abstract class SubstringCondition {
     /**
      * Return the Value used to encode this SubstringCondition in an RDF model.
      */
-    public abstract Value toValue();
+    public abstract Node toNode();
     
     public static class StartsWith extends SubstringCondition {
 
@@ -49,7 +49,7 @@ public abstract class SubstringCondition {
             return string.startsWith(substring);
         }
         
-        public Value toValue() {
+        public Node toNode() {
             return DATASOURCE.STARTS_WITH;
         }
     }
@@ -64,7 +64,7 @@ public abstract class SubstringCondition {
             return string.endsWith(substring);
         }
         
-        public Value toValue() {
+        public Node toNode() {
             return DATASOURCE.ENDS_WITH;
         }
     }
@@ -79,7 +79,7 @@ public abstract class SubstringCondition {
             return string.indexOf(substring) >= 0;
         }
         
-        public Value toValue() {
+        public Node toNode() {
             return DATASOURCE.CONTAINS;
         }
     }
@@ -94,7 +94,7 @@ public abstract class SubstringCondition {
             return string.indexOf(substring) < 0;
         }
         
-        public Value toValue() {
+        public Node toNode() {
             return DATASOURCE.DOES_NOT_CONTAIN;
         }
     }

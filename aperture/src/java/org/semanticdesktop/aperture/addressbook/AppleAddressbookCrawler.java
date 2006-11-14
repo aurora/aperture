@@ -6,30 +6,30 @@
  */
 package org.semanticdesktop.aperture.addressbook;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.sesame.repository.RStatement;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.util.iterator.CloseableIterator;
+import org.ontoware.aifbcommons.collection.ClosableIterable;
+import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.Syntax;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.Variable;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.FileUtil;
-import org.semanticdesktop.aperture.util.RepositoryUtil;
+import org.semanticdesktop.aperture.util.ModelUtil;
 import org.semanticdesktop.aperture.vocabulary.VCARD;
 
 
@@ -86,29 +86,49 @@ public class AppleAddressbookCrawler extends AddressbookCrawler {
 		
 		//System.err.println(rdfxml);
 		
-		Repository rep=RepositoryUtil.createSimpleRepository();
-		rep.add(new StringReader(rdfxml),"urn:mac:addressbook",RDFFormat.RDFXML);
+		Model model = createSimpleModel();
+		model.readFrom(new StringReader(rdfxml), Syntax.RdfXml);
 		
 		List<DataObject> res=new Vector<DataObject>();
 		
-		CloseableIterator i;
-		for (i=rep.getStatements(null,RDF.TYPE,VCARD.VCard); i.hasNext(); ) {
-			RStatement s=(RStatement) i.next();
-			URI uri=new URIImpl(s.getSubject().toString());
+		ClosableIterator<Statement> i = null;
+		try {
+			ClosableIterable<Statement> iterable = model.findStatements(Variable.ANY,RDF.type,VCARD.VCard);
+			i = iterable.iterator();
+			while (i.hasNext()) {
+				Statement s = i.next();
+				URI uri = URIImpl.createURIWithoutChecking(s.getSubject().toString());
 			
-			// get relevant triples
-			RDFContainer dorep = handler.getRDFContainerFactory(this,uri.toString()).getRDFContainer(uri);
-			//pretty
-			((Repository)dorep.getModel()).add(RepositoryUtil.getCBD(s.getSubject(),rep,true));
-			res.add(new DataObjectBase(uri,source,dorep));
+				// get relevant triples
+				RDFContainer dorep = handler.getRDFContainerFactory(this,uri.toString()).getRDFContainer(uri);
+				//pretty
+				List<Statement> statementList = ModelUtil.getCBD(s.getSubject(),model,true); 
+				dorep.getModel().addAll(statementList.iterator());
+				res.add(new DataObjectBase(uri,source,dorep));
+			}
+		} catch (ModelException me) {
+			LOGGER.log(Level.SEVERE,"Exception while crawling the mac addressbook",me);
+		} finally {
+			if (i!=null) {
+				i.close();
+			}
 		}
-		i.close();
 		
 		return res;
 	}
 
 	private String getScript() throws IOException {
 		return FileUtil.readStreamAsUTF8(getClass().getResourceAsStream("addressbook.applescript"));
+	}
+	
+	private Model createSimpleModel() {
+		try {
+			return new ModelImplSesame(false);
+		} catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "Couldn't create a simple model",e);
+			return null;
+		}
+		
 	}
 
 }

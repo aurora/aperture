@@ -6,7 +6,8 @@
  */
 package org.semanticdesktop.aperture.rdf.sesame;
 
-import org.openrdf.model.URI;
+
+import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.RDFContainerFactory;
 

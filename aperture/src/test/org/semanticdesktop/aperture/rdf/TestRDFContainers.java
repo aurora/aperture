@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.rdf;
 
+import org.semanticdesktop.aperture.rdf.rdf2go.TestRdf2GoRdfContainer;
 import org.semanticdesktop.aperture.rdf.sesame.TestSesameRDFContainer;
 
 import junit.framework.Test;
@@ -21,5 +22,6 @@ public class TestRDFContainers extends TestSuite {
         super("RDF containers");
         
         addTest(new TestSuite(TestSesameRDFContainer.class));
+        addTest(new TestSuite(TestRdf2GoRdfContainer.class));
     }
 }

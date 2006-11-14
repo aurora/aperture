@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.opener.DataOpener;
 import org.semanticdesktop.aperture.util.OSUtils;
 
@@ -86,14 +86,14 @@ public class FileOpener implements DataOpener {
 	public static void main(String args[]) throws IOException {
 		FileOpener f=new FileOpener();
 		if (OSUtils.isMac()) {
-			f.open(new URIImpl("file:///Users/"));
-			f.open(new URIImpl("file:///Users/"));
+			f.open(URIImpl.createURIWithoutChecking("file:///Users/"));
+			f.open(URIImpl.createURIWithoutChecking("file:///Users/"));
 		} else if (OSUtils.isWindows()) {
-			f.open(new URIImpl("file:/c:"));
-			f.open(new URIImpl("file:/c:/windows/win.ini"));
+			f.open(URIImpl.createURIWithoutChecking("file:/c:"));
+			f.open(URIImpl.createURIWithoutChecking("file:/c:/windows/win.ini"));
 		} else if (OSUtils.isLinux()) {
-			f.open(new URIImpl("file:///tmp"));
-			f.open(new URIImpl("file:///etc/bash.bashrc"));
+			f.open(URIImpl.createURIWithoutChecking("file:///tmp"));
+			f.open(URIImpl.createURIWithoutChecking("file:///etc/bash.bashrc"));
 		} else {
 			throw new Error("What weirdass OS are you running?");
 		}

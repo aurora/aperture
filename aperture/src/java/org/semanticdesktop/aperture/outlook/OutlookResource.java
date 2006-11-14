@@ -12,17 +12,15 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.LiteralImpl;
-import org.openrdf.model.impl.StatementImpl;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.model.vocabulary.RDF;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.ValueFactory;
 import org.semanticdesktop.aperture.util.DateUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA_GEN;
 import org.semanticdesktop.aperture.vocabulary.ICAL;
@@ -55,8 +53,6 @@ import com.jacob.com.Variant;
 public abstract class OutlookResource {
 
 	/**
-	 * 
-	 * 
 	 * <p>
 	 * Copyright: Copyright (c) 2003
 	 * </p>
@@ -178,6 +174,7 @@ public abstract class OutlookResource {
 		 */
 		public void readAddress(Dispatch d, String prefix, RDFContainer rdf, URI addressRelation) {
 			Variant var = Dispatch.get(d, prefix + "City");
+			ValueFactory vf = rdf.getValueFactory();
 			String city = (var == null) ? null : var.getString();
 			var = Dispatch.get(d, prefix + "Country");
 			String country = (var == null) ? null : var.getString();
@@ -206,22 +203,22 @@ public abstract class OutlookResource {
 			if ((city != null) || (country != null) || (pobox != null) || (plz != null) || (state != null)
 					|| (street != null)) {
 				// create address
-				URI address = new URIImpl(getUri() + "_" + prefix);
-				rdf.add(new StatementImpl(address, RDF.TYPE, VCARD.Address));
-				rdf.add(new StatementImpl(address, RDF.TYPE, VCARD.Address));
+				URI address = rdf.getValueFactory().createURI(getUri() + "_" + prefix);
+				rdf.add(vf.createStatement(address, RDF.type, VCARD.Address));
+				rdf.add(vf.createStatement(address, RDF.type, VCARD.Address));
 
 				if (city != null)
-					rdf.add(new StatementImpl(address, VCARD.locality, new LiteralImpl(city)));
+					rdf.add(vf.createStatement(address, VCARD.locality, vf.createLiteral(city)));
 				if (country != null)
-					rdf.add(new StatementImpl(address, VCARD.country, new LiteralImpl(country)));
+					rdf.add(vf.createStatement(address, VCARD.country, vf.createLiteral(country)));
 				if (pobox != null)
-					rdf.add(new StatementImpl(address, VCARD.pobox, new LiteralImpl(pobox)));
+					rdf.add(vf.createStatement(address, VCARD.pobox, vf.createLiteral(pobox)));
 				if (plz != null)
-					rdf.add(new StatementImpl(address, VCARD.postalcode, new LiteralImpl(plz)));
+					rdf.add(vf.createStatement(address, VCARD.postalcode, vf.createLiteral(plz)));
 				if (state != null)
-					rdf.add(new StatementImpl(address, VCARD.region, new LiteralImpl(state)));
+					rdf.add(vf.createStatement(address, VCARD.region, vf.createLiteral(state)));
 				if (street != null)
-					rdf.add(new StatementImpl(address, VCARD.streetAddress, new LiteralImpl(street)));
+					rdf.add(vf.createStatement(address, VCARD.streetAddress, vf.createLiteral(street)));
 				// add the ano-statement to the result
 				rdf.add(addressRelation, address);
 			}
@@ -312,7 +309,8 @@ public abstract class OutlookResource {
 
 		protected void addData(RDFContainer rdf) throws IOException {
 			Dispatch resource = getSaveResource();
-
+			ValueFactory vf = rdf.getValueFactory();
+			
 			addPropertyIfNotNull(rdf, DATA_GEN.subject, resource, "Subject");
 			addPropertyIfNotNull(rdf, DATA_GEN.title, resource, "Subject");
 			addDateIfNotNull(rdf, DATA_GEN.receivedDate, resource, "ReceivedTime");
@@ -322,12 +320,12 @@ public abstract class OutlookResource {
 			String name = getLiteralOf(getSaveResource(), "SenderName");
 			String mailbox = getLiteralOf(getSaveResource(), "SenderEmailAddress");
 			if (!(name == null && mailbox == null)) {
-				URI from = new URIImpl(getUri() + "_FROM");
-				rdf.add(new StatementImpl(from, RDF.TYPE, DATA_GEN.Agent));
+				URI from = vf.createURI(getUri() + "_FROM");
+				rdf.add(vf.createStatement(from, RDF.type, DATA_GEN.Agent));
 				if (name != null)
-					rdf.add(new StatementImpl(from, DATA_GEN.name, new LiteralImpl(name)));
+					rdf.add(vf.createStatement(from, DATA_GEN.name, vf.createLiteral(name)));
 				if (mailbox != null) {
-					rdf.add(new StatementImpl(from, DATA_GEN.emailAddress, new LiteralImpl(mailbox)));
+					rdf.add(vf.createStatement(from, DATA_GEN.emailAddress, vf.createLiteral(mailbox)));
 				}
 				rdf.add(DATA_GEN.from, from);
 			}
@@ -349,12 +347,12 @@ public abstract class OutlookResource {
 						name = getLiteralOf(recipient, "Name");
 						mailbox = getLiteralOf(recipient, "Address");
 						if (!(name == null && mailbox == null)) {
-							URI rec = new URIImpl(getUri() + "_recipient" + i);
-							rdf.add(new StatementImpl(rec, RDF.TYPE, DATA_GEN.Agent));
+							URI rec = vf.createURI(getUri() + "_recipient" + i);
+							rdf.add(vf.createStatement(rec, RDF.type, DATA_GEN.Agent));
 							if (name != null)
-								rdf.add(new StatementImpl(rec, DATA_GEN.name, new LiteralImpl(name)));
+								rdf.add(vf.createStatement(rec, DATA_GEN.name, vf.createLiteral(name)));
 							if (mailbox != null) {
-								rdf.add(new StatementImpl(rec, DATA_GEN.emailAddress, new LiteralImpl(mailbox)));
+								rdf.add(vf.createStatement(rec, DATA_GEN.emailAddress, vf.createLiteral(mailbox)));
 							}
 
 							if (type.equals(Integer.toString(OlObjectClass.olTo))) {
@@ -699,7 +697,7 @@ public abstract class OutlookResource {
 	 * 
 	 * @param crawler crawler
 	 * @param resource Outlook resource that has to implement "EntryID" for identifier
-	 * @param itemType itemType for path
+	 * @param itemType itemtype for path
 	 * @throws Exception
 	 */
 	protected OutlookResource(OutlookCrawler crawler, Dispatch resource, String itemType) {
@@ -710,9 +708,9 @@ public abstract class OutlookResource {
 	 * Normal constructor with url and resource. Subclasses have to build the url themselves
 	 * 
 	 * @param crawler Crawlercrawler
-	 * @param uri url of the resource
+	 * @param uri uri of the resource
 	 * @param resource object of the resource
-	 * @param itemType itemType for path
+	 * @param itemType itemtype for path
 	 * @throws Exception
 	 */
 	protected OutlookResource(OutlookCrawler crawler, String uri, Dispatch resource, String itemType) {
@@ -750,10 +748,9 @@ public abstract class OutlookResource {
 
 	/**
 	 * finalizer for releasing the activeX
-	 * <p>
-	 * TODO This one runs in its own thread and is therefore dangerous to COM. I had to comment out the
+	 * 
+	 * //TODO This one runs in its own thread and is therefore dangerous to COM. I had to comment out the
 	 *       release method. Perhaps I will come up with a solution sometime
-	 * </p>
 	 */
 	protected void finalize() throws Throwable {
 		if (resource != null) {
@@ -881,7 +878,7 @@ public abstract class OutlookResource {
 	/**
 	 * get the crawler that hosts this resource
 	 * 
-	 * @return The OutlookCrawler
+	 * @return  the crawler that hosts this resource
 	 */
 	public OutlookCrawler getOLCrawler() {
 		return crawler;
@@ -921,8 +918,11 @@ public abstract class OutlookResource {
 
 /*
  * $Log$
- * Revision 1.5  2006/10/31 16:53:47  mylka
- * The javadoc creation doesn't make any warnings
+ * Revision 1.6  2006/11/14 16:13:30  mylka
+ * The Great Merge.
+ *
+ * Revision 1.4.2.1  2006/10/28 13:20:39  mylka
+ * Aperture RDF2Go first draft...
  *
  * Revision 1.4  2006/10/20 17:43:00  mylka
  * removed the umlauts from the copyright message.

@@ -6,7 +6,7 @@
  */
 package org.semanticdesktop.aperture.datasource;
 
-import org.openrdf.model.URI;
+import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
@@ -60,4 +60,10 @@ public interface DataSource {
 	 *            temporarily unset.
 	 */
 	public void setConfiguration(RDFContainer configuration);
+	
+	/**
+	 * Disposes this DataSource. This method disposes the underlying configuration RDFContainer. May also perform
+	 * any other cleanup operations necessary for this particular implementation.
+	 */
+	public void dispose();
 }

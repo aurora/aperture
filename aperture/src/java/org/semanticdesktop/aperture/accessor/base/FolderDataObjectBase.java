@@ -6,8 +6,8 @@
  */
 package org.semanticdesktop.aperture.accessor.base;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.vocabulary.RDF;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.FolderDataObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -23,6 +23,6 @@ public class FolderDataObjectBase extends DataObjectBase implements FolderDataOb
     public FolderDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata) {
         super(id, dataSource, metadata);
         // Add RDF type info
-        metadata.add(RDF.TYPE, DATA.FolderDataObject);
+        metadata.add(RDF.type, DATA.FolderDataObject);
     }
 }

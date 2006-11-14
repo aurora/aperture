@@ -27,15 +27,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFWriter;
-import org.openrdf.rio.Rio;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.sesame.sail.SailInitializationException;
-import org.openrdf.sesame.sail.SailUpdateException;
-import org.openrdf.sesame.sailimpl.memory.MemoryStore;
+import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Syntax;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.repository.Repository;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -54,6 +52,7 @@ import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
@@ -246,7 +245,13 @@ public class CrawlerPanel extends JPanel {
         // create a data source configuration
         InputPanel inputPanel = getConfigurationPanel().getInputPanel();
         File rootFile = new File(inputPanel.getFolderField().getText());
-        SesameRDFContainer configuration = new SesameRDFContainer(new URIImpl("source:testSource"));
+        Model model = null;
+        try {
+        	model = new ModelImplSesame(false);
+        } catch (ModelException me) {
+        	throw new RuntimeException(me);
+        }
+        RDF2GoRDFContainer configuration = new RDF2GoRDFContainer(model,URIImpl.createURIWithoutChecking("source:testSource"));
         ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
 
         // create the data source
@@ -281,8 +286,8 @@ public class CrawlerPanel extends JPanel {
 
     private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
-        // the Repository to store all metadata in
-        private Repository repository;
+        // the Model to store all metadata in
+        private Model model;
 
         // the number of objects accessed thus far
         private int nrObjects;
@@ -300,27 +305,12 @@ public class CrawlerPanel extends JPanel {
         private boolean extractContents;
 
         public SimpleCrawlerHandler() {
-            // create a Repository
-            repository = new Repository(new MemoryStore());
-
             try {
-                repository.initialize();
+                model = new ModelImplSesame(false);
             }
-            catch (SailInitializationException e) {
+            catch (ModelException e) {
                 // we cannot effectively continue
                 throw new RuntimeException(e);
-            }
-
-            // set auto-commit off so that all additions and deletions between two commits become a
-            // single transaction
-            try {
-                repository.setAutoCommit(false);
-            }
-            catch (SailUpdateException e) {
-                // this will hurt performance but we can still continue.
-                // Each add and remove will now be a separate transaction (slow).
-                LOGGER.log(Level.SEVERE,
-                        "Exception while setting auto-commit off, continuing in auto-commit mode", e);
             }
 
             // create components for processing file contents
@@ -348,9 +338,10 @@ public class CrawlerPanel extends JPanel {
                 String text = getConfigurationPanel().getOutputPanel().getFileField().getText();
                 File repositoryFile = new File(text);
                 Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
-                RDFWriter rdfWriter = Rio.createWriter(RDFFormat.TRIX, writer);
-                repository.export(rdfWriter);
+                model.writeTo(writer,Syntax.RdfXml);
                 writer.close();
+                model.close();
+                crawler.getDataSource().dispose();
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -380,22 +371,22 @@ public class CrawlerPanel extends JPanel {
         }
 
         public RDFContainer getRDFContainer(URI uri) {
-            SesameRDFContainer container = new SesameRDFContainer(repository, uri);
-            container.setContext(uri);
-            return container;
-        }
+        	// FIXME Try to force it to use contexts
+        	/*Model contextModel = null;
+    		try {
+    			contextModel = new ModelImplSesame(uri, (Repository) model
+    					.getUnderlyingModelImplementation());
+    		}
+    		catch (ModelException me) {
+    			throw new RuntimeException(me);
+    		}*/
+    		RDF2GoRDFContainer container = new RDF2GoRDFContainer(model, uri, true);
+    		return container;
+    	}
 
         public void objectNew(Crawler dataCrawler, DataObject object) {
             if (object instanceof FileDataObject) {
                 process((FileDataObject) object);
-            }
-
-            try {
-                repository.commit();
-            }
-            catch (SailUpdateException e) {
-                // don't continue when this happens
-                throw new RuntimeException(e);
             }
             
             object.dispose();

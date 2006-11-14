@@ -9,8 +9,8 @@ package org.semanticdesktop.aperture.opener.http;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.opener.DataOpener;
 import org.semanticdesktop.aperture.util.OSUtils;
 
@@ -57,7 +57,7 @@ public class HttpOpener implements DataOpener {
 	
 	public static void main(String args[]) throws IOException {
 		HttpOpener ho=new HttpOpener();
-		ho.open(new URIImpl("http://www.google.com"));
+		ho.open(URIImpl.createURIWithoutChecking("http://www.google.com"));
 	}
 	
 }

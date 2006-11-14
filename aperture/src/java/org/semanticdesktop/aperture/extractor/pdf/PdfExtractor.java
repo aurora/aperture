@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.openrdf.model.URI;
+import org.ontoware.rdf2go.model.node.URI;
 import org.pdfbox.exceptions.CryptographyException;
 import org.pdfbox.exceptions.InvalidPasswordException;
 import org.pdfbox.pdfparser.PDFParser;
@@ -180,13 +180,13 @@ public class PdfExtractor implements Extractor {
         }
     }
 
-    private void addStringMetadata(org.openrdf.model.URI property, String value, RDFContainer result) {
+    private void addStringMetadata(URI property, String value, RDFContainer result) {
         if (value != null) {
             result.add(property, value);
         }
     }
 
-    private void addCalendarMetadata(org.openrdf.model.URI property, Calendar value, RDFContainer result) {
+    private void addCalendarMetadata(URI property, Calendar value, RDFContainer result) {
         if (value != null) {
             result.add(property, value);
         }

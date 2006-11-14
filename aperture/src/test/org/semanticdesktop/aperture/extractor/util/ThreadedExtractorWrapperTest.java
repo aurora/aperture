@@ -9,7 +9,7 @@ package org.semanticdesktop.aperture.extractor.util;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import org.openrdf.model.URI;
+import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;

@@ -22,29 +22,23 @@ import java.io.FileWriter;
 
 import java.io.Writer;
 
-import java.util.logging.Level;
-
 import java.util.logging.Logger;
 
 
 
-import org.openrdf.model.URI;
+import org.ontoware.rdf2go.exception.ModelException;
 
-import org.openrdf.model.impl.URIImpl;
+import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 
-import org.openrdf.rio.RDFFormat;
+import org.ontoware.rdf2go.model.Model;
 
-import org.openrdf.rio.RDFWriter;
+import org.ontoware.rdf2go.model.Syntax;
 
-import org.openrdf.rio.Rio;
+import org.ontoware.rdf2go.model.node.URI;
 
-import org.openrdf.sesame.repository.Repository;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 
-import org.openrdf.sesame.sail.SailInitializationException;
-
-import org.openrdf.sesame.sail.SailUpdateException;
-
-import org.openrdf.sesame.sailimpl.memory.MemoryStore;
+import org.openrdf.repository.Repository;
 
 import org.semanticdesktop.aperture.accessor.DataObject;
 
@@ -68,7 +62,7 @@ import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
 
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 
 import org.semanticdesktop.aperture.vocabulary.ICALTZD;
 
@@ -130,7 +124,7 @@ public class ExampleIcalCrawler {
 
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ModelException {
 
         // create a new ExampleFileCrawler instance
 
@@ -194,7 +188,7 @@ public class ExampleIcalCrawler {
 
 
 
-    public void crawl() {
+    public void crawl() throws ModelException {
 
         if (icalFile == null) {
 
@@ -206,9 +200,21 @@ public class ExampleIcalCrawler {
 
         // create a data source configuration
 
-        SesameRDFContainer configuration = 
+        Model model = null;
 
-                new SesameRDFContainer(new URIImpl("source:testSource"));
+        try {
+
+        	model = new ModelImplSesame(false);
+
+        } catch (ModelException me) {
+
+        	throw new RuntimeException(me);
+
+        }
+
+        RDF2GoRDFContainer configuration = 
+
+                new RDF2GoRDFContainer(model,URIImpl.createURIWithoutChecking("source:testSource"));
 
         ConfigurationUtil.setRootUrl(icalFile.getAbsolutePath(), configuration);
 
@@ -244,63 +250,27 @@ public class ExampleIcalCrawler {
 
 
 
-    private class SimpleCrawlerHandler implements CrawlerHandler,
-
-            RDFContainerFactory {
+    private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
 
 
-        private Repository repository;
+    	protected Model model;
 
+    	
 
+    	protected int nrObjects;
 
-        private int nrObjects;
-
-
+    	
 
         public SimpleCrawlerHandler() {
 
-            // create a Repository
+        	try {
 
-            repository = new Repository(new MemoryStore());
+            	model = new ModelImplSesame(false);
 
+            } catch (ModelException me) {
 
-
-            try {
-
-                repository.initialize();
-
-            } catch (SailInitializationException e) {
-
-                // we cannot effectively continue
-
-                throw new RuntimeException(e);
-
-            }
-
-
-
-            // set auto-commit off so that all additions and deletions between
-
-            // two commits become a single transaction
-
-            try {
-
-                repository.setAutoCommit(false);
-
-            } catch (SailUpdateException e) {
-
-                // this will hurt performance but we can still continue.
-
-                // Each add and remove will now be a separate transaction
-
-                // (slow).
-
-                LOGGER.log(Level.SEVERE,
-
-                        "Exception while setting auto-commit off, " +
-
-                        "continuing in auto-commit mode", e);
+            	throw new RuntimeException(me);
 
             }
 
@@ -308,177 +278,149 @@ public class ExampleIcalCrawler {
 
 
 
-        public void crawlStarted(Crawler crawler) {
+		public void accessingObject(Crawler crawler, String url) {
 
-            nrObjects = 0;
+			// do nothing by default
 
-        }
+		}
 
 
 
-        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
+		public void crawlStarted(Crawler crawler) {
 
-            try {
+			nrObjects = 0;
 
-                Writer writer = new BufferedWriter(
+		}
 
-                        new FileWriter(repositoryFile.getAbsolutePath()));
 
-                RDFWriter rdfWriter = 
 
-                        Rio.createWriter(RDFFormat.RDFXML, writer);
+		public void crawlStopped(Crawler crawler, ExitCode exitCode) {
 
-                repository.export(rdfWriter);
+		    try {
 
-                writer.close();
+		        Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
 
-                System.out.println("Crawled " + nrObjects
+		        model.writeTo(writer,Syntax.RdfXml);
 
-                        + " components (exit code: " + exitCode + ")");
+		        writer.close();
 
-                System.out.println("Saved RDF model to " + repositoryFile);
+		
 
-            } catch (Exception e) {
+		        System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
 
-                e.printStackTrace();
+		        System.out.println("Saved RDF model to " + repositoryFile);
 
-            }
+		    }
 
-        }
+		    catch (Exception e) {
 
+		        e.printStackTrace();
 
+		    }
 
-        public void accessingObject(Crawler crawler, String url) {
+		}
 
-            System.out.println("Processing component " + nrObjects + ": " + url
 
-                    + "...");
 
-        }
+		public void objectChanged(Crawler dataCrawler, DataObject object) {
 
+		    object.dispose();
 
+		    printUnexpectedEventWarning("changed");
 
-        public RDFContainerFactory getRDFContainerFactory(Crawler crawler,
+		}
 
-                String url) {
 
-            return this;
 
-        }
+		public void objectNotModified(Crawler crawler, String url) {
 
+		    printUnexpectedEventWarning("unmodified");
 
+		}
 
-        public RDFContainer getRDFContainer(URI uri) {
 
-            SesameRDFContainer container = 
 
-                    new SesameRDFContainer(repository,uri);
+		public void objectRemoved(Crawler dataCrawler, String url) {
 
-            container.setContext(uri);
+		    printUnexpectedEventWarning("removed");
 
-            return container;
+		}
 
-        }
 
 
+		public void clearStarted(Crawler crawler) {
 
-        public void objectNew(Crawler dataCrawler, DataObject object) {
+		    printUnexpectedEventWarning("clearStarted");
 
-            nrObjects++;
+		}
 
 
 
-            LOGGER.fine("New object: '" + object.getID() + "'");
+		public void clearingObject(Crawler crawler, String url) {
 
+		    printUnexpectedEventWarning("clearingObject");
 
+		}
 
-            // commit all generated statements
 
-            try {
 
-                repository.commit();
+		public void clearFinished(Crawler crawler, ExitCode exitCode) {
 
-            } catch (SailUpdateException e) {
+		    printUnexpectedEventWarning("clear finished");
 
-                // don't continue when this happens
+		}
 
-                throw new RuntimeException(e);
 
-            }
 
+		public void objectNew(Crawler crawler, DataObject object) {
 
+			object.dispose();
 
-            object.dispose();
+		}
 
-        }
 
 
+		public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
 
-        public void objectChanged(Crawler dataCrawler, DataObject object) {
+		    return this;
 
-            object.dispose();
+		}
 
-            printUnexpectedEventWarning("Object '" + object.getID()
 
-                    + "' changed");
 
-        }
+		public RDFContainer getRDFContainer(URI uri) {
 
+			Model contextModel = null;
 
+			try {
 
-        public void objectNotModified(Crawler crawler, String url) {
+				contextModel = new ModelImplSesame(uri, (Repository) model
 
-            printUnexpectedEventWarning("Object '" + url + "' unmodified");
+						.getUnderlyingModelImplementation());
 
-        }
+			}
 
+			catch (ModelException me) {
 
+				throw new RuntimeException(me);
 
-        public void objectRemoved(Crawler dataCrawler, String url) {
+			}
 
-            printUnexpectedEventWarning("Object '" + url + "' removed");
+			RDF2GoRDFContainer container = new RDF2GoRDFContainer(contextModel, uri);
 
-        }
+			return container;
 
+		}
 
 
-        public void clearStarted(Crawler crawler) {
 
-            printUnexpectedEventWarning("Clear Started");
+		protected void printUnexpectedEventWarning(String event) {
 
-        }
+		     // as we don't keep track of access data in this example code, some events should never occur
 
+		     LOGGER.warning("encountered unexpected event (" + event + ") with non-incremental crawler");
 
-
-        public void clearingObject(Crawler crawler, String url) {
-
-            printUnexpectedEventWarning("Clearing Object '" + url + "'");
-
-        }
-
-
-
-        public void clearFinished(Crawler crawler, ExitCode exitCode) {
-
-            printUnexpectedEventWarning("Clear finished, exitCode: "
-
-                    + exitCode.toString());
-
-        }
-
-
-
-        private void printUnexpectedEventWarning(String event) {
-
-            // as we don't keep track of access data in this example code, some
-
-            // events should never occur
-
-            LOGGER.warning("encountered unexpected event (" + event + ") " 
-
-                    + "with non-incremental crawler");
-
-        }
+		}
 
     }
 

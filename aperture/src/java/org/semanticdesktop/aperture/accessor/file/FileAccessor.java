@@ -17,10 +17,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.StatementImpl;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.model.vocabulary.RDF;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -135,7 +134,7 @@ public class FileAccessor implements DataAccessor {
 			result = new FileDataObjectBase(id, source, metadata, contentStream);
 			// Add type info. (type, File) cannot be added in the FileDataObject class itself because it is
 			// also used for things like email Messages with content, that are strictly speaking not files.
-			result.getMetadata().add(RDF.TYPE, DATA.FileDataObject);
+			result.getMetadata().add(RDF.type, DATA.FileDataObject);
 		}
 		else if (isFolder) {
 			result = new FolderDataObjectBase(id, source, metadata);
@@ -208,7 +207,7 @@ public class FileAccessor implements DataAccessor {
 				for (int i = 0; i < children.length; i++) {
 					File child = children[i];
 					if (child != null) {
-						metadata.add(new StatementImpl(toURI(child), DATA.partOf, id));
+						metadata.add(metadata.getValueFactory().createStatement(toURI(child), DATA.partOf, id));
 					}
 				}
 			}
@@ -222,6 +221,6 @@ public class FileAccessor implements DataAccessor {
 		// it does make sure we have legal URIs so do it anyway. We could also do "file:///" +
 		// file.getAbsolutePath() or something similar, which may be cheaper, but I'm not sure whether we
 		// can expect any issues there
-		return new URIImpl(file.toURI().toString());
+		return URIImpl.createURIWithoutChecking(file.toURI().toString());
 	}
 }

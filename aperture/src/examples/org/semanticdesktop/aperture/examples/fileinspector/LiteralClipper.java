@@ -65,10 +65,6 @@ public class LiteralClipper implements RDFHandler {
         wrappedHandler.handleStatement(clippedStatement(statement));
     }
 
-    public void handleStatement(Statement statement, Resource context) throws RDFHandlerException {
-        wrappedHandler.handleStatement(clippedStatement(statement), context);
-    }
-
     private Statement clippedStatement(Statement statement) {
         Value object = statement.getObject();
         if (object instanceof Literal) {
@@ -95,4 +91,8 @@ public class LiteralClipper implements RDFHandler {
         
         return statement;
     }
+
+	public void handleComment(String arg0) throws RDFHandlerException {
+		wrappedHandler.handleComment(arg0);
+	}
 }

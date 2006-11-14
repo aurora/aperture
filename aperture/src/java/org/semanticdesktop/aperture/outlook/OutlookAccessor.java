@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.model.vocabulary.RDF;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -148,13 +148,13 @@ public class OutlookAccessor implements DataAccessor {
 			}
 
 			// create the metadata
-			URI id = new URIImpl(url);
+			URI id = URIImpl.createURIWithoutChecking(url);
 			RDFContainer metadata = containerFactory.getRDFContainer(id);
 
 			// basic info
-			metadata.add(RDF.TYPE, resource.getType());
+			metadata.add(RDF.type, resource.getType());
 			if (parent != null)
-				metadata.add(DATA.partOf, new URIImpl(parent.getUri()));
+				metadata.add(DATA.partOf, URIImpl.createURIWithoutChecking(parent.getUri()));
 
 			// get the details
 			resource.addData(metadata);

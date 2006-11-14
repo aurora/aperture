@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
+import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -22,7 +22,7 @@ import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.accessor.base.FileAccessData;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.util.FileUtil;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
@@ -57,7 +57,7 @@ public class TestFileAccessor extends ApertureTestBase {
         FileUtil.deltree(tmpDir);
     }
 
-    public void testFileAccess() throws UrlNotFoundException, MalformedURLException, IOException {
+    public void testFileAccess() throws UrlNotFoundException, MalformedURLException, IOException, ModelException {
         // create the data object
         SimpleRDFContainerFactory factory = new SimpleRDFContainerFactory();
         DataObject dataObject = fileAccessor.getDataObject(tmpFile.toURI().toString(), null, null, factory);
@@ -65,15 +65,17 @@ public class TestFileAccessor extends ApertureTestBase {
         assertTrue(dataObject instanceof FileDataObject);
 
         // check its metadata
-        checkStatement(DATA.name, "file-", (SesameRDFContainer) dataObject.getMetadata());
+        checkStatement(DATA.name, "file-", (RDF2GoRDFContainer) dataObject.getMetadata());
 
-        URI parentURI = new URIImpl(tmpDir.toURI().toString());
-        checkStatement(DATA.partOf, parentURI, (SesameRDFContainer) dataObject.getMetadata());
+        URI parentURI = dataObject.getMetadata().getValueFactory().createURI(tmpDir.toURI().toString());
+        checkStatement(DATA.partOf, parentURI, (RDF2GoRDFContainer) dataObject.getMetadata());
         
+        // we don't need to dispose the DataSource because we passed null as the value of DataSource to the
+        // extract method
         dataObject.dispose();
     }
 
-    public void testFolderAccess() throws UrlNotFoundException, MalformedURLException, IOException {
+    public void testFolderAccess() throws UrlNotFoundException, MalformedURLException, IOException, ModelException {
         // create the data object
         SimpleRDFContainerFactory factory = new SimpleRDFContainerFactory();
         DataObject dataObject = fileAccessor.getDataObject(tmpDir.toURI().toString(), null, null, factory);
@@ -81,8 +83,10 @@ public class TestFileAccessor extends ApertureTestBase {
         assertTrue(dataObject instanceof FolderDataObject);
 
         // check its metadata
-        checkStatement(DATA.name, "TestFileAccessor", (SesameRDFContainer) dataObject.getMetadata());
+        checkStatement(DATA.name, "TestFileAccessor", (RDF2GoRDFContainer) dataObject.getMetadata());
         
+        // we don't need to dispose the DataSource because we passed null as the value of DataSource to the
+        // extract method
         dataObject.dispose();
     }
 
@@ -104,13 +108,15 @@ public class TestFileAccessor extends ApertureTestBase {
         // double-check that we *do* get a DataObject when we don't pass the AccessData
         DataObject object2 = fileAccessor.getDataObject(url, null, params, factory);
         assertNotNull(object2);
-        object2.dispose();
+        
+        // we don't need to dispose the DataSource because we passed null as the value of DataSource to the
+		// extract method
+		object2.dispose();
     }
     
-    private static class SimpleRDFContainerFactory implements RDFContainerFactory {
-
+    private class SimpleRDFContainerFactory implements RDFContainerFactory {
         public RDFContainer getRDFContainer(URI uri) {
-            return new SesameRDFContainer(uri);
+            return createSesameRDFContainer(uri);
         }
     }
 }

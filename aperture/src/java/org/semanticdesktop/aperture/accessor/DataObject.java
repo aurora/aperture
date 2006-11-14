@@ -6,7 +6,7 @@
  */
 package org.semanticdesktop.aperture.accessor;
 
-import org.openrdf.model.URI;
+import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
@@ -46,7 +46,9 @@ public interface DataObject {
     public RDFContainer getMetadata();
     
     /**
-     * Closes this DataObject, freeing any resources that it keeps hold of.
+     * Closes this DataObject, freeing any resources that it keeps hold of. This method disposes the underlying
+     * metadata RDFContainer. It doesn't dispose the DataSource. The metadata RDFContainer cannot be used after
+     * the call to this method.
      */
     public void dispose();
 }

@@ -10,11 +10,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
-import org.openrdf.model.Resource;
-import org.openrdf.model.impl.LiteralImpl;
-import org.openrdf.model.impl.StatementImpl;
-import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.model.vocabulary.XMLSchema;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.node.Resource;
+import org.ontoware.rdf2go.vocabulary.RDF;
+import org.ontoware.rdf2go.vocabulary.XSD;
+import org.semanticdesktop.aperture.util.ModelUtil;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
@@ -22,44 +23,44 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
  */
 public class RegExpPattern extends UrlPattern {
 
-    private Pattern pattern;
+	private Pattern pattern;
 
-    public RegExpPattern(Pattern pattern) {
-        this.pattern = pattern;
-    }
+	public RegExpPattern(Pattern pattern) {
+		this.pattern = pattern;
+	}
 
-    public RegExpPattern(String pattern) {
-        this(Pattern.compile(pattern));
-    }
+	public RegExpPattern(String pattern) {
+		this(Pattern.compile(pattern));
+	}
 
-    public Pattern getPattern() {
-        return pattern;
-    }
+	public Pattern getPattern() {
+		return pattern;
+	}
 
-    public String getPatternString() {
-        return pattern.pattern();
-    }
+	public String getPatternString() {
+		return pattern.pattern();
+	}
 
-    public void setPattern(Pattern pattern) {
-        this.pattern = pattern;
-    }
+	public void setPattern(Pattern pattern) {
+		this.pattern = pattern;
+	}
 
-    public void setPattern(String pattern) {
-        this.pattern = Pattern.compile(pattern);
-    }
+	public void setPattern(String pattern) {
+		this.pattern = Pattern.compile(pattern);
+	}
 
-    public boolean matches(String url) {
-        return pattern.matcher(url).matches();
-    }
+	public boolean matches(String url) {
+		return pattern.matcher(url).matches();
+	}
 
-    public Collection getStatements(Resource subject) {
-        ArrayList result = new ArrayList();
-        
-        result.add(new StatementImpl(subject, RDF.TYPE, DATASOURCE_GEN.RegExpPattern));
-        result.add(new StatementImpl(subject, RDF.VALUE,
-                new LiteralImpl(getPatternString(), XMLSchema.STRING)));
-        
-        return result;
-    }
+	public Collection<Statement> getStatements(Model model, Resource subject) {
+		ArrayList<Statement> result = new ArrayList<Statement>();
+
+		result.add(ModelUtil.createStatement(model, subject, RDF.type, DATASOURCE_GEN.RegExpPattern));
+		result.add(ModelUtil.createStatement(model, subject, RDF.value, ModelUtil.createLiteral(model,
+			getPatternString(), XSD._string)));
+
+		return result;
+	}
 
 }

@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 
-import org.openrdf.model.URI;
+import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.HtmlParserUtil;

@@ -8,20 +8,21 @@ package org.semanticdesktop.aperture.extractor.powerpoint;
 
 import java.io.IOException;
 
+import org.ontoware.rdf2go.exception.ModelException;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class PowerPointExtractorTest extends ExtractorTestBase {
 
-    public void testExtraction() throws ExtractorException, IOException {
+    public void testExtraction() throws ExtractorException, IOException, ModelException {
         // apply the extractor on an example file
         ExtractorFactory factory = new PowerPointExtractorFactory();
         Extractor extractor = factory.get();
-        SesameRDFContainer container = extract(DOCS_PATH + "microsoft-powerpoint-2000.ppt", extractor);
+        RDF2GoRDFContainer container = extract(DOCS_PATH + "microsoft-powerpoint-2000.ppt", extractor);
 
         // check the extraction results
         checkStatement(DATA.fullText, "presentation", container);
@@ -34,5 +35,6 @@ public class PowerPointExtractorTest extends ExtractorTestBase {
         checkStatement(DATA.creator, "Fluit", container);
         checkStatement(DATA.keyword, "test", container);
         checkStatement(DATA.keyword, "rdf", container);
+        container.dispose();
     }        
 }

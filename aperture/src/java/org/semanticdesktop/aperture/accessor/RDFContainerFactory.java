@@ -6,7 +6,7 @@
  */
 package org.semanticdesktop.aperture.accessor;
 
-import org.openrdf.model.URI;
+import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**

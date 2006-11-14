@@ -9,11 +9,12 @@ package org.semanticdesktop.aperture.datasource.config;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.openrdf.model.Resource;
-import org.openrdf.model.impl.LiteralImpl;
-import org.openrdf.model.impl.StatementImpl;
-import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.model.vocabulary.XMLSchema;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.node.Resource;
+import org.ontoware.rdf2go.vocabulary.RDF;
+import org.ontoware.rdf2go.vocabulary.XSD;
+import org.semanticdesktop.aperture.util.ModelUtil;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
@@ -21,42 +22,43 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
  */
 public class SubstringPattern extends UrlPattern {
 
-    private String substring;
+	private String substring;
 
-    private SubstringCondition condition;
+	private SubstringCondition condition;
 
-    public SubstringPattern(String substring, SubstringCondition condition) {
-        this.substring = substring;
-        this.condition = condition;
-    }
+	public SubstringPattern(String substring, SubstringCondition condition) {
+		this.substring = substring;
+		this.condition = condition;
+	}
 
-    public String getSubstring() {
-        return substring;
-    }
+	public String getSubstring() {
+		return substring;
+	}
 
-    public void setSubstring(String substring) {
-        this.substring = substring;
-    }
+	public void setSubstring(String substring) {
+		this.substring = substring;
+	}
 
-    public SubstringCondition getCondition() {
-        return condition;
-    }
+	public SubstringCondition getCondition() {
+		return condition;
+	}
 
-    public void setCondition(SubstringCondition condition) {
-        this.condition = condition;
-    }
+	public void setCondition(SubstringCondition condition) {
+		this.condition = condition;
+	}
 
-    public boolean matches(String url) {
-        return condition.test(url, substring);
-    }
+	public boolean matches(String url) {
+		return condition.test(url, substring);
+	}
 
-    public Collection getStatements(Resource subject) {
-        ArrayList result = new ArrayList();
+	public Collection<Statement> getStatements(Model model, Resource subject) {
+		ArrayList<Statement> result = new ArrayList<Statement>();
 
-        result.add(new StatementImpl(subject, RDF.TYPE, DATASOURCE_GEN.SubstringPattern));
-        result.add(new StatementImpl(subject, RDF.VALUE, new LiteralImpl(substring, XMLSchema.STRING)));
-        result.add(new StatementImpl(subject, DATASOURCE_GEN.condition, condition.toValue()));
+		result.add(ModelUtil.createStatement(model, subject, RDF.type, DATASOURCE_GEN.SubstringPattern));
+		result.add(ModelUtil.createStatement(model, subject, RDF.value, ModelUtil.createLiteral(model,
+			substring, XSD._string)));
+		result.add(ModelUtil.createStatement(model, subject, DATASOURCE_GEN.condition, condition.toNode()));
 
-        return result;
-    }
+		return result;
+	}
 }

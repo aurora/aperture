@@ -68,7 +68,7 @@ public interface AccessData {
 	 * 
 	 * @return A Set of Strings.
 	 */
-	public Set getStoredIDs();
+	public Set<String> getStoredIDs();
 
 	/**
 	 * Returns whether this AccessData holds any information about the specified ID.

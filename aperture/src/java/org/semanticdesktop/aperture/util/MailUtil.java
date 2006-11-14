@@ -12,12 +12,9 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 
-import org.openrdf.model.Literal;
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.LiteralImpl;
-import org.openrdf.model.impl.StatementImpl;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.model.vocabulary.RDF;
+import org.ontoware.rdf2go.model.node.Literal;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
@@ -68,21 +65,21 @@ public class MailUtil {
 		// proceed when at least one has a reasonable value
 		if (hasRealValue(name) || hasRealValue(emailAddress)) {
 			// create a URI for this address
-			URI person = new URIImpl(getPersonURI(emailAddress, name));
+			URI person = metadata.getValueFactory().createURI(getPersonURI(emailAddress, name));
 
 			// connect the person resource to the mail resource
 			metadata.add(predicate, person);
-			metadata.add(new StatementImpl(person, RDF.TYPE, DATA.Agent));
+			metadata.add(metadata.getValueFactory().createStatement(person, RDF.type, DATA.Agent));
 
 			// add name and address details
 			if (hasRealValue(name)) {
-				Literal literal = new LiteralImpl(name);
-				metadata.add(new StatementImpl(person, DATA.name, literal));
+				Literal literal = metadata.getValueFactory().createLiteral(name);
+				metadata.add(metadata.getValueFactory().createStatement(person, DATA.name, literal));
 			}
 
 			if (hasRealValue(emailAddress)) {
-				Literal literal = new LiteralImpl(emailAddress);
-				metadata.add(new StatementImpl(person, DATA.emailAddress, literal));
+				Literal literal = metadata.getValueFactory().createLiteral(emailAddress);
+				metadata.add(metadata.getValueFactory().createStatement(person, DATA.emailAddress, literal));
 			}
 		}
 	}

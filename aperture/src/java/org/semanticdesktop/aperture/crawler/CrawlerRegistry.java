@@ -8,7 +8,7 @@ package org.semanticdesktop.aperture.crawler;
 
 import java.util.Set;
 
-import org.openrdf.model.URI;
+import org.ontoware.rdf2go.model.node.URI;
 
 /**
  * An CrawlerRegistry serves as a central registry for registering and obtaining CrawlerFactories.

@@ -6,9 +6,9 @@
  */
 package org.semanticdesktop.aperture.vocabulary;
 
-import org.openrdf.model.Literal;
-import org.openrdf.model.impl.LiteralImpl;
-import org.openrdf.model.vocabulary.XMLSchema;
+import org.ontoware.rdf2go.model.node.DatatypeLiteral;
+import org.ontoware.rdf2go.model.node.impl.DatatypeLiteralImpl;
+import org.ontoware.rdf2go.vocabulary.XSD;
 
 
 /**
@@ -19,19 +19,19 @@ import org.openrdf.model.vocabulary.XMLSchema;
  * $Id$
  */
 public class DATASOURCE extends DATASOURCE_GEN {
-	
-	public static final Literal STARTS_WITH = new LiteralImpl("startsWith", XMLSchema.STRING);
 
-    public static final Literal ENDS_WITH = new LiteralImpl("endsWith", XMLSchema.STRING);
+	public static final DatatypeLiteral STARTS_WITH = new DatatypeLiteralImpl("startsWith", XSD._string);
 
-    public static final Literal CONTAINS = new LiteralImpl("contains", XMLSchema.STRING);
+    public static final DatatypeLiteral ENDS_WITH = new DatatypeLiteralImpl("endsWith", XSD._string);
 
-    public static final Literal DOES_NOT_CONTAIN = new LiteralImpl("doesNotContain", XMLSchema.STRING);
+    public static final DatatypeLiteral CONTAINS = new DatatypeLiteralImpl("contains", XSD._string);
+
+    public static final DatatypeLiteral DOES_NOT_CONTAIN = new DatatypeLiteralImpl("doesNotContain", XSD._string);
     
-    public static final Literal PLAIN = new LiteralImpl("plain", XMLSchema.STRING);
+    public static final DatatypeLiteral PLAIN = new DatatypeLiteralImpl("plain", XSD._string);
     
-    public static final Literal SSL = new LiteralImpl("ssl", XMLSchema.STRING);
+    public static final DatatypeLiteral SSL = new DatatypeLiteralImpl("ssl", XSD._string);
     
-    public static final Literal SSL_NO_CERT = new LiteralImpl("ssl-no-cert", XMLSchema.STRING);
+    public static final DatatypeLiteral SSL_NO_CERT = new DatatypeLiteralImpl("ssl-no-cert", XSD._string);
 }
 

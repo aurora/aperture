@@ -6,12 +6,15 @@
  */
 package org.semanticdesktop.aperture.addressbook;
 
+import java.io.PrintWriter;
+
 import junit.framework.TestCase;
 
-import org.openrdf.model.URI;
-import org.openrdf.rio.rdfxml.RDFXMLWriter;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.sesame.sailimpl.memory.MemoryStore;
+import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Syntax;
+import org.ontoware.rdf2go.model.node.URI;
+import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
@@ -21,6 +24,7 @@ import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
@@ -33,15 +37,15 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
  * @author grimnes
  * $Id$
  */
-public class AppleAddressbookCrawlerTest extends TestCase implements CrawlerHandler, RDFContainerFactory {
-	private Repository repository;
+public class AppleAddressbookCrawlerTest extends ApertureTestBase implements CrawlerHandler, RDFContainerFactory {
+	private Model model;
 	int objects;
 	private ExitCode code;
 	
 	public void testCrawl() throws Exception { 
 		DataSource ds=new AddressbookDataSource();
-		
-		ds.setConfiguration(new SesameRDFContainer("urn:TestTAddressbookDataSource"));
+
+		ds.setConfiguration(createSesameRDFContainer("urn:TestTAddressbookDataSource"));
 		ds.getConfiguration().put(DATASOURCE.flavour,AppleAddressbookCrawler.TYPE);
 		
 		CrawlerFactory cf=new AddressbookCrawlerFactory();
@@ -51,19 +55,20 @@ public class AppleAddressbookCrawlerTest extends TestCase implements CrawlerHand
 		c.setAccessData(new AccessDataImpl());
 		c.setCrawlerHandler(this);
 		
-		repository=new Repository(new MemoryStore());
-		repository.initialize();
+		model = new ModelImplSesame(false);
 		
 		System.err.println("Crawling addressbook... ");
 		c.crawl();
 		assertEquals("Crawling must have succeeded.",code,ExitCode.COMPLETED);
 		
 		System.err.println("Objects crawler: "+objects);
-		repository.export(new RDFXMLWriter(System.err));
+		model.writeTo(new PrintWriter(System.out), Syntax.RdfXml);
+		
+		model.close();
 	}
 	
 	public RDFContainer getRDFContainer(URI uri) {
-		return new SesameRDFContainer(repository,uri);
+		return new RDF2GoRDFContainer(model,uri);
 	}
 	
 	public void crawlStarted(Crawler crawler) {

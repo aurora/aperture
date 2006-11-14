@@ -6,31 +6,20 @@
  */
 package org.semanticdesktop.aperture.rdf.sesame;
 
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.openrdf.model.Literal;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.model.vocabulary.XMLSchema;
-import org.openrdf.sesame.repository.RStatement;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.sesame.sail.SailInitializationException;
-import org.openrdf.sesame.sail.SailUpdateException;
-import org.openrdf.sesame.sailimpl.memory.MemoryStore;
-import org.openrdf.util.iterator.CloseableIterator;
-import org.semanticdesktop.aperture.rdf.MultipleValuesException;
+import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.UpdateException;
-import org.semanticdesktop.aperture.util.DateUtil;
+import org.semanticdesktop.aperture.rdf.ValueFactory;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 
 /**
  * An implementation of RDFContainer that uses a Sesame non-inferencing in-memory repository.
@@ -43,15 +32,7 @@ import org.semanticdesktop.aperture.util.DateUtil;
  */
 public class SesameRDFContainer implements RDFContainer {
 
-	private static final Logger LOGGER = Logger.getLogger(SesameRDFContainer.class.getName());
-
-	private Repository repository;
-
-	private ValueFactory valueFactory;
-
-	private URI describedUri;
-
-	private Resource context;
+	private RDF2GoRDFContainer container;
 
 	/**
 	 * Create a new SesameRDFContainer that will manage statements concerning the specified URI.
@@ -59,8 +40,7 @@ public class SesameRDFContainer implements RDFContainer {
 	 * @param describedUri The URI that typically will serve as object in most statements.
 	 */
 	public SesameRDFContainer(String describedUri) {
-		createRepository();
-		this.describedUri = valueFactory.createURI(describedUri);
+		createContainer(URIImpl.create(describedUri),null,false);
 	}
 
 	/**
@@ -69,353 +49,162 @@ public class SesameRDFContainer implements RDFContainer {
 	 * @param describedUri The URI that typically will serve as object in most statements.
 	 */
 	public SesameRDFContainer(URI describedUri) {
-		createRepository();
-		this.describedUri = describedUri;
+		createContainer(describedUri,null,false);	
+	}
+	
+	public SesameRDFContainer(URI describedUri, URI context) {
+		createContainer(describedUri,context,false);
 	}
 
 	/**
 	 * Create a new SesameRDFContainer that will manage statements concerning the specified URI. All
 	 * statements will be stored in and retrieved from the specified Repository.
 	 * 
-	 * @param repository The Repository to store statements in and retrieve statements from.
+	 * @param model The Model to store statements in and retrieve statements from.
 	 * @param describedUri The URI that typically will serve as object in most statements.
 	 */
-	public SesameRDFContainer(Repository repository, URI describedUri) {
-		this.repository = repository;
-		this.describedUri = describedUri;
-		valueFactory = repository.getSail().getValueFactory();
+	public SesameRDFContainer(ModelImplSesame model, URI describedUri) {
+		this.container = new RDF2GoRDFContainer(model,describedUri);
 	}
-
-	private void createRepository() {
-		MemoryStore memoryStore = new MemoryStore();
-
-		repository = new Repository(memoryStore);
+	
+	private void createContainer(URI describedUri, URI context,boolean shared) {
 		try {
-			repository.initialize();
+			ModelImplSesame model = new ModelImplSesame(context,false);
+			container = new RDF2GoRDFContainer(model,describedUri,shared);
+		} catch (ModelException me) {
+			throw new RuntimeException(me);
 		}
-		catch (SailInitializationException e) {
-			// should never happen, indicates an internal error and therefore wrapped in a
-			// RuntimeException rather than an UpdateException
-			throw new RuntimeException(e);
-		}
-
-		// cannot happen before repository is initialized
-		valueFactory = memoryStore.getValueFactory();
 	}
 
 	public URI getDescribedUri() {
-		return describedUri;
+		return container.getDescribedUri();
 	}
 
-	public Object getModel() {
-		return repository;
+	public Model getModel() {
+		return container.getModel();
 	}
 
-	public Repository getRepository() {
-		return repository;
+	public URI getContext() {
+		return ((ModelImplSesame)container.getModel()).getContextURI();
 	}
-
-	public void setContext(Resource context) {
-		this.context = context;
-	}
-
-	public Resource getContext() {
-		return context;
-	}
-
+	
 	public void put(URI property, String value) {
-		replaceInternal(property, valueFactory.createLiteral(value));
+		container.put(property, value);
 	}
 
 	public void put(URI property, Date value) {
-		String date = DateUtil.dateTime2String(value);
-		replaceInternal(property, valueFactory.createLiteral(date, XMLSchema.DATETIME));
+		container.put(property, value);
 	}
 
 	public void put(URI property, Calendar value) {
-		put(property, value.getTime());
+		container.put(property, value);
 	}
 
 	public void put(URI property, boolean value) {
-		String val = value ? "true" : "false";
-		replaceInternal(property, valueFactory.createLiteral(val, XMLSchema.BOOLEAN));
+		container.put(property, value);
 	}
 
 	public void put(URI property, int value) {
-		String val = Integer.toString(value);
-		replaceInternal(property, valueFactory.createLiteral(val, XMLSchema.INT));
-	}
+		container.put(property, value);	}
 
 	public void put(URI property, long value) {
-		String val = Long.toString(value);
-		replaceInternal(property, valueFactory.createLiteral(val, XMLSchema.LONG));
+		container.put(property, value);
 	}
 
-	public void put(URI property, Value value) {
-		replaceInternal(property, value);
+	public void put(URI property, Node value) {
+		container.put(property, value);
 	}
 
 	public void add(URI property, String value) {
-		addInternal(property, valueFactory.createLiteral(value));
+		container.add(property, value);
 	}
 
 	public void add(URI property, Date value) {
-		String date = DateUtil.dateTime2String(value);
-		addInternal(property, valueFactory.createLiteral(date, XMLSchema.DATETIME));
+		container.add(property, value);
 	}
 
 	public void add(URI property, Calendar value) {
-		add(property, value.getTime());
+		container.add(property, value);
 	}
 
 	public void add(URI property, boolean value) {
-		String val = value ? "true" : "false";
-		addInternal(property, valueFactory.createLiteral(val, XMLSchema.BOOLEAN));
+		container.add(property, value);
 	}
 
 	public void add(URI property, int value) {
-		String val = Integer.toString(value);
-		addInternal(property, valueFactory.createLiteral(val, XMLSchema.INT));
+		container.add(property, value);
 	}
 
 	public void add(URI property, long value) {
-		String val = Long.toString(value);
-		addInternal(property, valueFactory.createLiteral(val, XMLSchema.LONG));
+		container.add(property, value);
 	}
 
-	public void add(URI property, Value value) {
-		addInternal(property, value);
+	public void add(URI property, Node value) {
+		container.add(property, value);
 	}
 
 	public String getString(URI property) {
-		Value value = getInternal(property);
-		if (value instanceof Literal) {
-			return ((Literal) value).getLabel();
-		}
-		else {
-			return null;
-		}
+		return container.getString(property);
 	}
 
 	public Date getDate(URI property) {
-		String value = getString(property);
-		if (value == null) {
-			return null;
-		}
-		else {
-			try {
-				return DateUtil.string2DateTime(value);
-			}
-			catch (ParseException e) {
-				// illegal date: interpret as no date available
-				return null;
-			}
-		}
+		return container.getDate(property);
 	}
 
 	public Calendar getCalendar(URI property) {
-		Date date = getDate(property);
-		if (date == null) {
-			return null;
-		}
-		else {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(date);
-			return calendar;
-		}
+		return container.getCalendar(property);
 	}
 
 	public Boolean getBoolean(URI property) {
-		String value = getString(property);
-		if (value == null) {
-			return null;
-		}
-		else {
-			return new Boolean(value);
-		}
+		return container.getBoolean(property);
 	}
 
 	public Integer getInteger(URI property) {
-		String value = getString(property);
-		if (value == null) {
-			return null;
-		}
-		else {
-			try {
-				return new Integer(value);
-			}
-			catch (NumberFormatException e) {
-				return null;
-			}
-		}
+		return container.getInteger(property);
 	}
 
 	public Long getLong(URI property) {
-		String value = getString(property);
-		if (value == null) {
-			return null;
-		}
-		else {
-			try {
-				return new Long(value);
-			}
-			catch (NumberFormatException e) {
-				return null;
-			}
-		}
+		return container.getLong(property);
 	}
 
 	public URI getURI(URI property) {
-		Value value = getInternal(property);
-		if (value instanceof URI) {
-			return (URI) value;
-		}
-		else {
-			return null;
-		}
+		return container.getURI(property);
 	}
 
-	public Value getValue(URI property) {
-		return getInternal(property);
+	public Node getNode(URI property) {
+		return container.getNode(property);
 	}
 
 	public void remove(URI property) {
-		lazyCommit();
-
-		// note: this also throws a MultipleValueException when there are multiple values
-		Value value = getInternal(property);
-		if (value != null) {
-			try {
-				repository.remove(describedUri, property, value, context);
-			}
-			catch (SailUpdateException e) {
-				LOGGER.log(Level.INFO, "cannot remove statement", e);
-				throw new UpdateException("cannot remove statement", e);
-			}
-		}
+		container.remove(property);
 	}
 
 	public Collection getAll(URI property) {
-		lazyCommit();
-
-		// determine all matching Statements
-		CloseableIterator iterator = repository.getStatements(describedUri, property, null, context);
-
-		try {
-			// put their values in a new Collection
-			ArrayList result = new ArrayList();
-			while (iterator.hasNext()) {
-				RStatement statement = (RStatement) iterator.next();
-				result.add(statement.getObject());
-			}
-			return result;
-		}
-		finally {
-			iterator.close();
-		}
+		return container.getAll(property);
 	}
 
 	public void add(Statement statement) {
-		try {
-			repository.add(statement, context);
-		}
-		catch (SailUpdateException e) {
-			LOGGER.log(Level.INFO, "cannot add statement", e);
-			throw new UpdateException("cannot add statement", e);
-		}
+		container.add(statement);
 	}
 
 	public void remove(Statement statement) {
-		lazyCommit();
-
-		try {
-			repository.remove(statement, context);
-		}
-		catch (SailUpdateException e) {
-			LOGGER.log(Level.INFO, "cannot add statement", e);
-			throw new UpdateException("cannot add statement", e);
-		}
+		container.remove(statement);
 	}
 
-	private void addInternal(URI property, Value object) {
-		try {
-			repository.add(describedUri, property, object, context);
-		}
-		catch (SailUpdateException e) {
-			LOGGER.log(Level.INFO, "cannot add statement", e);
-			throw new UpdateException("cannot add statement", e);
-		}
+	public ValueFactory getValueFactory() {
+		return container.getValueFactory();
+	}
+	
+	public void dispose() {
+		container.dispose();
+	}
+	
+	public boolean isModelShared() {
+		return container.isModelShared();
+	}
+	
+	public boolean isDisposed() {
+		return container.isDisposed();
 	}
 
-	private void replaceInternal(URI property, Value object) throws MultipleValuesException {
-		lazyCommit();
-
-		try {
-			// remove any existing statements with this property, throw an exception when there is more
-			// than one such statement
-			CloseableIterator statements = repository.getStatements(describedUri, property, null, context);
-			RStatement statementToRemove = null;
-
-			try {
-				if (statements.hasNext()) {
-					statementToRemove = (RStatement) statements.next();
-					if (statements.hasNext()) {
-						throw new MultipleValuesException(describedUri, property);
-					}
-				}
-			}
-			finally {
-				statements.close();
-			}
-
-			// do this after the iterator has closed or the remove may result in a deadlock
-			if (statementToRemove != null) {
-				repository.remove(statementToRemove, context);
-			}
-
-			// add the new statement
-			repository.add(describedUri, property, object, context);
-		}
-		catch (SailUpdateException e) {
-			LOGGER.log(Level.INFO, "cannot update statement", e);
-			throw new UpdateException("cannot update statement", e);
-		}
-	}
-
-	private Value getInternal(URI property) {
-		lazyCommit();
-
-		CloseableIterator statements = repository.getStatements(describedUri, property, null, context);
-
-		try {
-			Value result = null;
-
-			if (statements.hasNext()) {
-				RStatement firstStatement = (RStatement) statements.next();
-				if (statements.hasNext()) {
-					throw new MultipleValuesException(describedUri, property);
-				}
-				result = firstStatement.getObject();
-			}
-
-			return result;
-		}
-		finally {
-			statements.close();
-		}
-	}
-
-	/**
-	 * Commits any uncommitted statements on the Repository. This should be invoked before querying or
-	 * removing statements on the Repository. This method has no effect when the Repository is in auto-commit
-	 * mode.
-	 */
-	private void lazyCommit() {
-		try {
-			repository.commit();
-		}
-		catch (SailUpdateException e) {
-			throw new UpdateException(e);
-		}
-	}
 }

@@ -8,7 +8,7 @@ package org.semanticdesktop.aperture.opener;
 
 import java.io.IOException;
 
-import org.openrdf.model.URI;
+import org.ontoware.rdf2go.model.node.URI;
 
 /**
  * A DataOpener opens a URI in its native application, e.g. an editor, web browser or mail reader.

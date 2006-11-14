@@ -10,9 +10,10 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.URI;
 
 /**
  * RDFContainer defines a simple interface for RDF stores. Its purpose is to make populating an model as
@@ -43,10 +44,21 @@ public interface RDFContainer {
     public URI getDescribedUri();
 
     /**
-     * Get the underlying RDF model holding the RDF statements. Examples of RDF models are a Sesame
-     * Repository or a Jena Graph.
+     * Get the underlying RDF2Go model holding the RDF statements. 
      */
-    public Object getModel();
+    public Model getModel();
+    
+    /**
+     * Get the value factory for the underlying rdf repository. 
+     */
+    public ValueFactory getValueFactory();
+    
+    /**
+	 * State that this container won't be used anymore and it can perform any cleanup necessary. Examples of
+	 * actions taken by this method might include closing the connection to an underyling RDF store or freeing
+	 * any system resources this particular implementation might own
+	 */
+	public void dispose();
 
     /* Map-oriented methods that automatically take the described URI as subject */
 
@@ -62,7 +74,7 @@ public interface RDFContainer {
 
     public void put(URI property, long value) throws UpdateException;
 
-    public void put(URI property, Value value) throws UpdateException;
+    public void put(URI property, Node value) throws UpdateException;
 
     public void add(URI property, String value) throws UpdateException;
 
@@ -76,7 +88,7 @@ public interface RDFContainer {
 
     public void add(URI property, long value) throws UpdateException;
 
-    public void add(URI property, Value value) throws UpdateException;
+    public void add(URI property, Node value) throws UpdateException;
 
     public String getString(URI property);
 
@@ -92,7 +104,7 @@ public interface RDFContainer {
 
     public URI getURI(URI property);
 
-    public Value getValue(URI property);
+    public Node getNode(URI property);
 
     public void remove(URI property) throws UpdateException;
 

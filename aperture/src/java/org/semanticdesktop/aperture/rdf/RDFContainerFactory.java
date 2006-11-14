@@ -6,7 +6,7 @@
  */
 package org.semanticdesktop.aperture.rdf;
 
-import org.openrdf.model.URI;
+import org.ontoware.rdf2go.model.node.URI;
 
 /**
  * RDFContainerFactories create new RDFContainers on demand.

@@ -342,4 +342,8 @@ Difference to name is that title is the human readable title of the resurce wher
 	 rdfs:label="to">
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
+<rdf:Property rdf:about="&data_;containsId"
+	 rdfs:comment="Used in ModelAccessData to tie the knownID's with the root node"
+	 rdfs:label="containsId">
+</rdf:Property>
 </rdf:RDF>

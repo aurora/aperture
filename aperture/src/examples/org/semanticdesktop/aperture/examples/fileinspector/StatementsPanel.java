@@ -20,12 +20,16 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.openrdf.repository.Connection;
+import org.openrdf.repository.Repository;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
-import org.openrdf.sesame.repository.Repository;
+import org.openrdf.rio.UnsupportedRDFormatException;
+import org.openrdf.sail.SailException;
+
 
 public class StatementsPanel extends JPanel {
 
@@ -116,28 +120,36 @@ public class StatementsPanel extends JPanel {
 
     private void updateDisplay() {
         String text = null;
+        Connection connection = null;
+        RDFWriter writer = null;
+        StringWriter buffer = null;
 
         if (repository != null) {
-            // determine the selected RDFFormat
-            RDFFormat format = (RDFFormat) formatBoxModel.getSelectedItem();
-
-            // create an RDFWriter based on the chosen format
-            StringWriter buffer = new StringWriter(10000);
-            RDFWriter writer = Rio.createWriter(format, buffer);
-
-            // export the statements to a String
-            try {
+        	try {
+	        	// determine the selected RDFFormat
+	            RDFFormat format = (RDFFormat) formatBoxModel.getSelectedItem();
+	
+	            // create an RDFWriter based on the chosen format
+	            buffer = new StringWriter(10000);
+	            writer = Rio.createWriter(format, buffer);
+	
+	            // export the statements to a String
+            
                 // wrap the writer in a utility RDFHandler that clips long literals
                 // (JTextArea - or actually Swing - will become unstable with long strongs)
                 RDFHandler handler = new LiteralClipper(writer);
 
                 // export the statements
-                repository.export(handler);
+                connection = repository.getConnection();
+                connection.export(handler);
                 text = buffer.toString();
             }
-            catch (RDFHandlerException e) {
+            catch (Exception e) {
                 text = "Exception while extracting statements:\n\n" + e.getMessage()
                         + "\n\nPartial contents:\n\n" + buffer.toString();
+            }
+            finally {
+            	closeConnection(connection);
             }
 
             text = text.trim();
@@ -146,6 +158,17 @@ public class StatementsPanel extends JPanel {
         // update UI
         statementsTextArea.setText(text);
         statementsTextArea.setCaretPosition(0);
+    }
+    
+    private void closeConnection(Connection connection) {
+    	if (connection != null) {
+    		try {
+    			connection.close();
+    		}
+    		catch (SailException se) {
+    			se.printStackTrace();
+    		}
+    	}
     }
 
     public Repository getRepository() {

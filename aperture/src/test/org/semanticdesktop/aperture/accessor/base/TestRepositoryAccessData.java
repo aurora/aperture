@@ -9,10 +9,11 @@ package org.semanticdesktop.aperture.accessor.base;
 import java.io.IOException;
 
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.sesame.sail.SailInitializationException;
-import org.openrdf.sesame.sail.SailUpdateException;
-import org.openrdf.sesame.sailimpl.memory.MemoryStore;
+import org.openrdf.repository.Repository;
+import org.openrdf.repository.RepositoryImpl;
+import org.openrdf.sail.SailException;
+import org.openrdf.sail.SailInitializationException;
+import org.openrdf.sail.memory.MemoryStore;
 import org.semanticdesktop.aperture.ApertureTestBase;
 
 public class TestRepositoryAccessData extends ApertureTestBase {
@@ -21,25 +22,25 @@ public class TestRepositoryAccessData extends ApertureTestBase {
 	
 	private RepositoryAccessData accessData;
 	
-	public void setUp() throws SailInitializationException {
+	public void setUp() throws SailInitializationException, SailException {
 		MemoryStore memoryStore = new MemoryStore();
-		repository = new Repository(memoryStore);
+		repository = new RepositoryImpl(memoryStore);
 		repository.initialize();
 		accessData = new RepositoryAccessData(repository, new URIImpl("urn:test:dummy"));
 	}
 	
 	public void tearDown() {
-		repository.shutDown();
+		accessData.shutDown();
 		repository = null;
 	}
 	
-	public void testAutoCommitting() throws SailInitializationException, SailUpdateException, IOException {
-		repository.setAutoCommit(true);
+	public void testAutoCommitting() throws SailInitializationException, SailException, IOException {
+		accessData.setAutoCommit(true);
 		AccessDataTest.test(accessData);
 	}
 	
-	public void testNonAutoCommitting() throws SailInitializationException, SailUpdateException, IOException {
-		repository.setAutoCommit(false);
+	public void testNonAutoCommitting() throws SailInitializationException, SailException, IOException {
+		accessData.setAutoCommit(false);
 		AccessDataTest.test(accessData);
 	}
 }

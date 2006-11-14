@@ -27,10 +27,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.StatementImpl;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.model.vocabulary.RDF;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
@@ -115,7 +114,7 @@ public class DataObjectFactory {
 		this.containerFactory = containerFactory;
 
 		// create a HashMap representation of this message and all its nested parts
-		HashMap map = handleMailPart(message, new URIImpl(messageUri), MailUtil.getDate(message));
+		HashMap map = handleMailPart(message, URIImpl.createURIWithoutChecking(messageUri), MailUtil.getDate(message));
 
 		// convert the HashMap representation to a DataObject representation
 		ArrayList result = new ArrayList();
@@ -123,7 +122,7 @@ public class DataObjectFactory {
 
 		// The first object is the Message itself, add RDF type to it
 		RDFContainer msgObject=((DataObject) result.get(0)).getMetadata();
-		msgObject.add(RDF.TYPE, DATA.Email);
+		msgObject.add(RDF.type, DATA.Email);
 		
 		String messageID = message.getMessageID();
 		if (messageID != null) {
@@ -331,7 +330,7 @@ public class DataObjectFactory {
 				continue;
 			}
 
-			URI bodyURI = new URIImpl(uriPrefix + i);
+			URI bodyURI = URIImpl.createURIWithoutChecking(uriPrefix + i);
 			HashMap childResult = handleMailPart(bodyPart, bodyURI, date);
 
 			if (childResult != null) {
@@ -434,7 +433,7 @@ public class DataObjectFactory {
 			}
 
 			// derive a URI
-			URI bodyURI = new URIImpl(bodyURIPrefix + i);
+			URI bodyURI = URIImpl.createURIWithoutChecking(bodyURIPrefix + i);
 
 			// interpret this part
 			HashMap child = handleMailPart(bodyPart, bodyURI, date);
@@ -492,7 +491,7 @@ public class DataObjectFactory {
 			BodyPart bodyPart = part.getBodyPart(i);
 
 			// interpret this body part
-			URI bodyURI = new URIImpl(bodyURIPrefix + i);
+			URI bodyURI = URIImpl.createURIWithoutChecking(bodyURIPrefix + i);
 			HashMap child = handleMailPart(bodyPart, bodyURI, date);
 
 			// append it to the part object in the appropriate way
@@ -578,7 +577,7 @@ public class DataObjectFactory {
 
 		// the optional third part contains the (partial) returned message and will become an attachment
 		if (count > 2) {
-			URI nestedURI = new URIImpl(getBodyPartURIPrefix(uri) + "0");
+			URI nestedURI = URIImpl.createURIWithoutChecking(getBodyPartURIPrefix(uri) + "0");
 			HashMap returnedMessage = handleMailPart(part.getBodyPart(2), nestedURI, date);
 			if (returnedMessage != null) {
 				ArrayList children = new ArrayList();
@@ -651,7 +650,7 @@ public class DataObjectFactory {
 
 				// also register the child in the parent's metadata
 				URI childID = (URI) child.get(ID_KEY);
-				metadata.add(new StatementImpl(childID, DATA.partOf, id));
+				metadata.add(metadata.getValueFactory().createStatement(childID, DATA.partOf, id));
 
 				createDataObjects(child, id, result);
 			}

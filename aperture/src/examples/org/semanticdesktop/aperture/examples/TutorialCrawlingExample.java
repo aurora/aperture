@@ -9,15 +9,16 @@ package org.semanticdesktop.aperture.examples;
 import java.io.File;
 import java.io.PrintWriter;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFWriter;
-import org.openrdf.rio.Rio;
-import org.openrdf.sesame.repository.RStatement;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.sesame.sailimpl.memory.MemoryStore;
-import org.openrdf.util.iterator.CloseableIterator;
+import org.ontoware.aifbcommons.collection.ClosableIterable;
+import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.Syntax;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.Variable;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
@@ -29,6 +30,8 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoValueFactory;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainerFactory;
 
@@ -50,7 +53,7 @@ public class TutorialCrawlingExample {
 	
 	public void doCrawling(File rootFile) throws Exception {
         // create a data source configuration
-        RDFContainer configuration = new SesameRDFContainer(new URIImpl("source:testSource"));
+        RDFContainer configuration = new SesameRDFContainer(URIImpl.create("source:testSource"));
         ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
 
         // create the data source
@@ -69,38 +72,41 @@ public class TutorialCrawlingExample {
 	
 	private class TutorialCrawlerHandler extends CrawlerHandlerBase {
 		
-		Repository repository;
-		RDFContainerFactory factory;
+		Model sharedModel;
 		
 		public TutorialCrawlerHandler() throws Exception {
-			repository = new Repository(new MemoryStore());
-			repository.initialize();
-			repository.setAutoCommit(false);
-			factory = new SesameRDFContainerFactory();
+			sharedModel = new ModelImplSesame(false);
 		}
 		// let's dump the contents onto the standard output	
 		public void crawlStopped(Crawler crawler, ExitCode exitCode) {
 			try {
-				repository.commit();
-				RDFWriter rdfWriter = Rio.createWriter(RDFFormat.TRIX, new PrintWriter(System.out));
-				repository.export(rdfWriter);
+				sharedModel.writeTo(new PrintWriter(System.out), Syntax.Trix );
 			}
 			catch (Exception e) {
 				throw new RuntimeException(e);
 			}
+			sharedModel.close();
 		}
 
 		public RDFContainer getRDFContainer(URI uri) {
-			return factory.getRDFContainer(uri);
+			Model newModel = null;
+			try {
+				newModel = new ModelImplSesame(false);
+			} catch (ModelException me) {
+				me.printStackTrace();
+				throw new RuntimeException(me);
+			}
+			return new RDF2GoRDFContainer(newModel,uri);
 		}
 		
 		public void objectChanged(Crawler crawler, DataObject object) {
 			processBinary(object);
 			try {
-				repository.remove(null, null, null, object.getID());
-				CloseableIterator<RStatement> iterator 
-						= ((Repository)object.getMetadata().getModel()).extractStatements();
-				repository.add(iterator,object.getID());
+				
+				ClosableIterable<Statement> iterable 
+						= object.getMetadata().getModel().findStatements(Variable.ANY, Variable.ANY, Variable.ANY);
+				ClosableIterator<Statement> iterator = iterable.iterator();
+				sharedModel.addAll(iterator);
 				iterator.close();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -111,9 +117,10 @@ public class TutorialCrawlingExample {
 		public void objectNew(Crawler crawler, DataObject object) {
 			processBinary(object);
 			try {
-				CloseableIterator<RStatement> iterator 
-						= ((Repository)object.getMetadata().getModel()).extractStatements();
-				repository.add(iterator,object.getID());
+				ClosableIterable<Statement> iterable 
+						= object.getMetadata().getModel().findStatements(Variable.ANY, Variable.ANY, Variable.ANY);
+				ClosableIterator<Statement> iterator = iterable.iterator();
+				sharedModel.addAll(iterator);
 				iterator.close();
 			} catch (Exception e) {
 				e.printStackTrace();

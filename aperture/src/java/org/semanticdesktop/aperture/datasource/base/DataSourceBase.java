@@ -6,7 +6,7 @@
  */
 package org.semanticdesktop.aperture.datasource.base;
 
-import org.openrdf.model.URI;
+import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
@@ -50,5 +50,9 @@ public abstract class DataSourceBase implements DataSource {
 	public void setConfiguration(RDFContainer configuration) {
 		// set the configuration
 		this.configuration = configuration;
+	}
+	
+	public void dispose() {
+		configuration.dispose();
 	}
 }

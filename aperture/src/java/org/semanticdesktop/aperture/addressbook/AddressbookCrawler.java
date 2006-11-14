@@ -17,10 +17,13 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.openrdf.model.BNode;
-import org.openrdf.model.Statement;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.util.iterator.CloseableIterator;
+import org.ontoware.aifbcommons.collection.ClosableIterable;
+import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.node.BlankNode;
+import org.ontoware.rdf2go.model.node.Variable;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
@@ -54,7 +57,8 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 		
 			List people = crawlAddressbook();
 			
-			Set<String> current=new HashSet<String>();
+			Set before=accessData.getStoredIDs();
+			Set current=new HashSet();
 			for (Iterator it=people.iterator(); it.hasNext();) {
 				DataObject o=(DataObject) it.next();
 				String sum=computeChecksum(o);
@@ -69,13 +73,14 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 					accessData.put(o.getID().toString(),ADDRESSBOOK_CHECKSUM_KEY,sum);
 					handler.objectNew(this,o);
 				}
-				current.add(o.getID().toString());
+				current.add(o);
 			}			
 			
-			//TODO: crawl groups, friends etc. 			
+			//Blah - crawl objects, friends etc. 			
 			
-			//remove found tags from list of tags to be deleted
-			deprecatedUrls.removeAll(current);
+			//report deleted tags
+			before.removeAll(current);
+			deprecatedUrls.addAll(before);
 			
 			crawlCompleted=true;
 			
@@ -112,25 +117,38 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 		}
 		//hack hack
 		RDFContainer rdf=o.getMetadata();
-		Repository rep=(Repository)rdf.getModel();
+		Model model=rdf.getModel();
 		
 		// List all properties
-		List<String> predValues=new Vector<String>();
-		CloseableIterator i = rep.getStatements(rdf.getDescribedUri(),null,null);
-		while(i.hasNext()) {
-			Statement s=(Statement) i.next();
-			if (s.getObject() instanceof BNode) {
-				LOGGER.warning("BlankNodes messes up checksum generation!");
+		List predValues=new Vector();
+		ClosableIterator<Statement> i = null;
+		
+		try {
+			ClosableIterable<Statement> iterable = model.findStatements(rdf.getDescribedUri(),Variable.ANY,Variable.ANY);
+			i = iterable.iterator();
+			while(i.hasNext()) {
+				Statement s=(Statement) i.next();
+				if (s.getObject() instanceof BlankNode) {
+					LOGGER.warning("BlankNodes messes up checksum generation!");
+				}
+				predValues.add(s.getPredicate().toString()+s.getObject().toString());
 			}
-			predValues.add(s.getPredicate().toString()+s.getObject().toString());
+		} catch (ModelException me) {
+			LOGGER.log(Level.SEVERE, "Couldn't find statements",me);
+		} finally {
+			if (i != null) {
+				i.close();
+			}
 		}
-		i.close();
+		
+		
 		
 		// sort them...
 		Collections.sort(predValues);
 		
-		for (String s: predValues)
-			md.update(s.getBytes());	
+		//DAMN java 1.4
+		for (Iterator it=predValues.iterator();it.hasNext();)
+			md.update(((String)it.next()).getBytes());	
 		
 		StringBuilder digest=new StringBuilder("");
 		byte[] dig=md.digest();
@@ -141,7 +159,7 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 		
 		return digest.toString();
 	}
-	public abstract List<DataObject> crawlAddressbook() throws Exception; 
+	public abstract List crawlAddressbook() throws Exception; 
 
 }
 

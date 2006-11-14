@@ -6,11 +6,11 @@
  */
 package org.semanticdesktop.aperture.datasource.config;
 
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.sesame.repository.Repository;
+import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.model.Model;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 public class TestConfigurationUtil extends ApertureTestBase {
@@ -18,10 +18,11 @@ public class TestConfigurationUtil extends ApertureTestBase {
     private RDFContainer configuration;
 
     public void setUp() {
-        configuration = new SesameRDFContainer("urn:test:dummysource");
+        configuration = createSesameRDFContainer("urn:test:dummysource");
     }
 
     public void tearDown() {
+    	configuration.dispose();
         configuration = null;
     }
 
@@ -74,8 +75,8 @@ public class TestConfigurationUtil extends ApertureTestBase {
         String security2 = ConfigurationUtil.getConnectionSecurity(configuration);
         assertEquals(security1, security2);
     }
-
-    public void testDomainBoundaries() throws RDFHandlerException {
+    
+    public void testDomainBoundaries() throws ModelException {
         String javaString = ".java";
         String cvsString = ".*/CVS/.*";
 
@@ -96,10 +97,10 @@ public class TestConfigurationUtil extends ApertureTestBase {
         RegExpPattern pattern2 = (RegExpPattern) boundaries2.getExcludePatterns().get(0);
         assertEquals(cvsString, pattern2.getPatternString());
 
-        /*
-         * The folling test fails, probably due to a bug in Sesame 2.0 alpha 1 (see
-         * http://www.openrdf.org/issues/browse/SES-221).
-         */
+        
+         // The folling test fails, probably due to a bug in Sesame 2.0 alpha 1 (see
+         //http://www.openrdf.org/issues/browse/SES-221).
+         
 
          // check that the boundaries can also be completely removed
          ConfigurationUtil.setDomainBoundaries(null, configuration);
@@ -107,6 +108,6 @@ public class TestConfigurationUtil extends ApertureTestBase {
          assertEquals(0, boundaries3.getIncludePatterns().size());
          assertEquals(0, boundaries3.getExcludePatterns().size());
          
-         assertEquals(0,((Repository)configuration.getModel()).size());
+         assertEquals(0,((Model)configuration.getModel()).size());
     }
 }

@@ -6,16 +6,18 @@
  */
 package org.semanticdesktop.aperture.outlook;
 
+import java.io.PrintWriter;
+
 import junit.framework.TestCase;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.n3.N3Writer;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.sesame.sail.SailInitializationException;
-import org.openrdf.sesame.sail.SailUpdateException;
-import org.openrdf.sesame.sailimpl.memory.MemoryStore;
+import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Syntax;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.repository.Repository;
+import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.crawler.Crawler;
@@ -23,6 +25,7 @@ import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.LogUtil;
 
@@ -37,9 +40,9 @@ import org.semanticdesktop.aperture.util.LogUtil;
  * @author sauermann
  * $Id$
  */
-public class TestOutlookCrawlAll extends TestCase {
+public class TestOutlookCrawlAll extends ApertureTestBase {
 	
-	public static URIImpl TESTID = new URIImpl("urn:test:outlookdatasource");
+	public static URI TESTID = URIImpl.createURIWithoutChecking("urn:test:outlookdatasource");
 	public static String TESTROOT = "test:local:outlook:";
 
 	OutlookDataSource olds;
@@ -48,7 +51,7 @@ public class TestOutlookCrawlAll extends TestCase {
 	protected void setUp() throws Exception {
 		LogUtil.setFullLogging();
 		olds = new OutlookDataSource();
-		SesameRDFContainer config = new SesameRDFContainer(TESTID);
+		RDFContainer config = createSesameRDFContainer(TESTID);
 		ConfigurationUtil.setRootUrl(TESTROOT, config);
 		olds.setConfiguration(config);
 		
@@ -61,6 +64,7 @@ public class TestOutlookCrawlAll extends TestCase {
 	}
 
 	protected void tearDown() throws Exception {
+		olds.dispose();
 		olds = null;
 		crawler = null;
 	}
@@ -74,57 +78,31 @@ public class TestOutlookCrawlAll extends TestCase {
         
         // dump the repo
         
-        dumpRepo(crawlerHandler.getRepository());
+        dumpRepo(crawlerHandler.getModel());
+        crawlerHandler.getModel().close();
 	}
 	
-	
-	
-    private void dumpRepo(Repository repository) throws RDFHandlerException, SailUpdateException {
-    	repository.changeNamespacePrefix("http://www.gnowsis.org/ont/vcard#", "vcard");
-       	repository.changeNamespacePrefix("http://www.w3.org/2002/12/cal/ical#", "ical");
-    	repository.changeNamespacePrefix("http://aperture.semanticdesktop.org/ontology/data#", "data");
-    	N3Writer w = new N3Writer(System.out);
-    	repository.export(w);
-		
+	private void dumpRepo(Model model) {
+		model.writeTo(new PrintWriter(System.out), Syntax.Ntriples);
 	}
-
 
 	private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
-        private Repository repository;
+        private Model model;
 
         int newCount;
 
-        private SesameRDFContainer lastContainer;
+        private RDF2GoRDFContainer lastContainer;
         
-        public SimpleCrawlerHandler() {
+        public SimpleCrawlerHandler() throws ModelException {
             // create a Repository
-            repository = new Repository(new MemoryStore());
-
-            try {
-                repository.initialize();
-            }
-            catch (SailInitializationException e) {
-                // we cannot effectively continue
-                throw new RuntimeException(e);
-            }
-
-            // set auto-commit off so that all additions and deletions between two commits become a
-            // single transaction
-            try {
-                repository.setAutoCommit(false);
-            }
-            catch (SailUpdateException e) {
-                // we could theoretically continue (although much slower), but as this is a unit test,
-                // exit anyway
-                throw new RuntimeException(e);
-            }
+            model = new ModelImplSesame(false);
 
             newCount = 0;
         }
 
-        public Repository getRepository() {
-            return repository;
+        public Model getModel() {
+            return model;
         }
         
         public void crawlStarted(Crawler crawler) {
@@ -144,12 +122,21 @@ public class TestOutlookCrawlAll extends TestCase {
         }
 
         public RDFContainer getRDFContainer(URI uri) {
-            SesameRDFContainer container = new SesameRDFContainer(repository, uri);
-            container.setContext(uri);
-            
-            lastContainer = container;
-            
-            return container;
+//        	 an rdf2go way to return a container, backed by a model, backed by a repository, which
+			// actually is the private repository common to all return RDFContainers, but with a 
+			// different context
+			Model newModel = null;
+			try {
+				newModel = new ModelImplSesame(uri,(Repository)model.getUnderlyingModelImplementation());
+			} catch (ModelException me) {
+				return null;
+			}
+			
+			RDF2GoRDFContainer container = new RDF2GoRDFContainer(newModel, uri);
+
+			lastContainer = container;
+
+			return container;
         }
 
         public void objectNew(Crawler dataCrawler, DataObject object) {
@@ -161,13 +148,6 @@ public class TestOutlookCrawlAll extends TestCase {
             String uri = object.getID().toString();
             
             object.dispose();
-            
-            try {
-                repository.commit();
-            }
-            catch (SailUpdateException e) {
-                fail();
-            }
         }
 
         public void objectChanged(Crawler dataCrawler, DataObject object) {
@@ -202,6 +182,10 @@ public class TestOutlookCrawlAll extends TestCase {
     	int notModifiedCount = 0;
     	int removedCount = 0;
     	int cleared = 0;
+    	
+    	public UpdatingCrawlerHandler() throws ModelException {
+
+        }
     	
         public void objectChanged(Crawler dataCrawler, DataObject object) {
         	changedCount++;

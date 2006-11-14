@@ -6,22 +6,26 @@
  */
 package org.semanticdesktop.aperture.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.PrintStream;
+import java.io.Reader;
 import java.util.Date;
-import java.util.List;
 
-import org.openrdf.model.vocabulary.OWL;
-import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.model.vocabulary.RDFS;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.sesame.query.QueryLanguage;
-import org.openrdf.sesame.repository.RBNode;
-import org.openrdf.sesame.repository.RURI;
-import org.openrdf.sesame.repository.RValue;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.sesame.sailimpl.memory.MemoryStore;
-import org.openrdf.util.iterator.CloseableIterator;
+import org.ontoware.aifbcommons.collection.ClosableIterable;
+import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.Syntax;
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.Resource;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.Variable;
+import org.ontoware.rdf2go.vocabulary.OWL;
+import org.ontoware.rdf2go.vocabulary.RDF;
+import org.ontoware.rdf2go.vocabulary.RDFS;
 
 /**
  * reads an RDF/S file and creates an Aperture Vocabulary file from it.
@@ -46,7 +50,7 @@ public class VocabularyWriter {
 	String outputFileN = null;
 	String ns = null;
 	String packagen = null;
-	Repository myRepository = null;
+	Model myModel = null;
 	// output stream
 	PrintStream outP;
 	
@@ -70,13 +74,11 @@ public class VocabularyWriter {
 	
 	private void loadOnt()  throws Exception  {
 		// read
-		myRepository = new Repository(new MemoryStore());
-		myRepository.initialize();
-		RDFFormat informat = RDFFormat.forFileName(inputRdfF.getName(),RDFFormat.RDFXML);
-		System.out.println("reading from "+inputRdfF.getAbsolutePath()+" in format "+informat);
-		myRepository.add(inputRdfF, ns, informat);
-
-		
+		myModel = new ModelImplSesame(false);
+		System.out.println("reading from "+inputRdfF.getAbsolutePath()+" in format "+ Syntax.RdfXml);
+		Reader reader = new BufferedReader(new FileReader(inputRdfF));
+		myModel.readFrom(reader, Syntax.RdfXml);
+		reader.close();
 	}
 
 	private void writeVocab() throws Exception {
@@ -87,8 +89,8 @@ public class VocabularyWriter {
 		{
 			// preamble
 			outP.println("package "+packagen+";\n");
-			outP.println("import org.openrdf.model.URI;");
-			outP.println("import org.openrdf.model.impl.URIImpl;\n");
+			outP.println("import org.ontoware.rdf2go.model.node.URI;");
+			outP.println("import org.ontoware.rdf2go.model.node.impl.URIImpl;\n");
 			outP.println("/**");
 			outP.println(" * Vocabulary File. Created by " + VocabularyWriter.class.getName()+" on "+new Date());
 			outP.println(" * input file: "+inputRdf);
@@ -98,13 +100,13 @@ public class VocabularyWriter {
 			outP.println("	public static final String NS = \""+ns+"\";\n");
 		
 			// iterate through classes
-			generateElement(RDFS.CLASS.toString(), false);
-			generateElement(OWL.CLASS.toString(), false);
+			generateElement(RDFS.Class, false);
+			generateElement(OWL.Class, false);
 			
 			// iterate through properties
-			generateElement(RDF.PROPERTY.toString(), true);
-			generateElement(OWL.DATATYPEPROPERTY.toString(), true);
-			generateElement(OWL.OBJECTPROPERTY.toString(), true);
+			generateElement(RDF.Property, true);
+			generateElement(OWL.DatatypeProperty, true);
+			generateElement(OWL.ObjectProperty, true);
 			
 			// end
 			outP.println("}");
@@ -114,26 +116,26 @@ public class VocabularyWriter {
 		System.out.println("successfully wrote file to "+outputF);
 	}
 	
-	public void generateElement(String type, boolean isProperty) throws Exception
+	public void generateElement(URI type, boolean isProperty) throws Exception
 	{
-		String queryS = "SELECT x FROM {x} rdf:type {<"+type+">}";
-		CloseableIterator queryC = myRepository.evaluateTupleQuery(QueryLanguage.SERQL, queryS);
+		ClosableIterable<Statement> iterable = myModel.findStatements(Variable.ANY,RDF.type,type);
+		ClosableIterator<Statement> queryC = iterable.iterator();
 		try {
 		    while (queryC.hasNext()) {
-		        List answer = (List)queryC.next();
-		        RValue rx = (RValue) answer.get(0);
+		        Statement answer = queryC.next();
+		        Resource rx = answer.getSubject();
 		        // we do not create constants for blank nodes
-		        if (rx instanceof RBNode)
+		        if (!(rx instanceof URI))
 		        	continue;
-		        RURI vx = (RURI) rx;
+		        URI vx = (URI) rx;
 		        String uri = vx.toString();
-		        String localName = vx.getLocalName();
+		        String localName = getLocalName(vx);
 		        String javalocalName = asLegalJavaID(localName, !isProperty);
 		        outP.println("    /**");
-		        printCommentAndLabel(uri);
+		        printCommentAndLabel(vx);
 		        outP.println("     */");
 		        outP.println("    public static final URI " + javalocalName +
-		        	" = new URIImpl(\"" + uri + "\");\n");
+		        	" = URIImpl.createURIWithoutChecking(\"" + uri + "\");\n");
 		    }
 		}
 		finally {
@@ -142,17 +144,40 @@ public class VocabularyWriter {
 	}
 	
 	/**
+	 * The RDF2Go interface doesn't support getting a local name from the URI. I 'borrowed' this snippet
+	 * from the Sesame LiteralImpl.
+	 */
+	private String getLocalName(URI vx) {
+		String fullUri = vx.toString();
+		int splitIdx = fullUri.indexOf('#');
+
+		if (splitIdx < 0) {
+			splitIdx = fullUri.lastIndexOf('/');
+		}
+
+		if (splitIdx < 0) {
+			splitIdx = fullUri.lastIndexOf(':');
+		}
+
+		if (splitIdx < 0) {
+			throw new RuntimeException("Not a legal (absolute) URI: " + fullUri);
+		}
+		return fullUri.substring(splitIdx + 1);
+	}
+
+	/**
 	 * print comment and label of the uri to the passed stream
 	 * @param uri
 	 */
-	public void printCommentAndLabel(String uri) throws Exception {
-		String queryS = "SELECT l FROM {<"+uri+">} rdfs:label {l}";
-		CloseableIterator queryC = myRepository.evaluateTupleQuery(QueryLanguage.SERQL, queryS);
+	public void printCommentAndLabel(URI uri) throws Exception {
+
+		ClosableIterable<Statement> iterable = myModel.findStatements(uri,RDFS.label,Variable.ANY);
+		ClosableIterator<Statement> queryC = iterable.iterator();
 		try {
 			String l = "";
 		    while (queryC.hasNext()) {
-		        List answer = (List)queryC.next();
-		        RValue vl = (RValue) answer.get(0);
+		    	Statement answer = queryC.next();;
+		        Node vl = answer.getObject();
 		        l += vl.toString()+" "; 
 		    }
 		    if (l.length() > 0)
@@ -161,13 +186,14 @@ public class VocabularyWriter {
 		finally {
 			queryC.close();
 		}
-		queryS = "SELECT l FROM {<"+uri+">} rdfs:comment {l}";
-		queryC = myRepository.evaluateTupleQuery(QueryLanguage.SERQL, queryS);
+
+		iterable = myModel.findStatements(uri,RDFS.comment,Variable.ANY);
+		queryC = iterable.iterator();
 		try {
 			String l = "";
 		    while (queryC.hasNext()) {
-		        List answer = (List)queryC.next();
-		        RValue vl = (RValue) answer.get(0);
+		    	Statement answer = queryC.next();;
+		        Node vl = answer.getObject();
 		        l += vl.toString()+" "; 
 		    }
 		    if (l.length() > 0)
@@ -176,36 +202,31 @@ public class VocabularyWriter {
 		finally {
 			queryC.close();
 		}
-		queryS = "SELECT d FROM {<"+uri+">} rdfs:domain {d}";
-		queryC = myRepository.evaluateTupleQuery(QueryLanguage.SERQL, queryS);
+		
+		iterable = myModel.findStatements(uri,RDFS.domain,Variable.ANY);
+		queryC = iterable.iterator();
 		try {
 			String l = "";
 		    while (queryC.hasNext()) {
-		        List answer = (List)queryC.next();
-		        RValue vl = (RValue) answer.get(0);
-		        if (vl instanceof RBNode)
-		        	continue;
-		        RURI vx = (RURI) vl;
-		        l += vx.getLocalName()+" "; 
+		    	Statement answer = queryC.next();;
+		        Node vl = answer.getObject();
+		        l += vl.toString()+" "; 
 		    }
 		    if (l.length() > 0)
-		    	outP.println("     * Domain: "+l);
+		    	outP.println("     * Comment: "+l);
 		}
 		finally {
 			queryC.close();
 		}
 		
-		queryS = "SELECT d FROM {<"+uri+">} rdfs:range {d}";
-		queryC = myRepository.evaluateTupleQuery(QueryLanguage.SERQL, queryS);
+		iterable = myModel.findStatements(uri,RDFS.range,Variable.ANY);
+		queryC = iterable.iterator();
 		try {
 			String l = "";
 		    while (queryC.hasNext()) {
-		        List answer = (List)queryC.next();
-		        RValue vl = (RValue) answer.get(0);
-		        if (vl instanceof RBNode)
-		        	continue;
-		        RURI vx = (RURI) vl;
-		        l += vx.getLocalName()+" "; 
+		    	Statement answer = queryC.next();;
+		        Node vl = answer.getObject();
+		        l += vl.toString()+" "; 
 		    }
 		    if (l.length() > 0)
 		    	outP.println("     * Range: "+l);
@@ -213,8 +234,6 @@ public class VocabularyWriter {
 		finally {
 			queryC.close();
 		}
-
-		
 	}
 
 	public void getOpt(String[] args) throws Exception 
@@ -308,7 +327,6 @@ public class VocabularyWriter {
 
 	private static void usage(String string) throws Exception {
 		throw new Exception(string);
-		
 	}
 
 }

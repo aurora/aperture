@@ -8,7 +8,7 @@ package org.semanticdesktop.aperture.datasource;
 
 import java.util.Set;
 
-import org.openrdf.model.URI;
+import org.ontoware.rdf2go.model.node.URI;
 
 /**
  * An DataSourceRegistry serves as a central registry for registering and obtaining DataSourceFactories.

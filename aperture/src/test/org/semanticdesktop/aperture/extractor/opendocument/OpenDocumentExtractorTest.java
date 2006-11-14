@@ -8,10 +8,12 @@ package org.semanticdesktop.aperture.extractor.opendocument;
 
 import java.io.IOException;
 
+import org.ontoware.rdf2go.exception.ModelException;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
@@ -41,29 +43,31 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
     
     private static final String OPEN_DOCUMENT_WRITER_DOC = DOCS_PATH + "openoffice-2.0-writer.odt";
     
-    public void testContentExtraction() throws ExtractorException, IOException {
+    public void testContentExtraction() throws ExtractorException, IOException, ModelException {
         // repeat for every example OpenDocument/OpenOffice document
         for (int i = 0; i < RESOURCES.length; i++) {
             // check of any document text is extracted
-            SesameRDFContainer container = getStatements(RESOURCES[i]);
+            RDF2GoRDFContainer container = getStatements(RESOURCES[i]);
             checkStatement(DATA.fullText, "This", container);
+            container.dispose();
         }
     }
     
-    private SesameRDFContainer getStatements(String resourceName) throws ExtractorException, IOException {
+    private RDF2GoRDFContainer getStatements(String resourceName) throws ExtractorException, IOException {
         ExtractorFactory factory = new OpenDocumentExtractorFactory();
         Extractor extractor = factory.get();
         return extract(resourceName, extractor);
     }
     
-    public void testMetadataExtraction() throws ExtractorException, IOException {
+    public void testMetadataExtraction() throws ExtractorException, IOException, ModelException {
         testMetadataExtraction(OPEN_DOCUMENT_WRITER_DOC);
         testMetadataExtraction(OPEN_OFFICE_WRITER_DOC);
     }
 
-    private void testMetadataExtraction(String resourceName) throws ExtractorException, IOException {
+    private void testMetadataExtraction(String resourceName) throws ExtractorException, IOException,
+    		ModelException {
         // apply the extractor
-        SesameRDFContainer container = getStatements(resourceName);
+        RDF2GoRDFContainer container = getStatements(resourceName);
 
         // check for all properties that we're sure of exist in this example document
         checkStatement(DATA.title, "Example", container);
@@ -78,5 +82,7 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
         checkStatement(DATA.language, "en-US", container);
         checkStatement(DATA.pageCount, "1", container);
         checkStatement(DATA.generator, "OpenOffice", container);
+        
+        container.getModel().close();
     }
 }

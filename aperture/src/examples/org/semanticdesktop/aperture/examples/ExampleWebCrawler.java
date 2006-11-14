@@ -18,15 +18,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.PatternSyntaxException;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFWriter;
-import org.openrdf.rio.Rio;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.sesame.sail.SailInitializationException;
-import org.openrdf.sesame.sail.SailUpdateException;
-import org.openrdf.sesame.sailimpl.memory.MemoryStore;
+import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Syntax;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.repository.Repository;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -49,7 +47,7 @@ import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.hypertext.linkextractor.impl.DefaultLinkExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
@@ -161,7 +159,13 @@ public class ExampleWebCrawler {
         }
 
         // create a data source configuration
-        SesameRDFContainer configuration = new SesameRDFContainer(new URIImpl("source:testSource"));
+        Model model = null;
+        try {
+        	model = new ModelImplSesame(false);
+        } catch (ModelException me) {
+        	throw new RuntimeException(me);
+        }
+        RDF2GoRDFContainer configuration = new RDF2GoRDFContainer(model,URIImpl.createURIWithoutChecking("source:testSource"));
         ConfigurationUtil.setRootUrl(startUrl, configuration);
         ConfigurationUtil.setIncludeEmbeddedResources(includeEmbeddedResources, configuration);
 
@@ -332,77 +336,31 @@ public class ExampleWebCrawler {
 
     private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
-        private ExtractorRegistry extractorRegistry;
-
-        private Repository repository;
-
-        private int nrUrls;
+    	protected Model model;
+    	
+    	protected int nrObjects;
+    	
+        private ExtractorRegistry extractorRegistry;   
 
         public SimpleCrawlerHandler() {
+        	try {
+            	model = new ModelImplSesame(false);
+            } catch (ModelException me) {
+            	throw new RuntimeException(me);
+            }
+        	
             // create some identification and extraction components
             if (extractingContents) {
                 extractorRegistry = new DefaultExtractorRegistry();
-            }
-
-            // create a Repository
-            repository = new Repository(new MemoryStore());
-
-            try {
-                repository.initialize();
-            }
-            catch (SailInitializationException e) {
-                // we cannot effectively continue
-                throw new RuntimeException(e);
-            }
-
-            // set auto-commit off so that all additions and deletions between two commits become a
-            // single transaction
-            try {
-                repository.setAutoCommit(false);
-            }
-            catch (SailUpdateException e) {
-                // this will hurt performance but we can still continue.
-                // Each add and remove will now be a separate transaction (slow).
-                LOGGER.log(Level.SEVERE,
-                        "Exception while setting auto-commit off, continuing in auto-commit mode", e);
-            }
-        }
-
-        public void crawlStarted(Crawler crawler) {
-            nrUrls = 0;
-        }
-
-        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-            try {
-                Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
-                RDFWriter rdfWriter = Rio.createWriter(RDFFormat.TRIX, writer);
-                repository.export(rdfWriter);
-                writer.close();
-
-                System.out.println("Crawled " + nrUrls + " URLs (exit code: " + exitCode + ")");
-                System.out.println("Saved RDF model to " + repositoryFile);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
             }
         }
 
         public void accessingObject(Crawler crawler, String url) {
             if (verbose) {
-                System.out.println("Processing URL " + ++nrUrls + ": " + url + "...");
+                System.out.println("Processing URL " + ++nrObjects + ": " + url + "...");
             }
         }
-
-        public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
-            return this;
-        }
-
-        public RDFContainer getRDFContainer(URI uri) {
-            SesameRDFContainer container = new SesameRDFContainer(repository, uri);
-            container.setContext(uri);
-            return container;
-        }
-
+        
         public void objectNew(Crawler dataCrawler, DataObject object) {
             // process the contents on an InputStream, if available
             if (object instanceof FileDataObject) {
@@ -416,44 +374,10 @@ public class ExampleWebCrawler {
                     LOGGER.log(Level.WARNING, "ExtractorException while processing " + object.getID(), e);
                 }
             }
-
-            // commit all generated statements
-            try {
-            	repository.commit();
-            }
-            catch (SailUpdateException e) {
-                // don't continue when this happens
-                throw new RuntimeException(e);
-            }
             
             object.dispose();
         }
-
-        public void objectChanged(Crawler dataCrawler, DataObject object) {
-            object.dispose();
-            printUnexpectedEventWarning("changed");
-        }
-
-        public void objectNotModified(Crawler crawler, String url) {
-            printUnexpectedEventWarning("unmodified");
-        }
-
-        public void objectRemoved(Crawler dataCrawler, String url) {
-            printUnexpectedEventWarning("removed");
-        }
-
-        public void clearStarted(Crawler crawler) {
-            printUnexpectedEventWarning("clearStarted");
-        }
-
-        public void clearingObject(Crawler crawler, String url) {
-            printUnexpectedEventWarning("clearingObject");
-        }
-
-        public void clearFinished(Crawler crawler, ExitCode exitCode) {
-            printUnexpectedEventWarning("clear finished");
-        }
-
+        
         private void process(FileDataObject object) throws IOException, ExtractorException {
         	// instead of using the MIME type returned by the web server, we could also use the
         	// MimeTypeIdentifier, as we do in the other examples. We do it this way to demonstrate
@@ -472,9 +396,69 @@ public class ExampleWebCrawler {
             }
         }
 
-        private void printUnexpectedEventWarning(String event) {
-            // as we don't keep track of access data in this example code, some events should never occur
-            LOGGER.warning("encountered unexpected event (" + event + ") with non-incremental crawler");
-        }
+		public void crawlStarted(Crawler crawler) {
+			nrObjects = 0;
+		}
+
+		public void crawlStopped(Crawler crawler, ExitCode exitCode) {
+		    try {
+		        Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
+		        model.writeTo(writer,Syntax.Trix);
+		        writer.close();
+		
+		        System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
+		        System.out.println("Saved RDF model to " + repositoryFile);
+		    }
+		    catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		}
+
+		public void objectChanged(Crawler dataCrawler, DataObject object) {
+		    object.dispose();
+		    printUnexpectedEventWarning("changed");
+		}
+
+		public void objectNotModified(Crawler crawler, String url) {
+		    printUnexpectedEventWarning("unmodified");
+		}
+
+		public void objectRemoved(Crawler dataCrawler, String url) {
+		    printUnexpectedEventWarning("removed");
+		}
+
+		public void clearStarted(Crawler crawler) {
+		    printUnexpectedEventWarning("clearStarted");
+		}
+
+		public void clearingObject(Crawler crawler, String url) {
+		    printUnexpectedEventWarning("clearingObject");
+		}
+
+		public void clearFinished(Crawler crawler, ExitCode exitCode) {
+		    printUnexpectedEventWarning("clear finished");
+		}
+
+		public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
+		    return this;
+		}
+
+		public RDFContainer getRDFContainer(URI uri) {
+			Model contextModel = null;
+			try {
+				contextModel = new ModelImplSesame(uri, (Repository) model
+						.getUnderlyingModelImplementation());
+			}
+			catch (ModelException me) {
+				throw new RuntimeException(me);
+			}
+			RDF2GoRDFContainer container = new RDF2GoRDFContainer(contextModel, uri);
+			return container;
+		}
+
+		protected void printUnexpectedEventWarning(String event) {
+		     // as we don't keep track of access data in this example code, some events should never occur
+		     LOGGER.warning("encountered unexpected event (" + event + ") with non-incremental crawler");
+		}       
     }
 }

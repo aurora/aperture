@@ -7,7 +7,6 @@
 package org.semanticdesktop.aperture.accessor.base;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -17,14 +16,14 @@ import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
+import org.openrdf.model.Value;
 import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.XMLSchema;
-import org.openrdf.sesame.repository.RStatement;
-import org.openrdf.sesame.repository.RValue;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.sesame.sail.SailUpdateException;
+import org.openrdf.repository.Connection;
+import org.openrdf.repository.Repository;
+import org.openrdf.sail.SailException;
 import org.openrdf.util.iterator.CloseableIterator;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.vocabulary.DATA;
@@ -55,6 +54,8 @@ public class RepositoryAccessData implements AccessData {
 	 * The Repository holding the context information.
 	 */
 	private Repository repository;
+	
+	private Connection connection;
 
 	/**
 	 * The context Resource used to store all access data in.
@@ -69,20 +70,38 @@ public class RepositoryAccessData implements AccessData {
 	 * @param context The context used to mark all statements handled by this RepositoryAccessData. This is
 	 *            allowed to be null.
 	 */
-	public RepositoryAccessData(Repository repository, Resource context) {
+	public RepositoryAccessData(Repository repository, Resource context) throws SailException {
 		if (repository == null) {
 			throw new IllegalArgumentException("repository cannot be null");
 		}
 
 		this.repository = repository;
 		this.context = context;
+		this.connection = repository.getConnection();
+		this.connection.setAutoCommit(true);
+	}
+	
+	public void shutDown() {
+		try {
+			connection.close();
+		} catch (SailException se) {
+			throw new RuntimeException(se);
+		}
+	}
+	
+	public void setAutoCommit(boolean value) {
+		try {
+			connection.setAutoCommit(value);
+		} catch (SailException se) {
+			throw new RuntimeException(se);
+		}
 	}
 
 	public void clear() throws IOException {
 		try {
-			repository.clearContext(context);
+			connection.clearContext(context);
 		}
-		catch (SailUpdateException e) {
+		catch (SailException e) {
 			IOException ioe = new IOException();
 			ioe.initCause(e);
 			throw ioe;
@@ -94,15 +113,15 @@ public class RepositoryAccessData implements AccessData {
 
 		URI idURI = new URIImpl(id);
 		URI keyURI = toURI(key);
-		CloseableIterator<RStatement> iterator = null;
+		CloseableIterator<? extends Statement> iterator = null;
 
 		// only returns a value when there is exactly one matching statement
 		try {
-			iterator = repository.getStatements(idURI, keyURI, null, context);
+			iterator = connection.getStatements(idURI, keyURI, null, context, false);
 			if (iterator.hasNext()) {
-				RStatement statement = iterator.next();
+				Statement statement = iterator.next();
 				if (!iterator.hasNext()) {
-					RValue value = statement.getObject();
+					Value value = statement.getObject();
 					if (value instanceof Literal) {
 						return ((Literal) value).getLabel();
 					}
@@ -123,14 +142,14 @@ public class RepositoryAccessData implements AccessData {
 		commit();
 
 		URI idURI = new URIImpl(id);
-		CloseableIterator<RStatement> iterator = null;
+		CloseableIterator<? extends Statement> iterator = null;
 		HashSet<String> result = null;
 
 		try {
-			iterator = repository.getStatements(idURI, DATA.linksTo, null, context);
+			iterator = connection.getStatements(idURI, toSesameURI(DATA.linksTo), null, context, false);
 			while (iterator.hasNext()) {
-				RStatement statement = iterator.next();
-				RValue value = statement.getObject();
+				Statement statement = iterator.next();
+				Value value = statement.getObject();
 				if (value instanceof URI) {
 					if (result == null) {
 						result = new HashSet<String>();
@@ -146,6 +165,10 @@ public class RepositoryAccessData implements AccessData {
 		return result;
 	}
 
+	private URI toSesameURI(org.ontoware.rdf2go.model.node.URI rdf2goUri) {
+		return new URIImpl(rdf2goUri.toString());
+	}
+
 	/**
 	 * Warning: expensive operation, as this implementation queries for all unique subjects used in this
 	 * RepositoryAccessData's context.
@@ -157,11 +180,11 @@ public class RepositoryAccessData implements AccessData {
 	public Set<String> getStoredIDs() {
 		commit();
 
-		CloseableIterator<RStatement> iterator = null;
+		CloseableIterator<? extends Statement> iterator = null;
 		HashSet<String> result = new HashSet<String>();
 
 		try {
-			iterator = repository.getStatements(null, null, null, context);
+			iterator = connection.getStatements(null, null, null, context, false);
 			while (iterator.hasNext()) {
 				result.add(iterator.next().getSubject().toString());
 			}
@@ -181,10 +204,10 @@ public class RepositoryAccessData implements AccessData {
 		commit();
 
 		URI idURI = new URIImpl(id);
-		CloseableIterator<RStatement> iterator = null;
+		CloseableIterator<? extends Statement> iterator = null;
 
 		try {
-			iterator = repository.getStatements(idURI, null, null, context);
+			iterator = connection.getStatements(idURI, null, null, context, false);
 			return iterator.hasNext();
 		}
 		finally {
@@ -213,7 +236,7 @@ public class RepositoryAccessData implements AccessData {
 	public void putReferredID(String id, String referredID) {
 		URI subject = new URIImpl(id);
 		URI object = new URIImpl(referredID);
-		add(new StatementImpl(subject, DATA.linksTo, object));
+		add(new StatementImpl(subject, toSesameURI(DATA.linksTo), object));
 	}
 
 	public void remove(String id, String key) {
@@ -226,45 +249,45 @@ public class RepositoryAccessData implements AccessData {
 
 	public void removeReferredID(String id, String referredID) {
 		commit();
-
+		
 		URI subject = new URIImpl(id);
 		URI object = new URIImpl(referredID);
-		Statement statement = new StatementImpl(subject, DATA.linksTo, object);
+		Statement statement = new StatementImpl(subject, toSesameURI(DATA.linksTo), object);
 
 		try {
-			repository.remove(statement, context);
+			connection.remove(statement, context);
 		}
-		catch (SailUpdateException e) {
+		catch (SailException e) {
 			LOGGER.log(Level.SEVERE, "Exception while removing statement", e);
 		}
 	}
 
 	public void removeReferredIDs(String id) {
-		remove(new URIImpl(id), DATA.linksTo);
+		remove(new URIImpl(id), toSesameURI(DATA.linksTo));
 	}
-
+	
 	public void store() throws IOException {
 		commit();
 	}
 
 	private void commit() {
 		try {
-			repository.commit();
+			connection.commit();
 		}
-		catch (SailUpdateException e) {
+		catch (SailException e) {
 			LOGGER.log(Level.SEVERE, "Exception while commiting repository", e);
 		}
 	}
 
 	private URI toURI(String key) {
 		if (key == AccessData.DATE_KEY) {
-			return DATA.date;
+			return toSesameURI(DATA.date);
 		}
 		else if (key == AccessData.BYTE_SIZE_KEY) {
-			return DATA.byteSize;
+			return toSesameURI(DATA.byteSize);
 		}
 		else if (key == AccessData.REDIRECTS_TO_KEY) {
-			return DATA.redirectsTo;
+			return toSesameURI(DATA.redirectsTo);
 		}
 		else {
 			return new URIImpl(URI_PREFIX + key);
@@ -273,9 +296,9 @@ public class RepositoryAccessData implements AccessData {
 
 	private void add(Statement statement) {
 		try {
-			repository.add(statement, context);
+			connection.add(statement, context);
 		}
-		catch (SailUpdateException e) {
+		catch (SailException e) {
 			LOGGER.log(Level.SEVERE, "Exception while adding statement", e);
 		}
 	}
@@ -285,15 +308,15 @@ public class RepositoryAccessData implements AccessData {
 
 		// for now we gather all statements in a collection and remove them one-by-one, this will become
 		// easier (just pass a CloseableIterator to the remove method) once Sesame issue SES-252 is fixed
-		ArrayList<RStatement> statements = new ArrayList<RStatement>();
-		repository.getStatements(subject, predicate, null, context, statements);
+		// ArrayList<Statement> statements = new ArrayList<Statement>();
+		
+		CloseableIterator<? extends Statement> statements = null; 
 
 		try {
-			for (RStatement statement : statements) {
-				repository.remove(statement, context);
-			}
+			statements = connection.getStatements(subject, predicate, null, context, false);
+			connection.remove(statements);
 		}
-		catch (SailUpdateException e) {
+		catch (SailException e) {
 			LOGGER.log(Level.SEVERE, "Exception while removing statement", e);
 		}
 	}

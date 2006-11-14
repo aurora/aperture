@@ -6,7 +6,7 @@
  */
 package org.semanticdesktop.aperture.datasource.filesystem;
 
-import org.openrdf.model.URI;
+import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;

@@ -8,11 +8,13 @@ package org.semanticdesktop.aperture.extractor.pdf;
 
 import java.io.IOException;
 
+import org.ontoware.rdf2go.exception.ModelException;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class PdfExtractorTest extends ExtractorTestBase {
@@ -27,33 +29,41 @@ public class PdfExtractorTest extends ExtractorTestBase {
     
     private static final String PDF_WRITER_DOC = DOCS_PATH + "pdf-word-2000-pdfwriter-7.0.pdf";
     
-    private SesameRDFContainer getStatements(String resourceName) throws ExtractorException, IOException {
+    private RDF2GoRDFContainer container;
+    
+    
+    private RDF2GoRDFContainer getStatements(String resourceName) throws ExtractorException, IOException {
         // apply the extractor
         ExtractorFactory factory = new PdfExtractorFactory();
         Extractor extractor = factory.get();
         return extract(resourceName, extractor);
     }
     
-    public void testOpenOffice2Writer() throws ExtractorException, IOException {
+    public void tearDown() {
+    	container.dispose();
+    	container = null;
+    }
+    
+    public void testOpenOffice2Writer() throws ExtractorException, IOException, ModelException {
         // note: document has no date
-        SesameRDFContainer container = getStatements(OPEN_OFFICE_2_DOC);
+        container = getStatements(OPEN_OFFICE_2_DOC);
         
         checkStatement(DATA.generator, "OpenOffice", container);
         
         checkOmnipresentStatements(container);
     }
     
-    public void testOpenOffice1Writer() throws ExtractorException, IOException {
+    public void testOpenOffice1Writer() throws ExtractorException, IOException, ModelException {
         // note: document has no date
-        SesameRDFContainer container = getStatements(OPEN_OFFICE_1_DOC);
+        container = getStatements(OPEN_OFFICE_1_DOC);
         
         checkStatement(DATA.generator, "OpenOffice", container);
         
         checkOmnipresentStatements(container);
     }
     
-    public void testPDFCreator() throws ExtractorException, IOException {
-        SesameRDFContainer container = getStatements(PDF_CREATOR_DOC);
+    public void testPDFCreator() throws ExtractorException, IOException, ModelException {
+        container = getStatements(PDF_CREATOR_DOC);
         
         checkStatement(DATA.generator, "PDFCreator", container);
         checkStatement(DATA.generator, "Ghostscript", container);
@@ -62,8 +72,8 @@ public class PdfExtractorTest extends ExtractorTestBase {
         checkOmnipresentStatements(container);
     }
     
-    public void testPDFMaker() throws ExtractorException, IOException {
-        SesameRDFContainer container = getStatements(PDF_MAKER_DOC);
+    public void testPDFMaker() throws ExtractorException, IOException, ModelException {
+        container = getStatements(PDF_MAKER_DOC);
         
         checkStatement(DATA.generator, "PDFMaker", container);
         checkStatement(DATA.generator, "Distiller", container);
@@ -72,8 +82,8 @@ public class PdfExtractorTest extends ExtractorTestBase {
         checkOmnipresentStatements(container);
     }
     
-    public void testPDFWriter() throws ExtractorException, IOException {
-        SesameRDFContainer container = getStatements(PDF_WRITER_DOC);
+    public void testPDFWriter() throws ExtractorException, IOException, ModelException {
+        container = getStatements(PDF_WRITER_DOC);
         
         checkStatement(DATA.title, "Microsoft Word", container);
         checkStatement(DATA.creator, "Christiaan Fluit", container);
@@ -84,7 +94,7 @@ public class PdfExtractorTest extends ExtractorTestBase {
         checkStatement(DATA.pageCount, "1", container);
     }
     
-    private void checkOmnipresentStatements(SesameRDFContainer container) {
+    private void checkOmnipresentStatements(RDF2GoRDFContainer container) throws ModelException {
         checkStatement(DATA.creator, "Christiaan Fluit", container);
         checkStatement(DATA.subject, "Testing", container);
         checkStatement(DATA.title, "Example", container);

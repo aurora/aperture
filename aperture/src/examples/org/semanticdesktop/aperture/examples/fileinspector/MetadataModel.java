@@ -11,9 +11,13 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 
 import org.openrdf.model.Literal;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
 import org.openrdf.model.Value;
-import org.openrdf.sesame.repository.RStatement;
-import org.openrdf.sesame.repository.Repository;
+import org.openrdf.model.impl.URIImpl;
+import org.openrdf.repository.Connection;
+import org.openrdf.repository.Repository;
+import org.openrdf.sail.SailException;
 import org.openrdf.util.iterator.CloseableIterator;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
@@ -46,11 +50,15 @@ public class MetadataModel {
 			fullText = null;
 		}
 		else {
-			CloseableIterator statements = repository.getStatements(null, DATA.fullText, null);
+			URI fullTextUri = new URIImpl(DATA.fullText.toString());
+			CloseableIterator statements = null; 
+			Connection connection = null;
 			try {
+				connection = repository.getConnection();
+				statements = connection.getStatements(null, fullTextUri, null,false);
 				StringBuilder buffer = new StringBuilder(10000);
 				while (statements.hasNext()) {
-					RStatement statement = (RStatement) statements.next();
+					Statement statement = (Statement) statements.next();
 					Value value = statement.getObject();
 					if (value instanceof Literal) {
 						buffer.append(((Literal) value).getLabel());
@@ -63,14 +71,31 @@ public class MetadataModel {
 
 				fullText = buffer.toString().trim();
 			}
+			catch (SailException se) {
+				se.printStackTrace();
+			}
 			finally {
-				statements.close();
+				if (statements != null) {
+					statements.close();
+				}
+				closeConnection(connection);
 			}
 		}
 
 		// notify listeners
 		fireStateChanged();
 	}
+	
+	private void closeConnection(Connection connection) {
+    	if (connection != null) {
+    		try {
+    			connection.close();
+    		}
+    		catch (SailException se) {
+    			se.printStackTrace();
+    		}
+    	}
+    }
 
 	public String getMimeType() {
 		return mimeType;

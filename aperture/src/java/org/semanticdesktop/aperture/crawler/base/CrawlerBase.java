@@ -186,8 +186,6 @@ public abstract class CrawlerBase implements Crawler {
 	 * interrupted or anything). Also this method is expected to update the deprecatedUrls set, as any
 	 * remaining URLs in this set will be removed as being removed after this method completes.
 	 * 
-	 * @see ExitCode
-	 * 
 	 * @return An ExitCode indicating how the crawl procedure terminated.
 	 */
 	protected abstract ExitCode crawlObjects();

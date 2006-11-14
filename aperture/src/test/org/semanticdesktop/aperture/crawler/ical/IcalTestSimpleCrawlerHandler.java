@@ -6,22 +6,22 @@
  */
 package org.semanticdesktop.aperture.crawler.ical;
 
-import org.openrdf.model.URI;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.sesame.sail.SailInitializationException;
-import org.openrdf.sesame.sail.SailUpdateException;
-import org.openrdf.sesame.sailimpl.memory.MemoryStore;
+import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.repository.Repository;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 
 class IcalTestSimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
     
-    private Repository repository;
+    private ModelImplSesame model;
 
     private int numberOfObjects;
     
@@ -29,33 +29,16 @@ class IcalTestSimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactor
     //////////////////////////////////////////// CONSTRUCTOR /////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    public IcalTestSimpleCrawlerHandler() {
-        repository = new Repository(new MemoryStore());
-        
-        try {
-            repository.initialize();
-        } catch (SailInitializationException e) {
-            // we cannot effectively continue
-            throw new RuntimeException(e);
-        }
-
-        // set auto-commit off so that all additions and deletions between
-        // two commits become a single transaction
-        try {
-            repository.setAutoCommit(false);
-        } catch (SailUpdateException e) {
-            // this will hurt performance but we can still continue.
-            // Each add and remove will now be a separate transaction
-            // (slow).
-        }
+    public IcalTestSimpleCrawlerHandler() throws ModelException {
+        model = new ModelImplSesame(false);
     }
     
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////// GETTERS AND SETTERS ///////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    public Repository getRepository() {
-        return repository;
+    public ModelImplSesame getModel() {
+        return model;
     }
     
     public int getNumberOfObjects() {
@@ -96,13 +79,6 @@ class IcalTestSimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactor
 
     public void objectNew(Crawler crawler, DataObject object) {
         numberOfObjects++;
-        // commit all generated statements
-        try {
-            repository.commit();
-        } catch (SailUpdateException e) {
-            // don't continue when this happens
-            throw new RuntimeException(e);
-        }
         
         // free any resources contained by this DataObject
         object.dispose();
@@ -125,9 +101,8 @@ class IcalTestSimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactor
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public RDFContainer getRDFContainer(URI uri) {
-        SesameRDFContainer container = 
-            new SesameRDFContainer(repository,uri);
-        container.setContext(uri);
+        RDF2GoRDFContainer container = 
+            new RDF2GoRDFContainer(model,uri,true);
         return container;
     }
 }

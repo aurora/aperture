@@ -6,7 +6,7 @@
  */
 package org.semanticdesktop.aperture.mime.identifier;
 
-import org.openrdf.model.URI;
+import org.ontoware.rdf2go.model.node.URI;
 
 /**
  * Identifies the MIME type of a binary resource. Implementations typically use heuristics such as magic

@@ -9,8 +9,8 @@ package org.semanticdesktop.aperture.accessor.base;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.vocabulary.RDF;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -39,7 +39,7 @@ public class DataObjectBase implements DataObject {
         this.dataSource = dataSource;
         this.metadata = metadata;
         disposed = false;
-        metadata.add(RDF.TYPE, DATA.DataObject);
+        metadata.add(RDF.type, DATA.DataObject);
     }
 
     public void finalize() throws Throwable {
@@ -87,5 +87,7 @@ public class DataObjectBase implements DataObject {
 
     public void dispose() {
         disposed = true;
+        // Added after discussion on the aperture-devel mailing list. 10.11.2006
+        metadata.dispose();
     }
 }

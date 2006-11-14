@@ -1,10 +1,10 @@
 package org.semanticdesktop.aperture.vocabulary;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Thu Sep 28 15:57:50 CEST 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Oct 24 17:03:54 CEST 2006
  * input file: doc/ontology/data.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/data#
  */
@@ -15,60 +15,60 @@ public class DATA_GEN {
      * Label: AddressBookEntry 
      * Comment: An addressbook-entry, for example from the Apple address book or from Microsoft Outlook. 
      */
-    public static final URI AddressBookEntry = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#AddressBookEntry");
+    public static final URI AddressBookEntry = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#AddressBookEntry");
 
     /**
      * Label: Agent 
      */
-    public static final URI Agent = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#Agent");
+    public static final URI Agent = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#Agent");
 
     /**
      * Label: DataObject 
      * Comment: A resource that contains some information. 
      */
-    public static final URI DataObject = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#DataObject");
+    public static final URI DataObject = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#DataObject");
 
     /**
      * Label: Document 
      */
-    public static final URI Document = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#Document");
+    public static final URI Document = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#Document");
 
     /**
      * Label: Email 
      */
-    public static final URI Email = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#Email");
+    public static final URI Email = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#Email");
 
     /**
      * Label: FileDataObject 
      * Comment: A file-based data object. May be a website, a file from filesystem or any other file representable as a stream. Has a size and some content, that is extracted. 
      */
-    public static final URI FileDataObject = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#FileDataObject");
+    public static final URI FileDataObject = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#FileDataObject");
 
     /**
      * Label: FolderDataObject 
      */
-    public static final URI FolderDataObject = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#FolderDataObject");
+    public static final URI FolderDataObject = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#FolderDataObject");
 
     /**
      * Label: MSOLDistList 
      * Comment: A distribution list from outlook 
      */
-    public static final URI MSOLDistList = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#MSOLDistList");
+    public static final URI MSOLDistList = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#MSOLDistList");
 
     /**
      * Label: MSOLNote 
      */
-    public static final URI MSOLNote = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#MSOLNote");
+    public static final URI MSOLNote = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#MSOLNote");
 
     /**
      * Label: MSOLTask 
      */
-    public static final URI MSOLTask = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#MSOLTask");
+    public static final URI MSOLTask = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#MSOLTask");
 
     /**
      * Label: MSOutlookObject 
      */
-    public static final URI MSOutlookObject = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#MSOutlookObject");
+    public static final URI MSOutlookObject = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#MSOutlookObject");
 
     /**
      * Label: bcc 
@@ -76,7 +76,7 @@ public class DATA_GEN {
      * Domain: Email 
      * Range: Agent 
      */
-    public static final URI bcc = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#bcc");
+    public static final URI bcc = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#bcc");
 
     /**
      * Label: byteSize 
@@ -84,7 +84,7 @@ public class DATA_GEN {
      * Domain: FileDataObject 
      * Range: Literal 
      */
-    public static final URI byteSize = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#byteSize");
+    public static final URI byteSize = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#byteSize");
 
     /**
      * Label: cc 
@@ -92,7 +92,7 @@ public class DATA_GEN {
      * Domain: Email 
      * Range: Agent 
      */
-    public static final URI cc = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#cc");
+    public static final URI cc = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#cc");
 
     /**
      * Label: characterSet 
@@ -100,7 +100,7 @@ public class DATA_GEN {
      * Domain: FileDataObject 
      * Range: Literal 
      */
-    public static final URI characterSet = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#characterSet");
+    public static final URI characterSet = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#characterSet");
 
     /**
      * Label: contentMimeType 
@@ -109,14 +109,14 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: FileDataObject 
      * Range: Literal 
      */
-    public static final URI contentMimeType = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#contentMimeType");
+    public static final URI contentMimeType = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#contentMimeType");
 
     /**
      * Label: created 
      * Comment: DublinCore: Date of creation of the resource. See 'date' for more details. 
      * Range: Literal 
      */
-    public static final URI created = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#created");
+    public static final URI created = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#created");
 
     /**
      * Label: creator 
@@ -124,7 +124,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: DataObject 
      * Range: Literal 
      */
-    public static final URI creator = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#creator");
+    public static final URI creator = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#creator");
 
     /**
      * Label: dataSource 
@@ -132,7 +132,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: DataObject 
      * Range: Resource 
      */
-    public static final URI dataSource = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#dataSource");
+    public static final URI dataSource = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#dataSource");
 
     /**
      * Label: date 
@@ -140,7 +140,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: DataObject 
      * Range: Literal 
      */
-    public static final URI date = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#date");
+    public static final URI date = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#date");
 
     /**
      * Label: dateAsNumber 
@@ -148,7 +148,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: DataObject 
      * Range: Literal 
      */
-    public static final URI dateAsNumber = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#dateAsNumber");
+    public static final URI dateAsNumber = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#dateAsNumber");
 
     /**
      * Label: description 
@@ -156,21 +156,21 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: DataObject 
      * Range: Literal 
      */
-    public static final URI description = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#description");
+    public static final URI description = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#description");
 
     /**
      * Label: emailAddress 
      * Domain: Agent 
      * Range: Literal 
      */
-    public static final URI emailAddress = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#emailAddress");
+    public static final URI emailAddress = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#emailAddress");
 
     /**
      * Label: expirationDate 
      * Comment: Date the resource expires (especially needed for web-resources). See 'date' for more details. 
      * Range: Literal 
      */
-    public static final URI expirationDate = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#expirationDate");
+    public static final URI expirationDate = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#expirationDate");
 
     /**
      * Label: from 
@@ -178,7 +178,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: Email 
      * Range: Agent 
      */
-    public static final URI from = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#from");
+    public static final URI from = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#from");
 
     /**
      * Label: fullText 
@@ -186,7 +186,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: DataObject 
      * Range: Literal 
      */
-    public static final URI fullText = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#fullText");
+    public static final URI fullText = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#fullText");
 
     /**
      * Label: generator 
@@ -194,7 +194,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: DataObject 
      * Range: Literal 
      */
-    public static final URI generator = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#generator");
+    public static final URI generator = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#generator");
 
     /**
      * Label: group 
@@ -202,7 +202,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: AddressBookEntry 
      * Range: Literal 
      */
-    public static final URI group = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#group");
+    public static final URI group = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#group");
 
     /**
      * Label: homepage 
@@ -210,7 +210,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: Agent 
      * Range: Literal 
      */
-    public static final URI homepage = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#homepage");
+    public static final URI homepage = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#homepage");
 
     /**
      * Label: keyword 
@@ -218,7 +218,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: DataObject 
      * Range: Literal 
      */
-    public static final URI keyword = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#keyword");
+    public static final URI keyword = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#keyword");
 
     /**
      * Label: language 
@@ -226,7 +226,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: DataObject 
      * Range: Literal 
      */
-    public static final URI language = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#language");
+    public static final URI language = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#language");
 
     /**
      * Label: linksTo 
@@ -234,7 +234,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: FileDataObject 
      * Range: DataObject 
      */
-    public static final URI linksTo = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#linksTo");
+    public static final URI linksTo = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#linksTo");
 
     /**
      * Label: messageID 
@@ -242,7 +242,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: Email 
      * Range: Literal 
      */
-    public static final URI messageID = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#messageID");
+    public static final URI messageID = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#messageID");
 
     /**
      * Label: mimeType 
@@ -250,14 +250,14 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: FileDataObject 
      * Range: Literal 
      */
-    public static final URI mimeType = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#mimeType");
+    public static final URI mimeType = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#mimeType");
 
     /**
      * Label: modified 
      * Comment: DublinCore: Date on which the resource was changed. See 'date' for more details. 
      * Range: Literal 
      */
-    public static final URI modified = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#modified");
+    public static final URI modified = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#modified");
 
     /**
      * Label: msOLUID 
@@ -265,7 +265,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: MSOutlookObject 
      * Range: Literal 
      */
-    public static final URI msOLUID = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#msOLUID");
+    public static final URI msOLUID = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#msOLUID");
 
     /**
      * Label: msolCompletedDate 
@@ -273,14 +273,14 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: MSOLTask 
      * Range: Literal 
      */
-    public static final URI msolCompletedDate = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#msolCompletedDate");
+    public static final URI msolCompletedDate = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#msolCompletedDate");
 
     /**
      * Label: msolDueDate 
      * Domain: MSOLTask 
      * Range: Literal 
      */
-    public static final URI msolDueDate = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#msolDueDate");
+    public static final URI msolDueDate = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#msolDueDate");
 
     /**
      * Label: name 
@@ -288,7 +288,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: Agent DataObject 
      * Range: Literal 
      */
-    public static final URI name = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#name");
+    public static final URI name = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#name");
 
     /**
      * Label: pageCount 
@@ -296,7 +296,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: Document 
      * Range: Literal 
      */
-    public static final URI pageCount = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#pageCount");
+    public static final URI pageCount = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#pageCount");
 
     /**
      * Label: partOf 
@@ -304,14 +304,14 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: FileDataObject 
      * Range: FolderDataObject 
      */
-    public static final URI partOf = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#partOf");
+    public static final URI partOf = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#partOf");
 
     /**
      * Label: printDate 
      * Comment: Date the resource was last printed (only supported by OpenDocument format, candidate for removal here). See 'date' for more details. 
      * Range: Literal 
      */
-    public static final URI printDate = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#printDate");
+    public static final URI printDate = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#printDate");
 
     /**
      * Label: receivedDate 
@@ -319,7 +319,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: Email 
      * Range: Literal 
      */
-    public static final URI receivedDate = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#receivedDate");
+    public static final URI receivedDate = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#receivedDate");
 
     /**
      * Label: redirectsTo 
@@ -327,14 +327,14 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: DataObject 
      * Range: DataObject 
      */
-    public static final URI redirectsTo = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#redirectsTo");
+    public static final URI redirectsTo = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#redirectsTo");
 
     /**
      * Label: retrievalDate 
      * Comment: Date when the resource was retrieved by Aperture. See 'date' for more details. 
      * Range: Literal 
      */
-    public static final URI retrievalDate = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#retrievalDate");
+    public static final URI retrievalDate = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#retrievalDate");
 
     /**
      * Label: rootFolderOf 
@@ -342,7 +342,7 @@ content defaults to the value specified by the 'mimeType' property.
      * Domain: FolderDataObject 
      * Range: Resource 
      */
-    public static final URI rootFolderOf = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#rootFolderOf");
+    public static final URI rootFolderOf = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#rootFolderOf");
 
     /**
      * Label: sender 
@@ -351,7 +351,7 @@ This field contains the authenticated identity  of  the  AGENT (person,  system 
      * Domain: Email 
      * Range: Agent 
      */
-    public static final URI sender = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#sender");
+    public static final URI sender = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#sender");
 
     /**
      * Label: sentDate 
@@ -359,7 +359,7 @@ This field contains the authenticated identity  of  the  AGENT (person,  system 
      * Domain: Email 
      * Range: Literal 
      */
-    public static final URI sentDate = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#sentDate");
+    public static final URI sentDate = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#sentDate");
 
     /**
      * Label: subject 
@@ -367,7 +367,7 @@ This field contains the authenticated identity  of  the  AGENT (person,  system 
      * Domain: DataObject 
      * Range: Literal 
      */
-    public static final URI subject = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#subject");
+    public static final URI subject = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#subject");
 
     /**
      * Label: title 
@@ -376,13 +376,19 @@ Difference to name is that title is the human readable title of the resurce wher
      * Domain: DataObject 
      * Range: Literal 
      */
-    public static final URI title = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#title");
+    public static final URI title = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#title");
 
     /**
      * Label: to 
      * Comment: e-mail: TO 
      * Range: Literal 
      */
-    public static final URI to = new URIImpl("http://aperture.semanticdesktop.org/ontology/data#to");
+    public static final URI to = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#to");
+
+    /**
+     * Label: containsId 
+     * Comment: Used in ModelAccessData to tie the knownID's with the root node 
+     */
+    public static final URI containsId = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#containsId");
 
 }

@@ -90,7 +90,7 @@ public class LogUtil {
 		addConsoleHandler();
 		Logger.getLogger("org.gnowsis").setLevel(level);
 		Logger.getLogger("org.gnogno").setLevel(level);
-		Logger.getLogger("org.openrdf").setLevel(level);
+		Logger.getLogger("org.ontoware").setLevel(level);
 		Logger.getLogger("org.semanticdesktop").setLevel(level);
 	}
 
@@ -111,7 +111,7 @@ public class LogUtil {
 			return;
 		Logger.global.setLevel(level);
 		addConsoleHandler();
-		Logger.getLogger("org.openrdf").setLevel(level);
+		Logger.getLogger("org.ontoware").setLevel(level);
 		Logger.getLogger("org.semanticdesktop").setLevel(level);
 		Handler handler = new FileHandler(file.getName(), false);
 		handler.setLevel(Level.ALL);
@@ -122,7 +122,7 @@ public class LogUtil {
 		Logger.global.addHandler(handler);
 		Logger.getLogger("org.gnowsis").setLevel(level);
 		Logger.getLogger("org.gnogno").setLevel(level);
-		Logger.getLogger("org.openrdf").setLevel(level);
+		Logger.getLogger("org.ontoware").setLevel(level);
 		Logger.getLogger("org.semanticdesktop").setLevel(level);
 	}
 	
@@ -142,6 +142,12 @@ public class LogUtil {
 
 /*
  * $Log$
+ * Revision 1.2  2006/11/14 16:12:50  mylka
+ * The Great Merge.
+ *
+ * Revision 1.1.2.1  2006/10/28 13:20:42  mylka
+ * Aperture RDF2Go first draft...
+ *
  * Revision 1.1  2006/02/27 14:05:46  leo_sauermann
  * Implemented First version of Outlook. Added the vocabularyWriter for ease of vocabulary and some launch configs to run it. Added new dependencies (jacob)
  * Revision 1.3 2004/09/09 15:38:34 kiesel - added

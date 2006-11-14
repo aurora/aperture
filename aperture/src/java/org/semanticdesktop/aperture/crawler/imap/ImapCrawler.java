@@ -45,14 +45,16 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.openrdf.model.Resource;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.model.impl.StatementImpl;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.sesame.repository.RStatement;
-import org.openrdf.sesame.repository.Repository;
-import org.openrdf.util.iterator.CloseableIterator;
+import org.ontoware.aifbcommons.collection.ClosableIterable;
+import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.Resource;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.Variable;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -764,7 +766,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 			return null;
 		}
 		else {
-			Value parent = (Value) parentIDs.iterator().next();
+			Node parent = (Node) parentIDs.iterator().next();
 			if (parent instanceof URI) {
 				return (URI) parent;
 			}
@@ -803,15 +805,15 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	private void queueChildren(DataObject object, LinkedList queue) {
 		// as RDFContainer does not support querying for statements with the described URI as subject, we
 		// have no other option than to retrieve the Repository
-		Repository metadata = (Repository) object.getMetadata().getModel();
+		Model metadata = object.getMetadata().getModel();
 
 		// query for all child URIs
-		CloseableIterator statements = metadata.getStatements(null, DATA.partOf, object.getID());
-
+		ClosableIterator<Statement> statements = null; 
 		try {
+			ClosableIterable<Statement> iterable = metadata.findStatements(Variable.ANY, DATA.partOf, object.getID());
 			// queue these URIs
 			while (statements.hasNext()) {
-				RStatement statement = (RStatement) statements.next();
+				Statement statement = (Statement) statements.next();
 				Resource resource = statement.getSubject();
 
 				if (resource instanceof URI) {
@@ -824,9 +826,13 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 					LOGGER.severe("Internal error: unknown child value type: " + resource.getClass());
 				}
 			}
+		} catch (ModelException me) {
+			LOGGER.log(Level.SEVERE,"Couldn't queue children",me);
 		}
 		finally {
-			statements.close();
+			if (statements != null) {
+				statements.close();
+			}
 		}
 	}
 
@@ -1036,7 +1042,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		}
 
 		// register the folder's name
-		URI folderURI = new URIImpl(url);
+		URI folderURI = URIImpl.createURIWithoutChecking(url);
 		RDFContainer metadata = containerFactory.getRDFContainer(folderURI);
 		metadata.add(DATA.name, folder.getName());
 
@@ -1066,8 +1072,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 				if (isAcceptable(message)) {
 					long messageID = imapFolder.getUID(message);
-					URI messageURI = new URIImpl(uriPrefix + messageID);
-					metadata.add(new StatementImpl(messageURI, DATA.partOf, folderURI));
+					URI messageURI = metadata.getValueFactory().createURI(uriPrefix + messageID);
+					metadata.add(metadata.getValueFactory().createStatement(messageURI, DATA.partOf, folderURI));
 				}
 			}
 		}
@@ -1077,7 +1083,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		for (int i = 0; i < subFolders.length; i++) {
 			Folder subFolder = subFolders[i];
 			if (subFolder.exists()) {
-				metadata.add(new StatementImpl(getURI(subFolder), DATA.partOf, folderURI));
+				metadata.add(metadata.getValueFactory().createStatement(getURI(subFolder), DATA.partOf, folderURI));
 			}
 		}
 
@@ -1108,7 +1114,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	}
 
 	private URI getURI(Folder folder) throws MessagingException {
-		return new URIImpl(getURIPrefix(folder) + ";TYPE=LIST");
+		return URIImpl.create(getURIPrefix(folder) + ";TYPE=LIST");
 	}
 
 	private String getSubFoldersString(Folder folder) throws MessagingException {
