@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-Name: Aperture Vocabulary
+Bundle-SymbolicName: org.semanticedeskrtop.aperture.vocabulary
+Bundle-Version: 2006.1.3
+Bundle-Description: Aperture vocabulary bundle...

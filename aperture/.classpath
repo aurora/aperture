@@ -3,6 +3,7 @@
 	<classpathentry kind="src" path="src/examples"/>
 	<classpathentry kind="src" path="src/java"/>
 	<classpathentry kind="src" path="src/test"/>
+	<classpathentry kind="src" path="src/activators"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/junit-3.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/pdfbox-0.7.3.jar"/>

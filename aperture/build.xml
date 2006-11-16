@@ -20,31 +20,83 @@ your copy of ANT at http://ant.apache.org/
 		<property name="project.version.major" value="2006" />
 		<property name="project.version.minor" value="1" />
 		<property name="version-status" value="-alpha-3" />
-		<property name="project.version.full" value="${project.version.major}.${project.version.minor}${version-status}" />
-	
+		<property name="project.version.full" 
+			      value="${project.version.major}.${project.version.minor}${version-status}" />
+		
 		<!-- input dirs -->
 		<property name="src.dir" value="${basedir}/src" />
 		<property name="src.java.dir" value="${src.dir}/java" />
 		<property name="src.test.dir" value="${src.dir}/test" />
 		<property name="src.examples.dir" value="${src.dir}/examples" />
+		<property name="src.activators.dir" value="${src.dir}/activators" />
 		<property name="bin.dir" value="${basedir}/bin" />
 		<property name="lib.dir" value="${basedir}/lib" />
 		<property name="doc.dir" value="${basedir}/doc" />
-				
+		<property name="manifest.dir" value="${src.dir}/manifest" />
+			
 		<!-- build dirs -->
 		<property name="build.dir" value="${basedir}/build" />
 		<property name="classes.java.dir" value="${build.dir}/classes" />
 		<property name="classes.test.dir" value="${build.dir}/classes-test" />
 		<property name="classes.examples.dir" value="${build.dir}/classes-examples" />
+		<property name="classes.activators.dir" value="${build.dir}/classes-activators" />
 		
-		<!-- dist dirs and files -->
+		<!-- dist dirs -->
 		<property name="dist.dir" value="${build.dir}/dist" />
 		<property name="dist.lib.dir" value="${dist.dir}/lib" />
+		<property name="dist.bundle.dir" value="${dist.dir}/bundles" />
 		<property name="javadoc.dir" value="${dist.dir}/api" />
-		<property name="project.jar" value="${project.shortname}-${project.version.full}.jar" />
-		<property name="project-test.jar" value="${project.shortname}-test-${project.version.full}.jar" />
-		<property name="project-examples.jar" value="${project.shortname}-examples-${project.version.full}.jar" />
 		
+		<!-- dist files -->
+		<property name="project.jar" 
+			      value="${project.shortname}-${project.version.full}.jar" />
+		<property name="project-test.jar" 
+			      value="${project.shortname}-test-${project.version.full}.jar" />
+		<property name="project-examples.jar" 
+			      value="${project.shortname}-examples-${project.version.full}.jar" />
+
+		<!-- coarse grained bundles properties -->
+		<property name="bundle.core.coarsegrained.jar" 
+			      value="${project.shortname}-core-coarsegrained-${project.version.full}.jar" />
+		<property name="core.coarsegrained.manifest.mf" 
+			      value="${manifest.dir}/core.coarsegrained.manifest.mf" />
+		
+		<property name="bundle.impl.coarsegrained.jar" 
+			      value="${project.shortname}-impl-coarsegrained-${project.version.full}.jar" />
+		<property name="impl.coarsegrained.manifest.mf" 
+			      value="${manifest.dir}/impl.coarsegrained.manifest.mf" />
+		
+		<!-- medium granularity bundles properties -->
+		<property name="bundle.core.services.jar" 
+			      value="${project.shortname}-core-services-${project.version.full}.jar" />
+		<property name="core.services.manifest.mf" 
+			      value="${manifest.dir}/core.services.manifest.mf" />
+		
+		<property name="bundle.core.services.impl.jar" 
+			      value="${project.shortname}-core-services-impl-${project.version.full}.jar" />
+		<property name="core.services.impl.manifest.mf" 
+			      value="${manifest.dir}/core.services.impl.manifest.mf" />
+		
+		<property name="bundle.supporting.services.jar" 
+			      value="${project.shortname}-supporting-services-${project.version.full}.jar" />
+		<property name="supporting.services.manifest.mf" 
+			      value="${manifest.dir}/supporting.services.manifest.mf" />
+		
+		<property name="bundle.supporting.services.impl.jar" 
+			      value="${project.shortname}-supporting-services-impl-${project.version.full}.jar" />
+		<property name="supporting.services.impl.manifest.mf" 
+			      value="${manifest.dir}/supporting.services.impl.manifest.mf" />
+
+		<property name="bundle.vocabulary.jar" 
+			      value="${project.shortname}-vocabulary-${project.version.full}.jar" />
+		<property name="vocabulary.manifest.mf" 
+			      value="${manifest.dir}/vocabulary.manifest.mf" />
+				
+		<property name="bundle.supporting.api.jar" 
+			      value="${project.shortname}-supporting-api-${project.version.full}.jar" />
+		<property name="supporting.api.manifest.mf" 
+			      value="${manifest.dir}/supporting.api.manifest.mf" />				
+
 		<!-- release dirs and files -->
 		<property name="release.dir" value="${build.dir}/release" />
 		<property name="release.lib.dir" value="${release.dir}/lib" />
@@ -87,6 +139,12 @@ your copy of ANT at http://ant.apache.org/
 			<pathelement location="${classes.java.dir}" />
 		</path>
 		
+		<!-- classpath to compile activators -->
+		<path id="classpath.activators">
+			<path refid="classpath.test" />
+			<pathelement location="${classes.test.dir}" />
+		</path>
+		
 		<!-- classpath to run unit tests -->
 		<path id="classpath.junit">
 			<path refid="classpath.test" />
@@ -102,11 +160,15 @@ your copy of ANT at http://ant.apache.org/
 		</patternset>
 	</target>
 	
-	<target name="clean" depends="init" description="delete generated classes and distribution results">
+	<target name="clean" 
+		    depends="init" 
+		    description="delete generated classes and distribution results">
 		<delete includeemptydirs="true" dir="${build.dir}" />
 	</target>
 	
-	<target name="compile" depends="init" description="compile Aperture core classes">
+	<target name="compile" 
+		    depends="init" 
+		    description="compile Aperture core classes">
 		<!-- compile core classes -->
 		<mkdir dir="${classes.java.dir}" />
 		<javac source="${java.source.version}" 
@@ -128,7 +190,9 @@ your copy of ANT at http://ant.apache.org/
 		</copy>
 	</target>
 
-	<target name="compile.examples" depends="init, compile" description="compile Aperture examples classes">
+	<target name="compile.examples" 
+		    depends="init, compile" 
+		    description="compile Aperture examples classes">
 		<!-- compile example classes -->
 		<mkdir dir="${classes.examples.dir}" />
 		<javac source="${java.source.version}" 
@@ -140,6 +204,7 @@ your copy of ANT at http://ant.apache.org/
 			   debuglevel="${compile.debuglevel}" 
 			   deprecation="${compile.deprecation}" 
 			   optimize="${compile.optimize}" />
+		
 		<!-- copy resource files -->
 		<copy todir="${classes.examples.dir}">
 			<fileset dir="${src.examples.dir}">
@@ -148,8 +213,10 @@ your copy of ANT at http://ant.apache.org/
 		</copy>
 	</target>
 
-	<target name="compile.test" depends="init, compile" description="compile Aperture unit tests">
-		<!-- compule unit tests -->		
+	<target name="compile.test" 
+		    depends="init, compile" 
+		    description="compile Aperture unit tests">
+		<!-- compile unit tests -->		
 		<mkdir dir="${classes.test.dir}" />
 		<javac source="${java.source.version}" 
 			   target="${java.target.version}" 
@@ -170,30 +237,706 @@ your copy of ANT at http://ant.apache.org/
 		</copy>
 	</target>
 	
-	<target name="jar" depends="compile" description="create a jar file with the Aperture core classes">
+	<target name="compile.activators" 
+		    depends="init, compile" 
+		    description="compile Aperture bundle activators">
+		<!-- compule unit tests -->		
+		<mkdir dir="${classes.activators.dir}" />
+		<javac source="${java.source.version}" 
+			   target="${java.target.version}" 
+			   srcdir="${src.activators.dir}" 
+			   destdir="${classes.activators.dir}" 
+			   classpathref="classpath.activators" 
+			   debug="${compile.debug}" 
+			   debuglevel="${compile.debuglevel}" 
+			   deprecation="${compile.deprecation}" 
+			   optimize="${compile.optimize}" 
+		/>
+		
+		<!-- copy resource files -->
+		<copy todir="${classes.activators.dir}">
+			<fileset dir="${src.activators.dir}">
+				<patternset refid="resources" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="jar" 
+		    depends="compile" 
+		    description="create a jar file with the Aperture core classes">
 		<mkdir dir="${dist.lib.dir}" />
 		<jar destfile="${dist.lib.dir}/${project.jar}" compress="no">
 			<fileset dir="${classes.java.dir}" />
 		</jar>
 	</target>
 	
-	<target name="jar.examples" depends="compile.examples" description="create a jar file with the Aperture example classes">
+	<target name="jar.examples" 
+		    depends="compile.examples" 
+		    description="create a jar file with the Aperture example classes">
 		<mkdir dir="${dist.lib.dir}" />
 		<jar destfile="${dist.lib.dir}/${project-examples.jar}" compress="no">
 			<fileset dir="${classes.examples.dir}" />
 		</jar>
 	</target>
 
-	<target name="jar.test" depends="compile.test" description="create a jar file with the Aperture unit test classes">
+	<target name="jar.test" 
+		    depends="compile.test" 
+		    description="create a jar file with the Aperture unit test classes">
 		<mkdir dir="${dist.lib.dir}" />
 		<jar destfile="${dist.lib.dir}/${project-test.jar}" compress="no">
 			<fileset dir="${classes.test.dir}" />
 		</jar>
 	</target>
 	
-	<target name="build" depends="jar, jar.examples, jar.test" description="incrementally builds all Aperture jar files" />
+	<!-- elementary, selectors. could be used to package fine-grained bundles -->
+	
+	<!--   all selector include this one, it prevents from copying empty folders into jar files and     -->
+	<!--                             excludes the default registries                                    -->
+	<selector id="bundle.basic.selector">
+		<and>
+			<filename name="**/Default*Registry*" negate="true"/>
+			<filename name="**/defaults.xml" negate="true"/>
+			<type type="file" />
+		</and>
+	</selector>
 
-	<target name="javadoc" depends="init" description="create the javadoc for the core classes">
+	<selector id="bundle.vocabulary.selector">
+		<filename name="org/semanticdesktop/aperture/vocabulary/*" />
+	</selector>
+	
+	<selector id="bundle.accessor.service.selector">
+		<and>
+			<or>
+				<filename name="org/semanticdesktop/aperture/accessor/*" />
+				<filename name="org/semanticdesktop/aperture/accessor/base/*" />
+				<filename name="org/semanticdesktop/aperture/accessor/impl/*" />
+			</or>
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+	
+	<selector id="bundle.crawler.service.selector">
+		<and>
+			<or>
+				<filename name="org/semanticdesktop/aperture/crawler/*" />
+				<filename name="org/semanticdesktop/aperture/crawler/base/*" />
+				<filename name="org/semanticdesktop/aperture/crawler/impl/*" />				
+			</or>
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+	
+	<selector id="bundle.datasource.service.selector">
+		<and>
+			<or>
+				<filename name="org/semanticdesktop/aperture/datasource/*" />
+				<filename name="org/semanticdesktop/aperture/datasource/base/*" />
+				<filename name="org/semanticdesktop/aperture/datasource/config/*" />
+				<filename name="org/semanticdesktop/aperture/datasource/impl/*" />
+			</or>
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+	
+	<selector id="bundle.extractor.service.selector">
+		<and>
+			<or>
+				<filename name="org/semanticdesktop/aperture/extractor/*" />
+				<filename name="org/semanticdesktop/aperture/extractor/impl/*" />
+			</or>
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+	
+	<selector id="bundle.opener.service.selector">
+		<and>
+			<or>
+				<filename name="org/semanticdesktop/aperture/opener/*" />
+				<filename name="org/semanticdesktop/aperture/opener/impl/*" />
+			</or>
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+	
+	<selector id="bundle.rdf.service.selector">
+		<and>
+			<or>
+				<filename name="org/semanticdesktop/aperture/rdf/*" />
+				<filename name="org/semanticdesktop/aperture/rdf/rdf2go/*" />
+			</or>
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+	
+	<selector id="bundle.linkextractor.service.selector">
+		<and>
+			<or>
+				<filename name="org/semanticdesktop/aperture/hypertext/linkextractor/*" />
+				<filename name="org/semanticdesktop/aperture/hypertext/linkextractor/impl/*" />
+				<filename name="org/semanticdesktop/aperture/hypertext/linkextractor/impl/*" />
+			</or>
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+	
+	<selector id="bundle.mime.identifier.service.selector">
+		<and>
+			<or>
+				<filename name="org/semanticdesktop/aperture/mime/identifier/*" />
+				<filename name="org/semanticdesktop/aperture/mime/identifier/impl/*" />
+			</or>
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+	
+	<selector id="bundle.security.trustdecider.service.selector">
+		<and>
+			<or>
+				<filename name="org/semanticdesktop/aperture/security/trustdecider/*" />
+				<filename name="org/semanticdesktop/aperture/security/trustdecider/impl/*" />
+			</or>
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+	
+	<selector id="bundle.security.trustmanager.service.selector">
+		<and>
+			<or>
+				<filename name="org/semanticdesktop/aperture/security/trustmanager/*" />
+				<filename name="org/semanticdesktop/aperture/security/trustmanager/impl/*" />
+			</or>
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+	
+	<selector id="bundle.security.socketfactory.standard.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/security/socketfactory/standard/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>	
+	</selector>
+	
+	<selector id="bundle.supporting.api.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/util/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+	
+	<selector id="bundle.accessor.file.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/accessor/file/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+	
+	<selector id="bundle.accessor.http.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/accessor/http/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>	
+	</selector>
+	
+	<selector id="bundle.addressbook.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/addressbook/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+	
+	<selector id="bundle.crawler.ical.selector">
+		<and>
+			<or>
+				<filename name="org/semanticdesktop/aperture/crawler/ical/*" />
+				<filename name="org/semanticdesktop/aperture/datasource/ical/*" />
+			</or>
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+
+	<selector id="bundle.crawler.filesystem.selector">
+		<and>
+			<or>
+				<filename name="org/semanticdesktop/aperture/crawler/filesystem/*" />
+				<filename name="org/semanticdesktop/aperture/datasource/filesystem/*" />
+			</or>
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	
+	<selector id="bundle.crawler.imap.selector">
+		<and>
+			<or>
+				<filename name="org/semanticdesktop/aperture/crawler/imap/*" />
+				<filename name="org/semanticdesktop/aperture/datasource/imap/*" />
+			</or>
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	
+	<selector id="bundle.crawler.web.selector">
+		<and>
+			<or>
+				<filename name="org/semanticdesktop/aperture/crawler/web/*" />
+				<filename name="org/semanticdesktop/aperture/datasource/web/*" />
+			</or>
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	
+	<selector id="bundle.extractor.excel.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/excel/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	<selector id="bundle.extractor.html.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/html/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	<selector id="bundle.extractor.mime.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/mime/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	<selector id="bundle.extractor.office.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/office/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	<selector id="bundle.extractor.opendocument.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/opendocument/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	<selector id="bundle.extractor.openxml.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/openxml/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>	
+	<selector id="bundle.extractor.pdf.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/pdf/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>	
+	<selector id="bundle.extractor.plaintext.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/plaintext/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	<selector id="bundle.extractor.powerpoint.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/powerpoint/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>	
+	<selector id="bundle.extractor.presentations.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/presentations/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	<selector id="bundle.extractor.publisher.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/publisher/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>	
+	<selector id="bundle.extractor.quattro.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/quattro/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	<selector id="bundle.extractor.rtf.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/rtf/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	<selector id="bundle.extractor.visio.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/visio/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	<selector id="bundle.extractor.word.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/word/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	<selector id="bundle.extractor.wordperfect.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/wordperfect/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	<selector id="bundle.extractor.works.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/works/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	<selector id="bundle.extractor.xml.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/xml/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	
+	<selector id="bundle.extractor.util.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/extractor/util/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>		
+	</selector>
+	
+	<selector id="bundle.hypertext.linkextractor.html.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/hypertext/linkextractor/html/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+	
+	<selector id="bundle.mime.identifier.magic.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/mime/identifier/magic/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+	
+	<selector id="bundle.opener.file.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/opener/file/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+
+	<selector id="bundle.opener.http.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/opener/http/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+
+	<selector id="bundle.outlook.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/outlook/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>
+	</selector>
+	
+	<selector id="bundle.security.trustdecider.dialog.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/security/trustdecider/dialog/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>	
+	</selector>
+
+	<selector id="bundle.security.trustmanager.standard.selector">
+		<and>
+			<filename name="org/semanticdesktop/aperture/security/trustmanager/standard/*" />
+			<selector refid="bundle.basic.selector" />
+		</and>	
+	</selector>
+	
+	<!-- selectors for bundles at medium granularity, division proposed by Herko ter Horst -->
+	<selector id="bundle.core.services.selector">
+		<or>
+			<selector refid="bundle.accessor.service.selector" />
+			<selector refid="bundle.crawler.service.selector" />
+			<selector refid="bundle.datasource.service.selector" />
+			<selector refid="bundle.extractor.service.selector" />
+			<selector refid="bundle.opener.service.selector" />
+			<selector refid="bundle.rdf.service.selector" />
+			<selector refid="bundle.security.socketfactory.standard.selector" />
+			<filename name="org/semanticdesktop/aperture/CoreServicesActivator.*" />
+		</or>
+	</selector>
+	
+	<selector id="bundle.supporting.services.selector">
+		<or>
+			<selector refid="bundle.linkextractor.service.selector" />
+			<selector refid="bundle.mime.identifier.service.selector" />
+			<selector refid="bundle.security.trustmanager.service.selector" />
+			<selector refid="bundle.security.trustdecider.service.selector" />
+			<filename name="org/semanticdesktop/aperture/SupportingServicesActivator.*" />
+		</or>
+	</selector>
+	
+	<selector id="bundle.core.services.impl.selector">
+		<or>
+			<selector refid="bundle.accessor.file.selector" />
+			<selector refid="bundle.accessor.http.selector" />
+			<selector refid="bundle.crawler.ical.selector" />
+			<selector refid="bundle.crawler.imap.selector" />
+			<selector refid="bundle.crawler.filesystem.selector" />
+			<selector refid="bundle.crawler.web.selector" />
+			<selector refid="bundle.extractor.excel.selector" />
+			<selector refid="bundle.extractor.html.selector" />
+			<selector refid="bundle.extractor.mime.selector" />
+			<selector refid="bundle.extractor.office.selector" />
+			<selector refid="bundle.extractor.opendocument.selector" />
+			<selector refid="bundle.extractor.openxml.selector" />
+			<selector refid="bundle.extractor.pdf.selector" />
+			<selector refid="bundle.extractor.plaintext.selector" />
+			<selector refid="bundle.extractor.powerpoint.selector" />
+			<selector refid="bundle.extractor.presentations.selector" />
+			<selector refid="bundle.extractor.publisher.selector" />
+			<selector refid="bundle.extractor.quattro.selector" />
+			<selector refid="bundle.extractor.rtf.selector" />
+			<selector refid="bundle.extractor.visio.selector" />
+			<selector refid="bundle.extractor.word.selector" />
+			<selector refid="bundle.extractor.wordperfect.selector" />
+			<selector refid="bundle.extractor.works.selector" />
+			<selector refid="bundle.extractor.xml.selector" />
+			<!-- this is used by the above impl -->
+			<selector refid="bundle.extractor.util.selector" />
+			<selector refid="bundle.opener.file.selector" />
+			<selector refid="bundle.opener.http.selector" />
+			<selector refid="bundle.outlook.selector" />
+			<filename name="org/semanticdesktop/aperture/CoreImplementationsActivator.*" />
+		</or>
+	</selector>
+	
+	<selector id="bundle.supporting.services.impl.selector">
+		<or>
+			<selector refid="bundle.hypertext.linkextractor.html.selector" />
+			<selector refid="bundle.mime.identifier.magic.selector" />
+			<selector refid="bundle.security.trustmanager.standard.selector" />
+			<selector refid="bundle.security.trustdecider.dialog.selector" />
+			<filename name="org/semanticdesktop/aperture/SupportingImplementationsActivator.*" />
+		</or>
+	</selector>
+	
+	<!-- selectors for bundles at the highest level (core and impl) division by Antoni -->
+	
+	<selector id="bundle.core.coarsegrained.selector">
+		<or>
+			<selector refid="bundle.vocabulary.selector" />
+			<selector refid="bundle.core.services.selector" />
+			<selector refid="bundle.supporting.services.selector" />
+		    <selector refid="bundle.supporting.api.selector" />
+			<filename name="org/semanticdesktop/aperture/CoarsegrainedCoreActivator.*" />
+		</or>	
+	</selector>
+	
+	<selector id="bundle.impl.coarsegrained.selector">
+		<or>
+			<selector refid="bundle.core.services.impl.selector" />
+			<selector refid="bundle.supporting.services.impl.selector" />			
+			<filename name="org/semanticdesktop/aperture/CoarsegrainedImplActivator.*" />
+		</or>
+	</selector>
+	
+	<!-- targets for jar files at the highest level -->
+	
+	<target name="bundle.core.coarsegrained.jar" 
+		    depends="compile.activators" 
+		    description="create the coarsegrained core aperture bundle">
+		<mkdir dir="${dist.bundle.dir}" />
+		<jar destfile="${dist.bundle.dir}/${bundle.core.coarsegrained.jar}" 
+			 compress="no" 
+			 manifest="${core.coarsegrained.manifest.mf}">
+			<fileset dir="${classes.java.dir}">
+				<selector refid="bundle.core.coarsegrained.selector" />
+			</fileset>	
+			<fileset dir="${src.java.dir}">
+				<selector refid="bundle.core.coarsegrained.selector" />
+			</fileset>	
+			<fileset dir="${classes.activators.dir}">
+				<selector refid="bundle.core.coarsegrained.selector" />
+			</fileset>	
+			<fileset dir="${src.activators.dir}">
+				<selector refid="bundle.core.coarsegrained.selector" />
+			</fileset>	
+		</jar>
+	</target>
+	
+	<target name="bundle.impl.coarsegrained.jar" 
+		    depends="compile.activators" 
+		    description="create the coarsegrained aperture implementation bundle">
+		<mkdir dir="${dist.bundle.dir}" />	
+		<jar destfile="${dist.bundle.dir}/${bundle.impl.coarsegrained.jar}" 
+			 compress="no" 
+			 manifest="${impl.coarsegrained.manifest.mf}">
+			<fileset dir="${classes.java.dir}">
+				<selector refid="bundle.impl.coarsegrained.selector" />
+			</fileset>	
+			<fileset dir="${src.java.dir}">
+				<selector refid="bundle.impl.coarsegrained.selector" />
+			</fileset>	
+			<fileset dir="${classes.activators.dir}">
+				<selector refid="bundle.impl.coarsegrained.selector" />
+			</fileset>	
+			<fileset dir="${src.activators.dir}">
+				<selector refid="bundle.impl.coarsegrained.selector" />
+			</fileset>	
+		</jar>
+	</target>
+	
+	<!-- targets for jars at the medium level of granularity -->
+	
+	<target name="bundle.core.services.jar" 
+		    depends="compile.activators" 
+		    description="create the core services aperture bundle">
+		<mkdir dir="${dist.bundle.dir}" />
+		<jar destfile="${dist.bundle.dir}/${bundle.core.services.jar}" 
+			 compress="no" 
+			 manifest="${core.services.manifest.mf}">
+			<fileset dir="${classes.java.dir}">
+				<selector refid="bundle.core.services.selector" />
+			</fileset>	
+			<fileset dir="${src.java.dir}">
+				<selector refid="bundle.core.services.selector" />
+			</fileset>	
+			<fileset dir="${classes.activators.dir}">
+				<selector refid="bundle.core.services.selector" />
+			</fileset>	
+			<fileset dir="${src.activators.dir}">
+				<selector refid="bundle.core.services.selector" />
+			</fileset>	
+		</jar>
+	</target>
+		
+	<target name="bundle.supporting.services.jar" 
+		    depends="compile.activators" 
+		    description="create the supporting services aperture bundle">
+		<mkdir dir="${dist.bundle.dir}" />	
+		<jar destfile="${dist.bundle.dir}/${bundle.supporting.services.jar}" 
+			 compress="no" 
+			 manifest="${supporting.services.manifest.mf}">
+			<fileset dir="${classes.java.dir}">
+				<selector refid="bundle.supporting.services.selector" />
+			</fileset>	
+			<fileset dir="${src.java.dir}">
+				<selector refid="bundle.supporting.services.selector" />
+			</fileset>	
+			<fileset dir="${classes.activators.dir}">
+				<selector refid="bundle.supporting.services.selector" />
+			</fileset>	
+			<fileset dir="${src.activators.dir}">
+				<selector refid="bundle.supporting.services.selector" />
+			</fileset>	
+		</jar>
+	</target>
+	
+	<target name="bundle.core.services.impl.jar" 
+		    depends="compile.activators" 
+		    description="create the core services impl aperture bundle">
+		<mkdir dir="${dist.bundle.dir}" />
+		<jar destfile="${dist.bundle.dir}/${bundle.core.services.impl.jar}" 
+			 compress="no" 
+			 manifest="${core.services.impl.manifest.mf}">
+			<fileset dir="${classes.java.dir}">
+				<selector refid="bundle.core.services.impl.selector" />
+			</fileset>	
+			<fileset dir="${src.java.dir}">
+				<selector refid="bundle.core.services.impl.selector" />
+			</fileset>	
+			<fileset dir="${classes.activators.dir}">
+				<selector refid="bundle.core.services.impl.selector" />
+			</fileset>	
+			<fileset dir="${src.activators.dir}">
+				<selector refid="bundle.core.services.impl.selector" />
+			</fileset>	
+		</jar>
+	</target>
+		
+	<target name="bundle.supporting.services.impl.jar" 
+		    depends="compile.activators" 
+		    description="create the supporting services aperture bundle">
+		<mkdir dir="${dist.bundle.dir}" />	
+		<jar destfile="${dist.bundle.dir}/${bundle.supporting.services.impl.jar}" 
+			 compress="no" 
+			 manifest="${supporting.services.impl.manifest.mf}">
+			<fileset dir="${classes.java.dir}">
+				<selector refid="bundle.supporting.services.impl.selector" />
+			</fileset>	
+			<fileset dir="${src.java.dir}">
+				<selector refid="bundle.supporting.services.impl.selector" />
+			</fileset>	
+			<fileset dir="${classes.activators.dir}">
+				<selector refid="bundle.supporting.services.impl.selector" />
+			</fileset>	
+			<fileset dir="${src.activators.dir}">
+				<selector refid="bundle.supporting.services.impl.selector" />
+			</fileset>	
+		</jar>
+	</target>
+	
+	<target name="bundle.supporting.api.jar" 
+		    depends="compile.activators" 
+		    description="create the supporting api aperture bundle">
+		<mkdir dir="${dist.bundle.dir}" />	
+		<jar destfile="${dist.bundle.dir}/${bundle.supporting.api.jar}" 
+			 compress="no" 
+			 manifest="${supporting.api.manifest.mf}">
+			<fileset dir="${classes.java.dir}">
+				<selector refid="bundle.supporting.api.selector" />
+			</fileset>	
+			<fileset dir="${src.java.dir}">
+				<selector refid="bundle.supporting.api.selector" />
+			</fileset>	
+			<fileset dir="${classes.activators.dir}">
+				<selector refid="bundle.supporting.api.selector" />
+			</fileset>	
+			<fileset dir="${src.activators.dir}">
+				<selector refid="bundle.supporting.api.selector" />
+			</fileset>	
+		</jar>
+	</target>
+	
+	<target name="bundle.vocabulary.jar" 
+		    depends="compile.activators" 
+		    description="create the supporting api aperture bundle">
+		<mkdir dir="${dist.bundle.dir}" />	
+		<jar destfile="${dist.bundle.dir}/${bundle.vocabulary.jar}" 
+			 compress="no" 
+			 manifest="${vocabulary.manifest.mf}">
+			<fileset dir="${classes.java.dir}">
+				<selector refid="bundle.vocabulary.selector" />
+			</fileset>	
+			<fileset dir="${src.java.dir}">
+				<selector refid="bundle.vocabulary.selector" />
+			</fileset>	
+			<fileset dir="${classes.activators.dir}">
+				<selector refid="bundle.vocabulary.selector" />
+			</fileset>	
+			<fileset dir="${src.activators.dir}">
+				<selector refid="bundle.vocabulary.selector" />
+			</fileset>	
+		</jar>
+	</target>
+	
+	<target name="jar.coarsegrained.bundles" 
+		    depends="bundle.core.coarsegrained.jar,bundle.impl.coarsegrained.jar" 
+		    description="create coarsegrained aperture OSGi bundles" />
+
+	<target name="jar.middlegrained.bundles" 
+		    depends="bundle.core.services.jar,bundle.core.services.impl.jar,bundle.supporting.services.jar,bundle.supporting.services.impl.jar,bundle.supporting.api.jar,bundle.vocabulary.jar" 
+		    description="create coarsegrained aperture OSGi bundles" />	
+	
+	<target name="jar.bundles"
+	        depends="jar.coarsegrained.bundles,jar.middlegrained.bundles"
+	        description="create OSGi bundles from the aperture source code" />
+	
+	<target name="build" 
+		    depends="jar, jar.examples, jar.test, jar.bundles" 
+		    description="incrementally builds all Aperture jar files" />
+
+	<target name="javadoc" 
+		    depends="init" 
+		    description="create the javadoc for the core classes">
 		<!-- create javadoc files -->
 		<mkdir dir="${javadoc.dir}" />
 		<javadoc destdir="${javadoc.dir}" 
@@ -216,7 +959,7 @@ your copy of ANT at http://ant.apache.org/
 	
 	<target name="javadoc_limitedfornepomuk" 
 		    depends="init" 
-		    description="create the javadoc for the interfaces, but not the implementations. documentation input for the nepomuk consortium.">
+		    description="create the javadoc for the interfaces, but not the impl. documentation input for the nepomuk consortium.">
 		<mkdir dir="${javadoc.dir}" />
 		<javadoc destdir="${javadoc.dir}" 
 			     sourcepath="${src.java.dir}" 
@@ -243,9 +986,13 @@ your copy of ANT at http://ant.apache.org/
 	
 	
 	
-	<target name="dist" description="build the jar and javadoc files" depends="build, test, javadoc" />
+	<target name="dist" 
+		    description="build the jar and javadoc files" 
+		    depends="build, test, javadoc" />
 
-	<target name="release" depends="clean, dist" description="builds a directory tree containing a complete Aperture distro">
+	<target name="release" 
+		    depends="clean, dist" 
+		    description="builds a directory tree containing a complete Aperture distro">
 		<!-- copy README-like files -->
 		<mkdir dir="${release.dir}" />
 		<copy todir="${release.dir}">
