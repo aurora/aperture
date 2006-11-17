@@ -6,8 +6,38 @@
  */
 package org.semanticdesktop.aperture.opener;
 
+import java.util.Hashtable;
 
-public class DataOpenerServiceActivator {
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
+import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
+import org.semanticdesktop.aperture.opener.impl.DataOpenerRegistryImpl;
 
+public class DataOpenerServiceActivator implements BundleActivator {
+
+	public static BundleContext bc = null;
+	
+	private ServiceRegistration registration;
+	
+	private ServiceReference reference;
+	
+	public void start(BundleContext context) throws Exception {
+		System.out.println("Starting bundle" + this.getClass().getName());
+		bc = context;
+		DataOpenerRegistry registry = new DataOpenerRegistryImpl();
+		registration = bc.registerService(DataOpenerRegistry.class.getName(), registry, new Hashtable());
+		reference = registration.getReference();
+		System.out.println("Service registered: " + DataOpenerRegistry.class.getName());
+	}
+
+	public void stop(BundleContext context) throws Exception {
+		System.out.println("Stopping bundle" + this.getClass().getName());
+		bc.ungetService(reference);
+		System.out.println("Service unregistered: " + DataOpenerRegistry.class.getName());
+		registration = null;
+		reference = null;
+		bc = null;
+	}
 }
-

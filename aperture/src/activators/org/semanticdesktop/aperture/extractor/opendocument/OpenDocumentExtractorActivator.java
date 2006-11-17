@@ -6,8 +6,19 @@
  */
 package org.semanticdesktop.aperture.extractor.opendocument;
 
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 
-public class OpenDocumentExtractorActivator {
+public class OpenDocumentExtractorActivator implements BundleActivator {
+
+	public void start(BundleContext context) throws Exception {
+	// TODO Auto-generated method stub
+		System.out.println("Starting bundle" + this.getClass().getName());
+	}
+
+	public void stop(BundleContext context) throws Exception {
+	// TODO Auto-generated method stub
+		System.out.println("Stopping bundle" + this.getClass().getName());
+	}
 
 }
-

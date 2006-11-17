@@ -6,8 +6,34 @@
  */
 package org.semanticdesktop.aperture;
 
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 
-public class CoarsegrainedImplActivator {
+public class CoarsegrainedImplActivator implements BundleActivator {
 
+	public static BundleContext bc;
+
+	private CoreImplementationsActivator coreImplementationsActivator;
+
+	private SupportingImplementationsActivator supportingImplementationsActivator;
+
+	public void start(BundleContext context) throws Exception {
+		coreImplementationsActivator = new CoreImplementationsActivator();
+		coreImplementationsActivator.start(context);
+
+		supportingImplementationsActivator = new SupportingImplementationsActivator();
+		supportingImplementationsActivator.start(context);
+
+		bc = context;
+	}
+
+	public void stop(BundleContext context) throws Exception {
+		coreImplementationsActivator.stop(context);
+		coreImplementationsActivator = null;
+		
+		supportingImplementationsActivator.stop(context);
+		supportingImplementationsActivator = null;
+		
+		bc = null;
+	}
 }
-

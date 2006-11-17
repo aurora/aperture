@@ -33,6 +33,11 @@ your copy of ANT at http://ant.apache.org/
 		<property name="lib.dir" value="${basedir}/lib" />
 		<property name="doc.dir" value="${basedir}/doc" />
 		<property name="manifest.dir" value="${src.dir}/manifest" />
+		
+		<!-- mangen related properties -->
+		<property name="mangen.dir" value="${basedir}/mangen" />
+		<property name="mangen.jar" value="${mangen.dir}/mangen.jar" />
+		<property name="mangen.properties" value="${mangen.dir}/mangen.properties" />
 			
 		<!-- build dirs -->
 		<property name="build.dir" value="${basedir}/build" />
@@ -296,8 +301,13 @@ your copy of ANT at http://ant.apache.org/
 		<and>
 			<filename name="**/Default*Registry*" negate="true"/>
 			<filename name="**/defaults.xml" negate="true"/>
+			<filename name="**/*.html" negate="true" />
 			<type type="file" />
 		</and>
+	</selector>
+	
+	<selector id="bundle.exclude.resources.selector">
+		<filename name="**/*.java" />
 	</selector>
 
 	<selector id="bundle.vocabulary.selector">
@@ -751,13 +761,19 @@ your copy of ANT at http://ant.apache.org/
 				<selector refid="bundle.core.coarsegrained.selector" />
 			</fileset>	
 			<fileset dir="${src.java.dir}">
-				<selector refid="bundle.core.coarsegrained.selector" />
+				<and>
+					<selector refid="bundle.core.coarsegrained.selector" />
+					<selector refid="bundle.exclude.resources.selector" />
+				</and>
 			</fileset>	
 			<fileset dir="${classes.activators.dir}">
 				<selector refid="bundle.core.coarsegrained.selector" />
 			</fileset>	
 			<fileset dir="${src.activators.dir}">
-				<selector refid="bundle.core.coarsegrained.selector" />
+				<and>
+					<selector refid="bundle.core.coarsegrained.selector" />
+					<selector refid="bundle.exclude.resources.selector" />
+				</and>
 			</fileset>	
 		</jar>
 	</target>
@@ -773,13 +789,19 @@ your copy of ANT at http://ant.apache.org/
 				<selector refid="bundle.impl.coarsegrained.selector" />
 			</fileset>	
 			<fileset dir="${src.java.dir}">
-				<selector refid="bundle.impl.coarsegrained.selector" />
+				<and>
+					<selector refid="bundle.impl.coarsegrained.selector" />
+					<selector refid="bundle.exclude.resources.selector" />
+				</and>
 			</fileset>	
 			<fileset dir="${classes.activators.dir}">
 				<selector refid="bundle.impl.coarsegrained.selector" />
 			</fileset>	
 			<fileset dir="${src.activators.dir}">
-				<selector refid="bundle.impl.coarsegrained.selector" />
+				<and>
+					<selector refid="bundle.impl.coarsegrained.selector" />
+					<selector refid="bundle.exclude.resources.selector" />
+				</and>
 			</fileset>	
 		</jar>
 	</target>
@@ -797,13 +819,19 @@ your copy of ANT at http://ant.apache.org/
 				<selector refid="bundle.core.services.selector" />
 			</fileset>	
 			<fileset dir="${src.java.dir}">
-				<selector refid="bundle.core.services.selector" />
+				<and>
+					<selector refid="bundle.core.services.selector" />
+					<selector refid="bundle.exclude.resources.selector" />
+				</and>
 			</fileset>	
 			<fileset dir="${classes.activators.dir}">
 				<selector refid="bundle.core.services.selector" />
 			</fileset>	
 			<fileset dir="${src.activators.dir}">
-				<selector refid="bundle.core.services.selector" />
+				<and>
+					<selector refid="bundle.core.services.selector" />
+					<selector refid="bundle.exclude.resources.selector" />
+				</and>
 			</fileset>	
 		</jar>
 	</target>
@@ -819,13 +847,19 @@ your copy of ANT at http://ant.apache.org/
 				<selector refid="bundle.supporting.services.selector" />
 			</fileset>	
 			<fileset dir="${src.java.dir}">
-				<selector refid="bundle.supporting.services.selector" />
+				<and>
+					<selector refid="bundle.supporting.services.selector" />
+					<selector refid="bundle.exclude.resources.selector" />
+				</and>
 			</fileset>	
 			<fileset dir="${classes.activators.dir}">
 				<selector refid="bundle.supporting.services.selector" />
 			</fileset>	
 			<fileset dir="${src.activators.dir}">
-				<selector refid="bundle.supporting.services.selector" />
+				<and>
+					<selector refid="bundle.supporting.services.selector" />
+					<selector refid="bundle.exclude.resources.selector" />
+				</and>
 			</fileset>	
 		</jar>
 	</target>
@@ -841,13 +875,19 @@ your copy of ANT at http://ant.apache.org/
 				<selector refid="bundle.core.services.impl.selector" />
 			</fileset>	
 			<fileset dir="${src.java.dir}">
-				<selector refid="bundle.core.services.impl.selector" />
+				<and>
+					<selector refid="bundle.core.services.impl.selector" />
+					<selector refid="bundle.exclude.resources.selector" />
+				</and>
 			</fileset>	
 			<fileset dir="${classes.activators.dir}">
 				<selector refid="bundle.core.services.impl.selector" />
 			</fileset>	
 			<fileset dir="${src.activators.dir}">
-				<selector refid="bundle.core.services.impl.selector" />
+				<and>
+					<selector refid="bundle.core.services.impl.selector" />
+					<selector refid="bundle.exclude.resources.selector" />
+				</and>
 			</fileset>	
 		</jar>
 	</target>
@@ -863,13 +903,19 @@ your copy of ANT at http://ant.apache.org/
 				<selector refid="bundle.supporting.services.impl.selector" />
 			</fileset>	
 			<fileset dir="${src.java.dir}">
-				<selector refid="bundle.supporting.services.impl.selector" />
+				<and>
+					<selector refid="bundle.supporting.services.impl.selector" />
+					<selector refid="bundle.exclude.resources.selector" />
+				</and>
 			</fileset>	
 			<fileset dir="${classes.activators.dir}">
 				<selector refid="bundle.supporting.services.impl.selector" />
 			</fileset>	
 			<fileset dir="${src.activators.dir}">
-				<selector refid="bundle.supporting.services.impl.selector" />
+				<and>
+					<selector refid="bundle.supporting.services.impl.selector" />
+					<selector refid="bundle.exclude.resources.selector" />
+				</and>
 			</fileset>	
 		</jar>
 	</target>
@@ -885,13 +931,19 @@ your copy of ANT at http://ant.apache.org/
 				<selector refid="bundle.supporting.api.selector" />
 			</fileset>	
 			<fileset dir="${src.java.dir}">
-				<selector refid="bundle.supporting.api.selector" />
+				<and>
+					<selector refid="bundle.supporting.api.selector" />
+					<selector refid="bundle.exclude.resources.selector" />
+				</and>
 			</fileset>	
 			<fileset dir="${classes.activators.dir}">
 				<selector refid="bundle.supporting.api.selector" />
 			</fileset>	
 			<fileset dir="${src.activators.dir}">
-				<selector refid="bundle.supporting.api.selector" />
+				<and>
+					<selector refid="bundle.supporting.api.selector" />
+					<selector refid="bundle.exclude.resources.selector" />
+				</and>
 			</fileset>	
 		</jar>
 	</target>
@@ -907,13 +959,19 @@ your copy of ANT at http://ant.apache.org/
 				<selector refid="bundle.vocabulary.selector" />
 			</fileset>	
 			<fileset dir="${src.java.dir}">
-				<selector refid="bundle.vocabulary.selector" />
+				<and>
+					<selector refid="bundle.vocabulary.selector" />
+					<selector refid="bundle.exclude.resources.selector" />
+				</and>
 			</fileset>	
 			<fileset dir="${classes.activators.dir}">
 				<selector refid="bundle.vocabulary.selector" />
 			</fileset>	
 			<fileset dir="${src.activators.dir}">
-				<selector refid="bundle.vocabulary.selector" />
+				<and>
+					<selector refid="bundle.vocabulary.selector" />
+					<selector refid="bundle.exclude.resources.selector" />
+				</and>
 			</fileset>	
 		</jar>
 	</target>
@@ -929,6 +987,15 @@ your copy of ANT at http://ant.apache.org/
 	<target name="jar.bundles"
 	        depends="jar.coarsegrained.bundles,jar.middlegrained.bundles"
 	        description="create OSGi bundles from the aperture source code" />
+	
+	<target name="mangen.run"
+			depends="jar.bundles"
+	 	    description="run the mangen utility to generate the import/export statements in the manifests">
+		<java jar="${mangen.jar}" fork="true">
+			<jvmarg value="-Dmangen.properties=${mangen.properties}"/>
+			<arg value="${dist.bundle.dir}"/>
+		</java>
+	</target>
 	
 	<target name="build" 
 		    depends="jar, jar.examples, jar.test, jar.bundles" 

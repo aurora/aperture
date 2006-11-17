@@ -28,5 +28,6 @@
 	<classpathentry kind="lib" path="lib/rdf2go-sesame2.jar"/>
 	<classpathentry kind="lib" path="lib/rdf2go.jar"/>
 	<classpathentry kind="lib" path="lib/commons-httpclient-3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/osgi.core.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>

@@ -6,8 +6,37 @@
  */
 package org.semanticdesktop.aperture.security.trustdecider;
 
+import java.util.Hashtable;
 
-public class TrustDeciderServiceActivator {
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
+import org.semanticdesktop.aperture.security.trustdecider.impl.TrustDeciderRegistryImpl;
 
+public class TrustDeciderServiceActivator implements BundleActivator {
+
+	public static BundleContext bc = null;
+	
+	private ServiceRegistration registration;
+	
+	private ServiceReference reference;
+	
+	public void start(BundleContext context) throws Exception {
+		System.out.println("Starting bundle" + this.getClass().getName());
+		bc = context;
+		TrustDeciderRegistry registry = new TrustDeciderRegistryImpl();
+		registration = bc.registerService(TrustDeciderRegistry.class.getName(), registry, new Hashtable());
+		reference = registration.getReference();
+		System.out.println("Service registered: " + TrustDeciderRegistry.class.getName());
+	}
+
+	public void stop(BundleContext context) throws Exception {
+		System.out.println("Stopping bundle" + this.getClass().getName());
+		bc.ungetService(reference);
+		System.out.println("Service unregistered: " + TrustDeciderRegistry.class.getName());
+		registration = null;
+		reference = null;
+		bc = null;
+	}
 }
-

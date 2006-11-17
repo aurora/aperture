@@ -6,8 +6,21 @@
  */
 package org.semanticdesktop.aperture.extractor.visio;
 
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 
-public class VisioExtractorActivator {
+public class VisioExtractorActivator implements BundleActivator {
+
+	public void start(BundleContext context) throws Exception {
+	// TODO Auto-generated method stub
+		System.out.println("Starting bundle" + this.getClass().getName());
+
+	}
+
+	public void stop(BundleContext context) throws Exception {
+	// TODO Auto-generated method stub
+		System.out.println("Stopping bundle" + this.getClass().getName());
+
+	}
 
 }
-
