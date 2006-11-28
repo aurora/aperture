@@ -22,6 +22,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 
+import org.semanticdesktop.aperture.examples.fileinspector.FileSelectorPanel;
+
 public class FileSelectorPanel extends JPanel {
 
     private File file;

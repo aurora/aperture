@@ -45,7 +45,7 @@ public class DefaultExtractorRegistry extends ExtractorRegistryImpl {
 
     public DefaultExtractorRegistry() {
         try {
-            InputStream stream = ResourceUtil.getInputStream(DEFAULT_FILE);
+            InputStream stream = ResourceUtil.getInputStream(DEFAULT_FILE,DefaultExtractorRegistry.class);
             BufferedInputStream buffer = new BufferedInputStream(stream);
             parse(buffer);
             buffer.close();

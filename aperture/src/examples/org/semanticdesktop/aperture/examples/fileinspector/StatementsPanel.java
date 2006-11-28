@@ -29,6 +29,7 @@ import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.UnsupportedRDFormatException;
 import org.openrdf.sail.SailException;
+import org.semanticdesktop.aperture.examples.fileinspector.LiteralClipper;
 
 
 public class StatementsPanel extends JPanel {

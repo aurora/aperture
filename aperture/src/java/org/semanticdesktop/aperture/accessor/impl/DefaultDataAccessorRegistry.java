@@ -45,7 +45,7 @@ public class DefaultDataAccessorRegistry extends DataAccessorRegistryImpl {
 
     public DefaultDataAccessorRegistry() {
         try {
-            InputStream stream = ResourceUtil.getInputStream(DEFAULT_FILE);
+            InputStream stream = ResourceUtil.getInputStream(DEFAULT_FILE,DefaultDataAccessorRegistry.class);
             BufferedInputStream buffer = new BufferedInputStream(stream);
             parse(buffer);
             buffer.close();

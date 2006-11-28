@@ -21,6 +21,12 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import org.semanticdesktop.aperture.examples.ExampleImapCrawler;
+import org.semanticdesktop.aperture.examples.imapcrawler.ConnectionPanel;
+import org.semanticdesktop.aperture.examples.imapcrawler.CrawlerPanel;
+import org.semanticdesktop.aperture.examples.imapcrawler.CrawlerWizard;
+import org.semanticdesktop.aperture.examples.imapcrawler.FolderPanel;
+import org.semanticdesktop.aperture.examples.imapcrawler.OutputPanel;
+import org.semanticdesktop.aperture.examples.imapcrawler.SummaryPanel;
 
 public class CrawlerWizard extends JPanel {
 

@@ -6,19 +6,35 @@
  */
 package org.semanticdesktop.aperture.extractor.office;
 
+import java.util.Hashtable;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
+import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 
 public class OfficeExtractorActivator implements BundleActivator {
 
+	public static BundleContext bc;
+
+	private OfficeExtractorFactory factory;
+
+	private ServiceReference reference;
+
 	public void start(BundleContext context) throws Exception {
-	// TODO Auto-generated method stub
 		System.out.println("Starting bundle" + this.getClass().getName());
+
+		OfficeExtractorActivator.bc = context;
+
+		factory = new OfficeExtractorFactory();
+		ServiceRegistration registration = bc.registerService(ExtractorFactory.class.getName(), factory,
+			new Hashtable());
+		reference = registration.getReference();
 	}
 
 	public void stop(BundleContext context) throws Exception {
-	// TODO Auto-generated method stub
 		System.out.println("Stopping bundle" + this.getClass().getName());
+		bc.ungetService(reference);
 	}
-
 }

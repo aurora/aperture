@@ -107,7 +107,7 @@ public class TestMagicMimeTypeIdentifier extends ApertureTestBase {
 
 	private void checkMimeType(String resourceName, String mimeType, MimeTypeIdentifier identifier)
 			throws IOException {
-		InputStream stream = ResourceUtil.getInputStream(DOCS_PATH + resourceName);
+		InputStream stream = ResourceUtil.getInputStream(DOCS_PATH + resourceName,TestMagicMimeTypeIdentifier.class);
 		byte[] bytes = IOUtil.readBytes(stream, identifier.getMinArrayLength());
 		String determinedType = identifier.identify(bytes, resourceName, null);
 		assertEquals(mimeType, determinedType);

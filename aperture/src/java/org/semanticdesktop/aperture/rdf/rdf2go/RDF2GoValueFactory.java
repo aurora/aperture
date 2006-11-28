@@ -18,16 +18,12 @@ import org.ontoware.rdf2go.model.node.Literal;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.DatatypeLiteralImpl;
-import org.ontoware.rdf2go.model.node.impl.PlainLiteralImpl;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.XSD;
-import org.semanticdesktop.aperture.crawler.ical.IcalCrawler;
 import org.semanticdesktop.aperture.rdf.ValueFactory;
 
 public class RDF2GoValueFactory implements ValueFactory {
 
-	private static final Logger LOGGER = Logger.getLogger(IcalCrawler.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(RDF2GoValueFactory.class.getName());
 
 	private Model model;
 

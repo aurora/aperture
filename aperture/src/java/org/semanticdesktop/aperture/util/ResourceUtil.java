@@ -17,13 +17,13 @@ import javax.swing.ImageIcon;
  * classpath.
  */
 public class ResourceUtil {
-
-    public static URL getURL(String resourceName) {
+	
+    public static URL getURL(String resourceName, Class clazz) {
         URL result = null;
 
         result = ResourceUtil.class.getResource(resourceName);
         if (result == null) {
-            result = ResourceUtil.class.getClassLoader().getResource(resourceName);
+            result = clazz.getClassLoader().getResource(resourceName);
             if (result == null) {
                 result = ClassLoader.getSystemResource(resourceName);
             }
@@ -32,12 +32,12 @@ public class ResourceUtil {
         return result;
     }
 
-    public static InputStream getInputStream(String resourceName) {
+    public static InputStream getInputStream(String resourceName, Class clazz) {
         InputStream result = null;
 
         result = ResourceUtil.class.getResourceAsStream(resourceName);
         if (result == null) {
-            result = ResourceUtil.class.getClassLoader().getResourceAsStream(resourceName);
+            result = clazz.getClassLoader().getResourceAsStream(resourceName);
             if (result == null) {
                 result = ClassLoader.getSystemResourceAsStream(resourceName);
             }
@@ -46,10 +46,10 @@ public class ResourceUtil {
         return result;
     }
 
-    public static String getString(String resourceName) throws IOException {
+    public static String getString(String resourceName, Class clazz) throws IOException {
         String result = null;
 
-        InputStream in = ResourceUtil.getInputStream(resourceName);
+        InputStream in = ResourceUtil.getInputStream(resourceName,clazz);
 
         if (in != null) {
             try {
@@ -60,17 +60,6 @@ public class ResourceUtil {
             }
         }
 
-        return result;
-    }
-    
-    public static ImageIcon getImageIcon(String resourceName) {
-        ImageIcon result = null;
-
-        URL resourceURL = getURL(resourceName);
-        if (resourceURL != null) {
-            result = new ImageIcon(resourceURL);
-        }
-        
         return result;
     }
 }

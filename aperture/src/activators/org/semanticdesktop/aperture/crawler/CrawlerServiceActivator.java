@@ -10,24 +10,37 @@ import java.util.Hashtable;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.semanticdesktop.aperture.crawler.impl.CrawlerRegistryImpl;
 
-public class CrawlerServiceActivator implements BundleActivator {
+public class CrawlerServiceActivator implements BundleActivator, ServiceListener {
 
 	public static BundleContext bc = null;
-	
-	private ServiceRegistration registration;
-	
+
 	private ServiceReference reference;
-	
+
+	private CrawlerRegistry registry;
+
 	public void start(BundleContext context) throws Exception {
 		System.out.println("Starting bundle" + this.getClass().getName());
 		bc = context;
-		CrawlerRegistry registry = new CrawlerRegistryImpl();
-		registration = bc.registerService(CrawlerRegistry.class.getName(), registry, new Hashtable());
+		registry = new CrawlerRegistryImpl();
+		ServiceRegistration registration = bc.registerService(CrawlerRegistry.class.getName(), registry,
+			new Hashtable());
 		reference = registration.getReference();
+
+		String filter = "(objectclass=" + CrawlerFactory.class.getName() + ")";
+		bc.addServiceListener(this, filter);
+
+		ServiceReference references[] = bc.getServiceReferences(null, filter);
+
+		for (int i = 0; references != null && i < references.length; i++) {
+			this.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, references[i]));
+		}
+
 		System.out.println("Service registered: " + CrawlerRegistry.class.getName());
 	}
 
@@ -35,9 +48,31 @@ public class CrawlerServiceActivator implements BundleActivator {
 		System.out.println("Stopping bundle" + this.getClass().getName());
 		bc.ungetService(reference);
 		System.out.println("Service unregistered: " + CrawlerRegistry.class.getName());
-		registration = null;
 		reference = null;
 		bc = null;
 	}
+
+	public void serviceChanged(ServiceEvent event) {
+		CrawlerFactory factory;
+		switch (event.getType()) {
+		case ServiceEvent.REGISTERED:
+			factory = (CrawlerFactory) CrawlerServiceActivator.bc.getService(event
+					.getServiceReference());
+			registry.add(factory);
+			break;
+		case ServiceEvent.MODIFIED:
+			factory = (CrawlerFactory) CrawlerServiceActivator.bc.getService(event
+					.getServiceReference());
+			registry.remove(factory);
+			registry.add(factory);
+			break;
+		case ServiceEvent.UNREGISTERING:
+			factory = (CrawlerFactory) CrawlerServiceActivator.bc.getService(event
+					.getServiceReference());
+			registry.remove(factory);
+			break;
+		}
+	}
+
 
 }

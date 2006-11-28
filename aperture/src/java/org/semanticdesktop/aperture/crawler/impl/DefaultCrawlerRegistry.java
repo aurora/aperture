@@ -45,7 +45,7 @@ public class DefaultCrawlerRegistry extends CrawlerRegistryImpl {
 
     public DefaultCrawlerRegistry() {
         try {
-            InputStream stream = ResourceUtil.getInputStream(DEFAULT_FILE);
+            InputStream stream = ResourceUtil.getInputStream(DEFAULT_FILE,DefaultCrawlerRegistry.class);
             BufferedInputStream buffer = new BufferedInputStream(stream);
             parse(buffer);
             buffer.close();

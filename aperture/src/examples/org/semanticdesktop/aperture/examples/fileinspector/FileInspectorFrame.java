@@ -14,6 +14,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import org.semanticdesktop.aperture.examples.fileinspector.FileInspectorFrame;
+import org.semanticdesktop.aperture.examples.fileinspector.FileInspectorPanel;
+
 public class FileInspectorFrame extends JFrame {
 
     private JPanel jContentPane = null;

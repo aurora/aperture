@@ -45,7 +45,7 @@ public class DefaultDataSourceRegistry extends DataSourceRegistryImpl {
 
     public DefaultDataSourceRegistry() {
         try {
-            InputStream stream = ResourceUtil.getInputStream(DEFAULT_FILE);
+            InputStream stream = ResourceUtil.getInputStream(DEFAULT_FILE,DefaultDataSourceRegistry.class);
             BufferedInputStream buffer = new BufferedInputStream(stream);
             parse(buffer);
             buffer.close();

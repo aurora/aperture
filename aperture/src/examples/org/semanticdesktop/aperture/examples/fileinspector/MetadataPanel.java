@@ -17,6 +17,9 @@ import javax.swing.TransferHandler;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.semanticdesktop.aperture.examples.fileinspector.MetadataModel;
+import org.semanticdesktop.aperture.examples.fileinspector.StatementsPanel;
+
 public class MetadataPanel extends JPanel implements ChangeListener {
 
     private MetadataModel model;

@@ -6,21 +6,35 @@
  */
 package org.semanticdesktop.aperture.accessor.file;
 
+import java.util.Hashtable;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
+import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 
 public class FileAccessorActivator implements BundleActivator {
 
+	public static BundleContext bc;
+
+	private FileAccessorFactory factory;
+
+	private ServiceReference reference;
+
 	public void start(BundleContext context) throws Exception {
-		// TODO Auto-generated method stub
 		System.out.println("Starting bundle" + this.getClass().getName());
+
+		FileAccessorActivator.bc = context;
+
+		factory = new FileAccessorFactory();
+		ServiceRegistration registration = bc.registerService(DataAccessorFactory.class.getName(), factory,
+			new Hashtable());
+		reference = registration.getReference();
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		// TODO Auto-generated method stub
 		System.out.println("Stopping bundle" + this.getClass().getName());
+		bc.ungetService(reference);
 	}
-
 }
-

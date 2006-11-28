@@ -1,6 +1,14 @@
 Manifest-Version: 1.0
 Bundle-Name: Aperture Supporting services implementations
-Bundle-SymbolicName: org.semanticedesktop.aperture.supporting.services.implementations
+Bundle-SymbolicName: org.semanticedesktop.aperture.support.services
+ .impl
 Bundle-Version: 2006.1.3
-Bundle-Description: Aperture supporting services implementations bundle...
-Bundle-Activator: org.semanticdesktop.aperture.SupportingImplementationsActivator
+Bundle-Description: Aperture supporting services implementations 
+ bundle...
+Bundle-Activator: org.semanticdesktop.aperture.Supporting
+ ImplementationsActivator
+Require-Bundle: org.semanticdesktop.aperture.support.services,
+ org.semanticdesktop.aperture.vocabulary,
+ org.semanticdesktop.aperture.util,
+ org.ontoware.rdf2go,
+ org.ontoware.rdf2go.aifbcommons

@@ -28,6 +28,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import org.semanticdesktop.aperture.examples.imapcrawler.CrawlerFrame;
+import org.semanticdesktop.aperture.examples.imapcrawler.CrawlerWizard;
 import org.semanticdesktop.aperture.security.socketfactory.standard.StandardSocketFactory;
 import org.semanticdesktop.aperture.security.trustdecider.dialog.TrustDeciderDialog;
 import org.semanticdesktop.aperture.security.trustmanager.standard.StandardTrustManager;

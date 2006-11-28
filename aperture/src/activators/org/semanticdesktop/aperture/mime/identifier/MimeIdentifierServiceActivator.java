@@ -10,25 +10,36 @@ import java.util.Hashtable;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.impl.MimeTypeIdentifierRegistryImpl;
 
-public class MimeIdentifierServiceActivator implements BundleActivator {
-
+public class MimeIdentifierServiceActivator implements BundleActivator, ServiceListener {
 	public static BundleContext bc = null;
-	
-	private ServiceRegistration registration;
-	
+
 	private ServiceReference reference;
-	
+
+	private MimeTypeIdentifierRegistry registry;
+
 	public void start(BundleContext context) throws Exception {
 		System.out.println("Starting bundle" + this.getClass().getName());
 		bc = context;
-		MimeTypeIdentifierRegistry registry = new MimeTypeIdentifierRegistryImpl();
-		registration = bc.registerService(MimeTypeIdentifierRegistry.class.getName(), registry, new Hashtable());
+		registry = new MimeTypeIdentifierRegistryImpl();
+		ServiceRegistration registration = bc.registerService(MimeTypeIdentifierRegistry.class.getName(), registry,
+			new Hashtable());
 		reference = registration.getReference();
+
+		String filter = "(objectclass=" + MimeTypeIdentifierFactory.class.getName() + ")";
+		bc.addServiceListener(this, filter);
+
+		ServiceReference references[] = bc.getServiceReferences(null, filter);
+
+		for (int i = 0; references != null && i < references.length; i++) {
+			this.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, references[i]));
+		}
+
 		System.out.println("Service registered: " + MimeTypeIdentifierRegistry.class.getName());
 	}
 
@@ -36,9 +47,29 @@ public class MimeIdentifierServiceActivator implements BundleActivator {
 		System.out.println("Stopping bundle" + this.getClass().getName());
 		bc.ungetService(reference);
 		System.out.println("Service unregistered: " + MimeTypeIdentifierRegistry.class.getName());
-		registration = null;
 		reference = null;
 		bc = null;
 	}
 
+	public void serviceChanged(ServiceEvent event) {
+		MimeTypeIdentifierFactory factory;
+		switch (event.getType()) {
+		case ServiceEvent.REGISTERED:
+			factory = (MimeTypeIdentifierFactory) MimeIdentifierServiceActivator.bc.getService(event
+					.getServiceReference());
+			registry.add(factory);
+			break;
+		case ServiceEvent.MODIFIED:
+			factory = (MimeTypeIdentifierFactory) MimeIdentifierServiceActivator.bc.getService(event
+					.getServiceReference());
+			registry.remove(factory);
+			registry.add(factory);
+			break;
+		case ServiceEvent.UNREGISTERING:
+			factory = (MimeTypeIdentifierFactory) MimeIdentifierServiceActivator.bc.getService(event
+					.getServiceReference());
+			registry.remove(factory);
+			break;
+		}
+	}
 }

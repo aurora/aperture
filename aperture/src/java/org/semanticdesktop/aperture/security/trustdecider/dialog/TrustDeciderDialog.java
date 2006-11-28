@@ -9,10 +9,12 @@ package org.semanticdesktop.aperture.security.trustdecider.dialog;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -146,23 +148,23 @@ public class TrustDeciderDialog implements TrustDecider {
             if (rootCANotValid) {
                 JLabel label = new JLabel(
                         "The security certificate was issued by a company that is not trusted.");
-                label.setIcon(ResourceUtil.getImageIcon(WARNING_ICON_RESOURCE));
+                label.setIcon(getImageIcon(WARNING_ICON_RESOURCE));
                 dialogMsgArray.add(label);
             }
             else {
                 JLabel label = new JLabel("The security certificate was issued by a company that is trusted.");
-                label.setIcon(ResourceUtil.getImageIcon(CHECK_ICON_RESOURCE));
+                label.setIcon(getImageIcon(CHECK_ICON_RESOURCE));
                 dialogMsgArray.add(label);
             }
 
             if (timeNotValid) {
                 JLabel label = new JLabel("The security certificate has expired or is not yet valid.");
-                label.setIcon(ResourceUtil.getImageIcon(WARNING_ICON_RESOURCE));
+                label.setIcon(getImageIcon(WARNING_ICON_RESOURCE));
                 dialogMsgArray.add(label);
             }
             else {
                 JLabel label = new JLabel("The security certificate has not expired and is still valid.");
-                label.setIcon(ResourceUtil.getImageIcon(CHECK_ICON_RESOURCE));
+                label.setIcon(getImageIcon(CHECK_ICON_RESOURCE));
                 dialogMsgArray.add(label);
             }
 
@@ -223,5 +225,16 @@ public class TrustDeciderDialog implements TrustDecider {
         else {
             return null;
         }
+    }
+    
+    private ImageIcon getImageIcon(String resourceName) {
+        ImageIcon result = null;
+
+        URL resourceURL = ResourceUtil.getURL(resourceName,TrustDeciderDialog.class);
+        if (resourceURL != null) {
+            result = new ImageIcon(resourceURL);
+        }
+        
+        return result;
     }
 }

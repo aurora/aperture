@@ -1,6 +1,24 @@
 Manifest-Version: 1.0
 Bundle-Name: Aperture Core services implementations
-Bundle-SymbolicName: org.semanticedesktop.aperture.core.services.implementations
+Bundle-SymbolicName: org.semanticedesktop.aperture.core.services.impl
 Bundle-Version: 2006.1.3
 Bundle-Description: Aperture core services implementations bundle...
-Bundle-Activator: org.semanticdesktop.aperture.CoreImplementationsActivator
+Bundle-Activator: org.semanticdesktop.aperture.CoreImplementations
+ Activator
+Require-Bundle: org.semanticdesktop.aperture.core.services,
+ org.semanticdesktop.aperture.vocabulary,
+ org.semanticdesktop.aperture.util,
+ org.ontoware.rdf2go,
+ org.ontoware.rdf2go.aifbcommons
+Bundle-Classpath: activation-1.0.2-upd2.jar,
+ bcmail-jdk14-132.jar,
+ bcprov-jdk14-132.jar,
+ fontbox-0.1.0-dev.jar,
+ htmlparser-1.6.jar,
+ ical4j-cvs20061019.jar,
+ jacob-1.10-pre4.jar,
+ mail-1.4.jar,
+ pdfbox-0.7.3.jar,
+ poi-3.0-alpha2-20060616.jar,
+ poi-contrib-3.0-alpha2-20060616.jar,
+ poi-scratchpad-3.0-alpha2-20060616.jar

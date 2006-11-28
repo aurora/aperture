@@ -20,6 +20,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.JTextArea;
 
+import org.semanticdesktop.aperture.examples.imapcrawler.OutputPanel;
+
 public class OutputPanel extends JPanel {
 
     private JPanel contentPanel = null;

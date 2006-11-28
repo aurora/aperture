@@ -62,12 +62,12 @@ your copy of ANT at http://ant.apache.org/
 
 		<!-- coarse grained bundles properties -->
 		<property name="bundle.core.coarsegrained.jar" 
-			      value="${project.shortname}-core-coarsegrained-${project.version.full}.jar" />
+			      value="${project.shortname}-core-${project.version.full}.jar" />
 		<property name="core.coarsegrained.manifest.mf" 
 			      value="${manifest.dir}/core.coarsegrained.manifest.mf" />
 		
 		<property name="bundle.impl.coarsegrained.jar" 
-			      value="${project.shortname}-impl-coarsegrained-${project.version.full}.jar" />
+			      value="${project.shortname}-impl-${project.version.full}.jar" />
 		<property name="impl.coarsegrained.manifest.mf" 
 			      value="${manifest.dir}/impl.coarsegrained.manifest.mf" />
 		
@@ -305,6 +305,31 @@ your copy of ANT at http://ant.apache.org/
 			<type type="file" />
 		</and>
 	</selector>
+
+	
+	<selector id="jars.poi.selector">
+		<or>
+			<filename name="poi-3.0-alpha2-20060616.jar" />
+			<filename name="poi-contrib-3.0-alpha2-20060616.jar" />
+			<filename name="poi-scratchpad-3.0-alpha2-20060616.jar" />
+		</or>
+	</selector>
+	
+	<selector id="jars.pdfbox.selector">
+		<or>
+			<filename name="pdfbox-0.7.3.jar" />
+			<filename name="fontbox-0.1.0-dev.jar" />
+			<filename name="bcmail-jdk14-132.jar" />
+			<filename name="bcprov-jdk14-132.jar" />
+		</or>	
+	</selector>
+	
+	<selector id="jars.mail.selector">
+		<or>
+			<filename name="mail-1.4.jar" />
+			<filename name="activation-1.0.2-upd2.jar" />
+		</or>
+	</selector>
 	
 	<selector id="bundle.exclude.resources.selector">
 		<filename name="**/*.java" />
@@ -449,7 +474,10 @@ your copy of ANT at http://ant.apache.org/
 	
 	<selector id="bundle.addressbook.selector">
 		<and>
-			<filename name="org/semanticdesktop/aperture/addressbook/*" />
+			<or>
+				<filename name="org/semanticdesktop/aperture/addressbook/*" />
+				<filename name="applewrapper-0.1.jar" />
+			</or>
 			<selector refid="bundle.basic.selector" />
 		</and>
 	</selector>
@@ -459,6 +487,7 @@ your copy of ANT at http://ant.apache.org/
 			<or>
 				<filename name="org/semanticdesktop/aperture/crawler/ical/*" />
 				<filename name="org/semanticdesktop/aperture/datasource/ical/*" />
+				<filename name="ical4j-cvs20061019.jar" />
 			</or>
 			<selector refid="bundle.basic.selector" />
 		</and>		
@@ -479,6 +508,7 @@ your copy of ANT at http://ant.apache.org/
 			<or>
 				<filename name="org/semanticdesktop/aperture/crawler/imap/*" />
 				<filename name="org/semanticdesktop/aperture/datasource/imap/*" />
+				<selector refid="jars.mail.selector" />
 			</or>
 			<selector refid="bundle.basic.selector" />
 		</and>		
@@ -496,7 +526,10 @@ your copy of ANT at http://ant.apache.org/
 	
 	<selector id="bundle.extractor.excel.selector">
 		<and>
-			<filename name="org/semanticdesktop/aperture/extractor/excel/*" />
+			<or>
+				<filename name="org/semanticdesktop/aperture/extractor/excel/*" />
+				<selector refid="jars.poi.selector" />
+			</or>
 			<selector refid="bundle.basic.selector" />
 		</and>		
 	</selector>
@@ -508,7 +541,10 @@ your copy of ANT at http://ant.apache.org/
 	</selector>
 	<selector id="bundle.extractor.mime.selector">
 		<and>
-			<filename name="org/semanticdesktop/aperture/extractor/mime/*" />
+			<or>
+				<filename name="org/semanticdesktop/aperture/extractor/mime/*" />
+				<selector refid="jars.mail.selector" />
+			</or>
 			<selector refid="bundle.basic.selector" />
 		</and>		
 	</selector>
@@ -517,7 +553,7 @@ your copy of ANT at http://ant.apache.org/
 			<filename name="org/semanticdesktop/aperture/extractor/office/*" />
 			<selector refid="bundle.basic.selector" />
 		</and>		
-	</selector>
+	</selector>	
 	<selector id="bundle.extractor.opendocument.selector">
 		<and>
 			<filename name="org/semanticdesktop/aperture/extractor/opendocument/*" />
@@ -532,7 +568,10 @@ your copy of ANT at http://ant.apache.org/
 	</selector>	
 	<selector id="bundle.extractor.pdf.selector">
 		<and>
-			<filename name="org/semanticdesktop/aperture/extractor/pdf/*" />
+			<or>
+				<filename name="org/semanticdesktop/aperture/extractor/pdf/*" />
+				<selector refid="jars.pdfbox.selector" />
+			</or>
 			<selector refid="bundle.basic.selector" />
 		</and>		
 	</selector>	
@@ -544,7 +583,10 @@ your copy of ANT at http://ant.apache.org/
 	</selector>
 	<selector id="bundle.extractor.powerpoint.selector">
 		<and>
-			<filename name="org/semanticdesktop/aperture/extractor/powerpoint/*" />
+			<or>
+				<filename name="org/semanticdesktop/aperture/extractor/powerpoint/*" />
+				<selector refid="jars.poi.selector" />
+			</or>
 			<selector refid="bundle.basic.selector" />
 		</and>		
 	</selector>	
@@ -580,7 +622,10 @@ your copy of ANT at http://ant.apache.org/
 	</selector>
 	<selector id="bundle.extractor.word.selector">
 		<and>
-			<filename name="org/semanticdesktop/aperture/extractor/word/*" />
+			<or>
+				<filename name="org/semanticdesktop/aperture/extractor/word/*" />
+				<selector refid="jars.poi.selector" />
+			</or>
 			<selector refid="bundle.basic.selector" />
 		</and>		
 	</selector>
@@ -605,7 +650,11 @@ your copy of ANT at http://ant.apache.org/
 	
 	<selector id="bundle.extractor.util.selector">
 		<and>
-			<filename name="org/semanticdesktop/aperture/extractor/util/*" />
+			<or>
+				<filename name="org/semanticdesktop/aperture/extractor/util/*" />
+				<selector refid="jars.poi.selector" />
+				<filename name="htmlparser-1.6.jar" />
+			</or>
 			<selector refid="bundle.basic.selector" />
 		</and>		
 	</selector>
@@ -640,7 +689,11 @@ your copy of ANT at http://ant.apache.org/
 
 	<selector id="bundle.outlook.selector">
 		<and>
-			<filename name="org/semanticdesktop/aperture/outlook/*" />
+			<or>
+				<filename name="org/semanticdesktop/aperture/outlook/*" />
+				<filename name="jacob-1.10-pre4.jar" />
+				<filename name="jacob.dll" />
+			</or>
 			<selector refid="bundle.basic.selector" />
 		</and>
 	</selector>
@@ -765,7 +818,7 @@ your copy of ANT at http://ant.apache.org/
 					<selector refid="bundle.core.coarsegrained.selector" />
 					<selector refid="bundle.exclude.resources.selector" />
 				</and>
-			</fileset>	
+			</fileset>
 			<fileset dir="${classes.activators.dir}">
 				<selector refid="bundle.core.coarsegrained.selector" />
 			</fileset>	
@@ -774,6 +827,9 @@ your copy of ANT at http://ant.apache.org/
 					<selector refid="bundle.core.coarsegrained.selector" />
 					<selector refid="bundle.exclude.resources.selector" />
 				</and>
+			</fileset>
+			<fileset dir="${lib.dir}">
+				<selector refid="bundle.core.coarsegrained.selector" />
 			</fileset>	
 		</jar>
 	</target>
@@ -793,7 +849,7 @@ your copy of ANT at http://ant.apache.org/
 					<selector refid="bundle.impl.coarsegrained.selector" />
 					<selector refid="bundle.exclude.resources.selector" />
 				</and>
-			</fileset>	
+			</fileset>
 			<fileset dir="${classes.activators.dir}">
 				<selector refid="bundle.impl.coarsegrained.selector" />
 			</fileset>	
@@ -802,6 +858,9 @@ your copy of ANT at http://ant.apache.org/
 					<selector refid="bundle.impl.coarsegrained.selector" />
 					<selector refid="bundle.exclude.resources.selector" />
 				</and>
+			</fileset>
+			<fileset dir="${lib.dir}">
+				<selector refid="bundle.impl.coarsegrained.selector" />
 			</fileset>	
 		</jar>
 	</target>
@@ -833,6 +892,9 @@ your copy of ANT at http://ant.apache.org/
 					<selector refid="bundle.exclude.resources.selector" />
 				</and>
 			</fileset>	
+			<fileset dir="${lib.dir}">
+				<selector refid="bundle.core.services.selector" />
+			</fileset>	
 		</jar>
 	</target>
 		
@@ -860,6 +922,9 @@ your copy of ANT at http://ant.apache.org/
 					<selector refid="bundle.supporting.services.selector" />
 					<selector refid="bundle.exclude.resources.selector" />
 				</and>
+			</fileset>	
+			<fileset dir="${lib.dir}">
+				<selector refid="bundle.supporting.services.selector" />
 			</fileset>	
 		</jar>
 	</target>
@@ -889,6 +954,9 @@ your copy of ANT at http://ant.apache.org/
 					<selector refid="bundle.exclude.resources.selector" />
 				</and>
 			</fileset>	
+			<fileset dir="${lib.dir}">
+				<selector refid="bundle.core.services.impl.selector" />
+			</fileset>	
 		</jar>
 	</target>
 		
@@ -916,6 +984,9 @@ your copy of ANT at http://ant.apache.org/
 					<selector refid="bundle.supporting.services.impl.selector" />
 					<selector refid="bundle.exclude.resources.selector" />
 				</and>
+			</fileset>	
+			<fileset dir="${lib.dir}">
+				<selector refid="bundle.supporting.services.impl.selector" />
 			</fileset>	
 		</jar>
 	</target>
@@ -945,6 +1016,9 @@ your copy of ANT at http://ant.apache.org/
 					<selector refid="bundle.exclude.resources.selector" />
 				</and>
 			</fileset>	
+			<fileset dir="${lib.dir}">
+				<selector refid="bundle.supporting.api.selector" />
+			</fileset>	
 		</jar>
 	</target>
 	
@@ -973,8 +1047,24 @@ your copy of ANT at http://ant.apache.org/
 					<selector refid="bundle.exclude.resources.selector" />
 				</and>
 			</fileset>	
+			<fileset dir="${lib.dir}">
+				<selector refid="bundle.vocabulary.selector" />
+			</fileset>	
 		</jar>
 	</target>
+	
+	<target name="bundle.example.jar" 
+			    depends="compile.examples" 
+			    description="create the bundle with an example">
+			<mkdir dir="${dist.bundle.dir}" />	
+			<jar destfile="${dist.bundle.dir}/aperture-example.jar" 
+				 compress="no" 
+				 manifest="${manifest.dir}/aperture.example.manifest.mf">
+				<fileset dir="${classes.examples.dir}">
+					<filename name="org/semanticdesktop/aperture/examples/osgi/*" />
+				</fileset>	
+			</jar>
+		</target>
 	
 	<target name="jar.coarsegrained.bundles" 
 		    depends="bundle.core.coarsegrained.jar,bundle.impl.coarsegrained.jar" 
@@ -985,7 +1075,7 @@ your copy of ANT at http://ant.apache.org/
 		    description="create coarsegrained aperture OSGi bundles" />	
 	
 	<target name="jar.bundles"
-	        depends="jar.coarsegrained.bundles,jar.middlegrained.bundles"
+	        depends="jar.coarsegrained.bundles,bundle.example.jar"
 	        description="create OSGi bundles from the aperture source code" />
 	
 	<target name="mangen.run"
@@ -995,6 +1085,16 @@ your copy of ANT at http://ant.apache.org/
 			<jvmarg value="-Dmangen.properties=${mangen.properties}"/>
 			<arg value="${dist.bundle.dir}"/>
 		</java>
+	</target>
+	
+	<target name="osgi.dist"
+			depends="jar.bundles"
+			description="creates the aperture bundle and copies all dependencies to a single directory">
+		<copy todir="${dist.bundle.dir}">
+			<fileset dir="${basedir}/srcbundles">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
 	</target>
 	
 	<target name="build" 

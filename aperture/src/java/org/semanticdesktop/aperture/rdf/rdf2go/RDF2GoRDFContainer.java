@@ -39,13 +39,13 @@ public class RDF2GoRDFContainer implements RDFContainer {
 	private static final Logger LOGGER = Logger.getLogger(RDF2GoRDFContainer.class.getName());
 
 	private ValueFactory valueFactory;
-	
+
 	private Model model;
 
 	private URI describedUri;
-	
+
 	private boolean modelShared;
-	
+
 	private boolean disposed;
 
 	/**
@@ -54,22 +54,28 @@ public class RDF2GoRDFContainer implements RDFContainer {
 	 * @param describedUri The URI that typically will serve as object in most statements.
 	 */
 	public RDF2GoRDFContainer(Model model, String describedUri) {
-		init(model,false);
+		init(model, false);
 		this.describedUri = valueFactory.createURI(describedUri);
 	}
 
 	/**
-	 * Create a new SesameRDFContainer that will manage statements concerning the specified URI. All
-	 * statements will be stored in and retrieved from the specified Repository.
+	 * This has been the default to support backwards compatibility. Many bundles expect to get access to all
+	 * classes available from the VM boot classpath without specifying the constraint in their bundle manifest
+	 * (i.e. Import-Package or Require-Bundle). This is not the default behavior of OSGi R4. The OSGi
+	 * specification mandates that a bundle declare all package depenencies using either Import-Package or
+	 * Require-Bundle. The one exception to this rule is the java.* packages which is always delegated to the
+	 * boot classpath. All other packages dependencies must be declared in the bundle's manifest file. Create
+	 * a new SesameRDFContainer that will manage statements concerning the specified URI. All statements will
+	 * be stored in and retrieved from the specified Repository.
 	 * 
 	 * @param model The Model to store statements in and retrieve statements from.
 	 * @param describedUri The URI that typically will serve as object in most statements.
 	 */
 	public RDF2GoRDFContainer(Model model, URI describedUri) {
-		init(model,false);
+		init(model, false);
 		this.describedUri = describedUri;
 	}
-	
+
 	/**
 	 * Create a new SesameRDFContainer that will manage statements concerning the specified URI. All
 	 * statements will be stored in and retrieved from the specified Repository.
@@ -83,10 +89,10 @@ public class RDF2GoRDFContainer implements RDFContainer {
 	 *            between multiple RDFContainers.
 	 */
 	public RDF2GoRDFContainer(Model model, URI describedUri, boolean modelShared) {
-		init(model,modelShared);
+		init(model, modelShared);
 		this.describedUri = describedUri;
 	}
-	
+
 	/**
 	 * Create a new SesameRDFContainer that will manage statements concerning the specified URI. All
 	 * statements will be stored in and retrieved from the specified Repository.
@@ -100,7 +106,7 @@ public class RDF2GoRDFContainer implements RDFContainer {
 	 *            between multiple RDFContainers.
 	 */
 	public RDF2GoRDFContainer(Model model, String describedUri, boolean modelShared) {
-		init(model,modelShared);
+		init(model, modelShared);
 		this.describedUri = valueFactory.createURI(describedUri);
 	}
 
@@ -190,8 +196,9 @@ public class RDF2GoRDFContainer implements RDFContainer {
 		if (node instanceof Literal) {
 			try {
 				return ((Literal) node).asString();
-			} catch (ModelException me) {
-				LOGGER.log(Level.SEVERE,"Couldn't return the string from a literal",me);
+			}
+			catch (ModelException me) {
+				LOGGER.log(Level.SEVERE, "Couldn't return the string from a literal", me);
 				return null;
 			}
 		}
@@ -279,8 +286,9 @@ public class RDF2GoRDFContainer implements RDFContainer {
 		if (node instanceof URI) {
 			try {
 				return node.asURI();
-			} catch (ModelException me) {
-				LOGGER.log(Level.SEVERE,"Couldn't return the uri: ",me);
+			}
+			catch (ModelException me) {
+				LOGGER.log(Level.SEVERE, "Couldn't return the uri: ", me);
 				return null;
 			}
 		}
@@ -301,15 +309,16 @@ public class RDF2GoRDFContainer implements RDFContainer {
 		if (node != null) {
 			try {
 				model.removeStatement(describedUri, property, node);
-			} catch (ModelException me) {
-				LOGGER.log(Level.SEVERE,"Couldn't remove a statement from the model",me);
+			}
+			catch (ModelException me) {
+				LOGGER.log(Level.SEVERE, "Couldn't remove a statement from the model", me);
 			}
 		}
 	}
 
 	public Collection getAll(URI property) {
 		checkState();
-		// determine all matching Statements	
+		// determine all matching Statements
 		ClosableIterator<Statement> iterator = null;
 		try {
 			ClosableIterable<Statement> iterable = model.findStatements(describedUri, property, Variable.ANY);
@@ -321,8 +330,9 @@ public class RDF2GoRDFContainer implements RDFContainer {
 				result.add(statement.getObject());
 			}
 			return result;
-		} catch (ModelException me) {
-			LOGGER.log(Level.SEVERE,"Couldn't find statements",me);
+		}
+		catch (ModelException me) {
+			LOGGER.log(Level.SEVERE, "Couldn't find statements", me);
 			return null;
 		}
 		finally {
@@ -362,16 +372,14 @@ public class RDF2GoRDFContainer implements RDFContainer {
 			LOGGER.log(Level.INFO, "cannot add statement", e);
 			throw new UpdateException("cannot add statement", e);
 		}
-		
 	}
 
-	private void replaceInternal(URI property, Node object) 
-		throws MultipleValuesException {
+	private void replaceInternal(URI property, Node object) throws MultipleValuesException {
 
 		try {
 			// remove any existing statements with this property, throw an exception when there is more
 			// than one such statement
-			ClosableIterable<Statement> iterable = model.findStatements(describedUri,property,Variable.ANY);
+			ClosableIterable<Statement> iterable = model.findStatements(describedUri, property, Variable.ANY);
 			ClosableIterator<Statement> statements = iterable.iterator();
 			Statement statementToRemove = null;
 
@@ -393,7 +401,7 @@ public class RDF2GoRDFContainer implements RDFContainer {
 			}
 
 			// add the new statement
-			model.addStatement(describedUri,property,object);
+			model.addStatement(describedUri, property, object);
 		}
 		catch (ModelException me) {
 			LOGGER.log(Level.INFO, "cannot update statement", me);
@@ -404,7 +412,7 @@ public class RDF2GoRDFContainer implements RDFContainer {
 	private Node getInternal(URI property) {
 		ClosableIterator<Statement> statements = null;
 		try {
-			ClosableIterable<Statement> iterable = model.findStatements(describedUri,property,Variable.ANY);
+			ClosableIterable<Statement> iterable = model.findStatements(describedUri, property, Variable.ANY);
 			statements = iterable.iterator();
 			Node result = null;
 
@@ -417,8 +425,9 @@ public class RDF2GoRDFContainer implements RDFContainer {
 			}
 
 			return result;
-		} catch (ModelException me) {
-			LOGGER.log(Level.SEVERE,"couldn't find statements",me);
+		}
+		catch (ModelException me) {
+			LOGGER.log(Level.SEVERE, "couldn't find statements", me);
 			return null;
 		}
 		finally {
@@ -427,33 +436,33 @@ public class RDF2GoRDFContainer implements RDFContainer {
 			}
 		}
 	}
-	
+
 	public ValueFactory getValueFactory() {
 		checkState();
 		return valueFactory;
 	}
-	
+
 	public void dispose() {
 		this.disposed = true;
 		if (!modelShared) {
 			model.close();
 		}
 	}
-	
+
 	public boolean isDisposed() {
 		return disposed;
 	}
-	
+
 	public boolean isModelShared() {
 		return modelShared;
 	}
-	
+
 	private void checkState() {
 		if (disposed) {
 			throw new IllegalStateException("Trying to perform an operation after disposal");
 		}
 	}
-	
+
 	private void init(Model model, boolean shared) {
 		this.model = model;
 		this.valueFactory = new RDF2GoValueFactory(model);

@@ -86,7 +86,7 @@ public class TestStandardTrustManager extends ApertureTestBase {
         X509Certificate[] chain = getSelfSignedCertificateChain();
 
         // copy the same keystore to a temporary file
-        InputStream stream = ResourceUtil.getInputStream(DUMMY_KEYSTORE_RESOURCE);
+        InputStream stream = ResourceUtil.getInputStream(DUMMY_KEYSTORE_RESOURCE,TestStandardTrustManager.class);
         File tmpFile = File.createTempFile("keystore", null);
         IOUtil.writeStream(stream, tmpFile);
         stream.close();
@@ -158,7 +158,7 @@ public class TestStandardTrustManager extends ApertureTestBase {
     private X509Certificate[] getSelfSignedCertificateChain() throws KeyStoreException,
             NoSuchAlgorithmException, CertificateException, IOException {
         // load a dummy keystore
-        InputStream stream = ResourceUtil.getInputStream(DUMMY_KEYSTORE_RESOURCE);
+        InputStream stream = ResourceUtil.getInputStream(DUMMY_KEYSTORE_RESOURCE,TestStandardTrustManager.class);
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(stream, DUMMY_KEYSTORE_PASSWORD);
         stream.close();

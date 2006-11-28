@@ -46,7 +46,7 @@ public class DefaultLinkExtractorRegistry extends LinkExtractorRegistryImpl {
 
     public DefaultLinkExtractorRegistry() {
         try {
-            InputStream stream = ResourceUtil.getInputStream(DEFAULT_FILE);
+            InputStream stream = ResourceUtil.getInputStream(DEFAULT_FILE,DefaultLinkExtractorRegistry.class);
             BufferedInputStream buffer = new BufferedInputStream(stream);
             parse(buffer);
             buffer.close();

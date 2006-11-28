@@ -46,7 +46,7 @@ public class DefaultMimeTypeIdentifierRegistry extends MimeTypeIdentifierRegistr
 
     public DefaultMimeTypeIdentifierRegistry() {
         try {
-            InputStream stream = ResourceUtil.getInputStream(DEFAULT_FILE);
+            InputStream stream = ResourceUtil.getInputStream(DEFAULT_FILE,DefaultMimeTypeIdentifierRegistry.class);
             BufferedInputStream buffer = new BufferedInputStream(stream);
             parse(buffer);
             buffer.close();

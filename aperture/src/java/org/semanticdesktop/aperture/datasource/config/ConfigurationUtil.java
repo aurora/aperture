@@ -27,13 +27,9 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.ValueFactory;
 import org.semanticdesktop.aperture.util.ModelUtil;
-import org.semanticdesktop.aperture.vocabulary.DATA;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
-
-import com.sun.corba.se.spi.activation.Repository;
 
 /**
  * ConfigurationUtil provides utility methods for setting and retrieving standard DataSource configuration
