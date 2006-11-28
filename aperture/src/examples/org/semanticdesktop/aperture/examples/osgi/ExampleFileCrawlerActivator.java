@@ -30,8 +30,7 @@ public class ExampleFileCrawlerActivator implements BundleActivator {
     private DataSourceRegistry dataSourceRegistry;
 
 	public void start(BundleContext context) throws Exception {
-        System.out.println("HUERRAAAA!!!!!");
-		ServiceReference crawlerReference = context.getServiceReference(CrawlerRegistry.class.getName());
+   		ServiceReference crawlerReference = context.getServiceReference(CrawlerRegistry.class.getName());
 		ServiceReference accessorReference = context
 				.getServiceReference(DataAccessorRegistry.class.getName());
 		ServiceReference extractorReference = context.getServiceReference(ExtractorRegistry.class.getName());
