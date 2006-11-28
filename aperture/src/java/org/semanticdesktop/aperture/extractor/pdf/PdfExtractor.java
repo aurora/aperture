@@ -68,11 +68,12 @@ public class PdfExtractor implements Extractor {
         // try to decrypt it, if necessary
         if (document.isEncrypted()) {
             try {
-                if (document.isOwnerPassword("") || document.isUserPassword("")) {
-                    LOGGER.log(Level.INFO, "Trying to decrypt " + id);
-                    document.decrypt("");
-                    LOGGER.log(Level.INFO, "Decryption succeeded");
-                }
+            	// As of PDFBox 0.7.3, it is no longer possible to check if the passwords are emtpy.
+                // if (document.isOwnerPassword("") || document.isUserPassword("")) {
+                LOGGER.log(Level.INFO, "Trying to decrypt " + id);
+                document.decrypt("");
+                LOGGER.log(Level.INFO, "Decryption succeeded");
+                // }
             }
             catch (CryptographyException e) {
                 throw new ExtractorException(e);
