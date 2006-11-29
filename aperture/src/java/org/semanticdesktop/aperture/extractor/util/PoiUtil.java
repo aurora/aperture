@@ -21,6 +21,8 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DCES;
+import org.semanticdesktop.aperture.vocabulary.DCTERMS;
 
 /**
  * Features Apache POI-specific utility methods for text and metadata extraction purposes.
@@ -99,15 +101,15 @@ public class PoiUtil {
 	public static void extractMetadata(POIFSFileSystem poiFileSystem, RDFContainer container) {
 		SummaryInformation summary = getSummaryInformation(poiFileSystem);
 		if (summary != null) {
-			copyString(summary.getTitle(), DATA.title, container);
-			copyString(summary.getSubject(), DATA.subject, container);
-			copyString(summary.getComments(), DATA.description, container);
+			copyString(summary.getTitle(), DCES.title, container);
+			copyString(summary.getSubject(), DCES.subject, container);
+			copyString(summary.getComments(), DCES.description, container);
 			copyString(summary.getApplicationName(), DATA.generator, container);
-			copyString(summary.getAuthor(), DATA.creator, container);
-			copyString(summary.getLastAuthor(), DATA.creator, container);
+			copyString(summary.getAuthor(), DCES.creator, container);
+			copyString(summary.getLastAuthor(), DCES.creator, container);
 
-			copyDate(summary.getCreateDateTime(), DATA.created, container);
-			copyDate(summary.getLastSaveDateTime(), DATA.date, container);
+			copyDate(summary.getCreateDateTime(), DCTERMS.created, container);
+			copyDate(summary.getLastSaveDateTime(), DCES.date, container);
 
 			int nrPages = summary.getPageCount();
 			if (nrPages > 1) {

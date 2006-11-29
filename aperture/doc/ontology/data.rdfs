@@ -95,20 +95,6 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 	<rdfs:domain rdf:resource="&data_;FileDataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data_;created"
-	 a:maxCardinality="1"
-	 rdfs:label="created">
-	<rdfs:comment>DublinCore: Date of creation of the resource. See 'date' for more details.</rdfs:comment>
-	<rdfs:subPropertyOf rdf:resource="&data_;date"/>
-	<rdfs:range rdf:resource="&rdfs;Literal"/>
-</rdf:Property>
-<rdf:Property rdf:about="&data_;creator"
-	 a:maxCardinality="1"
-	 rdfs:label="creator">
-	<rdfs:comment>Dublin Core: An entity primarily responsible for making the content of the resource. Examples of a Creator include a person, an organisation, or a service. Typically, the name of a Creator should be used to indicate the entity.</rdfs:comment>
-	<rdfs:domain rdf:resource="&data_;DataObject"/>
-	<rdfs:range rdf:resource="&rdfs;Literal"/>
-</rdf:Property>
 <rdf:Property rdf:about="&data_;dataSource"
 	 a:maxCardinality="1"
 	 rdfs:comment="The datasource this data-object came from."
@@ -116,23 +102,10 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Resource"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data_;date"
-	 a:maxCardinality="1"
-	 rdfs:label="date">
-	<rdfs:comment xml:space='preserve'><![CDATA[The general "date", typically last modification or publication date. See sub-properties "modified", "created" for more detailed dates. Date on which the resource was changed. Conforms to Xml-Schema dateTime and therefore also ISO 8601. See http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/#dateTime.  See http://www.iso.ch/markete/8601.pdf. To code: SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");]]></rdfs:comment>
-	<rdfs:domain rdf:resource="&data_;DataObject"/>
-	<rdfs:range rdf:resource="&rdfs;Literal"/>
-</rdf:Property>
 <rdf:Property rdf:about="&data_;dateAsNumber"
 	 a:maxCardinality="1"
 	 rdfs:label="dateAsNumber">
 	<rdfs:comment xml:space='preserve'><![CDATA[The date expressed as a number, measured in milliseconds since the epoch (00:00:00 GMT, January 1, 1970).]]></rdfs:comment>
-	<rdfs:domain rdf:resource="&data_;DataObject"/>
-	<rdfs:range rdf:resource="&rdfs;Literal"/>
-</rdf:Property><rdf:Property rdf:about="&data_;description"
-	 a:maxCardinality="1"
-	 rdfs:label="description">
-	<rdfs:comment>DublinCore: An account of the content of the resource. Description may include but is not limited to: an abstract, table of contents, reference to a graphical representation of content or a free-text account of the content.</rdfs:comment>
 	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
@@ -190,13 +163,6 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&data_;language"
-	 a:maxCardinality="1"
-	 rdfs:label="language">
-	<rdfs:comment>DublinCore: A language of the intellectual content of the resource. Recommended best practice is to use RFC 3066, which, in conjunction with ISO 639, defines two- and three-letter primary language tags with optional subtags. Examples include "en" or "eng" for English, "akk" for Akkadian, and "en-GB" for English used in the United Kingdom. See also: http://www.ietf.org/rfc/rfc3066.txt</rdfs:comment>
-	<rdfs:domain rdf:resource="&data_;DataObject"/>
-	<rdfs:range rdf:resource="&rdfs;Literal"/>
-</rdf:Property>
 <rdf:Property rdf:about="&data_;linksTo"
 	 a:maxCardinality="1"
 	 rdfs:label="linksTo">
@@ -216,13 +182,6 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 	 rdfs:label="mimeType">
 	<rdfs:comment>The mime type of the resource, if available. Example: "text/plain". See http://www.iana.org/assignments/media-types/</rdfs:comment>
 	<rdfs:domain rdf:resource="&data_;FileDataObject"/>
-	<rdfs:range rdf:resource="&rdfs;Literal"/>
-</rdf:Property>
-<rdf:Property rdf:about="&data_;modified"
-	 a:maxCardinality="1"
-	 rdfs:label="modified">
-	<rdfs:comment>DublinCore: Date on which the resource was changed. See 'date' for more details.</rdfs:comment>
-	<rdfs:subPropertyOf rdf:resource="&data_;date"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&data_;msOLUID"
@@ -319,21 +278,6 @@ This field contains the authenticated identity  of  the  AGENT (person,  system 
 	 rdfs:label="sentDate">
 	<rdfs:domain rdf:resource="&data_;Email"/>
 	<rdfs:subPropertyOf rdf:resource="&data_;date"/>
-	<rdfs:range rdf:resource="&rdfs;Literal"/>
-</rdf:Property>
-<rdf:Property rdf:about="&data_;subject"
-	 a:maxCardinality="1"
-	 rdfs:comment="DublinCore: The topic of the content of the resource."
-	 rdfs:label="subject">
-	<rdfs:domain rdf:resource="&data_;DataObject"/>
-	<rdfs:range rdf:resource="&rdfs;Literal"/>
-</rdf:Property>
-<rdf:Property rdf:about="&data_;title"
-	 a:maxCardinality="1"
-	 rdfs:label="title">
-	<rdfs:comment>DublinCore: A name given to the resource. Typically, a Title will be a name by which the resource is formally known.
-Difference to name is that title is the human readable title of the resurce whereas name is the filename.</rdfs:comment>
-	<rdfs:domain rdf:resource="&data_;DataObject"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&data_;to"

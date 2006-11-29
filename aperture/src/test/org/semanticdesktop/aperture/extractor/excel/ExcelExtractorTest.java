@@ -15,6 +15,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DCES;
 
 public class ExcelExtractorTest extends ExtractorTestBase {
 
@@ -26,11 +27,11 @@ public class ExcelExtractorTest extends ExtractorTestBase {
 
         // check the extraction results
         checkStatement(DATA.fullText, "spreadsheet", container);
-        checkStatement(DATA.title, "Excel", container);
-        checkStatement(DATA.subject, "document", container);
-        checkStatement(DATA.description, "comments", container);
+        checkStatement(DCES.title, "Excel", container);
+        checkStatement(DCES.subject, "document", container);
+        checkStatement(DCES.description, "comments", container);
         checkStatement(DATA.generator, "Excel", container);
-        checkStatement(DATA.creator, "Fluit", container);
+        checkStatement(DCES.creator, "Fluit", container);
         checkStatement(DATA.keyword, "test", container);
         checkStatement(DATA.keyword, "rdf", container);
         container.dispose();

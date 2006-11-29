@@ -27,6 +27,7 @@ import org.openrdf.sail.SailException;
 import org.openrdf.util.iterator.CloseableIterator;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DCES;
 
 /**
  * RepositoryAccessData provides an AccessData implementation storing its information to and retrieving it
@@ -226,7 +227,7 @@ public class RepositoryAccessData implements AccessData {
 			add(new StatementImpl(subject, predicate, new URIImpl(value)));
 		}
 		else {
-			URI dataType = (predicate == DATA.date || predicate == DATA.byteSize) ? XMLSchema.LONG
+			URI dataType = (predicate == DCES.date || predicate == DATA.byteSize) ? XMLSchema.LONG
 					: XMLSchema.STRING;
 			Literal object = new LiteralImpl(value, dataType);
 			add(new StatementImpl(subject, predicate, object));
@@ -281,7 +282,7 @@ public class RepositoryAccessData implements AccessData {
 
 	private URI toURI(String key) {
 		if (key == AccessData.DATE_KEY) {
-			return toSesameURI(DATA.date);
+			return toSesameURI(DCES.date);
 		}
 		else if (key == AccessData.BYTE_SIZE_KEY) {
 			return toSesameURI(DATA.byteSize);

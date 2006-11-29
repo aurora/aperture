@@ -23,6 +23,7 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.ValueFactory;
 import org.semanticdesktop.aperture.util.DateUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA_GEN;
+import org.semanticdesktop.aperture.vocabulary.DCES;
 import org.semanticdesktop.aperture.vocabulary.ICAL;
 import org.semanticdesktop.aperture.vocabulary.VCARD;
 
@@ -79,7 +80,7 @@ public abstract class OutlookResource {
 			// type is already added by AccessData.
 
 			// add label
-			addPropertyIfNotNull(rdf, DATA_GEN.title, resource, "Subject");
+			addPropertyIfNotNull(rdf, DCES.title, resource, "Subject");
 			// body
 			addPropertyIfNotNull(rdf, DATA_GEN.fullText, resource, "Body");
 
@@ -131,7 +132,7 @@ public abstract class OutlookResource {
 			// save dispatch
 			Dispatch resource = getSaveResource();
 			// title
-			addPropertyIfNotNull(rdf, DATA_GEN.title, resource, "Subject");
+			addPropertyIfNotNull(rdf, DCES.title, resource, "Subject");
 
 			// email(s)
 			addPropertyIfNotNull(rdf, DATA_GEN.emailAddress, resource, "Email1Address");
@@ -254,7 +255,7 @@ public abstract class OutlookResource {
 
 		protected void addData(RDFContainer rdf) throws IOException {
 			Dispatch resource = getResource();
-			addPropertyIfNotNull(rdf, DATA_GEN.title, resource, "Subject");
+			addPropertyIfNotNull(rdf, DCES.title, resource, "Subject");
 			addPropertyIfNotNull(rdf, DATA_GEN.fullText, resource, "Body");
 		}
 
@@ -280,7 +281,7 @@ public abstract class OutlookResource {
 		}
 
 		protected void addData(RDFContainer rdf) throws IOException {
-			addPropertyIfNotNull(rdf, DATA_GEN.title, getResource(), "Name");
+			addPropertyIfNotNull(rdf, DCES.title, getResource(), "Name");
 
 		}
 
@@ -311,8 +312,8 @@ public abstract class OutlookResource {
 			Dispatch resource = getSaveResource();
 			ValueFactory vf = rdf.getValueFactory();
 			
-			addPropertyIfNotNull(rdf, DATA_GEN.subject, resource, "Subject");
-			addPropertyIfNotNull(rdf, DATA_GEN.title, resource, "Subject");
+			addPropertyIfNotNull(rdf, DCES.subject, resource, "Subject");
+			addPropertyIfNotNull(rdf, DCES.title, resource, "Subject");
 			addDateIfNotNull(rdf, DATA_GEN.receivedDate, resource, "ReceivedTime");
 			addDateIfNotNull(rdf, DATA_GEN.sentDate, resource, "SentOn");
 			addPropertyIfNotNull(rdf, DATA_GEN.fullText, resource, "Body");
@@ -389,7 +390,7 @@ public abstract class OutlookResource {
 
 		protected void addData(RDFContainer rdf) throws IOException {
 			Dispatch resource = getResource();
-			addPropertyIfNotNull(rdf, DATA_GEN.title, resource, "Subject");
+			addPropertyIfNotNull(rdf, DCES.title, resource, "Subject");
 			addPropertyIfNotNull(rdf, DATA_GEN.fullText, resource, "Body");
 		}
 
@@ -459,7 +460,7 @@ public abstract class OutlookResource {
 		}
 
 		protected void addData(RDFContainer rdf) throws IOException {
-			rdf.add(DATA_GEN.title, "Outlook root folder");
+			rdf.add(DCES.title, "Outlook root folder");
 		}
 
 		public long getLastModified() {
@@ -487,7 +488,7 @@ public abstract class OutlookResource {
 
 		protected void addData(RDFContainer rdf) throws IOException {
 			Dispatch resource = getSaveResource();
-			addPropertyIfNotNull(rdf, DATA_GEN.title, resource, "Subject");
+			addPropertyIfNotNull(rdf, DCES.title, resource, "Subject");
 			addPropertyIfNotNull(rdf, DATA_GEN.fullText, resource, "Body");
 			
 			// task-specific
@@ -918,6 +919,9 @@ public abstract class OutlookResource {
 
 /*
  * $Log$
+ * Revision 1.7  2006/11/29 11:01:37  mylka
+ * Changed 'Dublin Core' properties from the data vocabulary to their 'real' Dublin Core equivalents.
+ *
  * Revision 1.6  2006/11/14 16:13:30  mylka
  * The Great Merge.
  *

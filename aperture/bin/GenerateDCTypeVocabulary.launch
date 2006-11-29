@@ -4,7 +4,7 @@
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="4"/>
 </listAttribute>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--package  org.semanticdesktop.aperture.vocabulary -o src/java/org/semanticdesktop/aperture/vocabulary/ -i doc/ontology/data.rdfs -a http://aperture.semanticdesktop.org/ontology/data# -n DATA_GEN"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--package  org.semanticdesktop.aperture.vocabulary -o src/java/org/semanticdesktop/aperture/vocabulary/ -i doc/ontology/dctype.rdfs -a http://purl.org/dc/dcmitype/ -n DCTYPE_GEN"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="aperture"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/aperture"/>

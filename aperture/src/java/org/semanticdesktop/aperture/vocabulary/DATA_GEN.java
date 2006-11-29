@@ -4,7 +4,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Oct 24 17:03:54 CEST 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Nov 29 11:56:03 CET 2006
  * input file: doc/ontology/data.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/data#
  */
@@ -73,32 +73,32 @@ public class DATA_GEN {
     /**
      * Label: bcc 
      * Comment: e-mail: BCC 
-     * Domain: Email 
-     * Range: Agent 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#Email 
+     * Range: http://aperture.semanticdesktop.org/ontology/data#Agent 
      */
     public static final URI bcc = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#bcc");
 
     /**
      * Label: byteSize 
      * Comment: Size of dataobject in bytes. 
-     * Domain: FileDataObject 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#FileDataObject 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI byteSize = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#byteSize");
 
     /**
      * Label: cc 
      * Comment: e-mail: CC 
-     * Domain: Email 
-     * Range: Agent 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#Email 
+     * Range: http://aperture.semanticdesktop.org/ontology/data#Agent 
      */
     public static final URI cc = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#cc");
 
     /**
      * Label: characterSet 
      * Comment: Characterset in which the content of the document was created. Example: ISO-8859-1, UTF-8. One of the registered character sets at http://www.iana.org/assignments/character-sets 
-     * Domain: FileDataObject 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#FileDataObject 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI characterSet = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#characterSet");
 
@@ -106,241 +106,195 @@ public class DATA_GEN {
      * Label: contentMimeType 
      * Comment: Key used to store the MIME type of the content of an object when it is different from the object's main MIME type. This value can be used, for example, to model an e-mail message whose mime type is"message/rfc822", but whose content has type "text/html". If not specified, the MIME type of the
 content defaults to the value specified by the 'mimeType' property. 
-     * Domain: FileDataObject 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#FileDataObject 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI contentMimeType = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#contentMimeType");
 
     /**
-     * Label: created 
-     * Comment: DublinCore: Date of creation of the resource. See 'date' for more details. 
-     * Range: Literal 
-     */
-    public static final URI created = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#created");
-
-    /**
-     * Label: creator 
-     * Comment: Dublin Core: An entity primarily responsible for making the content of the resource. Examples of a Creator include a person, an organisation, or a service. Typically, the name of a Creator should be used to indicate the entity. 
-     * Domain: DataObject 
-     * Range: Literal 
-     */
-    public static final URI creator = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#creator");
-
-    /**
      * Label: dataSource 
      * Comment: The datasource this data-object came from. 
-     * Domain: DataObject 
-     * Range: Resource 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#DataObject 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Resource 
      */
     public static final URI dataSource = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#dataSource");
 
     /**
-     * Label: date 
-     * Comment: The general "date", typically last modification or publication date. See sub-properties "modified", "created" for more detailed dates. Date on which the resource was changed. Conforms to Xml-Schema dateTime and therefore also ISO 8601. See http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/#dateTime.  See http://www.iso.ch/markete/8601.pdf. To code: SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"); 
-     * Domain: DataObject 
-     * Range: Literal 
-     */
-    public static final URI date = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#date");
-
-    /**
      * Label: dateAsNumber 
      * Comment: The date expressed as a number, measured in milliseconds since the epoch (00:00:00 GMT, January 1, 1970). 
-     * Domain: DataObject 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#DataObject 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI dateAsNumber = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#dateAsNumber");
 
     /**
-     * Label: description 
-     * Comment: DublinCore: An account of the content of the resource. Description may include but is not limited to: an abstract, table of contents, reference to a graphical representation of content or a free-text account of the content. 
-     * Domain: DataObject 
-     * Range: Literal 
-     */
-    public static final URI description = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#description");
-
-    /**
      * Label: emailAddress 
-     * Domain: Agent 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#Agent 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI emailAddress = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#emailAddress");
 
     /**
      * Label: expirationDate 
      * Comment: Date the resource expires (especially needed for web-resources). See 'date' for more details. 
-     * Range: Literal 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI expirationDate = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#expirationDate");
 
     /**
      * Label: from 
      * Comment: sender of the e-mail 
-     * Domain: Email 
-     * Range: Agent 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#Email 
+     * Range: http://aperture.semanticdesktop.org/ontology/data#Agent 
      */
     public static final URI from = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#from");
 
     /**
      * Label: fullText 
      * Comment: Fulltext of the resource. Plain-text representation with all markup removed. This text can be displayed and used to feed search engines. 
-     * Domain: DataObject 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#DataObject 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI fullText = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#fullText");
 
     /**
      * Label: generator 
      * Comment: The application that created the resource. 
-     * Domain: DataObject 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#DataObject 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI generator = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#generator");
 
     /**
      * Label: group 
      * Comment: The group of this entry, most address books lets you organize entries by groups "work", "personal", etc. This property is for representing this group. 
-     * Domain: AddressBookEntry 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#AddressBookEntry 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI group = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#group");
 
     /**
      * Label: homepage 
      * Comment: The homepage url of the Agent/Person 
-     * Domain: Agent 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#Agent 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI homepage = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#homepage");
 
     /**
      * Label: keyword 
      * Comment: Adapted DublinCore: The topic of the content of the resource, as keyword. No sentences here. Recommended best practice is to select a value from a controlled vocabulary or formal classification scheme. 
-     * Domain: DataObject 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#DataObject 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI keyword = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#keyword");
 
     /**
-     * Label: language 
-     * Comment: DublinCore: A language of the intellectual content of the resource. Recommended best practice is to use RFC 3066, which, in conjunction with ISO 639, defines two- and three-letter primary language tags with optional subtags. Examples include "en" or "eng" for English, "akk" for Akkadian, and "en-GB" for English used in the United Kingdom. See also: http://www.ietf.org/rfc/rfc3066.txt 
-     * Domain: DataObject 
-     * Range: Literal 
-     */
-    public static final URI language = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#language");
-
-    /**
      * Label: linksTo 
      * Comment: this document links to another - for example links on webpages 
-     * Domain: FileDataObject 
-     * Range: DataObject 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#FileDataObject 
+     * Range: http://aperture.semanticdesktop.org/ontology/data#DataObject 
      */
     public static final URI linksTo = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#linksTo");
 
     /**
      * Label: messageID 
      * Comment: The mailbox messageID of this message. 
-     * Domain: Email 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#Email 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI messageID = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#messageID");
 
     /**
      * Label: mimeType 
      * Comment: The mime type of the resource, if available. Example: "text/plain". See http://www.iana.org/assignments/media-types/ 
-     * Domain: FileDataObject 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#FileDataObject 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI mimeType = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#mimeType");
 
     /**
-     * Label: modified 
-     * Comment: DublinCore: Date on which the resource was changed. See 'date' for more details. 
-     * Range: Literal 
-     */
-    public static final URI modified = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#modified");
-
-    /**
      * Label: msOLUID 
      * Comment: unique identifier created by Microsoft Outlook 
-     * Domain: MSOutlookObject 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#MSOutlookObject 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI msOLUID = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#msOLUID");
 
     /**
      * Label: msolCompletedDate 
      * Comment: Task was completed then. 
-     * Domain: MSOLTask 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#MSOLTask 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI msolCompletedDate = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#msolCompletedDate");
 
     /**
      * Label: msolDueDate 
-     * Domain: MSOLTask 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#MSOLTask 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI msolDueDate = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#msolDueDate");
 
     /**
      * Label: name 
      * Comment: Name of a DataObject or an Agent. File names, folder names, attachment names. In contrast to title, this is the name of the file itself whereas title is the heading inside the content. 
-     * Domain: Agent DataObject 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#Agent http://aperture.semanticdesktop.org/ontology/data#DataObject 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI name = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#name");
 
     /**
      * Label: pageCount 
      * Comment: Number of pages if printed. 
-     * Domain: Document 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#Document 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI pageCount = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#pageCount");
 
     /**
      * Label: partOf 
      * Comment: This file is part-of a folder or other container. 
-     * Domain: FileDataObject 
-     * Range: FolderDataObject 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#FileDataObject 
+     * Range: http://aperture.semanticdesktop.org/ontology/data#FolderDataObject 
      */
     public static final URI partOf = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#partOf");
 
     /**
      * Label: printDate 
      * Comment: Date the resource was last printed (only supported by OpenDocument format, candidate for removal here). See 'date' for more details. 
-     * Range: Literal 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI printDate = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#printDate");
 
     /**
      * Label: receivedDate 
      * Comment: Date when this e-mail was received. 
-     * Domain: Email 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#Email 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI receivedDate = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#receivedDate");
 
     /**
      * Label: redirectsTo 
      * Comment: this URI redirects to another - for example redirecting HTTP URLs 
-     * Domain: DataObject 
-     * Range: DataObject 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#DataObject 
+     * Range: http://aperture.semanticdesktop.org/ontology/data#DataObject 
      */
     public static final URI redirectsTo = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#redirectsTo");
 
     /**
      * Label: retrievalDate 
      * Comment: Date when the resource was retrieved by Aperture. See 'date' for more details. 
-     * Range: Literal 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI retrievalDate = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#retrievalDate");
 
     /**
      * Label: rootFolderOf 
      * Comment: This property specifies that this folder is the root folder of a particular datasource. 
-     * Domain: FolderDataObject 
-     * Range: Resource 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#FolderDataObject 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Resource 
      */
     public static final URI rootFolderOf = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#rootFolderOf");
 
@@ -348,40 +302,23 @@ content defaults to the value specified by the 'mimeType' property.
      * Label: sender 
      * Comment: (from RFC 822)
 This field contains the authenticated identity  of  the  AGENT (person,  system  or  process)  that sends the message.  It is intended for use when the sender is not the author of the message,  or  to  indicate  who among a group of authors actually sent the message.  If the contents of the "Sender" field would be  completely  redundant  with  the  "From"  field,  then the "Sender" field need not be present and its use is  discouraged (though  still legal). 
-     * Domain: Email 
-     * Range: Agent 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#Email 
+     * Range: http://aperture.semanticdesktop.org/ontology/data#Agent 
      */
     public static final URI sender = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#sender");
 
     /**
      * Label: sentDate 
      * Comment: Date when this e-mail was sent. 
-     * Domain: Email 
-     * Range: Literal 
+     * Comment: http://aperture.semanticdesktop.org/ontology/data#Email 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI sentDate = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#sentDate");
 
     /**
-     * Label: subject 
-     * Comment: DublinCore: The topic of the content of the resource. 
-     * Domain: DataObject 
-     * Range: Literal 
-     */
-    public static final URI subject = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#subject");
-
-    /**
-     * Label: title 
-     * Comment: DublinCore: A name given to the resource. Typically, a Title will be a name by which the resource is formally known.
-Difference to name is that title is the human readable title of the resurce whereas name is the filename. 
-     * Domain: DataObject 
-     * Range: Literal 
-     */
-    public static final URI title = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#title");
-
-    /**
      * Label: to 
      * Comment: e-mail: TO 
-     * Range: Literal 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI to = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/data#to");
 

@@ -31,6 +31,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.HtmlParserUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DCES;
 
 /**
  * An Extractor implementation for message/rfc822-style messages.
@@ -69,7 +70,7 @@ public class MimeExtractor implements Extractor {
 			if (title != null) {
 				title = title.trim();
 				if (title.length() > 0) {
-					result.add(DATA.title, title);
+					result.add(DCES.title, title);
 				}
 			}
 
@@ -86,7 +87,7 @@ public class MimeExtractor implements Extractor {
 
 			Date date = MailUtil.getDate(message);
 			if (date != null) {
-				result.add(DATA.date, date);
+				result.add(DCES.date, date);
 			}
 		}
 		catch (MessagingException e) {

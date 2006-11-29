@@ -15,6 +15,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DCES;
 
 public class HtmlExtractorTest extends ExtractorTestBase {
     
@@ -33,11 +34,11 @@ public class HtmlExtractorTest extends ExtractorTestBase {
         Extractor extractor = factory.get();
         RDF2GoRDFContainer container = extract(resourceName, extractor);
         checkStatement(DATA.fullText, "text", container);
-        checkStatement(DATA.title, "document", container);
-        checkStatement(DATA.creator, "Chris", container);
+        checkStatement(DCES.title, "document", container);
+        checkStatement(DCES.creator, "Chris", container);
         checkStatement(DATA.keyword, "test", container);
         checkStatement(DATA.keyword, "rdf", container);
-        checkStatement(DATA.description, "testing", container);
+        checkStatement(DCES.description, "testing", container);
         container.dispose();
     }
 }

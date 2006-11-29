@@ -320,8 +320,8 @@ public class VocabularyWriter {
         
         // check standard name
         String result = buf.toString();
-        if (result.equals("class"))
-        	result = "class_";
+        if (result.equals("class") || result.equals("abstract"))
+        	result = result + "_";
         return result;
     }
 

@@ -32,6 +32,7 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.HttpClientUtil;
 import org.semanticdesktop.aperture.util.UrlUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DCES;
 
 /**
  * A DataAccessor implementation for the http and https schemes.
@@ -267,7 +268,7 @@ public class HttpAccessor implements DataAccessor {
 
 		long lastModified = connection.getLastModified();
 		if (lastModified != 0L) {
-			metadata.add(DATA.date, new Date(lastModified));
+			metadata.add(DCES.date, new Date(lastModified));
 		}
 
 		long expires = connection.getExpiration();

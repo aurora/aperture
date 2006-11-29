@@ -25,6 +25,8 @@ import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DCES;
+import org.semanticdesktop.aperture.vocabulary.DCTERMS;
 
 /**
  * Extracts full-text and metadata from Adobe Acrobat (PDF) files.
@@ -106,21 +108,21 @@ public class PdfExtractor implements Extractor {
         PDDocumentInformation metadata = document.getDocumentInformation();
 
         try {
-            addStringMetadata(DATA.creator, metadata.getAuthor(), result);
+            addStringMetadata(DCES.creator, metadata.getAuthor(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting author of " + id, e);
         }
 
         try {
-            addStringMetadata(DATA.title, metadata.getTitle(), result);
+            addStringMetadata(DCES.title, metadata.getTitle(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting title of " + id, e);
         }
 
         try {
-            addStringMetadata(DATA.subject, metadata.getSubject(), result);
+            addStringMetadata(DCES.subject, metadata.getSubject(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting subject of " + id, e);
@@ -141,14 +143,14 @@ public class PdfExtractor implements Extractor {
         }
 
         try {
-            addCalendarMetadata(DATA.created, metadata.getCreationDate(), result);
+            addCalendarMetadata(DCTERMS.created, metadata.getCreationDate(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting creation date of " + id, e);
         }
 
         try {
-            addCalendarMetadata(DATA.date, metadata.getModificationDate(), result);
+            addCalendarMetadata(DCES.date, metadata.getModificationDate(), result);
         }
         catch (Exception e) {
             LOGGER.log(Level.WARNING, "Exception while extracting modification date of " + id, e);

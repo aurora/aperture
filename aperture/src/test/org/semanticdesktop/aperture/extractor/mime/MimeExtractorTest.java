@@ -14,8 +14,8 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DCES;
 
 public class MimeExtractorTest extends ExtractorTestBase {
 
@@ -27,8 +27,8 @@ public class MimeExtractorTest extends ExtractorTestBase {
 
 		// check the extraction results
 		checkStatement(DATA.fullText, "test body", container);
-		checkStatement(DATA.title, "test subject", container);
-		checkStatement(DATA.date, "2006", container);
+		checkStatement(DCES.title, "test subject", container);
+		checkStatement(DCES.date, "2006", container);
 
 		assertEquals("email:christiaan.fluit@aduna.biz", container.getURI(DATA.from).toString());
 		assertEquals("email:Christiaan.Fluit@aduna.biz", container.getURI(DATA.to).toString());

@@ -31,6 +31,7 @@ import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DCES;
 
 /**
  * A DataAccessor implementation for the file scheme.
@@ -178,7 +179,7 @@ public class FileAccessor implements DataAccessor {
 		// create regular File metadata first
 		long lastModified = file.lastModified();
 		if (lastModified != 0l) {
-			metadata.add(DATA.date, new Date(lastModified));
+			metadata.add(DCES.date, new Date(lastModified));
 		}
 
 		String name = file.getName();
