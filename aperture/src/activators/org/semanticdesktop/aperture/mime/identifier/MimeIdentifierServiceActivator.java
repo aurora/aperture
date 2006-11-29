@@ -24,7 +24,7 @@ public class MimeIdentifierServiceActivator implements BundleActivator, ServiceL
 	private MimeTypeIdentifierRegistry registry;
 
 	public void start(BundleContext context) throws Exception {
-		System.out.println("Starting bundle" + this.getClass().getName());
+		
 		bc = context;
 		registry = new MimeTypeIdentifierRegistryImpl();
 		ServiceRegistration registration = bc.registerService(MimeTypeIdentifierRegistry.class.getName(), registry,
@@ -40,13 +40,13 @@ public class MimeIdentifierServiceActivator implements BundleActivator, ServiceL
 			this.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, references[i]));
 		}
 
-		System.out.println("Service registered: " + MimeTypeIdentifierRegistry.class.getName());
+		
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		System.out.println("Stopping bundle" + this.getClass().getName());
+		
 		bc.ungetService(reference);
-		System.out.println("Service unregistered: " + MimeTypeIdentifierRegistry.class.getName());
+		
 		reference = null;
 		bc = null;
 	}

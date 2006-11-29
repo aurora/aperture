@@ -25,7 +25,7 @@ public class CrawlerServiceActivator implements BundleActivator, ServiceListener
 	private CrawlerRegistry registry;
 
 	public void start(BundleContext context) throws Exception {
-		System.out.println("Starting bundle" + this.getClass().getName());
+		
 		bc = context;
 		registry = new CrawlerRegistryImpl();
 		ServiceRegistration registration = bc.registerService(CrawlerRegistry.class.getName(), registry,
@@ -41,13 +41,13 @@ public class CrawlerServiceActivator implements BundleActivator, ServiceListener
 			this.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, references[i]));
 		}
 
-		System.out.println("Service registered: " + CrawlerRegistry.class.getName());
+		
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		System.out.println("Stopping bundle" + this.getClass().getName());
+		
 		bc.ungetService(reference);
-		System.out.println("Service unregistered: " + CrawlerRegistry.class.getName());
+		
 		reference = null;
 		bc = null;
 	}

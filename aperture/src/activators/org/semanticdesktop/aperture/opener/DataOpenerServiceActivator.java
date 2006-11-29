@@ -25,7 +25,7 @@ public class DataOpenerServiceActivator implements BundleActivator, ServiceListe
 	private DataOpenerRegistry registry;
 
 	public void start(BundleContext context) throws Exception {
-		System.out.println("Starting bundle" + this.getClass().getName());
+		
 		bc = context;
 		registry = new DataOpenerRegistryImpl();
 		ServiceRegistration registration = bc.registerService(DataOpenerRegistry.class.getName(), registry,
@@ -41,13 +41,13 @@ public class DataOpenerServiceActivator implements BundleActivator, ServiceListe
 			this.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, references[i]));
 		}
 
-		System.out.println("Service registered: " + DataOpenerRegistry.class.getName());
+		
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		System.out.println("Stopping bundle" + this.getClass().getName());
+		
 		bc.ungetService(reference);
-		System.out.println("Service unregistered: " + DataOpenerRegistry.class.getName());
+		
 		reference = null;
 		bc = null;
 	}

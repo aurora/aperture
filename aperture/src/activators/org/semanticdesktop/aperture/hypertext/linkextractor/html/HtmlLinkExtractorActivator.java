@@ -23,7 +23,7 @@ public class HtmlLinkExtractorActivator implements BundleActivator {
 	private ServiceReference reference;
 
 	public void start(BundleContext context) throws Exception {
-		System.out.println("Starting bundle" + this.getClass().getName());
+		
 
 		HtmlLinkExtractorActivator.bc = context;
 
@@ -34,7 +34,7 @@ public class HtmlLinkExtractorActivator implements BundleActivator {
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		System.out.println("Stopping bundle" + this.getClass().getName());
+		
 		bc.ungetService(reference);
 	}
 }

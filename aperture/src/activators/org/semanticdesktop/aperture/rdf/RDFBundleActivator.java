@@ -12,12 +12,12 @@ import org.osgi.framework.BundleContext;
 public class RDFBundleActivator implements BundleActivator {
 
 	public void start(BundleContext context) throws Exception {
-		System.out.println("Starting bundle" + this.getClass().getName());
+		
 		// this bundle only exposes api, it doesn't register or use any services
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		System.out.println("Stopping bundle" + this.getClass().getName());
+		
 //		 this bundle only exposes api, it doesn't register or use any services
 	}
 

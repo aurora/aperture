@@ -25,7 +25,7 @@ public class DataSourceServiceActivator implements BundleActivator, ServiceListe
 	private DataSourceRegistry registry;
 
 	public void start(BundleContext context) throws Exception {
-		System.out.println("Starting bundle" + this.getClass().getName());
+		
 		bc = context;
 		registry = new DataSourceRegistryImpl();
 		ServiceRegistration registration = bc.registerService(DataSourceRegistry.class.getName(), registry,
@@ -41,13 +41,13 @@ public class DataSourceServiceActivator implements BundleActivator, ServiceListe
 			this.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, references[i]));
 		}
 
-		System.out.println("Service registered: " + DataSourceRegistry.class.getName());
+		
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		System.out.println("Stopping bundle" + this.getClass().getName());
+		
 		bc.ungetService(reference);
-		System.out.println("Service unregistered: " + DataSourceRegistry.class.getName());
+		
 		reference = null;
 		bc = null;
 	}

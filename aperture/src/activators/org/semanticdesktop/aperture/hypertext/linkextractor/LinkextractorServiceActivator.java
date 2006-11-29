@@ -25,7 +25,7 @@ public class LinkextractorServiceActivator implements BundleActivator, ServiceLi
 	private LinkExtractorRegistry registry;
 
 	public void start(BundleContext context) throws Exception {
-		System.out.println("Starting bundle" + this.getClass().getName());
+		
 		bc = context;
 		registry = new LinkExtractorRegistryImpl();
 		ServiceRegistration registration = bc.registerService(LinkExtractorRegistry.class.getName(), registry,
@@ -41,13 +41,13 @@ public class LinkextractorServiceActivator implements BundleActivator, ServiceLi
 			this.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, references[i]));
 		}
 
-		System.out.println("Service registered: " + LinkExtractorRegistry.class.getName());
+		
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		System.out.println("Stopping bundle" + this.getClass().getName());
+		
 		bc.ungetService(reference);
-		System.out.println("Service unregistered: " + LinkExtractorRegistry.class.getName());
+		
 		reference = null;
 		bc = null;
 	}

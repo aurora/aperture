@@ -28,7 +28,7 @@ public class OutlookActivator implements BundleActivator {
 	private ServiceReference accessorServiceReference;
 
 	public void start(BundleContext context) throws Exception {
-		System.out.println("Starting bundle" + this.getClass().getName());
+		
 
 		OutlookActivator.bc = context;
 
@@ -49,7 +49,7 @@ public class OutlookActivator implements BundleActivator {
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		System.out.println("Stopping bundle" + this.getClass().getName());
+		
 		bc.ungetService(crawlerServiceReference);
 		bc.ungetService(dataSourceServiceReference);
 		bc.ungetService(accessorServiceReference);

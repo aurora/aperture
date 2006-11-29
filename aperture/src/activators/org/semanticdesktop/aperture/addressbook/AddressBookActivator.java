@@ -27,7 +27,7 @@ public class AddressBookActivator implements BundleActivator {
 	private ServiceReference dataSourceServiceReference;
 
 	public void start(BundleContext context) throws Exception {
-		System.out.println("Starting bundle" + this.getClass().getName());
+		
 
 		AddressBookActivator.bc = context;
 
@@ -43,7 +43,7 @@ public class AddressBookActivator implements BundleActivator {
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		System.out.println("Stopping bundle" + this.getClass().getName());
+		
 		bc.ungetService(crawlerServiceReference);
 		bc.ungetService(dataSourceServiceReference);
 	}

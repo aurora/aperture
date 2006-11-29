@@ -25,7 +25,7 @@ public class AccessorServiceActivator implements BundleActivator, ServiceListene
 	private DataAccessorRegistry registry;
 
 	public void start(BundleContext context) throws Exception {
-		System.out.println("Starting bundle" + this.getClass().getName());
+		
 		bc = context;
 		registry = new DataAccessorRegistryImpl();
 		ServiceRegistration registration = bc.registerService(DataAccessorRegistry.class.getName(), registry,
@@ -41,13 +41,13 @@ public class AccessorServiceActivator implements BundleActivator, ServiceListene
 			this.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, references[i]));
 		}
 
-		System.out.println("Service registered: " + DataAccessorRegistry.class.getName());
+		
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		System.out.println("Stopping bundle" + this.getClass().getName());
+		
 		bc.ungetService(reference);
-		System.out.println("Service unregistered: " + DataAccessorRegistry.class.getName());
+		
 		reference = null;
 		bc = null;
 	}

@@ -13,13 +13,13 @@ public class ExtractorUtilActivator implements BundleActivator {
 
 	public void start(BundleContext context) throws Exception {
 		// this bundle only exports api, it doesn't make any services available
-		System.out.println("Starting bundle" + this.getClass().getName());
+		
 
 	}
 
 	public void stop(BundleContext context) throws Exception {
 		// this bundle only exports api, it doesn't make any services available
-		System.out.println("Stopping bundle" + this.getClass().getName());
+		
 	}
 
 }

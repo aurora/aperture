@@ -12,12 +12,12 @@ import org.osgi.framework.BundleContext;
 public class VocabularyActivator implements BundleActivator {
 
 	public void start(BundleContext context) throws Exception {
-		System.out.println("Starting bundle" + this.getClass().getName());
+		
 		// this bundle only exposes api, the activator doesn't have to do anything
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		System.out.println("Stopping bundle" + this.getClass().getName());
+		
 		// this bundle only exposes api, the activator doesn't have to do anything
 	}
 

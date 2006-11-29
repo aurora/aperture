@@ -27,7 +27,7 @@ public class TrustManagerServiceActivator implements BundleActivator, ServiceLis
 	private TrustManagerRegistry registry;
 
 	public void start(BundleContext context) throws Exception {
-		System.out.println("Starting bundle" + this.getClass().getName());
+		
 		bc = context;
 		registry = new TrustManagerRegistryImpl();
 		ServiceRegistration registration = bc.registerService(TrustManagerRegistry.class.getName(), registry,
@@ -43,13 +43,13 @@ public class TrustManagerServiceActivator implements BundleActivator, ServiceLis
 			this.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, references[i]));
 		}
 
-		System.out.println("Service registered: " + TrustManagerRegistry.class.getName());
+		
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		System.out.println("Stopping bundle" + this.getClass().getName());
+		
 		bc.ungetService(reference);
-		System.out.println("Service unregistered: " + TrustManagerRegistry.class.getName());
+		
 		reference = null;
 		bc = null;
 	}

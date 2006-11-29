@@ -25,7 +25,7 @@ public class ExtractorServiceActivator implements BundleActivator, ServiceListen
 	private ExtractorRegistry registry;
 
 	public void start(BundleContext context) throws Exception {
-		System.out.println("Starting bundle" + this.getClass().getName());
+		
 		bc = context;
 		registry = new ExtractorRegistryImpl();
 		ServiceRegistration registration = bc.registerService(ExtractorRegistry.class.getName(), registry,
@@ -41,13 +41,13 @@ public class ExtractorServiceActivator implements BundleActivator, ServiceListen
 			this.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, references[i]));
 		}
 
-		System.out.println("Service registered: " + ExtractorRegistry.class.getName());
+		
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		System.out.println("Stopping bundle" + this.getClass().getName());
+		
 		bc.ungetService(reference);
-		System.out.println("Service unregistered: " + ExtractorRegistry.class.getName());
+		
 		reference = null;
 		bc = null;
 	}

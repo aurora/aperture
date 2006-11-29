@@ -29,7 +29,7 @@ public class FilesystemCrawlerActivator implements BundleActivator {
 	private ServiceReference dataSourceServiceReference;
 
 	public void start(BundleContext context) throws Exception {
-		System.out.println("Starting bundle" + this.getClass().getName());
+		
 
 		FilesystemCrawlerActivator.bc = context;
 
@@ -45,7 +45,7 @@ public class FilesystemCrawlerActivator implements BundleActivator {
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		System.out.println("Stopping bundle" + this.getClass().getName());
+		
 		bc.ungetService(crawlerServiceReference);
 		bc.ungetService(dataSourceServiceReference);
 	}
