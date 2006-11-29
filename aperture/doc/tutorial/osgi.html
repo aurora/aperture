@@ -1,0 +1,274 @@
+<html>
+
+<head>
+<title>Aperture - OSGi</title>
+<link rel="stylesheet" type="text/css"
+	href="../style/default/documentation.css">
+</head>
+
+<body>
+
+<h1>Aperture in OSGi bundles</h1>
+
+In order to use Aperture in an OSGI environment, you need to package it as a bundle. Fortunately you don't need to do it yourself.
+The build.xml ant script provides a target osgi.dist. Just invoke it and in the directory build/dist/bundles - you will get three
+jar files: aperture-core, aperture-impl and aperture-example. Their contents and intended usage is summarized below:
+
+<h2>aperture-core</h2>
+
+<p>
+This is the bundle that contains all the core interfaces, services, vocabularies and utility classes. It doesn't contain any implementations.
+If you'd like to extend aperture, write your own crawler, accessor or extractor - this is the bundle you will have to depend on. Also every
+client application will only need this single dependency. Simple and convenient. 
+</p>
+<p>
+Activating this bundle in an osgi environment makes following services available:
+</p>
+<ol>
+  <li>org.semanticdesktop.aperture.accessor.DataAccessorRegistry</li>
+  <li>org.semanticdesktop.aperture.crawler.CrawlerRegistry</li>
+  <li>org.semanticdesktop.aperture.datasource.DataSourceRegistry</li>
+  <li>org.semanticdesktop.aperture.extractor.ExtractorRegistry</li>
+  <li>org.semanticdesktop.aperture.opener.DataOpenerRegistry</li>
+  <li>org.semanticdesktop.aperture.hypertext.linkextractor.ExtractorRegistry</li>
+  <li>org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierRegistry</li>
+  <li>org.semanticdesktop.aperture.security.trustdecider.TrustDeciderRegistry</li>
+  <li>org.semanticdesktop.aperture.security.trustmanager.TrustManagerRegistry</li>
+</ol>
+
+<p>
+These registries will listen for appropriate factories appearing in the environment and will automatically include them. 
+</p>
+
+<a name="aperture-impl" />
+<h2>aperture-impl</h2>
+
+<p>
+This bundle contains all implementations. Every implementation depends on core. The activator of this bundle registers services under
+appropriate names, so that registries can detect them. Every factory is treated as a separate service. It is registered under the name
+of the generic interface it implements (e.g. a FileSystemCrawlerFactory is registered under the name of a CrawlerFactory). This enables
+automatic detection.
+</p>
+
+
+<h1>Build infrastructure</h1>
+
+<p>
+This part of this document is a bit technical. You may skip it if you only want to use Aperture. Nevertheless, It may be of some interest 
+to all that need to include aperture in their own projects  and would like to influence the packaging.
+</p>
+
+<p>
+It was required that the OSGi packaging be as unobtrusive as possible. It has been decided that the structure of the source tree must not 
+be altered, and that the former packaging method (as a plain jar) must remain available. 
+</p>
+
+<h2>build.xml script</h2>
+
+<p>
+Classes for the bundles are picked one-by-one. A sophisticated system of selectors has been introduced in the ant build script. It is
+now over 1000 lines longer. Aperture has been conceptually divided into ca. 40 'elementary' bundles. In this division the vocabulary and
+utility classes are in separate bundles. Every Registry service and every implementation has it's own bundle.  Every 'elementary'
+bundle has:
+</p>
+
+<ul>
+   <li>It's own selector in the build script. This selector covers:
+  	  <ul>
+   		 <li>Source files</li>
+   		 <li>Class files</li>
+  		 <li>Activator source</li>
+   		 <li>Activator files</li>
+   		 <li>Non-java resources (like xml, dtd or icons)</li>
+         <li>Library jars (that are to be included in the bundle</li>
+      </ul>
+   </li>
+   <li>
+   		It's own activator class.
+   </li>
+</ul>
+<p>
+In order for this to work - every selector is applied to five directories:
+</p>
+ 
+<ul>
+ 	<li>src/java</li>
+   	<li>src/activators</li>
+   	<li>build/classes</li>
+   	<li>build/classes-activators</li>
+  	<li>lib</li>
+</ul>
+
+<p>
+Additional measures have been taken to prevent non-java resources from being copied twice (from the source and from the classes
+directory.
+</p>
+
+<h2>Activators</h2>
+
+<p>
+The activators have been kept separate from the 'normal' source code. They are stored in the src/activators subdirectory. Every
+'elementary' bundle has it's own Activator. There are basically two kinds of activators: registry activators and implementation activators.
+</p>
+
+<p>
+The registry activators are responsible for running the the registries. They are also equipped with osgi ServiceTrackers that listen for
+implementations appearing and disappearing. There were two reasons why this approach has been chosen.
+</p>
+
+<ul>
+  <li>It is much cleaner and simpler. Only the registry Activators need to be aware of other services appearing and disappearing. It is enough
+      for them to use a 15-line service tracker. The implementations can be completely unaware of the registries. The client application
+      can even bypass the registries altogether and search for implementations by itself (by looking for services under the name of the
+      factory interface - see <a href="#aperture-impl">aperture-impl</a>)</li>
+  <li>It makes it possible to have multiple registries in a system.</li>
+</ul>
+<p>
+The coarsegrained bundles are built out of 'elementary' bundles. Every coarsegrained bundle (that is core and impl) has an activator that 
+simply calls the activators of all 'elementary' bundles. 
+</p>
+
+<h2>middle-grained bundles</h2>
+
+Some attempt has been made to implement a more detailed packaging scheme. It would consist of six bundles:
+
+<ul>
+	<li>vocabulary (Vocabulary classes)</li>
+	<li>util (Utility classes)</li>
+	<li>Core services: 
+		<ul>
+			<li>Registries and interfaces for:
+				<ol>
+					<li>DataAccessors</li>
+					<li>Crawlers</li>
+					<li>Extractors</li>
+					<li>DataSources</li>
+					<li>DataOpeners</li>
+				</ol>
+			</li>
+			<li>
+				Core rdf interfaces and classes (RDFContainer, RDF2GoRDFContainer etc.)
+			</li>
+		</ul>
+	</li>
+	<li>Supporting services:
+		<ul>
+			<li>Registries and interfaces for:
+				<ol>
+					<li>LinkExtractors</li>
+					<li>MimeTypeIdentifiers</li>
+					<li>TrustManagers</li>
+					<li>TrustDeciders</li>
+				</ol>
+			</li>
+			<li>
+				Core rdf interfaces and classes (RDFContainer, RDF2GoRDFContainer etc.)
+			</li>
+		</ul>
+	</li>
+	<li>
+		Core implementations - implementations of the all mentioned interfaces.
+	</li>
+	<li>
+		Supporting implementations.
+	</li>
+</ul>
+
+Following things have been prepared for this:
+
+<ol>
+	<li>There are 'middlegrained' selectors that combine appropriate elementary selectors</li>
+	<li>There are targets that create jar files with bundles</li>
+	<li>Those jar files contain manifests that have also been prepared</li>
+</ol>
+
+Unfortunately the 'middle-grained' approach has been abandoned. It prooved too time-consuming to maintain the manifest files for six bundles.
+It could potentially be done by adopting one of following approaches:
+
+<ol>
+	<li>Use eclipse plugin development environment. Create separate projects for every bundle, import the source from external directory
+	    (that is from the main aperture directory), use the include/exclude feature to have every bundle include the appropriate set of
+	    files and libraries. This approach has the disadvantage, that the build process would not be automated.</li>
+	<li>Find some tool that would generate manifest files automatically it should provide following functionality
+	    <ul>
+	        <li>Generate the Bundle-Classpath list - a list of all jar files that are included in the bundle</li>
+	    	<li>Create a set of imports</li>
+	    	<li>Exclude imports from bundles that are on the Required-bundle list</li>
+	    	<li>Exclude imports from jars, that are included in the Bundle-Classpath</li>
+	    	<li>Exclude other imports - defined by some rules</li>
+	    	<li>Create a set of exports - all packages in the bundle</li>
+	    	<li>Exclude exports defined by a set of rules</li>
+	    </ul>
+	    A tool called mangen has been evaluated but with no success.
+	</li>
+</ol>
+
+<h1>Other Issues</h1>
+
+<p>
+I moved the MailUtil class from the util package because it would
+introduce a dependency on mail....jar for the core bundle
+</p>
+
+<p>
+All classes from the core bundle that refer directly to org.openrdf
+will not work (that is: RepositoryUtil, RepositoryAccessData etc.) This would introduce a dependency on sesame.
+</p>
+
+
+<p>
+The ResourceUtil methods got a second argument (that is a class that
+originates the request). It didn't work under OSGI since every bundle
+has it's own classloader and the resource lookup wouldn't work.
+</p>
+
+<p>
+Added an OutlookAccessorFactory
+</p>
+
+<h1>Example</h1>
+
+<p>
+I've written a simple example of the FileSystemCrawler. It doesn't have
+any interface (yet...) the path to the root directory and to the
+repository file is hard-coded in:
+</p>
+
+<p>
+src/examples/org/semanticdesktop/aperture/examples/osgi/ExampleFileCrawlerActivator.java
+</p>
+<p>
+line number 66.
+</p>
+<p>
+If you want to see it in action do the following:
+</p>
+<ol>
+<li>download the 'distribution' from
+http://www.dfki.uni-kl.de/~mylka/aperture-20061128.zip. 
+It contains two full-featured execution environments - Equinox and Knopflerfish. 
+This example works under Equinox but fails under Knopflerfish. I have been unable to find out why.
+</li>
+
+<li>Unpack it and edit the file mentioned above.</li>
+<li>type 'ant osgi.dist'</li>
+<li>Go to the directory build/dist/bundles</li>
+<li>run the run.aperture.sh script (I did it on linux, it shouldn't be
+too difficult to adjust it to work under windows</li>
+<li>When the osgi prompt appears, type 'ss' to show the list of bundles.
+There should be 10 started bundles and the 11'th one should be the
+aperture-example.</li>
+<li>type start 11. The example will start to crawl the given directory
+and will store the rdf in the given file. (Hopefully)</li>
+</ol>
+
+<p>
+Any comments welcome
+</p>
+<p>
+Antoni Mylka<br>
+<a href="mailto:antoni.mylka@dkfi.de">antoni.mylka@dkfi.de</a>
+</p>
+</body>
+
+</html>
