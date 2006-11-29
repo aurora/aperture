@@ -1090,7 +1090,7 @@ your copy of ANT at http://ant.apache.org/
 	<target name="osgi.dist"
 			depends="jar.bundles"
 			description="creates the aperture bundle and copies all dependencies to a single directory">
-		<copy todir="${dist.bundle.dir}">
+		<copy todir="${dist.bundle.dir}" failonerror="false">
 			<fileset dir="${basedir}/srcbundles">
 				<include name="**/*.*"/>
 			</fileset>
