@@ -15,8 +15,8 @@ import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
-import org.semanticdesktop.aperture.vocabulary.DCES;
-import org.semanticdesktop.aperture.vocabulary.DCTERMS;
+import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class OpenDocumentExtractorTest extends ExtractorTestBase {
 
@@ -71,16 +71,16 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
         RDF2GoRDFContainer container = getStatements(resourceName);
 
         // check for all properties that we're sure of exist in this example document
-        checkStatement(DCES.title, "Example", container);
-        checkStatement(DCES.subject, "Testing", container);
+        checkStatement(DATA.title, "Example", container);
+        checkStatement(DATA.subject, "Testing", container);
         checkStatement(DATA.keyword, "rdf", container);
         checkStatement(DATA.keyword, "test", container);
-        checkStatement(DCES.description, "comments", container);
-        checkStatement(DCES.creator, "Christiaan Fluit", container);
-        checkStatement(DCES.date, "2005", container);
-        checkStatement(DCTERMS.created, "2005", container);
+        checkStatement(DATA.description, "comments", container);
+        checkStatement(DATA.creator, "Christiaan Fluit", container);
+        checkStatement(DATA.date, "2005", container);
+        checkStatement(DATA.created, "2005", container);
         checkStatement(DATA.printDate, "2005", container);
-        checkStatement(DCES.language, "en-US", container);
+        checkStatement(DATA.language, "en-US", container);
         checkStatement(DATA.pageCount, "1", container);
         checkStatement(DATA.generator, "OpenOffice", container);
         

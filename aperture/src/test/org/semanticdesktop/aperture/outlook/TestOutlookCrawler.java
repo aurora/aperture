@@ -33,7 +33,7 @@ import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainerFactory;
 import org.semanticdesktop.aperture.util.LogUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
-import org.semanticdesktop.aperture.vocabulary.DCES;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * crawl through the locally installed outlook.
@@ -134,7 +134,7 @@ public class TestOutlookCrawler extends ApertureTestBase {
 		DataObject o = access.getDataObject(TESTAPPOINTMENTURI, olds, null,
 			SesameRDFContainerFactory.DEFAULTFACTORY);
 		RDFContainer rdf = o.getMetadata();
-		String s = rdf.getString(DCES.title);
+		String s = rdf.getString(DATA.title);
 		assertEquals("title wrong", "Test Termin", s);
 		o.dispose();
 		rdf.getModel().close();
@@ -146,7 +146,7 @@ public class TestOutlookCrawler extends ApertureTestBase {
 			DataObject o = access.getDataObject(TESTAPPOINTMENTURI, olds, null,
 				SesameRDFContainerFactory.DEFAULTFACTORY);
 			RDFContainer rdf = o.getMetadata();
-			String s = rdf.getString(DCES.title);
+			String s = rdf.getString(DATA.title);
 			assertEquals("title wrong", "Test Termin", s);
 			o.dispose();
 			rdf.getModel().close();
@@ -155,7 +155,7 @@ public class TestOutlookCrawler extends ApertureTestBase {
 			DataObject o = access.getDataObject(TESTTASKURI, olds, null,
 				SesameRDFContainerFactory.DEFAULTFACTORY);
 			RDFContainer rdf = o.getMetadata();
-			String s = rdf.getString(DCES.title);
+			String s = rdf.getString(DATA.title);
 			assertEquals("title wrong", "Test this stuff now", s);
 			o.dispose();
 			rdf.getModel().close();
@@ -164,7 +164,7 @@ public class TestOutlookCrawler extends ApertureTestBase {
 			DataObject o = access.getDataObject(TESTAPPOINTMENTURI, olds, null,
 				SesameRDFContainerFactory.DEFAULTFACTORY);
 			RDFContainer rdf = o.getMetadata();
-			String s = rdf.getString(DCES.title);
+			String s = rdf.getString(DATA.title);
 			assertEquals("title wrong", "Test Termin", s);
 			o.dispose();
 			rdf.getModel().close();

@@ -30,8 +30,8 @@ import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.util.SimpleSAXAdapter;
 import org.semanticdesktop.aperture.util.SimpleSAXParser;
 import org.semanticdesktop.aperture.vocabulary.DATA;
-import org.semanticdesktop.aperture.vocabulary.DCES;
-import org.semanticdesktop.aperture.vocabulary.DCTERMS;
+import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -168,31 +168,31 @@ public class OpenDocumentExtractor implements Extractor {
 
 			// determine which metadata property we're dealing with
 			if ("dc:creator".equals(name)) {
-				addStatement(DCES.creator, metaChild.getFirstChild(), result);
+				addStatement(DATA.creator, metaChild.getFirstChild(), result);
 			}
 			else if ("meta:initial-creator".equals(name)) {
-				addStatement(DCES.creator, metaChild.getFirstChild(), result);
+				addStatement(DATA.creator, metaChild.getFirstChild(), result);
 			}
 			else if ("dc:title".equals(name)) {
-				addStatement(DCES.title, metaChild.getFirstChild(), result);
+				addStatement(DATA.title, metaChild.getFirstChild(), result);
 			}
 			else if ("dc:description".equals(name)) {
-				addStatement(DCES.description, metaChild.getFirstChild(), result);
+				addStatement(DATA.description, metaChild.getFirstChild(), result);
 			}
 			else if ("dc:subject".equals(name)) {
-				addStatement(DCES.subject, metaChild.getFirstChild(), result);
+				addStatement(DATA.subject, metaChild.getFirstChild(), result);
 			}
 			else if ("dc:date".equals(name)) {
-				addDateStatement(DCES.date, metaChild.getFirstChild(), result);
+				addDateStatement(DATA.date, metaChild.getFirstChild(), result);
 			}
 			else if ("meta:creation-date".equals(name)) {
-				addDateStatement(DCTERMS.created, metaChild.getFirstChild(), result);
+				addDateStatement(DATA.created, metaChild.getFirstChild(), result);
 			}
 			else if ("meta:print-date".equals(name)) {
 				addDateStatement(DATA.printDate, metaChild.getFirstChild(), result);
 			}
 			else if ("dc:language".equals(name)) {
-				addStatement(DCES.language, metaChild.getFirstChild(), result);
+				addStatement(DATA.language, metaChild.getFirstChild(), result);
 			}
 			else if ("meta:generator".equals(name)) {
 				addStatement(DATA.generator, metaChild.getFirstChild(), result);

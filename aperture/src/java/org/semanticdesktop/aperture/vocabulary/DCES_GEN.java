@@ -4,12 +4,12 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Nov 29 11:14:08 CET 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Nov 29 15:24:29 CET 2006
  * input file: doc/ontology/dces.rdfs
  * namespace: http://purl.org/dc/elements/1.1/
  */
-public class DCES_GEN {
-	public static final String NS = "http://purl.org/dc/elements/1.1/";
+public interface DCES_GEN {
+	public static final String NS_DCES_GEN = "http://purl.org/dc/elements/1.1/";
 
     /**
      * Label: Title (en-us) 

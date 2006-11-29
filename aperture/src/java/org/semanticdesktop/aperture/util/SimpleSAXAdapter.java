@@ -7,6 +7,7 @@
 package org.semanticdesktop.aperture.util;
 
 import java.util.Map;
+
 import org.xml.sax.SAXException;
 
 /**

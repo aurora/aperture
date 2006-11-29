@@ -4,12 +4,12 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Nov 29 11:14:22 CET 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Nov 29 15:23:45 CET 2006
  * input file: doc/ontology/dcq.rdfs
  * namespace: http://purl.org/dc/terms/
  */
-public class DCTERMS_GEN {
-	public static final String NS = "http://purl.org/dc/terms/";
+public interface DCTERMS_GEN {
+	public static final String NS_DCTERMS_GEN = "http://purl.org/dc/terms/";
 
     /**
      * Label: Subject Encoding Schemes (en-us) 

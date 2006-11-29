@@ -16,7 +16,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.HtmlParserUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
-import org.semanticdesktop.aperture.vocabulary.DCES;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * HtmlExtractor extracts full-text and metadata from HTML and XHTML documents.
@@ -47,9 +47,9 @@ public class HtmlExtractor implements Extractor {
             }
 
             // store other metadata
-            addProperty(DCES.title, getTitle());
-            addProperty(DCES.creator, getAuthor());
-            addProperty(DCES.description, getDescription());
+            addProperty(DATA.title, getTitle());
+            addProperty(DATA.creator, getAuthor());
+            addProperty(DATA.description, getDescription());
         }
         
         private void addProperty(URI property, String value) {

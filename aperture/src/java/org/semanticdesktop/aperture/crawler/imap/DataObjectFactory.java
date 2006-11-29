@@ -37,7 +37,6 @@ import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
-import org.semanticdesktop.aperture.vocabulary.DCES;
 
 /**
  * Creates a set of DataObjects from a MimeMessage.
@@ -236,7 +235,7 @@ public class DataObjectFactory {
 			result.put(DATA.byteSize, new Integer(size));
 		}
 
-		result.put(DCES.date, date);
+		result.put(DATA.date, date);
 
 		// Differentiate between Messages and other types of mail parts. We don't use the Part.getHeader
 		// method as they don't decode non-ASCII 'encoded words' (see RFC 2047).
@@ -248,7 +247,7 @@ public class DataObjectFactory {
 
 			// add message metadata
 			Message message = (Message) mailPart;
-			addIfNotNull(DCES.subject, message.getSubject(), result);
+			addIfNotNull(DATA.subject, message.getSubject(), result);
 			addIfNotNull(DATA.from, message.getFrom(), result);
 			addIfNotNull(DATA.to, message.getRecipients(RecipientType.TO), result);
 			addIfNotNull(DATA.cc, message.getRecipients(RecipientType.CC), result);
@@ -628,12 +627,12 @@ public class DataObjectFactory {
 		copyString(DATA.characterSet, map, metadata);
 		copyString(DATA.mimeType, map, metadata);
 		copyString(DATA.contentMimeType, map, metadata);
-		copyString(DCES.subject, map, metadata);
+		copyString(DATA.subject, map, metadata);
 		copyString(DATA.name, map, metadata);
 
 		copyInt(DATA.byteSize, map, metadata);
 
-		copyDate(DCES.date, map, metadata);
+		copyDate(DATA.date, map, metadata);
 
 		copyAddresses(DATA.from, map, metadata);
 		copyAddresses(DATA.sender, map, metadata);

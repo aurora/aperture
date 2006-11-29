@@ -15,7 +15,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
-import org.semanticdesktop.aperture.vocabulary.DCES;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class VisioExtractorTest extends ExtractorTestBase {
 
@@ -27,10 +27,10 @@ public class VisioExtractorTest extends ExtractorTestBase {
 
         // check the extraction results
         checkStatement(DATA.fullText, "developers", container);
-        checkStatement(DCES.title, "Title", container);
-        checkStatement(DCES.subject, "Topic", container);
-        checkStatement(DCES.description, "abstract", container);
-        checkStatement(DCES.creator, "Leo", container);
+        checkStatement(DATA.title, "Title", container);
+        checkStatement(DATA.subject, "Topic", container);
+        checkStatement(DATA.description, "abstract", container);
+        checkStatement(DATA.creator, "Leo", container);
         checkStatement(DATA.keyword, "visio", container);
         checkStatement(DATA.keyword, "aperture", container);
         

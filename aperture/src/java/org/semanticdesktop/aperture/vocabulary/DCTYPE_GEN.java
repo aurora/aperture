@@ -4,12 +4,12 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Nov 29 11:14:15 CET 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Nov 29 15:23:35 CET 2006
  * input file: doc/ontology/dctype.rdfs
  * namespace: http://purl.org/dc/dcmitype/
  */
-public class DCTYPE_GEN {
-	public static final String NS = "http://purl.org/dc/dcmitype/";
+public interface DCTYPE_GEN {
+	public static final String NS_DCTYPE_GEN = "http://purl.org/dc/dcmitype/";
 
     /**
      */

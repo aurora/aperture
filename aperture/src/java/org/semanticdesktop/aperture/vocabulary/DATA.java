@@ -13,7 +13,7 @@ package org.semanticdesktop.aperture.vocabulary;
  * @author grimnes
  * $Id$
  */
-public class DATA extends DATA_GEN {
+public class DATA implements DATA_GEN, DCES_GEN, DCTERMS_GEN, DCTYPE_GEN {
 
 }
 

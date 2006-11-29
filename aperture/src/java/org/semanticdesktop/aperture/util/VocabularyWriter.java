@@ -96,8 +96,8 @@ public class VocabularyWriter {
 			outP.println(" * input file: "+inputRdf);
 			outP.println(" * namespace: "+ns);
 			outP.println(" */");
-			outP.println("public class "+outputFileN+" {");
-			outP.println("	public static final String NS = \""+ns+"\";\n");
+			outP.println("public interface "+outputFileN+" {");
+			outP.println("	public static final String NS_" + outputFileN + " = \""+ns+"\";\n");
 		
 			// iterate through classes
 			generateElement(RDFS.Class, false);

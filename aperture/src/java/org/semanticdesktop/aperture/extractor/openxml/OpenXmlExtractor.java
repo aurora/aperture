@@ -30,8 +30,8 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.SimpleSAXListener;
 import org.semanticdesktop.aperture.util.SimpleSAXParser;
 import org.semanticdesktop.aperture.vocabulary.DATA;
-import org.semanticdesktop.aperture.vocabulary.DCES;
-import org.semanticdesktop.aperture.vocabulary.DCTERMS;
+import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -310,25 +310,25 @@ public class OpenXmlExtractor implements Extractor {
 
 		// note this tests for both core and app properties
 		if ("title".equals(localName)) {
-			metadata.add(DCES.title, value);
+			metadata.add(DATA.title, value);
 		}
 		else if ("subject".equals(localName)) {
-			metadata.add(DCES.subject, value);
+			metadata.add(DATA.subject, value);
 		}
 		else if ("created".equals(localName)) {
-			metadata.add(DCTERMS.created, value);
+			metadata.add(DATA.created, value);
 		}
 		else if ("creator".equals(localName)) {
-			metadata.add(DCES.creator, value);
+			metadata.add(DATA.creator, value);
 		}
 		else if ("description".equals(localName)) {
-			metadata.add(DCES.description, value);
+			metadata.add(DATA.description, value);
 		}
 		else if ("lastModifiedBy".equals(localName)) {
-			metadata.add(DCES.creator, value);
+			metadata.add(DATA.creator, value);
 		}
 		else if ("modified".equals(localName)) {
-			metadata.add(DCTERMS.modified, value);
+			metadata.add(DATA.modified, value);
 		}
 		else if ("Application".equals(localName)) {
 			metadata.add(DATA.generator, value);

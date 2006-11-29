@@ -15,7 +15,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
-import org.semanticdesktop.aperture.vocabulary.DCES;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class PublisherExtractorTest extends ExtractorTestBase {
 
@@ -27,10 +27,10 @@ public class PublisherExtractorTest extends ExtractorTestBase {
 
         // check the extraction results
         checkStatement(DATA.fullText, "Example", container);
-        checkStatement(DCES.title, "Publisher", container);
-        checkStatement(DCES.subject, "document", container);
-        checkStatement(DCES.description, "comments", container);
-        checkStatement(DCES.creator, "Wester", container);
+        checkStatement(DATA.title, "Publisher", container);
+        checkStatement(DATA.subject, "document", container);
+        checkStatement(DATA.description, "comments", container);
+        checkStatement(DATA.creator, "Wester", container);
         checkStatement(DATA.keyword, "test", container);
         checkStatement(DATA.keyword, "rdf", container);
         

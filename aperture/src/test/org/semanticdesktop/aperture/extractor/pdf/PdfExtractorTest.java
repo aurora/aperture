@@ -15,8 +15,8 @@ import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
-import org.semanticdesktop.aperture.vocabulary.DCES;
-import org.semanticdesktop.aperture.vocabulary.DCTERMS;
+import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class PdfExtractorTest extends ExtractorTestBase {
 
@@ -68,7 +68,7 @@ public class PdfExtractorTest extends ExtractorTestBase {
         
         checkStatement(DATA.generator, "PDFCreator", container);
         checkStatement(DATA.generator, "Ghostscript", container);
-        checkStatement(DCES.date, "2005", container);
+        checkStatement(DATA.date, "2005", container);
         
         checkOmnipresentStatements(container);
     }
@@ -78,7 +78,7 @@ public class PdfExtractorTest extends ExtractorTestBase {
         
         checkStatement(DATA.generator, "PDFMaker", container);
         checkStatement(DATA.generator, "Distiller", container);
-        checkStatement(DCES.date, "2005", container);
+        checkStatement(DATA.date, "2005", container);
         
         checkOmnipresentStatements(container);
     }
@@ -86,20 +86,20 @@ public class PdfExtractorTest extends ExtractorTestBase {
     public void testPDFWriter() throws ExtractorException, IOException, ModelException {
         container = getStatements(PDF_WRITER_DOC);
         
-        checkStatement(DCES.title, "Microsoft Word", container);
-        checkStatement(DCES.creator, "Christiaan Fluit", container);
+        checkStatement(DATA.title, "Microsoft Word", container);
+        checkStatement(DATA.creator, "Christiaan Fluit", container);
         checkStatement(DATA.generator, "PScript5.dll", container);
         checkStatement(DATA.generator, "Distiller", container);
-        checkStatement(DCES.date, "2005", container);
-        checkStatement(DCTERMS.created, "2005", container);
+        checkStatement(DATA.date, "2005", container);
+        checkStatement(DATA.created, "2005", container);
         checkStatement(DATA.pageCount, "1", container);
     }
     
     private void checkOmnipresentStatements(RDF2GoRDFContainer container) throws ModelException {
-        checkStatement(DCES.creator, "Christiaan Fluit", container);
-        checkStatement(DCES.subject, "Testing", container);
-        checkStatement(DCES.title, "Example", container);
-        checkStatement(DCTERMS.created, "2005", container);
+        checkStatement(DATA.creator, "Christiaan Fluit", container);
+        checkStatement(DATA.subject, "Testing", container);
+        checkStatement(DATA.title, "Example", container);
+        checkStatement(DATA.created, "2005", container);
         checkStatement(DATA.pageCount, "1", container);
         checkStatement(DATA.keyword, "rdf", container);
         checkStatement(DATA.keyword, "test", container);

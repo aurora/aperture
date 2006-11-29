@@ -4,12 +4,12 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Nov 29 11:56:03 CET 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Nov 29 15:23:59 CET 2006
  * input file: doc/ontology/data.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/data#
  */
-public class DATA_GEN {
-	public static final String NS = "http://aperture.semanticdesktop.org/ontology/data#";
+public interface DATA_GEN {
+	public static final String NS_DATA_GEN = "http://aperture.semanticdesktop.org/ontology/data#";
 
     /**
      * Label: AddressBookEntry 
