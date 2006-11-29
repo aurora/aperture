@@ -16,11 +16,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.JTextArea;
-
-import org.semanticdesktop.aperture.examples.imapcrawler.OutputPanel;
 
 public class OutputPanel extends JPanel {
 

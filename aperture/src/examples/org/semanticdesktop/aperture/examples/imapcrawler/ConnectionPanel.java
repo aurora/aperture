@@ -8,6 +8,7 @@ package org.semanticdesktop.aperture.examples.imapcrawler;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
@@ -23,7 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import java.awt.Insets;
 
 public class ConnectionPanel extends JPanel {
 

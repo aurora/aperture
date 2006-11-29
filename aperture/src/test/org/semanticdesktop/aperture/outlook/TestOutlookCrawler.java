@@ -33,7 +33,6 @@ import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainerFactory;
 import org.semanticdesktop.aperture.util.LogUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
-import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * crawl through the locally installed outlook.

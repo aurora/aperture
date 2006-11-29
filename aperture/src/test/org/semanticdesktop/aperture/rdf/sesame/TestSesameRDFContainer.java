@@ -7,9 +7,6 @@
 package org.semanticdesktop.aperture.rdf.sesame;
 
 import java.util.Date;
-import java.util.Properties;
-
-import junit.framework.TestCase;
 
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.Resource;

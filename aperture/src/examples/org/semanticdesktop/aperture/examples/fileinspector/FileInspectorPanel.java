@@ -34,9 +34,6 @@ import org.ontoware.rdf2go.model.Model;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.Repository;
-import org.semanticdesktop.aperture.examples.fileinspector.FileInspectorPanel;
-import org.semanticdesktop.aperture.examples.fileinspector.FileSelectorPanel;
-import org.semanticdesktop.aperture.examples.fileinspector.MetadataPanel;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
@@ -45,7 +42,6 @@ import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 
 public class FileInspectorPanel extends JPanel {

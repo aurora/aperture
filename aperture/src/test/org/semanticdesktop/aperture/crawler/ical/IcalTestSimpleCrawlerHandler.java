@@ -8,9 +8,7 @@ package org.semanticdesktop.aperture.crawler.ical;
 
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
-import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
-import org.openrdf.repository.Repository;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.crawler.Crawler;

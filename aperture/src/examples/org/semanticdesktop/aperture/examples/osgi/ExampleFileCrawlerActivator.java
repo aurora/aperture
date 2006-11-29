@@ -6,8 +6,6 @@
  */
 package org.semanticdesktop.aperture.examples.osgi;
 
-import java.io.File;
-
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;

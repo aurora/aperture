@@ -21,8 +21,6 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
-import org.semanticdesktop.aperture.vocabulary.DATA;
-import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * Features Apache POI-specific utility methods for text and metadata extraction purposes.

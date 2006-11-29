@@ -9,12 +9,10 @@ package org.semanticdesktop.aperture.opener.impl;
 import java.util.Collections;
 import java.util.Set;
 
-import org.semanticdesktop.aperture.extractor.Extractor;
-import org.semanticdesktop.aperture.extractor.ExtractorFactory;
+import junit.framework.TestCase;
+
 import org.semanticdesktop.aperture.opener.DataOpener;
 import org.semanticdesktop.aperture.opener.DataOpenerFactory;
-
-import junit.framework.TestCase;
 
 public class TestDataOpenerRegistryImpl extends TestCase {
 

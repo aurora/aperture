@@ -7,11 +7,11 @@
 package org.semanticdesktop.aperture.examples.imapcrawler;
 
 import java.awt.Font;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
-import javax.swing.JPanel;
 import javax.swing.JLabel;
-import java.awt.GridBagConstraints;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 public class SummaryPanel extends JPanel {

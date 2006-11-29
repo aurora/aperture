@@ -13,10 +13,10 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JTextArea;
 
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.examples.ExampleImapCrawler;
-import javax.swing.JTextArea;
 
 public class CrawlerPanel extends JPanel {
 

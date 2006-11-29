@@ -7,8 +7,9 @@
 package org.semanticdesktop.aperture.examples.filecrawler;
 
 import java.awt.BorderLayout;
-import javax.swing.JPanel;
+
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 

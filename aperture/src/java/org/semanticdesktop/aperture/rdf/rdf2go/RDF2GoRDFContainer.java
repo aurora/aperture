@@ -23,7 +23,6 @@ import org.ontoware.rdf2go.model.node.Literal;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.XSD;
 import org.semanticdesktop.aperture.rdf.MultipleValuesException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;

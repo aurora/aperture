@@ -8,8 +8,6 @@ package org.semanticdesktop.aperture.outlook;
 
 import java.io.PrintWriter;
 
-import junit.framework.TestCase;
-
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
@@ -26,7 +24,6 @@ import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 import org.semanticdesktop.aperture.util.LogUtil;
 
 /**

@@ -35,7 +35,6 @@ import net.fortuna.ical4j.model.component.VFreeBusy;
 import net.fortuna.ical4j.model.component.VJournal;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.component.VToDo;
-import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.util.CompatibilityHints;
 
@@ -57,7 +56,6 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.ValueFactory;
 import org.semanticdesktop.aperture.vocabulary.ICALTZD;
 
 /**

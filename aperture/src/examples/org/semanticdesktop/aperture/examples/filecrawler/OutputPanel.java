@@ -6,15 +6,15 @@
  */
 package org.semanticdesktop.aperture.examples.filecrawler;
 
-import javax.swing.JPanel;
-import java.awt.GridBagLayout;
-import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.io.File;
 
-import javax.swing.JFileChooser;
-import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 public class OutputPanel extends JPanel {

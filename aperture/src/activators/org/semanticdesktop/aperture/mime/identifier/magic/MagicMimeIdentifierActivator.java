@@ -12,10 +12,6 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.semanticdesktop.aperture.extractor.ExtractorFactory;
-import org.semanticdesktop.aperture.hypertext.linkextractor.LinkExtractorFactory;
-import org.semanticdesktop.aperture.hypertext.linkextractor.html.HtmlLinkExtractorActivator;
-import org.semanticdesktop.aperture.hypertext.linkextractor.html.HtmlLinkExtractorFactory;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierFactory;
 
 public class MagicMimeIdentifierActivator implements BundleActivator {

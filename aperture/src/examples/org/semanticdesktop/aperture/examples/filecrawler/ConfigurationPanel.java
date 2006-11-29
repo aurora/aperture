@@ -6,9 +6,10 @@
  */
 package org.semanticdesktop.aperture.examples.filecrawler;
 
-import javax.swing.JPanel;
-import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+
+import javax.swing.JPanel;
 
 public class ConfigurationPanel extends JPanel {
 

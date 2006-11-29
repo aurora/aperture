@@ -6,10 +6,10 @@
  */
 package org.semanticdesktop.aperture.security;
 
-import org.semanticdesktop.aperture.security.trustmanager.standard.TestStandardTrustManager;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.semanticdesktop.aperture.security.trustmanager.standard.TestStandardTrustManager;
 
 public class TestSecurityStuff extends TestSuite {
 

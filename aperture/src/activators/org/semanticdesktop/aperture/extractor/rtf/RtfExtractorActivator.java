@@ -13,8 +13,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
-import org.semanticdesktop.aperture.extractor.presentations.PresentationsExtractorActivator;
-import org.semanticdesktop.aperture.extractor.presentations.PresentationsExtractorFactory;
 
 public class RtfExtractorActivator implements BundleActivator {
 

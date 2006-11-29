@@ -6,19 +6,17 @@
  */
 package org.semanticdesktop.aperture.examples.fileinspector;
 
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
-import javax.swing.JTabbedPane;
+import java.awt.GridBagLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.TransferHandler;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
-import org.semanticdesktop.aperture.examples.fileinspector.MetadataModel;
-import org.semanticdesktop.aperture.examples.fileinspector.StatementsPanel;
 
 public class MetadataPanel extends JPanel implements ChangeListener {
 

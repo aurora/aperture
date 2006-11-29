@@ -8,8 +8,6 @@ package org.semanticdesktop.aperture.security.trustmanager;
 
 import java.util.Hashtable;
 
-import javax.net.ssl.TrustManager;
-
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;

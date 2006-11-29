@@ -6,13 +6,13 @@
  */
 package org.semanticdesktop.aperture.datasource;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.semanticdesktop.aperture.datasource.config.TestConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.config.TestDomainBoundaries;
 import org.semanticdesktop.aperture.datasource.config.TestUrlPatterns;
 import org.semanticdesktop.aperture.datasource.impl.TestDefaultDataSourceRegistry;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * Tests all DataSource implementations and related classes.

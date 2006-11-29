@@ -6,11 +6,11 @@
  */
 package org.semanticdesktop.aperture.mime;
 
-import org.semanticdesktop.aperture.mime.identifier.impl.TestDefaultMimeTypeIdentifierRegistry;
-import org.semanticdesktop.aperture.mime.identifier.magic.TestMagicMimeTypeIdentifier;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.semanticdesktop.aperture.mime.identifier.impl.TestDefaultMimeTypeIdentifierRegistry;
+import org.semanticdesktop.aperture.mime.identifier.magic.TestMagicMimeTypeIdentifier;
 
 public class TestMimeStuff extends TestSuite {
 
