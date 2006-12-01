@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.crawler.base;
+package org.semanticdesktop.aperture.examples;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;

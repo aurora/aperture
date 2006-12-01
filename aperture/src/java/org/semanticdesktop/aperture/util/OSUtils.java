@@ -11,9 +11,6 @@ import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.gnowsis.util.AppleUtils;
-import org.semanticdesktop.aperture.addressbook.AddressbookCrawler;
-
 /**
  * 
  * @author grimnes
@@ -41,9 +38,15 @@ public abstract class OSUtils {
 	 * @return
 	 */
 	public static boolean isMacOSXBundle(File f) {
-		if (!isMac()) return false; 
+		if (!isMac()) {
+			return false;
+		}
+		
+		Class apc;
 		try {
-			return AppleUtils.isBundle(f); 
+			apc = OSUtils.class.getClassLoader().loadClass("org.gnowsis.util.AppleUtils");
+			Method m = apc.getMethod("isBundle",new Class[] { File.class });
+			return ((Boolean)m.invoke(null,new Object[] { f })).booleanValue();
 		}
 		catch (Throwable e) {
 			log.log(Level.INFO, "Could not check if directoy was bundle, assuming not. ",e);
