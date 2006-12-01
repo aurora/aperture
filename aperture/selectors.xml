@@ -1,0 +1,516 @@
+    <!-- elementary, selectors. could be used to package fine-grained bundles -->
+    
+    <!--   all selector include this one, it prevents from copying empty folders into jar files and     -->
+    <!--                             excludes the default registries                                    -->
+    <selector id="bundle.basic.selector">
+        <and>
+            <filename name="**/Default*Registry*" negate="true"/>
+            <filename name="**/defaults.xml" negate="true"/>
+            <filename name="**/*.html" negate="true" />
+            <type type="file" />
+        </and>
+    </selector>
+
+    
+    <selector id="jars.poi.selector">
+        <or>
+            <filename name="poi-3.0-alpha2-20060616.jar" />
+            <filename name="poi-contrib-3.0-alpha2-20060616.jar" />
+            <filename name="poi-scratchpad-3.0-alpha2-20060616.jar" />
+        </or>
+    </selector>
+    
+    <selector id="jars.pdfbox.selector">
+        <or>
+            <filename name="pdfbox-0.7.3.jar" />
+            <filename name="fontbox-0.1.0-dev.jar" />
+            <filename name="bcmail-jdk14-132.jar" />
+            <filename name="bcprov-jdk14-132.jar" />
+        </or>   
+    </selector>
+    
+    <selector id="jars.mail.selector">
+        <or>
+            <filename name="mail-1.4.jar" />
+            <filename name="activation-1.0.2-upd2.jar" />
+        </or>
+    </selector>
+    
+    <selector id="bundle.exclude.resources.selector">
+        <filename name="**/*.java" />
+    </selector>
+
+    <selector id="bundle.vocabulary.selector">
+        <filename name="org/semanticdesktop/aperture/vocabulary/*" />
+    </selector>
+    
+    <selector id="bundle.accessor.service.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/accessor/*" />
+                <filename name="org/semanticdesktop/aperture/accessor/base/*" />
+                <filename name="org/semanticdesktop/aperture/accessor/impl/*" />
+            </or>
+            <not>
+                <filename name="org/semanticdesktop/aperture/accessor/base/RepositoryAccessData.*" />
+            </not>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.crawler.service.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/crawler/*" />
+                <filename name="org/semanticdesktop/aperture/crawler/base/*" />
+                <filename name="org/semanticdesktop/aperture/crawler/impl/*" />             
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.datasource.service.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/datasource/*" />
+                <filename name="org/semanticdesktop/aperture/datasource/base/*" />
+                <filename name="org/semanticdesktop/aperture/datasource/config/*" />
+                <filename name="org/semanticdesktop/aperture/datasource/impl/*" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.extractor.service.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/extractor/*" />
+                <filename name="org/semanticdesktop/aperture/extractor/impl/*" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.opener.service.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/opener/*" />
+                <filename name="org/semanticdesktop/aperture/opener/impl/*" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.rdf.service.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/rdf/*" />
+                <filename name="org/semanticdesktop/aperture/rdf/rdf2go/*" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.linkextractor.service.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/hypertext/linkextractor/*" />
+                <filename name="org/semanticdesktop/aperture/hypertext/linkextractor/impl/*" />
+                <filename name="org/semanticdesktop/aperture/hypertext/linkextractor/impl/*" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.mime.identifier.service.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/mime/identifier/*" />
+                <filename name="org/semanticdesktop/aperture/mime/identifier/impl/*" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.security.trustdecider.service.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/security/trustdecider/*" />
+                <filename name="org/semanticdesktop/aperture/security/trustdecider/impl/*" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.security.trustmanager.service.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/security/trustmanager/*" />
+                <filename name="org/semanticdesktop/aperture/security/trustmanager/impl/*" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.security.socketfactory.standard.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/security/socketfactory/standard/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>  
+    </selector>
+    
+    <selector id="bundle.supporting.api.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/util/*" />
+            <not>
+                <or>
+                      <filename name="org/semanticdesktop/aperture/util/RepositoryUtil.*" />
+                      <filename name="org/semanticdesktop/aperture/util/VocabularyWriter.*" />
+                </or>
+            </not>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.accessor.file.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/accessor/file/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.accessor.http.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/accessor/http/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>  
+    </selector>
+    
+    <selector id="bundle.addressbook.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/addressbook/*" />
+                <filename name="applewrapper-0.1.jar" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.crawler.ical.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/crawler/ical/*" />
+                <filename name="org/semanticdesktop/aperture/datasource/ical/*" />
+                <filename name="ical4j-cvs20061019.jar" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+
+    <selector id="bundle.crawler.filesystem.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/crawler/filesystem/*" />
+                <filename name="org/semanticdesktop/aperture/datasource/filesystem/*" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    
+    <selector id="bundle.crawler.imap.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/crawler/imap/*" />
+                <filename name="org/semanticdesktop/aperture/datasource/imap/*" />
+                <selector refid="jars.mail.selector" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    
+    <selector id="bundle.crawler.web.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/crawler/web/*" />
+                <filename name="org/semanticdesktop/aperture/datasource/web/*" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    
+    <selector id="bundle.extractor.excel.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/extractor/excel/*" />
+                <selector refid="jars.poi.selector" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    <selector id="bundle.extractor.html.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/extractor/html/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    <selector id="bundle.extractor.mime.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/extractor/mime/*" />
+                <selector refid="jars.mail.selector" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    <selector id="bundle.extractor.office.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/extractor/office/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector> 
+    <selector id="bundle.extractor.opendocument.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/extractor/opendocument/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    <selector id="bundle.extractor.openxml.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/extractor/openxml/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector> 
+    <selector id="bundle.extractor.pdf.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/extractor/pdf/*" />
+                <selector refid="jars.pdfbox.selector" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector> 
+    <selector id="bundle.extractor.plaintext.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/extractor/plaintext/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    <selector id="bundle.extractor.powerpoint.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/extractor/powerpoint/*" />
+                <selector refid="jars.poi.selector" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector> 
+    <selector id="bundle.extractor.presentations.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/extractor/presentations/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    <selector id="bundle.extractor.publisher.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/extractor/publisher/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector> 
+    <selector id="bundle.extractor.quattro.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/extractor/quattro/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    <selector id="bundle.extractor.rtf.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/extractor/rtf/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    <selector id="bundle.extractor.visio.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/extractor/visio/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    <selector id="bundle.extractor.word.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/extractor/word/*" />
+                <selector refid="jars.poi.selector" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    <selector id="bundle.extractor.wordperfect.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/extractor/wordperfect/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    <selector id="bundle.extractor.works.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/extractor/works/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    <selector id="bundle.extractor.xml.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/extractor/xml/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    
+    <selector id="bundle.extractor.util.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/extractor/util/*" />
+                <selector refid="jars.poi.selector" />
+                <filename name="htmlparser-1.6.jar" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    
+    <selector id="bundle.hypertext.linkextractor.html.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/hypertext/linkextractor/html/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.mime.identifier.magic.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/mime/identifier/magic/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.opener.file.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/opener/file/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+
+    <selector id="bundle.opener.http.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/opener/http/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+
+    <selector id="bundle.outlook.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/outlook/*" />
+                <filename name="jacob-1.10-pre4.jar" />
+                <filename name="jacob.dll" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.security.trustdecider.dialog.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/security/trustdecider/dialog/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>  
+    </selector>
+
+    <selector id="bundle.security.trustmanager.standard.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/security/trustmanager/standard/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>  
+    </selector>
+    
+    <!-- selectors for bundles at medium granularity, division proposed by Herko ter Horst -->
+    <selector id="bundle.core.services.selector">
+        <or>
+            <selector refid="bundle.accessor.service.selector" />
+            <selector refid="bundle.crawler.service.selector" />
+            <selector refid="bundle.datasource.service.selector" />
+            <selector refid="bundle.extractor.service.selector" />
+            <selector refid="bundle.opener.service.selector" />
+            <selector refid="bundle.rdf.service.selector" />
+            <filename name="org/semanticdesktop/aperture/CoreServicesActivator.*" />
+        </or>
+    </selector>
+    
+    <selector id="bundle.supporting.services.selector">
+        <or>
+            <selector refid="bundle.linkextractor.service.selector" />
+            <selector refid="bundle.mime.identifier.service.selector" />
+            <selector refid="bundle.security.trustmanager.service.selector" />
+            <selector refid="bundle.security.trustdecider.service.selector" />
+            <filename name="org/semanticdesktop/aperture/SupportingServicesActivator.*" />
+        </or>
+    </selector>
+    
+    <selector id="bundle.core.services.impl.selector">
+        <or>
+            <selector refid="bundle.accessor.file.selector" />
+            <selector refid="bundle.accessor.http.selector" />
+            <selector refid="bundle.crawler.ical.selector" />
+            <selector refid="bundle.crawler.imap.selector" />
+            <selector refid="bundle.crawler.filesystem.selector" />
+            <selector refid="bundle.crawler.web.selector" />
+            <selector refid="bundle.extractor.excel.selector" />
+            <selector refid="bundle.extractor.html.selector" />
+            <selector refid="bundle.extractor.mime.selector" />
+            <selector refid="bundle.extractor.office.selector" />
+            <selector refid="bundle.extractor.opendocument.selector" />
+            <selector refid="bundle.extractor.openxml.selector" />
+            <selector refid="bundle.extractor.pdf.selector" />
+            <selector refid="bundle.extractor.plaintext.selector" />
+            <selector refid="bundle.extractor.powerpoint.selector" />
+            <selector refid="bundle.extractor.presentations.selector" />
+            <selector refid="bundle.extractor.publisher.selector" />
+            <selector refid="bundle.extractor.quattro.selector" />
+            <selector refid="bundle.extractor.rtf.selector" />
+            <selector refid="bundle.extractor.visio.selector" />
+            <selector refid="bundle.extractor.word.selector" />
+            <selector refid="bundle.extractor.wordperfect.selector" />
+            <selector refid="bundle.extractor.works.selector" />
+            <selector refid="bundle.extractor.xml.selector" />
+            <!-- this is used by the above impl -->
+            <selector refid="bundle.extractor.util.selector" />
+            <selector refid="bundle.opener.file.selector" />
+            <selector refid="bundle.opener.http.selector" />
+            <selector refid="bundle.outlook.selector" />
+            <selector refid="bundle.security.socketfactory.standard.selector" />
+            <filename name="org/semanticdesktop/aperture/CoreImplementationsActivator.*" />
+        </or>
+    </selector>
+    
+    <selector id="bundle.supporting.services.impl.selector">
+        <or>
+            <selector refid="bundle.hypertext.linkextractor.html.selector" />
+            <selector refid="bundle.mime.identifier.magic.selector" />
+            <selector refid="bundle.security.trustmanager.standard.selector" />
+            <selector refid="bundle.security.trustdecider.dialog.selector" />
+            <filename name="org/semanticdesktop/aperture/SupportingImplementationsActivator.*" />
+        </or>
+    </selector>
+    
+    <!-- selectors for bundles at the highest level (core and impl) division by Antoni -->
+    
+    <selector id="bundle.core.coarsegrained.selector">
+        <or>
+            <selector refid="bundle.vocabulary.selector" />
+            <selector refid="bundle.core.services.selector" />
+            <selector refid="bundle.supporting.services.selector" />
+            <selector refid="bundle.supporting.api.selector" />
+            <filename name="org/semanticdesktop/aperture/CoarsegrainedCoreActivator.*" />
+        </or>   
+    </selector>
+    
+    <selector id="bundle.impl.coarsegrained.selector">
+        <or>
+            <selector refid="bundle.core.services.impl.selector" />
+            <selector refid="bundle.supporting.services.impl.selector" />           
+            <filename name="org/semanticdesktop/aperture/CoarsegrainedImplActivator.*" />
+        </or>
+    </selector>
