@@ -928,7 +928,7 @@ public class IcalCrawler extends CrawlerBase {
 	 * Crawls the ACTION property.<br>
 	 * Possible parameters: none<br>
 	 * Treatment: direct link<br>
-	 * 1st link: icaltzd:calscale<br>
+	 * 1st link: icaltzd:action<br>
 	 * 
 	 * <pre>
 	 *   ical:
