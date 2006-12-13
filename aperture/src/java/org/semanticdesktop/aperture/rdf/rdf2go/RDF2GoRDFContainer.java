@@ -318,9 +318,9 @@ public class RDF2GoRDFContainer implements RDFContainer {
 	public Collection getAll(URI property) {
 		checkState();
 		// determine all matching Statements
-		ClosableIterator<Statement> iterator = null;
+		ClosableIterator<? extends Statement> iterator = null;
 		try {
-			ClosableIterable<Statement> iterable = model.findStatements(describedUri, property, Variable.ANY);
+			ClosableIterable<? extends Statement> iterable = model.findStatements(describedUri, property, Variable.ANY);
 			iterator = iterable.iterator();
 			// put their values in a new Collection
 			ArrayList result = new ArrayList();
@@ -378,8 +378,8 @@ public class RDF2GoRDFContainer implements RDFContainer {
 		try {
 			// remove any existing statements with this property, throw an exception when there is more
 			// than one such statement
-			ClosableIterable<Statement> iterable = model.findStatements(describedUri, property, Variable.ANY);
-			ClosableIterator<Statement> statements = iterable.iterator();
+			ClosableIterable<? extends Statement> iterable = model.findStatements(describedUri, property, Variable.ANY);
+			ClosableIterator<? extends Statement> statements = iterable.iterator();
 			Statement statementToRemove = null;
 
 			try {
@@ -409,9 +409,9 @@ public class RDF2GoRDFContainer implements RDFContainer {
 	}
 
 	private Node getInternal(URI property) {
-		ClosableIterator<Statement> statements = null;
+		ClosableIterator<? extends Statement> statements = null;
 		try {
-			ClosableIterable<Statement> iterable = model.findStatements(describedUri, property, Variable.ANY);
+			ClosableIterable<? extends Statement> iterable = model.findStatements(describedUri, property, Variable.ANY);
 			statements = iterable.iterator();
 			Node result = null;
 

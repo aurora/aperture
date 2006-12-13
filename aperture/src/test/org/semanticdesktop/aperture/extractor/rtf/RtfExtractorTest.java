@@ -33,9 +33,9 @@ public class RtfExtractorTest extends ExtractorTestBase {
 
 		// fetch the full-text property
 		String uriString = container.getDescribedUri().toString();
-		ClosableIterable<Statement> iterable = model.findStatements(valueFactory.createURI(uriString),
+		ClosableIterable<? extends Statement> iterable = model.findStatements(valueFactory.createURI(uriString),
 			DATA.fullText, Variable.ANY);
-		ClosableIterator<Statement> statements = iterable.iterator();
+		ClosableIterator<? extends Statement> statements = iterable.iterator();
 		try {
 			// check predicate
 			Statement statement = (Statement) statements.next();

@@ -47,9 +47,9 @@ public class ApertureTestBase extends TestCase {
 		boolean encounteredSubstring = false;
 
 		// loop over all statements that have the specified property uri as predicate
-		ClosableIterable<Statement> iterable = model.findStatements(valueFactory.createURI(uriString), property,
+		ClosableIterable<? extends Statement> iterable = model.findStatements(valueFactory.createURI(uriString), property,
 			Variable.ANY);
-		ClosableIterator<Statement> statements = iterable.iterator();
+		ClosableIterator<? extends Statement> statements = iterable.iterator();
 		try {
 			while (statements.hasNext()) {
 				// check the property type
@@ -90,8 +90,8 @@ public class ApertureTestBase extends TestCase {
 		boolean encounteredValue = false;
 
 		// loop over all statements that have the specified property uri as predicate
-		ClosableIterable<Statement> iterable = model.findStatements(subject,property,Variable.ANY);
-		ClosableIterator<Statement> statements = iterable.iterator();
+		ClosableIterable<? extends Statement> iterable = model.findStatements(subject,property,Variable.ANY);
+		ClosableIterator<? extends Statement> statements = iterable.iterator();
 		try {
 			while (statements.hasNext()) {
 				// check the property type

@@ -264,10 +264,10 @@ public class ConfigurationUtil {
 	 * </pre>
 	 */
 	private static void deletePatternStatements(URI id, URI predicate, Model model) throws ModelException {
-		ClosableIterator<Statement> iterator = null;
+		ClosableIterator<? extends Statement> iterator = null;
 		try {
 			List<Statement> statementsToRemove = new LinkedList<Statement>();
-			ClosableIterable<Statement> iterable = model.findStatements(id, predicate, Variable.ANY);
+			ClosableIterable<? extends Statement> iterable = model.findStatements(id, predicate, Variable.ANY);
 			iterator = iterable.iterator();
 
 			while (iterator.hasNext()) {
@@ -301,9 +301,9 @@ public class ConfigurationUtil {
 	
 	private static List<Statement> findStatements(Resource resource, URI predicate, Model model) {
 		List<Statement> result = new LinkedList<Statement>();
-		ClosableIterator<Statement> iterator = null;
+		ClosableIterator<? extends Statement> iterator = null;
 		try {
-			ClosableIterable<Statement> iterable = null;
+			ClosableIterable<? extends Statement> iterable = null;
 			iterable = model.findStatements(resource,predicate,Variable.ANY);
 			iterator = iterable.iterator();
 			while (iterator.hasNext()) {
@@ -362,10 +362,10 @@ public class ConfigurationUtil {
 
     private static List<UrlPattern> getPatterns(URI id, URI predicate, Model model) {
         // query for all include or exclude pattern statements
-        ClosableIterator<Statement> statements = null;
+        ClosableIterator<? extends Statement> statements = null;
         ArrayList result = new ArrayList();
         try {
-        	ClosableIterable<Statement> iterable = model.findStatements(id,predicate,Variable.ANY);
+        	ClosableIterable<? extends Statement> iterable = model.findStatements(id,predicate,Variable.ANY);
         	statements = iterable.iterator();
             
             while (statements.hasNext()) {
@@ -422,10 +422,10 @@ public class ConfigurationUtil {
     }
 	 
 	private static Node getSingleValue(Resource resource, URI predicate, Model model) {
-		ClosableIterator<Statement> statements = null;
+		ClosableIterator<? extends Statement> statements = null;
 		Node result = null;
 		try {
-			ClosableIterable<Statement> iterable = model.findStatements(resource, predicate, Variable.ANY);
+			ClosableIterable<? extends Statement> iterable = model.findStatements(resource, predicate, Variable.ANY);
 			statements = iterable.iterator();
 			if (statements.hasNext()) {
 				Statement statement = (Statement) statements.next();

@@ -99,9 +99,9 @@ public class TutorialCrawlingExample {
 			processBinary(object);
 			try {
 				
-				ClosableIterable<Statement> iterable 
+				ClosableIterable<? extends Statement> iterable 
 						= object.getMetadata().getModel().findStatements(Variable.ANY, Variable.ANY, Variable.ANY);
-				ClosableIterator<Statement> iterator = iterable.iterator();
+				ClosableIterator<? extends Statement> iterator = iterable.iterator();
 				sharedModel.addAll(iterator);
 				iterator.close();
 			} catch (Exception e) {
@@ -113,9 +113,9 @@ public class TutorialCrawlingExample {
 		public void objectNew(Crawler crawler, DataObject object) {
 			processBinary(object);
 			try {
-				ClosableIterable<Statement> iterable 
+				ClosableIterable<? extends Statement> iterable 
 						= object.getMetadata().getModel().findStatements(Variable.ANY, Variable.ANY, Variable.ANY);
-				ClosableIterator<Statement> iterator = iterable.iterator();
+				ClosableIterator<? extends Statement> iterator = iterable.iterator();
 				sharedModel.addAll(iterator);
 				iterator.close();
 			} catch (Exception e) {

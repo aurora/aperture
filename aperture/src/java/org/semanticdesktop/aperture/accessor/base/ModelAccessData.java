@@ -86,11 +86,11 @@ public class ModelAccessData implements AccessData {
 
 		URI idURI = ModelUtil.createURI(model, id);
 		URI keyURI = toURI(key);
-		ClosableIterator<Statement> iterator = null;
+		ClosableIterator<? extends Statement> iterator = null;
 		
 		// only returns a value when there is exactly one matching statement
 		try {
-			ClosableIterable<Statement> iterable = model.findStatements(idURI, keyURI, Variable.ANY); 
+			ClosableIterable<? extends Statement> iterable = model.findStatements(idURI, keyURI, Variable.ANY); 
 			iterator = iterable.iterator();
 			if (iterator.hasNext()) {
 				Statement statement = iterator.next();
@@ -120,11 +120,11 @@ public class ModelAccessData implements AccessData {
 		commit();
 
 		URI idURI = ModelUtil.createURI(model, id);
-		ClosableIterator<Statement> iterator = null;
+		ClosableIterator<? extends Statement> iterator = null;
 		HashSet<String> result = null;
 
 		try {
-			ClosableIterable<Statement> iterable = model.findStatements(idURI, DATA.linksTo, Variable.ANY);
+			ClosableIterable<? extends Statement> iterable = model.findStatements(idURI, DATA.linksTo, Variable.ANY);
 			iterator = iterable.iterator();
 			while (iterator.hasNext()) {
 				Statement statement = iterator.next();
@@ -160,11 +160,11 @@ public class ModelAccessData implements AccessData {
 	public Set<String> getStoredIDs() {
 		commit();
 
-		ClosableIterator<Statement> iterator = null;
+		ClosableIterator<? extends Statement> iterator = null;
 		HashSet<String> result = new HashSet<String>();
 
 		try {
-			ClosableIterable<Statement> iterable = model.findStatements(Variable.ANY, Variable.ANY, Variable.ANY);
+			ClosableIterable<? extends Statement> iterable = model.findStatements(Variable.ANY, Variable.ANY, Variable.ANY);
 			iterator = iterable.iterator();
 			while (iterator.hasNext()) {
 				result.add(iterator.next().getSubject().toString());
@@ -187,10 +187,10 @@ public class ModelAccessData implements AccessData {
 		commit();
 		
 		URI idURI = ModelUtil.createURI(model, id);
-		ClosableIterator<Statement> iterator = null;
+		ClosableIterator<? extends Statement> iterator = null;
 
 		try {
-			ClosableIterable<Statement> iterable = model.findStatements(idURI,Variable.ANY,Variable.ANY);
+			ClosableIterable<? extends Statement> iterable = model.findStatements(idURI,Variable.ANY,Variable.ANY);
 			iterator = iterable.iterator();
 			return iterator.hasNext();
 		} catch (ModelException me) {

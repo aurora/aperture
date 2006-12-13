@@ -121,10 +121,10 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 		
 		// List all properties
 		List predValues=new Vector();
-		ClosableIterator<Statement> i = null;
+		ClosableIterator<? extends Statement> i = null;
 		
 		try {
-			ClosableIterable<Statement> iterable = model.findStatements(rdf.getDescribedUri(),Variable.ANY,Variable.ANY);
+			ClosableIterable<? extends Statement> iterable = model.findStatements(rdf.getDescribedUri(),Variable.ANY,Variable.ANY);
 			i = iterable.iterator();
 			while(i.hasNext()) {
 				Statement s=(Statement) i.next();

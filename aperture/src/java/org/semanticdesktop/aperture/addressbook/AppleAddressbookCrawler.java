@@ -91,9 +91,9 @@ public class AppleAddressbookCrawler extends AddressbookCrawler {
 		
 		List<DataObject> res=new Vector<DataObject>();
 		
-		ClosableIterator<Statement> i = null;
+		ClosableIterator<? extends Statement> i = null;
 		try {
-			ClosableIterable<Statement> iterable = model.findStatements(Variable.ANY,RDF.type,VCARD.VCard);
+			ClosableIterable<? extends Statement> iterable = model.findStatements(Variable.ANY,RDF.type,VCARD.VCard);
 			i = iterable.iterator();
 			while (i.hasNext()) {
 				Statement s = i.next();

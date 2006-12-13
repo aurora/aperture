@@ -155,9 +155,9 @@ public class ModelUtil {
 	public static List<Statement> getCBD(Resource node, Model model, boolean backwards) {
 		List<Statement> res;
 		res = new Vector<Statement>();
-		ClosableIterator<Statement> i = null;
+		ClosableIterator<? extends Statement> i = null;
 		try {
-			ClosableIterable<Statement> iterable = model.findStatements(node, Variable.ANY, Variable.ANY);
+			ClosableIterable<? extends Statement> iterable = model.findStatements(node, Variable.ANY, Variable.ANY);
 			i = iterable.iterator();
 			while (i.hasNext()) {
 				Statement s = i.next();
@@ -193,9 +193,9 @@ public class ModelUtil {
 
 	public static boolean hasStatement(Model model, Resource subject, URI predicate, Node object) {
 		boolean result = false;
-		ClosableIterator<Statement> iterator = null;
+		ClosableIterator<? extends Statement> iterator = null;
 		try {
-			ClosableIterable<Statement> iterable = model.findStatements(subject, predicate, object);
+			ClosableIterable<? extends Statement> iterable = model.findStatements(subject, predicate, object);
 			iterator = iterable.iterator();
 			if (iterator.hasNext()) {
 				result = true;

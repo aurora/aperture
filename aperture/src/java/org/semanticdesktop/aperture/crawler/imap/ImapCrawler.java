@@ -808,9 +808,9 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		Model metadata = object.getMetadata().getModel();
 
 		// query for all child URIs
-		ClosableIterator<Statement> statements = null; 
+		ClosableIterator<? extends Statement> statements = null; 
 		try {
-			ClosableIterable<Statement> iterable = metadata.findStatements(Variable.ANY, DATA.partOf, object.getID());
+			ClosableIterable<? extends Statement> iterable = metadata.findStatements(Variable.ANY, DATA.partOf, object.getID());
 			// queue these URIs
 			while (statements.hasNext()) {
 				Statement statement = (Statement) statements.next();
