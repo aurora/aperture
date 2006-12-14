@@ -272,7 +272,8 @@ public class ExampleImapCrawler {
 				crawler.setServerName(value);
 			}
 			else if (USERNAME_OPTION.equals(option)) {
-				crawler.setUsername(HttpClientUtil.formUrlEncode(value));
+				//crawler.setUsername(HttpClientUtil.formUrlEncode(value));
+				crawler.setUsername(value);
 			}
 			else if (PASSWORD_OPTION.equals(option)) {
 				crawler.setPassword(value);
@@ -507,6 +508,7 @@ public class ExampleImapCrawler {
 		}
 
 		public RDFContainer getRDFContainer(URI uri) {
+			System.out.println("getrdfcontainer");
 			Model contextModel = null;
 			try {
 				contextModel = new ModelImplSesame(uri, (Repository) model
