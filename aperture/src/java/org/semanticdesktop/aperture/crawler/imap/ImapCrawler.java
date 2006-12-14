@@ -671,6 +671,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 					reportNotModified(queuedUri);
 				}
 				else {
+					
+					// inserted by Antoni on 14.12.2006
+					queueChildren(object,queue);
+					
 					// report this object as a new object (assumption: objects are always new, never
 					// changed, since mails are immutable)
 					crawlReport.increaseNewCount();
@@ -680,8 +684,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 					// unmodified or deleted attachments)
 					registerParent(object);
 
-					// queue all its children
-					queueChildren(object, queue);
+					// queue all its children MOVED upwards by Antoni Mylka on 14.12.2006
+					// You cannot access the data object after passing it to a handler
+					// the handler may dispose it...
+					// queueChildren(object, queue);
 				}
 			}
 			catch (MessagingException e) {
@@ -811,6 +817,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 		ClosableIterator<? extends Statement> statements = null; 
 		try {
 			ClosableIterable<? extends Statement> iterable = metadata.findStatements(Variable.ANY, DATA.partOf, object.getID());
+			statements = iterable.iterator();
 			// queue these URIs
 			while (statements.hasNext()) {
 				Statement statement = (Statement) statements.next();
