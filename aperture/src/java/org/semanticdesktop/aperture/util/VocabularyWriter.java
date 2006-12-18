@@ -239,8 +239,10 @@ public class VocabularyWriter {
 	public void getOpt(String[] args) throws Exception 
 	{
 		int i = 0;
-		if (args.length==0)
+		if (args.length==0) {
+			help();
 			throw new Exception("no arguments given");
+		}
 		// args
 		while ((i<args.length) && args[i].startsWith("-"))
 		{
@@ -283,6 +285,10 @@ public class VocabularyWriter {
 		inputRdfF = new File(inputRdf);
 		outputDirF = new File(outputDir);
 		outputF = new File(outputDir, outputFileN+".java");
+	}
+
+	private void help() {
+		System.err.println("Syntax: java VocabularyWriter -i inputfile -o outputdir -a namespace -n classname --package package ");
 	}
 
 	/**
@@ -330,4 +336,3 @@ public class VocabularyWriter {
 	}
 
 }
-

@@ -100,7 +100,7 @@ public class HttpAccessor implements DataAccessor {
 			URL url = new URL(urlString);
 			url = UrlUtil.normalizeURL(url);
 			urlString = url.toExternalForm();
-			
+
 			// see if a date was registered for this url
 			Date ifModifiedSince = accessData == null ? null : getIfModifiedSince(urlString, accessData);
 
@@ -133,9 +133,11 @@ public class HttpAccessor implements DataAccessor {
 				nrRedirections++;
 
 				// update access data
-				accessData.remove(lastUrl, DATE_KEY);
-				accessData.remove(lastUrl, ACCESSED_KEY);
-				accessData.put(lastUrl, REDIRECTS_TO_KEY, urlString);
+				if (accessData!=null) {
+					accessData.remove(lastUrl, DATE_KEY);
+					accessData.remove(lastUrl, ACCESSED_KEY);
+					accessData.put(lastUrl, REDIRECTS_TO_KEY, urlString);
+				}
 
 				// check for urls that redirect to themselves
 				if (urlString.equals(lastUrl)) {
