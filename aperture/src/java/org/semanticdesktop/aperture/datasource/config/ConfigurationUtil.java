@@ -219,6 +219,7 @@ public class ConfigurationUtil {
 	 * stored through this same method.
 	 * 
 	 * <p>
+     * OBSOLETE: There is neither Sesame nor contexts...
 	 * Implementation note: this method assumes that the specified RDFContainer uses a Sesame Repository as
 	 * its model and will make use of its context support to mark all statements relating to this
 	 * DomainBoundaries.
@@ -330,22 +331,21 @@ public class ConfigurationUtil {
 			// create a BNode for this pattern
 			BlankNode patternResource = model.createBlankNode();
 
+            // connect it to the DataSource's Resource using the appropriate pattern predicate
+			model.addStatement(ModelUtil.createStatement(model, sourceID, predicate, patternResource));
+			
 			// store the statements modeling the pattern contents
 			Collection<Statement> collection = pattern.getStatements(model, patternResource);
 			model.addAll(collection.iterator());
 
-			// connect it to the DataSource's Resource using the appropriate pattern predicate
-			model.addStatement(ModelUtil.createStatement(model, sourceID, predicate, patternResource));
+			
+			
 		}
 	}
 	
     /**
      * Create a DomainBoundaries instance populated with UrlPatterns that reflect the specified
      * configuration.
-     * 
-     * <p>
-     * Implementation note: this method assumes that the specified RDFContainer uses a Sesame Repository
-     * as its model.
      */
     public static DomainBoundaries getDomainBoundaries(RDFContainer configuration) {
         // fetch the Repository and the DataSource ID
