@@ -18,7 +18,7 @@ import org.ontoware.rdf2go.vocabulary.XSD;
  * @author grimnes
  * $Id$
  */
-public class DATASOURCE extends DATASOURCE_GEN {
+public class DATASOURCE implements DATASOURCE_GEN {
 
 	public static final DatatypeLiteral STARTS_WITH = new DatatypeLiteralImpl("startsWith", XSD._string);
 

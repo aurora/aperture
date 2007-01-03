@@ -234,4 +234,11 @@
 	<rdfs:domain rdf:resource="&source_;IMAPDataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
+<rdf:Property rdf:about="&source_;timeout"
+	 a:maxCardinality="1"
+	 rdfs:label="name">
+	<rdfs:comment>The timeout in miliseconds between two consecutive crawls of this data source. This information may be used by a monitoring application.</rdfs:comment> 
+	<rdfs:domain rdf:resource="&source_;DataSource"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
 </rdf:RDF>

@@ -17,5 +17,5 @@ public class ICALTZD extends ICALTZD_GEN {
             = URIImpl.createURIWithoutChecking("" + ICALTZD.NS + "bymonthday");
     
     public static final URI realBlankNodes 
-            = URIImpl.createURIWithoutChecking(DATASOURCE_GEN.NS + "realBlankNodes");
+            = URIImpl.createURIWithoutChecking(DATASOURCE_GEN.NS_DATASOURCE_GEN + "realBlankNodes");
 }
