@@ -508,8 +508,7 @@ public class ExampleImapCrawler {
 		}
 
 		public RDFContainer getRDFContainer(URI uri) {
-			System.out.println("getrdfcontainer");
-			Model contextModel = null;
+			/*Model contextModel = null;
 			try {
 				contextModel = new ModelImplSesame(uri, (Repository) model
 						.getUnderlyingModelImplementation());
@@ -518,7 +517,9 @@ public class ExampleImapCrawler {
 				throw new RuntimeException(me);
 			}
 			RDF2GoRDFContainer container = new RDF2GoRDFContainer(contextModel, uri);
-			return container;
+			return container;*/
+			return new RDF2GoRDFContainer(model,uri,true);
+			
 		}
 
 		protected void printUnexpectedEventWarning(String event) {
