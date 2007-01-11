@@ -19,6 +19,12 @@
 	 rdfs:label="IMAPDataSourceDescription">
 	<source_:describedDataSourceType rdf:resource="&source_;IMAPDataSource"/>
 </source_:DataSourceDescription>
+<source_:DataSourceDescription rdf:about="&source_;IcalDataSourceDescription"
+	 source_:dataSourceComment="ICalendar file."
+	 source_:dataSourceName="ICalendar"
+	 rdfs:label="IcalDataSourceDescription">
+	<source_:describedDataSourceType rdf:resource="&source_;IcalDataSource"/>
+</source_:DataSourceDescription>
 <source_:DataSourceDescription rdf:about="&source_;MicrosoftOutlookDataSourceDescription"
 	 source_:dataSourceName="Microsoft Outlook"
 	 rdfs:label="MicrosoftOutlookDataSourceDescription">
@@ -31,12 +37,4 @@
 	 rdfs:label="WebDataSourceDescription">
 	<source_:describedDataSourceType rdf:resource="&source_;WebDataSource"/>
 </source_:DataSourceDescription>
-<source_:DataSourceDescription rdf:about="&source_;IcalDataSourceDescription"
-	 source_:dataSourceComment="ICalendar file."
-	 source_:dataSourceName="ICalendar"
-	 rdfs:label="IcalDataSourceDescription">
-	<source_:describedDataSourceType rdf:resource="&source_;IcalDataSource"/>
-</source_:DataSourceDescription>
-
-
 </rdf:RDF>

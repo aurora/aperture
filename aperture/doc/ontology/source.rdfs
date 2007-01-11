@@ -1,12 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE rdf:RDF [
 	 <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
-	 <!ENTITY a 'http://protege.stanford.edu/system#'>
 	 <!ENTITY source_ 'http://aperture.semanticdesktop.org/ontology/source#'>
 	 <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema#'>
 ]>
 <rdf:RDF xmlns:rdf="&rdf;"
-	 xmlns:a="&a;"
 	 xmlns:source_="&source_;"
 	 xmlns:rdfs="&rdfs;">
 <rdfs:Class rdf:about="&source_;AddressbookDataSource"
@@ -18,8 +16,8 @@
 	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
 </rdfs:Class>
 <rdfs:Class rdf:about="&source_;DataSourceDescription"
-	 rdfs:comment="A human description of a datasource. Adds icons, texts etc."
 	 rdfs:label="DataSourceDescription">
+	<rdfs:comment>A human-readable description of a datasource. Adds icons, texts etc.</rdfs:comment>
 	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
 </rdfs:Class>
 <rdfs:Class rdf:about="&source_;FileSystemDataSource"
@@ -28,6 +26,10 @@
 </rdfs:Class>
 <rdfs:Class rdf:about="&source_;IMAPDataSource"
 	 rdfs:label="IMAPDataSource">
+	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&source_;IcalDataSource"
+	 rdfs:label="IcalDataSource">
 	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
 </rdfs:Class>
 <rdfs:Class rdf:about="&source_;MicrosoftOutlookDataSource"
@@ -54,191 +56,152 @@
 	 rdfs:label="WebDataSource">
 	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
 </rdfs:Class>
-<rdfs:Class rdf:about="&source_;IcalDataSource"
-	 rdfs:label="IcalDataSource">
-	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
-</rdfs:Class>
 <rdf:Property rdf:about="&source_;basepath"
-	 a:maxCardinality="1"
 	 rdfs:label="basepath">
 	<rdfs:comment>basepath on the server. For IMAP this is the folder where the e-mails are stored. Some IMAP servers need this.</rdfs:comment>
 	<rdfs:domain rdf:resource="&source_;IMAPDataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;condition"
-	 a:maxCardinality="1"
 	 rdfs:comment="the condition for this pattern to match"
 	 rdfs:label="condition">
 	<rdfs:domain rdf:resource="&source_;Pattern"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;connectionSecurity"
-	 a:maxCardinality="1"
 	 rdfs:label="connectionSecurity">
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;dataSourceComment"
-	 a:maxCardinality="1"
 	 rdfs:comment="A comment about the datasource."
 	 rdfs:label="dataSourceComment">
 	<rdfs:domain rdf:resource="&source_;DataSourceDescription"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;dataSourceName"
-	 a:maxCardinality="1"
-	 a:minCardinality="1"
 	 rdfs:label="dataSourceName">
 	<rdfs:comment>Name of the type of datasource. For example "Local File System".</rdfs:comment>
 	<rdfs:domain rdf:resource="&source_;DataSourceDescription"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;describedDataSourceType"
-	 a:maxCardinality="1"
-	 a:minCardinality="1"
-	 a:range="cls"
 	 rdfs:comment="The datasource described"
 	 rdfs:label="describedDataSourceType">
-	<a:allowedParents rdf:resource="&source_;DataSource"/>
+	<rdfs:range rdf:resource="&source_;DataSource"/>
 	<rdfs:domain rdf:resource="&source_;DataSourceDescription"/>
-	<rdfs:range rdf:resource="&rdfs;Class"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;encryptedPassword"
-	 a:maxCardinality="1"
 	 rdfs:label="encryptedPassword">
 	<rdfs:comment>This is a utility field that implementations can use to store encrypted password for added security. Note that aperture does not make use of this, and no restrictions on what encryption can be used are implied... ROT13 if you want.</rdfs:comment>
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;excludePattern"
-	 a:maxCardinality="1"
 	 rdfs:comment="Patterns to exclude from this datasource"
 	 rdfs:label="excludePattern">
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&source_;Pattern"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;flavour"
-	 a:maxCardinality="1"
 	 rdfs:label="flavour">
 	<rdfs:comment>Some datasource have different flavours, for example the AddressbookDataSource has versions for Thunderbird, Mail.app, etc. This property specifies which one to use.</rdfs:comment>
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;hostname"
-	 a:maxCardinality="1"
 	 rdfs:comment="hostname of the server to connect to"
 	 rdfs:label="hostname">
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&source_;port"
-	 a:maxCardinality="1"
-	 rdfs:comment="port of the server to connect to"
-	 rdfs:label="port">
-	<rdfs:domain rdf:resource="&source_;DataSource"/>
-	<rdfs:range rdf:resource="&rdfs;Literal"/>
-</rdf:Property>
 <rdf:Property rdf:about="&source_;includeEmbeddedResources"
-	 a:maxCardinality="1"
-	 a:range="boolean"
 	 rdfs:comment="Include embedded resources when crawling this datasource."
 	 rdfs:label="includeEmbeddedResources">
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;includeHiddenResources"
-	 a:maxCardinality="1"
-	 a:range="boolean"
 	 rdfs:comment="Include hidden resources when crawling this datasource"
 	 rdfs:label="includeHiddenResources">
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;includeInbox"
-	 a:maxCardinality="1"
-	 a:range="boolean"
 	 rdfs:label="includeInbox">
 	<rdfs:comment>if this is true always include the inbox when crawling - regardless of the basepath setting.</rdfs:comment>
 	<rdfs:domain rdf:resource="&source_;IMAPDataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;includePattern"
-	 a:maxCardinality="1"
 	 rdfs:comment="patterns to include in this datasource"
 	 rdfs:label="includePattern">
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&source_;Pattern"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;maximumDepth"
-	 a:maxCardinality="1"
-	 a:range="integer"
 	 rdfs:comment="The maximum depth to crawl to in this datasource."
 	 rdfs:label="maximumDepth">
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;maximumSize"
-	 a:maxCardinality="1"
-	 a:range="integer"
 	 rdfs:label="maximumSize">
 	<rdfs:comment>The maximum size (in bytes) for resources in this datasource.</rdfs:comment>
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;name"
-	 a:maxCardinality="1"
 	 rdfs:comment="The readable name of the datasource"
 	 rdfs:label="name">
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;password"
-	 a:maxCardinality="1"
 	 rdfs:comment="The Password used to access this datasource."
 	 rdfs:label="password">
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
+<rdf:Property rdf:about="&source_;port"
+	 rdfs:comment="port of the server to connect to"
+	 rdfs:label="port">
+	<rdfs:domain rdf:resource="&source_;DataSource"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
 <rdf:Property rdf:about="&source_;rootFolder"
-	 a:maxCardinality="1"
-	 a:minCardinality="1"
 	 rdfs:label="rootFolder">
 	<rdfs:comment>Root-Folder in the local filesystem. On Windows machines something like "C:\myfiles\" on unix machines like "/Users/paul/"</rdfs:comment>
 	<rdfs:domain rdf:resource="&source_;FileSystemDataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;rootUrl"
-	 a:maxCardinality="1"
 	 rdfs:label="rootUrl">
 	<rdfs:comment>The root URL of this datasource. This may also be an indicator of how to create other URIs of this datasource</rdfs:comment>
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;sslFileName"
-	 a:maxCardinality="1"
 	 rdfs:label="sslFileName">
 	<rdfs:comment>The name of the file to be used for accepted SSL certificates.</rdfs:comment>
 	<rdfs:domain rdf:resource="&source_;IMAPDataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;sslFilePassword"
-	 a:maxCardinality="1"
 	 rdfs:label="sslFilePassword">
 	<rdfs:comment>The password used for encrypting the file with accepted ssl certificates.</rdfs:comment>
 	<rdfs:domain rdf:resource="&source_;IMAPDataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&source_;username"
-	 a:maxCardinality="1"
-	 rdfs:label="username">
-	<rdfs:domain rdf:resource="&source_;IMAPDataSource"/>
+<rdf:Property rdf:about="&source_;timeout"
+	 rdfs:comment="The timeout between two consecutive crawls (in miliseconds)"
+	 rdfs:label="timeout">
+	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
-<rdf:Property rdf:about="&source_;timeout"
-	 a:maxCardinality="1"
-	 rdfs:label="name">
-	<rdfs:comment>The timeout in miliseconds between two consecutive crawls of this data source. This information may be used by a monitoring application.</rdfs:comment> 
-	<rdfs:domain rdf:resource="&source_;DataSource"/>
+<rdf:Property rdf:about="&source_;username"
+	 rdfs:label="username">
+	<rdfs:domain rdf:resource="&source_;IMAPDataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 </rdf:RDF>
