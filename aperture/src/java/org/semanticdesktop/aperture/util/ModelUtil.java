@@ -125,7 +125,7 @@ public class ModelUtil {
 	}
 
 	public static Statement createStatement(Model model, Resource subject, URI predicate, Node object) {
-		return new StatementImpl(model, subject, predicate, object);
+		return model.createStatement(subject, predicate, object);
 	}
 
 	public static URI createURI(Model model, String uri) {

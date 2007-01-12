@@ -6,7 +6,9 @@
  */
 package org.semanticdesktop.aperture.vocabulary;
 
-
+/**
+ * The Fresnel vocabulary.
+ */
 public class FRESNEL implements FRESNEL_GEN {
 
 }

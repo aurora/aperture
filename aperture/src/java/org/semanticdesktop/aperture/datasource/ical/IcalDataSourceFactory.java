@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.datasource.ical;
 
+import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
@@ -23,4 +24,8 @@ public class IcalDataSourceFactory implements DataSourceFactory {
     public DataSource newInstance() {
         return new IcalDataSource();
     }
+
+	public boolean getDescription(Model model) {
+		return false;
+	}
 }

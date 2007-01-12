@@ -122,7 +122,7 @@ public class RDF2GoValueFactory implements ValueFactory {
 	}
 
 	public Statement createStatement(Resource subject, URI predicate, Node object) {
-		return new StatementImpl(model, subject, predicate, object);
+		return model.createStatement(subject, predicate, object); 
 	}
 
 	public URI createURI(String uri) {

@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.datasource.web;
 
+import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
@@ -23,4 +24,8 @@ public class WebDataSourceFactory implements DataSourceFactory {
     public DataSource newInstance() {
         return new WebDataSource();
     }
+
+	public boolean getDescription(Model model) {
+		return false;
+	}
 }

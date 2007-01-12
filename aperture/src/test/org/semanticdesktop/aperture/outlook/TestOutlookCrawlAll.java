@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.outlook;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.ontoware.rdf2go.exception.ModelException;
@@ -80,7 +81,13 @@ public class TestOutlookCrawlAll extends ApertureTestBase {
 	}
 	
 	private void dumpRepo(Model model) {
-		model.writeTo(new PrintWriter(System.out), Syntax.Ntriples);
+		try {
+			model.writeTo(new PrintWriter(System.out), Syntax.Ntriples);
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		} catch (ModelException me) {
+			me.printStackTrace();
+		}
 	}
 
 	private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {

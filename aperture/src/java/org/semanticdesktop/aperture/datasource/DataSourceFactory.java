@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.datasource;
 
+import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
 
 /**
@@ -29,4 +30,16 @@ public interface DataSourceFactory {
      * Returns a new instance of the supported DataSource type.
      */
     public DataSource newInstance();
+    
+    /**
+     * Puts a description of this data source into the given model. 
+     * This description should be expressed in fresnel vocabulary. It should
+     * be a single fresnel:Lens, with a fresnel:classLensDomain set to the
+     * URI of the type supported by this factory (returned by the 
+     * getSupportedType method). See the fresnel user manual for details. <br>
+     * 
+     * @return true if the description has been put into the model <br>
+     *         false if not e.g. if there is no such description.
+     */
+    public boolean getDescription(Model model);
 }

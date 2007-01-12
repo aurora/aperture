@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+	 <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+	 <!ENTITY source 'http://aperture.semanticdesktop.org/ontology/source#'>
+	 <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema#'>
+	 <!ENTITY sourceformat 'http://aperture.semanticdesktop.org/ontology/source#'>
+	 <!ENTITY fresnel 'http://www.w3.org/2004/09/fresnel#'>
+]>
+<rdf:RDF
+	xmlns:rdf="&rdf;"
+	xmlns:source="&source;"
+	xmlns:rdfs="&rdfs;"
+	xmlns:sourceformat="&sourceformat;"
+	xmlns:fresnel="&fresnel;">
+
+
+<fresnel:Lens rdf:about="&source;ImapDataSourceLens">
+	<fresnel:purpose rdf:resource="&fresnel;defaultLens"/>
+	<fresnel:classLensDomain rdf:resource="&source;ImapDataSource" />
+	<fresnel:showProperties rdf
+</fresnel:Lens>
+
+</rdf:RDF>

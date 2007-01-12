@@ -171,7 +171,13 @@ public class TestOutlookCrawler extends ApertureTestBase {
 	}
 
 	private void dumpRepo(Model model) {
-		model.writeTo(new PrintWriter(System.out), Syntax.Ntriples);
+		try {
+			model.writeTo(new PrintWriter(System.out), Syntax.Ntriples);
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		} catch (ModelException me) {
+			me.printStackTrace();
+		}
 	}
 
 	private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
