@@ -1,0 +1,3 @@
+The rdfs and owl files are copied by the ant script into util.ontology directory.
+This is done to make them available to the OntologyUtil class, that provides
+them to any aperture client willing to listen...

@@ -4,15 +4,9 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.addressbook;
+package org.semanticdesktop.aperture.addressbook.apple;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.PrintWriter;
 
 import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
@@ -22,51 +16,38 @@ import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
+import org.semanticdesktop.aperture.addressbook.apple.AppleAddressbookCrawler;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 
-public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerHandler, RDFContainerFactory {
-
-	private static String data="/org/semanticdesktop/aperture/docs/thunderbird-addressbook.mab";
+/** 
+ * It's nigh on impossible to test this without actually running on a mac and running addressbook. 
+ * Also, WHEN running on a mac, there is little control of what data exists.. 
+ * There is therefore no real tests here, i.e. it accepts any data as long as no exceptions are thrown.
+ * 
+ * @author grimnes
+ * $Id$
+ */
+public class AppleAddressbookCrawlerTest extends ApertureTestBase implements CrawlerHandler, RDFContainerFactory {
 	private Model model;
-	private int objects;
+	int objects;
+	private ExitCode code;
 	
-	private String makeFileFromResource(String path) throws IOException {
-		File f=File.createTempFile("thunderbirdTest",".mab");
-		f.deleteOnExit();
+	public void testCrawl() throws Exception { 
+		DataSource ds=new AppleAddressbookDataSource();
+
+		ds.setConfiguration(createSesameRDFContainer("urn:TestTAddressbookDataSource"));
+        // Removed by Antoni Mylka on 15.01.2007 - after the refactoring we don't need this anymore
+		//ds.getConfiguration().put(DATASOURCE.flavour,AppleAddressbookCrawler.TYPE);
 		
-		FileOutputStream fos=new FileOutputStream(f);
-		InputStream is=getClass().getResourceAsStream(path);
-		
-		//java sucks
-		byte[] buffer = new byte[512];
-		int read;
-		while ((read=is.read(buffer)) >0) {
-		   fos.write(buffer, 0, read);
-		}
-		fos.flush();
-		fos.close();
-		
-		return f.getAbsolutePath();
-	}
-	
-	public void testThunderbird() throws Exception { 
-		
-		DataSource ds=new AddressbookDataSource();
-		
-		ds.setConfiguration(createSesameRDFContainer("urn:TestThunderBirdDataSource"));
-		ConfigurationUtil.setBasepath(makeFileFromResource(data),ds.getConfiguration());
-		ds.getConfiguration().put(DATASOURCE.flavour,"thunderbird");
-		
-		CrawlerFactory cf=new AddressbookCrawlerFactory();
+		CrawlerFactory cf=new AppleAddressbookCrawlerFactory();
 		
 		Crawler c=cf.getCrawler(ds);
 		
@@ -75,90 +56,71 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
 		
 		model = new ModelImplSesame(false);
 		
+		System.err.println("Crawling addressbook... ");
 		c.crawl();
-
-		assertEquals(objects,179);
+		assertEquals("Crawling must have succeeded.",code,ExitCode.COMPLETED);
 		
-		//repository.export(new N3Writer(System.out));
+		System.err.println("Objects crawler: "+objects);
+		model.writeTo(new PrintWriter(System.out), Syntax.RdfXml);
 		
-		//test serialisation and parsing
-		StringWriter xml=new StringWriter();
-		model.writeTo(xml,Syntax.RdfXml);
-
-		File tmpfile=File.createTempFile("abook",".rdfxml");
-		
-		FileWriter writer = new FileWriter(tmpfile);
-		model.writeTo(writer,Syntax.RdfXml);
-		writer.close();
-		
-		Model model2 = new ModelImplSesame(false);
-		
-		FileReader reader = new FileReader(tmpfile);
-		assertTrue(reader.ready());
-		model2.readFrom(reader,Syntax.RdfXml);
-		reader.close();
-
-		//tmpfile.deleteOnExit();
 		model.close();
 	}
-
+	
 	public RDFContainer getRDFContainer(URI uri) {
 		return new RDF2GoRDFContainer(model,uri);
 	}
-
+	
 	public void crawlStarted(Crawler crawler) {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-		// TODO Auto-generated method stub
-		
+		code=exitCode;		
 	}
-
+	
 	public void accessingObject(Crawler crawler, String url) {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
 		return this;
 	}
-
+	
 	public void objectNew(Crawler crawler, DataObject object) {
 		objects++;
 		object.dispose();
 		
 	}
-
+	
 	public void objectChanged(Crawler crawler, DataObject object) {
 		object.dispose();
 	}
-
+	
 	public void objectNotModified(Crawler crawler, String url) {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	public void objectRemoved(Crawler crawler, String url) {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	public void clearStarted(Crawler crawler) {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	public void clearingObject(Crawler crawler, String url) {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	public void clearFinished(Crawler crawler, ExitCode exitCode) {
 		// TODO Auto-generated method stub
 		
 	}
-	
 }
 

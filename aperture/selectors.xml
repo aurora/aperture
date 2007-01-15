@@ -161,7 +161,7 @@
     
     <selector id="bundle.supporting.api.selector">
         <and>
-            <filename name="org/semanticdesktop/aperture/util/*" />
+            <filename name="org/semanticdesktop/aperture/util/**" />
             <not>
                 <or>
                       <filename name="org/semanticdesktop/aperture/util/RepositoryUtil.*" />
@@ -189,7 +189,7 @@
     <selector id="bundle.addressbook.selector">
         <and>
             <or>
-                <filename name="org/semanticdesktop/aperture/addressbook/*" />
+                <filename name="org/semanticdesktop/aperture/addressbook/**" />
                 <filename name="applewrapper-0.1.jar" />
             </or>
             <selector refid="bundle.basic.selector" />

@@ -37,12 +37,7 @@ your copy of ANT at http://ant.apache.org/
 		<property name="lib.dir" value="${basedir}/lib" />
 		<property name="doc.dir" value="${basedir}/doc" />
 		<property name="manifest.dir" value="${src.dir}/manifest" />
-		
-		<!-- mangen related properties -->
-		<property name="mangen.dir" value="${basedir}/mangen" />
-		<property name="mangen.jar" value="${mangen.dir}/mangen.jar" />
-		<property name="mangen.properties" value="${mangen.dir}/mangen.properties" />
-			
+					
 		<!-- build dirs -->
 		<property name="build.dir" value="${basedir}/build" />
 		<property name="classes.java.dir" value="${build.dir}/classes" />
@@ -175,8 +170,18 @@ your copy of ANT at http://ant.apache.org/
 		<delete includeemptydirs="true" dir="${build.dir}" />
 	</target>
 	
+    <target name="copyontologies"
+            description="Copies the aperture ontologies from doc/ontology to util/ontology">
+    	<copy todir="${src.java.dir}/org/semanticdesktop/aperture/util/ontology">
+    	    <fileset dir="${doc.dir}/ontology">
+    	        <include name="*.rdfs" />
+    	        <include name="*.owl" />
+    	    </fileset>
+    	</copy>
+    </target>
+    
 	<target name="compile" 
-		    depends="init" 
+		    depends="init,copyontologies" 
 		    description="compile Aperture core classes">
 		<!-- compile core classes -->
 		<mkdir dir="${classes.java.dir}" />
@@ -577,16 +582,7 @@ your copy of ANT at http://ant.apache.org/
 	<target name="jar.bundles"
 	        depends="jar.coarsegrained.bundles,bundle.example.jar"
 	        description="create OSGi bundles from the aperture source code" />
-	
-	<target name="mangen.run"
-			depends="jar.bundles"
-	 	    description="run the mangen utility to generate the import/export statements in the manifests">
-		<java jar="${mangen.jar}" fork="true">
-			<jvmarg value="-Dmangen.properties=${mangen.properties}"/>
-			<arg value="${dist.bundle.dir}"/>
-		</java>
-	</target>
-	
+		
 	<target name="osgi.dist"
 			depends="jar.bundles"
 			description="creates the aperture bundle and copies all dependencies to a single directory">

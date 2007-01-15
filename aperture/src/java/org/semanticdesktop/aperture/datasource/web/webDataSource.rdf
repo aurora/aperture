@@ -1,0 +1,32 @@
+@prefix fresnel:  <http://www.w3.org/2004/09/fresnel#> .
+@prefix foaf:     <http://xmlns.com/foaf/0.1/> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix source:   <http://aperture.semanticdesktop.org/ontology/source#> .
+@prefix sourceformat: <http://aperture.semanticdesktop.org/ontology/sourceformat#> .
+@prefix : <http://aperture.semanticdesktop.org/ontology/datasourcens#> .
+
+:WebDataSourceLens rdf:type fresnel:Lens ;
+                   fresnel:purpose fresnel:defaultLens ;
+                   fresnel:classLensDomain source:ImapDataSource ;
+                   fresnel:showProperties ( source:rootURL 
+                                            source:includeEmbeddedResources 
+                                            source:maximumDepth ) .
+
+:rootURLFormat rdf:type fresnel:Format ;
+               fresnel:propertyFormatDomain source:rootUrl ;
+               sourceformat:valueWidget sourceformat:TextFieldWidget .
+
+:includeEmbeddedResourcesFormat rdf:type fresnel:Format ;
+                                fresnel:propertyFormatDomain source:includeEmbeddedResources ;
+                                sourceformat:valueWidget sourceformat:CheckBoxWidget .
+                                
+:maximumDepthFormat rdf:type fresnel:Format ;
+                    fresnel:propertyFormatDomain source:maximumDepth ;
+                    sourceformat:valueWidget sourceformat:IntegerFieldWidget .
+                    
+:maximumByteSizeFormat rdf:type fresnel:Format ;
+                       fresnel:propertyFormatDomain source:maximumByteSize ;
+                       sourceformat:valueWidget sourceformat:IntegerFieldWidget .
+                    
+                    

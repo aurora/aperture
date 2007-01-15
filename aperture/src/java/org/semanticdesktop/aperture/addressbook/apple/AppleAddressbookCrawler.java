@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.addressbook;
+package org.semanticdesktop.aperture.addressbook.apple;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -26,6 +26,7 @@ import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
+import org.semanticdesktop.aperture.addressbook.AddressbookCrawler;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.FileUtil;

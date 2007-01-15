@@ -6,21 +6,12 @@
 @prefix sourceformat: <http://aperture.semanticdesktop.org/ontology/sourceformat#> .
 @prefix : <http://aperture.semanticdesktop.org/ontology/datasourcens#> .
 
-:ImapDataSourceLens rdf:type fresnel:Lens ;
+:ThunderbirdDataSourceLens rdf:type fresnel:Lens ;
 					fresnel:purpose fresnel:defaultLens ;
-					fresnel:classLensDomain source:ImapDataSource ;
-					fresnel:showProperties ( source:hostname
-									         source:username
-									         source:password ) .
+					fresnel:classLensDomain source:ThunderbirdAddressbookDataSource ;
+					fresnel:showProperties ( source:basepath ) .
 
-:hostnameFormat rdf:type fresnel:Format ;
+:basepathFormat rdf:type fresnel:Format ;
                 fresnel:propertyFormatDomain source:hostname ;
                 sourceformat:valueWidget sourceformat:TextFieldWidget .
                 
-:usernameFormat rdf:type fresnel:Format ;
-			    fresnel:propertyFormatDomain source:username ;
-			    sourceformat:valueWidget sourceformat:TextFieldWidget .
-			 
-:passwordFormat rdf:type fresnel:Format ;
-			    fresnel:propertyFormatDomain source:password ;
-			    sourceformat:valueWidget sourceformat:PasswordTextFieldWidget .

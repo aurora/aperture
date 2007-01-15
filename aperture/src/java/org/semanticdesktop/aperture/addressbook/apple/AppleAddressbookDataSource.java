@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.addressbook;
+package org.semanticdesktop.aperture.addressbook.apple;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
@@ -17,12 +17,10 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
  * @author grimnes
  * $Id$
  */
-public class AddressbookDataSource extends DataSourceBase {
-
-	protected static URI type=DATASOURCE.AddressbookDataSource;
+public class AppleAddressbookDataSource extends DataSourceBase {
 	
 	public URI getType() {
-		return type;
+		return DATASOURCE.AppleAddressbookDataSource;
 	}
 
 

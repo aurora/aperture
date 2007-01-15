@@ -108,7 +108,7 @@ public class IcalCrawler extends CrawlerBase {
 	private String baseuri;
 
 	public IcalCrawler() {
-		
+		// empty... for the time being.
 	}
 
 	/**
@@ -163,13 +163,21 @@ public class IcalCrawler extends CrawlerBase {
 		return crawlIcalFile(icalFile);
 	}
 
+	/**
+	 * The crawler uses real blank nodes by default. This setting can be overriden by the configuration option
+	 * ICALTZD.realBlankNodes.
+	 * 
+	 * @param configuration The RDFContainer with the configuration information to be checked
+	 * @return true if the crawler is to use real blank nodes <br>
+	 *         false if the crawler is to substitute blank nodes with automatically generated URIs
+	 */
 	private boolean checkRealBlankNodes(RDFContainer configuration) {
 		Boolean bool = configuration.getBoolean(ICALTZD.realBlankNodes);
-		if (bool == null || bool.booleanValue() == false) {
-			return false;
+		if (bool == null || bool.booleanValue() == true) {
+			return true;
 		}
 		else {
-			return true;
+			return false;
 		}
 	}
 
@@ -226,9 +234,9 @@ public class IcalCrawler extends CrawlerBase {
 		}
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////////
-	// ////////////////////////////////// ABSTRACT BUSINESS METHODS ///////////////////////////////////////
-	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////// ABSTRACT BUSINESS METHODS ///////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
 	 * Crawls the calendar.

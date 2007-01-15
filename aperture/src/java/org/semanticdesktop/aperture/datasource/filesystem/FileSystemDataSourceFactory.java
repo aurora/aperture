@@ -6,18 +6,42 @@
  */
 package org.semanticdesktop.aperture.datasource.filesystem;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
- * FileSystemDataSourceFactory returns instances of the FileSystemDataSource class. 
+ * ImapDataSourceFactory returns instances of the ImapDataSource class. 
  */
 public class FileSystemDataSourceFactory implements DataSourceFactory {
 
-    public URI getSupportedType() {
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////// CONSTANTS ////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	/** The Logger */
+	private static final Logger log = Logger.getLogger(FileSystemDataSourceFactory.class.getName());
+	
+	/** The path to the resource containing the ICAL_DESCRIPTION */
+    private static final String FILESYSTEM_DESCRIPTION = FileSystemDataSourceFactory.class.getPackage()
+    		.getName().replace('.', '/') + "/filesystemDataSource.rdf";
+    
+    /** The syntax the IMAP_DESCRIPTION is expressed in */
+    private static final Syntax FILESYSTEM_SYNTAX = Syntax.Turtle;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////// METHODS FROM THE DATA SOURCE FACTORY INTERFACE ///////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+	public URI getSupportedType() {
         return DATASOURCE_GEN.FileSystemDataSource;
     }
 
@@ -26,6 +50,32 @@ public class FileSystemDataSourceFactory implements DataSourceFactory {
     }
 
 	public boolean getDescription(Model model) {
-		return false;
+		InputStream stream = null;
+		try {
+			stream = FileSystemDataSourceFactory.class.getClassLoader()
+					.getResourceAsStream(FILESYSTEM_DESCRIPTION);
+			model.readFrom(stream,FILESYSTEM_SYNTAX);
+			return true;
+		} catch (Exception e) {
+			log.log(Level.WARNING,"Couldn't return the description of ICal data source",e);
+			return false;
+		} finally {
+			closeStream(stream);
+		}
+	}
+	
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////// UTILITY METHODS ////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private void closeStream(InputStream stream) {
+		if (stream == null) {
+			return;
+		}
+		try {
+			stream.close();
+		} catch (IOException ioe) {
+			// we can hardly do anything at the moment
+		}
 	}
 }

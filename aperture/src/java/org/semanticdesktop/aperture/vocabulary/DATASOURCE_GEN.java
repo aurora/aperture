@@ -4,7 +4,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Dec 20 12:09:02 CET 2006
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Jan 15 13:48:42 CET 2007
  * input file: doc/ontology/source.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/source#
  */
@@ -17,13 +17,18 @@ public interface DATASOURCE_GEN {
     public static final URI AddressbookDataSource = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#AddressbookDataSource");
 
     /**
+     * Label: AppleAddressbookDataSource 
+     */
+    public static final URI AppleAddressbookDataSource = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#AppleAddressbookDataSource");
+
+    /**
      * Label: DataSource 
      */
     public static final URI DataSource = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#DataSource");
 
     /**
      * Label: DataSourceDescription 
-     * Comment: A human description of a datasource. Adds icons, texts etc. 
+     * Comment: A human-readable description of a datasource. Adds icons, texts etc. 
      */
     public static final URI DataSourceDescription = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#DataSourceDescription");
 
@@ -36,6 +41,11 @@ public interface DATASOURCE_GEN {
      * Label: IMAPDataSource 
      */
     public static final URI IMAPDataSource = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#IMAPDataSource");
+
+    /**
+     * Label: IcalDataSource 
+     */
+    public static final URI IcalDataSource = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#IcalDataSource");
 
     /**
      * Label: MicrosoftOutlookDataSource 
@@ -63,14 +73,14 @@ public interface DATASOURCE_GEN {
     public static final URI TaggingDataSource = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#TaggingDataSource");
 
     /**
+     * Label: ThunderbirdAddressbookDataSource 
+     */
+    public static final URI ThunderbirdAddressbookDataSource = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#ThunderbirdAddressbookDataSource");
+
+    /**
      * Label: WebDataSource 
      */
     public static final URI WebDataSource = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#WebDataSource");
-
-    /**
-     * Label: IcalDataSource 
-     */
-    public static final URI IcalDataSource = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#IcalDataSource");
 
     /**
      * Label: basepath 
@@ -115,7 +125,7 @@ public interface DATASOURCE_GEN {
      * Label: describedDataSourceType 
      * Comment: The datasource described 
      * Comment: http://aperture.semanticdesktop.org/ontology/source#DataSourceDescription 
-     * Range: http://www.w3.org/2000/01/rdf-schema#Class 
+     * Range: http://aperture.semanticdesktop.org/ontology/source#DataSource 
      */
     public static final URI describedDataSourceType = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#describedDataSourceType");
 
@@ -150,14 +160,6 @@ public interface DATASOURCE_GEN {
      * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI hostname = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#hostname");
-
-    /**
-     * Label: port 
-     * Comment: port of the server to connect to 
-     * Comment: http://aperture.semanticdesktop.org/ontology/source#DataSource 
-     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
-     */
-    public static final URI port = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#port");
 
     /**
      * Label: includeEmbeddedResources 
@@ -224,6 +226,14 @@ public interface DATASOURCE_GEN {
     public static final URI password = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#password");
 
     /**
+     * Label: port 
+     * Comment: port of the server to connect to 
+     * Comment: http://aperture.semanticdesktop.org/ontology/source#DataSource 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
+     */
+    public static final URI port = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#port");
+
+    /**
      * Label: rootFolder 
      * Comment: Root-Folder in the local filesystem. On Windows machines something like "C:\myfiles\" on unix machines like "/Users/paul/" 
      * Comment: http://aperture.semanticdesktop.org/ontology/source#FileSystemDataSource 
@@ -256,18 +266,18 @@ public interface DATASOURCE_GEN {
     public static final URI sslFilePassword = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#sslFilePassword");
 
     /**
+     * Label: timeout 
+     * Comment: The timeout between two consecutive crawls (in miliseconds) 
+     * Comment: http://aperture.semanticdesktop.org/ontology/source#DataSource 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
+     */
+    public static final URI timeout = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#timeout");
+
+    /**
      * Label: username 
      * Comment: http://aperture.semanticdesktop.org/ontology/source#IMAPDataSource 
      * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI username = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#username");
-
-    /**
-     * Label: name 
-     * Comment: The timeout in miliseconds between two consecutive crawls of this data source. This information may be used by a monitoring application. 
-     * Comment: http://aperture.semanticdesktop.org/ontology/source#DataSource 
-     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
-     */
-    public static final URI timeout = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#timeout");
 
 }
