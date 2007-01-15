@@ -4,30 +4,28 @@
 @prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
 @prefix source:   <http://aperture.semanticdesktop.org/ontology/source#> .
 @prefix sourceformat: <http://aperture.semanticdesktop.org/ontology/sourceformat#> .
+@prefix : <http://aperture.semanticdesktop.org/ontology/datasourcens#> .
 
-:foafPersonDefaultLens rdf:type fresnel:Lens ;
-                       fresnel:purpose fresnel:defaultLens ;
-                       fresnel:classLensDomain foaf:Person ;
-                       fresnel:group :foafGroup ;
-                       fresnel:showProperties ( foaf:name 
-                                                foaf:surname 
-                                                foaf:depiction ) .
+:FileSystemDataSourceLens rdf:type fresnel:Lens ;
+                   fresnel:purpose fresnel:defaultLens ;
+                   fresnel:classLensDomain source:FileSystemDataSource ;
+                   fresnel:showProperties ( source:rootURL 
+                                            source:maximumDepth
+                                            source:maximumByteSize
+                                            source:includeHiddenResources ) .
 
-:ImapDataSourceLens rdf:type fresnel:Lens ;
-					fresnel:purpose fresnel:defaultLens ;
-					fresnel:classLensDomain source:ImapDataSource ;
-					fresnel:showProperties ( source:hostname
-									         source:username
-									         source:password ) .
-
-:hostnameFormat rdf:type fresnel:Format ;
-                fresnel:propertyFormatDomain source:hostname ;
-                sourceformat:valueWidget sourceformat:TextFieldWidget .
-                
-:usernameFormat rdf:type fresnel:Format ;
-			    fresnel:propertyFormatDomain source:username ;
-			    sourceformat:valueWidget sourceformat:TextFieldWidget .
-			 
-:passwordFormat rdf:type fresnel:Format ;
-			    fresnel:propertyFormatDomain source:password ;
-			    sourceformat:valueWidget sourceformat:PasswordTextFieldWidget .
+:rootURLFormat rdf:type fresnel:Format ;
+               fresnel:propertyFormatDomain source:rootUrl ;
+               sourceformat:valueWidget sourceformat:TextFieldWidget .
+                                
+:maximumDepthFormat rdf:type fresnel:Format ;
+                    fresnel:propertyFormatDomain source:maximumDepth ;
+                    sourceformat:valueWidget sourceformat:IntegerFieldWidget .
+                    
+:maximumByteSizeFormat rdf:type fresnel:Format ;
+                       fresnel:propertyFormatDomain source:maximumByteSize ;
+                       sourceformat:valueWidget sourceformat:IntegerFieldWidget .
+                    
+:includeHiddenResourcesFormat rdf:type fresnel:Format ;
+                              fresnel:propertyFormatDomain source:includeHiddenResources ;
+                              sourceformat:valueWidget sourceformat:CheckBoxWidget .                    
