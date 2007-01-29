@@ -7,7 +7,7 @@
 COPYRIGHT
 =========
 
-Copyright (c) 2005 - 2006 Aduna.
+Copyright (c) 2005 - 2007 Aduna.
 All rights reserved.
 
 Licensed under the Open Software License version 3.0.
@@ -357,7 +357,14 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 <description>
 	<mimeType>application/vnd.visio</mimeType>
 	<parentType>application/vnd.ms-office</parentType>
-	<extensions>vsd,vst</extensions>
+	<extensions>vsd,vst,vss</extensions>
+	
+	<!-- Note: there are also .vdx, .vsx and .vtx files (XML for Visio
+	     Drawing/Stencil/Template Files) but these are XML files, not binary Office files.
+	     As long as the Extractor handling application/vnd.visio does not support these
+	     formats, we're actually better off treating those files as general XML documents.
+	     See e.g. http://msdn2.microsoft.com/en-us/library/aa218409(office.10).aspx for
+	     a description of the VDX format. -->
 </description>
 
 <description>
