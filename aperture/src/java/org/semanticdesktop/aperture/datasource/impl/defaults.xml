@@ -14,6 +14,9 @@
 		<name>org.semanticdesktop.aperture.outlook.OutlookDataSourceFactory</name>
 	</dataSourceFactory>
 	<dataSourceFactory>
-		<name>org.semanticdesktop.aperture.addressbook.AddressbookDataSourceFactory</name>
+		<name>org.semanticdesktop.aperture.addressbook.apple.AppleAddressbookDataSourceFactory</name>
+	</dataSourceFactory>
+	<dataSourceFactory>
+		<name>org.semanticdesktop.aperture.addressbook.thunderbird.ThunderbirdAddressbookDataSourceFactory</name>
 	</dataSourceFactory>
 </dataSourceFactories>
