@@ -556,7 +556,7 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 
 <description>
 	<mimeType>text/plain</mimeType>
-	<extensions>txt,1st,me,text,ans,asc,csv,tsv,faq,c,h,tex,latex,pv,log</extensions>
+	<extensions>txt,1st,me,text,ans,asc,csv,tsv,faq,c,h,tex,latex,pv,log,nt</extensions>
 </description>
 
 <description>
