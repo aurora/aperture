@@ -201,8 +201,42 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 
 <description>
 	<mimeType>text/xml</mimeType>
-	<extensions>xml,xsl,xslt,wml</extensions>
+	<extensions>xml</extensions>
 	<magicString>&lt;?xml</magicString>
+</description>
+
+<description>
+	<mimeType>application/xslt+xml</mimeType>
+	<extensions>xsl,xslt</extensions>
+	<parentType>text/xml</parentType>
+</description>
+
+<description>
+	<mimeType>text/vnd.wap.wml</mimeType>
+	<extensions>wml</extensions>
+	<parentType>text/xml</parentType>
+</description>
+
+<description>
+	<mimeType>application/rdf+xml</mimeType>
+	<extensions>rdf,rdfs</extensions>
+	<parentType>text/xml</parentType>
+</description>
+
+<description>
+	<mimeType>application/trix</mimeType>
+	<extensions>trix</extensions>
+	<parentType>text/xml</parentType>
+</description>
+
+<description>
+	<mimeType>application/x-turtle</mimeType>
+	<extensions>ttl</extensions>
+</description>
+
+<description>
+	<mimeType>text/rdf+n3</mimeType>
+	<extensions>n3</extensions>
 </description>
 
 <description>
@@ -659,7 +693,7 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 </description>
 
 <description>
-	<mimeType>image/svg</mimeType>
+	<mimeType>image/svg+xml</mimeType>
 	<extensions>svg</extensions>
 	<parentType>text/xml</parentType>
 </description>
