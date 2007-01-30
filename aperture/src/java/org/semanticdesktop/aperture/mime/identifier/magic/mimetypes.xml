@@ -572,6 +572,12 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<magicNumber encoding="string">ITSF</magicNumber>
 </description>
 
+<description>
+	<mimeType>application/x-freemind</mimeType>
+	<extensions>mm</extensions>
+	<magicNumber encoding="string">&lt;map version</magicNumber>
+</description>
+
 <!-- ================== Executables and similar stuff ================== -->
 
 <description>
@@ -650,6 +656,28 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<mimeType>image/png</mimeType>
 	<extensions>png</extensions>
 	<magicNumber encoding="hex">89 50 4e 47 0d 0a 1a</magicNumber>
+</description>
+
+<description>
+	<mimeType>image/svg</mimeType>
+	<extensions>svg</extensions>
+	<parentType>text/xml</parentType>
+</description>
+
+<description>
+	<mimeType>image/x-icon</mimeType>
+	<extensions>ico</extensions>
+	<magicNumber encoding="hex">00 00 01 00</magicNumber>
+</description>
+
+<description>
+	<mimeType>image/x-raw</mimeType>
+	<extensions>raw</extensions>
+</description>
+
+<description>
+	<mimeType>image/x-tga</mimeType>
+	<extensions>tga</extensions>
 </description>
 
 <description>
@@ -748,9 +776,24 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 </description>
 
 <description>
-	<mimeType>video/x-ms-wmv</mimeType>
-	<extensions>wmv</extensions>
+	<!-- This MIME type was invented to let the wmv and wma media types
+	     share the magic number. Differentiation between these two files
+	     is only possible based on file name extension. -->
+
+	<mimeType>application/x-ms-wm</mimeType>
 	<magicNumber encoding="hex">30 26 b2 75 8e 66 cf 11 a6 d9 00 aa 00 62 ce 6c</magicNumber>
+</description>
+
+<description>
+	<mimeType>audio/x-ms-wma</mimeType>
+	<parentType>application/x-ms-wm</parentType>
+	<extensions>wma</extensions>
+</description>
+
+<description>
+	<mimeType>video/x-ms-wmv</mimeType>
+	<parentType>application/x-ms-wm</parentType>
+	<extensions>wmv</extensions>
 </description>
 
 <description>
@@ -799,8 +842,9 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 
 <description>
 	<mimeType>audio/midi</mimeType>
-	<extensions>mid,midi</extensions>
-	<magicNumber encoding="string">MThd</magicNumber>
+	<extensions>mid,midi,rmi</extensions>
+	<magicNumber encoding="string">MThd</magicNumber> <!-- for regular MIDI files -->
+	<magicNumber encoding="string" offset="8">RMI</magicNumber> <!-- for .rmi files -->
 </description>
 
 <description>
@@ -822,6 +866,12 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 <description>
 	<mimeType>video/3gpp</mimeType>
 	<extensions>3gp,3g2</extensions>
+</description>
+
+<description>
+	<mimeType>audio/x-aiff</mimeType>
+	<extensions>aiff</extensions>
+	<magicNumber encoding="string">FORM</magicNumber>
 </description>
 
 <!-- ================== Play List Types ================== -->
