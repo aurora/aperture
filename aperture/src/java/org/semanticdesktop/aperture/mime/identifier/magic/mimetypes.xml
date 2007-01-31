@@ -170,17 +170,27 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<magicNumber encoding="string">SIT!</magicNumber>
 </description>
 
-
 <description>
 	<mimeType>application/binhex</mimeType>
 	<extensions>hqx</extensions>
+</description>
+
+<description>
+	<mimeType>application/vnd.ms-cab-compressed</mimeType>
+	<extensions>cab</extensions>
+	<magicNumber encoding="string">MSCF</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/x-installshield-compressedfile</mimeType>
+	<magicNumber encoding="string">ISc(</magicNumber>
 </description>
 
 <!-- ================== Web Types ================== -->
 
 <description>
 	<mimeType>text/html</mimeType>
-	<extensions>html,htm,shtml,jsp,php,asp,xhtml</extensions>
+	<extensions>html,htm,htc,shtml,jsp,jspf,php,asp,xhtml</extensions>
 	<allowsLeadingWhiteSpace>true</allowsLeadingWhiteSpace>
 	<magicString>&lt;HEAD</magicString>
 	<magicString>&lt;head</magicString>
@@ -224,6 +234,12 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 </description>
 
 <description>
+	<mimeType>application/owl+xml</mimeType>
+	<extensions>owl</extensions>
+	<parentType>text/xml</parentType>
+</description>
+
+<description>
 	<mimeType>application/trix</mimeType>
 	<extensions>trix</extensions>
 	<parentType>text/xml</parentType>
@@ -247,6 +263,24 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 <description>
 	<mimeType>text/javascript</mimeType>
 	<extensions>js</extensions>
+</description>
+
+<description>
+	<mimeType>application/java-archive</mimeType>
+	<extensions>jar</extensions>
+	<parentType>application/zip</parentType>
+</description>
+
+<description>
+	<mimeType>application/x-java-webarchive</mimeType>
+	<extensions>war</extensions>
+	<parentType>application/zip</parentType>
+</description>
+
+<description>
+	<mimeType>application/x-java-enterprisearchive</mimeType>
+	<extensions>ear</extensions>
+	<parentType>application/zip</parentType>
 </description>
 
 <description>
@@ -571,6 +605,11 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 </description>
 
 <description>
+	<mimeType>application/x-java-manifest</mimeType>
+	<magicString>Manifest-Version:</magicString>
+</description>
+
+<description>
 	<mimeType>text/rtf</mimeType>
 	<extensions>rtf</extensions>
 	<magicNumber encoding="string">{\rtf</magicNumber>
@@ -584,7 +623,7 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 
 <description>
 	<mimeType>application/x-framemaker</mimeType>
-	<extensions>book,fm,mif</extensions>
+	<extensions>book,fm,mif,mf</extensions>
 	<magicNumber encoding="string">&lt;MakerFile</magicNumber>
 	<magicNumber encoding="string">&lt;MIFFile</magicNumber>
 	<magicNumber encoding="string">&lt;MakerDictionary</magicNumber>
@@ -819,6 +858,12 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<extensions>dxf</extensions>
 </description>
 
+<description>
+	<mimeType>image/x-itunes-albumartwork</mimeType>
+	<extensions>itc</extensions>
+	<magicNumber encoding="string" offset="4">itch</magicNumber>
+</description>
+
 <!-- ================== Multimedia Types ================== -->
 
 <description>
@@ -980,14 +1025,42 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<magicNumber encoding="string">&lt;?wpl</magicNumber>
 </description>
 
-<!-- ================== Entryption-related Types ================== -->
+<!-- ================== Security & Integrity ================== -->
 
 <description>
 	<mimeType>application/pgp-signature</mimeType>
 	<magicNumber encoding="string">-----BEGIN PGP SIGNATURE-----</magicNumber>
 </description>
 
+<description>
+	<mimeType>application/x-md5</mimeType>
+	<extensions>md5</extensions>
+	<magicNumber encoding="string">MD5</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/x-sha</mimeType>
+	<extensions>sha,sha0,sha1,sha2,sha256,sha512</extensions>
+</description>
+
+<description>
+	<mimeType>application/x-axcrypt</mimeType>
+	<extensions>axx</extensions>
+	<magicNumber encoding="hex">c0 b9 07 2e 4f 93 f1 46 a0 15 79 2c a1 d9 e8 21 15 00 00 00 02</magicNumber>
+</description>
+
 <!-- ================== Miscellaneous Types ================== -->
+
+<description>
+	<mimeType>text/calendar</mimeType>
+	<extensions>ics</extensions>
+	<magicNumber encoding="string">BEGIN:VCALENDAR</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/x-mozilla-addressbook</mimeType>
+	<extensions>mab</extensions>
+</description>
 
 <description>
 	<mimeType>application/x-ms-registry</mimeType>
