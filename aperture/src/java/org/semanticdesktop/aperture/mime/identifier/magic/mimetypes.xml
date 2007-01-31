@@ -249,6 +249,12 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<extensions>js</extensions>
 </description>
 
+<description>
+	<mimeType>application/x-url</mimeType>
+	<magicString>[InternetShortcut]</magicString>
+	<extensions>url</extensions>
+</description>
+
 <!-- ================== OpenOffice 1.x/StarOffice 6.x-7.x Types ================== -->
 
 <description>
@@ -621,6 +627,18 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 </description>
 
 <description>
+	<mimeType>application/x-ms-scr</mimeType>
+	<parentType>application/x-ms-dos-executable</parentType>
+	<extensions>scr</extensions>
+</description>
+
+<description>
+	<mimeType>application/x-ms-shortcut</mimeType>
+	<extensions>lnk</extensions>
+	<magicNumber encoding="hex">4c 00 00 00 01 14 02 00 00 00 00 00 c0 00 00 00 00 00 00 46</magicNumber>
+</description>
+
+<description>
 	<mimeType>application/bat</mimeType>
 	<extensions>bat</extensions>
 </description>
@@ -801,7 +819,35 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<extensions>dxf</extensions>
 </description>
 
-<!-- ================== Video and Multimedia Types ================== -->
+<!-- ================== Multimedia Types ================== -->
+
+<description>
+	<mimeType>video/x-ms-asf</mimeType>
+	<extensions>asf</extensions>
+	<magicNumber encoding="hex">30 26 b2 75 8e 66 cf 11 a6 d9 00 aa 00 62 ce 6c</magicNumber>
+</description>
+
+<description>
+	<mimeType>video/x-ms-asx</mimeType>
+	<extensions>asx</extensions>
+	<magicString>&lt;asx</magicString>
+	<magicString>&lt;ASX</magicString>
+</description>
+
+<description>
+	<mimeType>audio/x-ms-wax</mimeType>
+	<extensions>wax</extensions>
+</description>
+
+<description>
+	<mimeType>video/x-ms-wvx</mimeType>
+	<extensions>wvx</extensions>
+</description>
+
+<description>
+	<mimeType>video/x-ms-wmx</mimeType>
+	<extensions>wmx</extensions>
+</description>
 
 <description>
 	<mimeType>video/x-msvideo</mimeType>
@@ -827,7 +873,7 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 <description>
 	<mimeType>video/x-ms-wmv</mimeType>
 	<parentType>application/x-ms-wm</parentType>
-	<extensions>wmv</extensions>
+	<extensions>wmv,wm</extensions>
 </description>
 
 <description>
@@ -908,6 +954,12 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<magicNumber encoding="string">FORM</magicNumber>
 </description>
 
+<description>
+	<mimeType>application/x-ms-wmd</mimeType>
+	<extensions>wmd</extensions>
+	<parentType>application/zip</parentType>
+</description>
+
 <!-- ================== Play List Types ================== -->
 
 <description>
@@ -923,9 +975,16 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 </description>
 
 <description>
-	<mimeType>application/asx</mimeType>
-	<extensions>asx</extensions>
-	<magicNumber encoding="string">&lt;ASX</magicNumber>
+	<mimeType>vnd.ms-wpl</mimeType>
+	<extensions>wpl</extensions>
+	<magicNumber encoding="string">&lt;?wpl</magicNumber>
+</description>
+
+<!-- ================== Entryption-related Types ================== -->
+
+<description>
+	<mimeType>application/pgp-signature</mimeType>
+	<magicNumber encoding="string">-----BEGIN PGP SIGNATURE-----</magicNumber>
 </description>
 
 <!-- ================== Miscellaneous Types ================== -->
@@ -940,6 +999,18 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<mimeType>application/x-bittorrent</mimeType>
 	<extensions>torrent</extensions>
 	<magicNumber encoding="string">d8:announce</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/x-pom</mimeType>
+	<extensions>pom</extensions>
+	<magicNumber encoding="string">&lt;project&gt;</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/x-ms-wmz</mimeType>
+	<extensions>wmz</extensions>
+	<parentType>application/zip</parentType>
 </description>
 
 </mimeTypes>
