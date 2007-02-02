@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -19,19 +19,23 @@ import org.semanticdesktop.aperture.hypertext.linkextractor.LinkExtractorFactory
 public class HtmlLinkExtractorFactory implements LinkExtractorFactory {
 
     private static final Set SUPPORTED_MIME_TYPES;
-    
+
     static {
         HashSet set = new HashSet();
         set.add("text/html");
-        set.add("application/xhtml+xml");  // found at http://www.hixie.ch/advocacy/xhtml
+        set.add("application/xhtml+xml");
+
+        // FIXME: I added text/xml because our own MIME type identifier currently labels XHTML docs as such.
+        // Ideally the application/xhtml+xml MIME type would handle these docs.
+        set.add("text/xml");
 
         SUPPORTED_MIME_TYPES = Collections.unmodifiableSet(set);
     }
-    
+
     public LinkExtractor get() {
         return new HtmlLinkExtractor();
     }
-    
+
     public Set getSupportedMimeTypes() {
         return SUPPORTED_MIME_TYPES;
     }
