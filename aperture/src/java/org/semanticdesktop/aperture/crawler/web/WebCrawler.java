@@ -257,11 +257,12 @@ public class WebCrawler extends CrawlerBase {
 					// Fetch the data object. Wrap the AccessData in a WebAccessData to get notified when a
 					// URL redirects to another URL.
 					RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, url);
-					WebAccessData ad=null;
-					if (accessData!=null)
-						ad= new WebAccessData(accessData);
+					WebAccessData wad = null;
+					if (accessData != null) {
+						wad = new WebAccessData(accessData);
+                    }
 				
-					DataObject dataObject = accessor.getDataObjectIfModified(url, source, ad, null, containerFactory);
+					DataObject dataObject = accessor.getDataObjectIfModified(url, source, wad, null, containerFactory);
 
 					// register that this data object has successfully been processed
 					deprecatedUrls.remove(url);
@@ -363,7 +364,9 @@ public class WebCrawler extends CrawlerBase {
 
 		// furthermore we should not list this object as accessed any longer; when it can be accessed normally
 		// in the next crawl, it should be reported as a new object
-		accessData.remove(url);
+        if (accessData != null) {
+            accessData.remove(url);
+        }
 	}
 
 	private DataAccessor getDataAccessor(String url) {
