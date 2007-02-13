@@ -60,6 +60,6 @@
 <rdf:Property rdf:about="&sourceformat;valueWidget"
 	 rdfs:label="valueWidget">
 	<rdfs:range rdf:resource="&sourceformat;UIWidget"/>
-	<rdfs:domain="&fresnel;Format" />
+	<rdfs:domain rdf:resource="&fresnel;Format" />
 </rdf:Property>
 </rdf:RDF>
