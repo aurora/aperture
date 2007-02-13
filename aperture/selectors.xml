@@ -161,7 +161,10 @@
     
     <selector id="bundle.supporting.api.selector">
         <and>
-            <filename name="org/semanticdesktop/aperture/util/**" />
+        	<or>
+	            <filename name="org/semanticdesktop/aperture/util/*" />
+	            <filename name="org/semanticdesktop/aperture/util/ontology/*" />
+	        </or>
             <not>
                 <or>
                       <filename name="org/semanticdesktop/aperture/util/RepositoryUtil.*" />
