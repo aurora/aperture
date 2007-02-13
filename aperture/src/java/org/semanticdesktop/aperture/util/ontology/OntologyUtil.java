@@ -19,14 +19,6 @@ public class OntologyUtil {
     private static final String RESOURCE_PACKAGE = OntologyUtil.class.getPackage().getName()
             .replace('.', '/');
 
-    private static final String DATA_ONTOLOGY = RESOURCE_PACKAGE + "/data.rdfs";
-    
-    private static final String DCES_ONTOLOGY = RESOURCE_PACKAGE + "/dces.rdfs";
-    
-    private static final String DCQ_ONTOLOGY = RESOURCE_PACKAGE + "/dcq.rdfs";
-    
-    private static final String DCTYPE_ONTOLOGY = RESOURCE_PACKAGE + "/dctype.rdfs";
-
     private static final String SOURCE_ONTOLOGY = RESOURCE_PACKAGE + "/source.rdfs";
 
     private static final String SOURCEFORMAT_ONTOLOGY = RESOURCE_PACKAGE + "/sourceformat.rdfs";

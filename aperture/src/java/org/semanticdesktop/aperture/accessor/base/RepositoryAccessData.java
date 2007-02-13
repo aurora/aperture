@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna.
+ * Copyright (c) 2006 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -50,11 +50,6 @@ public class RepositoryAccessData implements AccessData {
 	 */
 	public static final String URI_PREFIX = "urn:accessdata:";
 
-	/**
-	 * The Repository holding the context information.
-	 */
-	private Repository repository;
-	
 	private Connection connection;
 
 	/**
@@ -75,7 +70,6 @@ public class RepositoryAccessData implements AccessData {
 			throw new IllegalArgumentException("repository cannot be null");
 		}
 
-		this.repository = repository;
 		this.context = context;
 		this.connection = repository.getConnection();
 		this.connection.setAutoCommit(true);

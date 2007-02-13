@@ -8,7 +8,6 @@ package org.semanticdesktop.aperture.examples.osgi;
 
 import java.io.File;
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
@@ -34,8 +33,6 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
  * Example class that crawls a file system and puts all extracted metadata in a repository.
  */
 public class ExampleFileCrawler {
-
-	private static final Logger LOGGER = Logger.getLogger(ExampleFileCrawler.class.getName());
 
 	public static final String IDENTIFY_MIME_TYPE_OPTION = "-identifyMimeType";
 
@@ -156,12 +153,4 @@ public class ExampleFileCrawler {
 		// start crawling
 		crawler.crawl();
 	}
-
-	private static void exitWithUsageMessage() {
-		System.err.println("Usage: java " + ExampleFileCrawler.class.getName() + " ["
-				+ IDENTIFY_MIME_TYPE_OPTION + "] [" + EXTRACT_CONTENTS_OPTION + "] [" + VERBOSE_OPTION
-				+ "] rootDirectory repositoryFile");
-		System.exit(-1);
-	}
-
 }

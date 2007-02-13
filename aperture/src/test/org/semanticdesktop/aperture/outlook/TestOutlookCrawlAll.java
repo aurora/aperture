@@ -149,8 +149,6 @@ public class TestOutlookCrawlAll extends ApertureTestBase {
             assertNotNull(object);
             assertSame(lastContainer, object.getMetadata());
 
-            String uri = object.getID().toString();
-            
             object.dispose();
         }
 
@@ -180,43 +178,43 @@ public class TestOutlookCrawlAll extends ApertureTestBase {
         }
     }
     
-    private class UpdatingCrawlerHandler extends SimpleCrawlerHandler
-    {
-    	int changedCount = 0;
-    	int notModifiedCount = 0;
-    	int removedCount = 0;
-    	int cleared = 0;
-    	
-    	public UpdatingCrawlerHandler() throws ModelException {
-
-        }
-    	
-        public void objectChanged(Crawler dataCrawler, DataObject object) {
-        	changedCount++;
-            object.dispose();
-        }
-
-        public void objectNotModified(Crawler crawler, String url) {
-        	notModifiedCount++;
-        }
-
-        public void objectRemoved(Crawler dataCrawler, String url) {
-            removedCount++;
-        }
-
-        public void clearStarted(Crawler crawler) {
-            // no-op
-        }
-
-        public void clearingObject(Crawler crawler, String url) {
-        	cleared++;
-        }
-
-        public void clearFinished(Crawler crawler, ExitCode exitCode) {
-            // no-op
-        }
-    	
-    }
+//    private class UpdatingCrawlerHandler extends SimpleCrawlerHandler
+//    {
+//    	int changedCount = 0;
+//    	int notModifiedCount = 0;
+//    	int removedCount = 0;
+//    	int cleared = 0;
+//    	
+//    	public UpdatingCrawlerHandler() throws ModelException {
+//
+//        }
+//    	
+//        public void objectChanged(Crawler dataCrawler, DataObject object) {
+//        	changedCount++;
+//            object.dispose();
+//        }
+//
+//        public void objectNotModified(Crawler crawler, String url) {
+//        	notModifiedCount++;
+//        }
+//
+//        public void objectRemoved(Crawler dataCrawler, String url) {
+//            removedCount++;
+//        }
+//
+//        public void clearStarted(Crawler crawler) {
+//            // no-op
+//        }
+//
+//        public void clearingObject(Crawler crawler, String url) {
+//        	cleared++;
+//        }
+//
+//        public void clearFinished(Crawler crawler, ExitCode exitCode) {
+//            // no-op
+//        }
+//    	
+//    }
 
 
 }

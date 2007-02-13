@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -27,7 +27,6 @@ import org.ontoware.rdf2go.model.node.Variable;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
-import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 
@@ -45,8 +44,8 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 	protected static final String ADDRESSBOOK_CHECKSUM_KEY="ADDRESSBOOK_CHECKSUM";
 		
 	protected ExitCode crawlObjects() {
-		DataSource source = getDataSource();
-		RDFContainer configuration = source.getConfiguration();
+		//DataSource source = getDataSource();
+		//RDFContainer configuration = source.getConfiguration();
 		//String username = ConfigurationUtil.getUsername(configuration);
 		//String password = ConfigurationUtil.getPassword(configuration);
 

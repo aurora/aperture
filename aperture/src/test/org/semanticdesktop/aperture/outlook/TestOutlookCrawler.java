@@ -111,7 +111,6 @@ public class TestOutlookCrawler extends ApertureTestBase {
 		crawler.setAccessData(access);
 
 		crawler.crawl();
-		int found = crawlerHandler.newCount;
 
 		// dump the repo
 		System.out.println("fist run: ");
@@ -239,8 +238,6 @@ public class TestOutlookCrawler extends ApertureTestBase {
             assertNotNull(object);
             assertSame(lastContainer, object.getMetadata());
 
-            String uri = object.getID().toString();
-            
             object.dispose();
         }
 
