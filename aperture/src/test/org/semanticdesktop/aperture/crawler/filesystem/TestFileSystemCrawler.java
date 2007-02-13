@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -10,10 +10,10 @@ import java.io.File;
 import java.io.IOException;
 
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
@@ -154,7 +154,7 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
 		public SimpleCrawlerHandler() throws ModelException {
 			// create a Model
-			model = new ModelImplSesame(false);
+			model = new RepositoryModel(false);
 
 			// set auto-commit off so that all additions and deletions between two commits become a
 			// single transaction
@@ -193,7 +193,7 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 			// different context
 			//Model newModel = null;
 			//try {
-			//	newModel = new ModelImplSesame(uri,(Repository)model.getUnderlyingModelImplementation());
+			//	newModel = new RepositoryModel(uri,(Repository)model.getUnderlyingModelImplementation());
 			//} catch (ModelException me) {
 			//	return null;
 			//}

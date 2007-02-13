@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna.
+ * Copyright (c) 2006 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -9,10 +9,10 @@ package org.semanticdesktop.aperture.accessor.base;
 import java.io.IOException;
 
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.ApertureTestBase;
 
 public class TestModelAccessData extends ApertureTestBase {
@@ -23,7 +23,7 @@ public class TestModelAccessData extends ApertureTestBase {
 	
 	public void setUp() throws ModelException {
 		URI contextURI = URIImpl.createURIWithoutChecking("urn:test:dummy");
-		model = new ModelImplSesame(contextURI,false);
+		model = new RepositoryModel(contextURI,false);
 		accessData = new ModelAccessData(model);
 	}
 	

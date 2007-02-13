@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -7,8 +7,8 @@
 package org.semanticdesktop.aperture.crawler.ical;
 
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.crawler.Crawler;
@@ -19,7 +19,7 @@ import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 
 class IcalTestSimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
     
-    private ModelImplSesame model;
+    private RepositoryModel model;
 
     private int numberOfObjects;
     
@@ -28,14 +28,14 @@ class IcalTestSimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactor
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
     public IcalTestSimpleCrawlerHandler() throws ModelException {
-        model = new ModelImplSesame(false);
+        model = new RepositoryModel(false);
     }
     
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////// GETTERS AND SETTERS ///////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    public ModelImplSesame getModel() {
+    public RepositoryModel getModel() {
         return model;
     }
     

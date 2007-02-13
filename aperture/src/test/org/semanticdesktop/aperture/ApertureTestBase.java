@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -11,7 +11,6 @@ import junit.framework.TestCase;
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.Literal;
@@ -19,6 +18,7 @@ import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.ValueFactory;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
@@ -31,7 +31,7 @@ public class ApertureTestBase extends TestCase {
 
 	public Model createModel() {
 		try {
-			return new ModelImplSesame(false);
+			return new RepositoryModel(false);
 		}
 		catch (ModelException me) {
 			return null;
@@ -120,7 +120,7 @@ public class ApertureTestBase extends TestCase {
 	
 	protected RDFContainer createSesameRDFContainer(URI uri) {
 		try {
-			Model newModel = new ModelImplSesame(false);
+			Model newModel = new RepositoryModel(false);
 			return new RDF2GoRDFContainer(newModel,uri);
 		} catch (ModelException me) {
 			throw new RuntimeException(me);

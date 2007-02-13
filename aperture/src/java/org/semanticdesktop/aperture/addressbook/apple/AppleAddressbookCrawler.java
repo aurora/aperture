@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.Syntax;
@@ -24,6 +23,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
 import org.semanticdesktop.aperture.addressbook.AddressbookCrawler;
@@ -124,7 +124,7 @@ public class AppleAddressbookCrawler extends AddressbookCrawler {
 	
 	private Model createSimpleModel() {
 		try {
-			return new ModelImplSesame(false);
+			return new RepositoryModel(false);
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "Couldn't create a simple model",e);
 			return null;

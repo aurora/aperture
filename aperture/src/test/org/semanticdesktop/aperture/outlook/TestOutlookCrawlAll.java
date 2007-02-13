@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.openrdf.repository.Repository;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -100,7 +100,7 @@ public class TestOutlookCrawlAll extends ApertureTestBase {
         
         public SimpleCrawlerHandler() throws ModelException {
             // create a Repository
-            model = new ModelImplSesame(false);
+            model = new RepositoryModel(false);
 
             newCount = 0;
         }
@@ -126,12 +126,12 @@ public class TestOutlookCrawlAll extends ApertureTestBase {
         }
 
         public RDFContainer getRDFContainer(URI uri) {
-//        	 an rdf2go way to return a container, backed by a model, backed by a repository, which
+            // an rdf2go way to return a container, backed by a model, backed by a repository, which
 			// actually is the private repository common to all return RDFContainers, but with a 
 			// different context
 			Model newModel = null;
 			try {
-				newModel = new ModelImplSesame(uri,(Repository)model.getUnderlyingModelImplementation());
+				newModel = new RepositoryModel(uri,(Repository)model.getUnderlyingModelImplementation());
 			} catch (ModelException me) {
 				return null;
 			}

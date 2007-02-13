@@ -24,10 +24,11 @@
 	<classpathentry kind="lib" path="lib/openrdf-sesame-2.0-alpha4-onejar-lockconntracking.jar"/>
 	<classpathentry kind="lib" path="lib/commons-httpclient-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/applewrapper-0.2.jar"/>
-	<classpathentry kind="lib" path="lib/aifbcommons-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/osgi.core-4.0.jar"/>
 	<classpathentry kind="lib" path="lib/rdf2go-sesame2.jar"/>
-	<classpathentry kind="lib" path="lib/rdf2go.jar"/>
+	<classpathentry kind="lib" path="lib/rdf2go-api-4.3.0.jar"/>
+	<classpathentry kind="lib" path="lib/rdf2go-base-4.3.0.jar"/>
+	<classpathentry kind="lib" path="lib/aifbcommons-collection-4.3.0.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>

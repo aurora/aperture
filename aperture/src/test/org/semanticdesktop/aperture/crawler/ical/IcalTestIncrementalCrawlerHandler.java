@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -11,9 +11,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.crawler.Crawler;
@@ -40,7 +40,7 @@ class IcalTestIncrementalCrawlerHandler implements CrawlerHandler, RDFContainerF
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
     public IcalTestIncrementalCrawlerHandler(File file) throws ModelException {
-        model = new ModelImplSesame(false);
+        model = new RepositoryModel(false);
         newObjects = new HashSet<String>();
         changedObjects = new HashSet<String>();
         unchangedObjects = new HashSet<String>();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -17,11 +17,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.openrdf.repository.Repository;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
@@ -119,7 +119,7 @@ public class ExampleFileCrawler {
         // create a data source configuration
         Model model = null;
         try {
-        	model = new ModelImplSesame(false);
+        	model = new RepositoryModel(false);
         } catch (ModelException me) {
         	throw new RuntimeException(me);
         }
@@ -202,7 +202,7 @@ public class ExampleFileCrawler {
 
         public SimpleCrawlerHandler() {
         	try {
-            	model = new ModelImplSesame(false);
+            	model = new RepositoryModel(false);
             } catch (ModelException me) {
             	throw new RuntimeException(me);
             }
@@ -330,7 +330,7 @@ public class ExampleFileCrawler {
 		public RDFContainer getRDFContainer(URI uri) {
 			Model contextModel = null;
 			try {
-				contextModel = new ModelImplSesame(uri, (Repository) model
+				contextModel = new RepositoryModel(uri, (Repository) model
 						.getUnderlyingModelImplementation());
 			}
 			catch (ModelException me) {

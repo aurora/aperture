@@ -173,7 +173,9 @@ public class ModelAccessData implements AccessData {
 			
 		}
 		finally {
-			iterator.close();
+            if (iterator != null) {
+                iterator.close();
+            }
 		}
 
 		return result;

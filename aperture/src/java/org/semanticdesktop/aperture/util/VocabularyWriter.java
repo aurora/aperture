@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -15,7 +15,6 @@ import java.util.Date;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.Syntax;
@@ -26,6 +25,7 @@ import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.vocabulary.OWL;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.ontoware.rdf2go.vocabulary.RDFS;
+import org.openrdf.rdf2go.RepositoryModel;
 
 /**
  * reads an RDF/S file and creates an Aperture Vocabulary file from it.
@@ -74,7 +74,7 @@ public class VocabularyWriter {
 	
 	private void loadOnt()  throws Exception  {
 		// read
-		myModel = new ModelImplSesame(false);
+		myModel = new RepositoryModel(false);
 		System.out.println("reading from "+inputRdfF.getAbsolutePath()+" in format "+ Syntax.RdfXml);
 		Reader reader = new BufferedReader(new FileReader(inputRdfF));
 		myModel.readFrom(reader, Syntax.RdfXml);

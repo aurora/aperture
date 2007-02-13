@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -11,12 +11,12 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.ValueFactory;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
@@ -63,13 +63,13 @@ public class SesameRDFContainer implements RDFContainer {
 	 * @param model The Model to store statements in and retrieve statements from.
 	 * @param describedUri The URI that typically will serve as object in most statements.
 	 */
-	public SesameRDFContainer(ModelImplSesame model, URI describedUri) {
+	public SesameRDFContainer(RepositoryModel model, URI describedUri) {
 		this.container = new RDF2GoRDFContainer(model,describedUri);
 	}
 	
 	private void createContainer(URI describedUri, URI context,boolean shared) {
 		try {
-			ModelImplSesame model = new ModelImplSesame(context,false);
+            RepositoryModel model = new RepositoryModel(context,false);
 			container = new RDF2GoRDFContainer(model,describedUri,shared);
 		} catch (ModelException me) {
 			throw new RuntimeException(me);
@@ -85,7 +85,7 @@ public class SesameRDFContainer implements RDFContainer {
 	}
 
 	public URI getContext() {
-		return ((ModelImplSesame)container.getModel()).getContextURI();
+		return ((RepositoryModel)container.getModel()).getContextURI();
 	}
 	
 	public void put(URI property, String value) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -29,10 +29,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.openrdf.repository.Repository;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
@@ -176,7 +176,7 @@ public class FileInspectorPanel extends JPanel {
                 ExtractorFactory factory = (ExtractorFactory) factories.iterator().next();
                 currentExtractor = factory.get();
                 URI uri = new URIImpl(file.toURI().toString());
-                Model model = new ModelImplSesame(false);
+                Model model = new RepositoryModel(false);
                 org.ontoware.rdf2go.model.node.URI rdf2goUri = model.createURI(uri.toString());
                 container = new RDF2GoRDFContainer(model,rdf2goUri);
                 

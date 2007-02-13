@@ -193,13 +193,7 @@ public class RDF2GoRDFContainer implements RDFContainer {
 		checkState();
 		Node node = getInternal(property);
 		if (node instanceof Literal) {
-			try {
-				return ((Literal) node).asString();
-			}
-			catch (ModelException me) {
-				LOGGER.log(Level.SEVERE, "Couldn't return the string from a literal", me);
-				return null;
-			}
+		    return ((Literal) node).getValue();
 		}
 		else {
 			return null;
@@ -283,13 +277,7 @@ public class RDF2GoRDFContainer implements RDFContainer {
 		checkState();
 		Node node = getInternal(property);
 		if (node instanceof URI) {
-			try {
-				return node.asURI();
-			}
-			catch (ModelException me) {
-				LOGGER.log(Level.SEVERE, "Couldn't return the uri: ", me);
-				return null;
-			}
+		    return node.asURI();
 		}
 		else {
 			return null;
@@ -323,7 +311,7 @@ public class RDF2GoRDFContainer implements RDFContainer {
 			ClosableIterable<? extends Statement> iterable = model.findStatements(describedUri, property, Variable.ANY);
 			iterator = iterable.iterator();
 			// put their values in a new Collection
-			ArrayList result = new ArrayList();
+			ArrayList<Node> result = new ArrayList<Node>();
 			while (iterator.hasNext()) {
 				Statement statement = iterator.next();
 				result.add(statement.getObject());

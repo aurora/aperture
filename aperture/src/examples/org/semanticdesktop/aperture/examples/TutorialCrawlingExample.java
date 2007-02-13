@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -12,13 +12,13 @@ import java.io.PrintWriter;
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.crawler.Crawler;
@@ -71,7 +71,7 @@ public class TutorialCrawlingExample {
 		Model sharedModel;
 		
 		public TutorialCrawlerHandler() throws Exception {
-			sharedModel = new ModelImplSesame(false);
+			sharedModel = new RepositoryModel(false);
 		}
 		// let's dump the contents onto the standard output	
 		public void crawlStopped(Crawler crawler, ExitCode exitCode) {
@@ -87,7 +87,7 @@ public class TutorialCrawlingExample {
 		public RDFContainer getRDFContainer(URI uri) {
 			Model newModel = null;
 			try {
-				newModel = new ModelImplSesame(false);
+				newModel = new RepositoryModel(false);
 			} catch (ModelException me) {
 				me.printStackTrace();
 				throw new RuntimeException(me);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -10,9 +10,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
@@ -91,7 +91,7 @@ public class TestIcalCrawlerIncremental extends ApertureTestBase {
 		} else {
 			tempFile = createTempFile(fileStream,file);
 		}
-		Model configurationModel = new ModelImplSesame(false);
+		Model configurationModel = new RepositoryModel(false);
 		RDF2GoRDFContainer configurationContainer = new RDF2GoRDFContainer(configurationModel,URIImpl
 				.createURIWithoutChecking("source:testsource"));
 		ConfigurationUtil.setRootUrl(tempFile.getAbsolutePath(), configurationContainer);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -14,10 +14,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -74,7 +74,7 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
 		c.setAccessData(new AccessDataImpl());
 		c.setCrawlerHandler(this);
 		
-		model = new ModelImplSesame(false);
+		model = new RepositoryModel(false);
 		
 		c.crawl();
 
@@ -92,7 +92,7 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
 		model.writeTo(writer,Syntax.RdfXml);
 		writer.close();
 		
-		Model model2 = new ModelImplSesame(false);
+		Model model2 = new RepositoryModel(false);
 		
 		FileReader reader = new FileReader(tmpfile);
 		assertTrue(reader.ready());

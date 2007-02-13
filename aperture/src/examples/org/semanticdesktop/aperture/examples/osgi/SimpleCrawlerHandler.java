@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -17,10 +17,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -61,7 +61,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     public SimpleCrawlerHandler(MimeTypeIdentifier mimeTypeIdentifier, ExtractorRegistry extractorRegistry,
     		File repositoryFile) {
     	try {
-        	model = new ModelImplSesame(false);
+        	model = new RepositoryModel(false);
         } catch (ModelException me) {
         	throw new RuntimeException(me);
         }

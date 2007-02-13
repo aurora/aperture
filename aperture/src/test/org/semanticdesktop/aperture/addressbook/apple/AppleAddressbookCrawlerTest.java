@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -8,10 +8,10 @@ package org.semanticdesktop.aperture.addressbook.apple;
 
 import java.io.PrintWriter;
 
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -54,7 +54,7 @@ public class AppleAddressbookCrawlerTest extends ApertureTestBase implements Cra
 		c.setAccessData(new AccessDataImpl());
 		c.setCrawlerHandler(this);
 		
-		model = new ModelImplSesame(false);
+		model = new RepositoryModel(false);
 		
 		System.err.println("Crawling addressbook... ");
 		c.crawl();

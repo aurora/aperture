@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -12,11 +12,11 @@ import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.util.Set;
 
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
@@ -76,7 +76,7 @@ public class FileInspector {
 
 		// create the RDFContainer that will hold the RDF model
 		URI uri = URIImpl.create(file.toURI().toString());
-		Model model = new ModelImplSesame(false);
+		Model model = new RepositoryModel(false);
 		RDF2GoRDFContainer container = new RDF2GoRDFContainer(model, uri);
 
 		// determine and apply an Extractor that can handle this MIME type

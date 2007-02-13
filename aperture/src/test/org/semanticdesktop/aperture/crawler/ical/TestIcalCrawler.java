@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -13,7 +13,6 @@ import java.io.InputStream;
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.DatatypeLiteral;
@@ -24,6 +23,7 @@ import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.ontoware.rdf2go.vocabulary.XSD;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
@@ -37,8 +37,8 @@ public class TestIcalCrawler extends ApertureTestBase {
 	public static final String ICAL_TESTDATA_PATH = DOCS_PATH + "icaltestdata/";
 	public static final String TEMP_FILE_NAME = "temp-calendar.ics";
 
-	private ModelImplSesame model;
-	private ModelImplSesame model2;
+	private RepositoryModel model;
+	private RepositoryModel model2;
 	
 	public void setUp() {
 		
@@ -711,7 +711,7 @@ public class TestIcalCrawler extends ApertureTestBase {
 
 		assertTrue(file.delete());
 		model = testCrawlerHandler.getModel();
-		model2 = (ModelImplSesame)configurationContainer.getModel();
+		model2 = (RepositoryModel)configurationContainer.getModel();
 		return testCrawlerHandler.getModel();
 	}
 
