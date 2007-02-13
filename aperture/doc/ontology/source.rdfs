@@ -7,13 +7,9 @@
 <rdf:RDF xmlns:rdf="&rdf;"
 	 xmlns:source_="&source_;"
 	 xmlns:rdfs="&rdfs;">
-<rdfs:Class rdf:about="&source_;AddressbookDataSource"
-	 rdfs:label="AddressbookDataSource">
-	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
-</rdfs:Class>
 <rdfs:Class rdf:about="&source_;AppleAddressbookDataSource"
 	 rdfs:label="AppleAddressbookDataSource">
-	<rdfs:subClassOf rdf:resource="&source_;AddressbookDataSource"/>
+	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
 </rdfs:Class>
 <rdfs:Class rdf:about="&source_;DataSource"
 	 rdfs:label="DataSource">
@@ -58,7 +54,7 @@
 </rdfs:Class>
 <rdfs:Class rdf:about="&source_;ThunderbirdAddressbookDataSource"
 	 rdfs:label="ThunderbirdAddressbookDataSource">
-	<rdfs:subClassOf rdf:resource="&source_;AddressbookDataSource"/>
+	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
 </rdfs:Class>
 <rdfs:Class rdf:about="&source_;WebDataSource"
 	 rdfs:label="WebDataSource">
@@ -110,12 +106,6 @@
 	 rdfs:label="excludePattern">
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&source_;Pattern"/>
-</rdf:Property>
-<rdf:Property rdf:about="&source_;flavour"
-	 rdfs:label="flavour">
-	<rdfs:comment>Some datasource have different flavours, for example the AddressbookDataSource has versions for Thunderbird, Mail.app, etc. This property specifies which one to use.</rdfs:comment>
-	<rdfs:domain rdf:resource="&source_;DataSource"/>
-	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;hostname"
 	 rdfs:comment="hostname of the server to connect to"

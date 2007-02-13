@@ -7,13 +7,9 @@
 <rdf:RDF xmlns:rdf="&rdf;"
 	 xmlns:source_="&source_;"
 	 xmlns:rdfs="&rdfs;">
-<rdfs:Class rdf:about="&source_;AddressbookDataSource"
-	 rdfs:label="AddressbookDataSource">
-	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
-</rdfs:Class>
 <rdfs:Class rdf:about="&source_;AppleAddressbookDataSource"
 	 rdfs:label="AppleAddressbookDataSource">
-	<rdfs:subClassOf rdf:resource="&source_;AddressbookDataSource"/>
+	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
 </rdfs:Class>
 <rdfs:Class rdf:about="&source_;DataSource"
 	 rdfs:label="DataSource">
@@ -58,7 +54,7 @@
 </rdfs:Class>
 <rdfs:Class rdf:about="&source_;ThunderbirdAddressbookDataSource"
 	 rdfs:label="ThunderbirdAddressbookDataSource">
-	<rdfs:subClassOf rdf:resource="&source_;AddressbookDataSource"/>
+	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
 </rdfs:Class>
 <rdfs:Class rdf:about="&source_;WebDataSource"
 	 rdfs:label="WebDataSource">
