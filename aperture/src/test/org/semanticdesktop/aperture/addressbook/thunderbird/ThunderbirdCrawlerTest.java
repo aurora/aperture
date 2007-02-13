@@ -30,7 +30,6 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 
 public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerHandler, RDFContainerFactory {

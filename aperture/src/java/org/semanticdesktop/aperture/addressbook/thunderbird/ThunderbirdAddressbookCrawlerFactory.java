@@ -10,12 +10,9 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.semanticdesktop.aperture.addressbook.apple.AppleAddressbookCrawler;
-import org.semanticdesktop.aperture.addressbook.thunderbird.ThunderbirdCrawler;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 

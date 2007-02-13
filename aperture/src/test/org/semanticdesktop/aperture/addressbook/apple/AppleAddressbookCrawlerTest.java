@@ -16,7 +16,6 @@ import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
-import org.semanticdesktop.aperture.addressbook.apple.AppleAddressbookCrawler;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
@@ -24,7 +23,6 @@ import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 
 /** 

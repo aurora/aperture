@@ -6,8 +6,6 @@
  */
 package org.semanticdesktop.aperture.rdf.rdf2go;
 
-import java.util.Properties;
-
 import org.ontoware.rdf2go.ModelFactory;
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;

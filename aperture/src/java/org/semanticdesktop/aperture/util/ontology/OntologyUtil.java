@@ -13,7 +13,6 @@ import java.io.InputStream;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
-import org.semanticdesktop.aperture.util.ModelUtil;
 
 public class OntologyUtil {
 
