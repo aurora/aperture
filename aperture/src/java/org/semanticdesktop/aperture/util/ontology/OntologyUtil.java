@@ -13,6 +13,7 @@ import java.io.InputStream;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
+import org.semanticdesktop.aperture.util.ResourceUtil;
 
 public class OntologyUtil {
 
@@ -35,7 +36,8 @@ public class OntologyUtil {
     /**
      * Puts the source ontology into the given model.
      * @param model The model for the source ontology to be put into.
-     * @throws Exception if something goes wrong.
+     * @throws Ex
+     * dfception if something goes wrong.
      */
     public static void getSourceFormatOntology(Model model) throws Exception {
         readFileFromResource(model, SOURCEFORMAT_ONTOLOGY, Syntax.RdfXml);
@@ -43,7 +45,7 @@ public class OntologyUtil {
 
     private static void readFileFromResource(Model model, String path, Syntax syntax)
             throws FileNotFoundException, IOException, ModelException {
-        InputStream stream = ClassLoader.getSystemResourceAsStream(path);
+        InputStream stream = ResourceUtil.getInputStream(path, OntologyUtil.class);
         if (stream == null) {
             throw new FileNotFoundException("couldn't find resource " + path);
         }
