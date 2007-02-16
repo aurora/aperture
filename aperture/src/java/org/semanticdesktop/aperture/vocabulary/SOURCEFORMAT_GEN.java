@@ -4,12 +4,12 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Thu Jan 11 15:33:18 CET 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Feb 16 15:24:05 CET 2007
  * input file: doc/ontology/sourceformat.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/sourceformat#
  */
 public interface SOURCEFORMAT_GEN {
-	public static final String NS_SOURCEFORMAT_GEN = "http://aperture.semanticdesktop.org/ontology/sourceformat#";
+	public static final URI NS_SOURCEFORMAT_GEN = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/sourceformat#");
 
     /**
      * Label: CheckBoxWidget 
@@ -27,6 +27,11 @@ public interface SOURCEFORMAT_GEN {
      * Comment: A combo box. Define the displayed labels and internal values using instances of ComboBoxEntry. 
      */
     public static final URI ComboBoxWidget = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/sourceformat#ComboBoxWidget");
+
+    /**
+     * Label: IntegerFieldWidget 
+     */
+    public static final URI IntegerFieldWidget = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/sourceformat#IntegerFieldWidget");
 
     /**
      * Label: PasswordTextFieldWidget 

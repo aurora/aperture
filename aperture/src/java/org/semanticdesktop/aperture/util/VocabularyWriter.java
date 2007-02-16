@@ -97,7 +97,7 @@ public class VocabularyWriter {
 			outP.println(" * namespace: "+ns);
 			outP.println(" */");
 			outP.println("public interface "+outputFileN+" {");
-			outP.println("	public static final String NS_" + outputFileN + " = \""+ns+"\";\n");
+			outP.println("	public static final URI NS_" + outputFileN + " = URIImpl.createURIWithoutChecking(\""+ns+"\");\n");
 		
 			// iterate through classes
 			generateElement(RDFS.Class, false);

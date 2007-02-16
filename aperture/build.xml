@@ -176,6 +176,7 @@ your copy of ANT at http://ant.apache.org/
     	    <fileset dir="${doc.dir}/ontology">
     	        <include name="*.rdfs" />
     	        <include name="*.owl" />
+    	        <include name="*.n3" />
     	    </fileset>
     	</copy>
     </target>

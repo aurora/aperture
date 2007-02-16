@@ -10,7 +10,3 @@
 					   fresnel:purpose fresnel:defaultLens ;
 					   fresnel:classLensDomain source:MicrosoftOutlookDataSource ;
 					   fresnel:showProperties ( source:rootURL ) .
-
-:rootURLFormat rdf:type fresnel:Format ;
-               fresnel:propertyFormatDomain source:rootUrl ;
-               sourceformat:valueWidget sourceformat:TextFieldWidget .

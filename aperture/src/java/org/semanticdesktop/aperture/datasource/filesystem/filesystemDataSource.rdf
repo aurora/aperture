@@ -13,19 +13,3 @@
                                             source:maximumDepth
                                             source:maximumByteSize
                                             source:includeHiddenResources ) .
-
-:rootURLFormat rdf:type fresnel:Format ;
-               fresnel:propertyFormatDomain source:rootUrl ;
-               sourceformat:valueWidget sourceformat:TextFieldWidget .
-                                
-:maximumDepthFormat rdf:type fresnel:Format ;
-                    fresnel:propertyFormatDomain source:maximumDepth ;
-                    sourceformat:valueWidget sourceformat:IntegerFieldWidget .
-                    
-:maximumByteSizeFormat rdf:type fresnel:Format ;
-                       fresnel:propertyFormatDomain source:maximumByteSize ;
-                       sourceformat:valueWidget sourceformat:IntegerFieldWidget .
-                    
-:includeHiddenResourcesFormat rdf:type fresnel:Format ;
-                              fresnel:propertyFormatDomain source:includeHiddenResources ;
-                              sourceformat:valueWidget sourceformat:CheckBoxWidget .                    

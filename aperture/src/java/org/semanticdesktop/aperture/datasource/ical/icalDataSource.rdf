@@ -11,7 +11,3 @@
 					fresnel:classLensDomain source:IcalDataSource ;
 					fresnel:showProperties ( source:rootUrl ) .
 
-:rootURLFormat rdf:type fresnel:Format ;
-               fresnel:propertyFormatDomain source:rootUrl ;
-               sourceformat:valueWidget sourceformat:TextFieldWidget .
-

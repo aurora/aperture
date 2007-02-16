@@ -107,12 +107,6 @@
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&source_;Pattern"/>
 </rdf:Property>
-<rdf:Property rdf:about="&source_;flavour"
-	 rdfs:label="flavour">
-	<rdfs:comment>Some datasource have different flavours, for example the AddressbookDataSource has versions for Thunderbird, Mail.app, etc. This property specifies which one to use.</rdfs:comment>
-	<rdfs:domain rdf:resource="&source_;DataSource"/>
-	<rdfs:range rdf:resource="&rdfs;Literal"/>
-</rdf:Property>
 <rdf:Property rdf:about="&source_;hostname"
 	 rdfs:comment="hostname of the server to connect to"
 	 rdfs:label="hostname">

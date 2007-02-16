@@ -10,8 +10,4 @@
 					fresnel:purpose fresnel:defaultLens ;
 					fresnel:classLensDomain source:ThunderbirdAddressbookDataSource ;
 					fresnel:showProperties ( source:basepath ) .
-
-:basepathFormat rdf:type fresnel:Format ;
-                fresnel:propertyFormatDomain source:hostname ;
-                sourceformat:valueWidget sourceformat:TextFieldWidget .
                 

@@ -9,7 +9,7 @@ import org.ontoware.rdf2go.model.node.impl.URIImpl;
  * namespace: http://aperture.semanticdesktop.org/ontology/source#
  */
 public interface DATASOURCE_GEN {
-	public static final String NS_DATASOURCE_GEN = "http://aperture.semanticdesktop.org/ontology/source#";
+	public static final URI NS_DATASOURCE_GEN = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#");
 
     /**
      * Label: AddressbookDataSource 

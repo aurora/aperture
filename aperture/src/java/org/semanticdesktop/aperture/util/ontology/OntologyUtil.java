@@ -24,6 +24,8 @@ public class OntologyUtil {
 
     private static final String SOURCEFORMAT_ONTOLOGY = RESOURCE_PACKAGE + "/sourceformat.rdfs";
 
+    private static final String SOURCEOPTIONSFORMATS = RESOURCE_PACKAGE + "/sourceoptionsformats.n3";
+
     /**
      * Puts the source ontology into the given model.
      * @param model The model for the source ontology to be put into.
@@ -41,6 +43,7 @@ public class OntologyUtil {
      */
     public static void getSourceFormatOntology(Model model) throws Exception {
         readFileFromResource(model, SOURCEFORMAT_ONTOLOGY, Syntax.RdfXml);
+        readFileFromResource(model, SOURCEOPTIONSFORMATS, Syntax.Turtle);
     }
 
     private static void readFileFromResource(Model model, String path, Syntax syntax)
