@@ -12,21 +12,21 @@
 
 :includeEmbeddedResourcesFormat rdf:type fresnel:Format ;
                                 fresnel:propertyFormatDomain source:includeEmbeddedResources ;
-                                sourceformat:valueWidget sourceformat:CheckBoxWidget .
+                                sourceformat:valueWidget [ a sourceformat:CheckBoxWidget ] .
 
 :includeHiddenResourcesFormat rdf:type fresnel:Format ;
                               fresnel:propertyFormatDomain source:includeHiddenResources ;
-                              sourceformat:valueWidget sourceformat:CheckBoxWidget .                    
+                              sourceformat:valueWidget [ a sourceformat:CheckBoxWidget ] .                    
                                 
 :maximumDepthFormat rdf:type fresnel:Format ;
                     fresnel:propertyFormatDomain source:maximumDepth ;
-                    sourceformat:valueWidget sourceformat:IntegerFieldWidget .
+                    sourceformat:valueWidget [ a sourceformat:IntegerFieldWidget ] .
                     
 :maximumByteSizeFormat rdf:type fresnel:Format ;
                        fresnel:propertyFormatDomain source:maximumByteSize ;
-                       sourceformat:valueWidget sourceformat:IntegerFieldWidget .
+                       sourceformat:valueWidget [ a sourceformat:IntegerFieldWidget ] .
 
 :rootURLFormat rdf:type fresnel:Format ;
                fresnel:propertyFormatDomain source:rootURL ;
-               sourceformat:valueWidget sourceformat:TextFieldWidget .
+               sourceformat:valueWidget [ a sourceformat:TextFieldWidget ] .
                        

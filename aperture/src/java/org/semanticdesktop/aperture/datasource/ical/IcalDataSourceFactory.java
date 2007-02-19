@@ -16,6 +16,7 @@ import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
+import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
@@ -52,7 +53,7 @@ public class IcalDataSourceFactory implements DataSourceFactory {
 	public boolean getDescription(Model model) {
 		InputStream stream = null;
 		try {
-			stream = IcalDataSourceFactory.class.getClassLoader().getResourceAsStream(ICAL_DESCRIPTION);
+			stream = ResourceUtil.getInputStream(ICAL_DESCRIPTION, IcalDataSourceFactory.class);
 			model.readFrom(stream,ICAL_SYNTAX);
 			return true;
 		} catch (Exception e) {

@@ -13,14 +13,16 @@ import java.util.List;
 
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.hypertext.linkextractor.LinkExtractor;
+import org.semanticdesktop.aperture.util.ResourceUtil;
 
 public class HtmlLinkExtractorTest extends ApertureTestBase {
 
     private InputStream stream;
 
     public void setUp() {
-        stream = ClassLoader
-                .getSystemResourceAsStream("org/semanticdesktop/aperture/hypertext/linkextractor/html/test.html");
+        stream = ResourceUtil.getInputStream(
+            "org/semanticdesktop/aperture/hypertext/linkextractor/html/test.html",
+            HtmlLinkExtractorTest.class);
     }
 
     public void tearDown() throws IOException {

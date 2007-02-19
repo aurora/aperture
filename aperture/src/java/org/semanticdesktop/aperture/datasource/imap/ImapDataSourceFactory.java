@@ -16,6 +16,7 @@ import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
+import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
@@ -52,7 +53,7 @@ public class ImapDataSourceFactory implements DataSourceFactory {
 	public boolean getDescription(Model model) {
 		InputStream stream = null;
 		try {
-			stream = ImapDataSourceFactory.class.getClassLoader().getResourceAsStream(IMAP_DESCRIPTION);
+			stream = ResourceUtil.getInputStream(IMAP_DESCRIPTION, ImapDataSourceFactory.class);
 			model.readFrom(stream, IMAP_SYNTAX);
 			return true;
 		} catch (Exception e) {

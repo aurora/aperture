@@ -16,6 +16,7 @@ import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
+import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
@@ -32,7 +33,7 @@ public class AppleAddressbookDataSourceFactory implements DataSourceFactory {
 	
 	/** The path to the resource containing the ICAL_DESCRIPTION */
     private static final String ADDRESSBOOK_DESCRIPTION = AppleAddressbookDataSourceFactory.class.getPackage()
-    		.getName().replace('.', '/') + "AppleAddressbookDataSource.rdf";
+    		.getName().replace('.', '/') + "/AppleAddressbookDataSource.rdf";
     
     /** The syntax the ADDRESSBOOK_DESCRIPTION is expressed in */
     private static final Syntax ADDRESSBOOK_SYNTAX = Syntax.Turtle;
@@ -52,8 +53,8 @@ public class AppleAddressbookDataSourceFactory implements DataSourceFactory {
 	public boolean getDescription(Model model) {
 		InputStream stream = null;
 		try {
-			stream = AppleAddressbookDataSourceFactory.class.getClassLoader()
-					.getResourceAsStream(ADDRESSBOOK_DESCRIPTION);
+			stream = ResourceUtil.getInputStream(ADDRESSBOOK_DESCRIPTION, 
+                AppleAddressbookDataSourceFactory.class);
 			model.readFrom(stream,ADDRESSBOOK_SYNTAX);
 			return true;
 		} catch (Exception e) {

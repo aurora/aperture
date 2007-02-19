@@ -16,6 +16,7 @@ import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
+import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
@@ -52,8 +53,7 @@ public class FileSystemDataSourceFactory implements DataSourceFactory {
 	public boolean getDescription(Model model) {
 		InputStream stream = null;
 		try {
-			stream = FileSystemDataSourceFactory.class.getClassLoader()
-					.getResourceAsStream(FILESYSTEM_DESCRIPTION);
+			stream = ResourceUtil.getInputStream(FILESYSTEM_DESCRIPTION, FileSystemDataSourceFactory.class);
 			model.readFrom(stream,FILESYSTEM_SYNTAX);
 			return true;
 		} catch (Exception e) {

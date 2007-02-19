@@ -14,6 +14,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.util.ResourceUtil;
 
 public class ExtractorTestBase extends ApertureTestBase {
 
@@ -21,7 +22,7 @@ public class ExtractorTestBase extends ApertureTestBase {
         // setup some info
         String uriString = "http://docs-r-us.com/dummy";
         URI id = URIImpl.createURIWithoutChecking(uriString);
-        InputStream stream = ClassLoader.getSystemResourceAsStream(resourceName);
+        InputStream stream = ResourceUtil.getInputStream(resourceName,ExtractorTestBase.class);
         assertNotNull(stream);
         Model model = createModel();
         RDF2GoRDFContainer rdfContainer = new RDF2GoRDFContainer(model,id);

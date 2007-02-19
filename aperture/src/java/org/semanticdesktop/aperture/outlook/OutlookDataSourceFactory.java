@@ -39,7 +39,7 @@ public class OutlookDataSourceFactory implements DataSourceFactory {
 	
 	/** The path to the resource containing the ICAL_DESCRIPTION */
     private static final String OUTLOOK_DESCRIPTION = OutlookDataSourceFactory.class.getPackage().getName()
-    		  .replace('.', '/') + "outlookDataSource.rdf";
+    		  .replace('.', '/') + "/outlookDataSource.rdf";
     
     /** The syntax the OUTLOOK_DESCRIPTION is expressed in */
     private static final Syntax OUTLOOK_SYNTAX = Syntax.Turtle;

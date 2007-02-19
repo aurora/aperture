@@ -16,6 +16,7 @@ import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
+import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
@@ -52,7 +53,7 @@ public class WebDataSourceFactory implements DataSourceFactory {
 	public boolean getDescription(Model model) {
 		InputStream stream = null;
 		try {
-			stream = WebDataSourceFactory.class.getClassLoader().getResourceAsStream(WEB_DESCRIPTION);
+			stream = ResourceUtil.getInputStream(WEB_DESCRIPTION, WebDataSourceFactory.class);
 			model.readFrom(stream,WEB_SYNTAX);
 			return true;
 		} catch (Exception e) {
