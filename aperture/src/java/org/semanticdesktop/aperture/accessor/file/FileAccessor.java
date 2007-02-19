@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -75,7 +75,6 @@ public class FileAccessor implements DataAccessor {
 
 		// get the File instance
 		File file = getFile(url, params);
-		file = file.getCanonicalFile();
 
 		// make sure the physical resource exists
 		if (!file.exists()) {

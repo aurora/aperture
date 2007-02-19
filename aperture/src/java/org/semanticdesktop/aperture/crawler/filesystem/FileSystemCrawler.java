@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -8,11 +8,7 @@ package org.semanticdesktop.aperture.crawler.filesystem;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,7 +66,7 @@ public class FileSystemCrawler extends CrawlerBase {
 			LOGGER.log(Level.SEVERE,"root folder does not exist: '"+root+"'");
 			return ExitCode.FATAL_ERROR;
 		}
-
+        
 		// determine the maximum depth
 		Integer i = ConfigurationUtil.getMaximumDepth(configuration);
 		int maxDepth = i == null ? DEFAULT_MAX_DEPTH : i.intValue();
@@ -186,6 +182,14 @@ public class FileSystemCrawler extends CrawlerBase {
 	 * Crawls a single File and reports it to the registered DataSourceListeners.
 	 */
 	private void crawlSingleFile(File file) {
+        // resolve the file to its canonical form
+        try {
+            file = file.getCanonicalFile();
+        }
+        catch (IOException e) {
+            LOGGER.log(Level.WARNING, "unable to resolve file to its canocical form: " + file, e);
+        }
+        
 		// create an identifier for the file
 		String url = file.toURI().toString();
 
@@ -235,30 +239,5 @@ public class FileSystemCrawler extends CrawlerBase {
 		catch (IOException e) {
 			LOGGER.log(Level.WARNING, "I/O error while processing " + url, e);
 		}
-	}
-
-	/**
-	 * This must be overriden so that the URLs match those returned to objectNew, etc. Those methods call
-	 * File.getCanonicalFile(), which resolves symlinks, but the reportRemoved in CrawlerBase does not.
-	 */
-	protected void reportRemoved(Set ids) {
-		Set newset = new HashSet();
-		for (Iterator i = ids.iterator(); i.hasNext();) {
-			String url = (String) i.next();
-			try {
-				URI id = new URI(url);
-				// Isn't this pretty?
-				newset.add(new File(id).getCanonicalFile().toURI().toString());
-			}
-			catch (IOException e) {
-				// Let's all hope this doesn't happen and add the unchanged url
-				newset.add(url);
-			}
-			catch (URISyntaxException e) {
-				// Let's all hope this doesn't happen and add the unchanged url
-				newset.add(url);
-			}
-		}
-		super.reportRemoved(newset);
 	}
 }
