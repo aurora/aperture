@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
@@ -32,7 +33,14 @@ import org.openrdf.rdf2go.RepositoryModel;
  * 
  * usage:
  * <pre>
-VocabularyWriter -i &lt;inputrdfsfile&gt; -o &lt;outputdir&lt; --package packagename -a namespace -n nameofjavafile
+VocabularyWriter -i &lt;inputrdfsfile&gt; -o &lt;outputdir&gt; 
+  --package &lt;packagename&gt; -a &lt;namespace&gt; -n &lt;nameofjavafile&gt;
+  -namespacestrict &lt;false|true&gt;
+
+ -namespacestrict If true, only elements from within the namespace (-a)
+     are generated. Default false.
+
+Example values:
 --package  org.semanticdesktop.aperture.outlook.vocabulary 
 -o src/outlook/org/semanticdesktop/aperture/outlook/vocabulary/
 -i doc/ontology/data.rdfs
@@ -58,6 +66,10 @@ public class VocabularyWriter {
 	File inputRdfF;
 	File outputDirF;
 	File outputF;
+    Boolean namespacestrict = false;
+    
+    // avoid duplicates
+    HashMap<String, String> uriToLocalName = new HashMap<String, String>();
 
 
 	public VocabularyWriter() {
@@ -131,6 +143,12 @@ public class VocabularyWriter {
 		        String uri = vx.toString();
 		        String localName = getLocalName(vx);
 		        String javalocalName = asLegalJavaID(localName, !isProperty);
+                if (uriToLocalName.containsKey(uri))
+                    continue;
+                uriToLocalName.put(uri, javalocalName);
+                // check namespace strict?
+		        if (namespacestrict && !uri.startsWith(ns))
+		            continue;
 		        outP.println("    /**");
 		        printCommentAndLabel(vx);
 		        outP.println("     */");
@@ -262,11 +280,21 @@ public class VocabularyWriter {
 			{
 				i++;
 				outputFileN = args[i];
-			} else if (args[i].equals("--package"))			
-			{
-				i++;
-				packagen = args[i];
-			} else throw new Exception("unknow argument "+args[i]);
+			} else if (args[i].equals("--package"))          
+            {
+                i++;
+                packagen = args[i];
+            } else if (args[i].equals("-namespacestrict"))         
+            {
+                i++;
+                String s = args[i];
+                if ("false".equals(s))
+                    namespacestrict = false;
+                else if ("true".equals(s))
+                    namespacestrict = true;
+                else throw new Exception("namespacestrict only allows 'true' or 'false', not '"+s+"'");
+                    
+            } else throw new Exception("unknow argument "+args[i]);
 			i++;
 		}
 		
