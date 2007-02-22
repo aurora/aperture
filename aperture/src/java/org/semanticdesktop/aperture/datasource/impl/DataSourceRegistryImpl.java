@@ -72,6 +72,7 @@ public class DataSourceRegistryImpl implements DataSourceRegistry {
         factorySet.add(factory);
         Model descriptionModel = modelSet.getModel(factory.getSupportedType());
         factory.getDescription(descriptionModel);
+        descriptionModel.close();
     }
 
     public void remove(DataSourceFactory factory) {
