@@ -9,7 +9,7 @@
 :FileSystemDataSourceLens rdf:type fresnel:Lens ;
                    fresnel:purpose fresnel:defaultLens ;
                    fresnel:classLensDomain source:FileSystemDataSource ;
-                   fresnel:showProperties ( source:rootURL 
+                   fresnel:showProperties ( source:rootFolder 
                                             source:maximumDepth
                                             source:maximumByteSize
                                             source:includeHiddenResources ) .
