@@ -26,6 +26,10 @@
                        fresnel:propertyFormatDomain source:maximumByteSize ;
                        sourceformat:valueWidget [ a sourceformat:IntegerFieldWidget ] .
 
+:rootFolderFormat rdf:type fresnel:Format ;
+               fresnel:propertyFormatDomain source:rootFolder ;
+               sourceformat:valueWidget [ a sourceformat:TextFieldWidget ] .
+
 :rootURLFormat rdf:type fresnel:Format ;
                fresnel:propertyFormatDomain source:rootURL ;
                sourceformat:valueWidget [ a sourceformat:TextFieldWidget ] .
