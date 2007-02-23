@@ -94,7 +94,7 @@ public class XmlExtractor implements Extractor {
 				catch (SAXException se) {
 					// the FNFE is probably more worthy to report than the SAXException
 					LOGGER.log(Level.SEVERE, "FileNotFoundException while parsing document and unable "
-							+ "to disable external dtd loading", e);
+							+ "to disable external dtd loading: " + id.toString(), e);
 				}
 			}
 
