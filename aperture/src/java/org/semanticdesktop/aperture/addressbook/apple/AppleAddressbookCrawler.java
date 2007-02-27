@@ -15,6 +15,7 @@ import java.util.logging.Level;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
@@ -124,7 +125,7 @@ public class AppleAddressbookCrawler extends AddressbookCrawler {
 	
 	private Model createSimpleModel() {
 		try {
-			return new RepositoryModel(false);
+			return RDF2Go.getModelFactory().createModel();
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "Couldn't create a simple model",e);
 			return null;
