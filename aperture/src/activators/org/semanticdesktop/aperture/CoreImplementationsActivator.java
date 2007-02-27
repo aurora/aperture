@@ -10,6 +10,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.semanticdesktop.aperture.accessor.file.FileAccessorActivator;
 import org.semanticdesktop.aperture.accessor.http.HttpAccessorActivator;
+import org.semanticdesktop.aperture.addressbook.AddressBookActivator;
 import org.semanticdesktop.aperture.crawler.filesystem.FilesystemCrawlerActivator;
 import org.semanticdesktop.aperture.crawler.ical.IcalCrawlerActivator;
 import org.semanticdesktop.aperture.crawler.imap.ImapCrawlerActivator;
@@ -72,6 +73,8 @@ public class CoreImplementationsActivator implements BundleActivator {
 	private FileOpenerActivator fileOpenerActivator;
 	private HttpOpenerActivator httpOpenerActivator;
 	
+    private AddressBookActivator addressbookActivator;
+    
 	public void start(BundleContext context) throws Exception {
 		fileAccessorActivator = new FileAccessorActivator();
 		fileAccessorActivator.start(context);
@@ -131,7 +134,10 @@ public class CoreImplementationsActivator implements BundleActivator {
 		fileOpenerActivator.start(context);
 		httpOpenerActivator = new HttpOpenerActivator();
 		httpOpenerActivator.start(context);
-		
+
+        addressbookActivator = new AddressBookActivator();
+        addressbookActivator.start(context);
+        
 		bc = context;	
 	}
 
@@ -194,7 +200,9 @@ public class CoreImplementationsActivator implements BundleActivator {
 		fileOpenerActivator = null;
 		httpOpenerActivator.stop(context);
 		httpOpenerActivator = null;
-				
+		
+        addressbookActivator.stop(context);
+        
 		bc = null;	
 	}
 }

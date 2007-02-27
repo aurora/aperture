@@ -193,7 +193,8 @@
         <and>
             <or>
                 <filename name="org/semanticdesktop/aperture/addressbook/**" />
-                <filename name="applewrapper-0.1.jar" />
+                <filename name="applewrapper-0.2.jar" />
+                <filename name="demork-2.0.jar" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>
@@ -454,6 +455,7 @@
     
     <selector id="bundle.core.services.impl.selector">
         <or>
+        	<selector refid="bundle.addressbook.selector" />
             <selector refid="bundle.accessor.file.selector" />
             <selector refid="bundle.accessor.http.selector" />
             <selector refid="bundle.crawler.ical.selector" />
