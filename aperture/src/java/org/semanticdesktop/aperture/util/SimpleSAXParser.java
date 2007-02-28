@@ -22,11 +22,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * An XML parser that generates "simple" SAX-like events from a limited subset
- * of XML documents. The SimpleSAXParser can parse simple XML documents; it
- * doesn't support processing instructions or elements that contain both
- * sub-element and character data; character data is only supported in the
- * "leaves" of the XML element tree.
+ * An XML parser that generates "simple" SAX-like events from a limited subset of XML documents. The
+ * SimpleSAXParser can parse simple XML documents; it doesn't support processing instructions or elements that
+ * contain both sub-element and character data; character data is only supported in the "leaves" of the XML
+ * element tree.
  * 
  * <h3>Example:</h3>
  * <p>
@@ -46,13 +45,13 @@ import org.xml.sax.helpers.DefaultHandler;
  * <pre>
  * startDocument()
  * startTag(&quot;xml-doc&quot;, emptyMap, &quot;&quot;)
- *
+ * 
  * startTag(&quot;foo&quot;, a_b_Map, &quot;&quot;)
  * endTag(&quot;foo&quot;)
- *
+ * 
  * startTag(&quot;bar&quot;, emptyMap, &quot;Hello World!&quot;)
  * endTag(&quot;bar&quot;)
- *
+ * 
  * endTag(&quot;xml-doc&quot;)
  * endDocument()
  * </pre>
@@ -70,8 +69,14 @@ public class SimpleSAXParser {
     private SimpleSAXListener listener;
 
     /**
-     * Creates a new SimpleSAXParser that will use the supplied SAXParser for parsing the XML. One must
-     * set a SimpleSAXListener on this SimpleSAXParser before calling one of the parse() methods.
+     * Flag indicating whether textual element content needs to be trimmed before being reported. Defaults to
+     * 'true'.
+     */
+    private boolean trimWhitespace = true;
+
+    /**
+     * Creates a new SimpleSAXParser that will use the supplied SAXParser for parsing the XML. One must set a
+     * SimpleSAXListener on this SimpleSAXParser before calling one of the parse() methods.
      * 
      * @param saxParser The SAXParser to use for parsing.
      * 
@@ -82,9 +87,8 @@ public class SimpleSAXParser {
     }
 
     /**
-     * Creates a new SimpleSAXParser that will create a new SAXParser using a SAXParserFactory for
-     * parsing the XML. One must set a SimpleSAXListener on this object before calling one of the parse()
-     * methods.
+     * Creates a new SimpleSAXParser that will create a new SAXParser using a SAXParserFactory for parsing the
+     * XML. One must set a SimpleSAXListener on this object before calling one of the parse() methods.
      * 
      * @exception ParserConfigurationException If the SimpleSAXParser was unable to create a SAXParser.
      * @exception SAXException
@@ -98,8 +102,8 @@ public class SimpleSAXParser {
     }
 
     /**
-     * Sets the (new) listener that should receive any events from this parser. This listener will
-     * replace any previously set listener.
+     * Sets the (new) listener that should receive any events from this parser. This listener will replace any
+     * previously set listener.
      * 
      * @param listener The (new) listener for events from this parser.
      */
@@ -114,6 +118,21 @@ public class SimpleSAXParser {
      */
     public SimpleSAXListener getListener() {
         return listener;
+    }
+
+    /**
+     * Sets whether returned textual content needs to be trimmed before being reported to the
+     * SimpleSAXListener.
+     */
+    public void setTrimWhiteSpace(boolean trimWhitespace) {
+        this.trimWhitespace = trimWhitespace;
+    }
+
+    /**
+     * Returns whether textual content is trimmed before being reported to the SimpleSAXListener.
+     */
+    public boolean getTrimWhitespace() {
+        return trimWhitespace;
     }
 
     /**
@@ -145,8 +164,7 @@ public class SimpleSAXParser {
     }
 
     /**
-     * This DefaultHandler extension translates SAX2 events to the simpler to use SimpleSAXListener
-     * events.
+     * This DefaultHandler extension translates SAX2 events to the simpler to use SimpleSAXListener events.
      */
     private class SimpleSAXDefaultHandler extends DefaultHandler {
 
@@ -217,7 +235,11 @@ public class SimpleSAXParser {
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
             if (deferredStartTag != null) {
                 // Check if any character data has been collected in the _charBuf
-                String text = charBuf.toString().trim();
+                String text = charBuf.toString();
+
+                if (trimWhitespace) {
+                    text = text.trim();
+                }
 
                 // Report deferred start tag
                 listener.startTag(deferredStartTag, deferredAttributes, text);
