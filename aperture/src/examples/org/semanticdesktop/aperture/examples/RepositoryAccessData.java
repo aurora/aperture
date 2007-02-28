@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.accessor.base;
+package org.semanticdesktop.aperture.examples;
 
 import java.io.IOException;
 import java.util.HashSet;

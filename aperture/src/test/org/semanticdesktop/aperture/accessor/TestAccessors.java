@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -11,7 +11,6 @@ import junit.framework.TestSuite;
 
 import org.semanticdesktop.aperture.accessor.base.TestFileAccessData;
 import org.semanticdesktop.aperture.accessor.base.TestModelAccessData;
-import org.semanticdesktop.aperture.accessor.base.TestRepositoryAccessData;
 import org.semanticdesktop.aperture.accessor.file.TestFileAccessor;
 import org.semanticdesktop.aperture.accessor.impl.TestDefaultDataAccessorRegistry;
 
@@ -27,7 +26,6 @@ public class TestAccessors extends TestSuite {
         addTest(new TestSuite(TestFileAccessor.class));
         addTest(new TestSuite(TestDefaultDataAccessorRegistry.class));
         addTest(new TestSuite(TestFileAccessData.class));
-        addTest(new TestSuite(TestRepositoryAccessData.class));
         addTest(new TestSuite(TestModelAccessData.class));
     }
 }
