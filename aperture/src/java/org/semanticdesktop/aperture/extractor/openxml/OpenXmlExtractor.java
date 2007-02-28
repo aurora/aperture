@@ -74,7 +74,7 @@ public class OpenXmlExtractor implements Extractor {
      * application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml: ?
      * application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml: ?
      * application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml: w:t
-     * application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml: w:instrText w:t
+     * application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml: w:t
      * application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml: w:t
      * application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml: w:t
      * application/vnd.openxmlformats-officedocument.wordprocessingml.main+xml: w:t
@@ -339,6 +339,7 @@ public class OpenXmlExtractor implements Extractor {
         }
 
         parser.setListener(listener);
+        parser.setTrimWhiteSpace(false);
 
         try {
             parser.parse(new NonCloseableStream(stream));
@@ -506,23 +507,13 @@ public class OpenXmlExtractor implements Extractor {
 
         @SuppressWarnings("unchecked")
         public void startTag(String tagName, Map atts, String text) throws SAXException {
-            if (isFullTextTag(tagName)) {
-                // I don't really understand why but this improves output on a lot of my test documents;
-                // else words may get concatenated accidentally. The price: sometimes spaces appear inside
-                // words. In general this fixes more problems that it causes so I've kept it in.
-                boolean addSpace = false;
-                String preserve = (String) atts.get("xml:space");
-                if ("preserve".equals(preserve)) {
-                    addSpace = true;
-                }
-
-                if (addSpace) {
-                    fullText.append(' ');
-                }
+            if ("w:t".equals(tagName)) {
                 fullText.append(text);
-                if (addSpace) {
-                    fullText.append(' ');
-                }
+            }
+            else if ("t".equals(tagName) || "p:text".equals(tagName) || "a:t".equals(tagName)
+                    || "st:t".equals(tagName) || "v".equals(tagName)) {
+                fullText.append(text);
+                fullText.append(' ');
             }
             else if ("w:tab".equals(tagName) && !insideTabs) {
                 fullText.append('\t');
@@ -530,12 +521,6 @@ public class OpenXmlExtractor implements Extractor {
             else if ("w:tabs".equals(tagName)) {
                 insideTabs = true;
             }
-        }
-
-        private boolean isFullTextTag(String tagName) {
-            return "w:t".equals(tagName) || "t".equals(tagName) || "p:text".equals(tagName)
-                    || "a:t".equals(tagName) || "st:t".equals(tagName) || "v".equals(tagName)
-                    || "w:instrText".equals(tagName);
         }
 
         public void endTag(String tagName) throws SAXException {
