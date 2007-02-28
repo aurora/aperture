@@ -366,8 +366,12 @@ public class OpenXmlExtractor implements Extractor {
                     // if it has a namespace URI, we can easily create an RDF property from it
                     String nameSpace = childElement.getNamespaceURI();
                     if (nameSpace != null) {
-                        URI predicate = metadata.getValueFactory().createURI(nameSpace,
-                            childElement.getLocalName());
+                        if (!nameSpace.endsWith("/")) {
+                            nameSpace += "/";
+                        }
+                        String uriString = nameSpace + childElement.getLocalName();
+                        URI predicate = metadata.getValueFactory().createURI(uriString);
+                        
                         metadata.add(predicate, text);
                     }
 
