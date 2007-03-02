@@ -16,6 +16,7 @@ import java.util.HashMap;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.Syntax;
@@ -26,7 +27,6 @@ import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.vocabulary.OWL;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.ontoware.rdf2go.vocabulary.RDFS;
-import org.openrdf.rdf2go.RepositoryModel;
 
 /**
  * reads an RDF/S file and creates an Aperture Vocabulary file from it.
@@ -86,7 +86,7 @@ public class VocabularyWriter {
 	
 	private void loadOnt()  throws Exception  {
 		// read
-		myModel = new RepositoryModel(false);
+        myModel = RDF2Go.getModelFactory().createModel();
 		System.out.println("reading from "+inputRdfF.getAbsolutePath()+" in format "+ Syntax.RdfXml);
 		Reader reader = new BufferedReader(new FileReader(inputRdfF));
 		myModel.readFrom(reader, Syntax.RdfXml);
