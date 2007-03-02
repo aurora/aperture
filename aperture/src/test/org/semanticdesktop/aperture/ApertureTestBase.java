@@ -10,6 +10,7 @@ import junit.framework.TestCase;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
@@ -18,7 +19,6 @@ import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.ValueFactory;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
@@ -27,16 +27,23 @@ public class ApertureTestBase extends TestCase {
 
 	public static final String DOCS_PATH = "org/semanticdesktop/aperture/docs/";
 
-	// TODO fix this
-
 	public Model createModel() {
 		try {
-			return new RepositoryModel(false);
+			return RDF2Go.getModelFactory().createModel();
 		}
 		catch (ModelException me) {
 			return null;
 		}
 	}
+    
+    protected RDFContainer createRDFContainer(String uri) {
+        return createRDFContainer(URIImpl.createURIWithoutChecking(uri));
+    }
+    
+    protected RDFContainer createRDFContainer(URI uri) {
+        Model newModel = createModel();
+        return new RDF2GoRDFContainer(newModel,uri);
+    }
 
 	public void checkStatement(URI property, String substring, RDF2GoRDFContainer container) 
 			throws ModelException {
@@ -112,18 +119,5 @@ public class ApertureTestBase extends TestCase {
 
 		// see if any of the found properties contains the specified substring
 		assertTrue(encounteredValue);
-	}
-	
-	protected RDFContainer createRDFContainer(String uri) {
-		return createRDFContainer(URIImpl.createURIWithoutChecking(uri));
-	}
-	
-	protected RDFContainer createRDFContainer(URI uri) {
-		try {
-			Model newModel = new RepositoryModel(false);
-			return new RDF2GoRDFContainer(newModel,uri);
-		} catch (ModelException me) {
-			throw new RuntimeException(me);
-		}		
 	}
 }

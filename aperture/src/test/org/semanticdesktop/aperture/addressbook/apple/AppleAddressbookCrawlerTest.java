@@ -11,7 +11,6 @@ import java.io.PrintWriter;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
-import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -52,7 +51,7 @@ public class AppleAddressbookCrawlerTest extends ApertureTestBase implements Cra
 		c.setAccessData(new AccessDataImpl());
 		c.setCrawlerHandler(this);
 		
-		model = new RepositoryModel(false);
+        model = createModel();
 		
 		System.err.println("Crawling addressbook... ");
 		c.crawl();

@@ -10,10 +10,11 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
-import org.openrdf.rdf2go.RepositoryModel;
+import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.crawler.Crawler;
@@ -40,7 +41,7 @@ class IcalTestIncrementalCrawlerHandler implements CrawlerHandler, RDFContainerF
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
     public IcalTestIncrementalCrawlerHandler(File file) throws ModelException {
-        model = new RepositoryModel(false);
+        model = RDF2Go.getModelFactory().createModel();
         newObjects = new HashSet<String>();
         changedObjects = new HashSet<String>();
         unchangedObjects = new HashSet<String>();

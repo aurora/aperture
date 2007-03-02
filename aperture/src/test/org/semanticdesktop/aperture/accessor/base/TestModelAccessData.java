@@ -10,9 +10,6 @@ import java.io.IOException;
 
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.ApertureTestBase;
 
 public class TestModelAccessData extends ApertureTestBase {
@@ -22,8 +19,7 @@ public class TestModelAccessData extends ApertureTestBase {
 	private ModelAccessData accessData;
 	
 	public void setUp() throws ModelException {
-		URI contextURI = URIImpl.createURIWithoutChecking("urn:test:dummy");
-		model = new RepositoryModel(contextURI,false);
+        model = createModel();
 		accessData = new ModelAccessData(model);
 	}
 	

@@ -23,7 +23,6 @@ import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.ontoware.rdf2go.vocabulary.XSD;
-import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
@@ -37,8 +36,8 @@ public class TestIcalCrawler extends ApertureTestBase {
 	public static final String ICAL_TESTDATA_PATH = DOCS_PATH + "icaltestdata/";
 	public static final String TEMP_FILE_NAME = "temp-calendar.ics";
 
-	private RepositoryModel model;
-	private RepositoryModel model2;
+	private Model model;
+	private Model model2;
 	
 	public void setUp() {
 		
@@ -711,7 +710,7 @@ public class TestIcalCrawler extends ApertureTestBase {
 
 		assertTrue(file.delete());
 		model = testCrawlerHandler.getModel();
-		model2 = (RepositoryModel)configurationContainer.getModel();
+		model2 = configurationContainer.getModel();
 		return testCrawlerHandler.getModel();
 	}
 

@@ -13,7 +13,6 @@ import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
@@ -153,13 +152,7 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 		private RDF2GoRDFContainer lastContainer;
 
 		public SimpleCrawlerHandler() throws ModelException {
-			// create a Model
-			model = new RepositoryModel(false);
-
-			// set auto-commit off so that all additions and deletions between two commits become a
-			// single transaction
-			// unavailable in RDF2Go
-
+            model = createModel();
 			objectCount = 0;
 		}
 

@@ -12,7 +12,6 @@ import java.io.InputStream;
 
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
@@ -91,7 +90,7 @@ public class TestIcalCrawlerIncremental extends ApertureTestBase {
 		} else {
 			tempFile = createTempFile(fileStream,file);
 		}
-		Model configurationModel = new RepositoryModel(false);
+		Model configurationModel = createModel();
 		RDF2GoRDFContainer configurationContainer = new RDF2GoRDFContainer(configurationModel,URIImpl
 				.createURIWithoutChecking("source:testsource"));
 		ConfigurationUtil.setRootUrl(tempFile.getAbsolutePath(), configurationContainer);

@@ -6,9 +6,10 @@
  */
 package org.semanticdesktop.aperture.crawler.ical;
 
+import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
-import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.crawler.Crawler;
@@ -19,7 +20,7 @@ import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 
 class IcalTestSimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
     
-    private RepositoryModel model;
+    private Model model;
 
     private int numberOfObjects;
     
@@ -28,14 +29,14 @@ class IcalTestSimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactor
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
     public IcalTestSimpleCrawlerHandler() throws ModelException {
-        model = new RepositoryModel(false);
+        model = RDF2Go.getModelFactory().createModel();
     }
     
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////// GETTERS AND SETTERS ///////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    public RepositoryModel getModel() {
+    public Model getModel() {
         return model;
     }
     
