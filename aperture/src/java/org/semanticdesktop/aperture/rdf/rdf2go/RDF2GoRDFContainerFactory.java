@@ -11,7 +11,6 @@ import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
-import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.RDFContainerFactory;
 
 /**
@@ -26,7 +25,7 @@ public class RDF2GoRDFContainerFactory implements RDFContainerFactory,
 		factory = RDF2Go.getModelFactory();
 	}
 
-    public RDFContainer newInstance(String uri) {
+    public RDF2GoRDFContainer newInstance(String uri) {
     	try {
     		Model newModel = factory.createModel();
         	return new RDF2GoRDFContainer(newModel,uri);
@@ -35,7 +34,7 @@ public class RDF2GoRDFContainerFactory implements RDFContainerFactory,
     	}
     }
     
-    public RDFContainer newInstance(URI uri) {
+    public RDF2GoRDFContainer newInstance(URI uri) {
     	try {
     		Model newModel = factory.createModel();
         	return new RDF2GoRDFContainer(newModel,uri);
@@ -44,7 +43,7 @@ public class RDF2GoRDFContainerFactory implements RDFContainerFactory,
     	}
     }
 
-	public RDFContainer getRDFContainer(URI uri) {
+	public RDF2GoRDFContainer getRDFContainer(URI uri) {
 		return newInstance(uri);
 	}
 }
