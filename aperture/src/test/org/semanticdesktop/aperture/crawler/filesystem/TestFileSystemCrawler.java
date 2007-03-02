@@ -184,14 +184,6 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 			// an rdf2go way to return a container, backed by a model, backed by a repository, which
 			// actually is the private repository common to all return RDFContainers, but with a 
 			// different context
-			//Model newModel = null;
-			//try {
-			//	newModel = new RepositoryModel(uri,(Repository)model.getUnderlyingModelImplementation());
-			//} catch (ModelException me) {
-			//	return null;
-			//}
-			//RDF2GoRDFContainer container = new RDF2GoRDFContainer(newModel, uri);
-			
 			RDF2GoRDFContainer container = new RDF2GoRDFContainer(model,uri,true);
 			lastContainer = container;
 			return container;
