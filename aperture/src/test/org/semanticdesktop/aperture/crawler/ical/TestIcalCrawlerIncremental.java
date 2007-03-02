@@ -91,8 +91,7 @@ public class TestIcalCrawlerIncremental extends ApertureTestBase {
 			tempFile = createTempFile(fileStream,file);
 		}
 		Model configurationModel = createModel();
-		RDF2GoRDFContainer configurationContainer = new RDF2GoRDFContainer(configurationModel,URIImpl
-				.createURIWithoutChecking("source:testsource"));
+		RDF2GoRDFContainer configurationContainer = new RDF2GoRDFContainer(configurationModel, "source:testsource");
 		ConfigurationUtil.setRootUrl(tempFile.getAbsolutePath(), configurationContainer);
 
 		IcalDataSource icalDataSource = new IcalDataSource();
