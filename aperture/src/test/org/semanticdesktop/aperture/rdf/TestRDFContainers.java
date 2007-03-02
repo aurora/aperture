@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -10,7 +10,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.semanticdesktop.aperture.rdf.rdf2go.TestRdf2GoRdfContainer;
-import org.semanticdesktop.aperture.rdf.sesame.TestSesameRDFContainer;
 
 public class TestRDFContainers extends TestSuite {
 
@@ -21,7 +20,6 @@ public class TestRDFContainers extends TestSuite {
     public TestRDFContainers() {
         super("RDF containers");
         
-        addTest(new TestSuite(TestSesameRDFContainer.class));
         addTest(new TestSuite(TestRdf2GoRdfContainer.class));
     }
 }
