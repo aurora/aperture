@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna.
+ * Copyright (c) 2006 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -13,7 +13,7 @@ import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class PresentationsExtractorTest extends ExtractorTestBase {
@@ -23,7 +23,7 @@ public class PresentationsExtractorTest extends ExtractorTestBase {
 		// apply the extractor on an example file
 		ExtractorFactory factory = new PresentationsExtractorFactory();
 		Extractor extractor = factory.get();
-		RDF2GoRDFContainer container = extract(DOCS_PATH + "corel-presentations-3.0.shw", extractor);
+		RDFContainer container = extract(DOCS_PATH + "corel-presentations-3.0.shw", extractor);
 
 		// check the extraction results
 		checkStatement(DATA.fullText, "example", container);
@@ -36,7 +36,7 @@ public class PresentationsExtractorTest extends ExtractorTestBase {
 		// apply the extractor on an example file
 		ExtractorFactory factory = new PresentationsExtractorFactory();
 		Extractor extractor = factory.get();
-		RDF2GoRDFContainer container = extract(DOCS_PATH + "corel-presentations-x3.shw", extractor);
+		RDFContainer container = extract(DOCS_PATH + "corel-presentations-x3.shw", extractor);
 
 		// check the extraction results
 		checkStatement(DATA.fullText, "Presentation", container);

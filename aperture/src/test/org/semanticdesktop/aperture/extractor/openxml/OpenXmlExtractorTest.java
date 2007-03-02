@@ -13,7 +13,7 @@ import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class OpenXmlExtractorTest extends ExtractorTestBase {
@@ -46,13 +46,13 @@ public class OpenXmlExtractorTest extends ExtractorTestBase {
         // repeat for every example OpenDocument/OpenOffice document
         for (int i = 0; i < RESOURCES.length; i++) {
             // check of any document text is extracted
-            RDF2GoRDFContainer container = getStatements(DOCS_PATH + RESOURCES[i]);
+            RDFContainer container = getStatements(DOCS_PATH + RESOURCES[i]);
             checkStatement(DATA.fullText, "This", container);
             container.dispose();
         }
     }
 
-    private RDF2GoRDFContainer getStatements(String resourceName) throws ExtractorException, IOException {
+    private RDFContainer getStatements(String resourceName) throws ExtractorException, IOException {
         ExtractorFactory factory = new OpenXmlExtractorFactory();
         Extractor extractor = factory.get();
         return extract(resourceName, extractor);
@@ -67,7 +67,7 @@ public class OpenXmlExtractorTest extends ExtractorTestBase {
     private void testMetadataExtraction(String resourceName) throws ExtractorException, IOException,
             ModelException {
         // apply the extractor
-        RDF2GoRDFContainer container = getStatements(resourceName);
+        RDFContainer container = getStatements(resourceName);
 
         // check for all properties that we're sure of exist in this example document
         checkStatement(DATA.title, "Example", container);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -9,28 +9,33 @@ package org.semanticdesktop.aperture.extractor;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.ApertureTestBase;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainerFactory;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 
 public class ExtractorTestBase extends ApertureTestBase {
 
-    public RDF2GoRDFContainer extract(String resourceName, Extractor extractor) throws ExtractorException, IOException {
+    public RDFContainer extract(String resourceName, Extractor extractor) throws ExtractorException,
+            IOException {
         // setup some info
         String uriString = "http://docs-r-us.com/dummy";
         URI id = URIImpl.createURIWithoutChecking(uriString);
-        InputStream stream = ResourceUtil.getInputStream(resourceName,ExtractorTestBase.class);
+
+        // create a stream that provides access to the test document
+        InputStream stream = ResourceUtil.getInputStream(resourceName, ExtractorTestBase.class);
         assertNotNull(stream);
-        Model model = createModel();
-        RDF2GoRDFContainer rdfContainer = new RDF2GoRDFContainer(model,id);
+
+        // create a container in which the extraction results can be stored
+        RDFContainer rdfContainer = new RDF2GoRDFContainerFactory().newInstance(id);
 
         // apply the extractor
         extractor.extract(id, stream, null, null, rdfContainer);
         stream.close();
 
+        // return the extraction results
         return rdfContainer;
     }
 }

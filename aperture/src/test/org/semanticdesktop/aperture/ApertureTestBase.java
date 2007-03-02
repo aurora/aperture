@@ -45,7 +45,7 @@ public class ApertureTestBase extends TestCase {
         return new RDF2GoRDFContainer(newModel,uri);
     }
 
-	public void checkStatement(URI property, String substring, RDF2GoRDFContainer container) 
+	public void checkStatement(URI property, String substring, RDFContainer container) 
 			throws ModelException {
 		// setup some info
 		String uriString = container.getDescribedUri().toString();

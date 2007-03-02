@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -13,7 +13,7 @@ import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class PdfExtractorTest extends ExtractorTestBase {
@@ -28,10 +28,10 @@ public class PdfExtractorTest extends ExtractorTestBase {
     
     private static final String PDF_WRITER_DOC = DOCS_PATH + "pdf-word-2000-pdfwriter-7.0.pdf";
     
-    private RDF2GoRDFContainer container;
+    private RDFContainer container;
     
     
-    private RDF2GoRDFContainer getStatements(String resourceName) throws ExtractorException, IOException {
+    private RDFContainer getStatements(String resourceName) throws ExtractorException, IOException {
         // apply the extractor
         ExtractorFactory factory = new PdfExtractorFactory();
         Extractor extractor = factory.get();
@@ -93,7 +93,7 @@ public class PdfExtractorTest extends ExtractorTestBase {
         checkStatement(DATA.pageCount, "1", container);
     }
     
-    private void checkOmnipresentStatements(RDF2GoRDFContainer container) throws ModelException {
+    private void checkOmnipresentStatements(RDFContainer container) throws ModelException {
         checkStatement(DATA.creator, "Christiaan Fluit", container);
         checkStatement(DATA.subject, "Testing", container);
         checkStatement(DATA.title, "Example", container);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -13,7 +13,7 @@ import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class HtmlExtractorTest extends ExtractorTestBase {
@@ -31,7 +31,7 @@ public class HtmlExtractorTest extends ExtractorTestBase {
     private void testExtraction(String resourceName) throws ExtractorException, IOException, ModelException {
         ExtractorFactory factory = new HtmlExtractorFactory();
         Extractor extractor = factory.get();
-        RDF2GoRDFContainer container = extract(resourceName, extractor);
+        RDFContainer container = extract(resourceName, extractor);
         checkStatement(DATA.fullText, "text", container);
         checkStatement(DATA.title, "document", container);
         checkStatement(DATA.creator, "Chris", container);
