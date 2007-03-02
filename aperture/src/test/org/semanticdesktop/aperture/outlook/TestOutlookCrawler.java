@@ -215,7 +215,7 @@ public class TestOutlookCrawler extends ApertureTestBase {
         }
 
         public RDFContainer getRDFContainer(URI uri) {
-//        	 an rdf2go way to return a container, backed by a model, backed by a repository, which
+            // an rdf2go way to return a container, backed by a model, backed by a repository, which
 			// actually is the private repository common to all return RDFContainers, but with a 
 			// different context
 			Model newModel = null;

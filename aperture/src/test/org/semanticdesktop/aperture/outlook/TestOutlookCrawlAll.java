@@ -96,7 +96,7 @@ public class TestOutlookCrawlAll extends ApertureTestBase {
 
         int newCount;
 
-        private RDF2GoRDFContainer lastContainer;
+        private RDFContainer lastContainer;
         
         public SimpleCrawlerHandler() throws ModelException {
             // create a Repository

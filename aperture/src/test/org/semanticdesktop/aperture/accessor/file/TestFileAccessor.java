@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -22,7 +22,6 @@ import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.accessor.base.FileAccessData;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
 import org.semanticdesktop.aperture.util.FileUtil;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
@@ -65,10 +64,10 @@ public class TestFileAccessor extends ApertureTestBase {
         assertTrue(dataObject instanceof FileDataObject);
 
         // check its metadata
-        checkStatement(DATA.name, "file-", (RDF2GoRDFContainer) dataObject.getMetadata());
+        checkStatement(DATA.name, "file-", dataObject.getMetadata());
 
         URI parentURI = dataObject.getMetadata().getValueFactory().createURI(tmpDir.toURI().toString());
-        checkStatement(DATA.partOf, parentURI, (RDF2GoRDFContainer) dataObject.getMetadata());
+        checkStatement(DATA.partOf, parentURI, dataObject.getMetadata());
         
         // we don't need to dispose the DataSource because we passed null as the value of DataSource to the
         // extract method
@@ -83,7 +82,7 @@ public class TestFileAccessor extends ApertureTestBase {
         assertTrue(dataObject instanceof FolderDataObject);
 
         // check its metadata
-        checkStatement(DATA.name, "TestFileAccessor", (RDF2GoRDFContainer) dataObject.getMetadata());
+        checkStatement(DATA.name, "TestFileAccessor", dataObject.getMetadata());
         
         // we don't need to dispose the DataSource because we passed null as the value of DataSource to the
         // extract method

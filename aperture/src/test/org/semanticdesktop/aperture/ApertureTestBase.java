@@ -82,13 +82,13 @@ public class ApertureTestBase extends TestCase {
 		assertTrue(encounteredSubstring);
 	}
 
-	public void checkStatement(URI property, URI value, RDF2GoRDFContainer container) 
+	public void checkStatement(URI property, URI value, RDFContainer container) 
 			throws ModelException {
 		URI subject = container.getDescribedUri(); 
 		checkStatement(subject, property, value, container);
 	}
 
-	public void checkStatement(URI subject, URI property, Node value, RDF2GoRDFContainer container) 
+	public void checkStatement(URI subject, URI property, Node value, RDFContainer container) 
 			throws ModelException {
 		checkStatement(subject, property, value, container.getModel());
 	}
