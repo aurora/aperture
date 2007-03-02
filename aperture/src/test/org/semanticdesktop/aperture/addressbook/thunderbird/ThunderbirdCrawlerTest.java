@@ -61,7 +61,7 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
 		
 		DataSource ds=new ThunderbirdAddressbookDataSource();
 		
-		ds.setConfiguration(createSesameRDFContainer("urn:TestThunderBirdDataSource"));
+		ds.setConfiguration(createRDFContainer("urn:TestThunderBirdDataSource"));
 		ConfigurationUtil.setBasepath(makeFileFromResource(data),ds.getConfiguration());
         // Removed by Antoni Mylka on 15.01.2007 - after the refactoring we don't need this anymore
 		// ds.getConfiguration().put(DATASOURCE.flavour,"thunderbird");

@@ -41,7 +41,7 @@ public class AppleAddressbookCrawlerTest extends ApertureTestBase implements Cra
 	public void testCrawl() throws Exception { 
 		DataSource ds=new AppleAddressbookDataSource();
 
-		ds.setConfiguration(createSesameRDFContainer("urn:TestTAddressbookDataSource"));
+		ds.setConfiguration(createRDFContainer("urn:TestTAddressbookDataSource"));
         // Removed by Antoni Mylka on 15.01.2007 - after the refactoring we don't need this anymore
 		//ds.getConfiguration().put(DATASOURCE.flavour,AppleAddressbookCrawler.TYPE);
 		

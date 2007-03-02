@@ -54,7 +54,7 @@ public class TestRdf2GoRdfContainer extends ApertureTestBase {
 	}
 
 	public void testPutBasicTypes() throws Exception {
-		RDFContainer container = createSesameRDFContainer(TEST_OBJECT_URI);
+		RDFContainer container = createRDFContainer(TEST_OBJECT_URI);
 		Model model = (Model)container.getModel();
 		ValueFactory val = new RDF2GoValueFactory(model);
 		Resource subject = container.getDescribedUri();
@@ -74,7 +74,7 @@ public class TestRdf2GoRdfContainer extends ApertureTestBase {
 
 	public void testPutSemantics() {
 		URI subject = URIImpl.createURIWithoutChecking("urn:test:dummy");
-		RDFContainer container = createSesameRDFContainer(subject);
+		RDFContainer container = createRDFContainer(subject);
 		ValueFactory valFac = new RDF2GoValueFactory((Model)container.getModel());
 		
 		// check whether the current value is propertly overwritten

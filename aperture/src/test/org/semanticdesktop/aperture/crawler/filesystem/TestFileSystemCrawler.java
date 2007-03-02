@@ -86,7 +86,7 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
 	public void testCrawler() throws ModelException {
 		// create a DataSource
-		RDFContainer configuration = createSesameRDFContainer("urn:test:dummySource");
+		RDFContainer configuration = createRDFContainer("urn:test:dummySource");
 		ConfigurationUtil.setRootFolder(tmpDir.getAbsolutePath(), configuration);
 		ConfigurationUtil.setMaximumDepth(1, configuration);
 		DomainBoundaries domain = ConfigurationUtil.getDomainBoundaries(configuration);

@@ -114,11 +114,11 @@ public class ApertureTestBase extends TestCase {
 		assertTrue(encounteredValue);
 	}
 	
-	protected RDFContainer createSesameRDFContainer(String uri) {
-		return createSesameRDFContainer(URIImpl.createURIWithoutChecking(uri));
+	protected RDFContainer createRDFContainer(String uri) {
+		return createRDFContainer(URIImpl.createURIWithoutChecking(uri));
 	}
 	
-	protected RDFContainer createSesameRDFContainer(URI uri) {
+	protected RDFContainer createRDFContainer(URI uri) {
 		try {
 			Model newModel = new RepositoryModel(false);
 			return new RDF2GoRDFContainer(newModel,uri);

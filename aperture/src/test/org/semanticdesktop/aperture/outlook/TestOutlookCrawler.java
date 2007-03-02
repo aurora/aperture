@@ -62,7 +62,7 @@ public class TestOutlookCrawler extends ApertureTestBase {
 	protected void setUp() throws Exception {
 		LogUtil.setFullLogging();
 		olds = new OutlookDataSource();
-		RDFContainer config = createSesameRDFContainer(TESTID);
+		RDFContainer config = createRDFContainer(TESTID);
 		ConfigurationUtil.setRootUrl(TESTROOT, config);
 		// exclude leo's normal outlook file
 		DomainBoundaries bound = new DomainBoundaries();

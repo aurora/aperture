@@ -17,7 +17,7 @@ public class TestConfigurationUtil extends ApertureTestBase {
     private RDFContainer configuration;
 
     public void setUp() {
-        configuration = createSesameRDFContainer("urn:test:dummysource");
+        configuration = createRDFContainer("urn:test:dummysource");
     }
 
     public void tearDown() {

@@ -116,7 +116,7 @@ public class TestFileAccessor extends ApertureTestBase {
     
     private class SimpleRDFContainerFactory implements RDFContainerFactory {
         public RDFContainer getRDFContainer(URI uri) {
-            return createSesameRDFContainer(uri);
+            return createRDFContainer(uri);
         }
     }
 }

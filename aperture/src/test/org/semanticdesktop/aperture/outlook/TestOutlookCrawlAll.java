@@ -49,7 +49,7 @@ public class TestOutlookCrawlAll extends ApertureTestBase {
 	protected void setUp() throws Exception {
 		LogUtil.setFullLogging();
 		olds = new OutlookDataSource();
-		RDFContainer config = createSesameRDFContainer(TESTID);
+		RDFContainer config = createRDFContainer(TESTID);
 		ConfigurationUtil.setRootUrl(TESTROOT, config);
 		olds.setConfiguration(config);
 		

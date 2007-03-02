@@ -694,7 +694,7 @@ public class TestIcalCrawler extends ApertureTestBase {
 		assertNotNull(fileStream);
 		File file = createTempFile(fileStream);
 		assertTrue(file.canRead());
-		RDFContainer configurationContainer = createSesameRDFContainer("source:testsource");
+		RDFContainer configurationContainer = createRDFContainer("source:testsource");
 		ConfigurationUtil.setRootUrl(file.getAbsolutePath(), configurationContainer);
 
 		IcalDataSource icalDataSource = new IcalDataSource();
