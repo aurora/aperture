@@ -11,6 +11,8 @@ import java.io.PrintWriter;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.ModelFactory;
+import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
@@ -29,7 +31,6 @@ import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
 
 
 public class TutorialCrawlingExample {
@@ -49,7 +50,9 @@ public class TutorialCrawlingExample {
 	
 	public void doCrawling(File rootFile) throws Exception {
         // create a data source configuration
-        RDFContainer configuration = new SesameRDFContainer(URIImpl.create("source:testSource"));
+        ModelFactory factory = RDF2Go.getModelFactory();
+        Model model = factory.createModel();
+        RDFContainer configuration = new RDF2GoRDFContainer(model, URIImpl.create("source:testSource"), false);
         ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
 
         // create the data source

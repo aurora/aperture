@@ -20,7 +20,6 @@ import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.openrdf.rdf2go.RepositoryModel;
 import org.openrdf.repository.Repository;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -42,6 +41,7 @@ import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainerFactory;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
@@ -117,23 +117,18 @@ public class ExampleFileCrawler {
         }
 
         // create a data source configuration
-        Model model = null;
-        try {
-        	model = new RepositoryModel(false);
-        } catch (ModelException me) {
-        	throw new RuntimeException(me);
-        }
-        RDF2GoRDFContainer configuration = new RDF2GoRDFContainer(model,URIImpl.createURIWithoutChecking("source:testSource"));
+        RDF2GoRDFContainerFactory factory = new RDF2GoRDFContainerFactory();
+        RDF2GoRDFContainer configuration = factory.newInstance("source:testsource");
         ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
 
         // create the data source
         FileSystemDataSource source = new FileSystemDataSource();
         source.setConfiguration(configuration);
-        
+
         CrawlerHandler handler = null;
-        
+
         handler = new SimpleCrawlerHandler();
-        
+
         // setup a crawler that can handle this type of DataSource
         FileSystemCrawler crawler = new FileSystemCrawler();
         crawler.setDataSource(source);
@@ -147,7 +142,7 @@ public class ExampleFileCrawler {
     public static void main(String[] args) {
         // create a new ExampleFileCrawler instance
         ExampleFileCrawler crawler = new ExampleFileCrawler();
-        
+
         // parse the command line options
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
@@ -177,36 +172,38 @@ public class ExampleFileCrawler {
 
         // check that all required fields are available
         if (crawler.getRootFile() == null || crawler.getRepositoryFile() == null) {
-        	exitWithUsageMessage();
+            exitWithUsageMessage();
         }
-        
+
         // start crawling and exit afterwards
         crawler.crawl();
     }
 
     private static void exitWithUsageMessage() {
-        System.err.println("Usage: java " + ExampleFileCrawler.class.getName() + " [" + IDENTIFY_MIME_TYPE_OPTION
-                + "] [" + EXTRACT_CONTENTS_OPTION + "] [" + VERBOSE_OPTION + "] rootDirectory repositoryFile");
+        System.err.println("Usage: java " + ExampleFileCrawler.class.getName() + " ["
+                + IDENTIFY_MIME_TYPE_OPTION + "] [" + EXTRACT_CONTENTS_OPTION + "] [" + VERBOSE_OPTION
+                + "] rootDirectory repositoryFile");
         System.exit(-1);
     }
-    
+
     private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
-    	protected Model model;
-    	
-    	protected int nrObjects;
-    	
-    	private MimeTypeIdentifier mimeTypeIdentifier;
+        protected Model model;
+
+        protected int nrObjects;
+
+        private MimeTypeIdentifier mimeTypeIdentifier;
 
         private ExtractorRegistry extractorRegistry;
 
         public SimpleCrawlerHandler() {
-        	try {
-            	model = new RepositoryModel(false);
-            } catch (ModelException me) {
-            	throw new RuntimeException(me);
+            try {
+                model = new RepositoryModel(false);
             }
-        	
+            catch (ModelException me) {
+                throw new RuntimeException(me);
+            }
+
             // create some identification and extraction components
             if (identifyingMimeType) {
                 mimeTypeIdentifier = new MagicMimeTypeIdentifier();
@@ -215,7 +212,7 @@ public class ExampleFileCrawler {
                 extractorRegistry = new DefaultExtractorRegistry();
             }
         }
-        
+
         public void accessingObject(Crawler crawler, String url) {
             if (verbose) {
                 System.out.println("Processing file " + nrObjects + ": " + url + "...");
@@ -237,7 +234,7 @@ public class ExampleFileCrawler {
                     LOGGER.log(Level.WARNING, "ExtractorException while processing " + object.getID(), e);
                 }
             }
-            
+
             object.dispose();
         }
 
@@ -280,69 +277,71 @@ public class ExampleFileCrawler {
             }
         }
 
-		public void crawlStarted(Crawler crawler) {
-			nrObjects = 0;
-		}
+        public void crawlStarted(Crawler crawler) {
+            nrObjects = 0;
+        }
 
-		public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-		    try {
-		        Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
-		        model.writeTo(writer,Syntax.RdfXml);
-		        writer.close();
-		
-		        System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
-		        System.out.println("Saved RDF model to " + repositoryFile);
-		    }
-		    catch (Exception e) {
-		        e.printStackTrace();
-		    }
-		}
+        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
+            try {
+                Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
+                model.writeTo(writer, Syntax.RdfXml);
+                writer.close();
 
-		public void objectChanged(Crawler dataCrawler, DataObject object) {
-		    object.dispose();
-		    printUnexpectedEventWarning("changed");
-		}
+                System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
+                System.out.println("Saved RDF model to " + repositoryFile);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
-		public void objectNotModified(Crawler crawler, String url) {
-		    printUnexpectedEventWarning("unmodified");
-		}
+        public void objectChanged(Crawler dataCrawler, DataObject object) {
+            object.dispose();
+            printUnexpectedEventWarning("changed");
+        }
 
-		public void objectRemoved(Crawler dataCrawler, String url) {
-		    printUnexpectedEventWarning("removed");
-		}
+        public void objectNotModified(Crawler crawler, String url) {
+            printUnexpectedEventWarning("unmodified");
+        }
 
-		public void clearStarted(Crawler crawler) {
-		    printUnexpectedEventWarning("clearStarted");
-		}
+        public void objectRemoved(Crawler dataCrawler, String url) {
+            printUnexpectedEventWarning("removed");
+        }
 
-		public void clearingObject(Crawler crawler, String url) {
-		    printUnexpectedEventWarning("clearingObject");
-		}
+        public void clearStarted(Crawler crawler) {
+            printUnexpectedEventWarning("clearStarted");
+        }
 
-		public void clearFinished(Crawler crawler, ExitCode exitCode) {
-		    printUnexpectedEventWarning("clear finished");
-		}
+        public void clearingObject(Crawler crawler, String url) {
+            printUnexpectedEventWarning("clearingObject");
+        }
 
-		public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
-		    return this;
-		}
+        public void clearFinished(Crawler crawler, ExitCode exitCode) {
+            printUnexpectedEventWarning("clear finished");
+        }
 
-		public RDFContainer getRDFContainer(URI uri) {
-			Model contextModel = null;
-			try {
-				contextModel = new RepositoryModel(uri, (Repository) model
-						.getUnderlyingModelImplementation());
-			}
-			catch (ModelException me) {
-				throw new RuntimeException(me);
-			}
-			RDF2GoRDFContainer container = new RDF2GoRDFContainer(contextModel, uri);
-			return container;
-		}
+        public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
+            return this;
+        }
 
-		protected void printUnexpectedEventWarning(String event) {
-		     // as we don't keep track of access data in this example code, some events should never occur
-		     LOGGER.warning("encountered unexpected event (" + event + ") with non-incremental crawler");
-		}
+        public RDFContainer getRDFContainer(URI uri) {
+            // create a Model that operates on the same Repository as the centrally registered Model. This
+            // context Model will then add its statements to this Repository, using a context URI to keep its
+            // statements separate from the other statements that may already be in there.
+            Model contextModel = null;
+            try {
+                contextModel = new RepositoryModel(uri, (Repository) model.getUnderlyingModelImplementation());
+            }
+            catch (ModelException me) {
+                throw new RuntimeException(me);
+            }
+            RDF2GoRDFContainer container = new RDF2GoRDFContainer(contextModel, uri);
+            return container;
+        }
+
+        protected void printUnexpectedEventWarning(String event) {
+            // as we don't keep track of access data in this example code, some events should never occur
+            LOGGER.warning("encountered unexpected event (" + event + ") with non-incremental crawler");
+        }
     }
 }
