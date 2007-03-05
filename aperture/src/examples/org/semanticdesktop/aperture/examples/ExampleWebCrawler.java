@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 -2007 Aduna.
+ * Copyright (c) 2006 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -47,7 +47,7 @@ import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.hypertext.linkextractor.impl.DefaultLinkExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
@@ -165,7 +165,7 @@ public class ExampleWebCrawler {
         } catch (ModelException me) {
         	throw new RuntimeException(me);
         }
-        RDF2GoRDFContainer configuration = new RDF2GoRDFContainer(model,URIImpl.createURIWithoutChecking("source:testSource"));
+        RDFContainer configuration = new RDFContainerImpl(model,URIImpl.createURIWithoutChecking("source:testSource"));
         ConfigurationUtil.setRootUrl(startUrl, configuration);
         ConfigurationUtil.setIncludeEmbeddedResources(includeEmbeddedResources, configuration);
 
@@ -452,7 +452,7 @@ public class ExampleWebCrawler {
 			catch (ModelException me) {
 				throw new RuntimeException(me);
 			}
-			RDF2GoRDFContainer container = new RDF2GoRDFContainer(contextModel, uri);
+			RDFContainer container = new RDFContainerImpl(contextModel, uri);
 			return container;
 		}
 

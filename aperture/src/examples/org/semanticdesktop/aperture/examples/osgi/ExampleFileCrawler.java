@@ -26,7 +26,8 @@ import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierFactory;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierRegistry;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 /**
@@ -127,7 +128,7 @@ public class ExampleFileCrawler {
 		catch (ModelException me) {
 			throw new RuntimeException(me);
 		}
-		RDF2GoRDFContainer configuration = new RDF2GoRDFContainer(model, URIImpl
+		RDFContainer configuration = new RDFContainerImpl(model, URIImpl
 				.createURIWithoutChecking("source:testSource"));
 		ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
 

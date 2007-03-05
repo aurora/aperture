@@ -41,7 +41,8 @@ import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
 import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.util.IOUtil;
 
 public class FileInspectorPanel extends JPanel {
@@ -169,7 +170,7 @@ public class FileInspectorPanel extends JPanel {
             stream.close();
 
             // extract the full-text and metadata
-            RDF2GoRDFContainer container = null;
+            RDFContainer container = null;
 
             Set factories = extractorRegistry.get(mimeType);
             if (factories != null && !factories.isEmpty()) {
@@ -178,7 +179,7 @@ public class FileInspectorPanel extends JPanel {
                 URI uri = new URIImpl(file.toURI().toString());
                 Model model = new RepositoryModel(false);
                 org.ontoware.rdf2go.model.node.URI rdf2goUri = model.createURI(uri.toString());
-                container = new RDF2GoRDFContainer(model,rdf2goUri);
+                container = new RDFContainerImpl(model,rdf2goUri);
                 
                 // Somehow I couldn't get this working with a single stream and buffer and the use
                 // of mark() and reset(). I probably misunderstood something in the API. For now I'll

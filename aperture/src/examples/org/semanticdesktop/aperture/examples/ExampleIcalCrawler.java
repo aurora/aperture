@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 -2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -29,7 +29,7 @@ import org.semanticdesktop.aperture.crawler.ical.IcalCrawler;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.vocabulary.ICALTZD;
 
 /**
@@ -105,7 +105,7 @@ public class ExampleIcalCrawler {
         catch (ModelException me) {
             throw new RuntimeException(me);
         }
-        RDF2GoRDFContainer configuration = new RDF2GoRDFContainer(model, URIImpl
+        RDFContainer configuration = new RDFContainerImpl(model, URIImpl
                 .createURIWithoutChecking("source:testSource"));
         ConfigurationUtil.setRootUrl(icalFile.getAbsolutePath(), configuration);
         configuration.put(ICALTZD.realBlankNodes, true);
@@ -202,8 +202,7 @@ public class ExampleIcalCrawler {
             catch (ModelException me) {
                 throw new RuntimeException(me);
             }
-            RDF2GoRDFContainer container = new RDF2GoRDFContainer(contextModel, uri);
-            return container;
+            return new RDFContainerImpl(contextModel, uri);
         }
 
         protected void printUnexpectedEventWarning(String event) {

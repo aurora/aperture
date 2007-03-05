@@ -18,7 +18,8 @@ import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 
 public class TestIcalCrawlerIncremental extends ApertureTestBase {
 
@@ -91,7 +92,7 @@ public class TestIcalCrawlerIncremental extends ApertureTestBase {
 			tempFile = createTempFile(fileStream,file);
 		}
 		Model configurationModel = createModel();
-		RDF2GoRDFContainer configurationContainer = new RDF2GoRDFContainer(configurationModel, "source:testsource");
+		RDFContainer configurationContainer = new RDFContainerImpl(configurationModel, "source:testsource");
 		ConfigurationUtil.setRootUrl(tempFile.getAbsolutePath(), configurationContainer);
 
 		IcalDataSource icalDataSource = new IcalDataSource();

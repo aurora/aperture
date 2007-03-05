@@ -51,7 +51,7 @@ import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
@@ -249,7 +249,7 @@ public class CrawlerPanel extends JPanel {
         } catch (ModelException me) {
         	throw new RuntimeException(me);
         }
-        RDF2GoRDFContainer configuration = new RDF2GoRDFContainer(model,URIImpl.createURIWithoutChecking("source:testSource"));
+        RDFContainer configuration = new RDFContainerImpl(model,URIImpl.createURIWithoutChecking("source:testSource"));
         ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
 
         // create the data source
@@ -369,16 +369,7 @@ public class CrawlerPanel extends JPanel {
         }
 
         public RDFContainer getRDFContainer(URI uri) {
-        	// FIXME Try to force it to use contexts
-        	/*Model contextModel = null;
-    		try {
-    			contextModel = new RepositoryModel(uri, (Repository) model
-    					.getUnderlyingModelImplementation());
-    		}
-    		catch (ModelException me) {
-    			throw new RuntimeException(me);
-    		}*/
-    		RDF2GoRDFContainer container = new RDF2GoRDFContainer(model, uri, true);
+    		RDFContainer container = new RDFContainerImpl(model, uri, true);
     		return container;
     	}
 

@@ -13,7 +13,8 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainerFactory;
+import org.semanticdesktop.aperture.rdf.RDFContainerFactory;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 
 public class ExtractorTestBase extends ApertureTestBase {
@@ -29,7 +30,8 @@ public class ExtractorTestBase extends ApertureTestBase {
         assertNotNull(stream);
 
         // create a container in which the extraction results can be stored
-        RDFContainer rdfContainer = new RDF2GoRDFContainerFactory().newInstance(id);
+        RDFContainerFactory factory = new RDFContainerFactoryImpl();
+        RDFContainer rdfContainer = factory.newInstance(id);
 
         // apply the extractor
         extractor.extract(id, stream, null, null, rdfContainer);

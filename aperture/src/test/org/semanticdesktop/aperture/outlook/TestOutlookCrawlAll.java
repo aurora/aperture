@@ -24,7 +24,7 @@ import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.util.LogUtil;
 
 /**
@@ -136,8 +136,7 @@ public class TestOutlookCrawlAll extends ApertureTestBase {
 				return null;
 			}
 			
-			RDF2GoRDFContainer container = new RDF2GoRDFContainer(newModel, uri);
-
+			RDFContainer container = new RDFContainerImpl(newModel, uri);
 			lastContainer = container;
 
 			return container;

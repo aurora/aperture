@@ -21,7 +21,7 @@ import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.ValueFactory;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 
 public class ApertureTestBase extends TestCase {
 
@@ -42,7 +42,7 @@ public class ApertureTestBase extends TestCase {
     
     protected RDFContainer createRDFContainer(URI uri) {
         Model newModel = createModel();
-        return new RDF2GoRDFContainer(newModel,uri);
+        return new RDFContainerImpl(newModel,uri);
     }
 
 	public void checkStatement(URI property, String substring, RDFContainer container) 

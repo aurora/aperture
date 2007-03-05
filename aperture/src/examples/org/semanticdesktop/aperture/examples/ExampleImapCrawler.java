@@ -41,7 +41,7 @@ import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
@@ -210,7 +210,7 @@ public class ExampleImapCrawler {
 		} catch (ModelException me) {
 			throw new RuntimeException(me);
 		}
-		RDF2GoRDFContainer config = new RDF2GoRDFContainer(model,URIImpl.createURIWithoutChecking("urn:test:exampleimapsource"));
+		RDFContainer config = new RDFContainerImpl(model,URIImpl.createURIWithoutChecking("urn:test:exampleimapsource"));
 		ConfigurationUtil.setHostname(serverName, config);
 		ConfigurationUtil.setBasepath(folder, config);
 
@@ -506,18 +506,7 @@ public class ExampleImapCrawler {
 		}
 
 		public RDFContainer getRDFContainer(URI uri) {
-			/*Model contextModel = null;
-			try {
-				contextModel = new RepositoryModel(uri, (Repository) model
-						.getUnderlyingModelImplementation());
-			}
-			catch (ModelException me) {
-				throw new RuntimeException(me);
-			}
-			RDF2GoRDFContainer container = new RDF2GoRDFContainer(contextModel, uri);
-			return container;*/
-			return new RDF2GoRDFContainer(model,uri,true);
-			
+			return new RDFContainerImpl(model,uri,true);
 		}
 
 		protected void printUnexpectedEventWarning(String event) {

@@ -23,7 +23,8 @@ import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
 import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
@@ -77,7 +78,7 @@ public class FileInspector {
 		// create the RDFContainer that will hold the RDF model
 		URI uri = URIImpl.create(file.toURI().toString());
 		Model model = new RepositoryModel(false);
-		RDF2GoRDFContainer container = new RDF2GoRDFContainer(model, uri);
+		RDFContainer container = new RDFContainerImpl(model, uri);
 
 		// determine and apply an Extractor that can handle this MIME type
 		Set factories = extractorRegistry.get(mimeType);

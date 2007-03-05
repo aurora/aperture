@@ -28,7 +28,7 @@ import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 
 
 public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerHandler, RDFContainerFactory {
@@ -102,7 +102,7 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
 	}
 
 	public RDFContainer getRDFContainer(URI uri) {
-		return new RDF2GoRDFContainer(model,uri);
+		return new RDFContainerImpl(model,uri);
 	}
 
 	public void crawlStarted(Crawler crawler) {

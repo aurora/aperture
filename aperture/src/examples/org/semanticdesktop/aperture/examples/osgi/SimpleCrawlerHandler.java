@@ -33,7 +33,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
@@ -193,8 +193,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
 	}
 
 	public RDFContainer getRDFContainer(URI uri) {
-		RDF2GoRDFContainer container = new RDF2GoRDFContainer(model, uri, true);
-		return container;
+		return new RDFContainerImpl(model, uri, true);
 	}
 
 	protected void printUnexpectedEventWarning(String event) {

@@ -30,7 +30,7 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 
 
 public class TutorialCrawlingExample {
@@ -52,7 +52,7 @@ public class TutorialCrawlingExample {
         // create a data source configuration
         ModelFactory factory = RDF2Go.getModelFactory();
         Model model = factory.createModel();
-        RDFContainer configuration = new RDF2GoRDFContainer(model, URIImpl.create("source:testSource"), false);
+        RDFContainer configuration = new RDFContainerImpl(model, URIImpl.create("source:testSource"), false);
         ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
 
         // create the data source
@@ -95,7 +95,7 @@ public class TutorialCrawlingExample {
 				me.printStackTrace();
 				throw new RuntimeException(me);
 			}
-			return new RDF2GoRDFContainer(newModel,uri);
+			return new RDFContainerImpl(newModel,uri);
 		}
 		
 		public void objectChanged(Crawler crawler, DataObject object) {

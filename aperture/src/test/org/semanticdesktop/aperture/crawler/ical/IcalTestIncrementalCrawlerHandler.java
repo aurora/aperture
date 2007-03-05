@@ -20,7 +20,7 @@ import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 
 class IcalTestIncrementalCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
     
@@ -116,9 +116,7 @@ class IcalTestIncrementalCrawlerHandler implements CrawlerHandler, RDFContainerF
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public RDFContainer getRDFContainer(URI uri) {
-        RDF2GoRDFContainer container = 
-            new RDF2GoRDFContainer(model,uri,true);
-        return container;
+        return new RDFContainerImpl(model, uri, true);
     }
     
     //////////////////////////////////////////////////////////////////////////////////////////////////////

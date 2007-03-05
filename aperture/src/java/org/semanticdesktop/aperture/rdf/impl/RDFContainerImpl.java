@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.rdf.rdf2go;
+package org.semanticdesktop.aperture.rdf.impl;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -33,9 +33,9 @@ import org.semanticdesktop.aperture.util.DateUtil;
 /**
  * An implementation of RDFContainer that uses an RDF2Go Model backed by Sesame.
  */
-public class RDF2GoRDFContainer implements RDFContainer {
+public class RDFContainerImpl implements RDFContainer {
 
-	private static final Logger LOGGER = Logger.getLogger(RDF2GoRDFContainer.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(RDFContainerImpl.class.getName());
 
 	private ValueFactory valueFactory;
 
@@ -52,7 +52,7 @@ public class RDF2GoRDFContainer implements RDFContainer {
 	 * 
 	 * @param describedUri The URI that typically will serve as object in most statements.
 	 */
-	public RDF2GoRDFContainer(Model model, String describedUri) {
+	public RDFContainerImpl(Model model, String describedUri) {
 		init(model, false);
 		this.describedUri = valueFactory.createURI(describedUri);
 	}
@@ -70,7 +70,7 @@ public class RDF2GoRDFContainer implements RDFContainer {
 	 * @param model The Model to store statements in and retrieve statements from.
 	 * @param describedUri The URI that typically will serve as object in most statements.
 	 */
-	public RDF2GoRDFContainer(Model model, URI describedUri) {
+	public RDFContainerImpl(Model model, URI describedUri) {
 		init(model, false);
 		this.describedUri = describedUri;
 	}
@@ -87,7 +87,7 @@ public class RDF2GoRDFContainer implements RDFContainer {
 	 *            this parameter is set to false, the model will not be closed on disposal, and may be shared
 	 *            between multiple RDFContainers.
 	 */
-	public RDF2GoRDFContainer(Model model, URI describedUri, boolean modelShared) {
+	public RDFContainerImpl(Model model, URI describedUri, boolean modelShared) {
 		init(model, modelShared);
 		this.describedUri = describedUri;
 	}
@@ -104,7 +104,7 @@ public class RDF2GoRDFContainer implements RDFContainer {
 	 *            this parameter is set to false, the model will not be closed on disposal, and may be shared
 	 *            between multiple RDFContainers.
 	 */
-	public RDF2GoRDFContainer(Model model, String describedUri, boolean modelShared) {
+	public RDFContainerImpl(Model model, String describedUri, boolean modelShared) {
 		init(model, modelShared);
 		this.describedUri = valueFactory.createURI(describedUri);
 	}
@@ -452,7 +452,7 @@ public class RDF2GoRDFContainer implements RDFContainer {
 
 	private void init(Model model, boolean shared) {
 		this.model = model;
-		this.valueFactory = new RDF2GoValueFactory(model);
+		this.valueFactory = new ValueFactoryImpl(model);
 		this.modelShared = shared;
 		this.disposed = false;
 	}

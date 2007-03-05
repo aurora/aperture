@@ -30,7 +30,7 @@ import org.semanticdesktop.aperture.datasource.config.SubstringCondition;
 import org.semanticdesktop.aperture.datasource.config.SubstringPattern;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.util.FileUtil;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.ModelUtil;
@@ -38,197 +38,197 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class TestFileSystemCrawler extends ApertureTestBase {
 
-	private static final String TMP_SUBDIR = "TestFileSystemCrawler.tmpDir";
+    private static final String TMP_SUBDIR = "TestFileSystemCrawler.tmpDir";
 
-	private File tmpDir;
+    private File tmpDir;
 
-	private File subDir;
+    private File subDir;
 
-	private File tmpFile1;
+    private File tmpFile1;
 
-	private File tmpFile2;
+    private File tmpFile2;
 
-	private File tmpFile3;
+    private File tmpFile3;
 
-	private File tmpFile4;
+    private File tmpFile4;
 
-	public void setUp() throws IOException {
-		// create a temporary folder containing a temporary file
-		// unfortunately there is no File.createTempDir
-		tmpDir = new File(System.getProperty("java.io.tmpdir"), TMP_SUBDIR).getCanonicalFile();
-		FileUtil.deltree(tmpDir);
-		assertTrue(tmpDir.mkdir());
+    public void setUp() throws IOException {
+        // create a temporary folder containing a temporary file
+        // unfortunately there is no File.createTempDir
+        tmpDir = new File(System.getProperty("java.io.tmpdir"), TMP_SUBDIR).getCanonicalFile();
+        FileUtil.deltree(tmpDir);
+        assertTrue(tmpDir.mkdir());
 
-		// put two files in it
-		tmpFile1 = File.createTempFile("file-", ".txt", tmpDir);
-		IOUtil.writeString("test file 1", tmpFile1);
+        // put two files in it
+        tmpFile1 = File.createTempFile("file-", ".txt", tmpDir);
+        IOUtil.writeString("test file 1", tmpFile1);
 
-		tmpFile2 = File.createTempFile("file-", ".txt", tmpDir);
-		IOUtil.writeString("test file 2", tmpFile2);
+        tmpFile2 = File.createTempFile("file-", ".txt", tmpDir);
+        IOUtil.writeString("test file 2", tmpFile2);
 
-		tmpFile4 = File.createTempFile("file-skipme-", ".txt", tmpDir);
-		IOUtil.writeString("test file 4", tmpFile4);
+        tmpFile4 = File.createTempFile("file-skipme-", ".txt", tmpDir);
+        IOUtil.writeString("test file 4", tmpFile4);
 
-		// put another folder containing another file in it
-		subDir = new File(tmpDir, "dir");
-		subDir.mkdir();
+        // put another folder containing another file in it
+        subDir = new File(tmpDir, "dir");
+        subDir.mkdir();
 
-		tmpFile3 = File.createTempFile("file-", ".txt", subDir);
-		IOUtil.writeString("test file 3", tmpFile3);
+        tmpFile3 = File.createTempFile("file-", ".txt", subDir);
+        IOUtil.writeString("test file 3", tmpFile3);
 
-	}
+    }
 
-	public void tearDown() {
-		// delete the temporary folder
-		FileUtil.deltree(tmpDir);
-	}
+    public void tearDown() {
+        // delete the temporary folder
+        FileUtil.deltree(tmpDir);
+    }
 
-	public void testCrawler() throws ModelException {
-		// create a DataSource
-		RDFContainer configuration = createRDFContainer("urn:test:dummySource");
-		ConfigurationUtil.setRootFolder(tmpDir.getAbsolutePath(), configuration);
-		ConfigurationUtil.setMaximumDepth(1, configuration);
-		DomainBoundaries domain = ConfigurationUtil.getDomainBoundaries(configuration);
-		domain.addExcludePattern(new SubstringPattern("skipme", SubstringCondition.CONTAINS));
-		ConfigurationUtil.setDomainBoundaries(domain, configuration);
-		
-		//configuration.getModel().writeTo(new PrintWriter(System.out),Syntax.Trix);
-		
-		DataSource dataSource = new FileSystemDataSource();
-		dataSource.setConfiguration(configuration);
+    public void testCrawler() throws ModelException {
+        // create a DataSource
+        RDFContainer configuration = createRDFContainer("urn:test:dummySource");
+        ConfigurationUtil.setRootFolder(tmpDir.getAbsolutePath(), configuration);
+        ConfigurationUtil.setMaximumDepth(1, configuration);
+        DomainBoundaries domain = ConfigurationUtil.getDomainBoundaries(configuration);
+        domain.addExcludePattern(new SubstringPattern("skipme", SubstringCondition.CONTAINS));
+        ConfigurationUtil.setDomainBoundaries(domain, configuration);
 
-		// create a Crawler for this DataSource
-		FileSystemCrawler crawler = new FileSystemCrawler();
-		crawler.setDataSource(dataSource);
+        // configuration.getModel().writeTo(new PrintWriter(System.out),Syntax.Trix);
 
-		// setup a DataAccessorRegistry
-		DataAccessorRegistryImpl registry = new DataAccessorRegistryImpl();
-		registry.add(new FileAccessorFactory());
-		crawler.setDataAccessorRegistry(registry);
+        DataSource dataSource = new FileSystemDataSource();
+        dataSource.setConfiguration(configuration);
 
-		// setup a CrawlerHandler
-		SimpleCrawlerHandler crawlerHandler = new SimpleCrawlerHandler();
-		crawler.setCrawlerHandler(crawlerHandler);
+        // create a Crawler for this DataSource
+        FileSystemCrawler crawler = new FileSystemCrawler();
+        crawler.setDataSource(dataSource);
 
-		// start Crawling
-		crawler.crawl();
+        // setup a DataAccessorRegistry
+        DataAccessorRegistryImpl registry = new DataAccessorRegistryImpl();
+        registry.add(new FileAccessorFactory());
+        crawler.setDataAccessorRegistry(registry);
 
-		// inspect results
-		assertEquals(4, crawlerHandler.getObjectCount());
+        // setup a CrawlerHandler
+        SimpleCrawlerHandler crawlerHandler = new SimpleCrawlerHandler();
+        crawler.setCrawlerHandler(crawlerHandler);
 
-		Model model = crawlerHandler.getModel();
-		
-		//model.writeTo(new PrintWriter(System.out),Syntax.Trix);
+        // start Crawling
+        crawler.crawl();
 
-		checkStatement(toURI(tmpDir), DATA.rootFolderOf, dataSource.getID(), model);
+        // inspect results
+        assertEquals(4, crawlerHandler.getObjectCount());
 
-		checkStatement(toURI(tmpFile1), DATA.name, ModelUtil.createLiteral(model, tmpFile1.getName()), model);
-		checkStatement(toURI(tmpFile2), DATA.name, ModelUtil.createLiteral(model, tmpFile2.getName()), model);
-		checkStatement(toURI(subDir), DATA.name, ModelUtil.createLiteral(model, subDir.getName()), model);
+        Model model = crawlerHandler.getModel();
 
-		// This should not be found because of maximum depth restrictions: this file should not be
-		// reached. We deliberately check for a specific property rather than doing hasStatement(URI,
-		// null, null) as the URI of the skipped file will still be part of the metadata of the
-		// containing Folder.
-		assertFalse(ModelUtil.hasStatement(model,toURI(tmpFile3), DATA.name, null));
+        // model.writeTo(new PrintWriter(System.out),Syntax.Trix);
 
-		// This should no be found as it is excluded by the domain boundaries
-		assertFalse(ModelUtil.hasStatement(model,toURI(tmpFile4), DATA.name, null));
-		
-		model.close();
-		configuration.getModel().close();
-	}
+        checkStatement(toURI(tmpDir), DATA.rootFolderOf, dataSource.getID(), model);
 
-	private URI toURI(File file) {
-		return URIImpl.createURIWithoutChecking(file.toURI().toString());
-	}
+        checkStatement(toURI(tmpFile1), DATA.name, ModelUtil.createLiteral(model, tmpFile1.getName()), model);
+        checkStatement(toURI(tmpFile2), DATA.name, ModelUtil.createLiteral(model, tmpFile2.getName()), model);
+        checkStatement(toURI(subDir), DATA.name, ModelUtil.createLiteral(model, subDir.getName()), model);
 
-	private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
+        // This should not be found because of maximum depth restrictions: this file should not be
+        // reached. We deliberately check for a specific property rather than doing hasStatement(URI,
+        // null, null) as the URI of the skipped file will still be part of the metadata of the
+        // containing Folder.
+        assertFalse(ModelUtil.hasStatement(model, toURI(tmpFile3), DATA.name, null));
 
-		private Model model;
+        // This should no be found as it is excluded by the domain boundaries
+        assertFalse(ModelUtil.hasStatement(model, toURI(tmpFile4), DATA.name, null));
 
-		private int objectCount;
+        model.close();
+        configuration.getModel().close();
+    }
 
-		private RDF2GoRDFContainer lastContainer;
+    private URI toURI(File file) {
+        return URIImpl.createURIWithoutChecking(file.toURI().toString());
+    }
 
-		public SimpleCrawlerHandler() throws ModelException {
+    private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
+
+        private Model model;
+
+        private int objectCount;
+
+        private RDFContainer lastContainer;
+
+        public SimpleCrawlerHandler() throws ModelException {
             model = createModel();
-			objectCount = 0;
-		}
+            objectCount = 0;
+        }
 
-		public Model getModel() {
-			return model;
-		}
+        public Model getModel() {
+            return model;
+        }
 
-		public int getObjectCount() {
-			return objectCount;
-		}
+        public int getObjectCount() {
+            return objectCount;
+        }
 
-		public void crawlStarted(Crawler crawler) {
-		// no-op
-		}
+        public void crawlStarted(Crawler crawler) {
+        // no-op
+        }
 
-		public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-			assertEquals(ExitCode.COMPLETED, exitCode);
-		}
+        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
+            assertEquals(ExitCode.COMPLETED, exitCode);
+        }
 
-		public void accessingObject(Crawler crawler, String url) {
-		// no-op
-		}
+        public void accessingObject(Crawler crawler, String url) {
+        // no-op
+        }
 
-		public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
-			return this;
-		}
+        public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
+            return this;
+        }
 
-		public RDFContainer getRDFContainer(URI uri) {
-			// an rdf2go way to return a container, backed by a model, backed by a repository, which
-			// actually is the private repository common to all return RDFContainers, but with a 
-			// different context
-			RDF2GoRDFContainer container = new RDF2GoRDFContainer(model,uri,true);
-			lastContainer = container;
-			return container;
-		}
+        public RDFContainer getRDFContainer(URI uri) {
+            // an rdf2go way to return a container, backed by a model, backed by a repository, which
+            // actually is the private repository common to all returned RDFContainers, but with a
+            // different context
+            RDFContainer container = new RDFContainerImpl(model, uri, true);
+            lastContainer = container;
+            return container;
+        }
 
-		public void objectNew(Crawler dataCrawler, DataObject object) {
-			objectCount++;
+        public void objectNew(Crawler dataCrawler, DataObject object) {
+            objectCount++;
 
-			assertNotNull(object);
-			assertSame(lastContainer, object.getMetadata());
+            assertNotNull(object);
+            assertSame(lastContainer, object.getMetadata());
 
-			String uri = object.getID().toString();
-			if (uri.equals(subDir.toURI().toString())) {
-				assertTrue(object instanceof FolderDataObject);
-			}
-			else if (uri.indexOf("file-") != -1) {
-				assertTrue(object instanceof FileDataObject);
-			}
+            String uri = object.getID().toString();
+            if (uri.equals(subDir.toURI().toString())) {
+                assertTrue(object instanceof FolderDataObject);
+            }
+            else if (uri.indexOf("file-") != -1) {
+                assertTrue(object instanceof FileDataObject);
+            }
 
-			object.dispose();
-		}
+            object.dispose();
+        }
 
-		public void objectChanged(Crawler dataCrawler, DataObject object) {
-			object.dispose();
-			fail();
-		}
+        public void objectChanged(Crawler dataCrawler, DataObject object) {
+            object.dispose();
+            fail();
+        }
 
-		public void objectNotModified(Crawler crawler, String url) {
-			fail();
-		}
+        public void objectNotModified(Crawler crawler, String url) {
+            fail();
+        }
 
-		public void objectRemoved(Crawler dataCrawler, String url) {
-			fail();
-		}
+        public void objectRemoved(Crawler dataCrawler, String url) {
+            fail();
+        }
 
-		public void clearStarted(Crawler crawler) {
-			fail();
-		}
+        public void clearStarted(Crawler crawler) {
+            fail();
+        }
 
-		public void clearingObject(Crawler crawler, String url) {
-			fail();
-		}
+        public void clearingObject(Crawler crawler, String url) {
+            fail();
+        }
 
-		public void clearFinished(Crawler crawler, ExitCode exitCode) {
-			fail();
-		}
-	}
+        public void clearFinished(Crawler crawler, ExitCode exitCode) {
+            fail();
+        }
+    }
 }

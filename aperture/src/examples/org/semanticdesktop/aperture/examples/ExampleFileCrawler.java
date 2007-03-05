@@ -40,8 +40,8 @@ import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainerFactory;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
@@ -117,8 +117,8 @@ public class ExampleFileCrawler {
         }
 
         // create a data source configuration
-        RDF2GoRDFContainerFactory factory = new RDF2GoRDFContainerFactory();
-        RDF2GoRDFContainer configuration = factory.newInstance("source:testsource");
+        RDFContainerFactoryImpl factory = new RDFContainerFactoryImpl();
+        RDFContainer configuration = factory.newInstance("source:testsource");
         ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
 
         // create the data source
@@ -335,8 +335,7 @@ public class ExampleFileCrawler {
             catch (ModelException me) {
                 throw new RuntimeException(me);
             }
-            RDF2GoRDFContainer container = new RDF2GoRDFContainer(contextModel, uri);
-            return container;
+            return new RDFContainerImpl(contextModel, uri);
         }
 
         protected void printUnexpectedEventWarning(String event) {
