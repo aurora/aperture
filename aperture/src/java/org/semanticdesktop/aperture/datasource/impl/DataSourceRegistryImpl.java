@@ -38,23 +38,11 @@ public class DataSourceRegistryImpl implements DataSourceRegistry {
      */
     private HashMap factories = new HashMap();
     
-    private ModelSet modelSet;
-    
     private static Logger log = Logger.getLogger(DataSourceRegistryImpl.class.getName());
 
+    /** Default constructor */
     public DataSourceRegistryImpl() {
-        try {
-        modelSet = RDF2Go.getModelFactory().createModelSet();
-        Model sourceModel = modelSet.getModel(DATASOURCE.NS_DATASOURCE_GEN);
-        OntologyUtil.getSourceOntology(sourceModel);
-        sourceModel.close();
         
-        Model sourceFormatModel = modelSet.getModel(SOURCEFORMAT.NS_SOURCEFORMAT_GEN);
-        OntologyUtil.getSourceFormatOntology(sourceFormatModel);
-        sourceFormatModel.close();
-        } catch (Exception e) {
-            throw new RuntimeException("Couldn't create a Data source registry impl",e);
-        }
     }
     
     public void add(DataSourceFactory factory) {
@@ -70,9 +58,6 @@ public class DataSourceRegistryImpl implements DataSourceRegistry {
         }
 
         factorySet.add(factory);
-        Model descriptionModel = modelSet.getModel(factory.getSupportedType());
-        factory.getDescription(descriptionModel);
-        descriptionModel.close();
     }
 
     public void remove(DataSourceFactory factory) {
@@ -85,10 +70,6 @@ public class DataSourceRegistryImpl implements DataSourceRegistry {
                 factories.remove(type);
             }
         }
-        
-        Model modelToRemove = modelSet.getModel(type);
-        modelSet.removeModel(modelToRemove);
-        modelToRemove.close();
     }
 
     public Set get(URI type) {
@@ -117,21 +98,10 @@ public class DataSourceRegistryImpl implements DataSourceRegistry {
         try {
             OntologyUtil.getSourceFormatOntology(model);
             OntologyUtil.getSourceOntology(model);
-            Iterator<? extends Model> iterator = modelSet.getModels();
+            Iterator<DataSourceFactory> iterator = factories.values().iterator();
             while (iterator.hasNext()) {
-                Model modelToAdd = iterator.next();
-                ClosableIterator<? extends Statement> closableIterator = null;
-                try {
-                    closableIterator = modelToAdd.iterator();
-                    model.addAll(closableIterator);
-                    closableIterator.close();
-                } catch (ModelException me) {
-                    log.log(Level.SEVERE, "Couldn't get data source description");
-                } finally {
-                    if (closableIterator != null) {
-                        closableIterator.close();
-                    }
-                }
+                DataSourceFactory factory = iterator.next();
+                factory.getDescription(model);
             }
         } catch (Exception me) {
             log.log(Level.SEVERE,"Couldnt get data source ontology and " +
