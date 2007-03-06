@@ -164,6 +164,7 @@
         	<or>
 	            <filename name="org/semanticdesktop/aperture/util/*" />
 	            <filename name="org/semanticdesktop/aperture/util/ontology/*" />
+	            <filename name="applewrapper-0.2.jar" />
 	        </or>
             <not>
                 <or>
