@@ -78,9 +78,7 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
 
 		assertEquals(objects,179);
 		
-		//repository.export(new N3Writer(System.out));
-		
-		//test serialisation and parsing
+		// test serialisation and parsing
 		StringWriter xml=new StringWriter();
 		model.writeTo(xml,Syntax.RdfXml);
 
@@ -99,6 +97,7 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
 
 		//tmpfile.deleteOnExit();
 		model.close();
+        model2.close();
 	}
 
 	public RDFContainer getRDFContainer(URI uri) {

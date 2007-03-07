@@ -711,7 +711,7 @@ public class TestIcalCrawler extends ApertureTestBase {
 		assertTrue(file.delete());
 		model = testCrawlerHandler.getModel();
 		model2 = configurationContainer.getModel();
-		return testCrawlerHandler.getModel();
+		return model;
 	}
 
 	/**

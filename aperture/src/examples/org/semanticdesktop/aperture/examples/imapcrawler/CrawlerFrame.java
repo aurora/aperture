@@ -147,12 +147,6 @@ public class CrawlerFrame extends JFrame {
 					}
 				}
 
-				// Give me full console logging.
-				Handler handler = new ConsoleHandler();
-				handler.setLevel(Level.ALL);
-				Logger.global.setLevel(Level.ALL);
-				Logger.getLogger("").addHandler(handler);
-
 				// set up a CrawlerFrame
 				CrawlerFrame frame = new CrawlerFrame();
 				INSTANCE = frame;

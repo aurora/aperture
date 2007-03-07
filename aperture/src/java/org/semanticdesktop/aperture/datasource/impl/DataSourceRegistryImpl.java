@@ -6,7 +6,6 @@
  */
 package org.semanticdesktop.aperture.datasource.impl;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,18 +14,11 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.RDF2Go;
-import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.ModelSet;
-import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
 import org.semanticdesktop.aperture.datasource.DataSourceRegistry;
 import org.semanticdesktop.aperture.util.ontology.OntologyUtil;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
-import org.semanticdesktop.aperture.vocabulary.SOURCEFORMAT;
 
 /**
  * A trivial default implementation of the DataSourceRegistry interface.

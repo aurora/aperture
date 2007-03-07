@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -809,8 +809,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 	}
 
 	private void queueChildren(DataObject object, LinkedList queue) {
-		// as RDFContainer does not support querying for statements with the described URI as subject, we
-		// have no other option than to retrieve the Repository
 		Model metadata = object.getMetadata().getModel();
 
 		// query for all child URIs

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna.
+ * Copyright (c) 2006 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -27,16 +27,16 @@ import org.semanticdesktop.aperture.util.ModelUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
- * ModelAccessData provides an AccessData implementation storing its information to and retrieving it
- * from a Model.
+ * ModelAccessData provides an AccessData implementation storing its information to and retrieving it from a
+ * Model.
  * 
  * <p>
  * This implementation assumes that IDs used to store data are valid URIs and that keys contain only
  * characters that can be used in URIs.
  * 
  * <p>
- * Due to the fact that RDF2Go doesn't support contexts. The accessData will need to have an entire model
- * to itself.
+ * Due to the fact that RDF2Go doesn't support contexts. The accessData will need to have an entire model to
+ * itself.
  * <p>
  * The AccessData.DATE_KEY, AccessData.BYTE_SITE_KEY and AccessData.REDIRECTS_TO_KEY keys are mapped to
  * Aperture DATA predicates. In that case the value must be a long encoded as a String or, in the last case, a
@@ -44,267 +44,275 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
  */
 public class ModelAccessData implements AccessData {
 
-	private static final Logger LOGGER = Logger.getLogger(ModelAccessData.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ModelAccessData.class.getName());
 
-	/**
-	 * Used as a prefix to derive URIs from AccessData key names.
-	 */
-	public static final String URI_PREFIX = "urn:accessdata:";
+    /**
+     * Used as a prefix to derive URIs from AccessData key names.
+     */
+    public static final String URI_PREFIX = "urn:accessdata:";
 
-	/**
-	 * The Model holding the context information.
-	 */
-	private Model model;
+    /**
+     * The Model holding the context information.
+     */
+    private Model model;
 
-	/**
-	 * Creates a new ModelAccessData instance.
-	 * 
-	 * @param model The Repository used to store all access data in and retrieve all data from. This
-	 *            cannot be null
-	 */
-	public ModelAccessData(Model model) {
-		if (model == null) {
-			throw new IllegalArgumentException("model cannot be null");
-		}
+    /**
+     * Creates a new ModelAccessData instance.
+     * 
+     * @param model The Model used to store all access data in and retrieve all data from. This cannot be
+     *            null.
+     */
+    public ModelAccessData(Model model) {
+        if (model == null) {
+            throw new IllegalArgumentException("model cannot be null");
+        }
 
-		this.model = model;
-	}
+        this.model = model;
+    }
 
-	public void clear() throws IOException {
-		try {
-			model.removeAll();
-		}
-		catch (ModelException e) {
-			IOException ioe = new IOException();
-			ioe.initCause(e);
-			throw ioe;
-		}
-	}
+    public void clear() throws IOException {
+        try {
+            model.removeAll();
+        }
+        catch (ModelException e) {
+            IOException ioe = new IOException();
+            ioe.initCause(e);
+            throw ioe;
+        }
+    }
 
-	public String get(String id, String key) {
-		commit();
+    public String get(String id, String key) {
+        commit();
 
-		URI idURI = ModelUtil.createURI(model, id);
-		URI keyURI = toURI(key);
-		ClosableIterator<? extends Statement> iterator = null;
-		
-		// only returns a value when there is exactly one matching statement
-		try {
-			ClosableIterable<? extends Statement> iterable = model.findStatements(idURI, keyURI, Variable.ANY); 
-			iterator = iterable.iterator();
-			if (iterator.hasNext()) {
-				Statement statement = iterator.next();
-				if (!iterator.hasNext()) {
-					Node value = statement.getObject();
-					if (value instanceof Literal) {
-						return ((Literal) value).getValue();
-					}
-					else if (value instanceof URI) {
-						return value.toString();
-					}
-				}
-			}
-			return null;
-		} catch (ModelException me) {
-			LOGGER.log(Level.SEVERE,"Couldn't get value for id: '" + id + "' key: '" + key + "'",me);
-			return null;
-		}
-		finally {
-			if (iterator != null) {
-				iterator.close();
-			}
-		}
-	}
+        URI idURI = ModelUtil.createURI(model, id);
+        URI keyURI = toURI(key);
+        ClosableIterator<? extends Statement> iterator = null;
 
-	public Set<String> getReferredIDs(String id) {
-		commit();
-
-		URI idURI = ModelUtil.createURI(model, id);
-		ClosableIterator<? extends Statement> iterator = null;
-		HashSet<String> result = null;
-
-		try {
-			ClosableIterable<? extends Statement> iterable = model.findStatements(idURI, DATA.linksTo, Variable.ANY);
-			iterator = iterable.iterator();
-			while (iterator.hasNext()) {
-				Statement statement = iterator.next();
-				Node value = statement.getObject();
-				if (value instanceof URI) {
-					if (result == null) {
-						result = new HashSet<String>();
-					}
-					result.add(((URI) value).toString());
-				}
-			}
-		} catch (ModelException me) {
-			LOGGER.log(Level.SEVERE,"Couldn't get referred id's",me);
-			return null;
-		}
-		finally {
-			if (iterator != null) {
-				iterator.close();
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Warning: expensive operation, as this implementation queries for all unique subjects used in this
-	 * RepositoryAccessData's context.
-	 */
-	public int getSize() {
-		return getStoredIDs().size();
-	}
-
-	public Set<String> getStoredIDs() {
-		commit();
-
-		ClosableIterator<? extends Statement> iterator = null;
-		HashSet<String> result = new HashSet<String>();
-
-		try {
-			ClosableIterable<? extends Statement> iterable = model.findStatements(Variable.ANY, Variable.ANY, Variable.ANY);
-			iterator = iterable.iterator();
-			while (iterator.hasNext()) {
-				result.add(iterator.next().getSubject().toString());
-			}
-		} catch (ModelException me) {
-			
-		}
-		finally {
+        // only returns a value when there is exactly one matching statement
+        try {
+            ClosableIterable<? extends Statement> iterable = model
+                    .findStatements(idURI, keyURI, Variable.ANY);
+            iterator = iterable.iterator();
+            if (iterator.hasNext()) {
+                Statement statement = iterator.next();
+                if (!iterator.hasNext()) {
+                    Node value = statement.getObject();
+                    if (value instanceof Literal) {
+                        return ((Literal) value).getValue();
+                    }
+                    else if (value instanceof URI) {
+                        return value.toString();
+                    }
+                }
+            }
+            return null;
+        }
+        catch (ModelException me) {
+            LOGGER.log(Level.SEVERE, "Couldn't get value for id: '" + id + "' key: '" + key + "'", me);
+            return null;
+        }
+        finally {
             if (iterator != null) {
                 iterator.close();
             }
-		}
+        }
+    }
 
-		return result;
-	}
+    public Set<String> getReferredIDs(String id) {
+        commit();
 
-	public void initialize() throws IOException {
-	// no-op
-	}
+        URI idURI = ModelUtil.createURI(model, id);
+        ClosableIterator<? extends Statement> iterator = null;
+        HashSet<String> result = null;
 
-	public boolean isKnownId(String id)  {
-		commit();
-		
-		URI idURI = ModelUtil.createURI(model, id);
-		ClosableIterator<? extends Statement> iterator = null;
+        try {
+            ClosableIterable<? extends Statement> iterable = model.findStatements(idURI, DATA.linksTo,
+                Variable.ANY);
+            iterator = iterable.iterator();
+            while (iterator.hasNext()) {
+                Statement statement = iterator.next();
+                Node value = statement.getObject();
+                if (value instanceof URI) {
+                    if (result == null) {
+                        result = new HashSet<String>();
+                    }
+                    result.add(((URI) value).toString());
+                }
+            }
+        }
+        catch (ModelException me) {
+            LOGGER.log(Level.SEVERE, "Couldn't get referred id's", me);
+            return null;
+        }
+        finally {
+            if (iterator != null) {
+                iterator.close();
+            }
+        }
 
-		try {
-			ClosableIterable<? extends Statement> iterable = model.findStatements(idURI,Variable.ANY,Variable.ANY);
-			iterator = iterable.iterator();
-			return iterator.hasNext();
-		} catch (ModelException me) {
-			LOGGER.log(Level.SEVERE,"Couldn't determine if an id is known",me);
-			return false;
-		}
-		finally {
-			iterator.close();
-		}
-	}
+        return result;
+    }
 
-	public void put(String id, String key, String value) {
-		// remove any previous statements with different values
-		URI subject = ModelUtil.createURI(model, id);
-		URI predicate = toURI(key);
-		remove(subject, predicate);
+    /**
+     * Warning: expensive operation, as this implementation queries for all unique subjects used in this
+     * ModelAccessData's context.
+     */
+    public int getSize() {
+        return getStoredIDs().size();
+    }
 
-		// add the new statement
-		if (predicate == DATA.redirectsTo) {
-			add(ModelUtil.createStatement(model, subject, predicate, ModelUtil.createURI(model,value)));
-		}
-		else {
-			URI dataType = (predicate == DATA.dateAsNumber || predicate == DATA.byteSize) ? XSD._long
-					: XSD._string;
-			Literal object = ModelUtil.createLiteral(model,value, dataType);
-			add(ModelUtil.createStatement(model,subject, predicate, object));
-		}
-	}
+    public Set<String> getStoredIDs() {
+        commit();
 
-	public void putReferredID(String id, String referredID) {
-		URI subject = ModelUtil.createURI(model,id);
-		URI object = ModelUtil.createURI(model,referredID);
-		add(ModelUtil.createStatement(model,subject, DATA.linksTo, object));
-	}
+        ClosableIterator<? extends Statement> iterator = null;
+        HashSet<String> result = new HashSet<String>();
 
-	public void remove(String id, String key) {
-		remove(ModelUtil.createURI(model,id), toURI(key));
-	}
+        try {
+            ClosableIterable<? extends Statement> iterable = model.findStatements(Variable.ANY, Variable.ANY,
+                Variable.ANY);
+            iterator = iterable.iterator();
+            while (iterator.hasNext()) {
+                result.add(iterator.next().getSubject().toString());
+            }
+        }
+        catch (ModelException me) {
 
-	public void remove(String id) {
-		remove(ModelUtil.createURI(model, id), null);
-	}
+        }
+        finally {
+            if (iterator != null) {
+                iterator.close();
+            }
+        }
 
-	public void removeReferredID(String id, String referredID) {
-		commit();
-		
-		URI subject = ModelUtil.createURI(model, id);
-		URI object = ModelUtil.createURI(model,referredID);
-		Statement statement = ModelUtil.createStatement(model,subject, DATA.linksTo, object);
+        return result;
+    }
 
-		try {
-			model.removeStatement(statement);
-		}
-		catch (ModelException e) {
-			LOGGER.log(Level.SEVERE, "Exception while removing statement", e);
-		}
-	}
+    public void initialize() throws IOException {
+    // no-op
+    }
 
-	public void removeReferredIDs(String id) {
-		remove(ModelUtil.createURI(model, id), DATA.linksTo);
-	}
-	
-	public void store() throws IOException {
-		commit();
-	}
+    public boolean isKnownId(String id) {
+        commit();
 
-	private void commit() {
-		// this does nothing for the time being...
-		// TODO investigate into using the Model in manual commit mode
-	}
+        URI idURI = ModelUtil.createURI(model, id);
+        ClosableIterator<? extends Statement> iterator = null;
 
-	private URI toURI(String key) {
-		if (key == AccessData.DATE_KEY) {
-			return DATA.dateAsNumber;
-		}
-		else if (key == AccessData.BYTE_SIZE_KEY) {
-			return DATA.byteSize;
-		}
-		else if (key == AccessData.REDIRECTS_TO_KEY) {
-			return DATA.redirectsTo;
-		}
-		else {
-			return ModelUtil.createURI(model, URI_PREFIX + key);
-		}
-	}
+        try {
+            ClosableIterable<? extends Statement> iterable = model.findStatements(idURI, Variable.ANY,
+                Variable.ANY);
+            iterator = iterable.iterator();
+            return iterator.hasNext();
+        }
+        catch (ModelException me) {
+            LOGGER.log(Level.SEVERE, "Couldn't determine if an id is known", me);
+            return false;
+        }
+        finally {
+            iterator.close();
+        }
+    }
 
-	private void add(Statement statement) {
-		try {
-			model.addStatement(statement);
-		}
-		catch (ModelException e) {
-			LOGGER.log(Level.SEVERE, "Exception while adding statement", e);
-		}
-	}
+    public void put(String id, String key, String value) {
+        // remove any previous statements with different values
+        URI subject = ModelUtil.createURI(model, id);
+        URI predicate = toURI(key);
+        remove(subject, predicate);
 
-	private void remove(URI subject, URI predicate) {
-		commit();
-		ClosableIterator<Statement> iterator = null;
-		
-		try {
-			//ClosableIterable<Statement> iterable = model.findStatements(subject, predicate, Variable.ANY);
-			//iterator = iterable.iterator();
-			//model.removeAll(iterator);
-			model.removeStatement(subject,predicate,Variable.ANY);
-		} 
-		catch (ModelException e) {
-			LOGGER.log(Level.SEVERE, "Exception while removing statement", e);
-		}
-		finally {
-			if (iterator != null) {
-				iterator.close();
-			}
-		}
-	}
+        // add the new statement
+        if (predicate == DATA.redirectsTo) {
+            add(ModelUtil.createStatement(model, subject, predicate, ModelUtil.createURI(model, value)));
+        }
+        else {
+            URI dataType = (predicate == DATA.dateAsNumber || predicate == DATA.byteSize) ? XSD._long
+                    : XSD._string;
+            Literal object = ModelUtil.createLiteral(model, value, dataType);
+            add(ModelUtil.createStatement(model, subject, predicate, object));
+        }
+    }
+
+    public void putReferredID(String id, String referredID) {
+        URI subject = ModelUtil.createURI(model, id);
+        URI object = ModelUtil.createURI(model, referredID);
+        add(ModelUtil.createStatement(model, subject, DATA.linksTo, object));
+    }
+
+    public void remove(String id, String key) {
+        remove(ModelUtil.createURI(model, id), toURI(key));
+    }
+
+    public void remove(String id) {
+        remove(ModelUtil.createURI(model, id), null);
+    }
+
+    public void removeReferredID(String id, String referredID) {
+        commit();
+
+        URI subject = ModelUtil.createURI(model, id);
+        URI object = ModelUtil.createURI(model, referredID);
+        Statement statement = ModelUtil.createStatement(model, subject, DATA.linksTo, object);
+
+        try {
+            model.removeStatement(statement);
+        }
+        catch (ModelException e) {
+            LOGGER.log(Level.SEVERE, "Exception while removing statement", e);
+        }
+    }
+
+    public void removeReferredIDs(String id) {
+        remove(ModelUtil.createURI(model, id), DATA.linksTo);
+    }
+
+    public void store() throws IOException {
+        commit();
+    }
+
+    private void commit() {
+    // this does nothing for the time being...
+    // TODO investigate into using the Model in manual commit mode
+    }
+
+    private URI toURI(String key) {
+        if (key == AccessData.DATE_KEY) {
+            return DATA.dateAsNumber;
+        }
+        else if (key == AccessData.BYTE_SIZE_KEY) {
+            return DATA.byteSize;
+        }
+        else if (key == AccessData.REDIRECTS_TO_KEY) {
+            return DATA.redirectsTo;
+        }
+        else {
+            return ModelUtil.createURI(model, URI_PREFIX + key);
+        }
+    }
+
+    private void add(Statement statement) {
+        try {
+            model.addStatement(statement);
+        }
+        catch (ModelException e) {
+            LOGGER.log(Level.SEVERE, "Exception while adding statement", e);
+        }
+    }
+
+    private void remove(URI subject, URI predicate) {
+        commit();
+        ClosableIterator<Statement> iterator = null;
+
+        try {
+            // ClosableIterable<Statement> iterable = model.findStatements(subject, predicate, Variable.ANY);
+            // iterator = iterable.iterator();
+            // model.removeAll(iterator);
+            model.removeStatement(subject, predicate, Variable.ANY);
+        }
+        catch (ModelException e) {
+            LOGGER.log(Level.SEVERE, "Exception while removing statement", e);
+        }
+        finally {
+            if (iterator != null) {
+                iterator.close();
+            }
+        }
+    }
 }

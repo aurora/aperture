@@ -20,6 +20,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import org.ontoware.rdf2go.exception.ModelException;
 import org.semanticdesktop.aperture.examples.ExampleImapCrawler;
 
 public class CrawlerWizard extends JPanel {
@@ -331,7 +332,7 @@ public class CrawlerWizard extends JPanel {
 
         boolean identifyMimeType = outputPanel.isMimeTypeSelected();
         boolean extractContents = outputPanel.isExtractionSelected();
-        File repositoryFile = outputPanel.getRepositoryFile();
+        File outputFile = outputPanel.getOutputFile();
 
         // set a summary text in the summary panel
         StringBuilder buffer = new StringBuilder(300);
@@ -358,8 +359,8 @@ public class CrawlerWizard extends JPanel {
         buffer.append("\nExtract contents:  ");
         buffer.append(extractContents ? "on" : "off");
 
-        buffer.append("\n\nRepository file:  ");
-        buffer.append(repositoryFile.getAbsolutePath());
+        buffer.append("\n\nOutput file:  ");
+        buffer.append(outputFile.getAbsolutePath());
 
         summaryPanel.setSummary(buffer.toString());
 
@@ -370,7 +371,7 @@ public class CrawlerWizard extends JPanel {
         crawler.setPassword(password);
         crawler.setSecureConnection(sslSelected);
         crawler.setFolder(folder);
-        crawler.setRepositoryFile(repositoryFile);
+        crawler.setOutputFile(outputFile);
         crawler.setIdentifyingMimeType(identifyMimeType);
         crawler.setExtractingContents(extractContents);
 
@@ -427,7 +428,12 @@ public class CrawlerWizard extends JPanel {
         }
 
         public void run() {
-            crawler.crawl();
+            try {
+                crawler.crawl();
+            }
+            catch (ModelException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

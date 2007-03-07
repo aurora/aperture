@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -200,7 +200,7 @@ public class CrawlerPanel extends JPanel {
 
         String completionMessage = running ? null : "Finished crawling the IMAP folder (exit code: "
                 + exitCode + ").\nThe RDF model is stored in "
-                + crawler.getRepositoryFile().getAbsolutePath();
+                + crawler.getOutputFile().getAbsolutePath();
 
         folderValue.setText(crawler.getFolder());
         messageValue.setText(messageID);

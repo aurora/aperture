@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -34,321 +34,307 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 /**
  * ConfigurationUtil provides utility methods for setting and retrieving standard DataSource configuration
  * properties from an RDFContainer.
- * 
- * <p>
- * Some methods may rely on the use of a RDFcontainer implementation operating on top of a Sesame Repository.
- * These methods may also make use of the context support in the Repository class. Consequently, it is
- * important that the RDF model is also stored using a context-preserving storage mechanism (e.g. TriX files).
  */
 public class ConfigurationUtil {
 
-	private static final Logger LOGGER = Logger.getLogger(ConfigurationUtil.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ConfigurationUtil.class.getName());
 
-	private ConfigurationUtil() {
-	// prevent instantiation
-	}
+    private ConfigurationUtil() {
+    // prevent instantiation
+    }
 
-	public static void setName(String name, RDFContainer configuration) {
-		configuration.put(DATASOURCE_GEN.name, name);
-	}
+    public static void setName(String name, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.name, name);
+    }
 
-	public static String getName(RDFContainer configuration) {
-		return configuration.getString(DATASOURCE_GEN.name);
-	}
+    public static String getName(RDFContainer configuration) {
+        return configuration.getString(DATASOURCE_GEN.name);
+    }
 
-	public static void setRootUrl(String url, RDFContainer configuration) {
-		configuration.put(DATASOURCE_GEN.rootUrl, url);
-	}
+    public static void setRootUrl(String url, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.rootUrl, url);
+    }
 
-	public static String getRootUrl(RDFContainer configuration) {
-		return configuration.getString(DATASOURCE_GEN.rootUrl);
-	}
+    public static String getRootUrl(RDFContainer configuration) {
+        return configuration.getString(DATASOURCE_GEN.rootUrl);
+    }
 
-	public static void setRootFolder(String folder, RDFContainer configuration) {
-		configuration.put(DATASOURCE_GEN.rootFolder, folder);
-	}
+    public static void setRootFolder(String folder, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.rootFolder, folder);
+    }
 
-	public static String getRootFolder(RDFContainer configuration) {
-		return configuration.getString(DATASOURCE_GEN.rootFolder);
-	}
+    public static String getRootFolder(RDFContainer configuration) {
+        return configuration.getString(DATASOURCE_GEN.rootFolder);
+    }
 
-	public static void setHostname(String hostname, RDFContainer configuration) {
-		configuration.put(DATASOURCE_GEN.hostname, hostname);
-	}
+    public static void setHostname(String hostname, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.hostname, hostname);
+    }
 
-	public static String getHostname(RDFContainer configuration) {
-		return configuration.getString(DATASOURCE_GEN.hostname);
-	}
+    public static String getHostname(RDFContainer configuration) {
+        return configuration.getString(DATASOURCE_GEN.hostname);
+    }
 
-	public static void setPort(int port, RDFContainer configuration) {
-		configuration.put(DATASOURCE_GEN.port, port);
-	}
+    public static void setPort(int port, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.port, port);
+    }
 
-	public static Integer getPort(RDFContainer configuration) {
-		return configuration.getInteger(DATASOURCE_GEN.port);
-	}
+    public static Integer getPort(RDFContainer configuration) {
+        return configuration.getInteger(DATASOURCE_GEN.port);
+    }
 
-	public static void setBasepath(String basepath, RDFContainer configuration) {
-		configuration.put(DATASOURCE_GEN.basepath, basepath);
-	}
+    public static void setBasepath(String basepath, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.basepath, basepath);
+    }
 
-	public static String getBasepath(RDFContainer configuration) {
-		return configuration.getString(DATASOURCE_GEN.basepath);
-	}
+    public static String getBasepath(RDFContainer configuration) {
+        return configuration.getString(DATASOURCE_GEN.basepath);
+    }
 
-	public static void setBasepaths(Collection basepaths, RDFContainer configuration) {
-		// first remove all old base paths
-		Collection oldPaths = getBasepaths(configuration);
-		Iterator iterator = oldPaths.iterator();
-		URI id = configuration.getDescribedUri();
+    public static void setBasepaths(Collection basepaths, RDFContainer configuration) {
+        // first remove all old base paths
+        Collection oldPaths = getBasepaths(configuration);
+        Iterator iterator = oldPaths.iterator();
+        URI id = configuration.getDescribedUri();
 
-		while (iterator.hasNext()) {
-			String oldPath = (String) iterator.next();
-			configuration.remove(configuration.getValueFactory().createStatement(id, DATASOURCE_GEN.basepath,
-				configuration.getValueFactory().createLiteral(oldPath)));
-		}
+        while (iterator.hasNext()) {
+            String oldPath = (String) iterator.next();
+            configuration.remove(configuration.getValueFactory().createStatement(id, DATASOURCE_GEN.basepath,
+                configuration.getValueFactory().createLiteral(oldPath)));
+        }
 
-		// now add the new paths
-		iterator = basepaths.iterator();
-		while (iterator.hasNext()) {
-			String path = (String) iterator.next();
-			configuration.add(DATASOURCE_GEN.basepath, path);
-		}
-	}
+        // now add the new paths
+        iterator = basepaths.iterator();
+        while (iterator.hasNext()) {
+            String path = (String) iterator.next();
+            configuration.add(DATASOURCE_GEN.basepath, path);
+        }
+    }
 
-	public static Collection getBasepaths(RDFContainer configuration) {
-		ArrayList result = new ArrayList();
+    public static Collection getBasepaths(RDFContainer configuration) {
+        ArrayList result = new ArrayList();
 
-		Collection values = configuration.getAll(DATASOURCE_GEN.basepath);
-		Iterator iterator = values.iterator();
-		while (iterator.hasNext()) {
-			Node value = (Node) iterator.next();
-			if (value instanceof Literal) {
-				result.add(((Literal) value).getValue());
-			}
-		}
+        Collection values = configuration.getAll(DATASOURCE_GEN.basepath);
+        Iterator iterator = values.iterator();
+        while (iterator.hasNext()) {
+            Node value = (Node) iterator.next();
+            if (value instanceof Literal) {
+                result.add(((Literal) value).getValue());
+            }
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	public static void setUsername(String username, RDFContainer configuration) {
-		configuration.put(DATASOURCE_GEN.username, username);
-	}
+    public static void setUsername(String username, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.username, username);
+    }
 
-	public static String getUsername(RDFContainer configuration) {
-		return configuration.getString(DATASOURCE_GEN.username);
-	}
+    public static String getUsername(RDFContainer configuration) {
+        return configuration.getString(DATASOURCE_GEN.username);
+    }
 
-	public static void setPassword(String password, RDFContainer configuration) {
-		configuration.put(DATASOURCE_GEN.password, password);
-	}
+    public static void setPassword(String password, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.password, password);
+    }
 
-	public static String getPassword(RDFContainer configuration) {
-		return configuration.getString(DATASOURCE_GEN.password);
-	}
+    public static String getPassword(RDFContainer configuration) {
+        return configuration.getString(DATASOURCE_GEN.password);
+    }
 
-	public static void setMaximumDepth(int maximumDepth, RDFContainer configuration) {
-		configuration.put(DATASOURCE_GEN.maximumDepth, maximumDepth);
-	}
+    public static void setMaximumDepth(int maximumDepth, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.maximumDepth, maximumDepth);
+    }
 
-	public static Integer getMaximumDepth(RDFContainer configuration) {
-		return configuration.getInteger(DATASOURCE_GEN.maximumDepth);
-	}
+    public static Integer getMaximumDepth(RDFContainer configuration) {
+        return configuration.getInteger(DATASOURCE_GEN.maximumDepth);
+    }
 
-	public static void setMaximumByteSize(long maximumSize, RDFContainer configuration) {
-		configuration.put(DATASOURCE_GEN.maximumSize, maximumSize);
-	}
+    public static void setMaximumByteSize(long maximumSize, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.maximumSize, maximumSize);
+    }
 
-	public static Long getMaximumByteSize(RDFContainer configuration) {
-		return configuration.getLong(DATASOURCE_GEN.maximumSize);
-	}
+    public static Long getMaximumByteSize(RDFContainer configuration) {
+        return configuration.getLong(DATASOURCE_GEN.maximumSize);
+    }
 
-	public static void setIncludeHiddenResources(boolean value, RDFContainer configuration) {
-		configuration.put(DATASOURCE_GEN.includeHiddenResources, value);
-	}
+    public static void setIncludeHiddenResources(boolean value, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.includeHiddenResources, value);
+    }
 
-	public static Boolean getIncludeHiddenResourceS(RDFContainer configuration) {
-		return configuration.getBoolean(DATASOURCE_GEN.includeHiddenResources);
-	}
+    public static Boolean getIncludeHiddenResourceS(RDFContainer configuration) {
+        return configuration.getBoolean(DATASOURCE_GEN.includeHiddenResources);
+    }
 
-	public static void setIncludeEmbeddedResources(boolean value, RDFContainer configuration) {
-		configuration.put(DATASOURCE_GEN.includeEmbeddedResources, value);
-	}
+    public static void setIncludeEmbeddedResources(boolean value, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.includeEmbeddedResources, value);
+    }
 
-	public static Boolean getIncludeEmbeddedResourceS(RDFContainer configuration) {
-		return configuration.getBoolean(DATASOURCE_GEN.includeEmbeddedResources);
-	}
+    public static Boolean getIncludeEmbeddedResourceS(RDFContainer configuration) {
+        return configuration.getBoolean(DATASOURCE_GEN.includeEmbeddedResources);
+    }
 
-	public static void setConnectionSecurity(String securityType, RDFContainer configuration) {
-		configuration.put(DATASOURCE_GEN.connectionSecurity, securityType);
-	}
+    public static void setConnectionSecurity(String securityType, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.connectionSecurity, securityType);
+    }
 
-	public static String getConnectionSecurity(RDFContainer configuration) {
-		return configuration.getString(DATASOURCE_GEN.connectionSecurity);
-	}
+    public static String getConnectionSecurity(RDFContainer configuration) {
+        return configuration.getString(DATASOURCE_GEN.connectionSecurity);
+    }
 
-	public static void setSSLFileName(String sslfilename, RDFContainer configuration) {
-		configuration.put(DATASOURCE_GEN.sslFileName, sslfilename);
-	}
+    public static void setSSLFileName(String sslfilename, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.sslFileName, sslfilename);
+    }
 
-	public static String getSSLFileName(RDFContainer configuration) {
-		return configuration.getString(DATASOURCE_GEN.sslFileName);
-	}
+    public static String getSSLFileName(RDFContainer configuration) {
+        return configuration.getString(DATASOURCE_GEN.sslFileName);
+    }
 
-	public static void setSSLPassword(String sslpword, RDFContainer configuration) {
-		configuration.put(DATASOURCE_GEN.sslFilePassword, sslpword);
-	}
+    public static void setSSLPassword(String sslpword, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.sslFilePassword, sslpword);
+    }
 
-	public static String getSSLPassword(RDFContainer configuration) {
-		return configuration.getString(DATASOURCE_GEN.sslFilePassword);
-	}
+    public static String getSSLPassword(RDFContainer configuration) {
+        return configuration.getString(DATASOURCE_GEN.sslFilePassword);
+    }
 
-	public static Boolean getIncludeInbox(RDFContainer configuration) {
-		return configuration.getBoolean(DATASOURCE_GEN.includeInbox);
-	}
+    public static Boolean getIncludeInbox(RDFContainer configuration) {
+        return configuration.getBoolean(DATASOURCE_GEN.includeInbox);
+    }
 
-	public static void setIncludeInbox(boolean value, RDFContainer configuration) {
-		configuration.put(DATASOURCE_GEN.includeInbox, value);
-	}
+    public static void setIncludeInbox(boolean value, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.includeInbox, value);
+    }
 
-	// TODO Fix these methods in ConfigurationUtil and make these tests work
+    /**
+     * Stores the specified DomainBoundaries in the specified configuration. This method will overwrite a
+     * previously set DomainBoundaries but this is only guaranteed to work correctly when it has also been
+     * stored through this same method.
+     */
+    public static void setDomainBoundaries(DomainBoundaries boundaries, RDFContainer configuration) {
+        // fetch the Model and the DataSource ID
+        URI id = configuration.getDescribedUri();
+        Model model = configuration.getModel();
 
-	/**
-	 * Stores the specified DomainBoundaries in the specified configuration. This method will overwrite a
-	 * previously set DomainBoundaries but this is only guaranteed to work correctly when it has also been
-	 * stored through this same method.
-	 * 
-	 * <p>
-     * OBSOLETE: There is neither Sesame nor contexts...
-	 * Implementation note: this method assumes that the specified RDFContainer uses a Sesame Repository as
-	 * its model and will make use of its context support to mark all statements relating to this
-	 * DomainBoundaries.
-	 */
+        try {
+            deletePatternStatements(id, DATASOURCE.includePattern, model);
+            deletePatternStatements(id, DATASOURCE.excludePattern, model);
 
-	public static void setDomainBoundaries(DomainBoundaries boundaries, RDFContainer configuration) {
-		// fetch the Repository and the DataSource ID
-		URI id = configuration.getDescribedUri();
-		Model model = configuration.getModel();
+            // add statements reflecting the specified DomainBoundaries
+            if (boundaries != null) {
+                addPatternStatements(id, boundaries.getIncludePatterns(), DATASOURCE_GEN.includePattern,
+                    model);
+                addPatternStatements(id, boundaries.getExcludePatterns(), DATASOURCE_GEN.excludePattern,
+                    model);
+            }
+        }
+        catch (ModelException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-		try {
-			deletePatternStatements(id, DATASOURCE.includePattern, model);
-			deletePatternStatements(id, DATASOURCE.excludePattern, model);
-
-			// add statements reflecting the specified DomainBoundaries
-			if (boundaries != null) {
-				addPatternStatements(id, boundaries.getIncludePatterns(), DATASOURCE_GEN.includePattern,
-					model);
-				addPatternStatements(id, boundaries.getExcludePatterns(), DATASOURCE_GEN.excludePattern,
-					model);
-			}
-		}
-		catch (ModelException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
-	 * This is a translation of an SERQL query into triple-pattern operations. The original query looked
-	 * as follows:
-	 * 
-	 * <pre>
-	 * CONSTRUCT * 
-	 * FROM 
-	 * 		 {&lt;id&gt;} &lt;predicate&gt;    {p},
-     *		 {p}    rdf:type       {t},
-     *		 {p}    rdf:value      {v},
-     *		[{p}    data:condition {c}]     			
+    /**
+     * This is a translation of an SERQL query into triple-pattern operations. The original query looked as
+     * follows:
+     * 
+     * <pre>
+     * CONSTRUCT * 
+     * FROM 
+     * 		 {&lt;id&gt;} &lt;predicate&gt;    {p},
+     * 	 {p}    rdf:type       {t},
+     * 	 {p}    rdf:value      {v},
+     * 	[{p}    data:condition {c}]     			
      * USING NAMESPACE 
      * 		rdf = &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;, 
-     *		rdfs = &lt;http://www.w3.org/2000/01/rdf-schema#&gt;,
-     *		data = &lt;DATASOURCE.NS&gt;
-	 * </pre>
-	 */
-	private static void deletePatternStatements(URI id, URI predicate, Model model) throws ModelException {
-		ClosableIterator<? extends Statement> iterator = null;
-		try {
-			List<Statement> statementsToRemove = new LinkedList<Statement>();
-			ClosableIterable<? extends Statement> iterable = model.findStatements(id, predicate, Variable.ANY);
-			iterator = iterable.iterator();
+     * 	rdfs = &lt;http://www.w3.org/2000/01/rdf-schema#&gt;,
+     * 	data = &lt;DATASOURCE.NS&gt;
+     * </pre>
+     */
+    private static void deletePatternStatements(URI id, URI predicate, Model model) throws ModelException {
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            List<Statement> statementsToRemove = new LinkedList<Statement>();
+            ClosableIterable<? extends Statement> iterable = model
+                    .findStatements(id, predicate, Variable.ANY);
+            iterator = iterable.iterator();
 
-			while (iterator.hasNext()) {
-				Statement mainStatement = iterator.next();
-				Node object = mainStatement.getObject();
-				if (object instanceof Resource) {
-					Resource objectResource = (Resource) object;
-					List<Statement> types = findStatements(objectResource,RDF.type,model);
-					List<Statement> values = findStatements(objectResource,RDF.value,model);
-					List<Statement> conditions = findStatements(objectResource,DATASOURCE.condition,model);
-					if (types.size() > 0 && values.size() > 0) {
-						statementsToRemove.add(mainStatement);
-						statementsToRemove.addAll(types);
-						statementsToRemove.addAll(values);
-						statementsToRemove.addAll(conditions);
-					}
-				}
-			}
-			// LOGGER.info(query);
-			model.removeAll(statementsToRemove.iterator());
-		}
-		catch (ModelException e) {
-			LOGGER.log(Level.WARNING, "Query failed. Very odd. ", e);
-		}
-		finally {
-			if (iterator != null) {
-				iterator.close();
-			}
-		}
-	}
-	
-	private static List<Statement> findStatements(Resource resource, URI predicate, Model model) {
-		List<Statement> result = new LinkedList<Statement>();
-		ClosableIterator<? extends Statement> iterator = null;
-		try {
-			ClosableIterable<? extends Statement> iterable = null;
-			iterable = model.findStatements(resource,predicate,Variable.ANY);
-			iterator = iterable.iterator();
-			while (iterator.hasNext()) {
-				result.add(iterator.next());
-			}
-		} catch (ModelException me) {
-			LOGGER.log(Level.SEVERE,"Couldn't find statements",me);
-		} finally {
-			if (iterator != null) {
-				iterator.close();
-			}
-		}
-		return result;
-	}
+            while (iterator.hasNext()) {
+                Statement mainStatement = iterator.next();
+                Node object = mainStatement.getObject();
+                if (object instanceof Resource) {
+                    Resource objectResource = (Resource) object;
+                    List<Statement> types = findStatements(objectResource, RDF.type, model);
+                    List<Statement> values = findStatements(objectResource, RDF.value, model);
+                    List<Statement> conditions = findStatements(objectResource, DATASOURCE.condition, model);
+                    if (types.size() > 0 && values.size() > 0) {
+                        statementsToRemove.add(mainStatement);
+                        statementsToRemove.addAll(types);
+                        statementsToRemove.addAll(values);
+                        statementsToRemove.addAll(conditions);
+                    }
+                }
+            }
+            // LOGGER.info(query);
+            model.removeAll(statementsToRemove.iterator());
+        }
+        catch (ModelException e) {
+            LOGGER.log(Level.WARNING, "Query failed. Very odd. ", e);
+        }
+        finally {
+            if (iterator != null) {
+                iterator.close();
+            }
+        }
+    }
 
-	private static void addPatternStatements(URI sourceID, List patterns, URI predicate, Model model)
-			throws ModelException {
+    private static List<Statement> findStatements(Resource resource, URI predicate, Model model) {
+        List<Statement> result = new LinkedList<Statement>();
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            ClosableIterable<? extends Statement> iterable = null;
+            iterable = model.findStatements(resource, predicate, Variable.ANY);
+            iterator = iterable.iterator();
+            while (iterator.hasNext()) {
+                result.add(iterator.next());
+            }
+        }
+        catch (ModelException me) {
+            LOGGER.log(Level.SEVERE, "Couldn't find statements", me);
+        }
+        finally {
+            if (iterator != null) {
+                iterator.close();
+            }
+        }
+        return result;
+    }
 
-		// loop over all patterns
-		Iterator iterator = patterns.iterator();
-		while (iterator.hasNext()) {
-			UrlPattern pattern = (UrlPattern) iterator.next();
+    private static void addPatternStatements(URI sourceID, List patterns, URI predicate, Model model)
+            throws ModelException {
 
-			// create a BNode for this pattern
-			BlankNode patternResource = model.createBlankNode();
+        // loop over all patterns
+        Iterator iterator = patterns.iterator();
+        while (iterator.hasNext()) {
+            UrlPattern pattern = (UrlPattern) iterator.next();
+
+            // create a BNode for this pattern
+            BlankNode patternResource = model.createBlankNode();
 
             // connect it to the DataSource's Resource using the appropriate pattern predicate
-			model.addStatement(ModelUtil.createStatement(model, sourceID, predicate, patternResource));
-			
-			// store the statements modeling the pattern contents
-			Collection<Statement> collection = pattern.getStatements(model, patternResource);
-			model.addAll(collection.iterator());
+            model.addStatement(ModelUtil.createStatement(model, sourceID, predicate, patternResource));
 
-			
-			
-		}
-	}
-	
+            // store the statements modeling the pattern contents
+            Collection<Statement> collection = pattern.getStatements(model, patternResource);
+            model.addAll(collection.iterator());
+
+        }
+    }
+
     /**
-     * Create a DomainBoundaries instance populated with UrlPatterns that reflect the specified
-     * configuration.
+     * Create a DomainBoundaries instance populated with UrlPatterns that reflect the specified configuration.
      */
     public static DomainBoundaries getDomainBoundaries(RDFContainer configuration) {
-        // fetch the Repository and the DataSource ID
+        // fetch the Model and the DataSource ID
         URI id = configuration.getDescribedUri();
         Model model = (Model) configuration.getModel();
 
@@ -365,99 +351,103 @@ public class ConfigurationUtil {
         ClosableIterator<? extends Statement> statements = null;
         ArrayList result = new ArrayList();
         try {
-        	ClosableIterable<? extends Statement> iterable = model.findStatements(id,predicate,Variable.ANY);
-        	statements = iterable.iterator();
-            
+            ClosableIterable<? extends Statement> iterable = model
+                    .findStatements(id, predicate, Variable.ANY);
+            statements = iterable.iterator();
+
             while (statements.hasNext()) {
-	            Statement statement = (Statement) statements.next();
-	            Node value = statement.getObject();
-	
-	            // only proceed when the value is a Resource
-	            if (value instanceof Resource) {
-	                Resource patternResource = (Resource) value;
-	
-	                // determine its type and value
-	                Node typeValue = getSingleValue(patternResource, RDF.type, model);
-	                Node patternValue = getSingleValue(patternResource, RDF.value, model);
-	
-	                // skip in case of inappropriate values
-	                if (!(typeValue instanceof URI) || !(patternValue instanceof Literal)) {
-	                	LOGGER.config("type of boundary pattern not valid: "+typeValue);
-	                    continue;
-	                }
-	
-	                // convert the pattern Value to a String
-	                String patternString = ((Literal) patternValue).getValue();
-	
-	                // create the appropriate UrlPattern
-	                if (DATASOURCE_GEN.RegExpPattern.equals(typeValue)) {
-	                    result.add(new RegExpPattern(patternString));
-	                }
-	                else if (DATASOURCE_GEN.SubstringPattern.equals(typeValue)) {
-	                    // also fetch the condition statement
-	                    Node conditionValue = getSingleValue(patternResource, DATASOURCE_GEN.condition, model);
-	                    SubstringCondition condition = resolveCondition(conditionValue);
-	                    if (condition != null) {
-	                        result.add(new SubstringPattern(patternString, condition));
-	                    }
-	                    else
-	                    	LOGGER.config("cannot detect subtring pattern condition: "+conditionValue);
-	                }
-	                else {
-	                    // unknown type, ignore
-	                	LOGGER.config("type of boundary pattern not known: "+typeValue);
-	                }
-	            }
-	        }
-        } catch (ModelException me) {
-        	LOGGER.log(Level.SEVERE,"Couldn't get domain boundaries patterns",me);
+                Statement statement = (Statement) statements.next();
+                Node value = statement.getObject();
+
+                // only proceed when the value is a Resource
+                if (value instanceof Resource) {
+                    Resource patternResource = (Resource) value;
+
+                    // determine its type and value
+                    Node typeValue = getSingleValue(patternResource, RDF.type, model);
+                    Node patternValue = getSingleValue(patternResource, RDF.value, model);
+
+                    // skip in case of inappropriate values
+                    if (!(typeValue instanceof URI) || !(patternValue instanceof Literal)) {
+                        LOGGER.config("type of boundary pattern not valid: " + typeValue);
+                        continue;
+                    }
+
+                    // convert the pattern Value to a String
+                    String patternString = ((Literal) patternValue).getValue();
+
+                    // create the appropriate UrlPattern
+                    if (DATASOURCE_GEN.RegExpPattern.equals(typeValue)) {
+                        result.add(new RegExpPattern(patternString));
+                    }
+                    else if (DATASOURCE_GEN.SubstringPattern.equals(typeValue)) {
+                        // also fetch the condition statement
+                        Node conditionValue = getSingleValue(patternResource, DATASOURCE_GEN.condition, model);
+                        SubstringCondition condition = resolveCondition(conditionValue);
+                        if (condition != null) {
+                            result.add(new SubstringPattern(patternString, condition));
+                        }
+                        else
+                            LOGGER.config("cannot detect subtring pattern condition: " + conditionValue);
+                    }
+                    else {
+                        // unknown type, ignore
+                        LOGGER.config("type of boundary pattern not known: " + typeValue);
+                    }
+                }
+            }
+        }
+        catch (ModelException me) {
+            LOGGER.log(Level.SEVERE, "Couldn't get domain boundaries patterns", me);
         }
         finally {
-        	if (statements != null) {
-        		statements.close();
-        	}
+            if (statements != null) {
+                statements.close();
+            }
         }
-        
+
         return result;
     }
-	 
-	private static Node getSingleValue(Resource resource, URI predicate, Model model) {
-		ClosableIterator<? extends Statement> statements = null;
-		Node result = null;
-		try {
-			ClosableIterable<? extends Statement> iterable = model.findStatements(resource, predicate, Variable.ANY);
-			statements = iterable.iterator();
-			if (statements.hasNext()) {
-				Statement statement = (Statement) statements.next();
-				result = statement.getObject();
-			}
-		} catch (ModelException me) {
-			LOGGER.log(Level.SEVERE,"Couldn't get a single value",me);
-		}
-		finally {
-			if (statements != null) {
-				statements.close();
-			}
-		}
-		return result;
-	}
 
-	public static SubstringCondition resolveCondition(Node value) {
-		String comp = value.toString();
-		if (DATASOURCE.STARTS_WITH.toString().equals(comp)) {
-			return new SubstringCondition.StartsWith();
-		}
-		else if (DATASOURCE.ENDS_WITH.toString().equals(comp)) {
-			return new SubstringCondition.EndsWith();
-		}
-		else if (DATASOURCE.CONTAINS.toString().equals(comp)) {
-			return new SubstringCondition.Contains();
-		}
-		else if (DATASOURCE.DOES_NOT_CONTAIN.toString().equals(comp)) {
-			return new SubstringCondition.DoesNotContain();
-		}
-		else {
-			return null;
-		}
-	}
+    private static Node getSingleValue(Resource resource, URI predicate, Model model) {
+        ClosableIterator<? extends Statement> statements = null;
+        Node result = null;
+        try {
+            ClosableIterable<? extends Statement> iterable = model.findStatements(resource, predicate,
+                Variable.ANY);
+            statements = iterable.iterator();
+            if (statements.hasNext()) {
+                Statement statement = (Statement) statements.next();
+                result = statement.getObject();
+            }
+        }
+        catch (ModelException me) {
+            LOGGER.log(Level.SEVERE, "Couldn't get a single value", me);
+        }
+        finally {
+            if (statements != null) {
+                statements.close();
+            }
+        }
+        return result;
+    }
+
+    public static SubstringCondition resolveCondition(Node value) {
+        String comp = value.toString();
+        if (DATASOURCE.STARTS_WITH.toString().equals(comp)) {
+            return new SubstringCondition.StartsWith();
+        }
+        else if (DATASOURCE.ENDS_WITH.toString().equals(comp)) {
+            return new SubstringCondition.EndsWith();
+        }
+        else if (DATASOURCE.CONTAINS.toString().equals(comp)) {
+            return new SubstringCondition.Contains();
+        }
+        else if (DATASOURCE.DOES_NOT_CONTAIN.toString().equals(comp)) {
+            return new SubstringCondition.DoesNotContain();
+        }
+        else {
+            return null;
+        }
+    }
 }

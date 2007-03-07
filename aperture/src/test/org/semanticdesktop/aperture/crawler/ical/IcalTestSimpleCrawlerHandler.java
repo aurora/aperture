@@ -53,7 +53,7 @@ class IcalTestSimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactor
     }
     
     public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-        // we don't need to do anything   
+        // we don't need to do anything
     }
 
     public void accessingObject(Crawler crawler, String url) {

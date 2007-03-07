@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -15,10 +15,10 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.repository.Connection;
 import org.openrdf.repository.Repository;
-import org.openrdf.sail.SailException;
-import org.openrdf.util.iterator.CloseableIterator;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.RepositoryResult;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class MetadataModel {
@@ -51,8 +51,8 @@ public class MetadataModel {
 		}
 		else {
 			URI fullTextUri = new URIImpl(DATA.fullText.toString());
-			CloseableIterator statements = null; 
-			Connection connection = null;
+			RepositoryResult<Statement> statements = null; 
+			RepositoryConnection connection = null;
 			try {
 				connection = repository.getConnection();
 				statements = connection.getStatements(null, fullTextUri, null,false);
@@ -71,12 +71,17 @@ public class MetadataModel {
 
 				fullText = buffer.toString().trim();
 			}
-			catch (SailException se) {
-				se.printStackTrace();
+			catch (RepositoryException re) {
+				re.printStackTrace();
 			}
 			finally {
 				if (statements != null) {
-					statements.close();
+					try {
+                        statements.close();
+                    }
+                    catch (RepositoryException e) {
+                        e.printStackTrace();
+                    }
 				}
 				closeConnection(connection);
 			}
@@ -86,13 +91,13 @@ public class MetadataModel {
 		fireStateChanged();
 	}
 	
-	private void closeConnection(Connection connection) {
+	private void closeConnection(RepositoryConnection connection) {
     	if (connection != null) {
     		try {
     			connection.close();
     		}
-    		catch (SailException se) {
-    			se.printStackTrace();
+    		catch (RepositoryException re) {
+    			re.printStackTrace();
     		}
     	}
     }

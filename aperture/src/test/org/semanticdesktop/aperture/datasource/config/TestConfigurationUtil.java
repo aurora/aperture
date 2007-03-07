@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -21,7 +21,7 @@ public class TestConfigurationUtil extends ApertureTestBase {
     }
 
     public void tearDown() {
-    	configuration.dispose();
+        configuration.dispose();
         configuration = null;
     }
 
@@ -33,13 +33,13 @@ public class TestConfigurationUtil extends ApertureTestBase {
     }
 
     public void testPort() {
-    	assertNull(ConfigurationUtil.getPort(configuration));
-    	ConfigurationUtil.setPort(2, configuration);
-    	assertEquals(2, ConfigurationUtil.getPort(configuration).intValue());
-    	ConfigurationUtil.setPort(3, configuration);
-    	assertEquals(3, ConfigurationUtil.getPort(configuration).intValue());
+        assertNull(ConfigurationUtil.getPort(configuration));
+        ConfigurationUtil.setPort(2, configuration);
+        assertEquals(2, ConfigurationUtil.getPort(configuration).intValue());
+        ConfigurationUtil.setPort(3, configuration);
+        assertEquals(3, ConfigurationUtil.getPort(configuration).intValue());
     }
-    
+
     public void testPassword() {
         String password1 = "p@ssw0rd";
         ConfigurationUtil.setPassword(password1, configuration);
@@ -74,7 +74,7 @@ public class TestConfigurationUtil extends ApertureTestBase {
         String security2 = ConfigurationUtil.getConnectionSecurity(configuration);
         assertEquals(security1, security2);
     }
-    
+
     public void testDomainBoundaries() throws ModelException {
         String javaString = ".java";
         String cvsString = ".*/CVS/.*";
@@ -96,17 +96,12 @@ public class TestConfigurationUtil extends ApertureTestBase {
         RegExpPattern pattern2 = (RegExpPattern) boundaries2.getExcludePatterns().get(0);
         assertEquals(cvsString, pattern2.getPatternString());
 
-        
-         // The folling test fails, probably due to a bug in Sesame 2.0 alpha 1 (see
-         //http://www.openrdf.org/issues/browse/SES-221).
-         
+        // check that the boundaries can also be completely removed
+        ConfigurationUtil.setDomainBoundaries(null, configuration);
+        DomainBoundaries boundaries3 = ConfigurationUtil.getDomainBoundaries(configuration);
+        assertEquals(0, boundaries3.getIncludePatterns().size());
+        assertEquals(0, boundaries3.getExcludePatterns().size());
 
-         // check that the boundaries can also be completely removed
-         ConfigurationUtil.setDomainBoundaries(null, configuration);
-         DomainBoundaries boundaries3 = ConfigurationUtil.getDomainBoundaries(configuration);
-         assertEquals(0, boundaries3.getIncludePatterns().size());
-         assertEquals(0, boundaries3.getExcludePatterns().size());
-         
-         assertEquals(0,((Model)configuration.getModel()).size());
+        assertEquals(0, ((Model) configuration.getModel()).size());
     }
 }

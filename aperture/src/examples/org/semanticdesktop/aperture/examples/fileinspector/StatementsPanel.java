@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -20,14 +20,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.openrdf.repository.Connection;
 import org.openrdf.repository.Repository;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
-import org.openrdf.sail.SailException;
-
 
 public class StatementsPanel extends JPanel {
 
@@ -118,21 +117,21 @@ public class StatementsPanel extends JPanel {
 
     private void updateDisplay() {
         String text = null;
-        Connection connection = null;
+        RepositoryConnection connection = null;
         RDFWriter writer = null;
         StringWriter buffer = null;
 
         if (repository != null) {
-        	try {
-	        	// determine the selected RDFFormat
-	            RDFFormat format = (RDFFormat) formatBoxModel.getSelectedItem();
-	
-	            // create an RDFWriter based on the chosen format
-	            buffer = new StringWriter(10000);
-	            writer = Rio.createWriter(format, buffer);
-	
-	            // export the statements to a String
-            
+            try {
+                // determine the selected RDFFormat
+                RDFFormat format = (RDFFormat) formatBoxModel.getSelectedItem();
+
+                // create an RDFWriter based on the chosen format
+                buffer = new StringWriter(10000);
+                writer = Rio.createWriter(format, buffer);
+
+                // export the statements to a String
+
                 // wrap the writer in a utility RDFHandler that clips long literals
                 // (JTextArea - or actually Swing - will become unstable with long strongs)
                 RDFHandler handler = new LiteralClipper(writer);
@@ -147,7 +146,7 @@ public class StatementsPanel extends JPanel {
                         + "\n\nPartial contents:\n\n" + buffer.toString();
             }
             finally {
-            	closeConnection(connection);
+                closeConnection(connection);
             }
 
             text = text.trim();
@@ -157,16 +156,16 @@ public class StatementsPanel extends JPanel {
         statementsTextArea.setText(text);
         statementsTextArea.setCaretPosition(0);
     }
-    
-    private void closeConnection(Connection connection) {
-    	if (connection != null) {
-    		try {
-    			connection.close();
-    		}
-    		catch (SailException se) {
-    			se.printStackTrace();
-    		}
-    	}
+
+    private void closeConnection(RepositoryConnection connection) {
+        if (connection != null) {
+            try {
+                connection.close();
+            }
+            catch (RepositoryException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public Repository getRepository() {
@@ -241,7 +240,7 @@ public class StatementsPanel extends JPanel {
         public Component getListCellRendererComponent(JList list, Object value, int index,
                 boolean isSelected, boolean cellHasFocus) {
             DefaultListCellRenderer renderer = (DefaultListCellRenderer) super.getListCellRendererComponent(
-                    list, value, index, isSelected, cellHasFocus);
+                list, value, index, isSelected, cellHasFocus);
 
             String text = renderer.getText();
             if (RDFFormat.RDFXML.equals(value)) {

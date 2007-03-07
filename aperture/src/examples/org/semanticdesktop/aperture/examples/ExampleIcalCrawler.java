@@ -10,15 +10,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
-import java.util.logging.Logger;
 
+import org.ontoware.rdf2go.ModelFactory;
+import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.ModelSet;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.openrdf.rdf2go.RepositoryModel;
-import org.openrdf.repository.Repository;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
@@ -29,19 +28,18 @@ import org.semanticdesktop.aperture.crawler.ical.IcalCrawler;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.vocabulary.ICALTZD;
 
 /**
- * Example class that demostrates the usage of an IcalCrawler.
+ * Example class demonstrating the usage of an IcalCrawler.
  */
 public class ExampleIcalCrawler {
 
-    private static final Logger LOGGER = Logger.getLogger(ExampleIcalCrawler.class.getName());
-
     private File icalFile;
 
-    private File repositoryFile;
+    private File outputFile;
 
     public File getIcalFile() {
         return icalFile;
@@ -51,12 +49,12 @@ public class ExampleIcalCrawler {
         this.icalFile = icalFile;
     }
 
-    public File getRepositoryFile() {
-        return repositoryFile;
+    public File getOutputFile() {
+        return outputFile;
     }
 
-    public void setRepositoryFile(File file) {
-        this.repositoryFile = file;
+    public void setOutputFile(File file) {
+        this.outputFile = file;
     }
 
     public static void main(String[] args) throws ModelException {
@@ -69,8 +67,8 @@ public class ExampleIcalCrawler {
             if (crawler.getIcalFile() == null) {
                 crawler.setIcalFile(new File(arg));
             }
-            else if (crawler.getRepositoryFile() == null) {
-                crawler.setRepositoryFile(new File(arg));
+            else if (crawler.getOutputFile() == null) {
+                crawler.setOutputFile(new File(arg));
             }
             else {
                 exitWithUsageMessage();
@@ -78,7 +76,7 @@ public class ExampleIcalCrawler {
         }
 
         // check that all required fields are available
-        if (crawler.getIcalFile() == null || crawler.getRepositoryFile() == null) {
+        if (crawler.getIcalFile() == null || crawler.getOutputFile() == null) {
             exitWithUsageMessage();
         }
 
@@ -87,8 +85,7 @@ public class ExampleIcalCrawler {
     }
 
     private static void exitWithUsageMessage() {
-        System.err.println("Usage: java " + ExampleIcalCrawler.class.getName()
-                + " icalFilePath repositoryFilePath");
+        System.err.println("Usage: java " + ExampleIcalCrawler.class.getName() + " icalFile outputFile");
         System.exit(-1);
     }
 
@@ -98,15 +95,8 @@ public class ExampleIcalCrawler {
         }
 
         // create a data source configuration
-        Model model = null;
-        try {
-            model = new RepositoryModel(false);
-        }
-        catch (ModelException me) {
-            throw new RuntimeException(me);
-        }
-        RDFContainer configuration = new RDFContainerImpl(model, URIImpl
-                .createURIWithoutChecking("source:testSource"));
+        RDFContainerFactoryImpl factory = new RDFContainerFactoryImpl();
+        RDFContainer configuration = factory.newInstance("source:testSource");
         ConfigurationUtil.setRootUrl(icalFile.getAbsolutePath(), configuration);
         configuration.put(ICALTZD.realBlankNodes, true);
 
@@ -126,39 +116,20 @@ public class ExampleIcalCrawler {
 
     private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
-        protected Model model;
+        private ModelSet modelSet;
 
-        protected int nrObjects;
+        private int nrObjects;
 
-        public SimpleCrawlerHandler() {
-            try {
-                model = new RepositoryModel(false);
-            }
-            catch (ModelException me) {
-                throw new RuntimeException(me);
-            }
+        public SimpleCrawlerHandler() throws ModelException {
+            // create a ModelSet that will hold the RDF Models of all crawled files and folders
+            ModelFactory factory = RDF2Go.getModelFactory();
+            modelSet = factory.createModelSet();
         }
 
-        public void accessingObject(Crawler crawler, String url) {
-        // do nothing by default
-        }
+        public void accessingObject(Crawler crawler, String url) {}
 
         public void crawlStarted(Crawler crawler) {
             nrObjects = 0;
-        }
-
-        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-            try {
-                Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
-                model.writeTo(writer, Syntax.RdfXml);
-                writer.close();
-
-                System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
-                System.out.println("Saved RDF model to " + repositoryFile);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
         }
 
         public void objectChanged(Crawler dataCrawler, DataObject object) {
@@ -187,6 +158,7 @@ public class ExampleIcalCrawler {
         }
 
         public void objectNew(Crawler crawler, DataObject object) {
+            nrObjects++;
             object.dispose();
         }
 
@@ -195,19 +167,32 @@ public class ExampleIcalCrawler {
         }
 
         public RDFContainer getRDFContainer(URI uri) {
-            Model contextModel = null;
-            try {
-                contextModel = new RepositoryModel(uri, (Repository) model.getUnderlyingModelImplementation());
-            }
-            catch (ModelException me) {
-                throw new RuntimeException(me);
-            }
-            return new RDFContainerImpl(contextModel, uri);
+            // note: by using ModelSet.getModel, all statements added to this Model are added to the ModelSet
+            // automatically, unlike ModelFactory.createModel, which creates stand-alone models.
+
+            Model model = modelSet.getModel(uri);
+            return new RDFContainerImpl(model, uri);
         }
 
-        protected void printUnexpectedEventWarning(String event) {
+        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
+            try {
+                Writer writer = new BufferedWriter(new FileWriter(outputFile));
+                modelSet.writeTo(writer, Syntax.Trix);
+                writer.close();
+
+                System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
+                System.out.println("Saved RDF model to " + outputFile);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            
+            modelSet.close();
+        }
+
+        private void printUnexpectedEventWarning(String event) {
             // as we don't keep track of access data in this example code, some events should never occur
-            LOGGER.warning("encountered unexpected event (" + event + ") with non-incremental crawler");
+            System.err.println("encountered unexpected event (" + event + ") with non-incremental crawler");
         }
     }
 }

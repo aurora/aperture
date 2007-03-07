@@ -170,6 +170,7 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
         public void crawlStopped(Crawler crawler, ExitCode exitCode) {
             assertEquals(ExitCode.COMPLETED, exitCode);
+            // note: Model closed externally, not here
         }
 
         public void accessingObject(Crawler crawler, String url) {
@@ -181,9 +182,6 @@ public class TestFileSystemCrawler extends ApertureTestBase {
         }
 
         public RDFContainer getRDFContainer(URI uri) {
-            // an rdf2go way to return a container, backed by a model, backed by a repository, which
-            // actually is the private repository common to all returned RDFContainers, but with a
-            // different context
             RDFContainer container = new RDFContainerImpl(model, uri, true);
             lastContainer = container;
             return container;

@@ -13,15 +13,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.ontoware.rdf2go.ModelFactory;
+import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.ModelSet;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
-import org.openrdf.rdf2go.RepositoryModel;
-import org.openrdf.repository.Repository;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -46,11 +45,9 @@ import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
- * Example class that crawls a file system and puts all extracted metadata in a repository.
+ * Example class that crawls a file system and stores all extracted metadata in a RDF file.
  */
 public class ExampleFileCrawler {
-
-    private static final Logger LOGGER = Logger.getLogger(ExampleFileCrawler.class.getName());
 
     public static final String IDENTIFY_MIME_TYPE_OPTION = "-identifyMimeType";
 
@@ -60,7 +57,7 @@ public class ExampleFileCrawler {
 
     private File rootFile;
 
-    private File repositoryFile;
+    private File outputFile;
 
     private boolean identifyingMimeType = false;
 
@@ -76,8 +73,8 @@ public class ExampleFileCrawler {
         return identifyingMimeType;
     }
 
-    public File getRepositoryFile() {
-        return repositoryFile;
+    public File getOutputFile() {
+        return outputFile;
     }
 
     public File getRootFile() {
@@ -96,8 +93,8 @@ public class ExampleFileCrawler {
         this.identifyingMimeType = identifyingMimeType;
     }
 
-    public void setRepositoryFile(File repositoryFile) {
-        this.repositoryFile = repositoryFile;
+    public void setOutputFile(File outputFile) {
+        this.outputFile = outputFile;
     }
 
     public void setRootFile(File rootFile) {
@@ -108,12 +105,12 @@ public class ExampleFileCrawler {
         this.verbose = verbose;
     }
 
-    public void crawl() {
+    public void crawl() throws ModelException {
         if (rootFile == null) {
             throw new IllegalArgumentException("root file cannot be null");
         }
-        if (repositoryFile == null) {
-            throw new IllegalArgumentException("repository file cannot be null");
+        if (outputFile == null) {
+            throw new IllegalArgumentException("output file cannot be null");
         }
 
         // create a data source configuration
@@ -125,21 +122,17 @@ public class ExampleFileCrawler {
         FileSystemDataSource source = new FileSystemDataSource();
         source.setConfiguration(configuration);
 
-        CrawlerHandler handler = null;
-
-        handler = new SimpleCrawlerHandler();
-
         // setup a crawler that can handle this type of DataSource
         FileSystemCrawler crawler = new FileSystemCrawler();
         crawler.setDataSource(source);
         crawler.setDataAccessorRegistry(new DefaultDataAccessorRegistry());
-        crawler.setCrawlerHandler(handler);
+        crawler.setCrawlerHandler(new SimpleCrawlerHandler());
 
         // start crawling
         crawler.crawl();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ModelException {
         // create a new ExampleFileCrawler instance
         ExampleFileCrawler crawler = new ExampleFileCrawler();
 
@@ -162,8 +155,8 @@ public class ExampleFileCrawler {
             else if (crawler.getRootFile() == null) {
                 crawler.setRootFile(new File(arg));
             }
-            else if (crawler.getRepositoryFile() == null) {
-                crawler.setRepositoryFile(new File(arg));
+            else if (crawler.getOutputFile() == null) {
+                crawler.setOutputFile(new File(arg));
             }
             else {
                 exitWithUsageMessage();
@@ -171,7 +164,7 @@ public class ExampleFileCrawler {
         }
 
         // check that all required fields are available
-        if (crawler.getRootFile() == null || crawler.getRepositoryFile() == null) {
+        if (crawler.getRootFile() == null || crawler.getOutputFile() == null) {
             exitWithUsageMessage();
         }
 
@@ -182,27 +175,24 @@ public class ExampleFileCrawler {
     private static void exitWithUsageMessage() {
         System.err.println("Usage: java " + ExampleFileCrawler.class.getName() + " ["
                 + IDENTIFY_MIME_TYPE_OPTION + "] [" + EXTRACT_CONTENTS_OPTION + "] [" + VERBOSE_OPTION
-                + "] rootDirectory repositoryFile");
+                + "] rootDirectory outputFile");
         System.exit(-1);
     }
 
     private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
-        protected Model model;
+        private ModelSet modelSet;
 
-        protected int nrObjects;
+        private int nrObjects;
 
         private MimeTypeIdentifier mimeTypeIdentifier;
 
         private ExtractorRegistry extractorRegistry;
 
-        public SimpleCrawlerHandler() {
-            try {
-                model = new RepositoryModel(false);
-            }
-            catch (ModelException me) {
-                throw new RuntimeException(me);
-            }
+        public SimpleCrawlerHandler() throws ModelException {
+            // create a ModelSet that will hold the RDF Models of all crawled files and folders
+            ModelFactory factory = RDF2Go.getModelFactory();
+            modelSet = factory.createModelSet();
 
             // create some identification and extraction components
             if (identifyingMimeType) {
@@ -211,6 +201,10 @@ public class ExampleFileCrawler {
             if (extractingContents) {
                 extractorRegistry = new DefaultExtractorRegistry();
             }
+        }
+
+        public void crawlStarted(Crawler crawler) {
+            nrObjects = 0;
         }
 
         public void accessingObject(Crawler crawler, String url) {
@@ -222,23 +216,21 @@ public class ExampleFileCrawler {
         public void objectNew(Crawler dataCrawler, DataObject object) {
             nrObjects++;
 
-            // process the contents on an InputStream, if available
+            // process the contents of an InputStream, if available
             if (object instanceof FileDataObject) {
                 try {
                     process((FileDataObject) object);
                 }
-                catch (IOException e) {
-                    LOGGER.log(Level.WARNING, "IOException while processing " + object.getID(), e);
-                }
-                catch (ExtractorException e) {
-                    LOGGER.log(Level.WARNING, "ExtractorException while processing " + object.getID(), e);
+                catch (Exception e) {
+                    System.err.println("Exception while processing " + object.getID());
+                    e.printStackTrace();
                 }
             }
 
             object.dispose();
         }
 
-        private void process(FileDataObject object) throws IOException, ExtractorException {
+        private void process(FileDataObject object) throws IOException, ExtractorException, ModelException {
             // we cannot do anything when MIME type identification is disabled
             if (!identifyingMimeType) {
                 return;
@@ -259,7 +251,7 @@ public class ExampleFileCrawler {
             String mimeType = mimeTypeIdentifier.identify(bytes, null, id);
 
             if (mimeType != null) {
-                // add the mime type to the metadata
+                // add the MIME type to the metadata
                 RDFContainer metadata = object.getMetadata();
                 metadata.add(DATA.mimeType, mimeType);
 
@@ -277,46 +269,34 @@ public class ExampleFileCrawler {
             }
         }
 
-        public void crawlStarted(Crawler crawler) {
-            nrObjects = 0;
-        }
-
-        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-            try {
-                Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
-                model.writeTo(writer, Syntax.RdfXml);
-                writer.close();
-
-                System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
-                System.out.println("Saved RDF model to " + repositoryFile);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
         public void objectChanged(Crawler dataCrawler, DataObject object) {
+            // as we do not use incremental crawling, this should not happen
             object.dispose();
             printUnexpectedEventWarning("changed");
         }
 
         public void objectNotModified(Crawler crawler, String url) {
+            // as we do not use incremental crawling, this should not happen
             printUnexpectedEventWarning("unmodified");
         }
 
         public void objectRemoved(Crawler dataCrawler, String url) {
+            // as we do not use incremental crawling, this should not happen
             printUnexpectedEventWarning("removed");
         }
 
         public void clearStarted(Crawler crawler) {
+            // as we do not use incremental crawling, this should not happen
             printUnexpectedEventWarning("clearStarted");
         }
 
         public void clearingObject(Crawler crawler, String url) {
+            // as we do not use incremental crawling, this should not happen
             printUnexpectedEventWarning("clearingObject");
         }
 
         public void clearFinished(Crawler crawler, ExitCode exitCode) {
+            // as we do not use incremental crawling, this should not happen
             printUnexpectedEventWarning("clear finished");
         }
 
@@ -325,22 +305,32 @@ public class ExampleFileCrawler {
         }
 
         public RDFContainer getRDFContainer(URI uri) {
-            // create a Model that operates on the same Repository as the centrally registered Model. This
-            // context Model will then add its statements to this Repository, using a context URI to keep its
-            // statements separate from the other statements that may already be in there.
-            Model contextModel = null;
-            try {
-                contextModel = new RepositoryModel(uri, (Repository) model.getUnderlyingModelImplementation());
-            }
-            catch (ModelException me) {
-                throw new RuntimeException(me);
-            }
-            return new RDFContainerImpl(contextModel, uri);
+            // note: by using ModelSet.getModel, all statements added to this Model are added to the ModelSet
+            // automatically, unlike ModelFactory.createModel, which creates stand-alone models.
+
+            Model model = modelSet.getModel(uri);
+            return new RDFContainerImpl(model, uri);
         }
 
-        protected void printUnexpectedEventWarning(String event) {
+        private void printUnexpectedEventWarning(String event) {
             // as we don't keep track of access data in this example code, some events should never occur
-            LOGGER.warning("encountered unexpected event (" + event + ") with non-incremental crawler");
+            System.err.println("encountered unexpected event (" + event + ") with non-incremental crawler");
+        }
+
+        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
+            try {
+                Writer writer = new BufferedWriter(new FileWriter(outputFile));
+                modelSet.writeTo(writer, Syntax.Trix);
+                writer.close();
+                
+                System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
+                System.out.println("Saved RDF model to " + outputFile);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            
+            modelSet.close();
         }
     }
 }

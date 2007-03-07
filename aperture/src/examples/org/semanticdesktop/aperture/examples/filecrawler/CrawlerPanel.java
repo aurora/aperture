@@ -27,12 +27,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.ontoware.rdf2go.ModelFactory;
+import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.ModelSet;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -51,6 +52,7 @@ import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
@@ -185,7 +187,12 @@ public class CrawlerPanel extends JPanel {
             crawlButton.addActionListener(new java.awt.event.ActionListener() {
 
                 public void actionPerformed(java.awt.event.ActionEvent e) {
-                    crawl();
+                    try {
+                        crawl();
+                    }
+                    catch (ModelException exc) {
+                        exc.printStackTrace();
+                    }
                 }
             });
         }
@@ -234,7 +241,7 @@ public class CrawlerPanel extends JPanel {
         return exitButton;
     }
 
-    private void crawl() {
+    private void crawl() throws ModelException {
         // change enabled states of some buttons
         getCrawlButton().setEnabled(false);
         getStopButton().setEnabled(true);
@@ -243,13 +250,8 @@ public class CrawlerPanel extends JPanel {
         // create a data source configuration
         InputPanel inputPanel = getConfigurationPanel().getInputPanel();
         File rootFile = new File(inputPanel.getFolderField().getText());
-        Model model = null;
-        try {
-        	model = new RepositoryModel(false);
-        } catch (ModelException me) {
-        	throw new RuntimeException(me);
-        }
-        RDFContainer configuration = new RDFContainerImpl(model,URIImpl.createURIWithoutChecking("source:testSource"));
+        RDFContainerFactoryImpl containerFactory = new RDFContainerFactoryImpl();
+        RDFContainer configuration = containerFactory.newInstance("source:testsource");
         ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
 
         // create the data source
@@ -284,8 +286,8 @@ public class CrawlerPanel extends JPanel {
 
     private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
-        // the Model to store all metadata in
-        private Model model;
+        // the ModelSet to store all metadata in
+        private ModelSet modelSet;
 
         // the number of objects accessed thus far
         private int nrObjects;
@@ -302,15 +304,10 @@ public class CrawlerPanel extends JPanel {
         // switch to enable full-text and metadata extraction, implies MIME type identification
         private boolean extractContents;
 
-        public SimpleCrawlerHandler() {
-            try {
-                model = new RepositoryModel(false);
-            }
-            catch (ModelException e) {
-                // we cannot effectively continue
-                throw new RuntimeException(e);
-            }
-
+        public SimpleCrawlerHandler() throws ModelException {
+            ModelFactory modelFactory = RDF2Go.getModelFactory();
+            modelSet = modelFactory.createModelSet();
+            
             // create components for processing file contents
             mimeTypeIdentifier = new MagicMimeTypeIdentifier();
             extractorRegistry = new DefaultExtractorRegistry();
@@ -334,11 +331,11 @@ public class CrawlerPanel extends JPanel {
 
             try {
                 String text = getConfigurationPanel().getOutputPanel().getFileField().getText();
-                File repositoryFile = new File(text);
-                Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
-                model.writeTo(writer,Syntax.RdfXml);
+                File outputFile = new File(text);
+                Writer writer = new BufferedWriter(new FileWriter(outputFile));
+                modelSet.writeTo(writer, Syntax.Trix);
                 writer.close();
-                model.close();
+                modelSet.close();
                 crawler.getDataSource().dispose();
             }
             catch (Exception e) {
@@ -369,8 +366,8 @@ public class CrawlerPanel extends JPanel {
         }
 
         public RDFContainer getRDFContainer(URI uri) {
-    		RDFContainer container = new RDFContainerImpl(model, uri, true);
-    		return container;
+            Model model = modelSet.getModel(uri);
+    		return new RDFContainerImpl(model, uri);
     	}
 
         public void objectNew(Crawler dataCrawler, DataObject object) {

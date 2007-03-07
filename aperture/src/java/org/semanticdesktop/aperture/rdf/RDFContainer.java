@@ -20,19 +20,19 @@ import org.ontoware.rdf2go.model.node.URI;
  * simple as possible for developers new to RDF and triple stores.
  * 
  * <p>
- * RDFContainers typically have a central URI called the "described URI". The semantics of this is that
- * the content of the RDFContainer describes properties of this URI. All put methods in this interface
- * implicitly use this URI as subject. Furthermore, they adhere to Map semantics as much as possible,
- * e.g. invoking "put" a second time with the same property key overwrites any previously set value. When
- * the underlying model contains multiple properties that have the same subject and property, a
- * MultipleValuesException is thrown. Care therefore has to be taken when mixing use of the Map-like put
- * and get properties with the triple-oriented add and get methods.
+ * RDFContainers typically have a central URI called the "described URI". The semantics of this is that the
+ * content of the RDFContainer describes properties of this URI. All put methods in this interface implicitly
+ * use this URI as subject. Furthermore, they adhere to Map semantics as much as possible, e.g. invoking "put"
+ * a second time with the same property key overwrites any previously set value. When the underlying model
+ * contains multiple properties that have the same subject and property, a MultipleValuesException is thrown.
+ * Care therefore has to be taken when mixing use of the Map-like put and get properties with the
+ * triple-oriented add and get methods.
  * 
  * <p>
- * Putting a layer between the code generating the statements and the code that stores the statements
- * provides an additional benefit: decisions on how Java types such as ints and Dates are transformed
- * into RDF triples are now made in a single piece of code (the RDFContainer implementation), without
- * requiring the populators of the RDF model to address this issue.
+ * Putting a layer between the code generating the statements and the code that stores the statements provides
+ * an additional benefit: decisions on how Java types such as ints and Dates are transformed into RDF triples
+ * are now made in a single piece of code (the RDFContainer implementation), without requiring the populators
+ * of the RDF model to address this issue.
  */
 public interface RDFContainer {
 
@@ -44,21 +44,21 @@ public interface RDFContainer {
     public URI getDescribedUri();
 
     /**
-     * Get the underlying RDF2Go model holding the RDF statements. 
+     * Get the underlying RDF2Go model holding the RDF statements.
      */
     public Model getModel();
-    
+
     /**
-     * Get the value factory for the underlying rdf repository. 
+     * Get a ValueFactory with which RDF2Go datatype instances can be made.
      */
     public ValueFactory getValueFactory();
-    
+
     /**
-	 * State that this container won't be used anymore and it can perform any cleanup necessary. Examples of
-	 * actions taken by this method might include closing the connection to an underyling RDF store or freeing
-	 * any system resources this particular implementation might own
-	 */
-	public void dispose();
+     * State that this container won't be used anymore and it can perform any cleanup necessary. Examples of
+     * actions taken by this method might include closing the connection to an underyling RDF store or freeing
+     * any system resources this particular implementation might own
+     */
+    public void dispose();
 
     /* Map-oriented methods that automatically take the described URI as subject */
 

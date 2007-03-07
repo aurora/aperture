@@ -14,17 +14,15 @@ import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.PatternSyntaxException;
 
+import org.ontoware.rdf2go.ModelFactory;
+import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.ModelSet;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.openrdf.rdf2go.RepositoryModel;
-import org.openrdf.repository.Repository;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -47,26 +45,25 @@ import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.hypertext.linkextractor.impl.DefaultLinkExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
- * Example class that crawls a web site or locally stored hypertext graph and puts all extracted metadata
- * in a repository.
+ * Example class that crawls a web site or locally stored hypertext graph and dumps all extracted information
+ * to a RDF file.
  * 
  * <p>
- * The include and exclude pattern options use Java regular expressions. When no include and exclude
- * patterns are specified, then the domain is automatically bounded to those URLs that have the same host
- * and path name as the start URL.
+ * The include and exclude pattern options use Java regular expressions. When no include and exclude patterns
+ * are specified, then the domain is automatically bounded to those URLs that have the same host and path name
+ * as the start URL.
  * 
  * <p>
- * Unlike the other example crawler classes, this class has no switch for setting on MIME type detection.
- * This is because MIME type detection is already a crucial part of the WebCrawler's operation (needed
- * for determining an appropriate LinkExtractor), there is no need to redo it.
+ * Unlike the other example crawler classes, this class has no switch for setting on MIME type detection. This
+ * is because MIME type detection is already a crucial part of the WebCrawler's operation (needed for
+ * determining an appropriate LinkExtractor), there is no need to redo it.
  */
 public class ExampleWebCrawler {
-
-    private static final Logger LOGGER = Logger.getLogger(ExampleWebCrawler.class.getName());
 
     public static final String DEPTH_OPTION = "-depth";
 
@@ -82,7 +79,7 @@ public class ExampleWebCrawler {
 
     private String startUrl;
 
-    private File repositoryFile;
+    private File outputFile;
 
     private int depth = -1;
 
@@ -126,12 +123,12 @@ public class ExampleWebCrawler {
         this.includeEmbeddedResources = includeEmbeddedResources;
     }
 
-    public File getRepositoryFile() {
-        return repositoryFile;
+    public File getOutputFile() {
+        return outputFile;
     }
 
-    public void setRepositoryFile(File repositoryFile) {
-        this.repositoryFile = repositoryFile;
+    public void setOutputFile(File outputFile) {
+        this.outputFile = outputFile;
     }
 
     public String getStartUrl() {
@@ -150,37 +147,33 @@ public class ExampleWebCrawler {
         this.verbose = verbose;
     }
 
-    public void crawl() {
+    public void crawl() throws ModelException {
         if (startUrl == null) {
             throw new IllegalArgumentException("start URL cannot be null");
         }
-        if (repositoryFile == null) {
-            throw new IllegalArgumentException("repository file cannot be null");
+        if (outputFile == null) {
+            throw new IllegalArgumentException("output file cannot be null");
         }
 
         // create a data source configuration
-        Model model = null;
-        try {
-        	model = new RepositoryModel(false);
-        } catch (ModelException me) {
-        	throw new RuntimeException(me);
-        }
-        RDFContainer configuration = new RDFContainerImpl(model,URIImpl.createURIWithoutChecking("source:testSource"));
-        ConfigurationUtil.setRootUrl(startUrl, configuration);
-        ConfigurationUtil.setIncludeEmbeddedResources(includeEmbeddedResources, configuration);
+        RDFContainerFactoryImpl factory = new RDFContainerFactoryImpl();
+        RDFContainer config = factory.newInstance("urn:test:exampleimapsource");
+
+        ConfigurationUtil.setRootUrl(startUrl, config);
+        ConfigurationUtil.setIncludeEmbeddedResources(includeEmbeddedResources, config);
 
         if (depth >= 0) {
-            ConfigurationUtil.setMaximumDepth(depth, configuration);
+            ConfigurationUtil.setMaximumDepth(depth, config);
         }
-        
+
         if (boundaries != null) {
-            ConfigurationUtil.setDomainBoundaries(boundaries, configuration);
+            ConfigurationUtil.setDomainBoundaries(boundaries, config);
         }
 
         // create the DataSource
         WebDataSource source = new WebDataSource();
-        source.setConfiguration(configuration);
-        
+        source.setConfiguration(config);
+
         // setup a crawler that can handle this type of DataSource
         WebCrawler crawler = new WebCrawler();
         crawler.setDataSource(source);
@@ -193,7 +186,7 @@ public class ExampleWebCrawler {
         crawler.crawl();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ModelException {
         // create a new ExampleWebCrawler instance
         ExampleWebCrawler crawler = new ExampleWebCrawler();
 
@@ -229,7 +222,7 @@ public class ExampleWebCrawler {
                         exitWithUsageMessage();
                     }
                     else {
-                    	i++;
+                        i++;
                         crawler.setDepth(Integer.parseInt(nextArg));
                     }
                 }
@@ -245,7 +238,7 @@ public class ExampleWebCrawler {
                 }
                 else {
                     try {
-                    	i++;
+                        i++;
                         boundaries.addIncludePattern(new RegExpPattern(nextArg));
                     }
                     catch (PatternSyntaxException e) {
@@ -261,7 +254,7 @@ public class ExampleWebCrawler {
                 }
                 else {
                     try {
-                    	i++;
+                        i++;
                         boundaries.addExcludePattern(new RegExpPattern(nextArg));
                     }
                     catch (PatternSyntaxException e) {
@@ -277,8 +270,8 @@ public class ExampleWebCrawler {
             else if (crawler.getStartUrl() == null) {
                 crawler.setStartUrl(arg);
             }
-            else if (crawler.getRepositoryFile() == null) {
-                crawler.setRepositoryFile(new File(arg));
+            else if (crawler.getOutputFile() == null) {
+                crawler.setOutputFile(new File(arg));
             }
             else {
                 exitWithUsageMessage();
@@ -290,8 +283,8 @@ public class ExampleWebCrawler {
             System.err.println("Missing start URL");
             exitWithUsageMessage();
         }
-        if (crawler.getRepositoryFile() == null) {
-            System.err.println("Missing repository file");
+        if (crawler.getOutputFile() == null) {
+            System.err.println("Missing output file");
             exitWithUsageMessage();
         }
 
@@ -327,7 +320,7 @@ public class ExampleWebCrawler {
     }
 
     private static void exitWithUsageMessage() {
-        System.err.println("Usage: java " + ExampleWebCrawler.class.getName() + " startURL repositoryFile ["
+        System.err.println("Usage: java " + ExampleWebCrawler.class.getName() + " startURL outputFile ["
                 + DEPTH_OPTION + " depth] [" + INCLUDE_OPTION + " includePattern] [" + EXCLUDE_OPTION
                 + " exludePattern] [" + INCLUDE_EMBEDDED_RESOURCES_OPTION + "] [" + EXTRACT_CONTENTS_OPTION
                 + "] [" + VERBOSE_OPTION + "]");
@@ -336,19 +329,17 @@ public class ExampleWebCrawler {
 
     private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
-    	protected Model model;
-    	
-    	protected int nrObjects;
-    	
-        private ExtractorRegistry extractorRegistry;   
+        private ModelSet modelSet;
 
-        public SimpleCrawlerHandler() {
-        	try {
-            	model = new RepositoryModel(false);
-            } catch (ModelException me) {
-            	throw new RuntimeException(me);
-            }
-        	
+        private int nrObjects;
+
+        private ExtractorRegistry extractorRegistry;
+
+        public SimpleCrawlerHandler() throws ModelException {
+            // create a ModelSet that will hold the RDF Models of all crawled files and folders
+            ModelFactory factory = RDF2Go.getModelFactory();
+            modelSet = factory.createModelSet();
+
             // create some identification and extraction components
             if (extractingContents) {
                 extractorRegistry = new DefaultExtractorRegistry();
@@ -360,28 +351,26 @@ public class ExampleWebCrawler {
                 System.out.println("Processing URL " + ++nrObjects + ": " + url + "...");
             }
         }
-        
+
         public void objectNew(Crawler dataCrawler, DataObject object) {
             // process the contents on an InputStream, if available
             if (object instanceof FileDataObject) {
                 try {
                     process((FileDataObject) object);
                 }
-                catch (IOException e) {
-                    LOGGER.log(Level.WARNING, "IOException while processing " + object.getID(), e);
-                }
-                catch (ExtractorException e) {
-                    LOGGER.log(Level.WARNING, "ExtractorException while processing " + object.getID(), e);
+                catch (Exception e) {
+                    System.err.println("IOException while processing " + object.getID());
+                    e.printStackTrace();
                 }
             }
-            
+
             object.dispose();
         }
-        
+
         private void process(FileDataObject object) throws IOException, ExtractorException {
-        	// instead of using the MIME type returned by the web server, we could also use the
-        	// MimeTypeIdentifier, as we do in the other examples. We do it this way to demonstrate
-        	// that both are possible.
+            // instead of using the MIME type returned by the web server, we could also use the
+            // MimeTypeIdentifier, as we do in the other examples. We do it this way to demonstrate
+            // that both are possible.
             URI id = object.getID();
             String mimeType = object.getMetadata().getString(DATA.mimeType);
             if (mimeType != null) {
@@ -396,69 +385,66 @@ public class ExampleWebCrawler {
             }
         }
 
-		public void crawlStarted(Crawler crawler) {
-			nrObjects = 0;
-		}
+        public void crawlStarted(Crawler crawler) {
+            nrObjects = 0;
+        }
 
-		public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-		    try {
-		        Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
-		        model.writeTo(writer,Syntax.Trix);
-		        writer.close();
-		
-		        System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
-		        System.out.println("Saved RDF model to " + repositoryFile);
-		    }
-		    catch (Exception e) {
-		        e.printStackTrace();
-		    }
-		}
+        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
+            try {
+                Writer writer = new BufferedWriter(new FileWriter(outputFile));
+                modelSet.writeTo(writer, Syntax.Trix);
+                writer.close();
 
-		public void objectChanged(Crawler dataCrawler, DataObject object) {
-		    object.dispose();
-		    printUnexpectedEventWarning("changed");
-		}
+                System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
+                System.out.println("Saved RDF model to " + outputFile);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            
+            modelSet.close();
+        }
 
-		public void objectNotModified(Crawler crawler, String url) {
-		    printUnexpectedEventWarning("unmodified");
-		}
+        public void objectChanged(Crawler dataCrawler, DataObject object) {
+            object.dispose();
+            printUnexpectedEventWarning("changed");
+        }
 
-		public void objectRemoved(Crawler dataCrawler, String url) {
-		    printUnexpectedEventWarning("removed");
-		}
+        public void objectNotModified(Crawler crawler, String url) {
+            printUnexpectedEventWarning("unmodified");
+        }
 
-		public void clearStarted(Crawler crawler) {
-		    printUnexpectedEventWarning("clearStarted");
-		}
+        public void objectRemoved(Crawler dataCrawler, String url) {
+            printUnexpectedEventWarning("removed");
+        }
 
-		public void clearingObject(Crawler crawler, String url) {
-		    printUnexpectedEventWarning("clearingObject");
-		}
+        public void clearStarted(Crawler crawler) {
+            printUnexpectedEventWarning("clearStarted");
+        }
 
-		public void clearFinished(Crawler crawler, ExitCode exitCode) {
-		    printUnexpectedEventWarning("clear finished");
-		}
+        public void clearingObject(Crawler crawler, String url) {
+            printUnexpectedEventWarning("clearingObject");
+        }
 
-		public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
-		    return this;
-		}
+        public void clearFinished(Crawler crawler, ExitCode exitCode) {
+            printUnexpectedEventWarning("clear finished");
+        }
 
-		public RDFContainer getRDFContainer(URI uri) {
-			Model contextModel = null;
-			try {
-				contextModel = new RepositoryModel(uri, (Repository) model
-						.getUnderlyingModelImplementation());
-			}
-			catch (ModelException me) {
-				throw new RuntimeException(me);
-			}
-			RDFContainer container = new RDFContainerImpl(contextModel, uri);
-			return container;
-		}
+        public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
+            return this;
+        }
 
-		protected void printUnexpectedEventWarning(String event) {
-		     // as we don't keep track of access data in this example code, some events should never occur
-		     LOGGER.warning("encountered unexpected event (" + event + ") with non-incremental crawler");
-		}       
+        public RDFContainer getRDFContainer(URI uri) {
+            // note: by using ModelSet.getModel, all statements added to this Model are added to the ModelSet
+            // automatically, unlike ModelFactory.createModel, which creates stand-alone models.
+
+            Model model = modelSet.getModel(uri);
+            return new RDFContainerImpl(model, uri);
+       }
+
+        private void printUnexpectedEventWarning(String event) {
+            // as we don't keep track of access data in this example code, some events should never occur
+            System.err.println("encountered unexpected event (" + event + ") with non-incremental crawler");
+        }
     }
 }

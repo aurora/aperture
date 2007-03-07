@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -28,11 +28,11 @@ public class OutputPanel extends JPanel {
 
     private JCheckBox extractorBox = null;
 
-    private JPanel repositoryPanel = null;
+    private JPanel filePanel = null;
 
     private JLabel outputExplanationLabel = null;
 
-    private JTextField repositoryField = null;
+    private JTextField fileField = null;
 
     private JButton browseButton = null;
 
@@ -74,7 +74,7 @@ public class OutputPanel extends JPanel {
         this.setSize(541, 267);
         this.setName("output");
         this.add(getContentPanel(), gridBagConstraints);
-        this.add(getRepositoryPanel(), gridBagConstraints1);
+        this.add(getFilePanel(), gridBagConstraints1);
     }
 
     /**
@@ -144,12 +144,12 @@ public class OutputPanel extends JPanel {
     }
 
     /**
-     * This method initializes repositoryPanel
+     * This method initializes filePanel
      * 
      * @return javax.swing.JPanel
      */
-    private JPanel getRepositoryPanel() {
-        if (repositoryPanel == null) {
+    private JPanel getFilePanel() {
+        if (filePanel == null) {
             GridBagConstraints gridBagConstraints7 = new GridBagConstraints();
             gridBagConstraints7.gridx = 0;
             gridBagConstraints7.weightx = 1.0D;
@@ -180,32 +180,32 @@ public class OutputPanel extends JPanel {
             gridBagConstraints4.gridx = 0;
             outputExplanationLabel = new JLabel();
             outputExplanationLabel.setText("Output file for RDF model:");
-            repositoryPanel = new JPanel();
-            repositoryPanel.setLayout(new GridBagLayout());
-            repositoryPanel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            filePanel = new JPanel();
+            filePanel.setLayout(new GridBagLayout());
+            filePanel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
                     javax.swing.BorderFactory.createTitledBorder(null, "Output",
                             javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
                             javax.swing.border.TitledBorder.DEFAULT_POSITION, null, null),
                     javax.swing.BorderFactory.createEmptyBorder(0, 5, 5, 5)));
-            repositoryPanel.add(outputExplanationLabel, gridBagConstraints4);
-            repositoryPanel.add(getRepositoryField(), gridBagConstraints5);
-            repositoryPanel.add(getBrowseButton(), gridBagConstraints6);
-            repositoryPanel.add(formatLabel, gridBagConstraints7);
+            filePanel.add(outputExplanationLabel, gridBagConstraints4);
+            filePanel.add(getFileField(), gridBagConstraints5);
+            filePanel.add(getBrowseButton(), gridBagConstraints6);
+            filePanel.add(formatLabel, gridBagConstraints7);
         }
-        return repositoryPanel;
+        return filePanel;
     }
 
     /**
-     * This method initializes repositoryField
+     * This method initializes fileField
      * 
      * @return javax.swing.JTextField
      */
-    private JTextField getRepositoryField() {
-        if (repositoryField == null) {
-            repositoryField = new JTextField();
-            repositoryField.setText(new File("output.trix").getAbsolutePath());
+    private JTextField getFileField() {
+        if (fileField == null) {
+            fileField = new JTextField();
+            fileField.setText(new File("output.trix").getAbsolutePath());
         }
-        return repositoryField;
+        return fileField;
     }
 
     /**
@@ -225,12 +225,12 @@ public class OutputPanel extends JPanel {
                         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                     }
 
-                    fileChooser.setSelectedFile(new File(getRepositoryField().getText()));
+                    fileChooser.setSelectedFile(new File(getFileField().getText()));
 
                     int result = fileChooser.showOpenDialog(SwingUtilities
                             .windowForComponent(OutputPanel.this));
                     if (result == JFileChooser.APPROVE_OPTION) {
-                        getRepositoryField().setText(fileChooser.getSelectedFile().getAbsolutePath());
+                        getFileField().setText(fileChooser.getSelectedFile().getAbsolutePath());
                     }
                 }
             });
@@ -239,10 +239,10 @@ public class OutputPanel extends JPanel {
     }
 
     public boolean checkInputComplete() {
-        String text = getRepositoryField().getText().trim();
+        String text = getFileField().getText().trim();
         if (text.equals("")) {
             JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this),
-                    "Please enter a repository file.", "Missing input", JOptionPane.ERROR_MESSAGE);
+                    "Please enter an output file.", "Missing input", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         else {
@@ -258,8 +258,8 @@ public class OutputPanel extends JPanel {
         return getMimeTypeBox().isSelected() && getExtractorBox().isSelected();
     }
 
-    public File getRepositoryFile() {
-        return new File(getRepositoryField().getText().trim());
+    public File getOutputFile() {
+        return new File(getFileField().getText().trim());
     }
 
     /**

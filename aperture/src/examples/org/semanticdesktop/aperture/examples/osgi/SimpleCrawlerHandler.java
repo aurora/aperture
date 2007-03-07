@@ -13,14 +13,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.ontoware.rdf2go.ModelFactory;
+import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.ModelSet;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
-import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -37,78 +37,58 @@ import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
-
 public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
-	private static final Logger LOGGER = Logger.getLogger(SimpleCrawlerHandler.class.getName());
-	
-	protected Model model;
-	
-	protected int nrObjects;
-	
-	boolean identifyingMimeType = false;
-	
-	boolean extractingContents = false;
-	
-	boolean verbose;
-	
-	private MimeTypeIdentifier mimeTypeIdentifier;
+    private ModelSet modelSet;
+
+    private int nrObjects;
+
+    private MimeTypeIdentifier mimeTypeIdentifier;
 
     private ExtractorRegistry extractorRegistry;
-    
-    private File repositoryFile;
+
+    private File outputFile;
 
     public SimpleCrawlerHandler(MimeTypeIdentifier mimeTypeIdentifier, ExtractorRegistry extractorRegistry,
-    		File repositoryFile) {
-    	try {
-        	model = new RepositoryModel(false);
-        } catch (ModelException me) {
-        	throw new RuntimeException(me);
+            File outputFile) {
+        this.mimeTypeIdentifier = mimeTypeIdentifier;
+        this.extractorRegistry = extractorRegistry;
+        this.outputFile = outputFile;
+
+        // create a ModelSet that will gather all extracted metadata
+        ModelFactory factory = RDF2Go.getModelFactory();
+        try {
+            modelSet = factory.createModelSet();
         }
-    	
-        // create some identification and extraction components
-        if (mimeTypeIdentifier != null) {
-        	identifyingMimeType = true;
-        	this.mimeTypeIdentifier = mimeTypeIdentifier;
+        catch (ModelException e) {
+            throw new RuntimeException(e);
         }
-        if (extractorRegistry != null) {
-        	this.extractorRegistry = extractorRegistry;
-        	extractingContents = true;
-        }
-        
-        verbose = true;
-        
-        this.repositoryFile = repositoryFile;
     }
-    
+
     public void accessingObject(Crawler crawler, String url) {
-        if (verbose) {
-            System.out.println("Processing file " + nrObjects + ": " + url + "...");
-        }
+        System.out.println("Processing file " + nrObjects + ": " + url + "...");
     }
 
     public void objectNew(Crawler dataCrawler, DataObject object) {
         nrObjects++;
 
-        // process the contents on an InputStream, if available
+        // process the contents of an InputStream, if available
         if (object instanceof FileDataObject) {
             try {
                 process((FileDataObject) object);
             }
-            catch (IOException e) {
-                LOGGER.log(Level.WARNING, "IOException while processing " + object.getID(), e);
-            }
-            catch (ExtractorException e) {
-                LOGGER.log(Level.WARNING, "ExtractorException while processing " + object.getID(), e);
+            catch (Exception e) {
+                System.err.println("Exception while processing " + object.getID());
+                e.printStackTrace();
             }
         }
-        
+
         object.dispose();
     }
 
     private void process(FileDataObject object) throws IOException, ExtractorException {
         // we cannot do anything when MIME type identification is disabled
-        if (!identifyingMimeType) {
+        if (mimeTypeIdentifier == null) {
             return;
         }
 
@@ -132,7 +112,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
             metadata.add(DATA.mimeType, mimeType);
 
             // apply an Extractor if available
-            if (extractingContents) {
+            if (extractorRegistry != null) {
                 buffer.reset();
 
                 Set extractors = extractorRegistry.get(mimeType);
@@ -145,60 +125,61 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         }
     }
 
-	public void crawlStarted(Crawler crawler) {
-		nrObjects = 0;
-	}
+    public void crawlStarted(Crawler crawler) {
+        nrObjects = 0;
+    }
 
-	public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-	    try {
-	        Writer writer = new BufferedWriter(new FileWriter(repositoryFile));
-	        model.writeTo(writer,Syntax.RdfXml);
-	        writer.close();
-	
-	        System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
-	        System.out.println("Saved RDF model to " + repositoryFile);
-	    }
-	    catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	}
+    public void crawlStopped(Crawler crawler, ExitCode exitCode) {
+        try {
+            Writer writer = new BufferedWriter(new FileWriter(outputFile));
+            modelSet.writeTo(writer, Syntax.Trix);
+            writer.close();
+            modelSet.close();
 
-	public void objectChanged(Crawler dataCrawler, DataObject object) {
-	    object.dispose();
-	    printUnexpectedEventWarning("changed");
-	}
+            System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
+            System.out.println("Saved RDF model to " + outputFile);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	public void objectNotModified(Crawler crawler, String url) {
-	    printUnexpectedEventWarning("unmodified");
-	}
+    public void objectChanged(Crawler dataCrawler, DataObject object) {
+        object.dispose();
+        printUnexpectedEventWarning("changed");
+    }
 
-	public void objectRemoved(Crawler dataCrawler, String url) {
-	    printUnexpectedEventWarning("removed");
-	}
+    public void objectNotModified(Crawler crawler, String url) {
+        printUnexpectedEventWarning("unmodified");
+    }
 
-	public void clearStarted(Crawler crawler) {
-	    printUnexpectedEventWarning("clearStarted");
-	}
+    public void objectRemoved(Crawler dataCrawler, String url) {
+        printUnexpectedEventWarning("removed");
+    }
 
-	public void clearingObject(Crawler crawler, String url) {
-	    printUnexpectedEventWarning("clearingObject");
-	}
+    public void clearStarted(Crawler crawler) {
+        printUnexpectedEventWarning("clearStarted");
+    }
 
-	public void clearFinished(Crawler crawler, ExitCode exitCode) {
-	    printUnexpectedEventWarning("clear finished");
-	}
+    public void clearingObject(Crawler crawler, String url) {
+        printUnexpectedEventWarning("clearingObject");
+    }
 
-	public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
-	    return this;
-	}
+    public void clearFinished(Crawler crawler, ExitCode exitCode) {
+        printUnexpectedEventWarning("clear finished");
+    }
 
-	public RDFContainer getRDFContainer(URI uri) {
-		return new RDFContainerImpl(model, uri, true);
-	}
+    public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
+        return this;
+    }
 
-	protected void printUnexpectedEventWarning(String event) {
-	     // as we don't keep track of access data in this example code, some events should never occur
-	     LOGGER.warning("encountered unexpected event (" + event + ") with non-incremental crawler");
-	}
+    public RDFContainer getRDFContainer(URI uri) {
+        Model model = modelSet.getModel(uri);
+        return new RDFContainerImpl(model, uri);
+    }
+
+    private void printUnexpectedEventWarning(String event) {
+        // as we don't keep track of access data in this example code, some events should never occur
+        System.err.println("encountered unexpected event (" + event + ") with non-incremental crawler");
+    }
 }
-

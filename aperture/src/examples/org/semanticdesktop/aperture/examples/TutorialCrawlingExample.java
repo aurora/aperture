@@ -7,20 +7,15 @@
 package org.semanticdesktop.aperture.examples;
 
 import java.io.File;
-import java.io.PrintWriter;
 
-import org.ontoware.aifbcommons.collection.ClosableIterable;
-import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.ModelFactory;
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.ModelSet;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.crawler.Crawler;
@@ -32,23 +27,22 @@ import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 
-
 public class TutorialCrawlingExample {
 
-	public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         // create a new ExampleFileCrawler instance
         TutorialCrawlingExample crawler = new TutorialCrawlingExample();
-        
+
         if (args.length != 1) {
-        	System.err.println("Specify the root folder");
-        	System.exit(-1);
+            System.err.println("Specify the root folder");
+            System.exit(-1);
         }
 
         // start crawling and exit afterwards
         crawler.doCrawling(new File(args[0]));
-    }	
-	
-	public void doCrawling(File rootFile) throws Exception {
+    }
+
+    public void doCrawling(File rootFile) throws Exception {
         // create a data source configuration
         ModelFactory factory = RDF2Go.getModelFactory();
         Model model = factory.createModel();
@@ -58,7 +52,7 @@ public class TutorialCrawlingExample {
         // create the data source
         DataSource source = new FileSystemDataSource();
         source.setConfiguration(configuration);
-        
+
         // setup a crawler that can handle this type of DataSource
         FileSystemCrawler crawler = new FileSystemCrawler();
         crawler.setDataSource(source);
@@ -67,65 +61,40 @@ public class TutorialCrawlingExample {
 
         // start crawling
         crawler.crawl();
-	}
-	
-	private class TutorialCrawlerHandler extends CrawlerHandlerBase {
-		
-		Model sharedModel;
-		
-		public TutorialCrawlerHandler() throws Exception {
-			sharedModel = new RepositoryModel(false);
-		}
-		// let's dump the contents onto the standard output	
-		public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-			try {
-				sharedModel.writeTo(new PrintWriter(System.out), Syntax.Trix );
-			}
-			catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-			sharedModel.close();
-		}
+    }
 
-		public RDFContainer getRDFContainer(URI uri) {
-			Model newModel = null;
-			try {
-				newModel = new RepositoryModel(false);
-			} catch (ModelException me) {
-				me.printStackTrace();
-				throw new RuntimeException(me);
-			}
-			return new RDFContainerImpl(newModel,uri);
-		}
-		
-		public void objectChanged(Crawler crawler, DataObject object) {
-			processBinary(object);
-			try {
-				
-				ClosableIterable<? extends Statement> iterable 
-						= object.getMetadata().getModel().findStatements(Variable.ANY, Variable.ANY, Variable.ANY);
-				ClosableIterator<? extends Statement> iterator = iterable.iterator();
-				sharedModel.addAll(iterator);
-				iterator.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			object.dispose();
-		}
-		
-		public void objectNew(Crawler crawler, DataObject object) {
-			processBinary(object);
-			try {
-				ClosableIterable<? extends Statement> iterable 
-						= object.getMetadata().getModel().findStatements(Variable.ANY, Variable.ANY, Variable.ANY);
-				ClosableIterator<? extends Statement> iterator = iterable.iterator();
-				sharedModel.addAll(iterator);
-				iterator.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			object.dispose();
-		}
-	}
+    private static class TutorialCrawlerHandler extends CrawlerHandlerBase {
+
+        private ModelSet modelSet;
+
+        public TutorialCrawlerHandler() throws ModelException {
+            modelSet = RDF2Go.getModelFactory().createModelSet();
+        }
+
+        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
+            try {
+                modelSet.writeTo(System.out, Syntax.Trix);
+            }
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            
+            modelSet.close();
+        }
+
+        public RDFContainer getRDFContainer(URI uri) {
+            Model model = modelSet.getModel(uri);
+            return new RDFContainerImpl(model, uri);
+        }
+
+        public void objectChanged(Crawler crawler, DataObject object) {
+            processBinary(object);
+            object.dispose();
+        }
+
+        public void objectNew(Crawler crawler, DataObject object) {
+            processBinary(object);
+            object.dispose();
+        }
+    }
 }
-

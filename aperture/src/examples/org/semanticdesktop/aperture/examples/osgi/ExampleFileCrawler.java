@@ -9,10 +9,6 @@ package org.semanticdesktop.aperture.examples.osgi;
 import java.io.File;
 import java.util.Iterator;
 
-import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.openrdf.rdf2go.RepositoryModel;
 import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
@@ -27,131 +23,129 @@ import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierFactory;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierRegistry;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 /**
- * Example class that crawls a file system and puts all extracted metadata in a repository.
+ * Example class that crawls a file system and puts all extracted metadata in a RDF file.
  */
 public class ExampleFileCrawler {
 
-	public static final String IDENTIFY_MIME_TYPE_OPTION = "-identifyMimeType";
+    public static final String IDENTIFY_MIME_TYPE_OPTION = "-identifyMimeType";
 
-	public static final String EXTRACT_CONTENTS_OPTION = "-extractContents";
+    public static final String EXTRACT_CONTENTS_OPTION = "-extractContents";
 
-	public static final String VERBOSE_OPTION = "-verbose";
+    public static final String VERBOSE_OPTION = "-verbose";
 
-	private File rootFile;
+    private File rootFile;
 
-	private File repositoryFile;
+    private File outputFile;
 
-	private boolean identifyingMimeType = false;
+    private boolean identifyingMimeType = false;
 
-	private boolean extractingContents = false;
+    private boolean extractingContents = false;
 
-	private boolean verbose = false;
-	
-	private CrawlerRegistry crawlerRegistry;
-	private DataAccessorRegistry accessorRegistry;
-	private ExtractorRegistry extractorRegistry;
-	private MimeTypeIdentifierRegistry mimeIdentifierRegistry;
+    private boolean verbose = false;
+
+    private CrawlerRegistry crawlerRegistry;
+
+    private DataAccessorRegistry accessorRegistry;
+
+    private ExtractorRegistry extractorRegistry;
+
+    private MimeTypeIdentifierRegistry mimeIdentifierRegistry;
+
     private DataSourceRegistry dataSourceRegistry;
 
-	public ExampleFileCrawler(CrawlerRegistry crawlerRegistry, DataAccessorRegistry accessorRegistry,
-			ExtractorRegistry extractorRegistry, MimeTypeIdentifierRegistry mimeIdentifierRegistry,
+    public ExampleFileCrawler(CrawlerRegistry crawlerRegistry, DataAccessorRegistry accessorRegistry,
+            ExtractorRegistry extractorRegistry, MimeTypeIdentifierRegistry mimeIdentifierRegistry,
             DataSourceRegistry dataSourceRegistry) {
-		this.accessorRegistry = accessorRegistry;
-		this.crawlerRegistry = crawlerRegistry;
-		this.extractorRegistry = extractorRegistry;
-		this.mimeIdentifierRegistry = mimeIdentifierRegistry;
+        this.accessorRegistry = accessorRegistry;
+        this.crawlerRegistry = crawlerRegistry;
+        this.extractorRegistry = extractorRegistry;
+        this.mimeIdentifierRegistry = mimeIdentifierRegistry;
         this.dataSourceRegistry = dataSourceRegistry;
-	}
+    }
 
-	public boolean isExtractingContents() {
-		return extractingContents;
-	}
+    public boolean isExtractingContents() {
+        return extractingContents;
+    }
 
-	public boolean isIdentifyingMimeType() {
-		return identifyingMimeType;
-	}
+    public boolean isIdentifyingMimeType() {
+        return identifyingMimeType;
+    }
 
-	public File getRepositoryFile() {
-		return repositoryFile;
-	}
+    public File getOutputFile() {
+        return outputFile;
+    }
 
-	public File getRootFile() {
-		return rootFile;
-	}
+    public File getRootFile() {
+        return rootFile;
+    }
 
-	public boolean isVerbose() {
-		return verbose;
-	}
+    public boolean isVerbose() {
+        return verbose;
+    }
 
-	public void setExtractingContents(boolean extractingContents) {
-		this.extractingContents = extractingContents;
-	}
+    public void setExtractingContents(boolean extractingContents) {
+        this.extractingContents = extractingContents;
+    }
 
-	public void setIdentifyingMimeType(boolean identifyingMimeType) {
-		this.identifyingMimeType = identifyingMimeType;
-	}
+    public void setIdentifyingMimeType(boolean identifyingMimeType) {
+        this.identifyingMimeType = identifyingMimeType;
+    }
 
-	public void setRepositoryFile(File repositoryFile) {
-		this.repositoryFile = repositoryFile;
-	}
+    public void setOutputFile(File outputFile) {
+        this.outputFile = outputFile;
+    }
 
-	public void setRootFile(File rootFile) {
-		this.rootFile = rootFile;
-	}
+    public void setRootFile(File rootFile) {
+        this.rootFile = rootFile;
+    }
 
-	public void setVerbose(boolean verbose) {
-		this.verbose = verbose;
-	}
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
 
-	public void crawl(String rootDir, String repoFile) {
-		System.out.println("Trying to crawl the dir: " + rootDir);
-		System.out.println("RDF will be saved to: " + repoFile);
-		setRootFile(new File(rootDir));
-		setRepositoryFile(new File(repoFile));
+    public void crawl(String rootDir, String outputFile) {
+        System.out.println("Trying to crawl the dir: " + rootDir);
+        System.out.println("RDF will be saved to: " + outputFile);
+        setRootFile(new File(rootDir));
+        setOutputFile(new File(outputFile));
 
-		if (rootFile == null) {
-			throw new IllegalArgumentException("root file cannot be null");
-		}
-		if (repositoryFile == null) {
-			throw new IllegalArgumentException("repository file cannot be null");
-		}
+        if (rootFile == null) {
+            throw new IllegalArgumentException("root file cannot be null");
+        }
+        if (getOutputFile() == null) {
+            throw new IllegalArgumentException("output file cannot be null");
+        }
 
-		// create a data source configuration
-		Model model = null;
-		try {
-			model = new RepositoryModel(false);
-		}
-		catch (ModelException me) {
-			throw new RuntimeException(me);
-		}
-		RDFContainer configuration = new RDFContainerImpl(model, URIImpl
-				.createURIWithoutChecking("source:testSource"));
-		ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
+        // create a data source configuration
+        RDFContainerFactoryImpl factory = new RDFContainerFactoryImpl();
+        RDFContainer configuration = factory.newInstance("source:testsource");
+        ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
 
-		// create the data source
-		DataSourceFactory sourceFactory = (DataSourceFactory)dataSourceRegistry.get(DATASOURCE.FileSystemDataSource).iterator().next();
-		DataSource source = sourceFactory.newInstance();
-		source.setConfiguration(configuration);
+        // create the data source
+        DataSourceFactory sourceFactory = (DataSourceFactory) dataSourceRegistry.get(
+            DATASOURCE.FileSystemDataSource).iterator().next();
+        DataSource source = sourceFactory.newInstance();
+        source.setConfiguration(configuration);
 
-		CrawlerHandler handler = null;
+        CrawlerHandler handler = null;
 
-		Iterator it = mimeIdentifierRegistry.getAll().iterator();
-		MimeTypeIdentifierFactory mimeIdentifierFactory = (MimeTypeIdentifierFactory) it.next();
-		MimeTypeIdentifier mimeIdentifier = mimeIdentifierFactory.get();
-		
-		handler = new SimpleCrawlerHandler(mimeIdentifier,extractorRegistry,repositoryFile);
-		
-		// setup a crawler that can handle this type of DataSource
-		it = crawlerRegistry.get(DATASOURCE.FileSystemDataSource).iterator();
-		Crawler crawler = ((CrawlerFactory)it.next()).getCrawler(source);
-		crawler.setDataAccessorRegistry(accessorRegistry);
-		crawler.setCrawlerHandler(handler);
+        Iterator it = mimeIdentifierRegistry.getAll().iterator();
+        MimeTypeIdentifierFactory mimeIdentifierFactory = (MimeTypeIdentifierFactory) it.next();
+        MimeTypeIdentifier mimeIdentifier = mimeIdentifierFactory.get();
 
-		// start crawling
-		crawler.crawl();
-	}
+        handler = new SimpleCrawlerHandler(mimeIdentifier, extractorRegistry, getOutputFile());
+
+        // setup a crawler that can handle this type of DataSource
+        it = crawlerRegistry.get(DATASOURCE.FileSystemDataSource).iterator();
+        Crawler crawler = ((CrawlerFactory) it.next()).getCrawler(source);
+        crawler.setDataAccessorRegistry(accessorRegistry);
+        crawler.setCrawlerHandler(handler);
+
+        // start crawling
+        crawler.crawl();
+    }
 }

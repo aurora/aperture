@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -9,8 +9,6 @@ package org.semanticdesktop.aperture.examples;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -31,124 +29,117 @@ import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
- * Utility class. Provides default implementations for most methods of crawler handler. May facilitate the
- * integration of aperture into existing applications. The only thing the user has to provide are the
- * RDFContainerFactory methods and the crawlStopped method (what to do with the generated RDF data).
+ * Utility class providing default implementations for most CrawlerHandler methods.
  * 
- * @author Antoni Mylka
+ * <p>
+ * This class may facilitate the integration of Aperture into existing applications. The only thing an
+ * integrator has to provide are the RDFContainerFactory methods and the crawlStopped method, which decide
+ * what to do with the crawling and extraction results.
  */
 public abstract class CrawlerHandlerBase implements CrawlerHandler, RDFContainerFactory {
 
-	private static Logger LOGGER = Logger.getLogger(CrawlerHandlerBase.class.getName());
+    private MimeTypeIdentifier mimeTypeIdentifier;
 
-	private MimeTypeIdentifier mimeTypeIdentifier;
+    private ExtractorRegistry extractorRegistry;
 
-	private ExtractorRegistry extractorRegistry;
+    private boolean extractingContents;
 
-	private boolean extractContents;
+    public CrawlerHandlerBase() {
+        // create some identification and extraction components
+        extractingContents = true;
+        mimeTypeIdentifier = new MagicMimeTypeIdentifier();
+        extractorRegistry = new DefaultExtractorRegistry();
+    }
 
-	public CrawlerHandlerBase() {
-		// create some identification and extraction components
-		extractContents = true;
-		mimeTypeIdentifier = new MagicMimeTypeIdentifier();
-		extractorRegistry = new DefaultExtractorRegistry();
-	}
+    public void crawlStarted(Crawler crawler) {}
 
-	public void crawlStarted(Crawler crawler) {
+    public void accessingObject(Crawler crawler, String url) {}
 
-	}
+    public void objectNotModified(Crawler crawler, String url) {
+        printUnexpectedEventWarning("unmodified");
+    }
 
-	public abstract void crawlStopped(Crawler crawler, ExitCode exitCode);
+    public void objectRemoved(Crawler dataCrawler, String url) {
+        printUnexpectedEventWarning("removed");
+    }
 
-	public void accessingObject(Crawler crawler, String url) {
+    public void clearStarted(Crawler crawler) {
+        printUnexpectedEventWarning("clearStarted");
+    }
 
-	}
+    public void clearingObject(Crawler crawler, String url) {
+        printUnexpectedEventWarning("clearingObject");
+    }
 
-	public void objectNotModified(Crawler crawler, String url) {
-		printUnexpectedEventWarning("unmodified");
-	}
+    public void clearFinished(Crawler crawler, ExitCode exitCode) {
+        printUnexpectedEventWarning("clear finished");
+    }
 
-	public void objectRemoved(Crawler dataCrawler, String url) {
-		printUnexpectedEventWarning("removed");
-	}
+    public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
+        return this;
+    }
 
-	public void clearStarted(Crawler crawler) {
-		printUnexpectedEventWarning("clearStarted");
-	}
+    protected void processBinary(DataObject dataObject) {
+        // process the contents on an InputStream, if available
+        if (dataObject instanceof FileDataObject) {
+            try {
+                FileDataObject object = (FileDataObject) dataObject;
 
-	public void clearingObject(Crawler crawler, String url) {
-		printUnexpectedEventWarning("clearingObject");
-	}
+                // we cannot do anything when MIME type identification is disabled
+                if (!extractingContents) {
+                    return;
+                }
 
-	public void clearFinished(Crawler crawler, ExitCode exitCode) {
-		printUnexpectedEventWarning("clear finished");
-	}
+                URI id = object.getID();
 
-	public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
-		return this;
-	}
+                // Create a buffer around the object's stream large enough to be able to reset the stream
+                // after MIME type identification has taken place. Add some extra to the minimum array
+                // length required by the MimeTypeIdentifier for safety.
+                int minimumArrayLength = mimeTypeIdentifier.getMinArrayLength();
+                int bufferSize = Math.max(minimumArrayLength, 8192);
+                BufferedInputStream buffer = new BufferedInputStream(object.getContent(), bufferSize);
+                buffer.mark(minimumArrayLength + 10); // add some for safety
 
-	protected void processBinary(DataObject dataObject) {
-		// process the contents on an InputStream, if available
-		if (dataObject instanceof FileDataObject) {
-			try {
-				FileDataObject object = (FileDataObject) dataObject;
+                // apply the MimeTypeIdentifier
+                byte[] bytes = IOUtil.readBytes(buffer, minimumArrayLength);
+                String mimeType = mimeTypeIdentifier.identify(bytes, null, id);
 
-				// we cannot do anything when MIME type identification is disabled
-				if (!extractContents) {
-					return;
-				}
+                if (mimeType != null) {
+                    // add the mime type to the metadata
+                    RDFContainer metadata = object.getMetadata();
+                    metadata.add(DATA.mimeType, mimeType);
 
-				URI id = object.getID();
+                    // apply an Extractor if available
 
-				// Create a buffer around the object's stream large enough to be able to reset the stream
-				// after MIME type identification has taken place. Add some extra to the minimum array
-				// length required by the MimeTypeIdentifier for safety.
-				int minimumArrayLength = mimeTypeIdentifier.getMinArrayLength();
-				int bufferSize = Math.max(minimumArrayLength, 8192);
-				BufferedInputStream buffer = new BufferedInputStream(object.getContent(), bufferSize);
-				buffer.mark(minimumArrayLength + 10); // add some for safety
+                    buffer.reset();
 
-				// apply the MimeTypeIdentifier
-				byte[] bytes = IOUtil.readBytes(buffer, minimumArrayLength);
-				String mimeType = mimeTypeIdentifier.identify(bytes, null, id);
+                    Set extractors = extractorRegistry.get(mimeType);
+                    if (!extractors.isEmpty()) {
+                        ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
+                        Extractor extractor = factory.get();
+                        extractor.extract(id, buffer, null, mimeType, metadata);
+                    }
+                }
+            }
+            catch (IOException e) {
+                System.err.println("IOException while processing " + dataObject.getID());
+            }
+            catch (ExtractorException e) {
+                System.err.println("ExtractorException while processing " + dataObject.getID());
+            }
+        }
+    }
 
-				if (mimeType != null) {
-					// add the mime type to the metadata
-					RDFContainer metadata = object.getMetadata();
-					metadata.add(DATA.mimeType, mimeType);
+    private void printUnexpectedEventWarning(String event) {
+        // as we don't keep track of access data in this example code, some events should never occur
+        System.err.println("encountered unexpected event (" + event + ") with non-incremental crawler");
+    }
 
-					// apply an Extractor if available
+    public boolean isExtractingContents() {
+        return extractingContents;
+    }
 
-					buffer.reset();
-
-					Set extractors = extractorRegistry.get(mimeType);
-					if (!extractors.isEmpty()) {
-						ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
-						Extractor extractor = factory.get();
-						extractor.extract(id, buffer, null, mimeType, metadata);
-					}
-				}
-			}
-			catch (IOException e) {
-				LOGGER.log(Level.WARNING, "IOException while processing " + dataObject.getID(), e);
-			}
-			catch (ExtractorException e) {
-				LOGGER.log(Level.WARNING, "ExtractorException while processing " + dataObject.getID(), e);
-			}
-		}
-	}
-
-	protected void printUnexpectedEventWarning(String event) {
-		// as we don't keep track of access data in this example code, some events should never occur
-		LOGGER.warning("encountered unexpected event (" + event + ") with non-incremental crawler");
-	}
-
-	public boolean isExtractContents() {
-		return extractContents;
-	}
-
-	public void setExtractContents(boolean extractContents) {
-		this.extractContents = extractContents;
-	}
+    public void setExtractingContents(boolean extractingContents) {
+        this.extractingContents = extractingContents;
+    }
 }
