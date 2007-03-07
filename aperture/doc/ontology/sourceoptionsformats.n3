@@ -7,7 +7,7 @@
 @prefix : <http://aperture.semanticdesktop.org/ontology/datasourcens#> .
 
 :basepathFormat rdf:type fresnel:Format ;
-                fresnel:propertyFormatDomain source:hostname ;
+                fresnel:propertyFormatDomain source:basepath ;
                 sourceformat:valueWidget sourceformat:TextFieldWidget .
 
 :includeEmbeddedResourcesFormat rdf:type fresnel:Format ;
