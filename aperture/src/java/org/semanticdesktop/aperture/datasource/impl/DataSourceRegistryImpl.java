@@ -98,10 +98,13 @@ public class DataSourceRegistryImpl implements DataSourceRegistry {
         try {
             OntologyUtil.getSourceFormatOntology(model);
             OntologyUtil.getSourceOntology(model);
-            Iterator<DataSourceFactory> iterator = factories.values().iterator();
+            Iterator iterator = factories.values().iterator();
             while (iterator.hasNext()) {
-                DataSourceFactory factory = iterator.next();
-                factory.getDescription(model);
+                Set set = (Set)iterator.next();
+                for (Object factoryObject : set) {
+                    DataSourceFactory factory = (DataSourceFactory)factoryObject;
+                    factory.getDescription(model);
+                }
             }
         } catch (Exception me) {
             log.log(Level.SEVERE,"Couldnt get data source ontology and " +
