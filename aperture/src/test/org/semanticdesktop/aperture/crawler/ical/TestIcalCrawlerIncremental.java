@@ -11,7 +11,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 
 import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;

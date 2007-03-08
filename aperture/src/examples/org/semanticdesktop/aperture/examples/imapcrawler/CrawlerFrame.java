@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -14,8 +14,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.security.Security;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
