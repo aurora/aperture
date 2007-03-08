@@ -12,11 +12,8 @@ import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.Writer;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -45,7 +42,6 @@ import org.semanticdesktop.aperture.crawler.filesystem.FileSystemCrawler;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 import org.semanticdesktop.aperture.extractor.Extractor;
-import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
 import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
@@ -59,8 +55,6 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
 
 public class CrawlerPanel extends JPanel {
 
-    private static final Logger LOGGER = Logger.getLogger(CrawlerPanel.class.getName());
-    
     private ConfigurationPanel configurationPanel = null;
 
     private JLabel statusLabel = null;
@@ -429,11 +423,9 @@ public class CrawlerPanel extends JPanel {
                     }
                 }
             }
-            catch (IOException e) {
-                LOGGER.log(Level.WARNING, "IOException while processing " + id, e);
-            }
-            catch (ExtractorException e) {
-                LOGGER.log(Level.WARNING, "ExtractorException while processing " + id, e);
+            catch (Exception e) {
+                System.err.println("ExtractorException while processing " + id);
+                e.printStackTrace();
             }
         }
 

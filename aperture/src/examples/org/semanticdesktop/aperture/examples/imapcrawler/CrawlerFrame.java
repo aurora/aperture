@@ -14,8 +14,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.security.Security;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
@@ -31,8 +29,6 @@ import org.semanticdesktop.aperture.security.trustdecider.dialog.TrustDeciderDia
 import org.semanticdesktop.aperture.security.trustmanager.standard.StandardTrustManager;
 
 public class CrawlerFrame extends JFrame {
-
-	private static final Logger LOGGER = Logger.getLogger(CrawlerFrame.class.getName());
 
 	private static CrawlerFrame INSTANCE;
 
@@ -177,7 +173,8 @@ public class CrawlerFrame extends JFrame {
 				factory = (SSLSocketFactory) sslcontext.getSocketFactory();
 			}
 			catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Exception while instantiating a StandardSocketFactory", e);
+				System.err.println("Exception while instantiating a StandardSocketFactory");
+                e.printStackTrace();
 			}
 		}
 
