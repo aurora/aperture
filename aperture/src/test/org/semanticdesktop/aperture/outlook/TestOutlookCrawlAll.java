@@ -25,7 +25,6 @@ import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
-import org.semanticdesktop.aperture.util.LogUtil;
 
 /**
  * crawl through the locally installed outlook.
@@ -48,7 +47,6 @@ public class TestOutlookCrawlAll extends ApertureTestBase {
     OutlookCrawler crawler;
 
     protected void setUp() throws Exception {
-        LogUtil.setFullLogging();
         olds = new OutlookDataSource();
         RDFContainer config = createRDFContainer(TESTID);
         ConfigurationUtil.setRootUrl(TESTROOT, config);

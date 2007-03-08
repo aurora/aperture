@@ -31,7 +31,6 @@ import org.semanticdesktop.aperture.datasource.config.SubstringPattern;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
-import org.semanticdesktop.aperture.util.LogUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
@@ -60,7 +59,6 @@ public class TestOutlookCrawler extends ApertureTestBase {
     OutlookCrawler crawler;
 
     protected void setUp() throws Exception {
-        LogUtil.setFullLogging();
         olds = new OutlookDataSource();
         RDFContainer config = createRDFContainer(TESTID);
         ConfigurationUtil.setRootUrl(TESTROOT, config);
