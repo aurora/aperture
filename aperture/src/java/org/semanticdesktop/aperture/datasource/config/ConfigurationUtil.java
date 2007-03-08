@@ -11,8 +11,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
@@ -36,8 +34,6 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
  * properties from an RDFContainer.
  */
 public class ConfigurationUtil {
-
-    private static final Logger LOGGER = Logger.getLogger(ConfigurationUtil.class.getName());
 
     private ConfigurationUtil() {
     // prevent instantiation
@@ -277,9 +273,6 @@ public class ConfigurationUtil {
             // LOGGER.info(query);
             model.removeAll(statementsToRemove.iterator());
         }
-        catch (ModelException e) {
-            LOGGER.log(Level.WARNING, "Query failed. Very odd. ", e);
-        }
         finally {
             if (iterator != null) {
                 iterator.close();
@@ -287,7 +280,8 @@ public class ConfigurationUtil {
         }
     }
 
-    private static List<Statement> findStatements(Resource resource, URI predicate, Model model) {
+    private static List<Statement> findStatements(Resource resource, URI predicate, Model model)
+            throws ModelException {
         List<Statement> result = new LinkedList<Statement>();
         ClosableIterator<? extends Statement> iterator = null;
         try {
@@ -297,9 +291,6 @@ public class ConfigurationUtil {
             while (iterator.hasNext()) {
                 result.add(iterator.next());
             }
-        }
-        catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Couldn't find statements", me);
         }
         finally {
             if (iterator != null) {
@@ -369,7 +360,6 @@ public class ConfigurationUtil {
 
                     // skip in case of inappropriate values
                     if (!(typeValue instanceof URI) || !(patternValue instanceof Literal)) {
-                        LOGGER.config("type of boundary pattern not valid: " + typeValue);
                         continue;
                     }
 
@@ -387,18 +377,12 @@ public class ConfigurationUtil {
                         if (condition != null) {
                             result.add(new SubstringPattern(patternString, condition));
                         }
-                        else
-                            LOGGER.config("cannot detect subtring pattern condition: " + conditionValue);
-                    }
-                    else {
-                        // unknown type, ignore
-                        LOGGER.config("type of boundary pattern not known: " + typeValue);
                     }
                 }
             }
         }
-        catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Couldn't get domain boundaries patterns", me);
+        catch (ModelException e) {
+            throw new RuntimeException(e);
         }
         finally {
             if (statements != null) {
@@ -409,7 +393,7 @@ public class ConfigurationUtil {
         return result;
     }
 
-    private static Node getSingleValue(Resource resource, URI predicate, Model model) {
+    private static Node getSingleValue(Resource resource, URI predicate, Model model) throws ModelException {
         ClosableIterator<? extends Statement> statements = null;
         Node result = null;
         try {
@@ -420,9 +404,6 @@ public class ConfigurationUtil {
                 Statement statement = (Statement) statements.next();
                 result = statement.getObject();
             }
-        }
-        catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Couldn't get a single value", me);
         }
         finally {
             if (statements != null) {
