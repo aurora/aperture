@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna.
+ * Copyright (c) 2006 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -8,6 +8,7 @@ package org.semanticdesktop.aperture.extractor.office;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.extractor.Extractor;
@@ -22,9 +23,11 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
  */
 public class OfficeExtractor implements Extractor {
 
+    private static final Logger LOGGER = Logger.getLogger(OfficeExtractor.class.getName());
+    
 	public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
 			throws ExtractorException {
 		// do not specify a TextExtractor, PoiUtil will fall-back on using a StringExtractor
-		PoiUtil.extractAll(stream, null, result);
+		PoiUtil.extractAll(stream, null, result, LOGGER);
 	}
 }

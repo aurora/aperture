@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna.
+ * Copyright (c) 2006 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.extractor.Extractor;
@@ -26,6 +27,8 @@ import org.semanticdesktop.aperture.util.IOUtil;
  */
 public class QuattroExtractor implements Extractor {
 
+    private static final Logger LOGGER = Logger.getLogger(QuattroExtractor.class.getName()); 
+    
 	/**
 	 * The MS Office magic number. Only Quattro files with this MS Office (i.e. files that use the OLE format)
 	 * can be handled by this Extractor.
@@ -40,7 +43,7 @@ public class QuattroExtractor implements Extractor {
 		// for older, incompatible formats.
 		try {
 			if (hasMSOfficeMagicNumber(stream)) {
-				PoiUtil.extractAll(stream, null, result);
+				PoiUtil.extractAll(stream, null, result, LOGGER);
 			}
 		}
 		catch (IOException e) {

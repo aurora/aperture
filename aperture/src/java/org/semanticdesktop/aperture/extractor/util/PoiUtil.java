@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna.
+ * Copyright (c) 2006 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -33,8 +33,6 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
  * @link http://jakarta.apache.org/poi/
  */
 public class PoiUtil {
-
-	private static final Logger LOGGER = Logger.getLogger(PoiUtil.class.getName());
 
 	private static final String BUFFER_SIZE_PROPERTY = "aperture.poiUtil.bufferSize";
 
@@ -150,7 +148,7 @@ public class PoiUtil {
 	 * TextExtractor is specified to handle the specifics of full-text extraction for this particular MS
 	 * Office document type.
 	 */
-	public static void extractAll(InputStream stream, TextExtractor textExtractor, RDFContainer container) {
+	public static void extractAll(InputStream stream, TextExtractor textExtractor, RDFContainer container, Logger logger) {
 		// mark the stream with a sufficiently large buffer so that, when POI chokes on a document, there is a
 		// good chance we can reset to the beginning of the buffer and apply a StringExtractor
 		int bufferSize = getBufferSize();
@@ -185,7 +183,7 @@ public class PoiUtil {
 		// if text extraction was not successfull, try a StringExtractor as a fallback
 		if (text == null) {
 			if (textExtractor != null) {
-				LOGGER.log(Level.INFO,
+				logger.log(Level.INFO,
 					"regular POI-based processing failed, falling back to heuristic string extraction for "
 							+ container.getDescribedUri());
 			}
@@ -196,7 +194,7 @@ public class PoiUtil {
 				text = extractor.extract(stream);
 			}
 			catch (IOException e) {
-				LOGGER.log(Level.WARNING, "IOException while processing " + container.getDescribedUri(), e);
+				logger.log(Level.WARNING, "IOException while processing " + container.getDescribedUri(), e);
 			}
 		}
 
@@ -219,24 +217,18 @@ public class PoiUtil {
 	 *         set or has an illegal value.
 	 */
 	private static int getBufferSize() {
-		int result = -1;
+		int result = 4 * 1024 * 1024;
 
 		// see if the system property is set
 		String property = System.getProperty(BUFFER_SIZE_PROPERTY);
 		if (property != null && !property.equals("")) {
-			try {
-				result = Integer.parseInt(property);
-			}
-			catch (NumberFormatException e) {
-				LOGGER.log(Level.WARNING, "invalid buffer size: " + property);
-			}
+		    result = Integer.parseInt(property);
 		}
 
-		// overrule negative or unspecified values with a 4 MB buffer (yes, I know that's a lot, but we want
-		// quality output, right?)
+        // make sure it is valid
 		if (result < 0) {
-			result = 4 * 1024 * 1024;
-		}
+		    throw new IllegalArgumentException("Negative buffer sizes not allowed: " + result);
+        }
 
 		return result;
 	}
