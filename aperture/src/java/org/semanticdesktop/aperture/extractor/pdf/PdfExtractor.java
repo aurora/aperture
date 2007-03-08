@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -11,8 +11,6 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.pdfbox.exceptions.CryptographyException;
@@ -25,13 +23,15 @@ import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Extracts full-text and metadata from Adobe Acrobat (PDF) files.
  */
 public class PdfExtractor implements Extractor {
 
-    private static final Logger LOGGER = Logger.getLogger(PdfExtractor.class.getName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
             throws ExtractorException {
@@ -70,9 +70,9 @@ public class PdfExtractor implements Extractor {
             try {
             	// As of PDFBox 0.7.3, it is no longer possible to check if the passwords are emtpy.
                 // if (document.isOwnerPassword("") || document.isUserPassword("")) {
-                LOGGER.log(Level.INFO, "Trying to decrypt " + id);
+                logger.info("Trying to decrypt " + id);
                 document.decrypt("");
-                LOGGER.log(Level.INFO, "Decryption succeeded");
+                logger.info("Decryption succeeded");
                 // }
             }
             catch (CryptographyException e) {
@@ -82,7 +82,7 @@ public class PdfExtractor implements Extractor {
                 throw new ExtractorException(e);
             }
             catch (InvalidPasswordException e) {
-                LOGGER.log(Level.INFO, "Decryption failed", e);
+                logger.info("Decryption failed", e);
             }
         }
 
@@ -96,7 +96,7 @@ public class PdfExtractor implements Extractor {
         }
         catch (IOException e) {
             // exception ends here, maybe we can still extract metadata
-            LOGGER.log(Level.WARNING, "IOException while extracting full-text of " + id, e);
+            logger.warn("IOException while extracting full-text of " + id, e);
         }
 
         // extract the metadata
@@ -109,49 +109,49 @@ public class PdfExtractor implements Extractor {
             addStringMetadata(DATA.creator, metadata.getAuthor(), result);
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting author of " + id, e);
+            logger.warn("Exception while extracting author of " + id, e);
         }
 
         try {
             addStringMetadata(DATA.title, metadata.getTitle(), result);
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting title of " + id, e);
+            logger.warn("Exception while extracting title of " + id, e);
         }
 
         try {
             addStringMetadata(DATA.subject, metadata.getSubject(), result);
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting subject of " + id, e);
+            logger.warn("Exception while extracting subject of " + id, e);
         }
 
         try {
             addStringMetadata(DATA.generator, metadata.getCreator(), result);
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting creator of " + id, e);
+            logger.warn("Exception while extracting creator of " + id, e);
         }
 
         try {
             addStringMetadata(DATA.generator, metadata.getProducer(), result);
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting producer of " + id, e);
+            logger.warn("Exception while extracting producer of " + id, e);
         }
 
         try {
             addCalendarMetadata(DATA.created, metadata.getCreationDate(), result);
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting creation date of " + id, e);
+            logger.warn("Exception while extracting creation date of " + id, e);
         }
 
         try {
             addCalendarMetadata(DATA.date, metadata.getModificationDate(), result);
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting modification date of " + id, e);
+            logger.warn("Exception while extracting modification date of " + id, e);
         }
 
         try {
@@ -161,7 +161,7 @@ public class PdfExtractor implements Extractor {
             }
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting number of pages of " + id, e);
+            logger.warn("Exception while extracting number of pages of " + id, e);
         }
 
         try {
@@ -177,7 +177,7 @@ public class PdfExtractor implements Extractor {
             }
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while extracting keywords of " + id, e);
+            logger.warn("Exception while extracting keywords of " + id, e);
         }
     }
 

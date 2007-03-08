@@ -9,8 +9,6 @@ package org.semanticdesktop.aperture.accessor.base;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
@@ -25,6 +23,8 @@ import org.ontoware.rdf2go.vocabulary.XSD;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.util.ModelUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ModelAccessData provides an AccessData implementation storing its information to and retrieving it from a
@@ -44,7 +44,7 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
  */
 public class ModelAccessData implements AccessData {
 
-    private static final Logger LOGGER = Logger.getLogger(ModelAccessData.class.getName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Used as a prefix to derive URIs from AccessData key names.
@@ -109,7 +109,7 @@ public class ModelAccessData implements AccessData {
             return null;
         }
         catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Could not get value for id: '" + id + "' key: '" + key + "'", me);
+            logger.error("Could not get value for id: '" + id + "' key: '" + key + "'", me);
             return null;
         }
         finally {
@@ -143,7 +143,7 @@ public class ModelAccessData implements AccessData {
             }
         }
         catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Could not get referred id's", me);
+            logger.error("Could not get referred id's", me);
             return null;
         }
         finally {
@@ -207,7 +207,7 @@ public class ModelAccessData implements AccessData {
             return iterator.hasNext();
         }
         catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Could not determine if an ID is known: " + id, me);
+            logger.error("Could not determine if an ID is known: " + id, me);
             return false;
         }
         finally {
@@ -236,7 +236,7 @@ public class ModelAccessData implements AccessData {
             }
         }
         catch (ModelException e) {
-            LOGGER.log(Level.SEVERE, "Could not store info for ID " + id, e);
+            logger.error("Could not store info for ID " + id, e);
         }
     }
 
@@ -247,7 +247,7 @@ public class ModelAccessData implements AccessData {
             add(ModelUtil.createStatement(model, subject, DATA.linksTo, object));
         }
         catch (ModelException e) {
-            LOGGER.log(Level.SEVERE, "Could not store referred ID for ID " + id, e);
+            logger.error("Could not store referred ID for ID " + id, e);
         }
     }
 
@@ -256,7 +256,7 @@ public class ModelAccessData implements AccessData {
             remove(ModelUtil.createURI(model, id), toURI(key));
         }
         catch (ModelException e) {
-            LOGGER.log(Level.SEVERE, "Could not remove value for ID " + id, e);
+            logger.error("Could not remove value for ID " + id, e);
         }
     }
 
@@ -265,7 +265,7 @@ public class ModelAccessData implements AccessData {
             remove(ModelUtil.createURI(model, id), null);
         }
         catch (ModelException e) {
-            LOGGER.log(Level.SEVERE, "Could not remove info about ID " + id, e);
+            logger.error("Could not remove info about ID " + id, e);
         }
     }
 
@@ -280,7 +280,7 @@ public class ModelAccessData implements AccessData {
             model.removeStatement(statement);
         }
         catch (ModelException e) {
-            LOGGER.log(Level.SEVERE, "Could not remove referred ID for ID " + id, e);
+            logger.error("Could not remove referred ID for ID " + id, e);
         }
     }
 
@@ -289,7 +289,7 @@ public class ModelAccessData implements AccessData {
             remove(ModelUtil.createURI(model, id), DATA.linksTo);
         }
         catch (ModelException e) {
-            LOGGER.log(Level.SEVERE, "Could not remove referred IDs for ID " + id, e);
+            logger.error("Could not remove referred IDs for ID " + id, e);
        }
     }
 
@@ -319,7 +319,7 @@ public class ModelAccessData implements AccessData {
             model.addStatement(statement);
         }
         catch (ModelException e) {
-            LOGGER.log(Level.SEVERE, "Exception while adding statement", e);
+            logger.error("Exception while adding statement", e);
         }
     }
 
@@ -334,7 +334,7 @@ public class ModelAccessData implements AccessData {
             model.removeStatement(subject, predicate, Variable.ANY);
         }
         catch (ModelException e) {
-            LOGGER.log(Level.SEVERE, "Exception while removing statement", e);
+            logger.error("Exception while removing statement", e);
         }
         finally {
             if (iterator != null) {

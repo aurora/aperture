@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -12,8 +12,6 @@ import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -23,6 +21,8 @@ import org.semanticdesktop.aperture.util.DateUtil;
 import org.semanticdesktop.aperture.util.SimpleSAXAdapter;
 import org.semanticdesktop.aperture.util.SimpleSAXParser;
 import org.semanticdesktop.aperture.util.XmlWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -31,8 +31,6 @@ import org.xml.sax.SAXException;
  */
 public class CrawlReportBase implements CrawlReport {
 
-    private static final Logger LOGGER = Logger.getLogger(CrawlReportBase.class.getName());
-    
     public static final String CRAWL_REPORT_TAG = "crawlReport";
 
     public static final String VERSION_ATTR = "version";
@@ -239,6 +237,8 @@ public class CrawlReportBase implements CrawlReport {
 
     private class CrawlReportParser extends SimpleSAXAdapter {
 
+        private Logger logger = LoggerFactory.getLogger(getClass());
+        
         public void startTag(String tagName, Map atts, String text) throws SAXException {
             if (text != null && !text.equals("")) {
                 try {
@@ -258,7 +258,7 @@ public class CrawlReportBase implements CrawlReport {
                 }
                 catch (ParseException e) {
                     // log and ignore
-                    LOGGER.log(Level.WARNING, "invalid date: " + text, e);
+                    logger.warn("invalid date: " + text, e);
                 }
             }
             else if (CRAWL_STOPPED_TAG.equals(tagName)) {
@@ -268,7 +268,7 @@ public class CrawlReportBase implements CrawlReport {
                 }
                 catch (ParseException e) {
                     // log and ignore
-                    LOGGER.log(Level.WARNING, "invalid date: " + text, e);
+                    logger.warn("invalid date: " + text, e);
                 }
             }
             else if (EXIT_CODE_TAG.equals(tagName)) {
@@ -282,7 +282,7 @@ public class CrawlReportBase implements CrawlReport {
                     exitCode = ExitCode.FATAL_ERROR;
                 }
                 else {
-                    LOGGER.warning("unknown exit code: " + text);
+                    logger.warn("unknown exit code: " + text);
                 }
             }
             else if (NEW_COUNT_TAG.equals(tagName)) {
@@ -305,7 +305,7 @@ public class CrawlReportBase implements CrawlReport {
                 return Integer.parseInt(text);
             }
             catch (NumberFormatException e) {
-                LOGGER.log(Level.WARNING, "invalid int: " + text, e);
+                logger.warn("invalid int: " + text, e);
                 return oldValue;
             }
         }

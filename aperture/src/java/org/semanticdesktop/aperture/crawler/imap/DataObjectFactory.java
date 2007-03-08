@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.mail.BodyPart;
 import javax.mail.Message;
@@ -38,6 +36,8 @@ import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Creates a set of DataObjects from a MimeMessage.
@@ -60,7 +60,7 @@ public class DataObjectFactory {
     // To investigate: does JavaMail provide us with enough information for constructing proper
     // URLs for attachments? Perhaps we can create them ourselves by carefully counting BodyParts?
 
-    private static final Logger LOGGER = Logger.getLogger(DataObjectFactory.class.getName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Key used to store a DataObject's URI in the intermediate HashMap representation.
@@ -154,7 +154,7 @@ public class DataObjectFactory {
                 return handleMultipart((Multipart) content, contentType, uri, date);
             }
             else {
-                LOGGER.log(Level.WARNING, "multipart '" + uri + "' does not contain a Multipart object: "
+                logger.warn("multipart '" + uri + "' does not contain a Multipart object: "
                         + (content == null ? null : content.getClass()));
                 return null;
             }
@@ -204,7 +204,7 @@ public class DataObjectFactory {
                 return handleMailPart(nestedMessage, uri, MailUtil.getDate(nestedMessage));
             }
             else {
-                LOGGER.warning("message/rfc822 part with unknown content class: "
+                logger.warn("message/rfc822 part with unknown content class: "
                         + (content == null ? null : content.getClass()));
                 return null;
             }
@@ -531,7 +531,7 @@ public class DataObjectFactory {
             child = handleMailPart(part.getBodyPart(partIndex), uri, date);
         }
         else {
-            LOGGER.info("multipart/signed or multipart/encrypted without enough body parts, uri = " + uri);
+            logger.warn("multipart/signed or multipart/encrypted without enough body parts, uri = " + uri);
         }
 
         // if this part was nested in a message, we should merge the obtained info with the message info,
@@ -599,7 +599,7 @@ public class DataObjectFactory {
     private HashMap handleUnknownTypePart(Multipart part, ContentType contentType, URI uri, Date date)
             throws MessagingException, IOException {
         // treat this as multipart/mixed, as imposed by RFC 2046
-        LOGGER.log(Level.INFO, "Unknown multipart MIME type: \"" + contentType.getBaseType()
+        logger.warn("Unknown multipart MIME type: \"" + contentType.getBaseType()
                 + "\", treating as multipart/mixed");
         return handleMixedPart(part, contentType, uri, date);
     }
@@ -693,11 +693,11 @@ public class DataObjectFactory {
                 }
             }
             else if (value != null) {
-                LOGGER.warning("Unknown address class: " + value.getClass().getName());
+                logger.warn("Unknown address class: " + value.getClass().getName());
             }
         }
         catch (ModelException e) {
-            LOGGER.log(Level.WARNING, "ModelException while handling address metadata", e);
+            logger.error("ModelException while handling address metadata", e);
         }
     }
 

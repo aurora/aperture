@@ -12,8 +12,6 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.mail.Address;
 import javax.mail.BodyPart;
@@ -34,6 +32,8 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.HtmlParserUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An Extractor implementation for message/rfc822-style messages.
@@ -53,8 +53,6 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
  */
 public class MimeExtractor implements Extractor {
 
-    private static final Logger LOGGER = Logger.getLogger(MimeExtractor.class.getName());
-    
     public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
             throws ExtractorException {
         try {
@@ -284,7 +282,8 @@ public class MimeExtractor implements Extractor {
             }
         }
         catch (ModelException e) {
-            LOGGER.log(Level.WARNING, "ModelException while adding address metadata", e);
+            Logger logger = LoggerFactory.getLogger(getClass());
+            logger.error("ModelException while adding address metadata", e);
         }
     }
 }

@@ -18,8 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
@@ -41,6 +39,8 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.UrlUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Crawler implementation for WebDataSources.
@@ -67,7 +67,7 @@ public class WebCrawler extends CrawlerBase {
     // emptry trailing parts and not counting the object overhead of the char array, String object and HashSet
     // overhead.
 
-    private static final Logger LOGGER = Logger.getLogger(WebCrawler.class.getName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * The MimeTypeIdentifier used to determine the mime type of a DataObject.
@@ -337,7 +337,7 @@ public class WebCrawler extends CrawlerBase {
                     unregisterUrl(url, knownUrl);
                 }
                 catch (IOException e) {
-                    LOGGER.log(Level.INFO, "I/O error while accessing " + url, e);
+                    logger.info("I/O error while accessing " + url, e);
                 }
             }
         }
@@ -390,9 +390,9 @@ public class WebCrawler extends CrawlerBase {
     @SuppressWarnings("unchecked")
     private void scheduleCachedLinks(String url, int depth) {
         if (accessData == null) {
-            LOGGER.log(Level.SEVERE,
-                "Internal error: scheduling cached links for unmodified url while no AccessData is set: "
-                        + url);
+            logger
+                    .error("Internal error: scheduling cached links for unmodified url while no AccessData is set: "
+                            + url);
         }
         else {
             // see if this is a final URL or one that has redirected to another URL in the past
@@ -436,7 +436,7 @@ public class WebCrawler extends CrawlerBase {
             }
         }
         catch (IOException e) {
-            LOGGER.log(Level.WARNING, "IOException while determining MIME type", e);
+            logger.info("IOException while determining MIME type", e);
             // the stream is now in an undetermined state: remove it to prevent any processing
             object.setContent(null);
 
@@ -482,7 +482,7 @@ public class WebCrawler extends CrawlerBase {
                 content = new ByteArrayInputStream(IOUtil.readBytes(content));
             }
             catch (IOException e) {
-                LOGGER.log(Level.WARNING, "IOException while buffering document", e);
+                logger.warn("IOException while buffering document", e);
                 object.setContent(null);
                 return;
             }
@@ -507,7 +507,7 @@ public class WebCrawler extends CrawlerBase {
             links = extractor.extractLinks(content, params);
         }
         catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "IOException while extracting links", e);
+            logger.info("IOException while extracting links", e);
         }
         finally {
             // make sure the stream can be read again
@@ -515,8 +515,7 @@ public class WebCrawler extends CrawlerBase {
                 content.reset();
             }
             catch (IOException e) {
-                LOGGER.log(Level.SEVERE,
-                    "internal error: IOException while resetting a ByteArrayInputStream", e);
+                logger.warn("internal error: IOException while resetting a ByteArrayInputStream", e);
             }
         }
 

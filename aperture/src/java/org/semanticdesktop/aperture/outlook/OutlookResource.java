@@ -9,8 +9,6 @@ package org.semanticdesktop.aperture.outlook;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.node.URI;
@@ -27,6 +25,8 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
 import org.semanticdesktop.aperture.vocabulary.DATA_GEN;
 import org.semanticdesktop.aperture.vocabulary.ICAL;
 import org.semanticdesktop.aperture.vocabulary.VCARD;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.ComFailException;
@@ -54,6 +54,8 @@ import com.jacob.com.Variant;
  */
 public abstract class OutlookResource {
 
+    private Logger logger = LoggerFactory.getLogger(getClass());
+    
 	/**
 	 * <p>
 	 * Copyright: Copyright (c) 2003
@@ -226,7 +228,7 @@ public abstract class OutlookResource {
                     rdf.add(addressRelation, address);
                 }
                 catch (ModelException e) {
-                    log.log(Level.WARNING, "ModelException while adding statements", e);
+                    logger.error("ModelException while adding statements", e);
                 }
 			}
 		}
@@ -338,7 +340,7 @@ public abstract class OutlookResource {
                     rdf.add(DATA_GEN.from, from);
                 }
                 catch (ModelException e) {
-                    log.log(Level.WARNING, "ModelException while adding statements", e);
+                    logger.error("ModelException while adding statements", e);
                 }
 			}
 
@@ -348,7 +350,7 @@ public abstract class OutlookResource {
 			if (recipients != null) {
 				Dispatch recipientsD = recipients.toDispatch();
 				int count = Dispatch.get(recipientsD, "Count").toInt();
-				log.finest("adding e-mail, found recipients: "+count);
+				logger.info("adding e-mail, found recipients: "+count);
 				
 				// int dispId = Dispatch.getIDOfName(folders, "Item");
 				for (int i = 1; i <= count; i++) {
@@ -416,6 +418,8 @@ public abstract class OutlookResource {
 	 */
 	public abstract static class OutlookResourceSave extends OutlookResource {
 
+        protected Logger logger = LoggerFactory.getLogger(getClass());
+        
 		protected String saveRedemptionClass = null;
 
 		private Dispatch saveResource = null;
@@ -441,7 +445,7 @@ public abstract class OutlookResource {
 						saveResource = new ActiveXComponent(saveRedemptionClass);
 					}
 					catch (ComFailException x) {
-						OutlookCrawler.log.fine("Redemption error, cannot get redemption object for "
+						logger.warn("Redemption error, cannot get redemption object for "
 								+ saveRedemptionClass);
 						return null;
 					}
@@ -513,9 +517,6 @@ public abstract class OutlookResource {
 
 	}
 
-	protected static Logger log = Logger.getLogger(OutlookResource.class.getName());
-	
-	
 	private static String createUri(OutlookCrawler crawler, Dispatch resource, String itemType) {
 		if (crawler == null)
 			throw new RuntimeException("passed in a null crawler for createUri");
@@ -529,7 +530,7 @@ public abstract class OutlookResource {
 	 * Factory method to create Wrappers. this looks at the passed Dispatch and sees what type it is and
 	 * creates an according OutlookResource subclass
 	 */
-	public static OutlookResource createWrapperFor(OutlookCrawler crawler, Dispatch resource) {
+	public static OutlookResource createWrapperFor(OutlookCrawler crawler, Dispatch resource, Logger logger) {
 		try {
 			// Item is the desired Item, do something about it
 			int classID = Dispatch.get(resource, "Class").toInt();
@@ -568,7 +569,7 @@ public abstract class OutlookResource {
 
 		}
 		catch (Exception ex) {
-			OutlookCrawler.log.info("Error creating Resourcewrapper: " + ex);
+			logger.warn("Error creating Resourcewrapper: " + ex);
 			return null;
 		}
 	}
@@ -581,7 +582,7 @@ public abstract class OutlookResource {
 	 * 
 	 * @return Resourcewrapper or null
 	 */
-	public static OutlookResource createWrapperFor(OutlookCrawler crawler, String uri){
+	public static OutlookResource createWrapperFor(OutlookCrawler crawler, String uri, Logger logger){
 		// Parts
 		String itemType;
 		String itemIdentity;
@@ -613,7 +614,9 @@ public abstract class OutlookResource {
 
 		}
 		catch (Exception ex) {
-			log.fine("uri '" + uri + "' cannot be parsed." + ex.toString());
+            if (logger.isInfoEnabled()) {
+                logger.info("uri '" + uri + "' cannot be parsed." + ex.toString());
+            }
 			return null;
 		}
 
@@ -634,7 +637,7 @@ public abstract class OutlookResource {
 				if (variant == null)
 					throw new Exception("GetItemFromID returned null for id " + itemIdentity);
 				Dispatch item = variant.toDispatch();
-				OutlookResource wrapper = createWrapperFor(crawler, item);
+				OutlookResource wrapper = createWrapperFor(crawler, item, logger);
 
 				return wrapper;
 			}
@@ -645,7 +648,7 @@ public abstract class OutlookResource {
 
 			// a single Folder
 			if (itemType.equals(OutlookResource.Folder.ITEMTYPE) || itemType.equals(OutlookResource.Calendar.ITEMTYPE)) {
-				return OutlookResource.createWrapperForFolder(crawler, itemIdentity, itemType);
+				return OutlookResource.createWrapperForFolder(crawler, itemIdentity, itemType, logger);
 			}
 
 		}
@@ -655,9 +658,9 @@ public abstract class OutlookResource {
 			crawler.crashChecker(ex);
 		}
 		catch (Exception ex) {
-			log.info("Can not resolve outlook uri '" + uri + "': " + ex.toString());
-			if (log.isLoggable(Level.FINE))
-				ex.printStackTrace();
+            if (logger.isInfoEnabled()) {
+                logger.info("Cannot resolve outlook uri '" + uri + "': " + ex.toString(), ex);
+            }
 		}
 		return null;
 	}
@@ -680,7 +683,7 @@ public abstract class OutlookResource {
 	 * type it is and creates an according OLFolder or other resource
 	 */
 	public static OutlookResource.Folder createWrapperForFolder(OutlookCrawler crawler, String itemId,
-			String expectedItemType) throws Exception {
+			String expectedItemType, Logger logger) throws Exception {
 		Variant variant = Dispatch.call(crawler.getOutlookMapi(), "GetItemFromID", itemId);
 		if (variant == null)
 			throw new Exception("GetItemFromID returned null for id " + itemId);
@@ -689,7 +692,7 @@ public abstract class OutlookResource {
 		if (!expectedItemType.equals(folder.getItemType())) {
 			String msg = "created wrapper for item " + itemId + "  expected " + expectedItemType
 					+ " but got " + folder.getItemType();
-			OutlookCrawler.log.warning(msg);
+			logger.warn(msg);
 			throw new Exception(msg);
 		}
 		return folder;
@@ -767,7 +770,7 @@ public abstract class OutlookResource {
 	protected void finalize() throws Throwable {
 		if (resource != null) {
 			release();
-			OutlookCrawler.log.finer("finalize released " + getUri());
+			logger.warn("finalize released " + getUri());
 		}
 		super.finalize();
 	}
@@ -782,7 +785,6 @@ public abstract class OutlookResource {
 	 */
 	public DataObject getDataObjectIfModified(String url, DataSource source, AccessData accessData,
 			Map params, RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException {
-		log.finest("get data of " + url);
 		return null;
 	}
 
@@ -811,7 +813,7 @@ public abstract class OutlookResource {
 
 		}
 		catch (ComFailException x) {
-			OutlookCrawler.log.finer("Error on com for dispname " + dispName + ": " + x);
+			logger.warn("Error on com for dispname " + dispName + ": " + x);
 			return null;
 		}
 	}
@@ -830,24 +832,24 @@ public abstract class OutlookResource {
 			var = Dispatch.get(resource, "LastModificationTime");
 		}
 		catch (ComFailException x) {
-			log.severe("cannot read last-modification time of " + getUri() + " of type " + getItemType());
+			logger.warn("cannot read last-modification time of " + getUri() + " of type " + getItemType());
 			return 0;
 		}
 		if ((var == null) || (var.isNull())) {
-			log.warning("cannot read LastModificationTime, no value");
+			logger.warn("cannot read LastModificationTime, no value");
 			return 0;
 		}
 		else if (var.getvt() == Variant.VariantDate) {
 			double d = var.getDate();
 			VariantDate vDat = new VariantDate(var.toDate());
-			if (log.isLoggable(Level.FINEST)) {
-				log.finest("This has lastModified: " + DateUtil.dateTime2String(vDat.getDate())
+			if (logger.isInfoEnabled()) {
+				logger.info("This has lastModified: " + DateUtil.dateTime2String(vDat.getDate())
 						+ " with double " + Double.toString(d));
 			}
 			return vDat.getDate().getTime();
 		}
 		else {
-			log.warning("cannot read LastModificationTime, type is not date but: " + var.getvt());
+			logger.warn("cannot read LastModificationTime, type is not date but: " + var.getvt());
 			return 0;
 		}
 	}
@@ -882,7 +884,7 @@ public abstract class OutlookResource {
 
 		}
 		catch (ComFailException x) {
-			OutlookCrawler.log.finer("Error on com for dispname " + dispName + ": " + x);
+			logger.warn("Error on com for dispname " + dispName + ": " + x);
 			return null;
 		}
 	}
@@ -930,6 +932,9 @@ public abstract class OutlookResource {
 
 /*
  * $Log$
+ * Revision 1.10  2007/03/08 22:03:40  cfmfluit
+ * replaced java.util.logging-based logging with SLF4J
+ *
  * Revision 1.9  2007/03/08 13:23:03  cfmfluit
  * ValueFactory now throws ModelExceptions, rather than letting the implementation log the exception and return null. Adapted all classes using a ValueFactory accordingly. This fixes potential NPEs when the ValueFactory methods fail and the returned null values would be used accidentally to e.g. add a statement.
  *

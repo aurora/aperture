@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -8,8 +8,6 @@ package org.semanticdesktop.aperture.outlook;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
@@ -24,6 +22,8 @@ import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Access individual Outlook Objects.
@@ -31,8 +31,6 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
  * @author sauermann $Id$
  */
 public class OutlookAccessor implements DataAccessor {
-
-	protected static Logger log = Logger.getLogger(OutlookAccessor.class.getName());
 
 	// params in the map
 	/**
@@ -50,6 +48,8 @@ public class OutlookAccessor implements DataAccessor {
 	 */
 	public static final String PARAM_MAPI = "ol_mapi";
 
+    private Logger logger = LoggerFactory.getLogger(getClass());
+    
 	/**
 	 * 
 	 */
@@ -100,7 +100,7 @@ public class OutlookAccessor implements DataAccessor {
 	public DataObject getDataObjectIfModifiedOutlook(String url, DataSource source, AccessData accessData,
 			Map params, RDFContainerFactory containerFactory, OutlookResource resource, OutlookResource parent)
 			throws UrlNotFoundException, IOException {
-		log.finest("get data of " + url);
+		logger.info("get data of " + url);
 
 		// check if I have to crawl this first
 		OutlookCrawler crawler = null;
@@ -109,7 +109,7 @@ public class OutlookAccessor implements DataAccessor {
 				crawler = new OutlookCrawler();
 				crawler.setDataSource(source);
 				crawler.beginCall();
-				resource = OutlookResource.createWrapperFor(crawler, url);
+				resource = OutlookResource.createWrapperFor(crawler, url, logger);
 				if (resource == null)
 					throw new UrlNotFoundException(url, "cannot crawl " + url + ", not found in Outlook.");
 			}
@@ -127,18 +127,18 @@ public class OutlookAccessor implements DataAccessor {
 
 						// now that we now its previous last modified date, see if it has been modified
 						if (registeredDate == lastModified) {
-							log.finest(url + " not modified - reg:" + registeredDate);
+							logger.info(url + " not modified - reg:" + registeredDate);
 							// the file has not been modified
 							return null;
 						}
 						else
-							log
-									.finest(url + " was modified - reg:" + registeredDate + " new:"
+							logger
+									.info(url + " was modified - reg:" + registeredDate + " new:"
 											+ lastModified);
 
 					}
 					catch (NumberFormatException e) {
-						log.log(Level.WARNING, "illegal long: " + value, e);
+						logger.warn("illegal long: " + value, e);
 					}
 				}
 

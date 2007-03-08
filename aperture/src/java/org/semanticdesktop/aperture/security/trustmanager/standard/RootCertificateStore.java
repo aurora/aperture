@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -21,8 +21,9 @@ import java.security.cert.CertificateException;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A CertificateStore that holds the root Certificates. As this set is not mutable by the application
@@ -30,7 +31,7 @@ import java.util.logging.Logger;
  */
 public class RootCertificateStore implements CertificateStore {
 
-    private static final Logger LOGGER = Logger.getLogger(RootCertificateStore.class.getName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private String fileName;
 
@@ -85,7 +86,7 @@ public class RootCertificateStore implements CertificateStore {
                 throw (NoSuchAlgorithmException) ex;
             }
             else {
-                LOGGER.log(Level.SEVERE, "Unrecognized nested exception, ignoring", e);
+                logger.error("Unrecognized nested exception, ignoring", e);
             }
         }
     }

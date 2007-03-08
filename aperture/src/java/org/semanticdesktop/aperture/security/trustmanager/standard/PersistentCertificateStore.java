@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -24,8 +24,9 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A CertificateStore that can save its certificates to and load them from a file.
@@ -39,7 +40,7 @@ import java.util.logging.Logger;
  */
 public class PersistentCertificateStore implements CertificateStore {
 
-    private static final Logger LOGGER = Logger.getLogger(PersistentCertificateStore.class.getName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private File certificatesFile;
 
@@ -103,7 +104,7 @@ public class PersistentCertificateStore implements CertificateStore {
                 throw (NoSuchAlgorithmException) ex;
             }
             else {
-                LOGGER.log(Level.SEVERE, "Unrecognized nested exception, ignoring", e);
+                logger.error("Unrecognized nested exception, ignoring", e);
             }
         }
     }
@@ -142,7 +143,7 @@ public class PersistentCertificateStore implements CertificateStore {
                 throw (NoSuchAlgorithmException) ex;
             }
             else {
-                LOGGER.log(Level.SEVERE, "Unrecognized nested exception, ignoring", e);
+                logger.error("Unrecognized nested exception, ignoring", e);
             }
         }
     }

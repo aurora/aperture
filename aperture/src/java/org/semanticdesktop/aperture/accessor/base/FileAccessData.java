@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -19,8 +19,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -30,6 +28,8 @@ import org.semanticdesktop.aperture.util.ArrayMap;
 import org.semanticdesktop.aperture.util.SimpleSAXAdapter;
 import org.semanticdesktop.aperture.util.SimpleSAXParser;
 import org.semanticdesktop.aperture.util.XmlWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -37,8 +37,6 @@ import org.xml.sax.SAXException;
  * initializing it with the contents of such a file.
  */
 public class FileAccessData extends AccessDataImpl {
-
-	private static final Logger LOGGER = Logger.getLogger(FileAccessData.class.getName());
 
 	public static final String REFERRED_ID_TAG = "referredID";
 
@@ -150,7 +148,8 @@ public class FileAccessData extends AccessDataImpl {
 				xmlWriter.endTag("dataobject");
 			}
 			else {
-				LOGGER.log(Level.WARNING, "Failed to write null id");
+                Logger logger = LoggerFactory.getLogger(getClass());
+				logger.error("Cannot write null id");
 			}
 		}
 

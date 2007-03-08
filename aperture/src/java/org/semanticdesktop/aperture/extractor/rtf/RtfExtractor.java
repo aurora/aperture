@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -9,8 +9,6 @@ package org.semanticdesktop.aperture.extractor.rtf;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -21,6 +19,8 @@ import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RtfExtractor implements Extractor {
 
@@ -33,8 +33,6 @@ public class RtfExtractor implements Extractor {
 	 * it now works like a charm.
 	 */
 
-	private static final Logger LOGGER = Logger.getLogger(RtfExtractor.class.getName());
-
 	public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
 			throws ExtractorException {
 		RTFEditorKit rtfParser = new RTFEditorKit();
@@ -46,7 +44,8 @@ public class RtfExtractor implements Extractor {
 		}
 		catch (BadLocationException e) {
 			// problem relates to the file contents: just log and ignore
-			LOGGER.log(Level.WARNING, "Bad RTF location", e);
+            Logger logger = LoggerFactory.getLogger(getClass());
+			logger.warn("Bad RTF location", e);
 		}
 		catch (IOException e) {
 			throw new ExtractorException(e);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -18,8 +18,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
@@ -30,13 +28,15 @@ import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of the Crawler interface that offers generic implementations for some of its methods.
  */
 public abstract class CrawlerBase implements Crawler {
 
-	private static final Logger LOGGER = Logger.getLogger(CrawlerBase.class.getName());
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * The DataSource representing the physical source of information.
@@ -167,7 +167,7 @@ public abstract class CrawlerBase implements Crawler {
 			}
 		}
 		catch (IOException e) {
-			LOGGER.log(Level.WARNING, "IOException while accessing AccessData", e);
+			logger.error("IOException while accessing AccessData", e);
 			exitCode = ExitCode.FATAL_ERROR;
 		}
 
@@ -228,7 +228,7 @@ public abstract class CrawlerBase implements Crawler {
 			}
 		}
 		catch (IOException e) {
-			LOGGER.log(Level.WARNING, "IOException while accessing AccessData", e);
+			logger.error("IOException while accessing AccessData", e);
 			exitCode = ExitCode.FATAL_ERROR;
 		}
 
@@ -262,7 +262,7 @@ public abstract class CrawlerBase implements Crawler {
 				}
 			}
 			catch (IOException e) {
-				LOGGER.log(Level.SEVERE, "IOException while loading crawl report file", e);
+				logger.error("Unable to load crawl report file", e);
 			}
 		}
 
@@ -293,7 +293,7 @@ public abstract class CrawlerBase implements Crawler {
 				}
 			}
 			catch (IOException e) {
-				LOGGER.log(Level.SEVERE, "Unable to write scan report file", e);
+				logger.error("Unable to write crawl report file", e);
 			}
 		}
 	}

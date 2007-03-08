@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -16,8 +16,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.node.Literal;
@@ -40,15 +38,15 @@ import org.semanticdesktop.demork.database.Cell;
 import org.semanticdesktop.demork.database.Database;
 import org.semanticdesktop.demork.database.Row;
 import org.semanticdesktop.demork.database.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a crawler for the thunderbird address book.
- * 
- * @author grimnes $Id$
  */
 public class ThunderbirdCrawler extends AddressbookCrawler {
 
-    private static final Logger LOGGER = Logger.getLogger(ThunderbirdCrawler.class.getName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public final static String TYPE = "thunderbird";
 
@@ -202,7 +200,7 @@ public class ThunderbirdCrawler extends AddressbookCrawler {
                 addAddress(values, rdf, "Work", VCARD.addressWork);
             }
             catch (ModelException e) {
-                LOGGER.log(Level.WARNING, "ModelException while adding statements", e);
+                logger.error("ModelException while adding statements", e);
             }
         }
 

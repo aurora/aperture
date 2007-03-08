@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna.
+ * Copyright (c) 2006 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -13,8 +13,6 @@ import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.htmlparser.Parser;
 import org.htmlparser.Tag;
@@ -29,6 +27,8 @@ import org.htmlparser.util.ParserFeedback;
 import org.htmlparser.util.Translate;
 import org.htmlparser.visitors.NodeVisitor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A utility class for HTML parsing using the HTMLParser library. This class embeds all the logic necessary to
@@ -38,22 +38,22 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
  */
 public class HtmlParserUtil {
 
-	private static final Logger LOGGER = Logger.getLogger(HtmlParserUtil.class.getName());
-
 	private static final int BUFFER_SIZE = InputStreamSource.BUFFER_SIZE;
 
 	private static final ParserFeedback FEEDBACK_LOGGER = new ParserFeedback() {
 
+        private final Logger logger = LoggerFactory.getLogger(this.getClass());
+        
 		public void info(String message) {
-			LOGGER.log(Level.INFO, message);
+			logger.info(message);
 		}
 
 		public void warning(String message) {
-			LOGGER.log(Level.INFO, message);
+			logger.warn(message);
 		}
 
 		public void error(String message, ParserException e) {
-			LOGGER.log(Level.WARNING, message, e);
+			logger.error(message, e);
 		}
 	};
 

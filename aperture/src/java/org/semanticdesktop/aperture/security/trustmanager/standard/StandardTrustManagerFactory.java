@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -7,20 +7,20 @@
 package org.semanticdesktop.aperture.security.trustmanager.standard;
 
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.net.ssl.TrustManager;
 
 import org.semanticdesktop.aperture.security.trustdecider.TrustDecider;
 import org.semanticdesktop.aperture.security.trustmanager.TrustManagerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A StandardTrustManagerFactory hands out StandardTrustManager instances.
  */
 public class StandardTrustManagerFactory implements TrustManagerFactory {
 
-    private static final Logger LOGGER = Logger.getLogger(StandardTrustManagerFactory.class.getName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private StandardTrustManager trustManager;
 
@@ -65,7 +65,7 @@ public class StandardTrustManagerFactory implements TrustManagerFactory {
                     trustManager.setTrustDecider(trustDecider);
                 }
                 catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Exception while creating trust manager", e);
+                    logger.error("Exception while creating trust manager", e);
                 }
             }
 

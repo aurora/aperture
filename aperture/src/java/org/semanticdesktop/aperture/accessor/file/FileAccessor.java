@@ -14,8 +14,6 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
@@ -31,6 +29,8 @@ import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A DataAccessor implementation for the file scheme.
@@ -44,7 +44,7 @@ public class FileAccessor implements DataAccessor {
 
 	public static final String FILE_KEY = "file";
 
-	private static final Logger LOGGER = Logger.getLogger(FileAccessor.class.getName());
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * Return a DataObject for the specified url. If the specified Map contains a "file" key with a File
@@ -86,7 +86,7 @@ public class FileAccessor implements DataAccessor {
 		boolean isFolder = file.isDirectory();
 		if (!isFile && !isFolder) {
 			// we can still handle this by using a plain DataObjectBase but log it anyway
-			LOGGER.warning("not a file nor a folder: " + file);
+			logger.warn("not a file nor a folder: " + file);
 		}
 
 		// Check whether the file has been modified, if required. Note: this assumes that a folder gets a
@@ -109,7 +109,7 @@ public class FileAccessor implements DataAccessor {
 					}
 				}
 				catch (NumberFormatException e) {
-					LOGGER.log(Level.WARNING, "illegal long: " + value, e);
+					logger.error("illegal long: " + value, e);
 				}
 			}
 

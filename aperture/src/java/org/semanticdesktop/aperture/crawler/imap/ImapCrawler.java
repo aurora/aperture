@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.mail.FetchProfile;
 import javax.mail.Flags;
@@ -71,6 +69,8 @@ import org.semanticdesktop.aperture.security.trustmanager.standard.StandardTrust
 import org.semanticdesktop.aperture.util.HttpClientUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.mail.imap.IMAPFolder;
 
@@ -79,1167 +79,1171 @@ import com.sun.mail.imap.IMAPFolder;
  */
 public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
-	private static final Logger LOGGER = Logger.getLogger(ImapCrawler.class.getName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
-	private static final String ACCESSED_KEY = "accessed";
+    private static final String ACCESSED_KEY = "accessed";
 
-	private static final String NEXT_UID_KEY = "nextuid";
+    private static final String NEXT_UID_KEY = "nextuid";
 
-	private static final String SIZE_KEY = "size";
+    private static final String SIZE_KEY = "size";
 
-	private static final String SUBFOLDERS_KEY = "subfolders";
+    private static final String SUBFOLDERS_KEY = "subfolders";
 
-	// The source whose properties we're currently using. A separate DataSource is necessary as the
-	// DataAccessor implementation may be passed a different DataSource.
-	private DataSource configuredDataSource;
+    // The source whose properties we're currently using. A separate DataSource is necessary as the
+    // DataAccessor implementation may be passed a different DataSource.
+    private DataSource configuredDataSource;
 
-	// A Property instance holding *extra* properties to use when a Session is initiated.
-	// This can be used in apps running on Java < 5.0 to instruct to use a different SocketFactory,
-	// when you don't want to communicate this via the system properties
-	private Properties sessionProperties;
+    // A Property instance holding *extra* properties to use when a Session is initiated.
+    // This can be used in apps running on Java < 5.0 to instruct to use a different SocketFactory,
+    // when you don't want to communicate this via the system properties
+    private Properties sessionProperties;
 
-	private String hostName;
+    private String hostName;
 
-	private int port;
-	
-	private String userName;
+    private int port;
 
-	private String password;
+    private String userName;
 
-	private String connectionType;
+    private String password;
 
-	private boolean ignoreSSLCertificates = false;
+    private String connectionType;
 
-	private boolean useSSLCertificateFile = false;
+    private boolean ignoreSSLCertificates = false;
 
-	private String SSLCertificateFile;
+    private boolean useSSLCertificateFile = false;
 
-	private String SSLCertificatePassword;
+    private String SSLCertificateFile;
 
-	private ArrayList baseFolders = new ArrayList();
+    private String SSLCertificatePassword;
 
-	private long maximumByteSize;
+    private ArrayList baseFolders = new ArrayList();
 
-	private Store store;
-
-	private String cachedMessageUrl;
-
-	private Map cachedDataObjectsMap = new HashMap();
-
-	private int maxDepth;
-
-	private boolean includeInbox;
-
-	public void setSessionProperties(Properties sessionProperties) {
-		this.sessionProperties = sessionProperties;
-	}
-
-	public Properties getSessionProperties() {
-		return sessionProperties;
-	}
-
-	/* ----------------------------- Crawler implementation ----------------------------- */
-
-	protected ExitCode crawlObjects() {
-		// determine host name, user name, etc.
-		retrieveConfigurationData(getDataSource());
-
-		// make sure we have a connection to the mail store
-		try {
-			ensureConnectedStore();
-		}
-		catch (MessagingException e) {
-			LOGGER.log(Level.WARNING, "Unable to connect to IMAP mail store", e);
-			closeConnection();
-			return ExitCode.FATAL_ERROR;
-		}
-
-		// crawl the folder contents
-		boolean fatalError = false;
-
-		try {
-			// crawl all specified base folders
-			int nrFolders = baseFolders.size();
-			if (nrFolders == 0) {
-				crawlFolder(store.getDefaultFolder(), 0);
-			}
-			else {
-				for (int i = 0; i < nrFolders; i++) {
-					String baseFolderName = (String) baseFolders.get(i);
-					Folder baseFolder = store.getFolder(baseFolderName);
-					crawlFolder(baseFolder, 0);
-				}
-			}
-
-			// The inbox is a magic folder - include it if config option set.
-			if (includeInbox) {
-				crawlFolder(store.getFolder("INBOX"), 0);
-			}
-		}
-		catch (MessagingException e) {
-			LOGGER.log(Level.WARNING, "Exception while crawling. ", e);
-			fatalError = true;
-		}
-
-		// terminate the connection
-		closeConnection();
-
-		// determine the correct exit code
-		if (fatalError) {
-			return ExitCode.FATAL_ERROR;
-		}
-		else if (isStopRequested()) {
-			return ExitCode.STOP_REQUESTED;
-		}
-		else {
-			return ExitCode.COMPLETED;
-		}
-	}
-
-	/**
-	 * Prepare for accessing the specified DataSource by fetching all properties from it that are required to
-	 * connect to the mail box.
-	 */
-	private void retrieveConfigurationData(DataSource dataSource) {
-		// see if we have already configured for this source
-		if (dataSource == configuredDataSource) {
-			return;
-		}
-
-		// retrieve the DataSource's configuration object
-		configuredDataSource = dataSource;
-		RDFContainer config = dataSource.getConfiguration();
-
-		// fetch some trivial settings
-		hostName = ConfigurationUtil.getHostname(config);
-		userName = ConfigurationUtil.getUsername(config);
-		password = ConfigurationUtil.getPassword(config);
-
-		port = -1;
-		Integer configuredPort = ConfigurationUtil.getPort(config);
-		if (configuredPort != null) {
-			port = configuredPort.intValue();
-		}
-		
-		baseFolders.clear();
-		baseFolders.addAll(ConfigurationUtil.getBasepaths(config));
-
-		Boolean includeInboxB = config.getBoolean(DATASOURCE.includeInbox);
-		if (includeInboxB == null) {
-			includeInbox = false;
-		}
-		else {
-			includeInbox = includeInboxB.booleanValue();
-		}
-
-		Integer maxDepthI = ConfigurationUtil.getMaximumDepth(config);
-
-		if (maxDepthI == null) {
-			maxDepth = -1;
-		}
-		else {
-			maxDepth = maxDepthI.intValue();
-		}
-
-		// determine the connection type
-		String securityType = ConfigurationUtil.getConnectionSecurity(config);
-		if (securityType == null || DATASOURCE.PLAIN.toString().equals(securityType)) {
-			connectionType = "imap";
-		}
-		else if (DATASOURCE.SSL.toString().equals(securityType)
-				|| DATASOURCE.SSL_NO_CERT.toString().equals(securityType)) {
-			connectionType = "imaps";
-		}
-		else {
-			throw new IllegalArgumentException("Illegal connection security type: " + securityType);
-		}
-
-		if (DATASOURCE.SSL_NO_CERT.toString().equals(securityType)) {
-			ignoreSSLCertificates = true;
-		}
-
-		if (config.getString(DATASOURCE.sslFileName) != null) {
-			useSSLCertificateFile = true;
-			SSLCertificateFile = config.getString(DATASOURCE.sslFileName);
-			SSLCertificatePassword = config.getString(DATASOURCE.sslFilePassword);
-		}
-
-		// determine the maximum byte size
-		Long maximumSize = ConfigurationUtil.getMaximumByteSize(config);
-		if (maximumSize == null) {
-			maximumByteSize = Long.MAX_VALUE;
-		}
-		else {
-			maximumByteSize = maximumSize.longValue();
-		}
-
-		// make sure we get rid of any store that may relate to an older configuration
-		if (store != null) {
-			closeConnection();
-			store = null;
-		}
-	}
-
-	private void ensureConnectedStore() throws MessagingException {
-		// if there is no store yet, create one now
-		if (store == null) {
-			// get all system properties
-			Properties properties = System.getProperties();
-
-			if (ignoreSSLCertificates) {
-				properties.setProperty("mail.imaps.socketFactory.class", SimpleSocketFactory.class.getName());
-				properties.setProperty("mail.imaps.socketFactory.fallback", "false");
-			}
-
-			if (useSSLCertificateFile) {
-				properties.setProperty("javax.net.ssl.trustStore", SSLCertificateFile);
-				properties.setProperty("javax.net.ssl.trustStorePassword", SSLCertificatePassword);
-			}
-
-			// copy all extra registered session properties
-			if (sessionProperties != null) {
-				Enumeration keys = sessionProperties.elements();
-				while (keys.hasMoreElements()) {
-					String key = (String) keys.nextElement();
-					String value = sessionProperties.getProperty(key);
-					properties.setProperty(key, value);
-				}
-			}
-
-			Session session = Session.getDefaultInstance(properties);
-			store = session.getStore(connectionType);
-		}
-
-		// make sure it is connected
-		if (!store.isConnected()) {
-			store.connect(hostName, port, userName, password);
-		}
-	}
-
-	/**
-	 * Closes any connections this ImapCrawler may have to an IMAP server. Afterwards, the InputStream of any
-	 * returned FileDataObjects may no longer be accessible. Invoking this method when no connections are open
-	 * has no effect.
-	 */
-	public void closeConnection() {
-		if (store != null && store.isConnected()) {
-			try {
-				store.close();
-			}
-			catch (MessagingException e) {
-				LOGGER.log(Level.WARNING, "Unable to close connection", e);
-			}
-		}
-	}
-
-	private void crawlFolder(Folder folder, int depth) throws MessagingException {
-		if (isStopRequested()) {
-			return;
-		}
-		
-		// skip if there is a problem
-		if (folder == null) {
-			LOGGER.info("passed null folder, ignoring");
-			return;
-		}
-		else if (!folder.exists()) {
-			LOGGER.info("folder does not exist: \"" + folder.getFullName() + "\"");
-			return;
-		}
-
-		// crawl the folder and its messages, if any
-		LOGGER.info("crawling folder \"" + folder.getFullName() + "\"");
-		crawlSingleFolder(folder);
-		
-		// crawl its subfolders, if any and when allowed
-		if (holdsFolders(folder)) {
-			LOGGER.info("crawling subfolders in folder \"" + folder.getFullName() + "\"");
-			crawlSubFolders(folder, depth);
-		}
-
-		if (folder.isOpen()) {
-			// close the folder without deleting expunged messages
-			folder.close(false);
-		}
-	}
-
-	/**
-	 * Does this folder hold any subfolders?
-	 */
-	public static boolean holdsFolders(Folder folder) throws MessagingException {
-		return (folder.getType() & Folder.HOLDS_FOLDERS) == Folder.HOLDS_FOLDERS;
-	}
-
-	/**
-	 * Does this folder hold any messages?
-	 */
-	public static boolean holdsMessages(Folder folder) throws MessagingException {
-		return (folder.getType() & Folder.HOLDS_MESSAGES) == Folder.HOLDS_MESSAGES;
-	}
-
-	private void crawlSingleFolder(Folder folder) throws MessagingException {
-		// open the folder in read-only mode
-		if (holdsMessages(folder) && !folder.isOpen()) {
-			folder.open(Folder.READ_ONLY);
-		}
-
-		// report the folder's metadata
-		String folderUrl = getURIPrefix(folder) + ";TYPE=LIST";
-
-		if (!inDomain(folderUrl)) {
-			// This gives us different semantics to domainboundaries than the filecrawler,
-			// which will still process sub-folder/files when something is not in the domain,
-			// however, i think that's wrong :) - (says Gunnar)
-			return;
-		}
-
-		handler.accessingObject(this, folderUrl);
-		
-		// see if this object has been encountered before (we must do this before applying the accessor!)
-		boolean knownObject = accessData == null ? false : accessData.isKnownId(folderUrl);
-		deprecatedUrls.remove(folderUrl);
-
-		RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, folderUrl);
-
-		try {
-			FolderDataObject folderObject = getObject(folder, folderUrl, source, accessData, containerFactory);
-			
-			if (isStopRequested()) {
-				return;
-			}
-			
-			if (folderObject == null) {
-				// report this folder and all its messages as unchanged
-				reportNotModified(folderUrl);
-			}
-			else {
-				// report this new or changed folder
-				if (knownObject) {
-					handler.objectChanged(this, folderObject);
-					crawlReport.increaseChangedCount();
-				}
-				else {
-					handler.objectNew(this, folderObject);
-					crawlReport.increaseNewCount();
-				}
-
-				// (re-)crawl its messages
-				if (holdsMessages(folder)) {
-					crawlMessages((IMAPFolder) folder, folderObject.getID());
-				}
-			}
-		}
-		catch (MessagingException e) {
-			// just log this exception and continue, perhaps the messages can still be accessed
-			LOGGER.log(Level.WARNING, "Exception while crawling folder " + folderUrl, e);
-		}
-	}
-
-	private void crawlSubFolders(Folder folder, int depth) {
-		if (depth + 1 > maxDepth && maxDepth >= 0) {
-			LOGGER.info("Reached crawling depth limit (" + maxDepth + ") - stopping.");
-			return;
-		}
-
-		try {
-			Folder[] subFolders = folder.list();
-			LOGGER.fine("Crawling " + subFolders.length + " sub-folders.");
-			for (int i = 0; !isStopRequested() && i < subFolders.length; i++) {
-				try {
-					crawlFolder(subFolders[i], depth + 1);
-				}
-				catch (MessagingException e) {
-					LOGGER.info("Error crawling subfolder \"" + subFolders[i].getFullName() + "\"");
-					// but continue..
-				}
-			}
-		}
-		catch (MessagingException e) {
-			LOGGER.log(Level.INFO, "Exception while crawling subFolders of \"" + folder.getFullName() + "\"",
-				e);
-		}
-	}
-
-	private String getURIPrefix(Folder folder) throws MessagingException {
-		StringBuilder buffer = new StringBuilder(100);
-		URLName url = store.getURLName();
-
-		// start with protocol
-		// don't use url.getProtocol or your urls may start with "imaps://"
-		buffer.append("imap://");
-
-		// append host and username
-		String username = url.getUsername();
-		if (username != null && !username.equals("")) {
-			username = HttpClientUtil.formUrlEncode(username);
-			buffer.append(username);
-			buffer.append('@');
-		}
-		buffer.append(url.getHost());
-
-		// append path
-		buffer.append('/');
-		buffer.append(encodeFolderName(folder.getFullName()));
-
-		return buffer.toString();
-	}
-
-	public static String getFolderName(String url) {
-		if (!url.startsWith("imap://")) {
-			return null;
-		}
-
-		int firstIndex = url.indexOf('/', 7);
-		int lastIndex = url.endsWith(";TYPE=LIST") ? url.lastIndexOf(';') : url.lastIndexOf('/');
-
-		if (firstIndex >= 0 && lastIndex > firstIndex) {
-			String substring = url.substring(firstIndex + 1, lastIndex);
-			try {
-				return URLDecoder.decode(substring, "UTF-8");
-			}
-			catch (UnsupportedEncodingException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		else {
-			return null;
-		}
-	}
-
-	// does the same as HttpClientUtil.formUrlEncode (i.e. RFC 1738) except for encoding the slash,
-	// which should not be encoded according to RFC 2192.
-	public static String encodeFolderName(String string) {
-		int length = string.length();
-		StringBuilder buffer = new StringBuilder(length + 10);
-
-		for (int i = 0; i < length; i++) {
-			char c = string.charAt(i);
-
-			// Only characters in the range 48 - 57 (numbers), 65 - 90 (upper case letters), 97 - 122
-			// (lower case letters) can be left unencoded. The rest needs to be escaped.
-
-			if (c == ' ') {
-				// replace all spaces with a '+'
-				buffer.append('+');
-			}
-			else {
-				int cInt = (int) c;
-				if (cInt >= 48 && cInt <= 57 || cInt >= 65 && cInt <= 90 || cInt >= 97 && cInt <= 122
-						|| cInt == 46) {
-					// alphanumeric character or slash
-					buffer.append(c);
-				}
-				else {
-					// escape all non-alphanumerics
-					buffer.append('%');
-					String hexVal = Integer.toHexString((int) c);
-
-					// ensure use of two characters
-					if (hexVal.length() == 1) {
-						buffer.append('0');
-					}
-
-					buffer.append(hexVal);
-				}
-			}
-		}
-
-		return buffer.toString();
-	}
-
-	private void crawlMessages(IMAPFolder folder, URI folderUri) throws MessagingException {
-		if (isStopRequested()) {
-			return;
-		}
-		
-		LOGGER.fine("Crawling messages in folder " + folder.getFullName());
-
-		// determine the set of messages we haven't seen yet, to prevent prefetching the content info for old
-		// messages: especially handy when only a few mails were added to a large folder.
-		Message[] messages = folder.getMessages();
-		String messagePrefix = getURIPrefix(folder) + "/";
-
-		if (accessData != null) {
-			ArrayList filteredMessages = new ArrayList(messages.length);
-
-			// when messages disappear from the array, we must make sure they are removed from the list of
-			// child IDs of the folder
-			String folderUriString = folderUri.toString();
-			Set deprecatedChildren = accessData.getReferredIDs(folderUriString);
-			if (deprecatedChildren == null) {
-				deprecatedChildren = Collections.EMPTY_SET;
-			}
-			else {
-				deprecatedChildren = new HashSet(deprecatedChildren);
-			}
-
-			// loop over all messages
-			for (int i = 0; i < messages.length && !isStopRequested(); i++) {
-				MimeMessage message = (MimeMessage) messages[i];
-				long messageID = folder.getUID(message);
-
-				// determine the uri
-				String uri = messagePrefix + messageID;
-
-				// remove this URI from the set of deprecated children
-				deprecatedChildren.remove(uri);
-
-				// see if we've seen this message before
-				if (accessData.get(uri, ACCESSED_KEY) == null) {
-					// we haven't: register it for processing if it's not deleted/marked for deletion, etc.
-					if (isAcceptable(message)) {
-						filteredMessages.add(message);
-					}
-				}
-				else {
-					// we've seen this before: if it's not a removed message, it must be an unmodified message
-					if (isRemoved(message)) {
-						// this message models a deleted or expunged mail: make sure it does no longer appear
-						// as a child data object of the folder
-						accessData.removeReferredID(folderUriString, uri);
-					}
-					else {
-						reportNotModified(messagePrefix + messageID);
-					}
-				}
-			}
-
-			// create the subset of messages that we will process
-			messages = (Message[]) filteredMessages.toArray(new Message[filteredMessages.size()]);
-
-			// remove all child IDs that we did not encounter in the above loop
-			Iterator iterator = deprecatedChildren.iterator();
-			while (iterator.hasNext()) {
-				String childUri = (String) iterator.next();
-				accessData.removeReferredID(folderUriString, childUri);
-			}
-		}
-
-		if (isStopRequested()) {
-			return;
-		}
-		
-		// pre-fetch content info for the selected messages (assumption: all other info has already been
-		// pre-fetched when determining the folder's metadata, no need to prefetch it again)
-		FetchProfile profile = new FetchProfile();
-		profile.add(FetchProfile.Item.CONTENT_INFO);
-		folder.fetch(messages, profile);
-
-		// crawl every selected message
-		for (int i = 0; i < messages.length && !isStopRequested(); i++) {
-			MimeMessage message = (MimeMessage) messages[i];
-			long messageID = folder.getUID(message);
-			String uri = messagePrefix + messageID;
-
-			try {
-				if (inDomain(uri)) {
-					crawlMessage(message, uri, folderUri);
-				}
-			}
-			catch (Exception e) {
-				// just log these exceptions; as they only affect a single message, they are
-				// not considered fatal exceptions
-				LOGGER.log(Level.WARNING, "Exception while crawling message " + uri, e);
-			}
-		}
-	}
-
-	private void crawlMessage(MimeMessage message, String uri, URI folderUri) throws MessagingException {
-		// see if we should skip this message for some reason
-		if (!isAcceptable(message)) {
-			return;
-		}
-
-		// build a queue of urls to access
-		LinkedList queue = new LinkedList();
-		queue.add(uri);
-
-		// process the entire queue
-		while (!queue.isEmpty()) {
-			// fetch the first element in the queue
-			String queuedUri = (String) queue.removeFirst();
-			handler.accessingObject(this, queuedUri);
-
-			// get this DataObject
-			RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, queuedUri);
-			try {
-				DataObject object = getObject(message, queuedUri, folderUri, source, accessData,
-					containerFactory);
-
-				if (object == null) {
-					// report this object and all its children as unmodified
-					reportNotModified(queuedUri);
-				}
-				else {
-					
-					// inserted by Antoni on 14.12.2006
-					queueChildren(object,queue);
-					
-					// report this object as a new object (assumption: objects are always new, never
-					// changed, since mails are immutable)
-					crawlReport.increaseNewCount();
-					handler.objectNew(this, object);
-
-					// register parent child relationship (necessary in order to be able to report
-					// unmodified or deleted attachments)
-					registerParent(object);
-
-					// queue all its children MOVED upwards by Antoni Mylka on 14.12.2006
-					// You cannot access the data object after passing it to a handler
-					// the handler may dispose it...
-					// queueChildren(object, queue);
-				}
-			}
-			catch (MessagingException e) {
-				// just log and continue with the next url
-				LOGGER.log(Level.WARNING, "MessagingException while processing " + queuedUri, e);
-			}
-			catch (UrlNotFoundException e) {
-				// this is most likely an internal error in the DataObjectFactory or DataAccessor, so log
-				// it differently
-				LOGGER.log(Level.SEVERE, "Internal error while processing " + queuedUri, e);
-			}
-			catch (IOException e) {
-				// just log and continue with the next url
-				LOGGER.log(Level.WARNING, "IOException while processing " + queuedUri, e);
-			}
-		}
-	}
-
-	private boolean isRemoved(Message message) throws MessagingException {
-		return message.isExpunged() || message.isSet(Flags.Flag.DELETED);
-	}
-
-	private boolean isTooLarge(Message message) throws MessagingException {
-		return message.getSize() > maximumByteSize;
-	}
-
-	private boolean isAcceptable(Message message) throws MessagingException {
-		return !(isRemoved(message) || isTooLarge(message));
-	}
-
-	private int getMessageCount(Message[] messages) throws MessagingException {
-		int result = 0;
-
-		for (int i = 0; i < messages.length; i++) {
-			Message message = messages[i];
-			if (!isRemoved(message)) {
-				result++;
-			}
-		}
-
-		return result;
-	}
-
-	private void reportNotModified(String uri) {
-		// report this object as unmodified
-		crawlReport.increaseUnchangedCount();
-		handler.objectNotModified(this, uri);
-		deprecatedUrls.remove(uri);
-
-		// repeat recursively on all registered children
-		if (accessData == null) {
-			LOGGER.log(Level.SEVERE, "Internal error: reporting unmodified uri while no AccessData is set: "
-					+ uri);
-		}
-		else {
-			Set children = accessData.getReferredIDs(uri);
-			if (children != null) {
-				Iterator iterator = children.iterator();
-				while (iterator.hasNext()) {
-					reportNotModified((String) iterator.next());
-				}
-			}
-		}
-	}
-
-	private URI getParent(DataObject object) {
-		// query for all parents
-		Collection parentIDs = object.getMetadata().getAll(DATA.partOf);
-
-		// determine all unique parent URIs (the same partOf statement may be returned more than once due
-		// to the use of context in the underlying model)
-		if (!(parentIDs instanceof Set)) {
-			parentIDs = new HashSet(parentIDs);
-		}
-
-		// return the parent if there is only one
-		if (parentIDs.isEmpty()) {
-			return null;
-		}
-		else if (parentIDs.size() > 1) {
-			LOGGER.warning("Multiple parents for " + object.getID() + ", ignoring all");
-			return null;
-		}
-		else {
-			Node parent = (Node) parentIDs.iterator().next();
-			if (parent instanceof URI) {
-				return (URI) parent;
-			}
-			else {
-				LOGGER.severe("Internal error: encountered unexpected parent type: " + parent.getClass());
-				return null;
-			}
-		}
-	}
-
-	private void registerParent(DataObject object) {
-		if (accessData == null) {
-			return;
-		}
-
-		URI parent = getParent(object);
-		if (parent != null) {
-			String parentID = parent.toString();
-			String childID = object.getID().toString();
-
-			if (accessData.isKnownId(parentID)) {
-				if (parentID.equals(childID)) {
-					LOGGER.warning("cyclical " + DATA.partOf + " property for " + parentID + ", ignoring");
-				}
-				else {
-					accessData.putReferredID(parentID, childID);
-				}
-			}
-			else {
-				LOGGER.severe("Internal error: encountered unknown parent: " + parentID + ", child = "
-						+ childID);
-			}
-		}
-	}
-
-	private void queueChildren(DataObject object, LinkedList queue) {
-		Model metadata = object.getMetadata().getModel();
-
-		// query for all child URIs
-		ClosableIterator<? extends Statement> statements = null; 
-		try {
-			ClosableIterable<? extends Statement> iterable = metadata.findStatements(Variable.ANY, DATA.partOf, object.getID());
-			statements = iterable.iterator();
-			// queue these URIs
-			while (statements.hasNext()) {
-				Statement statement = (Statement) statements.next();
-				Resource resource = statement.getSubject();
-
-				if (resource instanceof URI) {
-					String id = resource.toString();
-					if (!queue.contains(id)) {
-						queue.add(id);
-					}
-				}
-				else {
-					LOGGER.severe("Internal error: unknown child value type: " + resource.getClass());
-				}
-			}
-		} catch (ModelException me) {
-			LOGGER.log(Level.SEVERE,"Couldn't queue children",me);
-		}
-		finally {
-			if (statements != null) {
-				statements.close();
-			}
-		}
-	}
-
-	/* ----------------------------- DataAccessor implementation ----------------------------- */
-
-	public DataObject getDataObject(String url, DataSource source, Map params,
-			RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException {
-		return getDataObjectIfModified(url, source, null, params, containerFactory);
-	}
-
-	public DataObject getDataObjectIfModified(String url, DataSource source, AccessData accessData,
-			Map params, RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException {
-		// reconfigure for the specified DataSource if necessary
-		retrieveConfigurationData(source);
-
-		try {
-			// make sure we have a connection to the mail store
-			ensureConnectedStore();
-
-			// retrieve the specified folder
-			String folderName = getFolderName(url);
-
-			Folder folder;
-			if (folderName == null || folderName.equals("")) {
-				folder = store.getDefaultFolder();
-			}
-			else {
-				folder = store.getFolder(folderName);
-			}
-
-			if (!folder.exists()) {
-				throw new UrlNotFoundException(url, "unknown folder");
-			}
-
-			if (!folder.isOpen() && holdsMessages(folder)) {
-				folder.open(Folder.READ_ONLY);
-			}
-
-			// see if we need to process a folder or a message
-			int typeIndex = url.indexOf(";TYPE=");
-			if (typeIndex < 0) {
-				// determine the message UID: cutoff the ID part
-				int separatorIndex = url.lastIndexOf('/');
-				if (separatorIndex < 0 || separatorIndex >= url.length() - 1) {
-					throw new IllegalArgumentException("unable to get message UID from " + url);
-				}
-				String messageNumberString = url.substring(separatorIndex + 1);
-
-				// remove the fragment identifier
-				separatorIndex = messageNumberString.indexOf('#');
-				if (separatorIndex > 0 && separatorIndex < messageNumberString.length() - 1) {
-					messageNumberString = messageNumberString.substring(0, separatorIndex);
-				}
-
-				// parse the remaining number string
-				long messageUID;
-				try {
-					messageUID = Long.parseLong(messageNumberString);
-				}
-				catch (NumberFormatException e) {
-					throw new IllegalArgumentException("illegal message UID: " + messageNumberString);
-				}
-
-				// retrieve the message with this UID
-				MimeMessage message = (MimeMessage) ((UIDFolder) folder).getMessageByUID(messageUID);
-
-				// create a DataObject for the requested message or message part
-				return getObject(message, url, getURI(folder), source, accessData, containerFactory);
-			}
-			else {
-				// create a DataObject for this Folder
-				return getObject(folder, url, source, accessData, containerFactory);
-			}
-		}
-		catch (MessagingException e) {
-			IOException ioe = new IOException();
-			ioe.initCause(e);
-			throw ioe;
-		}
-	}
-
-	private DataObject getObject(MimeMessage message, String url, URI folderUri, DataSource source,
-			AccessData accessData, RDFContainerFactory containerFactory) throws MessagingException,
-			IOException {
-		// See if this url has been accessed before so that we can stop immediately. Note
-		// that no check on message date is done as messages are immutable. Therefore we only have to
-		// check whether the AccessData knows this ID.
-		if (accessData != null && accessData.get(url, ACCESSED_KEY) != null) {
-			return null;
-		}
-
-		// determine the root message URL, i.e. remove the fragment identifier
-		String messageUrl = url;
-		int index = messageUrl.indexOf('#');
-		if (index == 0) {
-			messageUrl = "";
-		}
-		else if (index > 0) {
-			messageUrl = messageUrl.substring(0, index);
-		}
-
-		// see if we have cached the DataObjects obtained from this message
-		if (!messageUrl.equals(cachedMessageUrl)) {
-			// we haven't: we're going to interpret this message and create all DataObjects at once
-
-			// clear the cache
-			cachedMessageUrl = null;
-			cachedDataObjectsMap.clear();
-
-			// create DataObjects for the mail and its attachments
-			DataObjectFactory factory = new DataObjectFactory();
-			List objects = factory
-					.createDataObjects(message, messageUrl, folderUri, source, containerFactory);
-
-			// register the created DataObjects in the cache map
-			Iterator iterator = objects.iterator();
-			while (iterator.hasNext()) {
-				DataObject object = (DataObject) iterator.next();
-				cachedDataObjectsMap.put(object.getID().toString(), object);
-			}
-
-			// register the message url that these objects came from
-			cachedMessageUrl = messageUrl;
-		}
-
-		// determine the resulting DataObject
-		DataObject result = (DataObject) cachedDataObjectsMap.get(url);
-		if (result == null) {
-			throw new UrlNotFoundException(url);
-		}
-
-		// register the access of this url
-		if (accessData != null) {
-			accessData.put(url, ACCESSED_KEY, "");
-		}
-
-		return result;
-	}
-
-	private FolderDataObject getObject(Folder folder, String url, DataSource source, AccessData accessData,
-			RDFContainerFactory containerFactory) throws MessagingException {
-		// See if this url has been accessed before and hasn't changed in the mean time.
-		// A check for the next UID guarantees that no mails have been added (see RFC 3501).
-		// If this is still the same, a check on the number of messages guarantees that no mails have
-		// been removed either. Finally, we check that it has the same set of subfolders
-		IMAPFolder imapFolder = (IMAPFolder) folder;
-		Message[] messages = null;
-
-		// check if the folder has changed
-		if (accessData != null) {
-			// the results default to 'true'; unless we can find complete evidence that the folder has not
-			// changed, we will always access the folder
-			boolean messagesChanged = true;
-			boolean foldersChanged = true;
-
-			if (holdsMessages(folder)) {
-				String nextUIDString = accessData.get(url, NEXT_UID_KEY);
-				String sizeString = accessData.get(url, SIZE_KEY);
-
-				// note: this is -1 for servers that don't support retrieval of a next UID, meaning that the
-				// folder will always be reported as changed when it should have been unmodified
-				long nextUID = imapFolder.getUIDNext();
-
-				if (nextUIDString != null && sizeString != null && nextUID != -1L) {
-					try {
-						// parse stored information
-						long previousNextUID = Long.parseLong(nextUIDString);
-						long previousSize = Integer.parseInt(sizeString);
-
-						// determine the new folder size, excluding all deleted/deletion-marked messages
-						messages = folder.getMessages();
-						FetchProfile profile = new FetchProfile();
-						profile.add(FetchProfile.Item.FLAGS); // needed for DELETED flag
-						folder.fetch(messages, profile);
-						int messageCount = getMessageCount(messages);
-
-						// compare the folder status with what we've stored in the AccessData
-						if (previousNextUID == nextUID && previousSize == messageCount) {
-							messagesChanged = false;
-						}
-					}
-					catch (NumberFormatException e) {
-						LOGGER.log(Level.WARNING,
-							"exception while parsing access data, ingoring access data", e);
-					}
-				}
-			}
-
-			if (holdsFolders(folder)) {
-				String registeredSubFolders = accessData.get(url, SUBFOLDERS_KEY);
-
-				if (registeredSubFolders != null) {
-					String subfolders = getSubFoldersString(folder);
-					if (registeredSubFolders.equals(subfolders)) {
-						foldersChanged = false;
-					}
-				}
-			}
-
-			if (!messagesChanged && !foldersChanged) {
-				// the folder contents have not changed, we can return immediately
-				LOGGER.fine("Folder \"" + folder.getFullName() + "\" has not changed.");
-				return null;
-			}
-
-			LOGGER.fine("Folder \"" + folder.getFullName() + "\" is new or has changes.");
-		}
-
-		// register the folder's name
-		URI folderURI = URIImpl.createURIWithoutChecking(url);
-		RDFContainer metadata = containerFactory.getRDFContainer(folderURI);
-		metadata.add(DATA.name, folder.getName());
-
-		// register the folder's parent
-		Folder parent = folder.getParent();
-		if (parent != null) {
-			metadata.add(DATA.partOf, getURI(parent));
-		}
-
-		// add message URIs as children
-		String uriPrefix = getURIPrefix(folder) + "/";
-
-		if (holdsMessages(folder)) {
-			if (messages == null) {
-				messages = folder.getMessages();
-			}
-
-			// for faster access, prefetch all message UIDs and flags
-			FetchProfile profile = new FetchProfile();
-			profile.add(UIDFolder.FetchProfileItem.UID); // needed for message.getUID
-			profile.add(FetchProfile.Item.FLAGS); // needed for isAcceptable (DELETED)
-			profile.add(FetchProfile.Item.ENVELOPE); // needed for isAcceptable (size check)
-			folder.fetch(messages, profile);
-
-			for (int i = 0; i < messages.length; i++) {
-				MimeMessage message = (MimeMessage) messages[i];
-
-				if (isAcceptable(message)) {
-					long messageID = imapFolder.getUID(message);
+    private long maximumByteSize;
+
+    private Store store;
+
+    private String cachedMessageUrl;
+
+    private Map cachedDataObjectsMap = new HashMap();
+
+    private int maxDepth;
+
+    private boolean includeInbox;
+
+    public void setSessionProperties(Properties sessionProperties) {
+        this.sessionProperties = sessionProperties;
+    }
+
+    public Properties getSessionProperties() {
+        return sessionProperties;
+    }
+
+    /* ----------------------------- Crawler implementation ----------------------------- */
+
+    protected ExitCode crawlObjects() {
+        // determine host name, user name, etc.
+        retrieveConfigurationData(getDataSource());
+
+        // make sure we have a connection to the mail store
+        try {
+            ensureConnectedStore();
+        }
+        catch (MessagingException e) {
+            logger.warn("Unable to connect to IMAP mail store", e);
+            closeConnection();
+            return ExitCode.FATAL_ERROR;
+        }
+
+        // crawl the folder contents
+        boolean fatalError = false;
+
+        try {
+            // crawl all specified base folders
+            int nrFolders = baseFolders.size();
+            if (nrFolders == 0) {
+                crawlFolder(store.getDefaultFolder(), 0);
+            }
+            else {
+                for (int i = 0; i < nrFolders; i++) {
+                    String baseFolderName = (String) baseFolders.get(i);
+                    Folder baseFolder = store.getFolder(baseFolderName);
+                    crawlFolder(baseFolder, 0);
+                }
+            }
+
+            // The inbox is a magic folder - include it if config option set.
+            if (includeInbox) {
+                crawlFolder(store.getFolder("INBOX"), 0);
+            }
+        }
+        catch (MessagingException e) {
+            logger.warn("MessagingException while crawling", e);
+            fatalError = true;
+        }
+
+        // terminate the connection
+        closeConnection();
+
+        // determine the correct exit code
+        if (fatalError) {
+            return ExitCode.FATAL_ERROR;
+        }
+        else if (isStopRequested()) {
+            return ExitCode.STOP_REQUESTED;
+        }
+        else {
+            return ExitCode.COMPLETED;
+        }
+    }
+
+    /**
+     * Prepare for accessing the specified DataSource by fetching all properties from it that are required to
+     * connect to the mail box.
+     */
+    private void retrieveConfigurationData(DataSource dataSource) {
+        // see if we have already configured for this source
+        if (dataSource == configuredDataSource) {
+            return;
+        }
+
+        // retrieve the DataSource's configuration object
+        configuredDataSource = dataSource;
+        RDFContainer config = dataSource.getConfiguration();
+
+        // fetch some trivial settings
+        hostName = ConfigurationUtil.getHostname(config);
+        userName = ConfigurationUtil.getUsername(config);
+        password = ConfigurationUtil.getPassword(config);
+
+        port = -1;
+        Integer configuredPort = ConfigurationUtil.getPort(config);
+        if (configuredPort != null) {
+            port = configuredPort.intValue();
+        }
+
+        baseFolders.clear();
+        baseFolders.addAll(ConfigurationUtil.getBasepaths(config));
+
+        Boolean includeInboxB = config.getBoolean(DATASOURCE.includeInbox);
+        if (includeInboxB == null) {
+            includeInbox = false;
+        }
+        else {
+            includeInbox = includeInboxB.booleanValue();
+        }
+
+        Integer maxDepthI = ConfigurationUtil.getMaximumDepth(config);
+
+        if (maxDepthI == null) {
+            maxDepth = -1;
+        }
+        else {
+            maxDepth = maxDepthI.intValue();
+        }
+
+        // determine the connection type
+        String securityType = ConfigurationUtil.getConnectionSecurity(config);
+        if (securityType == null || DATASOURCE.PLAIN.toString().equals(securityType)) {
+            connectionType = "imap";
+        }
+        else if (DATASOURCE.SSL.toString().equals(securityType)
+                || DATASOURCE.SSL_NO_CERT.toString().equals(securityType)) {
+            connectionType = "imaps";
+        }
+        else {
+            throw new IllegalArgumentException("Illegal connection security type: " + securityType);
+        }
+
+        if (DATASOURCE.SSL_NO_CERT.toString().equals(securityType)) {
+            ignoreSSLCertificates = true;
+        }
+
+        if (config.getString(DATASOURCE.sslFileName) != null) {
+            useSSLCertificateFile = true;
+            SSLCertificateFile = config.getString(DATASOURCE.sslFileName);
+            SSLCertificatePassword = config.getString(DATASOURCE.sslFilePassword);
+        }
+
+        // determine the maximum byte size
+        Long maximumSize = ConfigurationUtil.getMaximumByteSize(config);
+        if (maximumSize == null) {
+            maximumByteSize = Long.MAX_VALUE;
+        }
+        else {
+            maximumByteSize = maximumSize.longValue();
+        }
+
+        // make sure we get rid of any store that may relate to an older configuration
+        if (store != null) {
+            closeConnection();
+            store = null;
+        }
+    }
+
+    private void ensureConnectedStore() throws MessagingException {
+        // if there is no store yet, create one now
+        if (store == null) {
+            // get all system properties
+            Properties properties = System.getProperties();
+
+            if (ignoreSSLCertificates) {
+                properties.setProperty("mail.imaps.socketFactory.class", SimpleSocketFactory.class.getName());
+                properties.setProperty("mail.imaps.socketFactory.fallback", "false");
+            }
+
+            if (useSSLCertificateFile) {
+                properties.setProperty("javax.net.ssl.trustStore", SSLCertificateFile);
+                properties.setProperty("javax.net.ssl.trustStorePassword", SSLCertificatePassword);
+            }
+
+            // copy all extra registered session properties
+            if (sessionProperties != null) {
+                Enumeration keys = sessionProperties.elements();
+                while (keys.hasMoreElements()) {
+                    String key = (String) keys.nextElement();
+                    String value = sessionProperties.getProperty(key);
+                    properties.setProperty(key, value);
+                }
+            }
+
+            Session session = Session.getDefaultInstance(properties);
+            store = session.getStore(connectionType);
+        }
+
+        // make sure it is connected
+        if (!store.isConnected()) {
+            store.connect(hostName, port, userName, password);
+        }
+    }
+
+    /**
+     * Closes any connections this ImapCrawler may have to an IMAP server. Afterwards, the InputStream of any
+     * returned FileDataObjects may no longer be accessible. Invoking this method when no connections are open
+     * has no effect.
+     */
+    public void closeConnection() {
+        if (store != null && store.isConnected()) {
+            try {
+                store.close();
+            }
+            catch (MessagingException e) {
+                logger.warn("Unable to close connection", e);
+            }
+        }
+    }
+
+    private void crawlFolder(Folder folder, int depth) throws MessagingException {
+        if (isStopRequested()) {
+            return;
+        }
+
+        // skip if there is a problem
+        if (folder == null) {
+            logger.info("passed null folder, ignoring");
+            return;
+        }
+        else if (!folder.exists()) {
+            logger.info("folder does not exist: \"" + folder.getFullName() + "\"");
+            return;
+        }
+
+        // crawl the folder and its messages, if any
+        logger.info("crawling folder \"" + folder.getFullName() + "\"");
+        crawlSingleFolder(folder);
+
+        // crawl its subfolders, if any and when allowed
+        if (holdsFolders(folder)) {
+            logger.info("crawling subfolders in folder \"" + folder.getFullName() + "\"");
+            crawlSubFolders(folder, depth);
+        }
+
+        if (folder.isOpen()) {
+            // close the folder without deleting expunged messages
+            folder.close(false);
+        }
+    }
+
+    /**
+     * Does this folder hold any subfolders?
+     */
+    public static boolean holdsFolders(Folder folder) throws MessagingException {
+        return (folder.getType() & Folder.HOLDS_FOLDERS) == Folder.HOLDS_FOLDERS;
+    }
+
+    /**
+     * Does this folder hold any messages?
+     */
+    public static boolean holdsMessages(Folder folder) throws MessagingException {
+        return (folder.getType() & Folder.HOLDS_MESSAGES) == Folder.HOLDS_MESSAGES;
+    }
+
+    private void crawlSingleFolder(Folder folder) throws MessagingException {
+        // open the folder in read-only mode
+        if (holdsMessages(folder) && !folder.isOpen()) {
+            folder.open(Folder.READ_ONLY);
+        }
+
+        // report the folder's metadata
+        String folderUrl = getURIPrefix(folder) + ";TYPE=LIST";
+
+        if (!inDomain(folderUrl)) {
+            // This gives us different semantics to domainboundaries than the filecrawler,
+            // which will still process sub-folder/files when something is not in the domain,
+            // however, i think that's wrong :) - (says Gunnar)
+            return;
+        }
+
+        handler.accessingObject(this, folderUrl);
+
+        // see if this object has been encountered before (we must do this before applying the accessor!)
+        boolean knownObject = accessData == null ? false : accessData.isKnownId(folderUrl);
+        deprecatedUrls.remove(folderUrl);
+
+        RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, folderUrl);
+
+        try {
+            FolderDataObject folderObject = getObject(folder, folderUrl, source, accessData, containerFactory);
+
+            if (isStopRequested()) {
+                return;
+            }
+
+            if (folderObject == null) {
+                // report this folder and all its messages as unchanged
+                reportNotModified(folderUrl);
+            }
+            else {
+                // report this new or changed folder
+                if (knownObject) {
+                    handler.objectChanged(this, folderObject);
+                    crawlReport.increaseChangedCount();
+                }
+                else {
+                    handler.objectNew(this, folderObject);
+                    crawlReport.increaseNewCount();
+                }
+
+                // (re-)crawl its messages
+                if (holdsMessages(folder)) {
+                    crawlMessages((IMAPFolder) folder, folderObject.getID());
+                }
+            }
+        }
+        catch (MessagingException e) {
+            // just log this exception and continue, perhaps the messages can still be accessed
+            logger.warn("Exception while crawling folder " + folderUrl, e);
+        }
+    }
+
+    private void crawlSubFolders(Folder folder, int depth) {
+        if (depth + 1 > maxDepth && maxDepth >= 0) {
+            logger.info("Reached crawling depth limit (" + maxDepth + ") - stopping.");
+            return;
+        }
+
+        try {
+            Folder[] subFolders = folder.list();
+            logger.info("Crawling " + subFolders.length + " sub-folders.");
+            for (int i = 0; !isStopRequested() && i < subFolders.length; i++) {
+                try {
+                    crawlFolder(subFolders[i], depth + 1);
+                }
+                catch (MessagingException e) {
+                    logger.info("Error crawling subfolder \"" + subFolders[i].getFullName() + "\"");
+                    // but continue..
+                }
+            }
+        }
+        catch (MessagingException e) {
+            logger.warn("Exception while crawling subFolders of \"" + folder.getFullName() + "\"", e);
+        }
+    }
+
+    private String getURIPrefix(Folder folder) throws MessagingException {
+        StringBuilder buffer = new StringBuilder(100);
+        URLName url = store.getURLName();
+
+        // start with protocol
+        // don't use url.getProtocol or your urls may start with "imaps://"
+        buffer.append("imap://");
+
+        // append host and username
+        String username = url.getUsername();
+        if (username != null && !username.equals("")) {
+            username = HttpClientUtil.formUrlEncode(username);
+            buffer.append(username);
+            buffer.append('@');
+        }
+        buffer.append(url.getHost());
+
+        // append path
+        buffer.append('/');
+        buffer.append(encodeFolderName(folder.getFullName()));
+
+        return buffer.toString();
+    }
+
+    public static String getFolderName(String url) {
+        if (!url.startsWith("imap://")) {
+            return null;
+        }
+
+        int firstIndex = url.indexOf('/', 7);
+        int lastIndex = url.endsWith(";TYPE=LIST") ? url.lastIndexOf(';') : url.lastIndexOf('/');
+
+        if (firstIndex >= 0 && lastIndex > firstIndex) {
+            String substring = url.substring(firstIndex + 1, lastIndex);
+            try {
+                return URLDecoder.decode(substring, "UTF-8");
+            }
+            catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            return null;
+        }
+    }
+
+    // does the same as HttpClientUtil.formUrlEncode (i.e. RFC 1738) except for encoding the slash,
+    // which should not be encoded according to RFC 2192.
+    public static String encodeFolderName(String string) {
+        int length = string.length();
+        StringBuilder buffer = new StringBuilder(length + 10);
+
+        for (int i = 0; i < length; i++) {
+            char c = string.charAt(i);
+
+            // Only characters in the range 48 - 57 (numbers), 65 - 90 (upper case letters), 97 - 122
+            // (lower case letters) can be left unencoded. The rest needs to be escaped.
+
+            if (c == ' ') {
+                // replace all spaces with a '+'
+                buffer.append('+');
+            }
+            else {
+                int cInt = (int) c;
+                if (cInt >= 48 && cInt <= 57 || cInt >= 65 && cInt <= 90 || cInt >= 97 && cInt <= 122
+                        || cInt == 46) {
+                    // alphanumeric character or slash
+                    buffer.append(c);
+                }
+                else {
+                    // escape all non-alphanumerics
+                    buffer.append('%');
+                    String hexVal = Integer.toHexString((int) c);
+
+                    // ensure use of two characters
+                    if (hexVal.length() == 1) {
+                        buffer.append('0');
+                    }
+
+                    buffer.append(hexVal);
+                }
+            }
+        }
+
+        return buffer.toString();
+    }
+
+    private void crawlMessages(IMAPFolder folder, URI folderUri) throws MessagingException {
+        if (isStopRequested()) {
+            return;
+        }
+
+        logger.info("Crawling messages in folder " + folder.getFullName());
+
+        // determine the set of messages we haven't seen yet, to prevent prefetching the content info for old
+        // messages: especially handy when only a few mails were added to a large folder.
+        Message[] messages = folder.getMessages();
+        String messagePrefix = getURIPrefix(folder) + "/";
+
+        if (accessData != null) {
+            ArrayList filteredMessages = new ArrayList(messages.length);
+
+            // when messages disappear from the array, we must make sure they are removed from the list of
+            // child IDs of the folder
+            String folderUriString = folderUri.toString();
+            Set deprecatedChildren = accessData.getReferredIDs(folderUriString);
+            if (deprecatedChildren == null) {
+                deprecatedChildren = Collections.EMPTY_SET;
+            }
+            else {
+                deprecatedChildren = new HashSet(deprecatedChildren);
+            }
+
+            // loop over all messages
+            for (int i = 0; i < messages.length && !isStopRequested(); i++) {
+                MimeMessage message = (MimeMessage) messages[i];
+                long messageID = folder.getUID(message);
+
+                // determine the uri
+                String uri = messagePrefix + messageID;
+
+                // remove this URI from the set of deprecated children
+                deprecatedChildren.remove(uri);
+
+                // see if we've seen this message before
+                if (accessData.get(uri, ACCESSED_KEY) == null) {
+                    // we haven't: register it for processing if it's not deleted/marked for deletion, etc.
+                    if (isAcceptable(message)) {
+                        filteredMessages.add(message);
+                    }
+                }
+                else {
+                    // we've seen this before: if it's not a removed message, it must be an unmodified message
+                    if (isRemoved(message)) {
+                        // this message models a deleted or expunged mail: make sure it does no longer appear
+                        // as a child data object of the folder
+                        accessData.removeReferredID(folderUriString, uri);
+                    }
+                    else {
+                        reportNotModified(messagePrefix + messageID);
+                    }
+                }
+            }
+
+            // create the subset of messages that we will process
+            messages = (Message[]) filteredMessages.toArray(new Message[filteredMessages.size()]);
+
+            // remove all child IDs that we did not encounter in the above loop
+            Iterator iterator = deprecatedChildren.iterator();
+            while (iterator.hasNext()) {
+                String childUri = (String) iterator.next();
+                accessData.removeReferredID(folderUriString, childUri);
+            }
+        }
+
+        if (isStopRequested()) {
+            return;
+        }
+
+        // pre-fetch content info for the selected messages (assumption: all other info has already been
+        // pre-fetched when determining the folder's metadata, no need to prefetch it again)
+        FetchProfile profile = new FetchProfile();
+        profile.add(FetchProfile.Item.CONTENT_INFO);
+        folder.fetch(messages, profile);
+
+        // crawl every selected message
+        for (int i = 0; i < messages.length && !isStopRequested(); i++) {
+            MimeMessage message = (MimeMessage) messages[i];
+            long messageID = folder.getUID(message);
+            String uri = messagePrefix + messageID;
+
+            try {
+                if (inDomain(uri)) {
+                    crawlMessage(message, uri, folderUri);
+                }
+            }
+            catch (Exception e) {
+                // just log these exceptions; as they only affect a single message, they are
+                // not considered fatal exceptions
+                logger.warn("Exception while crawling message " + uri, e);
+            }
+        }
+    }
+
+    private void crawlMessage(MimeMessage message, String uri, URI folderUri) throws MessagingException {
+        // see if we should skip this message for some reason
+        if (!isAcceptable(message)) {
+            return;
+        }
+
+        // build a queue of urls to access
+        LinkedList queue = new LinkedList();
+        queue.add(uri);
+
+        // process the entire queue
+        while (!queue.isEmpty()) {
+            // fetch the first element in the queue
+            String queuedUri = (String) queue.removeFirst();
+            handler.accessingObject(this, queuedUri);
+
+            // get this DataObject
+            RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, queuedUri);
+            try {
+                DataObject object = getObject(message, queuedUri, folderUri, source, accessData,
+                    containerFactory);
+
+                if (object == null) {
+                    // report this object and all its children as unmodified
+                    reportNotModified(queuedUri);
+                }
+                else {
+
+                    // inserted by Antoni on 14.12.2006
+                    queueChildren(object, queue);
+
+                    // report this object as a new object (assumption: objects are always new, never
+                    // changed, since mails are immutable)
+                    crawlReport.increaseNewCount();
+                    handler.objectNew(this, object);
+
+                    // register parent child relationship (necessary in order to be able to report
+                    // unmodified or deleted attachments)
+                    registerParent(object);
+
+                    // queue all its children MOVED upwards by Antoni Mylka on 14.12.2006
+                    // You cannot access the data object after passing it to a handler
+                    // the handler may dispose it...
+                    // queueChildren(object, queue);
+                }
+            }
+            catch (MessagingException e) {
+                // just log and continue with the next url
+                logger.warn("MessagingException while processing " + queuedUri, e);
+            }
+            catch (UrlNotFoundException e) {
+                // this is most likely an internal error in the DataObjectFactory or DataAccessor, so log
+                // it differently
+                logger.error("Internal error while processing " + queuedUri, e);
+            }
+            catch (IOException e) {
+                // just log and continue with the next url
+                logger.warn("IOException while processing " + queuedUri, e);
+            }
+        }
+    }
+
+    private boolean isRemoved(Message message) throws MessagingException {
+        return message.isExpunged() || message.isSet(Flags.Flag.DELETED);
+    }
+
+    private boolean isTooLarge(Message message) throws MessagingException {
+        return message.getSize() > maximumByteSize;
+    }
+
+    private boolean isAcceptable(Message message) throws MessagingException {
+        return !(isRemoved(message) || isTooLarge(message));
+    }
+
+    private int getMessageCount(Message[] messages) throws MessagingException {
+        int result = 0;
+
+        for (int i = 0; i < messages.length; i++) {
+            Message message = messages[i];
+            if (!isRemoved(message)) {
+                result++;
+            }
+        }
+
+        return result;
+    }
+
+    private void reportNotModified(String uri) {
+        // report this object as unmodified
+        crawlReport.increaseUnchangedCount();
+        handler.objectNotModified(this, uri);
+        deprecatedUrls.remove(uri);
+
+        // repeat recursively on all registered children
+        if (accessData == null) {
+            logger.error("Internal error: reporting unmodified uri while no AccessData is set: " + uri);
+        }
+        else {
+            Set children = accessData.getReferredIDs(uri);
+            if (children != null) {
+                Iterator iterator = children.iterator();
+                while (iterator.hasNext()) {
+                    reportNotModified((String) iterator.next());
+                }
+            }
+        }
+    }
+
+    private URI getParent(DataObject object) {
+        // query for all parents
+        Collection parentIDs = object.getMetadata().getAll(DATA.partOf);
+
+        // determine all unique parent URIs (the same partOf statement may be returned more than once due
+        // to the use of context in the underlying model)
+        if (!(parentIDs instanceof Set)) {
+            parentIDs = new HashSet(parentIDs);
+        }
+
+        // return the parent if there is only one
+        if (parentIDs.isEmpty()) {
+            return null;
+        }
+        else if (parentIDs.size() > 1) {
+            logger.warn("Multiple parents for " + object.getID() + ", ignoring all");
+            return null;
+        }
+        else {
+            Node parent = (Node) parentIDs.iterator().next();
+            if (parent instanceof URI) {
+                return (URI) parent;
+            }
+            else {
+                logger.error("Internal error: encountered unexpected parent type: " + parent.getClass());
+                return null;
+            }
+        }
+    }
+
+    private void registerParent(DataObject object) {
+        if (accessData == null) {
+            return;
+        }
+
+        URI parent = getParent(object);
+        if (parent != null) {
+            String parentID = parent.toString();
+            String childID = object.getID().toString();
+
+            if (accessData.isKnownId(parentID)) {
+                if (parentID.equals(childID)) {
+                    logger.error("cyclical " + DATA.partOf + " property for " + parentID + ", ignoring");
+                }
+                else {
+                    accessData.putReferredID(parentID, childID);
+                }
+            }
+            else {
+                logger.error("Internal error: encountered unknown parent: " + parentID + ", child = "
+                        + childID);
+            }
+        }
+    }
+
+    private void queueChildren(DataObject object, LinkedList queue) {
+        Model metadata = object.getMetadata().getModel();
+
+        // query for all child URIs
+        ClosableIterator<? extends Statement> statements = null;
+        try {
+            ClosableIterable<? extends Statement> iterable = metadata.findStatements(Variable.ANY,
+                DATA.partOf, object.getID());
+            statements = iterable.iterator();
+            // queue these URIs
+            while (statements.hasNext()) {
+                Statement statement = (Statement) statements.next();
+                Resource resource = statement.getSubject();
+
+                if (resource instanceof URI) {
+                    String id = resource.toString();
+                    if (!queue.contains(id)) {
+                        queue.add(id);
+                    }
+                }
+                else {
+                    logger.error("Internal error: unknown child value type: " + resource.getClass());
+                }
+            }
+        }
+        catch (ModelException me) {
+            logger.error("Couldn't queue children", me);
+        }
+        finally {
+            if (statements != null) {
+                statements.close();
+            }
+        }
+    }
+
+    /* ----------------------------- DataAccessor implementation ----------------------------- */
+
+    public DataObject getDataObject(String url, DataSource source, Map params,
+            RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException {
+        return getDataObjectIfModified(url, source, null, params, containerFactory);
+    }
+
+    public DataObject getDataObjectIfModified(String url, DataSource source, AccessData accessData,
+            Map params, RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException {
+        // reconfigure for the specified DataSource if necessary
+        retrieveConfigurationData(source);
+
+        try {
+            // make sure we have a connection to the mail store
+            ensureConnectedStore();
+
+            // retrieve the specified folder
+            String folderName = getFolderName(url);
+
+            Folder folder;
+            if (folderName == null || folderName.equals("")) {
+                folder = store.getDefaultFolder();
+            }
+            else {
+                folder = store.getFolder(folderName);
+            }
+
+            if (!folder.exists()) {
+                throw new UrlNotFoundException(url, "unknown folder");
+            }
+
+            if (!folder.isOpen() && holdsMessages(folder)) {
+                folder.open(Folder.READ_ONLY);
+            }
+
+            // see if we need to process a folder or a message
+            int typeIndex = url.indexOf(";TYPE=");
+            if (typeIndex < 0) {
+                // determine the message UID: cutoff the ID part
+                int separatorIndex = url.lastIndexOf('/');
+                if (separatorIndex < 0 || separatorIndex >= url.length() - 1) {
+                    throw new IllegalArgumentException("unable to get message UID from " + url);
+                }
+                String messageNumberString = url.substring(separatorIndex + 1);
+
+                // remove the fragment identifier
+                separatorIndex = messageNumberString.indexOf('#');
+                if (separatorIndex > 0 && separatorIndex < messageNumberString.length() - 1) {
+                    messageNumberString = messageNumberString.substring(0, separatorIndex);
+                }
+
+                // parse the remaining number string
+                long messageUID;
+                try {
+                    messageUID = Long.parseLong(messageNumberString);
+                }
+                catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("illegal message UID: " + messageNumberString);
+                }
+
+                // retrieve the message with this UID
+                MimeMessage message = (MimeMessage) ((UIDFolder) folder).getMessageByUID(messageUID);
+
+                // create a DataObject for the requested message or message part
+                return getObject(message, url, getURI(folder), source, accessData, containerFactory);
+            }
+            else {
+                // create a DataObject for this Folder
+                return getObject(folder, url, source, accessData, containerFactory);
+            }
+        }
+        catch (MessagingException e) {
+            IOException ioe = new IOException();
+            ioe.initCause(e);
+            throw ioe;
+        }
+    }
+
+    private DataObject getObject(MimeMessage message, String url, URI folderUri, DataSource source,
+            AccessData accessData, RDFContainerFactory containerFactory) throws MessagingException,
+            IOException {
+        // See if this url has been accessed before so that we can stop immediately. Note
+        // that no check on message date is done as messages are immutable. Therefore we only have to
+        // check whether the AccessData knows this ID.
+        if (accessData != null && accessData.get(url, ACCESSED_KEY) != null) {
+            return null;
+        }
+
+        // determine the root message URL, i.e. remove the fragment identifier
+        String messageUrl = url;
+        int index = messageUrl.indexOf('#');
+        if (index == 0) {
+            messageUrl = "";
+        }
+        else if (index > 0) {
+            messageUrl = messageUrl.substring(0, index);
+        }
+
+        // see if we have cached the DataObjects obtained from this message
+        if (!messageUrl.equals(cachedMessageUrl)) {
+            // we haven't: we're going to interpret this message and create all DataObjects at once
+
+            // clear the cache
+            cachedMessageUrl = null;
+            cachedDataObjectsMap.clear();
+
+            // create DataObjects for the mail and its attachments
+            DataObjectFactory factory = new DataObjectFactory();
+            List objects = factory
+                    .createDataObjects(message, messageUrl, folderUri, source, containerFactory);
+
+            // register the created DataObjects in the cache map
+            Iterator iterator = objects.iterator();
+            while (iterator.hasNext()) {
+                DataObject object = (DataObject) iterator.next();
+                cachedDataObjectsMap.put(object.getID().toString(), object);
+            }
+
+            // register the message url that these objects came from
+            cachedMessageUrl = messageUrl;
+        }
+
+        // determine the resulting DataObject
+        DataObject result = (DataObject) cachedDataObjectsMap.get(url);
+        if (result == null) {
+            throw new UrlNotFoundException(url);
+        }
+
+        // register the access of this url
+        if (accessData != null) {
+            accessData.put(url, ACCESSED_KEY, "");
+        }
+
+        return result;
+    }
+
+    private FolderDataObject getObject(Folder folder, String url, DataSource source, AccessData accessData,
+            RDFContainerFactory containerFactory) throws MessagingException {
+        // See if this url has been accessed before and hasn't changed in the mean time.
+        // A check for the next UID guarantees that no mails have been added (see RFC 3501).
+        // If this is still the same, a check on the number of messages guarantees that no mails have
+        // been removed either. Finally, we check that it has the same set of subfolders
+        IMAPFolder imapFolder = (IMAPFolder) folder;
+        Message[] messages = null;
+
+        // check if the folder has changed
+        if (accessData != null) {
+            // the results default to 'true'; unless we can find complete evidence that the folder has not
+            // changed, we will always access the folder
+            boolean messagesChanged = true;
+            boolean foldersChanged = true;
+
+            if (holdsMessages(folder)) {
+                String nextUIDString = accessData.get(url, NEXT_UID_KEY);
+                String sizeString = accessData.get(url, SIZE_KEY);
+
+                // note: this is -1 for servers that don't support retrieval of a next UID, meaning that the
+                // folder will always be reported as changed when it should have been unmodified
+                long nextUID = imapFolder.getUIDNext();
+
+                if (nextUIDString != null && sizeString != null && nextUID != -1L) {
+                    try {
+                        // parse stored information
+                        long previousNextUID = Long.parseLong(nextUIDString);
+                        long previousSize = Integer.parseInt(sizeString);
+
+                        // determine the new folder size, excluding all deleted/deletion-marked messages
+                        messages = folder.getMessages();
+                        FetchProfile profile = new FetchProfile();
+                        profile.add(FetchProfile.Item.FLAGS); // needed for DELETED flag
+                        folder.fetch(messages, profile);
+                        int messageCount = getMessageCount(messages);
+
+                        // compare the folder status with what we've stored in the AccessData
+                        if (previousNextUID == nextUID && previousSize == messageCount) {
+                            messagesChanged = false;
+                        }
+                    }
+                    catch (NumberFormatException e) {
+                        logger.error("exception while parsing access data, ingoring access data", e);
+                    }
+                }
+            }
+
+            if (holdsFolders(folder)) {
+                String registeredSubFolders = accessData.get(url, SUBFOLDERS_KEY);
+
+                if (registeredSubFolders != null) {
+                    String subfolders = getSubFoldersString(folder);
+                    if (registeredSubFolders.equals(subfolders)) {
+                        foldersChanged = false;
+                    }
+                }
+            }
+
+            if (!messagesChanged && !foldersChanged) {
+                // the folder contents have not changed, we can return immediately
+                logger.info("Folder \"" + folder.getFullName() + "\" has not changed.");
+                return null;
+            }
+
+            logger.info("Folder \"" + folder.getFullName() + "\" is new or has changes.");
+        }
+
+        // register the folder's name
+        URI folderURI = URIImpl.createURIWithoutChecking(url);
+        RDFContainer metadata = containerFactory.getRDFContainer(folderURI);
+        metadata.add(DATA.name, folder.getName());
+
+        // register the folder's parent
+        Folder parent = folder.getParent();
+        if (parent != null) {
+            metadata.add(DATA.partOf, getURI(parent));
+        }
+
+        // add message URIs as children
+        String uriPrefix = getURIPrefix(folder) + "/";
+
+        if (holdsMessages(folder)) {
+            if (messages == null) {
+                messages = folder.getMessages();
+            }
+
+            // for faster access, prefetch all message UIDs and flags
+            FetchProfile profile = new FetchProfile();
+            profile.add(UIDFolder.FetchProfileItem.UID); // needed for message.getUID
+            profile.add(FetchProfile.Item.FLAGS); // needed for isAcceptable (DELETED)
+            profile.add(FetchProfile.Item.ENVELOPE); // needed for isAcceptable (size check)
+            folder.fetch(messages, profile);
+
+            for (int i = 0; i < messages.length; i++) {
+                MimeMessage message = (MimeMessage) messages[i];
+
+                if (isAcceptable(message)) {
+                    long messageID = imapFolder.getUID(message);
                     try {
                         URI messageURI = metadata.getValueFactory().createURI(uriPrefix + messageID);
-                        metadata.add(metadata.getValueFactory().createStatement(messageURI, DATA.partOf, folderURI));
+                        metadata.add(metadata.getValueFactory().createStatement(messageURI, DATA.partOf,
+                            folderURI));
                     }
                     catch (ModelException e) {
-                        LOGGER.log(Level.WARNING, "ModelException while creating URI", e);
+                        logger.error("ModelException while creating URI", e);
                     }
-				}
-			}
-		}
+                }
+            }
+        }
 
-		// add subfolder URIs
-		Folder[] subFolders = folder.list();
-		for (int i = 0; i < subFolders.length; i++) {
-			Folder subFolder = subFolders[i];
-			if (subFolder.exists()) {
-				metadata.add(metadata.getValueFactory().createStatement(getURI(subFolder), DATA.partOf, folderURI));
-			}
-		}
+        // add subfolder URIs
+        Folder[] subFolders = folder.list();
+        for (int i = 0; i < subFolders.length; i++) {
+            Folder subFolder = subFolders[i];
+            if (subFolder.exists()) {
+                metadata.add(metadata.getValueFactory().createStatement(getURI(subFolder), DATA.partOf,
+                    folderURI));
+            }
+        }
 
-		// register the access data of this url
-		if (accessData != null) {
-			if (holdsMessages(folder)) {
-				// getUIDNext may return -1 (unknown), be careful not to store that
-				long uidNext = imapFolder.getUIDNext();
-				if (uidNext != -1L) {
-					accessData.put(url, NEXT_UID_KEY, String.valueOf(imapFolder.getUIDNext()));
-				}
+        // register the access data of this url
+        if (accessData != null) {
+            if (holdsMessages(folder)) {
+                // getUIDNext may return -1 (unknown), be careful not to store that
+                long uidNext = imapFolder.getUIDNext();
+                if (uidNext != -1L) {
+                    accessData.put(url, NEXT_UID_KEY, String.valueOf(imapFolder.getUIDNext()));
+                }
 
-				int messageCount = getMessageCount(messages);
-				accessData.put(url, SIZE_KEY, String.valueOf(messageCount));
-			}
-			if (holdsFolders(folder)) {
-				accessData.put(url, SUBFOLDERS_KEY, getSubFoldersString(folder));
-			}
-		}
+                int messageCount = getMessageCount(messages);
+                accessData.put(url, SIZE_KEY, String.valueOf(messageCount));
+            }
+            if (holdsFolders(folder)) {
+                accessData.put(url, SUBFOLDERS_KEY, getSubFoldersString(folder));
+            }
+        }
 
-		// if this is a base folder then add some metadata
-		if (baseFolders.contains(folder.getFullName())) {
-			metadata.add(DATA.rootFolderOf, source.getID());
-		}
+        // if this is a base folder then add some metadata
+        if (baseFolders.contains(folder.getFullName())) {
+            metadata.add(DATA.rootFolderOf, source.getID());
+        }
 
-		// create the resulting FolderDataObject instance
-		return new FolderDataObjectBase(folderURI, source, metadata);
-	}
+        // create the resulting FolderDataObject instance
+        return new FolderDataObjectBase(folderURI, source, metadata);
+    }
 
-	private URI getURI(Folder folder) throws MessagingException {
-		return URIImpl.create(getURIPrefix(folder) + ";TYPE=LIST");
-	}
+    private URI getURI(Folder folder) throws MessagingException {
+        return URIImpl.create(getURIPrefix(folder) + ";TYPE=LIST");
+    }
 
-	private String getSubFoldersString(Folder folder) throws MessagingException {
-		StringBuilder buffer = new StringBuilder();
+    private String getSubFoldersString(Folder folder) throws MessagingException {
+        StringBuilder buffer = new StringBuilder();
 
-		Folder[] subFolders = folder.list();
-		for (int i = 0; i < subFolders.length; i++) {
-			Folder subFolder = subFolders[i];
-			if (subFolder.exists()) {
-				buffer.append(subFolder.getFullName());
+        Folder[] subFolders = folder.list();
+        for (int i = 0; i < subFolders.length; i++) {
+            Folder subFolder = subFolders[i];
+            if (subFolder.exists()) {
+                buffer.append(subFolder.getFullName());
 
-				if (i < subFolders.length - 1) {
-					buffer.append('@');
-				}
-			}
-		}
+                if (i < subFolders.length - 1) {
+                    buffer.append('@');
+                }
+            }
+        }
 
-		return buffer.toString();
-	}
+        return buffer.toString();
+    }
 
-	/**
-	 * This is a socket factory that ignores ssl certificates.
-	 */
-	public static class SimpleSocketFactory extends SSLSocketFactory {
+    /**
+     * This is a socket factory that ignores ssl certificates.
+     */
+    public static class SimpleSocketFactory extends SSLSocketFactory {
+        
+        private Logger logger = LoggerFactory.getLogger(getClass());
 
-		private SSLSocketFactory factory;
+        private SSLSocketFactory factory;
 
-		/**
-		 * Creates a socket factory that will ignore the ssl certificate, and accept any as valid.
-		 * 
-		 */
-		public SimpleSocketFactory() {
-			try {
-				SSLContext sslcontext = SSLContext.getInstance("TLS");
+        /**
+         * Creates a socket factory that will ignore the ssl certificate, and accept any as valid.
+         * 
+         */
+        public SimpleSocketFactory() {
+            try {
+                SSLContext sslcontext = SSLContext.getInstance("TLS");
 
-				sslcontext.init(null, new TrustManager[] { new NaiveTrustManager() }, null);
-				factory = (SSLSocketFactory) sslcontext.getSocketFactory();
-			}
-			catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Exception while setting up SimpleSocketFactory", e);
-			}
-		}
+                sslcontext.init(null, new TrustManager[] { new NaiveTrustManager() }, null);
+                factory = (SSLSocketFactory) sslcontext.getSocketFactory();
+            }
+            catch (Exception e) {
+                logger.error("Exception while setting up SimpleSocketFactory", e);
+            }
+        }
 
-		/**
-		 * Read trusted certificates from the given keyStore
-		 * 
-		 * @param certificateFile
-		 * @param password
-		 */
-		public SimpleSocketFactory(File certificateFile, String password) {
-			try {
-				SSLContext sslcontext = SSLContext.getInstance("TLS");
-				StandardTrustManager trustManager = new StandardTrustManager(certificateFile, password
-						.toCharArray());
-				sslcontext.init(null, new TrustManager[] { trustManager }, null);
-				factory = (SSLSocketFactory) sslcontext.getSocketFactory();
-			}
-			catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Exception while setting up SimpleSocketFactory", e);
-			}
-		}
+        /**
+         * Read trusted certificates from the given keyStore
+         * 
+         * @param certificateFile
+         * @param password
+         */
+        public SimpleSocketFactory(File certificateFile, String password) {
+            try {
+                SSLContext sslcontext = SSLContext.getInstance("TLS");
+                StandardTrustManager trustManager = new StandardTrustManager(certificateFile, password
+                        .toCharArray());
+                sslcontext.init(null, new TrustManager[] { trustManager }, null);
+                factory = (SSLSocketFactory) sslcontext.getSocketFactory();
+            }
+            catch (Exception e) {
 
-		public static SocketFactory getDefault() {
-			return new SimpleSocketFactory();
-		}
+                logger.error("Exception while setting up SimpleSocketFactory", e);
+            }
+        }
 
-		public Socket createSocket() throws IOException {
-			return factory.createSocket();
-		}
+        public static SocketFactory getDefault() {
+            return new SimpleSocketFactory();
+        }
 
-		public Socket createSocket(Socket socket, String host, int port, boolean flag) throws IOException {
-			return factory.createSocket(socket, host, port, flag);
-		}
+        public Socket createSocket() throws IOException {
+            return factory.createSocket();
+        }
 
-		public Socket createSocket(InetAddress address, int port, InetAddress localAddress, int localPort)
-				throws IOException {
-			return factory.createSocket(address, port, localAddress, localPort);
-		}
+        public Socket createSocket(Socket socket, String host, int port, boolean flag) throws IOException {
+            return factory.createSocket(socket, host, port, flag);
+        }
 
-		public Socket createSocket(InetAddress host, int port) throws IOException {
-			return factory.createSocket(host, port);
-		}
+        public Socket createSocket(InetAddress address, int port, InetAddress localAddress, int localPort)
+                throws IOException {
+            return factory.createSocket(address, port, localAddress, localPort);
+        }
 
-		public Socket createSocket(String host, int port, InetAddress localHost, int localPort)
-				throws IOException {
-			return factory.createSocket(host, port, localHost, localPort);
-		}
+        public Socket createSocket(InetAddress host, int port) throws IOException {
+            return factory.createSocket(host, port);
+        }
 
-		public Socket createSocket(String host, int port) throws IOException {
-			return factory.createSocket(host, port);
-		}
+        public Socket createSocket(String host, int port, InetAddress localHost, int localPort)
+                throws IOException {
+            return factory.createSocket(host, port, localHost, localPort);
+        }
 
-		public String[] getDefaultCipherSuites() {
-			return factory.getDefaultCipherSuites();
-		}
+        public Socket createSocket(String host, int port) throws IOException {
+            return factory.createSocket(host, port);
+        }
 
-		public String[] getSupportedCipherSuites() {
-			return factory.getSupportedCipherSuites();
-		}
+        public String[] getDefaultCipherSuites() {
+            return factory.getDefaultCipherSuites();
+        }
 
-		private class NaiveTrustManager implements X509TrustManager {
+        public String[] getSupportedCipherSuites() {
+            return factory.getSupportedCipherSuites();
+        }
 
-			public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-			// accept everything
-			}
+        private class NaiveTrustManager implements X509TrustManager {
 
-			public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-			// accept everything
-			}
+            public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+            // accept everything
+            }
 
-			public X509Certificate[] getAcceptedIssuers() {
-				return null;
-			}
+            public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+            // accept everything
+            }
 
-		}
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
 
-	}
+        }
+
+    }
 }

@@ -8,13 +8,14 @@ package org.semanticdesktop.aperture.extractor.visio;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.PoiUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An Extractor implementation for MS Visio documents. This implementation uses heuristic string extraction,
@@ -22,11 +23,11 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
  */
 public class VisioExtractor implements Extractor {
 
-    private static final Logger LOGGER = Logger.getLogger(VisioExtractor.class.getName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
     
 	public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
 			throws ExtractorException {
 		// do not specify a TextExtractor, PoiUtil will fall-back on using a StringExtractor
-		PoiUtil.extractAll(stream, null, result, LOGGER);
+		PoiUtil.extractAll(stream, null, result, logger);
 	}
 }

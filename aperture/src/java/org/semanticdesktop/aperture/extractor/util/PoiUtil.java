@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.poi.hpsf.PropertySetFactory;
 import org.apache.poi.hpsf.SummaryInformation;
@@ -21,6 +19,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.slf4j.Logger;
 
 /**
  * Features Apache POI-specific utility methods for text and metadata extraction purposes.
@@ -183,8 +182,7 @@ public class PoiUtil {
 		// if text extraction was not successfull, try a StringExtractor as a fallback
 		if (text == null) {
 			if (textExtractor != null) {
-				logger.log(Level.INFO,
-					"regular POI-based processing failed, falling back to heuristic string extraction for "
+				logger.info("regular POI-based processing failed, falling back to heuristic string extraction for "
 							+ container.getDescribedUri());
 			}
 
@@ -194,7 +192,7 @@ public class PoiUtil {
 				text = extractor.extract(stream);
 			}
 			catch (IOException e) {
-				logger.log(Level.WARNING, "IOException while processing " + container.getDescribedUri(), e);
+				logger.warn("IOException while processing " + container.getDescribedUri(), e);
 			}
 		}
 

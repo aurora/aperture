@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -10,8 +10,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -19,16 +17,18 @@ import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierFactory;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.util.SimpleSAXAdapter;
 import org.semanticdesktop.aperture.util.SimpleSAXParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
- * DefaultMimeTypeIdentifierRegistry provides the complete set of MimeTypeIdentifierFactories available
- * in Aperture.
+ * DefaultMimeTypeIdentifierRegistry provides the complete set of MimeTypeIdentifierFactories available in
+ * Aperture.
  * 
  * <p>
- * The main purpose of this class is to be able to conveniently access the set of
- * MimeTypeIdentifierFactories in non-OSGi applications, which take care of this initialization in a
- * different way. A single line of code gives you the entire set without requiring further setup.
+ * The main purpose of this class is to be able to conveniently access the set of MimeTypeIdentifierFactories
+ * in non-OSGi applications, which take care of this initialization in a different way. A single line of code
+ * gives you the entire set without requiring further setup.
  * 
  * <p>
  * The set of factory class names are loaded from an XML file which can optionally be specified to the
@@ -42,11 +42,10 @@ public class DefaultMimeTypeIdentifierRegistry extends MimeTypeIdentifierRegistr
 
     private static final String NAME_TAG = "name";
 
-    private static final Logger LOGGER = Logger.getLogger(DefaultMimeTypeIdentifierRegistry.class.getName());
-
     public DefaultMimeTypeIdentifierRegistry() {
         try {
-            InputStream stream = ResourceUtil.getInputStream(DEFAULT_FILE,DefaultMimeTypeIdentifierRegistry.class);
+            InputStream stream = ResourceUtil.getInputStream(DEFAULT_FILE,
+                DefaultMimeTypeIdentifierRegistry.class);
             BufferedInputStream buffer = new BufferedInputStream(stream);
             parse(buffer);
             buffer.close();
@@ -81,6 +80,8 @@ public class DefaultMimeTypeIdentifierRegistry extends MimeTypeIdentifierRegistr
 
     private class IdentifierParser extends SimpleSAXAdapter {
 
+        private Logger logger = LoggerFactory.getLogger(getClass());
+
         private boolean insideFactoryElement = false;
 
         public void startTag(String tagName, Map atts, String text) throws SAXException {
@@ -108,17 +109,17 @@ public class DefaultMimeTypeIdentifierRegistry extends MimeTypeIdentifierRegistr
                     add(factory);
                 }
                 catch (ClassNotFoundException e) {
-                    LOGGER.log(Level.WARNING, "unable to find class " + className + ", ignoring", e);
+                    logger.warn("unable to find class " + className + ", ignoring", e);
                 }
                 catch (InstantiationException e) {
-                    LOGGER.log(Level.WARNING, "unable to instantiate class " + className + ", ignoring", e);
+                    logger.warn("unable to instantiate class " + className + ", ignoring", e);
                 }
                 catch (IllegalAccessException e) {
-                    LOGGER.log(Level.WARNING, "unable to access class " + className + ", ignoring", e);
+                    logger.warn("unable to access class " + className + ", ignoring", e);
                 }
                 catch (ClassCastException e) {
-                    LOGGER.log(Level.WARNING, "unable to cast instance to "
-                            + MimeTypeIdentifierFactory.class.getName() + ", ignoring", e);
+                    logger.warn("unable to cast instance to " + MimeTypeIdentifierFactory.class.getName()
+                            + ", ignoring", e);
                 }
             }
         }

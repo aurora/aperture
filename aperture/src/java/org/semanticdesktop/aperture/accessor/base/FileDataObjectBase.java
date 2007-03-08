@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -8,21 +8,19 @@ package org.semanticdesktop.aperture.accessor.base;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A trivial default implementation of FileDataObject. 
  */
 public class FileDataObjectBase extends DataObjectBase implements FileDataObject {
 
-    private static final Logger LOGGER = Logger.getLogger(FileDataObjectBase.class.getName());
-    
     private InputStream content;
     
     public FileDataObjectBase() { }
@@ -63,7 +61,8 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
         	}
         }
         catch (IOException e) {
-            LOGGER.log(Level.WARNING, "IOException while closing stream", e);
+            Logger logger = LoggerFactory.getLogger(getClass());
+            logger.error("IOException while closing stream", e);
         }
         
         super.dispose();

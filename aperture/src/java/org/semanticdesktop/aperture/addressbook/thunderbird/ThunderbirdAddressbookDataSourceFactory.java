@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -8,8 +8,6 @@ package org.semanticdesktop.aperture.addressbook.thunderbird;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
@@ -18,6 +16,8 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ImapDataSourceFactory returns instances of the ImapDataSource class. 
@@ -28,10 +28,6 @@ public class ThunderbirdAddressbookDataSourceFactory implements DataSourceFactor
 	/////////////////////////////////////////// CONSTANTS ////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	/** The Logger */
-    private static final Logger log = Logger.getLogger(ThunderbirdAddressbookDataSourceFactory.class
-            .getName());
-
     /** The path to the resource containing the ICAL_DESCRIPTION */
     private static final String ADDRESSBOOK_DESCRIPTION = ThunderbirdAddressbookDataSourceFactory.class
             .getPackage().getName().replace('.', '/')
@@ -60,7 +56,8 @@ public class ThunderbirdAddressbookDataSourceFactory implements DataSourceFactor
 			model.readFrom(stream,ADDRESSBOOK_SYNTAX);
 			return true;
 		} catch (Exception e) {
-			log.log(Level.WARNING,"Couldn't return the description of ICal data source",e);
+            Logger logger = LoggerFactory.getLogger(getClass());
+			logger.warn("Could not return the description of ICal data source",e);
 			return false;
 		} finally {
 			closeStream(stream);

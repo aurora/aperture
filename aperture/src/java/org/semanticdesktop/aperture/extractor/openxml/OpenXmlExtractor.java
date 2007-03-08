@@ -15,8 +15,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -33,6 +31,8 @@ import org.semanticdesktop.aperture.util.SimpleSAXAdapter;
 import org.semanticdesktop.aperture.util.SimpleSAXListener;
 import org.semanticdesktop.aperture.util.SimpleSAXParser;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -104,8 +104,6 @@ public class OpenXmlExtractor implements Extractor {
      * <p:cSld name="">
      */
 
-    private static final Logger LOGGER = Logger.getLogger(OpenXmlExtractor.class.getName());
-
     private static final String CONTENT_TYPES_FILE = "[Content_Types].xml";
 
     private static final int BUFFER_SIZE = 4 * 1024 * 1024;
@@ -166,6 +164,8 @@ public class OpenXmlExtractor implements Extractor {
         TEXT_ATTRIBUTE_TYPES.put(
             "application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml", "p:cSld");
     }
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private ContentTypes contentTypes;
 
@@ -346,7 +346,7 @@ public class OpenXmlExtractor implements Extractor {
             parser.parse(new NonCloseableStream(stream));
         }
         catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Exception while parsing XML", e);
+            logger.warn("Exception while parsing XML", e);
         }
     }
 
@@ -377,7 +377,7 @@ public class OpenXmlExtractor implements Extractor {
                             metadata.add(predicate, text);
                         }
                         catch (ModelException e) {
-                            LOGGER.log(Level.WARNING, "ModelException while adding statement, ignoring", e);
+                            logger.error("ModelException while adding statement, ignoring", e);
                         }
                     }
 

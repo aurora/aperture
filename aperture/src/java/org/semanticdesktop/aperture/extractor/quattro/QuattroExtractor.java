@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.extractor.Extractor;
@@ -18,6 +17,8 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.PoiUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An Extractor implementation for Quattro Spreadsheets. This Extractor only knows how to handle recent
@@ -27,7 +28,7 @@ import org.semanticdesktop.aperture.util.IOUtil;
  */
 public class QuattroExtractor implements Extractor {
 
-    private static final Logger LOGGER = Logger.getLogger(QuattroExtractor.class.getName()); 
+    private Logger logger = LoggerFactory.getLogger(getClass()); 
     
 	/**
 	 * The MS Office magic number. Only Quattro files with this MS Office (i.e. files that use the OLE format)
@@ -43,7 +44,7 @@ public class QuattroExtractor implements Extractor {
 		// for older, incompatible formats.
 		try {
 			if (hasMSOfficeMagicNumber(stream)) {
-				PoiUtil.extractAll(stream, null, result, LOGGER);
+				PoiUtil.extractAll(stream, null, result, logger);
 			}
 		}
 		catch (IOException e) {

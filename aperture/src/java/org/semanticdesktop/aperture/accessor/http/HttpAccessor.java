@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -16,8 +16,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
@@ -32,13 +30,15 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.HttpClientUtil;
 import org.semanticdesktop.aperture.util.UrlUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A DataAccessor implementation for the http and https schemes.
  */
 public class HttpAccessor implements DataAccessor {
 
-	private static final Logger LOGGER = Logger.getLogger(HttpAccessor.class.getName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * Key used to store that a url is known. This is necessary because not every url has a date that can be
@@ -186,7 +186,7 @@ public class HttpAccessor implements DataAccessor {
 				return new Date(l);
 			}
 			catch (NumberFormatException e) {
-				LOGGER.log(Level.WARNING, "invalid long: " + value, e);
+				logger.error("invalid long: " + value, e);
 				return null;
 			}
 		}

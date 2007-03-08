@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
@@ -29,6 +27,8 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.UpdateException;
 import org.semanticdesktop.aperture.rdf.ValueFactory;
 import org.semanticdesktop.aperture.util.DateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A default RDFContainer implementation, wrapping and editing a RDF2Go Model.
@@ -39,7 +39,7 @@ import org.semanticdesktop.aperture.util.DateUtil;
  */
 public class RDFContainerImpl implements RDFContainer {
 
-    private static final Logger LOGGER = Logger.getLogger(RDFContainerImpl.class.getName());
+    private Logger logger = LoggerFactory.getLogger(RDFContainerImpl.class.getName());
 
     /**
      * The ValueFactory that transforms Java native types to RDF2Go RDF datastructures.
@@ -151,7 +151,7 @@ public class RDFContainerImpl implements RDFContainer {
             replaceInternal(property, valueFactory.createLiteral(value));
         }
         catch (ModelException e) {
-            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+            logger.error("ModelException while storing value, ignoring", e);
         }
     }
 
@@ -162,7 +162,7 @@ public class RDFContainerImpl implements RDFContainer {
             replaceInternal(property, valueFactory.createLiteral(date, XSD._dateTime));
         }
         catch (ModelException e) {
-            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+            logger.error("ModelException while storing value, ignoring", e);
         }
     }
 
@@ -177,7 +177,7 @@ public class RDFContainerImpl implements RDFContainer {
             replaceInternal(property, valueFactory.createLiteral(value));
         }
         catch (ModelException e) {
-            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+            logger.error("ModelException while storing value, ignoring", e);
         }
     }
 
@@ -187,7 +187,7 @@ public class RDFContainerImpl implements RDFContainer {
             replaceInternal(property, valueFactory.createLiteral(value));
         }
         catch (ModelException e) {
-            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+            logger.error("ModelException while storing value, ignoring", e);
         }
     }
 
@@ -197,7 +197,7 @@ public class RDFContainerImpl implements RDFContainer {
             replaceInternal(property, valueFactory.createLiteral(value));
         }
         catch (ModelException e) {
-            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+            logger.error("ModelException while storing value, ignoring", e);
         }
     }
 
@@ -212,7 +212,7 @@ public class RDFContainerImpl implements RDFContainer {
             addInternal(property, valueFactory.createLiteral(value));
         }
         catch (ModelException e) {
-            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+            logger.error("ModelException while storing value, ignoring", e);
         }
     }
 
@@ -223,7 +223,7 @@ public class RDFContainerImpl implements RDFContainer {
             addInternal(property, valueFactory.createLiteral(date, XSD._dateTime));
         }
         catch (ModelException e) {
-            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+            logger.error("ModelException while storing value, ignoring", e);
         }
     }
 
@@ -238,7 +238,7 @@ public class RDFContainerImpl implements RDFContainer {
             addInternal(property, valueFactory.createLiteral(value));
         }
         catch (ModelException e) {
-            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+            logger.error("ModelException while storing value, ignoring", e);
         }
     }
 
@@ -248,7 +248,7 @@ public class RDFContainerImpl implements RDFContainer {
             addInternal(property, valueFactory.createLiteral(value));
         }
         catch (ModelException e) {
-            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+            logger.error("ModelException while storing value, ignoring", e);
         }
     }
 
@@ -258,7 +258,7 @@ public class RDFContainerImpl implements RDFContainer {
             addInternal(property, valueFactory.createLiteral(value));
         }
         catch (ModelException e) {
-            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+            logger.error("ModelException while storing value, ignoring", e);
         }
     }
 
@@ -376,7 +376,7 @@ public class RDFContainerImpl implements RDFContainer {
                 model.removeStatement(describedUri, property, node);
             }
             catch (ModelException me) {
-                LOGGER.log(Level.SEVERE, "Could not remove a statement from the model", me);
+                logger.error("Could not remove a statement from the model", me);
             }
         }
     }
@@ -398,7 +398,7 @@ public class RDFContainerImpl implements RDFContainer {
             return result;
         }
         catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Could not find statements", me);
+            logger.error("Could not find statements", me);
             return null;
         }
         finally {
@@ -414,7 +414,7 @@ public class RDFContainerImpl implements RDFContainer {
             model.addStatement(statement);
         }
         catch (ModelException e) {
-            LOGGER.log(Level.INFO, "cannot add statement", e);
+            logger.error("cannot add statement", e);
             throw new UpdateException("cannot add statement", e);
         }
     }
@@ -425,7 +425,7 @@ public class RDFContainerImpl implements RDFContainer {
             model.removeStatement(statement);
         }
         catch (ModelException e) {
-            LOGGER.log(Level.INFO, "cannot remove statement", e);
+            logger.error("cannot remove statement", e);
             throw new UpdateException("cannot remove statement", e);
         }
     }
@@ -435,7 +435,7 @@ public class RDFContainerImpl implements RDFContainer {
             model.addStatement(describedUri, property, object);
         }
         catch (ModelException e) {
-            LOGGER.log(Level.INFO, "cannot add statement", e);
+            logger.error("cannot add statement", e);
             throw new UpdateException("cannot add statement", e);
         }
     }
@@ -471,7 +471,7 @@ public class RDFContainerImpl implements RDFContainer {
             model.addStatement(describedUri, property, object);
         }
         catch (ModelException me) {
-            LOGGER.log(Level.INFO, "cannot update statement", me);
+            logger.error("cannot update statement", me);
             throw new UpdateException("cannot update statement", me);
         }
     }
@@ -495,7 +495,7 @@ public class RDFContainerImpl implements RDFContainer {
             return result;
         }
         catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Could not find statements", me);
+            logger.error("Could not find statements", me);
             return null;
         }
         finally {

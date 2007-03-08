@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -16,8 +16,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
@@ -25,6 +23,8 @@ import javax.net.ssl.X509TrustManager;
 
 import org.semanticdesktop.aperture.security.trustdecider.Decision;
 import org.semanticdesktop.aperture.security.trustdecider.TrustDecider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A default implementation, well-suited for most environments, of X509TrustManager. It handles all
@@ -34,7 +34,7 @@ import org.semanticdesktop.aperture.security.trustdecider.TrustDecider;
  */
 public class StandardTrustManager implements X509TrustManager {
 
-    private static final Logger LOGGER = Logger.getLogger(StandardTrustManager.class.getName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * The file name of the standard root certificates file.
@@ -245,7 +245,7 @@ public class StandardTrustManager implements X509TrustManager {
         }
         catch (Throwable e) {
             // a new exception is thrown below, no need to throw one here
-            LOGGER.log(Level.SEVERE, "Unexpected throwable while verifying certificate", e);
+            logger.error("Unexpected throwable while verifying certificate", e);
         }
 
         if (!Decision.TRUST_THIS_SESSION.equals(decision) && !Decision.TRUST_ALWAYS.equals(decision)) {

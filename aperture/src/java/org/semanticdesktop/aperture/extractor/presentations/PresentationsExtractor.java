@@ -9,7 +9,6 @@ package org.semanticdesktop.aperture.extractor.presentations;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.extractor.Extractor;
@@ -19,6 +18,8 @@ import org.semanticdesktop.aperture.extractor.util.WPStringExtractor;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An Extractor implementation for Corel Presentations files. This extractor knows how to handle Presentations
@@ -26,7 +27,7 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
  */
 public class PresentationsExtractor implements Extractor {
 
-    private static final Logger LOGGER = Logger.getLogger(PresentationsExtractor.class.getName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
     
 	/**
 	 * The MS Office magic number. Only Quattro files with this MS Office (i.e. files that use the OLE format)
@@ -48,7 +49,7 @@ public class PresentationsExtractor implements Extractor {
 			stream.reset();
 
 			if (hasMagicNumber(bytes, OFFICE_MAGIC_BYTES)) {
-				PoiUtil.extractAll(stream, null, result, LOGGER);
+				PoiUtil.extractAll(stream, null, result, logger);
 			}
 			else if (hasMagicNumber(bytes, WORDPERFECT_MAGIC_BYTES)) {
 				PresentationsWPStringExtractor extractor = new PresentationsWPStringExtractor();

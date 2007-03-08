@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -9,8 +9,6 @@ package org.semanticdesktop.aperture.security.socketfactory.standard;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
@@ -18,13 +16,13 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
 import org.semanticdesktop.aperture.security.trustmanager.standard.StandardTrustManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A SSLSocketFactory implementation that uses a StandardTrustManager as its TrustManager implementation.
  */
 public class StandardSocketFactory extends SSLSocketFactory {
-
-    private static final Logger LOGGER = Logger.getLogger(StandardSocketFactory.class.getName());
 
     private SSLSocketFactory factory;
 
@@ -35,7 +33,8 @@ public class StandardSocketFactory extends SSLSocketFactory {
             factory = (SSLSocketFactory) sslcontext.getSocketFactory();
         }
         catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Exception while instantiating a StandardSocketFactory", e);
+            Logger logger = LoggerFactory.getLogger(getClass());
+            logger.error("Exception while instantiating a StandardSocketFactory", e);
         }
     }
 

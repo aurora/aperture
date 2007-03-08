@@ -9,7 +9,6 @@ package org.semanticdesktop.aperture.extractor.excel;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.logging.Logger;
 
 import org.apache.poi.hssf.eventusermodel.HSSFEventFactory;
 import org.apache.poi.hssf.eventusermodel.HSSFListener;
@@ -33,16 +32,18 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.PoiUtil;
 import org.semanticdesktop.aperture.extractor.util.PoiUtil.TextExtractor;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExcelExtractor implements Extractor {
 
-    private static final Logger LOGGER = Logger.getLogger(ExcelExtractor.class.getName());
+    private Logger logger = LoggerFactory.getLogger(getClass());
     
 	private static final String END_OF_LINE = System.getProperty("line.separator", "\n");
 
 	public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
 			throws ExtractorException {
-		PoiUtil.extractAll(stream, new ExcelTextExtractor(), result, LOGGER);
+		PoiUtil.extractAll(stream, new ExcelTextExtractor(), result, logger);
 	}
 
 	private static class ExcelTextExtractor implements TextExtractor {

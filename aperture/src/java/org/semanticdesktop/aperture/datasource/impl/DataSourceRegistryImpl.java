@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -11,14 +11,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
 import org.semanticdesktop.aperture.datasource.DataSourceRegistry;
 import org.semanticdesktop.aperture.util.ontology.OntologyUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A trivial default implementation of the DataSourceRegistry interface.
@@ -30,8 +30,6 @@ public class DataSourceRegistryImpl implements DataSourceRegistry {
      */
     private HashMap factories = new HashMap();
     
-    private static Logger log = Logger.getLogger(DataSourceRegistryImpl.class.getName());
-
     /** Default constructor */
     public DataSourceRegistryImpl() {
         
@@ -99,8 +97,8 @@ public class DataSourceRegistryImpl implements DataSourceRegistry {
                 }
             }
         } catch (Exception me) {
-            log.log(Level.SEVERE,"Couldnt get data source ontology and " +
-                    "descriptions",me);
+            Logger logger = LoggerFactory.getLogger(getClass());
+            logger.error("Could not get data source ontology and descriptions",me);
         }
     }
 }

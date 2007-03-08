@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -13,8 +13,6 @@ import java.io.PushbackInputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.extractor.Extractor;
@@ -23,6 +21,8 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.UtfUtil;
 import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PlainTextExtractor implements Extractor {
 
@@ -30,7 +30,7 @@ public class PlainTextExtractor implements Extractor {
 	// Positively Must Know About Unicode and Character Sets (No Excuses!)"
 	// See: http://www.joelonsoftware.com/articles/Unicode.html
 
-	private static final Logger LOGGER = Logger.getLogger(PlainTextExtractor.class.getName());
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
 			throws ExtractorException {
@@ -56,8 +56,7 @@ public class PlainTextExtractor implements Extractor {
 						charset = Charset.forName(charsetName);
 					}
 					catch (UnsupportedCharsetException e) {
-						LOGGER.log(Level.WARNING,
-							"Unsupported charset, trying to continue with current charset", e);
+						logger.info("Unsupported charset, trying to continue with current charset", e);
 					}
 				}
 			}
@@ -74,7 +73,7 @@ public class PlainTextExtractor implements Extractor {
 				char c = firstChars.charAt(i);
 				if (!Character.isDefined(c) || (Character.isISOControl(c) && !Character.isWhitespace(c))) {
 					// c is not a Unicode char or is a control character that is not a whitespace char
-					LOGGER.log(Level.WARNING, "Document does not contain plain text");
+					logger.warn("Document does not contain plain text");
 					return;
 				}
 			}

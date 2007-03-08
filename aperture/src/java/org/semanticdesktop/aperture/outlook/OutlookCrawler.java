@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -8,8 +8,6 @@ package org.semanticdesktop.aperture.outlook;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -21,6 +19,8 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;
 import org.semanticdesktop.aperture.opener.DataOpener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.ComFailException;
@@ -106,7 +106,7 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 	 */
 	private static int crashed = 0;
 
-	protected static Logger log = Logger.getLogger(OutlookCrawler.class.getName());
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * Namespace
@@ -149,8 +149,7 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 			ComThread.doCoInitialize(0);
 		}
 		catch (Throwable t) {
-			t.printStackTrace();
-			log.severe("Cannot init Com: " + t);
+			logger.error("Cannot init Com", t);
 		}
 
 		// check if redemption is here
@@ -158,12 +157,11 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 			ActiveXComponent x = new ActiveXComponent("Redemption.SafeContactItem");
 			x.safeRelease();
 			hasRedemption = true;
-			log.config("found Oulook-Redemption and will use it to access information.");
+			logger.info("found Oulook-Redemption and will use it to access information.");
 		}
 		catch (ComFailException x) {
-			log.config("Redemption not available, you will be bugged by outlook messages.");
-			log
-					.warning("You will be bugged by MS-Outlook messages. To avoid that, download and install redemption from http://www.dimastr.com/redemption/");
+			logger
+					.warn("You will be bugged by MS-Outlook messages. To avoid that, download and install redemption from http://www.dimastr.com/redemption/");
 			hasRedemption = false;
 		}
 
@@ -189,14 +187,11 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 
 			}
 			catch (Exception x) {
-				log.info("ComFailed. Tried to init Outlook MAPI ActiveX again. Failed. Reason: "
-						+ x.toString());
+				logger.warn("ComFailed. Tried to init Outlook MAPI ActiveX again. Failed.", x);
 			}
 		}
 		else
-			log.info("Outlook crashed. This is the " + crashed + " time. Will restart ActiveX on 3rd fail. "
-					+ cause.toString());
-
+			logger.warn("Outlook crashed. This is the " + crashed + " time. Will restart ActiveX on 3rd fail. ", cause);
 	}
 
 	/**
@@ -204,7 +199,7 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 	 * 
 	 */
 	private boolean crawlContainer(OutlookResource.Folder folder, OutlookResource parent) {
-		log.finer("crawling folder: "+folder.getUri());
+		logger.info("crawling folder: "+folder.getUri());
 		// data of folder
 		crawlSingleResource(folder, parent);
 
@@ -269,15 +264,14 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 						if (boundaries.inDomain(subfolder.getUri()))
 							crawlContainer(subfolder, folder);
 						else
-							log.finest("not in domain, stepping over: "+subfolder.getUri());
+							logger.info("not in domain, stepping over: "+subfolder.getUri());
 					}
 					finally {
 						subfolder.release();
 					}
 				}
 				catch (Exception ex) {
-					OutlookCrawler.log.log(Level.INFO, "Error while adding subfolders of " + folder.getUri()
-							+ " : " + ex.getMessage(), ex);
+					logger.warn("Error while adding subfolders of " + folder.getUri(), ex);
 				}
 			}
 
@@ -300,7 +294,7 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 	 */
 	private void crawlSingleResource(OutlookResource resource, OutlookResource parent) {
 		String uri = resource.getUri();
-		log.finest("crawling resource "+uri);
+		logger.info("crawling resource "+uri);
 		
 		//		 register that we're processing this file
 		handler.accessingObject(this, uri);
@@ -333,10 +327,10 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 			}
 		}
 		catch (UrlNotFoundException e) {
-			log.log(Level.WARNING, "unable to access " + uri, e);
+			logger.warn("unable to access " + uri, e);
 		}
 		catch (IOException e) {
-			log.log(Level.WARNING, "I/O error while processing " + uri, e);
+			logger.warn("I/O error while processing " + uri, e);
 		}
 
 	}
@@ -369,8 +363,7 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 					}
 				}
 				catch (Exception ex) {
-					OutlookCrawler.log.log(Level.INFO, "Error while adding subfolders of " + folder.getUri()
-							+ " : " + ex.getMessage(), ex);
+					logger.info("Error while adding subfolders of " + folder.getUri(), ex);
 				}
 			}
 
@@ -409,7 +402,7 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 					if (dItem == null)
 						continue;
 
-					OutlookResource item = OutlookResource.createWrapperFor(this, dItem);
+					OutlookResource item = OutlookResource.createWrapperFor(this, dItem, logger);
 					try {
 						crawlSingleResource(item, folder);
 					}
@@ -422,8 +415,7 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 					return false;
 			}
 			catch (Exception ex) {
-				OutlookCrawler.log.info("Error while adding subfolders of " + folder.getUri() + " : "
-						+ ex.getMessage());
+				logger.warn("Error while adding subfolders of " + folder.getUri(), ex);
 			}
 		}
 		finally {
@@ -475,10 +467,10 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 	}
 
 	public void open(URI uri) throws IOException {
-		log.info("Outlook: opening uri " + uri);
+		logger.info("Outlook: opening uri " + uri);
 		beginCall();
 		try {
-			OutlookResource resource = OutlookResource.createWrapperFor(this, uri.toString());
+			OutlookResource resource = OutlookResource.createWrapperFor(this, uri.toString(), logger);
 			if (resource == null)
 				throw new IOException("outlook: cannot found uri " + uri);
 			try {
@@ -545,9 +537,9 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 		uriPrefix = ConfigurationUtil.getRootUrl(source.getConfiguration());
 		if (uriPrefix == null) {
 			uriPrefix = "gnowsis://localhost/outlook/";
-			log.warning("Outlook adapter missing the rootUrl property. Using " + uriPrefix + " instead.");
+			logger.warn("Outlook adapter missing the rootUrl property. Using " + uriPrefix + " instead.");
 		} else
-			log.finer("crawling outlook, uri prefix: "+uriPrefix);
+			logger.info("crawling outlook, uri prefix: "+uriPrefix);
 		
 		// domain boundaries
 		boundaries = ConfigurationUtil.getDomainBoundaries(source.getConfiguration());

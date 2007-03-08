@@ -16,8 +16,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
@@ -58,6 +56,8 @@ import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.ICALTZD;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Crawler implementation for crawling ical calendar sources modeled by a FileSystemDataSource.
@@ -69,7 +69,7 @@ import org.semanticdesktop.aperture.vocabulary.ICALTZD;
  */
 public class IcalCrawler extends CrawlerBase {
 
-	private static final Logger LOGGER = Logger.getLogger(IcalCrawler.class.getName());
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	/** The file from which we read. */
 	private File icalFile;
@@ -125,7 +125,7 @@ public class IcalCrawler extends CrawlerBase {
 			icalDataSource = (IcalDataSource) source;
 		}
 		catch (ClassCastException e) {
-			LOGGER.log(Level.SEVERE, "unsupported data source type", e);
+			logger.error("unsupported data source type", e);
 			return ExitCode.FATAL_ERROR;
 		}
 
@@ -137,18 +137,18 @@ public class IcalCrawler extends CrawlerBase {
 		if (icalFilePath == null) {
 			// treat this as an error rather than an "empty source" to prevent
 			// information loss
-			LOGGER.log(Level.SEVERE, "missing iCalendar file path specification");
+			logger.warn("missing iCalendar file path specification");
 			return ExitCode.FATAL_ERROR;
 		}
 
 		icalFile = new File(icalFilePath);
 		if (!icalFile.exists()) {
-			LOGGER.log(Level.SEVERE, "iCalendar file does not exist: '" + icalFile + "'");
+			logger.warn("iCalendar file does not exist: '" + icalFile + "'");
 			return ExitCode.FATAL_ERROR;
 		}
 
 		if (!icalFile.canRead()) {
-			LOGGER.log(Level.SEVERE, "iCalendar file cannot be read: '" + icalFile + "'");
+			logger.warn("iCalendar file cannot be read: '" + icalFile + "'");
 			return ExitCode.FATAL_ERROR;
 		}
 
@@ -156,7 +156,7 @@ public class IcalCrawler extends CrawlerBase {
 			baseuri = "file://" + icalFile.getCanonicalPath() + "#";
 		}
 		catch (IOException e) {
-			LOGGER.log(Level.SEVERE, "Couldn't get the canonical path " + "for the iCalFile", e);
+			logger.error("Couldn't get the canonical path " + "for the iCalFile", e);
 			return ExitCode.FATAL_ERROR;
 		}
 
@@ -213,15 +213,15 @@ public class IcalCrawler extends CrawlerBase {
 			return ExitCode.COMPLETED;
 		}
 		catch (FileNotFoundException fnfe) {
-			LOGGER.log(Level.SEVERE, "Couldn't find the calendar file", fnfe);
+			logger.warn("Couldn't find the calendar file", fnfe);
 			return ExitCode.FATAL_ERROR;
 		}
 		catch (ParserException pe) {
-			LOGGER.log(Level.SEVERE, "Couldn't parse the calendar file", pe);
+			logger.warn("Couldn't parse the calendar file", pe);
 			return ExitCode.FATAL_ERROR;
 		}
 		catch (IOException ioe) {
-			LOGGER.log(Level.SEVERE, "Input/Output error while parsing " + "the calendar file", ioe);
+			logger.warn("Input/Output error while parsing " + "the calendar file", ioe);
 			return ExitCode.FATAL_ERROR;
 		}
 		finally {
@@ -311,7 +311,7 @@ public class IcalCrawler extends CrawlerBase {
 			crawlExperimentalComponent(component, parentNode);
 		}
 		else {
-			LOGGER.log(Level.SEVERE, "Unknown component name: " + component.getName());
+			logger.warn("Unknown component name: " + component.getName());
 		}
 	}
 
@@ -470,7 +470,7 @@ public class IcalCrawler extends CrawlerBase {
 			crawlXtendedProperty(property, parentNode, rdfContainer);
 		}
 		else {
-			LOGGER.log(Level.SEVERE, "Unknown property name: " + property.getName());
+			logger.warn("Unknown property name: " + property.getName());
 		}
 	}
 
@@ -547,7 +547,7 @@ public class IcalCrawler extends CrawlerBase {
 			crawlXParameter(parameter, parentNode, rdfContainer);
 		}
 		else {
-			LOGGER.severe("Unknown parameter name: '" + parameterName + "'");
+			logger.warn("Unknown parameter name: '" + parameterName + "'");
 		}
 	}
 
@@ -567,7 +567,7 @@ public class IcalCrawler extends CrawlerBase {
                 crawlSingleComponent(component, rdfContainer.getDescribedUri(), rdfContainer);
             }
             catch (ModelException e) {
-                LOGGER.log(Level.WARNING, "ModelException while processing single component, skipping component", e);
+                logger.warn("ModelException while processing single component, skipping component", e);
             }
 		}
 	}
@@ -613,7 +613,7 @@ public class IcalCrawler extends CrawlerBase {
                 crawlSingleProperty(property, parentNode, rdfContainer);
             }
             catch (ModelException e) {
-                LOGGER.log(Level.WARNING, "ModelException while handling single property, skipping property", e);
+                logger.warn("ModelException while handling single property, skipping property", e);
             }
 		}
 	}
@@ -2290,7 +2290,7 @@ public class IcalCrawler extends CrawlerBase {
                 crawlRecurrenceParam(recurTokens[i], recurTokens[i + 1], rruleBlankNode, rdfContainer);
             }
             catch (ModelException e) {
-                LOGGER.log(Level.WARNING, "ModelException while processing recurrence param, skipping param", e);
+                logger.warn("ModelException while processing recurrence param, skipping param", e);
             }
 		}
 	}
@@ -2450,7 +2450,7 @@ public class IcalCrawler extends CrawlerBase {
             addStatement(rdfContainer, subject, predicate, rdfContainer.getValueFactory().createLiteral(object));
         }
         catch (ModelException e) {
-            LOGGER.log(Level.WARNING, "ModelException while creating literal, skipping statement", e);
+            logger.warn("ModelException while creating literal, skipping statement", e);
         }
 	}
 
@@ -2924,7 +2924,7 @@ public class IcalCrawler extends CrawlerBase {
 			datatypeURI = null;
 		}
 		else {
-			LOGGER.severe("Unknown value parameter: " + valueString);
+			logger.warn("Unknown value parameter: " + valueString);
 		}
 		return datatypeURI;
 	}
