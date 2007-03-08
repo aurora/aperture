@@ -8,6 +8,7 @@ package org.semanticdesktop.aperture.rdf.impl;
 
 import java.util.Date;
 
+import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
@@ -72,7 +73,7 @@ public class TestRdfContainerImpl extends ApertureTestBase {
         container.dispose();
     }
 
-    public void testPutSemantics() {
+    public void testPutSemantics() throws ModelException {
         URI subject = URIImpl.createURIWithoutChecking("urn:test:dummy");
         RDFContainer container = createRDFContainer(subject);
         ValueFactory valFac = new ValueFactoryImpl((Model) container.getModel());

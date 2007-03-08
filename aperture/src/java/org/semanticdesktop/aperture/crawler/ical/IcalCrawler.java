@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -38,6 +38,7 @@ import net.fortuna.ical4j.model.component.VToDo;
 import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.util.CompatibilityHints;
 
+import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.DatatypeLiteral;
 import org.ontoware.rdf2go.model.node.Literal;
@@ -281,7 +282,7 @@ public class IcalCrawler extends CrawlerBase {
 	 *            components i.e. those that don't create a new DataObject. The "main" components ignore this
 	 *            parameter and create their own RDFContainers.
 	 */
-	private void crawlSingleComponent(Component component, Resource parentNode, RDFContainer rdfContainer) {
+	private void crawlSingleComponent(Component component, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		if (component.getName().equals(Component.VALARM)) {
 			crawlVAlarmComponent(component, parentNode, rdfContainer);
 		}
@@ -321,7 +322,7 @@ public class IcalCrawler extends CrawlerBase {
 	 * @param property The property to be crawled.
 	 * @param rdfContainer The rdfContainer to store the generated statements in.
 	 */
-	private void crawlSingleProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	private void crawlSingleProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		String propertyName = property.getName();
 
 		if (propertyName.equals(Property.ACTION)) {
@@ -562,7 +563,12 @@ public class IcalCrawler extends CrawlerBase {
 		Iterator it = componentList.iterator();
 		while (it.hasNext()) {
 			Component component = (Component) it.next();
-			crawlSingleComponent(component, rdfContainer.getDescribedUri(), rdfContainer);
+			try {
+                crawlSingleComponent(component, rdfContainer.getDescribedUri(), rdfContainer);
+            }
+            catch (ModelException e) {
+                LOGGER.log(Level.WARNING, "ModelException while processing single component, skipping component", e);
+            }
 		}
 	}
 
@@ -602,7 +608,13 @@ public class IcalCrawler extends CrawlerBase {
 		Iterator it = propertyList.iterator();
 		while (it.hasNext()) {
 			Property property = (Property) it.next();
-			crawlSingleProperty(property, parentNode, rdfContainer);
+            
+			try {
+                crawlSingleProperty(property, parentNode, rdfContainer);
+            }
+            catch (ModelException e) {
+                LOGGER.log(Level.WARNING, "ModelException while handling single property, skipping property", e);
+            }
 		}
 	}
 
@@ -612,7 +624,7 @@ public class IcalCrawler extends CrawlerBase {
 	 * @param property The property whose parameter list we would like to crawl.
 	 * @param rdfContainer The container to store the generated statements in.
 	 */
-	private Resource crawlParameterList(Property property, RDFContainer rdfContainer) {
+	private Resource crawlParameterList(Property property, RDFContainer rdfContainer) throws ModelException {
 		Resource propertyBlankNode = generateAnonymousNode(rdfContainer);
 		ParameterList parameterList = property.getParameters();
 		crawlParameterList(parameterList, propertyBlankNode, rdfContainer);
@@ -913,7 +925,7 @@ public class IcalCrawler extends CrawlerBase {
 	 * 
 	 * @see #crawlVTimezoneComponent(Component, Resource)
 	 */
-	protected void crawlStandardObservance(Component component, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlStandardObservance(Component component, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Resource standardParentNode = generateAnonymousNode(rdfContainer);
 		crawlPropertyList(component, standardParentNode, rdfContainer);
 		addStatement(rdfContainer, parentNode, ICALTZD.standard, standardParentNode);
@@ -924,7 +936,7 @@ public class IcalCrawler extends CrawlerBase {
 	 * 
 	 * @see #crawlVTimezoneComponent(Component, Resource)
 	 */
-	protected void crawlDaylightObservance(Component component, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlDaylightObservance(Component component, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Resource daylightParentNode = generateAnonymousNode(rdfContainer);
 		crawlPropertyList(component, daylightParentNode, rdfContainer);
 		addStatement(rdfContainer, parentNode, ICALTZD.daylight, daylightParentNode);
@@ -968,9 +980,10 @@ public class IcalCrawler extends CrawlerBase {
 	 * 
 	 * Note that "Ping" is treated as an URI. This "uri://" prefix is a workaround. Sesame doesn't accept
 	 * malformed uris.
+	 * @throws ModelException 
 	 * 
 	 */
-	protected void crawlAttachProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlAttachProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.URI);
 		addStatement(rdfContainer, parentNode, ICALTZD.attach, propertyValue);
 	}
@@ -998,7 +1011,7 @@ public class IcalCrawler extends CrawlerBase {
 	 * @param parentNode
 	 * @param rdfContainer
 	 */
-	protected void crawlAttendeeProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlAttendeeProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Resource blankNode = crawlParameterList(property, rdfContainer);
 		addStatement(rdfContainer, parentNode, ICALTZD.attendee, blankNode);
 		addStatement(rdfContainer, blankNode, ICALTZD.calAddress, property.getValue());
@@ -1101,7 +1114,7 @@ public class IcalCrawler extends CrawlerBase {
 	 *   _:VTodoNode icaltzd:completed &quot;1997-12-10T08:00:00Z&quot;&circ;&circ;&lt;&quot;&amp;xsddatetime&quot;&gt;
 	 * </pre>
 	 */
-	protected void crawlCompletedProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlCompletedProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.DATE_TIME);
 		addStatement(rdfContainer, parentNode, ICALTZD.completed, propertyValue);
 	}
@@ -1144,7 +1157,7 @@ public class IcalCrawler extends CrawlerBase {
 	 *   _:VeventNode icaltzd:created &quot;1997-12-10T08:00:00&quot;&circ;&circ;&lt;&quot;&amp;xsd#datetime&quot;&gt;
 	 * </pre>
 	 */
-	protected void crawlCreatedProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlCreatedProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.DATE_TIME);
 		addStatement(rdfContainer, parentNode, ICALTZD.created, propertyValue);
 	}
@@ -1207,7 +1220,7 @@ public class IcalCrawler extends CrawlerBase {
 	 * @see <a href="http://www.w3.org/2002/12/cal/tzd/">Dan's Timezone Database</a>
 	 * 
 	 */
-	protected void crawlDtEndProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlDtEndProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.DATE_TIME);
 		addStatement(rdfContainer, parentNode, ICALTZD.dtend, propertyValue);
 	}
@@ -1228,7 +1241,7 @@ public class IcalCrawler extends CrawlerBase {
 	 * 
 	 * Note the conversion to the XSD time format
 	 */
-	protected void crawlDtStampProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlDtStampProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.DATE_TIME);
 		addStatement(rdfContainer, parentNode, ICALTZD.dtstamp, propertyValue);
 	}
@@ -1268,7 +1281,7 @@ public class IcalCrawler extends CrawlerBase {
 	 *  @see <a href="http://www.w3.org/2002/12/cal/tzd/">Dan's Timezone Database</a>
 	 * 
 	 */
-	protected void crawlDtStartProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlDtStartProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.DATE_TIME);
 		addStatement(rdfContainer, parentNode, ICALTZD.dtstart, propertyValue);
 	}
@@ -1309,7 +1322,7 @@ public class IcalCrawler extends CrawlerBase {
 	 *   @see <a href="http://www.w3.org/2002/12/cal/tzd/">Dan's Timezone Database</a>
 	 * 
 	 */
-	protected void crawlDueProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlDueProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.DATE_TIME);
 		addStatement(rdfContainer, parentNode, ICALTZD.due, propertyValue);
 	}
@@ -1333,7 +1346,7 @@ public class IcalCrawler extends CrawlerBase {
 	 *   _:durationNode icaltzd:value &quot;PT1H0M0S&quot;&circ;&circ;&lt;&quot;&amp;xsd#duration&quot;&gt;
 	 * </pre>
 	 */
-	protected void crawlDurationProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlDurationProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.DURATION);
 		Resource durationNode = generateAnonymousNode(rdfContainer);
 		addStatement(rdfContainer, parentNode, ICALTZD.duration, durationNode);
@@ -1381,7 +1394,7 @@ public class IcalCrawler extends CrawlerBase {
 	 * @see <a href="http://www.w3.org/2002/12/cal/tzd/">Dan's Timezone Database</a>
 	 * 
 	 */
-	protected void crawlExDateProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlExDateProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.DATE_TIME);
 		addStatement(rdfContainer, parentNode, ICALTZD.exdate, propertyValue);
 	}
@@ -1414,7 +1427,7 @@ public class IcalCrawler extends CrawlerBase {
 	 * 
 	 * @see #crawlRecur(String, Resource, RDFContainer)
 	 */
-	protected void crawlExRuleProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlExRuleProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Resource rruleBlankNode = generateAnonymousNode(rdfContainer);
 		crawlRecur(property.getValue(), rruleBlankNode, rdfContainer);
 		addStatement(rdfContainer, parentNode, ICALTZD.exrule, rruleBlankNode);
@@ -1444,7 +1457,7 @@ public class IcalCrawler extends CrawlerBase {
 	 *   _:VFreebusyComponentNode icaltzd:freebusy &quot;19971015T223000Z/PT6H30M&quot; .
 	 * </pre>
 	 */
-	protected void crawlFreeBusyProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlFreeBusyProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		List<Node> valueList = getMultipleRdfPropertyValues(rdfContainer, property, IcalDataType.PERIOD);
 		addMultipleStatements(rdfContainer, parentNode, ICALTZD.freebusy, valueList);
 	}
@@ -1471,7 +1484,7 @@ public class IcalCrawler extends CrawlerBase {
 	 *                   rdf:rest &lt;&quot;&amp;rdfnil&quot;&gt; .
 	 * </pre>
 	 */
-	protected void crawlGeoProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlGeoProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		String[] valueTokens = property.getValue().split(";");
 		Literal latitudeLiteral = rdfContainer.getValueFactory().createLiteral(valueTokens[0], XSD._double);
 		Literal longitudeLiteral = rdfContainer.getValueFactory().createLiteral(valueTokens[1], XSD._double);
@@ -1500,7 +1513,7 @@ public class IcalCrawler extends CrawlerBase {
 	 *        &quot;2004-12-23T15:17:52&quot;&circ;&circ;&lt;&quot;&amp;xsddatetime&quot;&gt;
 	 * </pre>
 	 */
-	protected void crawlLastModifiedProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlLastModifiedProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.DATE_TIME);
 		addStatement(rdfContainer, parentNode, ICALTZD.lastModified, propertyValue);
 	}
@@ -1558,7 +1571,7 @@ public class IcalCrawler extends CrawlerBase {
 	 *   _:organizerNode icaltzd:calAddress &quot;MAILTO:jsmith@host1.com&quot;
 	 * </pre>
 	 */
-	protected void crawlOrganizerProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlOrganizerProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Resource blankNode = crawlParameterList(property, rdfContainer);
 		addStatement(rdfContainer, parentNode, ICALTZD.organizer, blankNode);
 		addStatement(rdfContainer, blankNode, ICALTZD.calAddress, property.getValue());
@@ -1579,7 +1592,7 @@ public class IcalCrawler extends CrawlerBase {
 	 * </pre>
 	 */
 	protected void crawlPercentCompleteProperty(Property property, Resource parentNode,
-			RDFContainer rdfContainer) {
+			RDFContainer rdfContainer) throws ModelException {
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.INTEGER);
 		addStatement(rdfContainer, parentNode, ICALTZD.percentComplete, propertyValue);
 	}
@@ -1598,7 +1611,7 @@ public class IcalCrawler extends CrawlerBase {
 	 *   _:VtodoNode icaltzd:priority &quot;2&quot;&circ;&circ;&lt;&quot;&amp;xsd#integer&quot;&gt;
 	 * </pre>
 	 */
-	protected void crawlPriorityProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlPriorityProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.INTEGER);
 		addStatement(rdfContainer, parentNode, ICALTZD.priority, propertyValue);
 	}
@@ -1667,7 +1680,7 @@ public class IcalCrawler extends CrawlerBase {
 	 *   @see <a href="http://www.w3.org/2002/12/cal/tzd/">Dan's Timezone Database</a>
 	 * 
 	 */
-	protected void crawlRDateProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlRDateProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		List<Node> valueList = getMultipleRdfPropertyValues(rdfContainer, property, IcalDataType.DATE_TIME);
 		addMultipleStatements(rdfContainer, parentNode, ICALTZD.rdate, valueList);
 	}
@@ -1708,7 +1721,7 @@ public class IcalCrawler extends CrawlerBase {
 	 * 
 	 * @see <a href="http://www.w3.org/2002/12/cal/tzd/">Dan's Timezone Database</a>
 	 */
-	protected void crawlRecurrenceIdProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlRecurrenceIdProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Resource recurrenceIdBlankNode = crawlParameterList(property, rdfContainer);
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.DATE_TIME);
 		addStatement(rdfContainer, parentNode, ICALTZD.recurrenceId, recurrenceIdBlankNode);
@@ -1758,7 +1771,7 @@ public class IcalCrawler extends CrawlerBase {
 	 *   &lt;pre&gt;
 	 * 
 	 */
-	protected void crawlRepeatProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlRepeatProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.INTEGER);
 		addStatement(rdfContainer, parentNode, ICALTZD.repeat, propertyValue);
 	}
@@ -1835,7 +1848,7 @@ public class IcalCrawler extends CrawlerBase {
 	 * 
 	 * @see #crawlRecur(String, Resource, RDFContainer)
 	 */
-	protected void crawlRRuleProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlRRuleProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Resource rruleBlankNode = generateAnonymousNode(rdfContainer);
 		crawlRecur(property.getValue(), rruleBlankNode, rdfContainer);
 		addStatement(rdfContainer, parentNode, ICALTZD.rrule, rruleBlankNode);
@@ -1856,7 +1869,7 @@ public class IcalCrawler extends CrawlerBase {
 	 *   &lt;pre&gt;
 	 * 
 	 */
-	protected void crawlSequenceProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlSequenceProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.INTEGER);
 		addStatement(rdfContainer, parentNode, ICALTZD.sequence, propertyValue);
 	}
@@ -1946,7 +1959,7 @@ public class IcalCrawler extends CrawlerBase {
 	 * Note that the date-time value is converted from the ical form, to the form defined in the xsd datetime
 	 * datatype specification.
 	 */
-	protected void crawlTriggerProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlTriggerProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Resource triggerBlankNode = crawlParameterList(property, rdfContainer);
 		addStatement(rdfContainer, parentNode, ICALTZD.trigger, triggerBlankNode);
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.DURATION);
@@ -2058,7 +2071,7 @@ public class IcalCrawler extends CrawlerBase {
 	 *   &lt;pre&gt;
 	 * 
 	 */
-	protected void crawlTzUrlProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlTzUrlProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.URI);
 		addStatement(rdfContainer, parentNode, ICALTZD.tzurl, propertyValue);
 	}
@@ -2100,7 +2113,7 @@ public class IcalCrawler extends CrawlerBase {
 	 *   &lt;pre&gt;
 	 * 
 	 */
-	protected void crawlUrlProperty(Property property, Resource parentNode, RDFContainer rdfContainer) {
+	protected void crawlUrlProperty(Property property, Resource parentNode, RDFContainer rdfContainer) throws ModelException {
 		Node propertyValue = getRdfPropertyValue(rdfContainer, property, IcalDataType.URI);
 		addStatement(rdfContainer, parentNode, ICALTZD.url, propertyValue);
 	}
@@ -2273,12 +2286,17 @@ public class IcalCrawler extends CrawlerBase {
 	protected void crawlRecur(String recurString, Resource rruleBlankNode, RDFContainer rdfContainer) {
 		String[] recurTokens = recurString.split("[=;]");
 		for (int i = 0; i < recurTokens.length; i += 2) {
-			crawlRecurrenceParam(recurTokens[i], recurTokens[i + 1], rruleBlankNode, rdfContainer);
+			try {
+                crawlRecurrenceParam(recurTokens[i], recurTokens[i + 1], rruleBlankNode, rdfContainer);
+            }
+            catch (ModelException e) {
+                LOGGER.log(Level.WARNING, "ModelException while processing recurrence param, skipping param", e);
+            }
 		}
 	}
 
 	protected void crawlRecurrenceParam(String name, String value, Resource parentNode,
-			RDFContainer rdfContainer) {
+			RDFContainer rdfContainer) throws ModelException {
 		if (name.equals("FREQ")) {
 			crawlFreqRecurrenceParam(name, value, parentNode, rdfContainer);
 		}
@@ -2330,9 +2348,9 @@ public class IcalCrawler extends CrawlerBase {
 		addStatement(rdfContainer, parentNode, ICALTZD.until, value);
 	}
 
-	/** note that it is the only recurrence parameter that introduces a typed interval */
+	/** note that it is the only recurrence parameter that introduces a typed interval **/
 	protected void crawlIntervalRecurrenceParam(String name, String value, Resource parentNode,
-			RDFContainer rdfContainer) {
+			RDFContainer rdfContainer) throws ModelException {
 		Literal literal = rdfContainer.getValueFactory().createLiteral(value, XSD._integer);
 		addStatement(rdfContainer, parentNode, ICALTZD.interval, literal);
 	}
@@ -2428,7 +2446,12 @@ public class IcalCrawler extends CrawlerBase {
 	 * @param object
 	 */
 	private void addStatement(RDFContainer rdfContainer, Resource subject, URI predicate, String object) {
-		addStatement(rdfContainer, subject, predicate, rdfContainer.getValueFactory().createLiteral(object));
+		try {
+            addStatement(rdfContainer, subject, predicate, rdfContainer.getValueFactory().createLiteral(object));
+        }
+        catch (ModelException e) {
+            LOGGER.log(Level.WARNING, "ModelException while creating literal, skipping statement", e);
+        }
 	}
 
 	/**
@@ -2703,7 +2726,7 @@ public class IcalCrawler extends CrawlerBase {
 		}
 	}
 
-	private Resource generateAnonymousNode(RDFContainer rdfContainer) {
+	private Resource generateAnonymousNode(RDFContainer rdfContainer) throws ModelException {
 		if (realBlankNodes) {
 			return rdfContainer.getValueFactory().createBlankNode();
 		}
@@ -2717,7 +2740,7 @@ public class IcalCrawler extends CrawlerBase {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	private List<Node> getMultipleRdfPropertyValues(RDFContainer rdfContainer, Property property,
-			String defaultType) {
+			String defaultType) throws ModelException {
 		String totalPropertyValue = property.getValue();
 		if (totalPropertyValue == null) {
 			return null;
@@ -2732,13 +2755,13 @@ public class IcalCrawler extends CrawlerBase {
 		return resultList;
 	}
 
-	private Node getRdfPropertyValue(RDFContainer rdfContainer, Property property, String defaultType) {
+	private Node getRdfPropertyValue(RDFContainer rdfContainer, Property property, String defaultType) throws ModelException {
 		return getRdfPropertyValue(rdfContainer, property.getValue(), property.getParameter(Parameter.TZID),
 			property.getParameter(Parameter.VALUE), defaultType);
 	}
 
 	private Node getRdfPropertyValue(RDFContainer rdfContainer, String propertyValue, Parameter tzidParameter,
-			Parameter valueParameter, String defaultType) {
+			Parameter valueParameter, String defaultType) throws ModelException {
 		// timezones as datatypes ...
 		if (tzidParameter != null
 				&& (valueParameter == null && defaultType.equals(IcalDataType.DATE_TIME) || valueParameter != null
@@ -2779,7 +2802,7 @@ public class IcalCrawler extends CrawlerBase {
 	 * @param propertyValue The string that the URI should be created from.
 	 * @return The created URI.
 	 */
-	private Node tryToCreateAnUri(RDFContainer rdfContainer, String propertyValue) {
+	private Node tryToCreateAnUri(RDFContainer rdfContainer, String propertyValue) throws ModelException {
 		// first let's try the easy way;
 		URI uri = null;
 		// ugly hack, Sesame doesn't accept uris without colons, but java.net.URI does
@@ -2799,7 +2822,7 @@ public class IcalCrawler extends CrawlerBase {
 	}
 
 	private Node getDateTimeWithTimeZone(RDFContainer rdfContainer, String icalValue, 
-			Parameter tzidParameter) {
+			Parameter tzidParameter) throws ModelException {
 		String rdfPropertyValue = convertIcalDateTimeToXSDDateTime(icalValue);
 		URI timezoneDatatypeURI = createTimeZoneDatatypeURI(tzidParameter.getValue());
 		Node result = rdfContainer.getValueFactory().createLiteral(rdfPropertyValue, timezoneDatatypeURI);

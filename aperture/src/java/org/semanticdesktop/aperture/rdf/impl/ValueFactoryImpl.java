@@ -6,9 +6,6 @@
  */
 package org.semanticdesktop.aperture.rdf.impl;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
@@ -26,118 +23,57 @@ import org.semanticdesktop.aperture.rdf.ValueFactory;
  */
 public class ValueFactoryImpl implements ValueFactory {
 
-    private static final Logger LOGGER = Logger.getLogger(ValueFactoryImpl.class.getName());
-
     private Model model;
 
     public ValueFactoryImpl(Model model) {
         this.model = model;
     }
 
-    public Literal createLiteral(String label) {
-        try {
-            return model.createPlainLiteral(label);
-        }
-        catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Could not create a plain literal from '" + label + "'", me);
-            return null;
-        }
+    public Literal createLiteral(String label) throws ModelException {
+        return model.createPlainLiteral(label);
     }
 
-    public Literal createLiteral(String label, URI datatype) {
-        try {
-            return model.createDatatypeLiteral(label, datatype);
-        }
-        catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Could not create a datatype literal '" + label + "'", me);
-            return null;
-        }
+    public Literal createLiteral(String label, URI datatype) throws ModelException {
+        return model.createDatatypeLiteral(label, datatype);
     }
 
-    public Literal createLiteral(boolean value) {
-        try {
-            return model.createDatatypeLiteral(String.valueOf(value), XSD._boolean);
-        }
-        catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Could not create a datatype literal '" + value + "'", me);
-            return null;
-        }
+    public Literal createLiteral(boolean value) throws ModelException {
+        return model.createDatatypeLiteral(String.valueOf(value), XSD._boolean);
     }
 
-    public Literal createLiteral(long value) {
-        try {
-            return model.createDatatypeLiteral(String.valueOf(value), XSD._long);
-        }
-        catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Could not create a datatype literal '" + value + "'", me);
-            return null;
-        }
+    public Literal createLiteral(long value) throws ModelException {
+        return model.createDatatypeLiteral(String.valueOf(value), XSD._long);
     }
 
-    public Literal createLiteral(int value) {
-        try {
-            return model.createDatatypeLiteral(String.valueOf(value), XSD._integer);
-        }
-        catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Could not create a datatype literal '" + value + "'", me);
-            return null;
-        }
+    public Literal createLiteral(int value) throws ModelException {
+        return model.createDatatypeLiteral(String.valueOf(value), XSD._integer);
     }
 
-    public Literal createLiteral(short value) {
-        try {
-            return model.createDatatypeLiteral(String.valueOf(value), XSD._short);
-        }
-        catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Could not create a datatype literal '" + value + "'", me);
-            return null;
-        }
+    public Literal createLiteral(short value) throws ModelException {
+        return model.createDatatypeLiteral(String.valueOf(value), XSD._short);
     }
 
-    public Literal createLiteral(byte value) {
-        try {
-            return model.createDatatypeLiteral(String.valueOf(value), XSD._byte);
-        }
-        catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Could not create a datatype literal '" + value + "'", me);
-            return null;
-        }
+    public Literal createLiteral(byte value) throws ModelException {
+        return model.createDatatypeLiteral(String.valueOf(value), XSD._byte);
     }
 
-    public Literal createLiteral(double value) {
-        try {
-            return model.createDatatypeLiteral(String.valueOf(value), XSD._double);
-        }
-        catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Could not create a datatype literal '" + value + "'", me);
-            return null;
-        }
+    public Literal createLiteral(double value) throws ModelException {
+        return model.createDatatypeLiteral(String.valueOf(value), XSD._double);
     }
 
-    public Literal createLiteral(float value) {
-        try {
-            return model.createDatatypeLiteral(String.valueOf(value), XSD._float);
-        }
-        catch (ModelException me) {
-            LOGGER.log(Level.SEVERE, "Could not create a datatype literal '" + value + "'", me);
-            return null;
-        }
+    public Literal createLiteral(float value) throws ModelException {
+        return model.createDatatypeLiteral(String.valueOf(value), XSD._float);
     }
 
     public Statement createStatement(Resource subject, URI predicate, Node object) {
         return model.createStatement(subject, predicate, object);
     }
 
-    public URI createURI(String uri) {
-        try {
-            return model.createURI(uri);
-        }
-        catch (Exception e) {
-            throw new IllegalArgumentException("Illegal URI: " + uri, e);
-        }
+    public URI createURI(String uri) throws ModelException {
+        return model.createURI(uri);
     }
 
-    public URI createURI(String namespaceUri, String localName) {
+    public URI createURI(String namespaceUri, String localName) throws ModelException {
         return createURI(namespaceUri + "#" + localName);
     }
 

@@ -24,6 +24,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
@@ -369,10 +370,15 @@ public class OpenXmlExtractor implements Extractor {
                         if (!nameSpace.endsWith("/")) {
                             nameSpace += "/";
                         }
-                        String uriString = nameSpace + childElement.getLocalName();
-                        URI predicate = metadata.getValueFactory().createURI(uriString);
-                        
-                        metadata.add(predicate, text);
+
+                        try {
+                            String uriString = nameSpace + childElement.getLocalName();
+                            URI predicate = metadata.getValueFactory().createURI(uriString);
+                            metadata.add(predicate, text);
+                        }
+                        catch (ModelException e) {
+                            LOGGER.log(Level.WARNING, "ModelException while adding statement, ignoring", e);
+                        }
                     }
 
                     // make sure we also add all relevant properties from the Aperture namespace

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2005 - 2007 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.AccessData;
@@ -203,25 +204,30 @@ public abstract class OutlookResource {
 
 			if ((city != null) || (country != null) || (pobox != null) || (plz != null) || (state != null)
 					|| (street != null)) {
-				// create address
-				URI address = rdf.getValueFactory().createURI(getUri() + "_" + prefix);
-				rdf.add(vf.createStatement(address, RDF.type, VCARD.Address));
-				rdf.add(vf.createStatement(address, RDF.type, VCARD.Address));
+                try {
+                    // create address
+                    URI address = rdf.getValueFactory().createURI(getUri() + "_" + prefix);
+                    rdf.add(vf.createStatement(address, RDF.type, VCARD.Address));
+                    rdf.add(vf.createStatement(address, RDF.type, VCARD.Address));
 
-				if (city != null)
-					rdf.add(vf.createStatement(address, VCARD.locality, vf.createLiteral(city)));
-				if (country != null)
-					rdf.add(vf.createStatement(address, VCARD.country, vf.createLiteral(country)));
-				if (pobox != null)
-					rdf.add(vf.createStatement(address, VCARD.pobox, vf.createLiteral(pobox)));
-				if (plz != null)
-					rdf.add(vf.createStatement(address, VCARD.postalcode, vf.createLiteral(plz)));
-				if (state != null)
-					rdf.add(vf.createStatement(address, VCARD.region, vf.createLiteral(state)));
-				if (street != null)
-					rdf.add(vf.createStatement(address, VCARD.streetAddress, vf.createLiteral(street)));
-				// add the ano-statement to the result
-				rdf.add(addressRelation, address);
+                    if (city != null)
+                        rdf.add(vf.createStatement(address, VCARD.locality, vf.createLiteral(city)));
+                    if (country != null)
+                        rdf.add(vf.createStatement(address, VCARD.country, vf.createLiteral(country)));
+                    if (pobox != null)
+                        rdf.add(vf.createStatement(address, VCARD.pobox, vf.createLiteral(pobox)));
+                    if (plz != null)
+                        rdf.add(vf.createStatement(address, VCARD.postalcode, vf.createLiteral(plz)));
+                    if (state != null)
+                        rdf.add(vf.createStatement(address, VCARD.region, vf.createLiteral(state)));
+                    if (street != null)
+                        rdf.add(vf.createStatement(address, VCARD.streetAddress, vf.createLiteral(street)));
+                    // add the ano-statement to the result
+                    rdf.add(addressRelation, address);
+                }
+                catch (ModelException e) {
+                    log.log(Level.WARNING, "ModelException while adding statements", e);
+                }
 			}
 		}
 	}
@@ -321,14 +327,19 @@ public abstract class OutlookResource {
 			String name = getLiteralOf(getSaveResource(), "SenderName");
 			String mailbox = getLiteralOf(getSaveResource(), "SenderEmailAddress");
 			if (!(name == null && mailbox == null)) {
-				URI from = vf.createURI(getUri() + "_FROM");
-				rdf.add(vf.createStatement(from, RDF.type, DATA_GEN.Agent));
-				if (name != null)
-					rdf.add(vf.createStatement(from, DATA_GEN.name, vf.createLiteral(name)));
-				if (mailbox != null) {
-					rdf.add(vf.createStatement(from, DATA_GEN.emailAddress, vf.createLiteral(mailbox)));
-				}
-				rdf.add(DATA_GEN.from, from);
+                try {
+                    URI from = vf.createURI(getUri() + "_FROM");
+                    rdf.add(vf.createStatement(from, RDF.type, DATA_GEN.Agent));
+                    if (name != null)
+                        rdf.add(vf.createStatement(from, DATA_GEN.name, vf.createLiteral(name)));
+                    if (mailbox != null) {
+                        rdf.add(vf.createStatement(from, DATA_GEN.emailAddress, vf.createLiteral(mailbox)));
+                    }
+                    rdf.add(DATA_GEN.from, from);
+                }
+                catch (ModelException e) {
+                    log.log(Level.WARNING, "ModelException while adding statements", e);
+                }
 			}
 
 			// FIXME: Redemption seems to have a bug, so i use getResource() here.
@@ -919,6 +930,9 @@ public abstract class OutlookResource {
 
 /*
  * $Log$
+ * Revision 1.9  2007/03/08 13:23:03  cfmfluit
+ * ValueFactory now throws ModelExceptions, rather than letting the implementation log the exception and return null. Adapted all classes using a ValueFactory accordingly. This fixes potential NPEs when the ValueFactory methods fail and the returned null values would be used accidentally to e.g. add a statement.
+ *
  * Revision 1.8  2006/11/29 14:34:22  mylka
  * Merged three dublin core vocabularies with the data vocabulary into one single DATA class...
  *

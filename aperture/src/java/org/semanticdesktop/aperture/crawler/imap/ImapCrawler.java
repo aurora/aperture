@@ -1077,8 +1077,13 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
 				if (isAcceptable(message)) {
 					long messageID = imapFolder.getUID(message);
-					URI messageURI = metadata.getValueFactory().createURI(uriPrefix + messageID);
-					metadata.add(metadata.getValueFactory().createStatement(messageURI, DATA.partOf, folderURI));
+                    try {
+                        URI messageURI = metadata.getValueFactory().createURI(uriPrefix + messageID);
+                        metadata.add(metadata.getValueFactory().createStatement(messageURI, DATA.partOf, folderURI));
+                    }
+                    catch (ModelException e) {
+                        LOGGER.log(Level.WARNING, "ModelException while creating URI", e);
+                    }
 				}
 			}
 		}

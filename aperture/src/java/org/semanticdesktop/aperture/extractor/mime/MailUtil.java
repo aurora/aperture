@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 Aduna.
+ * Copyright (c) 2006 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -12,6 +12,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 
+import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.node.Literal;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.vocabulary.RDF;
@@ -49,7 +50,7 @@ public class MailUtil {
 	 * @param metadata The RDFContainer that will receive the RDF statements and whose described URI is
 	 *            expected to represent the mail resource.
 	 */
-	public static void addAddressMetadata(InternetAddress address, URI predicate, RDFContainer metadata) {
+	public static void addAddressMetadata(InternetAddress address, URI predicate, RDFContainer metadata) throws ModelException {
 		// fetch the name
 		String name = address.getPersonal();
 		if (name != null) {

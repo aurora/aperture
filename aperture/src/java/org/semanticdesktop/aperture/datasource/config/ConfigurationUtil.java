@@ -25,6 +25,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.UpdateException;
 import org.semanticdesktop.aperture.util.ModelUtil;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
@@ -95,8 +96,13 @@ public class ConfigurationUtil {
 
         while (iterator.hasNext()) {
             String oldPath = (String) iterator.next();
-            configuration.remove(configuration.getValueFactory().createStatement(id, DATASOURCE_GEN.basepath,
-                configuration.getValueFactory().createLiteral(oldPath)));
+            try {
+                configuration.remove(configuration.getValueFactory().createStatement(id, DATASOURCE_GEN.basepath,
+                    configuration.getValueFactory().createLiteral(oldPath)));
+            }
+            catch (ModelException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         // now add the new paths

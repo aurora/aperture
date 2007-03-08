@@ -77,7 +77,13 @@ public class RDFContainerImpl implements RDFContainer {
      */
     public RDFContainerImpl(Model model, String describedUri) {
         init(model, false);
-        this.describedUri = valueFactory.createURI(describedUri);
+        try {
+            this.describedUri = valueFactory.createURI(describedUri);
+        }
+        catch (ModelException e) {
+            // this is so destructive that there's no point in logging it, we throw a RTE instead
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -114,7 +120,13 @@ public class RDFContainerImpl implements RDFContainer {
      */
     public RDFContainerImpl(Model model, String describedUri, boolean modelShared) {
         init(model, modelShared);
-        this.describedUri = valueFactory.createURI(describedUri);
+        try {
+            this.describedUri = valueFactory.createURI(describedUri);
+        }
+        catch (ModelException e) {
+            // this is so destructive that there's no point in logging it, we throw a RTE instead
+            throw new RuntimeException(e);
+        }
     }
 
     private void init(Model model, boolean shared) {
@@ -135,13 +147,23 @@ public class RDFContainerImpl implements RDFContainer {
 
     public void put(URI property, String value) {
         checkState();
-        replaceInternal(property, valueFactory.createLiteral(value));
+        try {
+            replaceInternal(property, valueFactory.createLiteral(value));
+        }
+        catch (ModelException e) {
+            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+        }
     }
 
     public void put(URI property, Date value) {
         checkState();
         String date = DateUtil.dateTime2String(value);
-        replaceInternal(property, valueFactory.createLiteral(date, XSD._dateTime));
+        try {
+            replaceInternal(property, valueFactory.createLiteral(date, XSD._dateTime));
+        }
+        catch (ModelException e) {
+            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+        }
     }
 
     public void put(URI property, Calendar value) {
@@ -151,17 +173,32 @@ public class RDFContainerImpl implements RDFContainer {
 
     public void put(URI property, boolean value) {
         checkState();
-        replaceInternal(property, valueFactory.createLiteral(value));
+        try {
+            replaceInternal(property, valueFactory.createLiteral(value));
+        }
+        catch (ModelException e) {
+            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+        }
     }
 
     public void put(URI property, int value) {
         checkState();
-        replaceInternal(property, valueFactory.createLiteral(value));
+        try {
+            replaceInternal(property, valueFactory.createLiteral(value));
+        }
+        catch (ModelException e) {
+            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+        }
     }
 
     public void put(URI property, long value) {
         checkState();
-        replaceInternal(property, valueFactory.createLiteral(value));
+        try {
+            replaceInternal(property, valueFactory.createLiteral(value));
+        }
+        catch (ModelException e) {
+            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+        }
     }
 
     public void put(URI property, Node value) {
@@ -171,13 +208,23 @@ public class RDFContainerImpl implements RDFContainer {
 
     public void add(URI property, String value) {
         checkState();
-        addInternal(property, valueFactory.createLiteral(value));
+        try {
+            addInternal(property, valueFactory.createLiteral(value));
+        }
+        catch (ModelException e) {
+            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+        }
     }
 
     public void add(URI property, Date value) {
         checkState();
         String date = DateUtil.dateTime2String(value);
-        addInternal(property, valueFactory.createLiteral(date, XSD._dateTime));
+        try {
+            addInternal(property, valueFactory.createLiteral(date, XSD._dateTime));
+        }
+        catch (ModelException e) {
+            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+        }
     }
 
     public void add(URI property, Calendar value) {
@@ -187,17 +234,32 @@ public class RDFContainerImpl implements RDFContainer {
 
     public void add(URI property, boolean value) {
         checkState();
-        addInternal(property, valueFactory.createLiteral(value));
+        try {
+            addInternal(property, valueFactory.createLiteral(value));
+        }
+        catch (ModelException e) {
+            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+        }
     }
 
     public void add(URI property, int value) {
         checkState();
-        addInternal(property, valueFactory.createLiteral(value));
+        try {
+            addInternal(property, valueFactory.createLiteral(value));
+        }
+        catch (ModelException e) {
+            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+        }
     }
 
     public void add(URI property, long value) {
         checkState();
-        addInternal(property, valueFactory.createLiteral(value));
+        try {
+            addInternal(property, valueFactory.createLiteral(value));
+        }
+        catch (ModelException e) {
+            LOGGER.log(Level.WARNING, "ModelException while storing value, ignoring", e);
+        }
     }
 
     public void add(URI property, Node node) {
@@ -449,7 +511,8 @@ public class RDFContainerImpl implements RDFContainer {
     }
 
     /**
-     * Disposes this RDFContainerImpl. When the Model shared flag is set toResults of invoking any methods after disposal is undefined.
+     * Disposes this RDFContainerImpl. When the Model shared flag is set toResults of invoking any methods
+     * after disposal is undefined.
      */
     public void dispose() {
         this.disposed = true;
