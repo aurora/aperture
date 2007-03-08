@@ -9,6 +9,7 @@ package org.semanticdesktop.aperture.datasource.config;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.Resource;
@@ -55,8 +56,17 @@ public class SubstringPattern extends UrlPattern {
 		ArrayList<Statement> result = new ArrayList<Statement>();
 
 		result.add(ModelUtil.createStatement(model, subject, RDF.type, DATASOURCE_GEN.SubstringPattern));
-		result.add(ModelUtil.createStatement(model, subject, RDF.value, ModelUtil.createLiteral(model,
-			substring, XSD._string)));
+        
+		try {
+            result.add(ModelUtil.createStatement(model, subject, RDF.value, ModelUtil.createLiteral(model,
+            	substring, XSD._string)));
+        }
+        catch (ModelException e) {
+            // creation of a Literal failed, signaling a runtime exception
+            throw new RuntimeException(e);
+        }
+
+        
 		result.add(ModelUtil.createStatement(model, subject, DATASOURCE_GEN.condition, condition.toNode()));
 
 		return result;

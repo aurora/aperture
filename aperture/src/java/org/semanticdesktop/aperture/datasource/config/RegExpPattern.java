@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2006 Aduna.
+ * Copyright (c) 2005 - 2007 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
+import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.Resource;
@@ -57,8 +58,15 @@ public class RegExpPattern extends UrlPattern {
 		ArrayList<Statement> result = new ArrayList<Statement>();
 
 		result.add(ModelUtil.createStatement(model, subject, RDF.type, DATASOURCE_GEN.RegExpPattern));
-		result.add(ModelUtil.createStatement(model, subject, RDF.value, ModelUtil.createLiteral(model,
-			getPatternString(), XSD._string)));
+        
+		try {
+            result.add(ModelUtil.createStatement(model, subject, RDF.value, ModelUtil.createLiteral(model,
+            	getPatternString(), XSD._string)));
+        }
+        catch (ModelException e) {
+            // creation of a Literal failed, signaling a runtime exception
+            throw new RuntimeException(e);
+        }
 
 		return result;
 	}
