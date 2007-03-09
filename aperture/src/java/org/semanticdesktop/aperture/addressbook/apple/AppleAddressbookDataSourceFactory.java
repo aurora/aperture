@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ImapDataSourceFactory returns instances of the ImapDataSource class. 
+ * AppleAddressbookDataSourceFactory returns instances of the AppleAddressbookDataSource class. 
  */
 public class AppleAddressbookDataSourceFactory implements DataSourceFactory {
 

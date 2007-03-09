@@ -8,7 +8,7 @@
 
 :ImapDataSourceLens rdf:type fresnel:Lens ;
 					fresnel:purpose fresnel:defaultLens ;
-					fresnel:classLensDomain source:ImapDataSource ;
+					fresnel:classLensDomain source:IMAPDataSource ;
 					fresnel:showProperties ( source:hostname
 									         source:username
 									         source:password ) .

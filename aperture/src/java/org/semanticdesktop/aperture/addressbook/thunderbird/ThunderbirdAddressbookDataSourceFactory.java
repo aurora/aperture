@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ImapDataSourceFactory returns instances of the ImapDataSource class. 
+ * ThunderbirdAddressbookDataSourceFactory returns instances of the ThunderbirdAddressbookDataSource class. 
  */
 public class ThunderbirdAddressbookDataSourceFactory implements DataSourceFactory {
 

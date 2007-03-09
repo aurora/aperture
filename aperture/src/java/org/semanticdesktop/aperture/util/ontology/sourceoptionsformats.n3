@@ -10,6 +10,10 @@
                 fresnel:propertyFormatDomain source:basepath ;
                 sourceformat:valueWidget [ a sourceformat:TextFieldWidget ] .
 
+:hostnameFormat rdf:type fresnel:Format ;
+                fresnel:propertyFormatDomain source:hostname ;
+                sourceformat:valueWidget [ a sourceformat:TextFieldWidget ] .
+
 :includeEmbeddedResourcesFormat rdf:type fresnel:Format ;
                                 fresnel:propertyFormatDomain source:includeEmbeddedResources ;
                                 sourceformat:valueWidget [ a sourceformat:CheckBoxWidget ] .
@@ -26,11 +30,18 @@
                        fresnel:propertyFormatDomain source:maximumByteSize ;
                        sourceformat:valueWidget [ a sourceformat:IntegerFieldWidget ] .
 
+:passwordFormat rdf:type fresnel:Format ;
+			    fresnel:propertyFormatDomain source:password ;
+			    sourceformat:valueWidget [ a sourceformat:PasswordTextFieldWidget ] .
+
 :rootFolderFormat rdf:type fresnel:Format ;
                fresnel:propertyFormatDomain source:rootFolder ;
                sourceformat:valueWidget [ a sourceformat:TextFieldWidget ] .
 
 :rootURLFormat rdf:type fresnel:Format ;
-               fresnel:propertyFormatDomain source:rootURL ;
+               fresnel:propertyFormatDomain source:rootUrl ;
                sourceformat:valueWidget [ a sourceformat:TextFieldWidget ] .
                        
+:usernameFormat rdf:type fresnel:Format ;
+			    fresnel:propertyFormatDomain source:username ;
+			    sourceformat:valueWidget [ a sourceformat:TextFieldWidget ] .
