@@ -8,7 +8,7 @@
 
 :WebDataSourceLens rdf:type fresnel:Lens ;
                    fresnel:purpose fresnel:defaultLens ;
-                   fresnel:classLensDomain source:ImapDataSource ;
+                   fresnel:classLensDomain source:WebDataSource ;
                    fresnel:showProperties ( source:rootURL 
                                             source:includeEmbeddedResources 
                                             source:maximumDepth ) .

@@ -13,14 +13,3 @@
 									         source:username
 									         source:password ) .
 
-:hostnameFormat rdf:type fresnel:Format ;
-                fresnel:propertyFormatDomain source:hostname ;
-                sourceformat:valueWidget sourceformat:TextFieldWidget .
-                
-:usernameFormat rdf:type fresnel:Format ;
-			    fresnel:propertyFormatDomain source:username ;
-			    sourceformat:valueWidget sourceformat:TextFieldWidget .
-			 
-:passwordFormat rdf:type fresnel:Format ;
-			    fresnel:propertyFormatDomain source:password ;
-			    sourceformat:valueWidget sourceformat:PasswordTextFieldWidget .
