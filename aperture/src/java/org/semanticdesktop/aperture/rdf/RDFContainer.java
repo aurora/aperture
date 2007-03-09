@@ -108,7 +108,7 @@ public interface RDFContainer {
 
     public void remove(URI property) throws UpdateException;
 
-    // returns a Collection of Values
+    // returns a Collection of Nodes
     public Collection getAll(URI property);
 
     /* Statement-oriented methods */
