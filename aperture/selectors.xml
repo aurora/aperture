@@ -105,7 +105,7 @@
         <and>
             <or>
                 <filename name="org/semanticdesktop/aperture/rdf/*" />
-                <filename name="org/semanticdesktop/aperture/rdf/rdf2go/*" />
+                <filename name="org/semanticdesktop/aperture/rdf/impl/*" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>
