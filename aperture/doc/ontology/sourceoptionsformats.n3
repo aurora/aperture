@@ -8,7 +8,7 @@
 
 :basepathFormat rdf:type fresnel:Format ;
                 fresnel:propertyFormatDomain source:basepath ;
-                sourceformat:valueWidget sourceformat:TextFieldWidget .
+                sourceformat:valueWidget [ a sourceformat:TextFieldWidget ] .
 
 :includeEmbeddedResourcesFormat rdf:type fresnel:Format ;
                                 fresnel:propertyFormatDomain source:includeEmbeddedResources ;
