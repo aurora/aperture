@@ -48,10 +48,6 @@
 	 rdfs:label="SubstringPattern">
 	<rdfs:subClassOf rdf:resource="&source_;Pattern"/>
 </rdfs:Class>
-<rdfs:Class rdf:about="&source_;TaggingDataSource"
-	 rdfs:label="TaggingDataSource">
-	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
-</rdfs:Class>
 <rdfs:Class rdf:about="&source_;ThunderbirdAddressbookDataSource"
 	 rdfs:label="ThunderbirdAddressbookDataSource">
 	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
