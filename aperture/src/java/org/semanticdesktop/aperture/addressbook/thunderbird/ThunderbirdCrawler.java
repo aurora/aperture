@@ -78,8 +78,6 @@ public class ThunderbirdCrawler extends AddressbookCrawler {
 
         String encoding = demork.getEncoding(abookFile);
 
-        System.out.println(encoding);
-
         String mab = Utils.readWholeFileAsEncoding(abookFile, encoding);
 
         Database d = demork.inputMork(mab);
