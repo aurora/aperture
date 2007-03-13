@@ -30,6 +30,7 @@ class IcalTestSimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactor
     
     public IcalTestSimpleCrawlerHandler() throws ModelException {
         model = RDF2Go.getModelFactory().createModel();
+        model.open();
     }
     
     //////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -41,6 +41,7 @@ class IcalTestIncrementalCrawlerHandler implements CrawlerHandler, RDFContainerF
     
     public IcalTestIncrementalCrawlerHandler(File file) throws ModelException {
         model = RDF2Go.getModelFactory().createModel();
+        model.open();
         newObjects = new HashSet<String>();
         changedObjects = new HashSet<String>();
         unchangedObjects = new HashSet<String>();

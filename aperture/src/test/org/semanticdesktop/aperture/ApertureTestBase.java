@@ -30,7 +30,9 @@ public class ApertureTestBase extends TestCase {
 
 	public Model createModel() {
 		try {
-			return RDF2Go.getModelFactory().createModel();
+            Model model = RDF2Go.getModelFactory().createModel(); 
+            model.open();
+			return model;
 		}
 		catch (ModelRuntimeException me) {
 			return null;
@@ -38,7 +40,7 @@ public class ApertureTestBase extends TestCase {
 	}
     
     protected RDFContainer createRDFContainer(String uri) {
-        return createRDFContainer(URIImpl.createURIWithoutChecking(uri));
+        return createRDFContainer(new URIImpl(uri,false));
     }
     
     protected RDFContainer createRDFContainer(URI uri) {

@@ -29,6 +29,7 @@ public class RDFContainerFactoryImpl implements RDFContainerFactory,
     public RDFContainerImpl newInstance(String uri) {
         try {
             Model newModel = factory.createModel();
+            newModel.open();
             return new RDFContainerImpl(newModel, uri);
         }
         catch (ModelRuntimeException me) {
@@ -39,6 +40,7 @@ public class RDFContainerFactoryImpl implements RDFContainerFactory,
     public RDFContainerImpl newInstance(URI uri) {
         try {
             Model newModel = factory.createModel();
+            newModel.open();
             return new RDFContainerImpl(newModel, uri);
         }
         catch (ModelRuntimeException me) {
