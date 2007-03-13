@@ -16,7 +16,7 @@ import java.util.Set;
 
 import org.ontoware.rdf2go.ModelFactory;
 import org.ontoware.rdf2go.RDF2Go;
-import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.ModelSet;
 import org.ontoware.rdf2go.model.Syntax;
@@ -60,7 +60,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         try {
             modelSet = factory.createModelSet();
         }
-        catch (ModelException e) {
+        catch (ModelRuntimeException e) {
             throw new RuntimeException(e);
         }
     }

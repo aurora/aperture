@@ -43,9 +43,9 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.Node;
@@ -812,9 +812,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         // query for all child URIs
         ClosableIterator<? extends Statement> statements = null;
         try {
-            ClosableIterable<? extends Statement> iterable = metadata.findStatements(Variable.ANY,
-                DATA.partOf, object.getID());
-            statements = iterable.iterator();
+            statements = metadata.findStatements(Variable.ANY,DATA.partOf, object.getID());
             // queue these URIs
             while (statements.hasNext()) {
                 Statement statement = (Statement) statements.next();
@@ -831,7 +829,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 }
             }
         }
-        catch (ModelException me) {
+        catch (ModelRuntimeException me) {
             logger.error("Couldn't queue children", me);
         }
         finally {

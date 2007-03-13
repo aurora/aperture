@@ -256,9 +256,7 @@ public class ConfigurationUtil {
         ClosableIterator<? extends Statement> iterator = null;
         try {
             List<Statement> statementsToRemove = new LinkedList<Statement>();
-            ClosableIterable<? extends Statement> iterable = model
-                    .findStatements(id, predicate, Variable.ANY);
-            iterator = iterable.iterator();
+            iterator = model.findStatements(id, predicate, Variable.ANY);
 
             while (iterator.hasNext()) {
                 Statement mainStatement = iterator.next();
@@ -291,9 +289,7 @@ public class ConfigurationUtil {
         List<Statement> result = new LinkedList<Statement>();
         ClosableIterator<? extends Statement> iterator = null;
         try {
-            ClosableIterable<? extends Statement> iterable = null;
-            iterable = model.findStatements(resource, predicate, Variable.ANY);
-            iterator = iterable.iterator();
+            iterator = model.findStatements(resource, predicate, Variable.ANY);
             while (iterator.hasNext()) {
                 result.add(iterator.next());
             }
@@ -348,9 +344,7 @@ public class ConfigurationUtil {
         ClosableIterator<? extends Statement> statements = null;
         ArrayList result = new ArrayList();
         try {
-            ClosableIterable<? extends Statement> iterable = model
-                    .findStatements(id, predicate, Variable.ANY);
-            statements = iterable.iterator();
+            statements = model.findStatements(id, predicate, Variable.ANY);
 
             while (statements.hasNext()) {
                 Statement statement = (Statement) statements.next();
@@ -403,9 +397,7 @@ public class ConfigurationUtil {
         ClosableIterator<? extends Statement> statements = null;
         Node result = null;
         try {
-            ClosableIterable<? extends Statement> iterable = model.findStatements(resource, predicate,
-                Variable.ANY);
-            statements = iterable.iterator();
+            statements = model.findStatements(resource, predicate,Variable.ANY);
             if (statements.hasNext()) {
                 Statement statement = (Statement) statements.next();
                 result = statement.getObject();

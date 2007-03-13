@@ -97,9 +97,7 @@ public class ModelUtil {
         res = new Vector<Statement>();
         ClosableIterator<? extends Statement> i = null;
         try {
-            ClosableIterable<? extends Statement> iterable = model.findStatements(node, Variable.ANY,
-                Variable.ANY);
-            i = iterable.iterator();
+            i = model.findStatements(node, Variable.ANY, Variable.ANY);
             while (i.hasNext()) {
                 Statement s = i.next();
                 res.add(s);
@@ -109,8 +107,7 @@ public class ModelUtil {
             i.close();
 
             if (backwards) {
-                iterable = model.findStatements(Variable.ANY, Variable.ANY, node);
-                i = iterable.iterator();
+                i = model.findStatements(Variable.ANY, Variable.ANY, node);
                 while (i.hasNext()) {
                     Statement s = i.next();
                     res.add(s);
@@ -133,8 +130,7 @@ public class ModelUtil {
         boolean result = false;
         ClosableIterator<? extends Statement> iterator = null;
         try {
-            ClosableIterable<? extends Statement> iterable = model.findStatements(subject, predicate, object);
-            iterator = iterable.iterator();
+            iterator = model.findStatements(subject, predicate, object);
             result = iterator.hasNext();
         }
         finally {

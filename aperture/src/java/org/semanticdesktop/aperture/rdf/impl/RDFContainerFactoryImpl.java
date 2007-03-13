@@ -8,7 +8,7 @@ package org.semanticdesktop.aperture.rdf.impl;
 
 import org.ontoware.rdf2go.ModelFactory;
 import org.ontoware.rdf2go.RDF2Go;
-import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.rdf.RDFContainerFactory;
@@ -31,7 +31,7 @@ public class RDFContainerFactoryImpl implements RDFContainerFactory,
             Model newModel = factory.createModel();
             return new RDFContainerImpl(newModel, uri);
         }
-        catch (ModelException me) {
+        catch (ModelRuntimeException me) {
             throw new RuntimeException(me);
         }
     }
@@ -41,7 +41,7 @@ public class RDFContainerFactoryImpl implements RDFContainerFactory,
             Model newModel = factory.createModel();
             return new RDFContainerImpl(newModel, uri);
         }
-        catch (ModelException me) {
+        catch (ModelRuntimeException me) {
             throw new RuntimeException(me);
         }
     }

@@ -130,8 +130,7 @@ public class VocabularyWriter {
 	
 	public void generateElement(URI type, boolean isProperty) throws Exception
 	{
-		ClosableIterable<? extends Statement> iterable = myModel.findStatements(Variable.ANY,RDF.type,type);
-		ClosableIterator<? extends Statement> queryC = iterable.iterator();
+        ClosableIterator<? extends Statement> queryC = myModel.findStatements(Variable.ANY,RDF.type,type);
 		try {
 		    while (queryC.hasNext()) {
 		        Statement answer = queryC.next();
@@ -189,8 +188,7 @@ public class VocabularyWriter {
 	 */
 	public void printCommentAndLabel(URI uri) throws Exception {
 
-		ClosableIterable<? extends Statement> iterable = myModel.findStatements(uri,RDFS.label,Variable.ANY);
-		ClosableIterator<? extends Statement> queryC = iterable.iterator();
+        ClosableIterator<? extends Statement> queryC = myModel.findStatements(uri,RDFS.label,Variable.ANY);
 		try {
 			String l = "";
 		    while (queryC.hasNext()) {
@@ -205,8 +203,7 @@ public class VocabularyWriter {
 			queryC.close();
 		}
 
-		iterable = myModel.findStatements(uri,RDFS.comment,Variable.ANY);
-		queryC = iterable.iterator();
+		queryC = myModel.findStatements(uri,RDFS.comment,Variable.ANY);
 		try {
 			String l = "";
 		    while (queryC.hasNext()) {
@@ -221,8 +218,7 @@ public class VocabularyWriter {
 			queryC.close();
 		}
 		
-		iterable = myModel.findStatements(uri,RDFS.domain,Variable.ANY);
-		queryC = iterable.iterator();
+		queryC = myModel.findStatements(uri,RDFS.domain,Variable.ANY);
 		try {
 			String l = "";
 		    while (queryC.hasNext()) {
@@ -237,8 +233,7 @@ public class VocabularyWriter {
 			queryC.close();
 		}
 		
-		iterable = myModel.findStatements(uri,RDFS.range,Variable.ANY);
-		queryC = iterable.iterator();
+		queryC = myModel.findStatements(uri,RDFS.range,Variable.ANY);
 		try {
 			String l = "";
 		    while (queryC.hasNext()) {

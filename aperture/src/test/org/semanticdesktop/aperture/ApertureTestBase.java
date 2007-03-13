@@ -12,6 +12,7 @@ import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.Literal;
@@ -31,7 +32,7 @@ public class ApertureTestBase extends TestCase {
 		try {
 			return RDF2Go.getModelFactory().createModel();
 		}
-		catch (ModelException me) {
+		catch (ModelRuntimeException me) {
 			return null;
 		}
 	}
@@ -54,10 +55,9 @@ public class ApertureTestBase extends TestCase {
 		boolean encounteredSubstring = false;
 
 		// loop over all statements that have the specified property uri as predicate
-		ClosableIterable<? extends Statement> iterable = model.findStatements(valueFactory.createURI(uriString), property,
-			Variable.ANY);
-		ClosableIterator<? extends Statement> statements = iterable.iterator();
-		try {
+        ClosableIterator<? extends Statement> statements = model.findStatements(valueFactory
+                .createURI(uriString), property, Variable.ANY);
+        try {
 			while (statements.hasNext()) {
 				// check the property type
 				Statement statement = (Statement) statements.next();
@@ -97,8 +97,7 @@ public class ApertureTestBase extends TestCase {
 		boolean encounteredValue = false;
 
 		// loop over all statements that have the specified property uri as predicate
-		ClosableIterable<? extends Statement> iterable = model.findStatements(subject,property,Variable.ANY);
-		ClosableIterator<? extends Statement> statements = iterable.iterator();
+        ClosableIterator<? extends Statement> statements = model.findStatements(subject,property,Variable.ANY);
 		try {
 			while (statements.hasNext()) {
 				// check the property type

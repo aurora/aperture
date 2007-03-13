@@ -11,6 +11,7 @@ import java.io.IOException;
 import org.ontoware.rdf2go.ModelFactory;
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.ModelSet;
 import org.ontoware.rdf2go.model.Syntax;
@@ -85,7 +86,7 @@ public class TestOutlookCrawlAll extends ApertureTestBase {
         catch (IOException ioe) {
             ioe.printStackTrace();
         }
-        catch (ModelException me) {
+        catch (ModelRuntimeException me) {
             me.printStackTrace();
         }
     }

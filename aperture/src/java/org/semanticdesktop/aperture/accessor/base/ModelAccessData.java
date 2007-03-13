@@ -9,10 +9,12 @@ package org.semanticdesktop.aperture.accessor.base;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.Literal;
@@ -74,7 +76,7 @@ public class ModelAccessData implements AccessData {
         try {
             model.removeAll();
         }
-        catch (ModelException e) {
+        catch (ModelRuntimeException e) {
             IOException ioe = new IOException();
             ioe.initCause(e);
             throw ioe;
@@ -91,9 +93,7 @@ public class ModelAccessData implements AccessData {
             URI keyURI = toURI(key);
 
             // only returns a value when there is exactly one matching statement
-            ClosableIterable<? extends Statement> iterable = model
-                    .findStatements(idURI, keyURI, Variable.ANY);
-            iterator = iterable.iterator();
+            iterator = model.findStatements(idURI, keyURI, Variable.ANY);
             if (iterator.hasNext()) {
                 Statement statement = iterator.next();
                 if (!iterator.hasNext()) {
@@ -128,9 +128,7 @@ public class ModelAccessData implements AccessData {
         try {
             URI idURI = ModelUtil.createURI(model, id);
 
-            ClosableIterable<? extends Statement> iterable = model.findStatements(idURI, DATA.linksTo,
-                Variable.ANY);
-            iterator = iterable.iterator();
+            iterator = model.findStatements(idURI, DATA.linksTo, Variable.ANY);
             while (iterator.hasNext()) {
                 Statement statement = iterator.next();
                 Node value = statement.getObject();
@@ -170,15 +168,13 @@ public class ModelAccessData implements AccessData {
         HashSet<String> result = new HashSet<String>();
 
         try {
-            ClosableIterable<? extends Statement> iterable = model.findStatements(Variable.ANY, Variable.ANY,
-                Variable.ANY);
-            iterator = iterable.iterator();
+            iterator = model.findStatements(Variable.ANY, Variable.ANY,Variable.ANY);
             while (iterator.hasNext()) {
                 result.add(iterator.next().getSubject().toString());
             }
         }
-        catch (ModelException me) {
-
+        catch (ModelRuntimeException me) {
+            logger.warn("Couldn't get stored IDs", me);
         }
         finally {
             if (iterator != null) {
@@ -201,9 +197,7 @@ public class ModelAccessData implements AccessData {
         try {
             URI idURI = ModelUtil.createURI(model, id);
 
-            ClosableIterable<? extends Statement> iterable = model.findStatements(idURI, Variable.ANY,
-                Variable.ANY);
-            iterator = iterable.iterator();
+            iterator = model.findStatements(idURI, Variable.ANY,Variable.ANY);
             return iterator.hasNext();
         }
         catch (ModelException me) {
@@ -290,14 +284,14 @@ public class ModelAccessData implements AccessData {
         }
         catch (ModelException e) {
             logger.error("Could not remove referred IDs for ID " + id, e);
-       }
+        }
     }
 
     public void store() throws IOException {
         commit();
     }
 
-    private void commit() { }
+    private void commit() {}
 
     private URI toURI(String key) throws ModelException {
         if (key == AccessData.DATE_KEY) {
@@ -318,7 +312,7 @@ public class ModelAccessData implements AccessData {
         try {
             model.addStatement(statement);
         }
-        catch (ModelException e) {
+        catch (ModelRuntimeException e) {
             logger.error("Exception while adding statement", e);
         }
     }
@@ -333,7 +327,7 @@ public class ModelAccessData implements AccessData {
             // model.removeAll(iterator);
             model.removeStatement(subject, predicate, Variable.ANY);
         }
-        catch (ModelException e) {
+        catch (ModelRuntimeException e) {
             logger.error("Exception while removing statement", e);
         }
         finally {

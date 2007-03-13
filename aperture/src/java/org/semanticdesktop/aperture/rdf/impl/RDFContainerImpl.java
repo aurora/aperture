@@ -15,6 +15,7 @@ import java.util.Date;
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.Literal;
@@ -375,7 +376,7 @@ public class RDFContainerImpl implements RDFContainer {
             try {
                 model.removeStatement(describedUri, property, node);
             }
-            catch (ModelException me) {
+            catch (ModelRuntimeException me) {
                 logger.error("Could not remove a statement from the model", me);
             }
         }
@@ -386,9 +387,7 @@ public class RDFContainerImpl implements RDFContainer {
         // determine all matching Statements
         ClosableIterator<? extends Statement> iterator = null;
         try {
-            ClosableIterable<? extends Statement> iterable = model.findStatements(describedUri, property,
-                Variable.ANY);
-            iterator = iterable.iterator();
+            iterator = model.findStatements(describedUri, property,Variable.ANY);
             // put their values in a new Collection
             ArrayList<Node> result = new ArrayList<Node>();
             while (iterator.hasNext()) {
@@ -397,7 +396,7 @@ public class RDFContainerImpl implements RDFContainer {
             }
             return result;
         }
-        catch (ModelException me) {
+        catch (ModelRuntimeException me) {
             logger.error("Could not find statements", me);
             return null;
         }
@@ -413,7 +412,7 @@ public class RDFContainerImpl implements RDFContainer {
         try {
             model.addStatement(statement);
         }
-        catch (ModelException e) {
+        catch (ModelRuntimeException e) {
             logger.error("cannot add statement", e);
             throw new UpdateException("cannot add statement", e);
         }
@@ -424,7 +423,7 @@ public class RDFContainerImpl implements RDFContainer {
         try {
             model.removeStatement(statement);
         }
-        catch (ModelException e) {
+        catch (ModelRuntimeException e) {
             logger.error("cannot remove statement", e);
             throw new UpdateException("cannot remove statement", e);
         }
@@ -434,7 +433,7 @@ public class RDFContainerImpl implements RDFContainer {
         try {
             model.addStatement(describedUri, property, object);
         }
-        catch (ModelException e) {
+        catch (ModelRuntimeException e) {
             logger.error("cannot add statement", e);
             throw new UpdateException("cannot add statement", e);
         }
@@ -445,9 +444,8 @@ public class RDFContainerImpl implements RDFContainer {
         try {
             // remove any existing statements with this property, throw an exception when there is more
             // than one such statement
-            ClosableIterable<? extends Statement> iterable = model.findStatements(describedUri, property,
+            ClosableIterator<? extends Statement> statements = model.findStatements(describedUri, property,
                 Variable.ANY);
-            ClosableIterator<? extends Statement> statements = iterable.iterator();
             Statement statementToRemove = null;
 
             try {
@@ -470,7 +468,7 @@ public class RDFContainerImpl implements RDFContainer {
             // add the new statement
             model.addStatement(describedUri, property, object);
         }
-        catch (ModelException me) {
+        catch (ModelRuntimeException me) {
             logger.error("cannot update statement", me);
             throw new UpdateException("cannot update statement", me);
         }
@@ -479,9 +477,7 @@ public class RDFContainerImpl implements RDFContainer {
     private Node getInternal(URI property) {
         ClosableIterator<? extends Statement> statements = null;
         try {
-            ClosableIterable<? extends Statement> iterable = model.findStatements(describedUri, property,
-                Variable.ANY);
-            statements = iterable.iterator();
+            statements = model.findStatements(describedUri, property,Variable.ANY);
             Node result = null;
 
             if (statements.hasNext()) {
@@ -494,7 +490,7 @@ public class RDFContainerImpl implements RDFContainer {
 
             return result;
         }
-        catch (ModelException me) {
+        catch (ModelRuntimeException me) {
             logger.error("Could not find statements", me);
             return null;
         }

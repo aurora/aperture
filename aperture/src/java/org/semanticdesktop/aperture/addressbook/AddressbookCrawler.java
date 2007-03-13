@@ -15,9 +15,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.BlankNode;
@@ -121,18 +120,16 @@ public abstract class AddressbookCrawler extends CrawlerBase {
         ClosableIterator<? extends Statement> i = null;
 
         try {
-            ClosableIterable<? extends Statement> iterable = model.findStatements(rdf.getDescribedUri(),
-                Variable.ANY, Variable.ANY);
-            i = iterable.iterator();
+            i = model.findStatements(rdf.getDescribedUri(),Variable.ANY, Variable.ANY);
             while (i.hasNext()) {
-                Statement s = (Statement) i.next();
+                Statement s = i.next();
                 if (s.getObject() instanceof BlankNode) {
                     logger.warn("BlankNodes messes up checksum generation!");
                 }
                 predValues.add(s.getPredicate().toString() + s.getObject().toString());
             }
         }
-        catch (ModelException me) {
+        catch (ModelRuntimeException me) {
             logger.error("Could not find statements", me);
         }
         finally {

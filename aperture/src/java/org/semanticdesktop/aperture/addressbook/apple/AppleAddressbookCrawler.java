@@ -89,12 +89,11 @@ public class AppleAddressbookCrawler extends AddressbookCrawler {
 
         ClosableIterator<? extends Statement> i = null;
         try {
-            ClosableIterable<? extends Statement> iterable = model.findStatements(Variable.ANY, RDF.type,
+            i = model.findStatements(Variable.ANY, RDF.type,
                 VCARD.VCard);
-            i = iterable.iterator();
             while (i.hasNext()) {
                 Statement s = i.next();
-                URI uri = URIImpl.createURIWithoutChecking(s.getSubject().toString());
+                URI uri = new URIImpl(s.getSubject().toString(),false);
 
                 // get relevant triples
                 RDFContainer dorep = handler.getRDFContainerFactory(this, uri.toString())
