@@ -9,4 +9,4 @@
 :OutlookDataSourceLens rdf:type fresnel:Lens ;
 					   fresnel:purpose fresnel:defaultLens ;
 					   fresnel:classLensDomain source:MicrosoftOutlookDataSource ;
-					   fresnel:showProperties ( source:rootURL ) .
+					   fresnel:showProperties ( source:rootUrl ) .
