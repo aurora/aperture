@@ -36,6 +36,7 @@ import org.semanticdesktop.aperture.extractor.works.WorksExtractorActivator;
 import org.semanticdesktop.aperture.extractor.xml.XmlExtractorActivator;
 import org.semanticdesktop.aperture.opener.file.FileOpenerActivator;
 import org.semanticdesktop.aperture.opener.http.HttpOpenerActivator;
+import org.semanticdesktop.aperture.outlook.OutlookActivator;
 
 public class CoreImplementationsActivator implements BundleActivator {
 
@@ -74,6 +75,8 @@ public class CoreImplementationsActivator implements BundleActivator {
 	private HttpOpenerActivator httpOpenerActivator;
 	
     private AddressBookActivator addressbookActivator;
+    
+    private OutlookActivator outlookActivator;
     
 	public void start(BundleContext context) throws Exception {
 		fileAccessorActivator = new FileAccessorActivator();
@@ -137,6 +140,9 @@ public class CoreImplementationsActivator implements BundleActivator {
 
         addressbookActivator = new AddressBookActivator();
         addressbookActivator.start(context);
+        
+        outlookActivator = new OutlookActivator();
+        outlookActivator.start(context);
         
 		bc = context;	
 	}
@@ -202,6 +208,10 @@ public class CoreImplementationsActivator implements BundleActivator {
 		httpOpenerActivator = null;
 		
         addressbookActivator.stop(context);
+        addressbookActivator = null;
+        
+        outlookActivator.stop(context);
+        outlookActivator = null;
         
 		bc = null;	
 	}
