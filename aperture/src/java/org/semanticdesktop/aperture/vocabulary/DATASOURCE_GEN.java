@@ -274,6 +274,14 @@ public interface DATASOURCE_GEN {
     public static final URI timeout = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#timeout");
 
     /**
+     * Label: Thunderbird addresbook path 
+     * Comment: Path to the file where the thunderbird addresbook is stored 
+     * Comment: http://aperture.semanticdesktop.org/ontology/source#DataSource 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
+     */
+    public static final URI thunderbirdAddressbookPath = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#thunderbirdAddressbookPath");
+    
+    /**
      * Label: username 
      * Comment: http://aperture.semanticdesktop.org/ontology/source#IMAPDataSource 
      * Range: http://www.w3.org/2000/01/rdf-schema#Literal 

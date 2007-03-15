@@ -9,5 +9,5 @@
 :ThunderbirdDataSourceLens rdf:type fresnel:Lens ;
 					fresnel:purpose fresnel:defaultLens ;
 					fresnel:classLensDomain source:ThunderbirdAddressbookDataSource ;
-					fresnel:showProperties ( source:basepath ) .
+					fresnel:showProperties ( source:thunderbirdAddressbookPath ) .
                 

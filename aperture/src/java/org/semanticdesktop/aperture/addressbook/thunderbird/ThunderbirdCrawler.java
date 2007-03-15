@@ -30,6 +30,7 @@ import org.semanticdesktop.aperture.addressbook.AddressbookCrawler;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 import org.semanticdesktop.aperture.vocabulary.DATA_GEN;
 import org.semanticdesktop.aperture.vocabulary.VCARD;
 import org.semanticdesktop.demork.Demork;
@@ -72,7 +73,7 @@ public class ThunderbirdCrawler extends AddressbookCrawler {
      */
     public List crawlAddressbook() throws Exception {
 
-        String abookFile = ConfigurationUtil.getBasepath(getDataSource().getConfiguration());
+        String abookFile = getDataSource().getConfiguration().getString(DATASOURCE.thunderbirdAddressbookPath);
 
         Demork demork = new Demork();
 

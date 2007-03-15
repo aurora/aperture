@@ -193,6 +193,12 @@
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
+<rdf:Property rdf:about="&source_;thunderbirdAddressbookPath"
+	 rdfs:comment="Path to the file where the thunderbird addresbook is stored"
+	 rdfs:label="Thunderbird Addresbook Path">
+	<rdfs:domain rdf:resource="&source_;DataSource"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
 <rdf:Property rdf:about="&source_;username"
 	 rdfs:label="username">
 	<rdfs:domain rdf:resource="&source_;IMAPDataSource"/>

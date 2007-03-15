@@ -10,6 +10,13 @@
 					fresnel:purpose fresnel:defaultLens ;
 					fresnel:classLensDomain source:IMAPDataSource ;
 					fresnel:showProperties ( source:hostname
+										     source:port
 									         source:username
-									         source:password ) .
+									         source:password
+									         source:includeInbox
+									         source:maximumSize
+									         source:maximumDepth
+									         source:connectionSecurity 
+									         source:sslFileName
+									         source:sslFilePassword ) .
 
