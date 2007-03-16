@@ -12,13 +12,14 @@ You will need Apache ANT to execute this script, please get
 your copy of ANT at http://ant.apache.org/
 -->
 
-<project name="aperture" basedir="." default="build">
+<project name="aperture" basedir="." default="cleanandbuild">
 
 	<!-- define properties and paths -->
 	<target name="init" description="initialize variables used in all other targets">
 		<!-- names -->
 		<property name="project.longname" value="Aperture Crawling and Extraction Framework" />
 		<property name="project.shortname" value="aperture" />
+		<property name="project.bundlename" value="org.semanticdesktop.aperture" />
 		
 		<!-- versions -->
 		<property name="project.version.major" value="2006" />
@@ -59,48 +60,17 @@ your copy of ANT at http://ant.apache.org/
 		<property name="project-examples.jar" 
 			      value="${project.shortname}-examples-${project.version.full}.jar" />
 
-		<!-- coarse grained bundles properties -->
-		<property name="bundle.core.coarsegrained.jar" 
-			      value="${project.shortname}-core-${project.version.full}.jar" />
-		<property name="core.coarsegrained.manifest.mf" 
-			      value="${manifest.dir}/core.coarsegrained.manifest.mf" />
+		<!-- osgi bundle properties -->
+		<property name="bundle.core.jar" 
+			      value="${project.bundlename}_${project.version.full}.jar" />
+		<property name="core.manifest.mf" 
+			      value="${manifest.dir}/core.manifest.mf" />
 		
-		<property name="bundle.impl.coarsegrained.jar" 
-			      value="${project.shortname}-impl-${project.version.full}.jar" />
-		<property name="impl.coarsegrained.manifest.mf" 
-			      value="${manifest.dir}/impl.coarsegrained.manifest.mf" />
+		<property name="bundle.impl.jar" 
+			      value="${project.bundlename}.impl_${project.version.full}.jar" />
+		<property name="impl.manifest.mf" 
+			      value="${manifest.dir}/impl.manifest.mf" />
 		
-		<!-- medium granularity bundles properties -->
-		<property name="bundle.core.services.jar" 
-			      value="${project.shortname}-core-services-${project.version.full}.jar" />
-		<property name="core.services.manifest.mf" 
-			      value="${manifest.dir}/core.services.manifest.mf" />
-		
-		<property name="bundle.core.services.impl.jar" 
-			      value="${project.shortname}-core-services-impl-${project.version.full}.jar" />
-		<property name="core.services.impl.manifest.mf" 
-			      value="${manifest.dir}/core.services.impl.manifest.mf" />
-		
-		<property name="bundle.supporting.services.jar" 
-			      value="${project.shortname}-supporting-services-${project.version.full}.jar" />
-		<property name="supporting.services.manifest.mf" 
-			      value="${manifest.dir}/supporting.services.manifest.mf" />
-		
-		<property name="bundle.supporting.services.impl.jar" 
-			      value="${project.shortname}-supporting-services-impl-${project.version.full}.jar" />
-		<property name="supporting.services.impl.manifest.mf" 
-			      value="${manifest.dir}/supporting.services.impl.manifest.mf" />
-
-		<property name="bundle.vocabulary.jar" 
-			      value="${project.shortname}-vocabulary-${project.version.full}.jar" />
-		<property name="vocabulary.manifest.mf" 
-			      value="${manifest.dir}/vocabulary.manifest.mf" />
-				
-		<property name="bundle.supporting.api.jar" 
-			      value="${project.shortname}-supporting-api-${project.version.full}.jar" />
-		<property name="supporting.api.manifest.mf" 
-			      value="${manifest.dir}/supporting.api.manifest.mf" />				
-
 		<!-- release dirs and files -->
 		<property name="release.dir" value="${build.dir}/release" />
 		<property name="release.lib.dir" value="${release.dir}/lib" />
@@ -309,13 +279,13 @@ your copy of ANT at http://ant.apache.org/
 	
 	<!-- targets for jar files at the highest level -->
 	
-	<target name="bundle.core.coarsegrained.jar" 
+	<target name="bundle.core.jar" 
 		    depends="compile.activators" 
-		    description="create the coarsegrained core aperture bundle">
+		    description="create the core aperture bundle">
 		<mkdir dir="${dist.bundle.dir}" />
-		<jar destfile="${dist.bundle.dir}/${bundle.core.coarsegrained.jar}" 
+		<jar destfile="${dist.bundle.dir}/${bundle.core.jar}" 
 			 compress="no" 
-			 manifest="${core.coarsegrained.manifest.mf}">
+			 manifest="${core.manifest.mf}">
 			<fileset dir="${classes.java.dir}">
 				<selector refid="bundle.core.coarsegrained.selector" />
 			</fileset>	
@@ -340,13 +310,13 @@ your copy of ANT at http://ant.apache.org/
 		</jar>
 	</target>
 	
-	<target name="bundle.impl.coarsegrained.jar" 
+	<target name="bundle.impl.jar" 
 		    depends="compile.activators" 
-		    description="create the coarsegrained aperture implementation bundle">
+		    description="create the aperture implementation bundle">
 		<mkdir dir="${dist.bundle.dir}" />	
-		<jar destfile="${dist.bundle.dir}/${bundle.impl.coarsegrained.jar}" 
+		<jar destfile="${dist.bundle.dir}/${bundle.impl.jar}" 
 			 compress="no" 
-			 manifest="${impl.coarsegrained.manifest.mf}">
+			 manifest="${impl.manifest.mf}">
 			<fileset dir="${classes.java.dir}">
 				<selector refid="bundle.impl.coarsegrained.selector" />
 			</fileset>	
@@ -371,194 +341,7 @@ your copy of ANT at http://ant.apache.org/
 		</jar>
 	</target>
 	
-	<!-- targets for jars at the medium level of granularity -->
-	
-	<target name="bundle.core.services.jar" 
-		    depends="compile.activators" 
-		    description="create the core services aperture bundle">
-		<mkdir dir="${dist.bundle.dir}" />
-		<jar destfile="${dist.bundle.dir}/${bundle.core.services.jar}" 
-			 compress="no" 
-			 manifest="${core.services.manifest.mf}">
-			<fileset dir="${classes.java.dir}">
-				<selector refid="bundle.core.services.selector" />
-			</fileset>	
-			<fileset dir="${src.java.dir}">
-				<and>
-					<selector refid="bundle.core.services.selector" />
-					<selector refid="bundle.exclude.resources.selector" />
-				</and>
-			</fileset>	
-			<fileset dir="${classes.activators.dir}">
-				<selector refid="bundle.core.services.selector" />
-			</fileset>	
-			<fileset dir="${src.activators.dir}">
-				<and>
-					<selector refid="bundle.core.services.selector" />
-					<selector refid="bundle.exclude.resources.selector" />
-				</and>
-			</fileset>	
-			<fileset dir="${lib.dir}">
-				<selector refid="bundle.core.services.selector" />
-			</fileset>	
-		</jar>
-	</target>
-		
-	<target name="bundle.supporting.services.jar" 
-		    depends="compile.activators" 
-		    description="create the supporting services aperture bundle">
-		<mkdir dir="${dist.bundle.dir}" />	
-		<jar destfile="${dist.bundle.dir}/${bundle.supporting.services.jar}" 
-			 compress="no" 
-			 manifest="${supporting.services.manifest.mf}">
-			<fileset dir="${classes.java.dir}">
-				<selector refid="bundle.supporting.services.selector" />
-			</fileset>	
-			<fileset dir="${src.java.dir}">
-				<and>
-					<selector refid="bundle.supporting.services.selector" />
-					<selector refid="bundle.exclude.resources.selector" />
-				</and>
-			</fileset>	
-			<fileset dir="${classes.activators.dir}">
-				<selector refid="bundle.supporting.services.selector" />
-			</fileset>	
-			<fileset dir="${src.activators.dir}">
-				<and>
-					<selector refid="bundle.supporting.services.selector" />
-					<selector refid="bundle.exclude.resources.selector" />
-				</and>
-			</fileset>	
-			<fileset dir="${lib.dir}">
-				<selector refid="bundle.supporting.services.selector" />
-			</fileset>	
-		</jar>
-	</target>
-	
-	<target name="bundle.core.services.impl.jar" 
-		    depends="compile.activators" 
-		    description="create the core services impl aperture bundle">
-		<mkdir dir="${dist.bundle.dir}" />
-		<jar destfile="${dist.bundle.dir}/${bundle.core.services.impl.jar}" 
-			 compress="no" 
-			 manifest="${core.services.impl.manifest.mf}">
-			<fileset dir="${classes.java.dir}">
-				<selector refid="bundle.core.services.impl.selector" />
-			</fileset>	
-			<fileset dir="${src.java.dir}">
-				<and>
-					<selector refid="bundle.core.services.impl.selector" />
-					<selector refid="bundle.exclude.resources.selector" />
-				</and>
-			</fileset>	
-			<fileset dir="${classes.activators.dir}">
-				<selector refid="bundle.core.services.impl.selector" />
-			</fileset>	
-			<fileset dir="${src.activators.dir}">
-				<and>
-					<selector refid="bundle.core.services.impl.selector" />
-					<selector refid="bundle.exclude.resources.selector" />
-				</and>
-			</fileset>	
-			<fileset dir="${lib.dir}">
-				<selector refid="bundle.core.services.impl.selector" />
-			</fileset>	
-		</jar>
-	</target>
-		
-	<target name="bundle.supporting.services.impl.jar" 
-		    depends="compile.activators" 
-		    description="create the supporting services aperture bundle">
-		<mkdir dir="${dist.bundle.dir}" />	
-		<jar destfile="${dist.bundle.dir}/${bundle.supporting.services.impl.jar}" 
-			 compress="no" 
-			 manifest="${supporting.services.impl.manifest.mf}">
-			<fileset dir="${classes.java.dir}">
-				<selector refid="bundle.supporting.services.impl.selector" />
-			</fileset>	
-			<fileset dir="${src.java.dir}">
-				<and>
-					<selector refid="bundle.supporting.services.impl.selector" />
-					<selector refid="bundle.exclude.resources.selector" />
-				</and>
-			</fileset>	
-			<fileset dir="${classes.activators.dir}">
-				<selector refid="bundle.supporting.services.impl.selector" />
-			</fileset>	
-			<fileset dir="${src.activators.dir}">
-				<and>
-					<selector refid="bundle.supporting.services.impl.selector" />
-					<selector refid="bundle.exclude.resources.selector" />
-				</and>
-			</fileset>	
-			<fileset dir="${lib.dir}">
-				<selector refid="bundle.supporting.services.impl.selector" />
-			</fileset>	
-		</jar>
-	</target>
-	
-	<target name="bundle.supporting.api.jar" 
-		    depends="compile.activators" 
-		    description="create the supporting api aperture bundle">
-		<mkdir dir="${dist.bundle.dir}" />	
-		<jar destfile="${dist.bundle.dir}/${bundle.supporting.api.jar}" 
-			 compress="no" 
-			 manifest="${supporting.api.manifest.mf}">
-			<fileset dir="${classes.java.dir}">
-				<selector refid="bundle.supporting.api.selector" />
-			</fileset>	
-			<fileset dir="${src.java.dir}">
-				<and>
-					<selector refid="bundle.supporting.api.selector" />
-					<selector refid="bundle.exclude.resources.selector" />
-				</and>
-			</fileset>	
-			<fileset dir="${classes.activators.dir}">
-				<selector refid="bundle.supporting.api.selector" />
-			</fileset>	
-			<fileset dir="${src.activators.dir}">
-				<and>
-					<selector refid="bundle.supporting.api.selector" />
-					<selector refid="bundle.exclude.resources.selector" />
-				</and>
-			</fileset>	
-			<fileset dir="${lib.dir}">
-				<selector refid="bundle.supporting.api.selector" />
-			</fileset>	
-		</jar>
-	</target>
-	
-	<target name="bundle.vocabulary.jar" 
-		    depends="compile.activators" 
-		    description="create the supporting api aperture bundle">
-		<mkdir dir="${dist.bundle.dir}" />	
-		<jar destfile="${dist.bundle.dir}/${bundle.vocabulary.jar}" 
-			 compress="no" 
-			 manifest="${vocabulary.manifest.mf}">
-			<fileset dir="${classes.java.dir}">
-				<selector refid="bundle.vocabulary.selector" />
-			</fileset>	
-			<fileset dir="${src.java.dir}">
-				<and>
-					<selector refid="bundle.vocabulary.selector" />
-					<selector refid="bundle.exclude.resources.selector" />
-				</and>
-			</fileset>	
-			<fileset dir="${classes.activators.dir}">
-				<selector refid="bundle.vocabulary.selector" />
-			</fileset>	
-			<fileset dir="${src.activators.dir}">
-				<and>
-					<selector refid="bundle.vocabulary.selector" />
-					<selector refid="bundle.exclude.resources.selector" />
-				</and>
-			</fileset>	
-			<fileset dir="${lib.dir}">
-				<selector refid="bundle.vocabulary.selector" />
-			</fileset>	
-		</jar>
-	</target>
-	
+			
 	<target name="bundle.example.jar" 
 			    depends="compile.examples" 
 			    description="create the bundle with an example">
@@ -572,32 +355,17 @@ your copy of ANT at http://ant.apache.org/
 			</jar>
 		</target>
 	
-	<target name="jar.coarsegrained.bundles" 
-		    depends="bundle.core.coarsegrained.jar,bundle.impl.coarsegrained.jar" 
-		    description="create coarsegrained aperture OSGi bundles" />
-
-	<target name="jar.middlegrained.bundles" 
-		    depends="bundle.core.services.jar,bundle.core.services.impl.jar,bundle.supporting.services.jar,bundle.supporting.services.impl.jar,bundle.supporting.api.jar,bundle.vocabulary.jar" 
-		    description="create coarsegrained aperture OSGi bundles" />	
-	
-	<target name="jar.bundles"
-	        depends="jar.coarsegrained.bundles,bundle.example.jar"
-	        description="create OSGi bundles from the aperture source code" />
-		
-	<target name="osgi.dist"
-			depends="jar.bundles"
-			description="creates the aperture bundle and copies all dependencies to a single directory">
-		<copy todir="${dist.bundle.dir}" failonerror="false">
-			<fileset dir="${basedir}/srcbundles">
-				<include name="**/*.*"/>
-			</fileset>
-		</copy>
-	</target>
-	
+	<target name="jar.bundles" 
+		    depends="bundle.core.jar,bundle.impl.jar,bundle.example.jar" 
+		    description="create aperture OSGi bundles" />
+			
 	<target name="build" 
 		    depends="jar, jar.examples, jar.test, jar.bundles" 
 		    description="incrementally builds all Aperture jar files" />
-
+    
+    <target name="cleanandbuild"
+    		depends="clean, build" />
+    
 	<target name="javadoc" 
 		    depends="init" 
 		    description="create the javadoc for the core classes">
