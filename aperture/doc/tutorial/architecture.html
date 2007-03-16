@@ -18,27 +18,60 @@ find your way around using Aperture or extending Aperture. The following image
 shows how the components work together in a typical application:</p>
 <p align="center">
 <img border="0" src="aperture-architecture.png" width="952" height="537"></p>
+
 <p align="left">
-Aperture starts with the existing data sources of you, a file-system with files, 
-am IMAP server or other sources. For each of this sources, Aperture provides a 
+Aperture operates on existing data sources, many types are supported out of the
+box (like file-systems with files or IMAP servers), other may easily be added.
+For each of these data source types, Aperture provides a 
 crawler, which reads data from the source and converts it to a standardized 
-format - RDF. RDF is like a Java Hashset, but with more possibilities, see here. 
+format - <a href="http://www.w3.org/RDF/">RDF</a>. 
+A the most basic level <a href="http://www.w3.org/RDF/">RDF</a> is a data structure
+comparable to a Java Hashset, but with much more possibilities, see 
+<a href="http://www.w3.org/RDF/">here</a>. 
+</p>
+
+<p align="left">
 Once the data is converted by the crawler, it is passed to a crawler handler. 
-The crawler handler is the component you will write to use Aperture. You, as 
-Aperture user, decide now what happens with the data. If the crawler found a 
-binary file (like a HTML document), you can use Aperture to extract metadata and 
-the fulltext of this file. To do this, the MimeTypeIdentifier helps you to 
-detect which MIME type the file has. Based on the MIME type (for example, text/html), 
-Aperture provides you with various Extractors, these are objects that can 
-extract metadata from a binary file. For HTML, the HtmlExtractor does this task, 
-Aperture knows how to find the right Extractor, you use the ExtractorRegistry 
-for that. Finally, you have all metadata of&nbsp; the file that was crawled from 
-the filesystem, you can store this now in your search engine. We used the 
-LuceneSail search engine, you can use Lucene, MySQL, or whatever storage you 
-want.</p>
+The crawler handler is the component you will write to use Aperture in your
+application. You, as Aperture user, decide now what happens with the data. 
+</p>
+
+<p align="left">
+When the crawler finds a 
+file (like a HTML document), you can use Aperture to extract metadata and 
+the full text from it. To do this, you need to take following steps. 
+</p>
+
+<ol>
+<li>Use MimeTypeIdentifier to detect the MIME type of the file</li>
+<li>When you have the MIME Type (for example, text/html), you can use it
+to obtain an appropriate Extractor. Aperture provides you with various 
+Extractors, these are objects that can extract metadata from a binary file. 
+For HTML files, the HtmlExtractor does the job. Aperture knows how to find 
+the right Extractor, you use the ExtractorRegistry for that.</li>
+<li>Let extractor extract the metadata from the binary stream</li>
+<li>Finally, you have all metadata from the file, you can do whatever you need
+for you application. You may store it in an RDF database, or feed the text to
+a search engine, (or do both in the same time with the aid of LuceneSail). 
+You can use Lucene, MySQL, files or any other storage. It's all up to your
+imagination.</li>
+</ol>
+
 
 <h2>
 The APIs</h2>
+
+<p>
+Aperture architecture is built from services. This makes it fit nicely in other
+service-oriented applications. The main services are:
+<ul>
+<li><a href="crawlers.html">Crawlers</a></li>
+<li><a href="extractors.html">Extractors</a></li>
+<li><a href="accessors.html">Data Accessors</a></li>
+<li><a href="mimetypes.html">Mime type identifiers</a></li>
+<li><a href="link-extractors.html">Link extractors</a></li>
+</ul>
+</p>
 
 <p>
 The heart of each service is an API, usually a Java interface, whose methods perform the
@@ -88,18 +121,20 @@ additional measures to select the best one or simply take the first one availabl
 This service-factory-registry approach has been inspired by <a href="http://www.osgi.org/">OSGi</a>,
 a platform for using service-oriented architectures inside a Java application.
 In an OSGi application using Aperture, the HtmlExtractor and its factory would be bundled
-as a jar file together with a class implementing OSGi's BundleActivator interface. The latter class contains
-a method that is executed as soon as this bundle is presented to the system.
-This BundleActivator would then lookup the ExtractorRegistry instance of the system and register its factory at
-that registry. That's the reason why factory instantiation should be as cheap as possible, as
+as a jar file together with a class implementing OSGi's BundleActivator interface. 
+The activator will be responsible for letting the rest of the system know
+that an ExtractorFactory has appeared and is ready to use. The Factory would
+be detected by a Registry. Any application using the registry will now 
+transparently begin to use the new factory. That's the reason why factory 
+instantiation should be as cheap as possible, as
 they may all be instantiated during startup.
 </p>
 
 <p>
-For those applications not based on OSGi, a default implementation of a
-registry is also available. For example, DefaultExtractorRegistry contains by default
+For 'normal' java applications, not based on OSGi, a default implementation of a
+registry is also available. For example, DefaultExtractorRegistry contains
 an instance of every ExtractorFactory available in Aperture. When you want to
-differentiate from this set, e.g. because you have your own set implementations, you can:
+use a different set, e.g. because you have your own set implementations, you can:
 </p>
 
 <ul>

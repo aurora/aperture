@@ -7,7 +7,7 @@
 
 <body>
 
-<h1>Quickstart tutorial</h1>
+<h1>Quickstart</h1>
 
 <p>
 This guide is dedicated to all those that would simply like to do what aperture is for - that is to crawl
@@ -26,18 +26,19 @@ see <a href="rdf.html">RDF usage in Aperture</a>) We'll choose the second approa
 data source boils down to four lines of code:
 </p>
 
-<div class="code">
-<pre>
-RDFContainer configuration = new SesameRDFContainer(new URIImpl("source:testSource"));
-ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
-DataSource source = new FileSystemDataSource();
-source.setConfiguration(configuration);
-</pre>
-</div>
+<pre class="code">
+<font color="#804040">1 </font>Model model = RDF2Go.getModelFactory().getModel();
+<font color="#804040">2 </font>RDFContainer configuration = new RDFContainerImpl(model,new URIImpl(&quot;source:testSource&quot;));
+<font color="#804040">3 </font>ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
+<font color="#804040">4 </font>DataSource source = new FileSystemDataSource();
+<font color="#804040">5 </font>source.setConfiguration(configuration);
+</pre
+
 
 <p>
 This snippet does following things
 <ol>
+    <li>Instantiate an RDF2Go model, for more details about RDF2Go see <a href="rdf2go.html">here</a></li>
 	<li>Instantiate the RDFContainer using the available implementation. The given uri is more or less 
 	    irrelevant in this case. (Provided it is syntactically correct)</li>
 	<li>Set the rootFolder option to the absolute path of the rootFile (which is a java.io.File instance)</li>
@@ -50,15 +51,13 @@ This snippet does following things
 The second stage: the setting up and firing a crawler is done in another five lines:
 </p>
 
-<div class="code">
-<pre>
-FileSystemCrawler crawler = new FileSystemCrawler();
-crawler.setDataSource(source);
-crawler.setDataAccessorRegistry(new DefaultDataAccessorRegistry());
-crawler.setCrawlerHandler(new TutorialCrawlerHandler());
-crawler.crawl();
-</pre>
-</div>
+<pre class="code">
+<font color="#804040">1 </font>FileSystemCrawler crawler = new FileSystemCrawler();
+<font color="#804040">2 </font>crawler.setDataSource(source);
+<font color="#804040">3 </font>crawler.setDataAccessorRegistry(new DefaultDataAccessorRegistry());
+<font color="#804040">4 </font>crawler.setCrawlerHandler(new TutorialCrawlerHandler());
+<font color="#804040">5 </font>crawler.crawl();
+</pre
 
 <p>
 This piece of code has following meaning
@@ -79,119 +78,122 @@ encapsulates the default methods. The simplest use case of a crawler needs only 
 They are summarized in this snippet:
 </p>
 
-<div class="code">
-<pre>
-private class TutorialCrawlerHandler extends CrawlerHandlerBase {
-		
-		Repository repository;
-		RDFContainerFactory factory;
+<pre class="code">
+<font color="#804040"> 1 </font><font color="#2e8b57"><b>private</b></font> <font color="#2e8b57"><b>class</b></font> TutorialCrawlerHandler <font color="#2e8b57"><b>extends</b></font> CrawlerHandlerBase {
+<font color="#804040"> 2 </font>
+<font color="#804040"> 3 </font>    <font color="#0000ff">// our 'persistent' modelSet</font>
+<font color="#804040"> 4 </font>    <font color="#2e8b57"><b>private</b></font> ModelSet modelSet;
 </pre>
-</div>
-<div class="code">
-<pre>		
-		public TutorialCrawlerHandler() throws Exception {
-			repository = new Repository(new MemoryStore());
-			repository.initialize();
-			repository.setAutoCommit(false);
-			factory = new SesameRDFContainerFactory();
-		}
+
+Constructor - initializes the underlying modelSet - the rdf store that will contain all generated
+RDF statements. This may be a persistent model, whose content is stored in a file on a hard disk
+on in a relational database.
+
+<pre class="code">
+<font color="#804040"> 6 </font>    <font color="#2e8b57"><b>public</b></font> TutorialCrawlerHandler() <font color="#2e8b57"><b>throws</b></font> ModelException {
+<font color="#804040"> 7 </font>        modelSet = RDF2Go.getModelFactory().createModelSet();
+<font color="#804040"> 8 </font>    }
 </pre>
-</div>
 
-<p>
-Constructor - initializes the underlying repository - the rdf store that will contain all generated
-RDF statements.
-</p>
-
-<div class="code">
-<pre>
-		// let's dump the contents onto the standard output	
-		public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-			try {
-				repository.commit();
-				RDFWriter rdfWriter = Rio.createWriter(RDFFormat.TRIX, new PrintWriter(System.out));
-				repository.export(rdfWriter);
-			}
-			catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
-</pre>
-</div>
-
-<p>
 crawlStopped - the method called by the crawler, when it has finished the crawling process. At that
 point the Repository will contain all data that has been extracted from a file system, that is
 the file metadata (names, sizes, dates of last modification etc...) and contents (extracted from
 files that have been recognized as being of one of the supported file types. See <a 
-href="extractors.html">extractors</a> for details on this process
-</p>
+href="extractors.html">extractors</a> for details on this process. Don't forget
+to close the modelSet after you're done with it (line 18).
 
-<div class="code">
-<pre>
-		public RDFContainer getRDFContainer(URI uri) {
-			return factory.getRDFContainer(uri);
-		}
+
+<pre class="code">
+<font color="#804040">10 </font>    <font color="#2e8b57"><b>public</b></font> <font color="#2e8b57"><b>void</b></font> crawlStopped(Crawler crawler, ExitCode exitCode) {
+<font color="#804040">11 </font>        <font color="#804040"><b>try</b></font> {
+<font color="#804040">12 </font>            modelSet.writeTo(System.out, Syntax.Trix);
+<font color="#804040">13 </font>        }
+<font color="#804040">14 </font>        <font color="#804040"><b>catch</b></font> (Exception e) {
+<font color="#804040">15 </font>            <font color="#804040"><b>throw</b></font> <font color="#804040"><b>new</b></font> RuntimeException(e);
+<font color="#804040">16 </font>        }
+<font color="#804040">17 </font>
+<font color="#804040">18 </font>        modelSet.close();
+<font color="#804040">19 </font>    }
 </pre>
-</div>
 
 getRDFContainer - every time a new data object (in this case a file) is encountered, the crawler
 has to store the rdf data in some rdf container. He asks the handler to provide him with one. This
 approach gives us some flexibility. In this particular program we use this flexibility to make
-every container a new fresh one. As such we will have the information about different DataObject
+every container a new fresh one, backed by a new empty in-memory model.
+As such we will have the information about different DataObject
 nicely divided. They won't interfere with each other, and we will be able to decide by ourselves
 what to do with each DataObject.
 
-<div class="code">
-<pre>		
-		public void objectChanged(Crawler crawler, DataObject object) {
-			processBinary(object);
-			try {
-				repository.remove(null, null, null, object.getID());
-				CloseableIterator&lt;RStatement&gt; iterator 
-						= ((Repository)object.getMetadata().getModel()).extractStatements();
-				repository.add(iterator,object.getID());
-				iterator.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			object.dispose();
-		}
+<pre class="code">
+<font color="#804040">21 </font>    <font color="#2e8b57"><b>public</b></font> RDFContainer getRDFContainer(URI uri) {
+<font color="#804040">22 </font>        <font color="#0000ff">// we create a new in-memory temporary model for each data source</font>
+<font color="#804040">23 </font>        Model model = RDF2Go.getModelFactory().createModel(uri);
+<font color="#804040">24 </font>        <font color="#0000ff">// note that the model is opened when passed to an rdfcontainer</font>
+<font color="#804040">25 </font>        <font color="#804040"><b>return</b></font> <font color="#804040"><b>new</b></font> RDFContainerImpl(model, uri);
+<font color="#804040">26 </font>    }
 </pre>
-</div>
 
 <p>
-Here we see the aperture at it's full potential. This method is called when the crawler has finished
-crawling a single DataObject (i.e. a file) and would like to pass the information to us. We decide
-to store it in one central repository, but we could just as well do with it whatever pleases us. 
-Since this object has been changed, we assume that some information on this object had already been
-stored in the repository, so we delete all previous statements concerning this object.
+Now we see the power of aperture. The most important method in every application that uses aperture.
+ObjectNew. This method is called by the crawler whenever a new data object is found. For applications
+that don't keep information about previous crawls and are thus unable to tell if an object has been
+encountered before or not - this will be the only method that really matters. In this example we
+simply move the metadata from the data object (backed by an in-memory mode, we created in the
+getRdfContainer method) to our 'persistent' modelSet. We could just as well do just anything we
+like with the data, analyze it in any way, show it to the user, serialize to a file, feed to 
+Lucene for later searching. The sky is the limit.
 </p>
-
-<div class="code">
-<pre>		
-		public void objectNew(Crawler crawler, DataObject object) {
-			processBinary(object);
-			try {
-				CloseableIterator&lt;RStatement&gt; iterator 
-						= ((Repository)object.getMetadata().getModel()).extractStatements();
-				repository.add(iterator,object.getID());
-				iterator.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			object.dispose();
-		}
-	}
-}
-</pre>
-</div>
 
 <p>
-This method is quite similar to the previous one, with the exception, that we don't have to delete
-any previous information since this object is reported as new, so most probably there should be nothing
-do delete...
+Note that processBinary method from the CrawlerHandlerBase is used. It tries to find and use an extractor to 
+augment the metadata
+provided by the crawler itself. It has been ommitted from this example but the reader is heartily advised to
+acquaint him- or herself with it, since using extractors is a common task for all Aperture users.
 </p>
+<pre class="code">
+<font color="#804040">28 </font>    <font color="#2e8b57"><b>public</b></font> <font color="#2e8b57"><b>void</b></font> objectNew(Crawler crawler, DataObject object) {
+<font color="#804040">29 </font>        <font color="#0000ff">// first we try to extract the information from the binary file</font>
+<font color="#804040">30 </font>        processBinary(object);
+<font color="#804040">31 </font>        <font color="#0000ff">// then we add this information to our persistent model</font>
+<font color="#804040">32 </font>        modelSet.addModel(object.getMetadata().getModel());
+<font color="#804040">33 </font>        <font color="#0000ff">// don't forget to dipose of the DataObject</font>
+<font color="#804040">34 </font>        object.dispose();
+<font color="#804040">35 </font>    }
+<font color="#804040">36 </font>
+</pre>
+
+This method is a variant of the previous one. It is used by crawlers that keep track of their crawling and can
+distinguish between objects that have been encountered before or not. See 
+<a href="crawlers.html#incrementalCrawling">Incremental Crawling</a> for details.
+
+<pre class="code">
+<font color="#804040">37 </font>    <font color="#2e8b57"><b>public</b></font> <font color="#2e8b57"><b>void</b></font> objectChanged(Crawler crawler, DataObject object) {
+<font color="#804040">38 </font>        <font color="#0000ff">// first we remove old information about the data object</font>
+<font color="#804040">39 </font>        modelSet.removeModel(object.getID());
+<font color="#804040">40 </font>        <font color="#0000ff">// then we try to extract metadata and fulltext from the file</font>
+<font color="#804040">41 </font>        processBinary(object);
+<font color="#804040">42 </font>        <font color="#0000ff">// an then we add the information from the temporary model to our</font>
+<font color="#804040">43 </font>        <font color="#0000ff">// 'persistent' model</font>
+<font color="#804040">44 </font>        modelSet.addModel(object.getMetadata().getModel());
+<font color="#804040">45 </font>        <font color="#0000ff">// don't forget to dispose of the DataObject</font>
+<font color="#804040">46 </font>        object.dispose();
+<font color="#804040">47 </font>    }
+<font color="#804040">48 </font>
+</pre>
+
+
+At lastly, another method often called by crawlers that use <a href="crawlers.html#incrementalCrawling">Incremental Crawling</a>
+facilities. It is called whenever the crawler finds out that a data object has been deleted from the data source
+(e.g. a file was deleted). This method lets us update the 'persistent' rdf store to reflect the deletion.
+
+
+<pre class="code">
+<font color="#804040">49 </font>    <font color="#2e8b57"><b>public</b></font> <font color="#2e8b57"><b>void</b></font> objectRemoved(Crawler crawler, URI uri) {
+<font color="#804040">50 </font>        <font color="#0000ff">// we simply remove the information</font>
+<font color="#804040">51 </font>        modelSet.removeModel(uri);
+<font color="#804040">52 </font>    }
+<font color="#804040">53 </font>}
+</pre>
 
 <p> If this short demonstration got you interested - see the entire working
 example in org.semanticdesktop.aperture.examples.TutorialCrawlingExample. There are also numerous other

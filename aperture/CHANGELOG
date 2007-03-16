@@ -93,3 +93,27 @@ bug fixes:
 - same for WebCrawler and HttpAccessor
 - prevent NullPointerException in FileDataObjectBase.dispose
 - made sure ThreadedExtractorWrapper redirects all Exceptions of the wrapped Extractor
+
+----------------------------------
+version 2006.1-alpha-4, (not released yet)
+----------------------------------
+
+The entire Aperture Framework has been rewritten to utilize the RDF2Go framework.
+It is now completely independent from the underlying RDF store. Additional
+improvements:
+
+- changed the logging subsystem from Java Util Logging to SLF4J. This solves
+some classloading issues that were encountered when using Aperture in a 
+web application.
+
+- added the src/activators folder that contains code for embedding Aperture
+in an OSGi environment. Additional ant target has been added that creates 
+two OSGI bundles from Aperture. The OSGi setup has been tested.
+
+Updated dependencies
+- updated Sesame 2.0 from alpha-3 to beta-2
+- updated the applewrapper library to version 0.2
+- RDF2Go 4.4.1
+- Sesame 2.0-beta2 RDF2Go Adapter revision 2544
+- SLF4J 1.3.0
+- osgi.core-4.0.jar - The reference jar file, necessary to compile activators.
