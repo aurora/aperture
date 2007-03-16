@@ -63,38 +63,56 @@ public class TutorialCrawlingExample {
         crawler.crawl();
     }
 
-    private static class TutorialCrawlerHandler extends CrawlerHandlerBase {
+private class TutorialCrawlerHandler extends CrawlerHandlerBase {
 
-        private ModelSet modelSet;
+    // our 'persistent' modelSet
+    private ModelSet modelSet;
 
-        public TutorialCrawlerHandler() throws ModelException {
-            modelSet = RDF2Go.getModelFactory().createModelSet();
-        }
-
-        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-            try {
-                modelSet.writeTo(System.out, Syntax.Trix);
-            }
-            catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            
-            modelSet.close();
-        }
-
-        public RDFContainer getRDFContainer(URI uri) {
-            Model model = modelSet.getModel(uri);
-            return new RDFContainerImpl(model, uri);
-        }
-
-        public void objectChanged(Crawler crawler, DataObject object) {
-            processBinary(object);
-            object.dispose();
-        }
-
-        public void objectNew(Crawler crawler, DataObject object) {
-            processBinary(object);
-            object.dispose();
-        }
+    public TutorialCrawlerHandler() throws ModelException {
+        modelSet = RDF2Go.getModelFactory().createModelSet();
     }
+
+    public void crawlStopped(Crawler crawler, ExitCode exitCode) {
+        try {
+            modelSet.writeTo(System.out, Syntax.Trix);
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        
+        modelSet.close();
+    }
+
+    public RDFContainer getRDFContainer(URI uri) {
+        // we create a new in-memory temporary model for each data source
+        Model model = RDF2Go.getModelFactory().createModel(uri);
+        // note that the model is opened when passed to an rdfcontainer
+        return new RDFContainerImpl(model, uri);
+    }
+    
+    public void objectNew(Crawler crawler, DataObject object) {
+        // first we try to extract the information from the binary file
+        processBinary(object);
+        // then we add this information to our persistent model
+        modelSet.addModel(object.getMetadata().getModel());
+        // don't forget to dipose of the DataObject
+        object.dispose();
+    }
+
+    public void objectChanged(Crawler crawler, DataObject object) {
+        // first we remove old information about the data object
+        modelSet.removeModel(object.getID());
+        // then we try to extract metadata and fulltext from the file
+        processBinary(object);
+        // an then we add the information from the temporary model to our
+        // 'persistent' model
+        modelSet.addModel(object.getMetadata().getModel());
+        // don't forget to dispose of the DataObject
+        object.dispose();
+    }
+    
+    public void objectRemoved(Crawler crawler, URI uri) {
+        modelSet.removeModel(uri);
+    }
+}
 }
