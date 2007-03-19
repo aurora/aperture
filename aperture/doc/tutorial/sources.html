@@ -28,8 +28,12 @@ The current data source hierarchy looks as follows:
 
 <p>
 The specific DataSource implementations available at the moment do nothing more than define a
-URI used to identify the data source type in a RDF model.
-All configuration data except the name and ID of the DataSource are modeled as a RDF model and
+URI used to identify the data source type in a RDF model. That's why you don't need to explicitly
+add the RDF.type - source:FileSystemDataSource property.
+</p>
+
+<p>
+All configuration data is modeled as an RDF model and
 stored in a RDFContainer. Whenever possible, properties from the SourceVocabulary are used
 to model configuration settings, Although developers of new DataSource types are free to use
 their own properties when necessary. 
@@ -58,31 +62,22 @@ by an Accessor.
 The following code demonstrates how to create and configure a FileSystemDataSource:
 </p>
 
-<div class="code">
-<pre>
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
-import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
-import org.semanticdesktop.aperture.rdf.sesame.SesameRDFContainer;
+<pre class="code">
+<font color="#0000ff">// determine the root folder of the source</font>
+File rootFolder = <font color="#804040"><b>new</b></font> File(<font color="#ff00ff">&quot;D:</font><font color="#6a5acd">\\</font><font color="#ff00ff">path</font><font color="#6a5acd">\\</font><font color="#ff00ff">to</font><font color="#6a5acd">\\</font><font color="#ff00ff">the</font><font color="#6a5acd">\\</font><font color="#ff00ff">root</font><font color="#6a5acd">\\</font><font color="#ff00ff">folder&quot;</font>);
 
-...
+<font color="#0000ff">// determine a URI to identify the DataSource</font>
+URI id = <font color="#804040"><b>new</b></font> URIImpl(<font color="#ff00ff">&quot;urn:test:testsource&quot;</font>);
 
-// determine the root folder of the source
-File rootFolder = ...;
-
-// determine a URI to identify the DataSource
-URI id = new URIImpl("urn:test:testsource")
-
-// create the DataSource configuration
-SesameRDFContainer configuration = new SesameRDFContainer(id);
+<font color="#0000ff">// create the DataSource configuration</font>
+Model model = RDF2Go.getModelFactory().createModel();
+RDFContainer configuration = <font color="#804040"><b>new</b></font> RDFContainerImpl(model,id);
 ConfigurationUtil.setRootFolder(rootFolder.getAbsolutePath(), configuration);
 
-// create the DataSource instance
-FileSystemDataSource source = new FileSystemDataSource();
-source.setConfiguration(configuration);
+<font color="#0000ff">// create the DataSource instance</font>
+FileSystemDataSource source = <font color="#804040"><b>new</b></font> FileSystemDataSource();
+source.setConfiguration(configuration)
 </pre>
-</div>
 
 </body>
 

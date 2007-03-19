@@ -161,87 +161,66 @@ The following code demonstrates how to apply an Extractor on a given File and du
 results to System.out (using NTriples encoding):
 </p>
 
-<div class="code">
-<pre>
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.PrintWriter;
-import java.util.Set;
-
-import org.ontoware.rdf2go.impl.sesame2.ModelImplSesame;
-import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.Syntax;
-import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.openrdf.util.IOUtil;
-import org.semanticdesktop.aperture.extractor.Extractor;
-import org.semanticdesktop.aperture.extractor.ExtractorFactory;
-import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
-import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
-import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
-import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
-import org.semanticdesktop.aperture.rdf.rdf2go.RDF2GoRDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
-
-public class ExtractorExample {
-    public static void main(String[] args) throws Exception {
-        // create a MimeTypeIdentifier
-        MimeTypeIdentifier identifier = new MagicMimeTypeIdentifier();
-
-        // create an ExtractorRegistry containing all available
-        // ExtractorFactories
-        ExtractorRegistry extractorRegistry = new DefaultExtractorRegistry();
-
-        // read as many bytes of the file as desired by the MIME type identifier
-        File file = new File("somefile.someextension");
-        FileInputStream stream = new FileInputStream(file);
-        BufferedInputStream buffer = new BufferedInputStream(stream);
-        byte[] bytes = IOUtil.readBytes(buffer, identifier.getMinArrayLength());
-        stream.close();
-
-        // let the MimeTypeIdentifier determine the MIME type of this file
-        String mimeType = identifier.identify(bytes, file.getPath(), null);
-
-        // skip when the MIME type could not be determined
-        if (mimeType == null) {
-            System.err.println("MIME type could not be established.");
-            return;
-        }
-
-        // create the RDFContainer that will hold the RDF model
-        URI uri = URIImpl.create(file.toURI().toString());
-        Model model = new ModelImplSesame(false);
-        RDF2GoRDFContainer container = new RDF2GoRDFContainer(model, uri);
-
-        // determine and apply an Extractor that can handle this MIME type
-        Set factories = extractorRegistry.get(mimeType);
-        if (factories != null && !factories.isEmpty()) {
-            // just fetch the first available Extractor
-            ExtractorFactory factory = (ExtractorFactory) factories.iterator()
-                    .next();
-            Extractor extractor = factory.get();
-
-            // apply the extractor on the specified file
-            // (just open a new stream rather than buffer the previous stream)
-            stream = new FileInputStream(file);
-            buffer = new BufferedInputStream(stream, 8192);
-            extractor.extract(uri, buffer, null, mimeType, container);
-            stream.close();
-        }
-
-        // add the MIME type as an additional statement to the RDF model
-        container.add(DATA.mimeType, mimeType);
-
-        // report the output to System.out
-
-        container.getModel().writeTo(new PrintWriter(System.out),
-                Syntax.Ntriples);
-
-    }
-}
+<pre class="code">
+<font color="#804040"> 1 </font><font color="#2e8b57"><b>public</b></font> <font color="#2e8b57"><b>class</b></font> ExtractorExample {
+<font color="#804040"> 2 </font>    <font color="#2e8b57"><b>public</b></font> <font color="#2e8b57"><b>static</b></font> <font color="#2e8b57"><b>void</b></font> main(String[] args) <font color="#2e8b57"><b>throws</b></font> Exception {
+<font color="#804040"> 3 </font>        <font color="#0000ff">// create a MimeTypeIdentifier</font>
+<font color="#804040"> 4 </font>        MimeTypeIdentifier identifier = <font color="#804040"><b>new</b></font> MagicMimeTypeIdentifier();
+<font color="#804040"> 5 </font>
+<font color="#804040"> 6 </font>        <font color="#0000ff">// create an ExtractorRegistry containing all available</font>
+<font color="#804040"> 7 </font>        <font color="#0000ff">// ExtractorFactories</font>
+<font color="#804040"> 8 </font>        ExtractorRegistry extractorRegistry = <font color="#804040"><b>new</b></font> DefaultExtractorRegistry();
+<font color="#804040"> 9 </font>
+<font color="#804040">10 </font>        <font color="#0000ff">// read as many bytes of the file as desired by the MIME type identifier</font>
+<font color="#804040">11 </font>        File file = <font color="#804040"><b>new</b></font> File(<font color="#ff00ff">&quot;somefile.someextension&quot;</font>);
+<font color="#804040">12 </font>        FileInputStream stream = <font color="#804040"><b>new</b></font> FileInputStream(file);
+<font color="#804040">13 </font>        BufferedInputStream buffer = <font color="#804040"><b>new</b></font> BufferedInputStream(stream);
+<font color="#804040">14 </font>        <font color="#2e8b57"><b>byte</b></font>[] bytes = IOUtil.readBytes(buffer, identifier.getMinArrayLength());
+<font color="#804040">15 </font>        stream.close();
+<font color="#804040">16 </font>
+<font color="#804040">17 </font>        <font color="#0000ff">// let the MimeTypeIdentifier determine the MIME type of this file</font>
+<font color="#804040">18 </font>        String mimeType = identifier.identify(bytes, file.getPath(), <font color="#ff00ff">null</font>);
+<font color="#804040">19 </font>
+<font color="#804040">20 </font>        <font color="#0000ff">// skip when the MIME type could not be determined</font>
+<font color="#804040">21 </font>        <font color="#804040"><b>if</b></font> (mimeType == <font color="#ff00ff">null</font>) {
+<font color="#804040">22 </font>            System.err.println(<font color="#ff00ff">&quot;MIME type could not be established.&quot;</font>);
+<font color="#804040">23 </font>            <font color="#804040"><b>return</b></font>;
+<font color="#804040">24 </font>        }
+<font color="#804040">25 </font>
+<font color="#804040">26 </font>        <font color="#0000ff">// create the RDFContainer that will hold the RDF model</font>
+<font color="#804040">27 </font>        URI uri = URIImpl.create(file.toURI().toString());
+<font color="#804040">28 </font>        Model model = <font color="#804040"><b>new</b></font> RepositoryModel(<font color="#ff00ff">false</font>);
+<font color="#804040">29 </font>        model.open();
+<font color="#804040">30 </font>        RDFContainer container = <font color="#804040"><b>new</b></font> RDFContainerImpl(model, uri);
+<font color="#804040">31 </font>
+<font color="#804040">32 </font>        <font color="#0000ff">// determine and apply an Extractor that can handle this MIME type</font>
+<font color="#804040">33 </font>        Set factories = extractorRegistry.get(mimeType);
+<font color="#804040">34 </font>        <font color="#804040"><b>if</b></font> (factories != <font color="#ff00ff">null</font> &amp;&amp; !factories.isEmpty()) {
+<font color="#804040">35 </font>            <font color="#0000ff">// just fetch the first available Extractor</font>
+<font color="#804040">36 </font>            ExtractorFactory factory = (ExtractorFactory) factories.iterator()
+<font color="#804040">37 </font>                    .next();
+<font color="#804040">38 </font>            Extractor extractor = factory.get();
+<font color="#804040">39 </font>
+<font color="#804040">40 </font>            <font color="#0000ff">// apply the extractor on the specified file</font>
+<font color="#804040">41 </font>            <font color="#0000ff">// (just open a new stream rather than buffer the previous stream)</font>
+<font color="#804040">42 </font>            stream = <font color="#804040"><b>new</b></font> FileInputStream(file);
+<font color="#804040">43 </font>            buffer = <font color="#804040"><b>new</b></font> BufferedInputStream(stream, <font color="#ff00ff">8192</font>);
+<font color="#804040">44 </font>            extractor.extract(uri, buffer, <font color="#ff00ff">null</font>, mimeType, container);
+<font color="#804040">45 </font>            stream.close();
+<font color="#804040">46 </font>        }
+<font color="#804040">47 </font>
+<font color="#804040">48 </font>        <font color="#0000ff">// add the MIME type as an additional statement to the RDF model</font>
+<font color="#804040">49 </font>        container.add(DATA.mimeType, mimeType);
+<font color="#804040">50 </font>
+<font color="#804040">51 </font>        <font color="#0000ff">// report the output to System.out</font>
+<font color="#804040">52 </font>
+<font color="#804040">53 </font>        container.getModel().writeTo(<font color="#804040"><b>new</b></font> PrintWriter(System.out),
+<font color="#804040">54 </font>                Syntax.Ntriples);
+<font color="#804040">55 </font>
+<font color="#804040">56 </font>    }
+<font color="#804040">57 </font>}
+<font color="#804040">58 </font>
 </pre>
-</div>
 
 </body>
 

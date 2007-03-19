@@ -10,7 +10,7 @@
 <h1>The Use of RDF2Go in Aperture</h1>
 
 <p>
-Aperture is build on top RDF2Go. 
+Aperture is built on top RDF2Go. 
 It is an abstract layer that allows Aperture to work easily with all
 popular RDFStores like <a href="http://www.openrdf.org">Sesame</a>, 
 <a href="http://jena.sourceforge.net">Jena</a>. For a complete list of supported
@@ -21,7 +21,165 @@ RDF Stores and detailed documentation see RDF2Go homepage at
 <p>
 This guide is not intended to serve as detailed documentation of RDF2go. It is
 only intended to make the developer aware of certain RDF2Go issues that may 
-be important to use the whole power of Aperture.
+be important to use the full power of Aperture. This chapter requires some
+knowledge of Aperture, so if you're new, please acquaint yourself with the
+rest of this tutorial before coming here.
+</p>
+
+<h2>RDF2Go basics</h2>
+
+<p>
+The most important interface in RDF2Go is a Model. It encapsulates the RDF store
+of choice and provides methods to interact with it. Since RDF2Go is only an
+abstract layer, every user needs a concrete model implementation to work with.
+There are quite a few of them (see 
+<a href="http://wiki.ontoworld.org/wiki/RDF2Go">here</a>). For each supported
+RDF store there is an adapter, a jar file containing the implementation of Model and all other
+necessary interfaces. You need to have the rdf2go jars (both of them: api and
+impl.base), the adapter jar and the
+jar of your rdf store implementation of choice. (That's at least four). 
+</p>
+
+<h2>Initializing a model</h2>
+
+<p>
+There are many ways to initialize a model. An average developer should be aware
+of at least three. The first one is the simplest. (Example uses the classes from
+the Sesame2 implementation, it should be similar enough for all other stores).
+</p>
+
+<pre class="code">
+Model model = new RepositoryModel(false)
+</pre>
+
+<p>
+The above one uses one of the constructors from the RepositoryModel class. This
+creates a simple, non-inferencing, in-memory repository. It should be enough
+for many cases. If you need more flexibility, and are willing to learn the 
+complexities of your implementation (or already know them all by heart :-) you 
+can create an instance of the repository yourself and pass it to the RepositoryModel
+constructor. Like this:
+</p>
+
+<pre class="code">
+<font color="#0000ff">// you can initialize the repository like you want, add any elements</font>
+<font color="#0000ff">// to the sail stack, use hard disk or data base persistence ...</font>
+<font color="#0000ff">// the full power of sesame lies at your fingertips</font>
+Repository repository = 
+    <font color="#804040"><b>new</b></font> RepositoryImpl(
+    <font color="#804040"><b>new</b></font> RDFSRules(
+    <font color="#804040"><b>new</b></font> NativeStore(
+    <font color="#804040"><b>new</b></font> File(<font color="#ff00ff">&quot;path/to/the/store/folder&quot;</font>))));
+Model model = <font color="#804040"><b>new</b></font> Model(repository);
+</pre>
+
+<p>
+The third part comes in handy if you need you code to be indepenent of any 
+concrete rdf2go implementation, but still would like to create models. (Like 
+Aperture for example :-) RDF2go
+provides a singleton class called RDF2Go. Yes, I know it's uncommon to call a class
+with the name of the library itself :-). This class is capable of detecting
+installed RDF2Go adapter implementations at runtime. It follows a pattern similar
+to that found in the SLF4J logging framework. It is enough to have the adapter
+jar on the classpath for the RDF2Go to detect it. You can override this behaviour
+with explicit calls to RDF2Go.register() and RDF2Go.unregister() methods. With
+it creating a model is even more simple:
+</p>
+
+<pre class="code">
+Model model = RDF2Go.getModelFactory().createModel();
+</pre>
+
+<h2>Opening and closing</h2>
+
+<h3>Opening and closing a model</h3>
+
+<p>
+RDF2Go models often need certain resources to work. These may include opened
+files, database connections, http connections or anything else the underlying
+implementation might need. As such it is necessary to explicitly acquire those
+resources before using the model and return them when they are no longer needed.
+This is a price you have to pay for having a single unified interface to access
+a simple in-memory model with 5 triples and a massive database with millions of
+them.
+</p>
+
+<p>
+Thus working with a model follows a following pattern;
+</p>
+
+<pre class="code">
+Model model = prepareTheModelAndTheUnderlyingImplementation();
+model.open(); <font color="#0000ff">// 'open' the model and aquire all necessary system resources</font>
+doYourWork(model);
+model.close(); <font color="#0000ff">// return the resources...</font>
+</pre>
+
+<p>
+or, more often:
+</p>
+
+<pre class="code">
+Model model = <font color="#ff00ff">null</font>;
+<font color="#804040"><b>try</b></font> {
+    model = prepareTheModelAndTheUnderlyingImplementation();
+    model.open(); <font color="#0000ff">// 'open' the model and aquire all necessary system resources</font>
+    doYourWork(model);
+    model.close(); <font color="#0000ff">// return the resources...</font>
+} <font color="#804040"><b>catch</b></font> (Exception e) {
+    doSomethingWithTheException(e);
+} <font color="#804040"><b>finally</b></font> {
+    <font color="#804040"><b>if</b></font> (model != <font color="#ff00ff">null</font>) model.close();
+}
+</pre>
+
+<p>
+It is necessary to remeber about it. You will get errors if you try to use an
+unopened model and warnings if don't properly close it. This characteristic is
+important, because it implied other design decisions in Aperture. 
+</p>
+
+<h3>Opening and closing an RDFContainer</h3>
+
+<p>
+RDFContainer wraps a model. As such in order to work with the container the
+model has to be opened. That's why remeber that when you pass the model to
+the RDFContainer constructor - the model is opened automatically, at least in
+the default implementation. 
+</p>
+
+<p>
+When you stop working with an RDFContainer - you need to dispose of it. We 
+discourage you from closing the underlying model manually via a call to
+container.getModel().close(). There are many situations when multiple 
+RDFContainers share the same model, they represent properties of various
+resources stored in the same model. If you stop working with one container and
+want to close the underlying model - all other containers will become invalid.
+This may lead to subtle bugs.
+</p>
+
+<p>
+We have introduced a way to avoid this. Constructors of RDFContainerImpl may
+accept a third boolean argument. Set it to true, and the underlying model will
+be considered shared and disposing the RDFContainer will not close the underlying
+model. Keep this in mind when designing your application.
+</p>
+
+<h3>Opening and closing a DataObject</h3>
+
+<p>
+DataObject wraps (indirectly) two RDFContainers. The actual metadata container
+and the configuration of the data source. The first one is available through
+dataObject.getMetadata() and the second one through dataObject.getDataSource().getConfiguration().
+</p>
+
+<p>
+When you dispose the data object, the metadata container IS disposed with it. 
+(I'd like to underline that the container is disposed, not that underlying 
+metadata model is closed.) The configuration of the data source is NOT. There
+is no DataSource.dispose() method, so when you create a DataSource instance you
+need to remember to take care about the configuration RDFCOntainer when you 
+don't need it anymore.
 </p>
 
 </body>
