@@ -185,31 +185,7 @@ public class RepositoryAccessData implements AccessData {
      * RepositoryAccessData's context.
      */
     public int getSize() {
-        commit();
-
-        RepositoryResult<Statement> resultIterator = null;
-        int result = 0;
-            
-        try {
-            resultIterator = connection.getStatements(null, null, null, false, context);
-            while (resultIterator.hasNext()) {
-                resultIterator.next();
-                result++;
-            }
-            
-            return result;
-        }
-        catch (RepositoryException e) {
-            throw new RuntimeException(e);
-        }
-        finally {
-            try {
-                resultIterator.close();
-            }
-            catch (RepositoryException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        return getStoredIDs().size();
     }
 
     public Set<String> getStoredIDs() {
