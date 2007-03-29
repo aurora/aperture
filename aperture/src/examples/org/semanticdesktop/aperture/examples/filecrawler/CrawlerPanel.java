@@ -301,6 +301,7 @@ public class CrawlerPanel extends JPanel {
         public SimpleCrawlerHandler() throws ModelException {
             ModelFactory modelFactory = RDF2Go.getModelFactory();
             modelSet = modelFactory.createModelSet();
+            modelSet.open();
             
             // create components for processing file contents
             mimeTypeIdentifier = new MagicMimeTypeIdentifier();
@@ -361,6 +362,7 @@ public class CrawlerPanel extends JPanel {
 
         public RDFContainer getRDFContainer(URI uri) {
             Model model = modelSet.getModel(uri);
+            model.open();
     		return new RDFContainerImpl(model, uri);
     	}
 

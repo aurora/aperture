@@ -8,7 +8,6 @@ package org.semanticdesktop.aperture;
 
 import junit.framework.TestCase;
 
-import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;

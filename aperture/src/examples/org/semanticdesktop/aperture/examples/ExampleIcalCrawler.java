@@ -124,6 +124,7 @@ public class ExampleIcalCrawler {
             // create a ModelSet that will hold the RDF Models of all crawled files and folders
             ModelFactory factory = RDF2Go.getModelFactory();
             modelSet = factory.createModelSet();
+            modelSet.open();
         }
 
         public void accessingObject(Crawler crawler, String url) {}
@@ -171,6 +172,7 @@ public class ExampleIcalCrawler {
             // automatically, unlike ModelFactory.createModel, which creates stand-alone models.
 
             Model model = modelSet.getModel(uri);
+            model.open();
             return new RDFContainerImpl(model, uri);
         }
 

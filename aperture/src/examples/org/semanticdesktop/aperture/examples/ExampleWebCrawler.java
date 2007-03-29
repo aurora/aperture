@@ -339,6 +339,7 @@ public class ExampleWebCrawler {
             // create a ModelSet that will hold the RDF Models of all crawled files and folders
             ModelFactory factory = RDF2Go.getModelFactory();
             modelSet = factory.createModelSet();
+            modelSet.open();
 
             // create some identification and extraction components
             if (extractingContents) {
@@ -439,6 +440,7 @@ public class ExampleWebCrawler {
             // automatically, unlike ModelFactory.createModel, which creates stand-alone models.
 
             Model model = modelSet.getModel(uri);
+            model.open();
             return new RDFContainerImpl(model, uri);
        }
 

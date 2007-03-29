@@ -87,6 +87,7 @@ public class VocabularyWriter {
 	private void loadOnt()  throws Exception  {
 		// read
         myModel = RDF2Go.getModelFactory().createModel();
+        myModel.open();
 		System.out.println("reading from "+inputRdfF.getAbsolutePath()+" in format "+ Syntax.RdfXml);
 		Reader reader = new BufferedReader(new FileReader(inputRdfF));
 		myModel.readFrom(reader, Syntax.RdfXml);

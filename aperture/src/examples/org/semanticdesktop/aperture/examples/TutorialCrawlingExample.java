@@ -46,6 +46,7 @@ public class TutorialCrawlingExample {
         // create a data source configuration
         ModelFactory factory = RDF2Go.getModelFactory();
         Model model = factory.createModel();
+        model.open();
         RDFContainer configuration = new RDFContainerImpl(model, URIImpl.create("source:testSource"), false);
         ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
 
@@ -70,6 +71,7 @@ private class TutorialCrawlerHandler extends CrawlerHandlerBase {
 
     public TutorialCrawlerHandler() throws ModelException {
         modelSet = RDF2Go.getModelFactory().createModelSet();
+        modelSet.open();
     }
 
     public void crawlStopped(Crawler crawler, ExitCode exitCode) {
@@ -86,7 +88,7 @@ private class TutorialCrawlerHandler extends CrawlerHandlerBase {
     public RDFContainer getRDFContainer(URI uri) {
         // we create a new in-memory temporary model for each data source
         Model model = RDF2Go.getModelFactory().createModel(uri);
-        // note that the model is opened when passed to an rdfcontainer
+        model.open();
         return new RDFContainerImpl(model, uri);
     }
     

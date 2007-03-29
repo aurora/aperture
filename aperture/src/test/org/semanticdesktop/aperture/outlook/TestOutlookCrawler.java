@@ -192,6 +192,7 @@ public class TestOutlookCrawler extends ApertureTestBase {
         public SimpleCrawlerHandler() throws ModelException {
             ModelFactory factory = RDF2Go.getModelFactory();
             modelSet = factory.createModelSet();
+            modelSet.open();
 
             newCount = 0;
         }

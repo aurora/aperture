@@ -16,7 +16,6 @@ import java.util.Set;
 
 import org.ontoware.rdf2go.ModelFactory;
 import org.ontoware.rdf2go.RDF2Go;
-import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.ModelSet;
 import org.ontoware.rdf2go.model.Syntax;
@@ -57,12 +56,8 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
 
         // create a ModelSet that will gather all extracted metadata
         ModelFactory factory = RDF2Go.getModelFactory();
-        try {
-            modelSet = factory.createModelSet();
-        }
-        catch (ModelRuntimeException e) {
-            throw new RuntimeException(e);
-        }
+        modelSet = factory.createModelSet();
+        modelSet.open();
     }
 
     public void accessingObject(Crawler crawler, String url) {
@@ -175,6 +170,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
 
     public RDFContainer getRDFContainer(URI uri) {
         Model model = modelSet.getModel(uri);
+        model.open();
         return new RDFContainerImpl(model, uri);
     }
 
