@@ -26,7 +26,9 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -61,39 +63,49 @@ public class XmlExtractor implements Extractor {
             // prepare a ContentHandler that gathers all text
             XmlTextExtractor listener = new XmlTextExtractor();
 
+            // prepare an InputSource encapsulating the stream and its URL
+            InputSource source = new InputSource();
+            source.setSystemId(id.toString());
+            source.setByteStream(filterStream);
+
             // parse the stream
             try {
-                parser.parse(filterStream, listener);
+                parser.parse(source, listener);
             }
             catch (Exception e) {
-                if (!isFailingDTDException(e)) {
+                // see if this is an exception indicating that an external DTD or entity declaration cannot be
+                // resolved
+                if (!isFailingInclusionException(e)) {
                     return;
                 }
 
-                // a FNFE is typically thrown when an external DTD cannot be found. An UnknownHostException is
-                // thrown when the user is not online and certain hosts cannot be found.
-
-                // External DTDs are useful to support resolving of entities but failing to load the DTD
-                // should not result in an aborted text extraction. Now let's assume we use Xerxes or a
+                // a FileNotFoundException is typically thrown when an external DTD or entity declaration
+                // cannot be found. An UnknownHostException is thrown when the user is not online and certain
+                // hosts cannot be found.
+                // 
+                // Such external resources are useful to support resolving of entities but failing to load the
+                // DTD should not result in an aborted text extraction. Now let's assume we use Xerxes or a
                 // Xerces-derived parser (e.g. the one in Java 5), switch off external DTD loading and try
-                // again
+                // again.
                 try {
-                    // disable external dtd loading
-                    parser.getXMLReader().setFeature(
-                        "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                    // disable external DTD loading, etc. on the XMLReader
+                    XMLReader r = parser.getXMLReader();
+                    r.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                    r.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                    r.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
 
-                    // reset some data structures
+                    // reset stream and parser listener
                     listener.clear();
                     stream.reset();
 
-                    // try again to parse the document
-                    parser.parse(stream, listener);
+                    // try once more to parse the document
+                    parser.parse(source, listener);
                 }
                 catch (SAXException se) {
                     // the FNFE is probably more worthy to report than the SAXException
                     Logger logger = LoggerFactory.getLogger(getClass());
                     logger.error("FileNotFoundException while parsing document and unable "
-                            + "to disable external dtd loading: " + id.toString(), e);
+                            + "to disable loading of external resources for " + id.toString(), e);
                 }
             }
 
@@ -114,7 +126,7 @@ public class XmlExtractor implements Extractor {
         }
     }
 
-    private boolean isFailingDTDException(Exception e) {
+    private boolean isFailingInclusionException(Exception e) {
         return e instanceof FileNotFoundException || e instanceof UnknownHostException;
     }
 
