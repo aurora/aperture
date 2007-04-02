@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
@@ -25,7 +24,6 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.UpdateException;
 import org.semanticdesktop.aperture.util.ModelUtil;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
@@ -164,7 +162,7 @@ public class ConfigurationUtil {
         configuration.put(DATASOURCE_GEN.includeHiddenResources, value);
     }
 
-    public static Boolean getIncludeHiddenResourceS(RDFContainer configuration) {
+    public static Boolean getIncludeHiddenResources(RDFContainer configuration) {
         return configuration.getBoolean(DATASOURCE_GEN.includeHiddenResources);
     }
 

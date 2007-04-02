@@ -96,7 +96,7 @@ public class FileSystemCrawler extends CrawlerBase {
         maximumSize = l == null ? DEFAULT_MAX_SIZE : l.longValue();
 
         // determine whether we should crawl hidden files and directories
-        Boolean b = ConfigurationUtil.getIncludeHiddenResourceS(configuration);
+        Boolean b = ConfigurationUtil.getIncludeHiddenResources(configuration);
         ignoreHiddenFiles = b == null ? DEFAULT_IGNORE_HIDDEN_FILES : b.booleanValue();
 
         // determine whether we should crawl symbolic links

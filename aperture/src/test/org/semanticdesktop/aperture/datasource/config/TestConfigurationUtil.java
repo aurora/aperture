@@ -64,7 +64,7 @@ public class TestConfigurationUtil extends ApertureTestBase {
     public void testIncludeHiddenResources() {
         boolean include1 = true;
         ConfigurationUtil.setIncludeHiddenResources(include1, configuration);
-        Boolean include2 = ConfigurationUtil.getIncludeHiddenResourceS(configuration);
+        Boolean include2 = ConfigurationUtil.getIncludeHiddenResources(configuration);
         assertEquals(include1, include2.booleanValue());
     }
 
