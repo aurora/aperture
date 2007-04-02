@@ -41,7 +41,7 @@ public class ThunderbirdAddressbookDataSourceFactory implements DataSourceFactor
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
     
 	public URI getSupportedType() {
-        return DATASOURCE_GEN.AddressbookDataSource;
+        return DATASOURCE_GEN.ThunderbirdAddressbookDataSource;
     }
 
     public DataSource newInstance() {
