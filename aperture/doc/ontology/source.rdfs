@@ -121,6 +121,12 @@
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
+<rdf:Property rdf:about="&source_;followSymbolicLinks"
+	 rdfs:comment="Follow symbolic links when crawling this datasource"
+	 rdfs:label="followSymbolicLinks">
+	<rdfs:domain rdf:resource="&source_;FileSystemDataSource"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
 <rdf:Property rdf:about="&source_;includeInbox"
 	 rdfs:label="includeInbox">
 	<rdfs:comment>if this is true always include the inbox when crawling - regardless of the basepath setting.</rdfs:comment>

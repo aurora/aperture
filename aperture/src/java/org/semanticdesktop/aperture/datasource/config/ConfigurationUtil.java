@@ -168,6 +168,14 @@ public class ConfigurationUtil {
         return configuration.getBoolean(DATASOURCE_GEN.includeHiddenResources);
     }
 
+    public static void setFollowSymbolicLinks(boolean value, RDFContainer configuration) {
+        configuration.put(DATASOURCE_GEN.followSymbolicLinks, value);
+    }
+
+    public static Boolean getFollowSymbolicLinks(RDFContainer configuration) {
+        return configuration.getBoolean(DATASOURCE_GEN.followSymbolicLinks);
+    }
+
     public static void setIncludeEmbeddedResources(boolean value, RDFContainer configuration) {
         configuration.put(DATASOURCE_GEN.includeEmbeddedResources, value);
     }

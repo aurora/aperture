@@ -4,17 +4,12 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Jan 15 13:48:42 CET 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Apr 02 13:30:18 CEST 2007
  * input file: doc/ontology/source.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/source#
  */
 public interface DATASOURCE_GEN {
 	public static final URI NS_DATASOURCE_GEN = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#");
-
-    /**
-     * Label: AddressbookDataSource 
-     */
-    public static final URI AddressbookDataSource = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#AddressbookDataSource");
 
     /**
      * Label: AppleAddressbookDataSource 
@@ -66,11 +61,6 @@ public interface DATASOURCE_GEN {
      * Label: SubstringPattern 
      */
     public static final URI SubstringPattern = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#SubstringPattern");
-
-    /**
-     * Label: TaggingDataSource 
-     */
-    public static final URI TaggingDataSource = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#TaggingDataSource");
 
     /**
      * Label: ThunderbirdAddressbookDataSource 
@@ -146,14 +136,6 @@ public interface DATASOURCE_GEN {
     public static final URI excludePattern = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#excludePattern");
 
     /**
-     * Label: flavour 
-     * Comment: Some datasource have different flavours, for example the AddressbookDataSource has versions for Thunderbird, Mail.app, etc. This property specifies which one to use. 
-     * Comment: http://aperture.semanticdesktop.org/ontology/source#DataSource 
-     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
-     */
-    public static final URI flavour = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#flavour");
-
-    /**
      * Label: hostname 
      * Comment: hostname of the server to connect to 
      * Comment: http://aperture.semanticdesktop.org/ontology/source#DataSource 
@@ -176,6 +158,14 @@ public interface DATASOURCE_GEN {
      * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI includeHiddenResources = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#includeHiddenResources");
+
+    /**
+     * Label: followSymbolicLinks 
+     * Comment: Follow symbolic links when crawling this datasource 
+     * Comment: http://aperture.semanticdesktop.org/ontology/source#FileSystemDataSource 
+     * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
+     */
+    public static final URI followSymbolicLinks = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#followSymbolicLinks");
 
     /**
      * Label: includeInbox 
@@ -274,13 +264,13 @@ public interface DATASOURCE_GEN {
     public static final URI timeout = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#timeout");
 
     /**
-     * Label: Thunderbird addresbook path 
+     * Label: Thunderbird Addresbook Path 
      * Comment: Path to the file where the thunderbird addresbook is stored 
      * Comment: http://aperture.semanticdesktop.org/ontology/source#DataSource 
      * Range: http://www.w3.org/2000/01/rdf-schema#Literal 
      */
     public static final URI thunderbirdAddressbookPath = URIImpl.createURIWithoutChecking("http://aperture.semanticdesktop.org/ontology/source#thunderbirdAddressbookPath");
-    
+
     /**
      * Label: username 
      * Comment: http://aperture.semanticdesktop.org/ontology/source#IMAPDataSource 
