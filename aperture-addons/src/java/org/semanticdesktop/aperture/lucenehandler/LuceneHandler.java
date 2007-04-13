@@ -6,30 +6,29 @@
  */
 package org.semanticdesktop.aperture.lucenehandler;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.DateTools.Resolution;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.node.DatatypeLiteral;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.ontoware.rdf2go.util.RDFTool;
+import org.ontoware.rdf2go.vocabulary.XSD;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
@@ -197,10 +196,25 @@ public class LuceneHandler extends CrawlerHandlerBase implements CrawlerHandler 
 		RDFContainer meta = object.getMetadata();
 		doc.add(new Field("uri", meta.getDescribedUri().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED));
 		// iterate through all fields
+		
 		for (ClosableIterator<? extends Statement> i = meta.getModel().findStatements(meta.getDescribedUri(), Variable.ANY, Variable.ANY); i.hasNext(); )
 		{
 			Statement s = i.next();
-			doc.add(new Field(s.getPredicate().toString(), s.getObject().toString(), Field.Store.YES, Field.Index.TOKENIZED));
+			if (s.getObject() instanceof DatatypeLiteral) {
+				DatatypeLiteral l = (DatatypeLiteral) s.getObject();
+				if (l.getDatatype().equals(XSD._dateTime)){
+					String date = DateTools.dateToString(RDFTool.string2Date(l.getValue()), Resolution.SECOND) ;
+					doc.add(new Field(s.getPredicate().toString(),date,Field.Store.YES, Field.Index.TOKENIZED));
+				}
+				else {
+					doc.add(new Field(s.getPredicate().toString(), l.getValue(), Field.Store.YES, Field.Index.TOKENIZED));				
+			}
+
+			}
+			else {
+				doc.add(new Field(s.getPredicate().toString(), s.getObject().toString(), Field.Store.YES, Field.Index.TOKENIZED));
+			}
+			
 		}
 		return doc;
 	}
