@@ -44,7 +44,7 @@
                     fresnel:propertyFormatDomain source:maximumDepth ;
                     sourceformat:valueWidget [ a sourceformat:IntegerFieldWidget ] .
                     
-:maximumeSizeFormat rdf:type fresnel:Format ;
+:maximumSizeFormat rdf:type fresnel:Format ;
                        fresnel:propertyFormatDomain source:maximumSize ;
                        sourceformat:valueWidget [ a sourceformat:IntegerFieldWidget ] .
 

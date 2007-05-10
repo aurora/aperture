@@ -11,5 +11,5 @@
                    fresnel:classLensDomain source:FileSystemDataSource ;
                    fresnel:showProperties ( source:rootFolder 
                                             source:maximumDepth
-                                            source:maximumByteSize
+                                            source:maximumSize
                                             source:includeHiddenResources ) .

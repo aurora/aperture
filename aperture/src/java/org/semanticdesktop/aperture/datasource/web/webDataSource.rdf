@@ -11,7 +11,8 @@
                    fresnel:classLensDomain source:WebDataSource ;
                    fresnel:showProperties ( source:rootUrl 
                                             source:includeEmbeddedResources 
-                                            source:maximumDepth ) .
+                                            source:maximumDepth
+                                            source:maximumSize ) .
 
                     
                     
