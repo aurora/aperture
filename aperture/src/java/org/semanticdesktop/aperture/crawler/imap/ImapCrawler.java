@@ -670,23 +670,18 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                     reportNotModified(queuedUri);
                 }
                 else {
-
-                    // inserted by Antoni on 14.12.2006
+                    // queue all its children
                     queueChildren(object, queue);
-
-                    // report this object as a new object (assumption: objects are always new, never
-                    // changed, since mails are immutable)
-                    crawlReport.increaseNewCount();
-                    handler.objectNew(this, object);
 
                     // register parent child relationship (necessary in order to be able to report
                     // unmodified or deleted attachments)
                     registerParent(object);
 
-                    // queue all its children MOVED upwards by Antoni Mylka on 14.12.2006
-                    // You cannot access the data object after passing it to a handler
-                    // the handler may dispose it...
-                    // queueChildren(object, queue);
+                    // Report this object as a new object (assumption: objects are always new, never
+                    // changed, since mails are immutable).
+                    // This MUST happen last because the CrawlerHandler will probably dispose of it.
+                    crawlReport.increaseNewCount();
+                    handler.objectNew(this, object);
                 }
             }
             catch (MessagingException e) {
@@ -812,7 +807,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         // query for all child URIs
         ClosableIterator<? extends Statement> statements = null;
         try {
-            statements = metadata.findStatements(Variable.ANY,DATA.partOf, object.getID());
+            statements = metadata.findStatements(Variable.ANY, DATA.partOf, object.getID());
             // queue these URIs
             while (statements.hasNext()) {
                 Statement statement = (Statement) statements.next();
@@ -1148,7 +1143,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
      * This is a socket factory that ignores ssl certificates.
      */
     public static class SimpleSocketFactory extends SSLSocketFactory {
-        
+
         private Logger logger = LoggerFactory.getLogger(getClass());
 
         private SSLSocketFactory factory;
