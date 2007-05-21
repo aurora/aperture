@@ -10,9 +10,10 @@
 <h1>Quickstart</h1>
 
 <p>
-This guide is dedicated to all those that would simply like to do what aperture is for - that is to crawl
-a filesystem and extract everything there is to be extracted: file metadata and contents. All of this can
-be accomplished in a single class. This class is available in src/examples folder. It is called 
+This guide is dedicated to all those that would simply like to do what aperture 
+is for - that is to crawl a filesystem and extract everything there is to be 
+extracted: file metadata and contents. All of this can be accomplished in a 
+single class. This class is available in src/examples folder. It is called 
 TutorialCrawlingExample.
 </p>
 
@@ -23,7 +24,7 @@ The one we'll be interested in is a FileSystemDataSource. The configuration of a
 RDFContainer. It is an interface that makes access to the RDF store easy. It works more or less like a hash
 map. We can operate on it directly, or through a convenience class called ConfigurationUtil... (for details
 see <a href="rdf.html">RDF usage in Aperture</a>) We'll choose the second approach. The configuration of a 
-data source boils down to four lines of code:
+data source boils down to five lines of code:
 </p>
 
 <pre class="code">
@@ -73,7 +74,8 @@ This piece of code has following meaning
 </p>
 
 <p>
-The crawler handler is actually very simple. Aperture provides a class called CrawlerHandlerBase. It 
+The crawler handler is actually very simple. Aperture provides a class called CrawlerHandlerBase. Note that
+it is not available in the aperture jar itself. You need the examples jar file to use it. It 
 encapsulates the default methods. The simplest use case of a crawler needs only five methods to be provided.
 They are summarized in this snippet:
 </p>
@@ -86,8 +88,9 @@ They are summarized in this snippet:
 </pre>
 
 Constructor - initializes the underlying modelSet - the rdf store that will contain all generated
-RDF statements. This may be a persistent model, whose content is stored in a file on a hard disk
-on in a relational database.
+RDF statements. In this example we use the default createModelSet() method. It creates a model
+set backed by an in-memory repository with no inference. We could just as well use a persistent model, 
+whose content is stored in a file on in a relational database.
 
 <pre class="code">
 <font color="#804040"> 6 </font>    <font color="#2e8b57"><b>public</b></font> TutorialCrawlerHandler() <font color="#2e8b57"><b>throws</b></font> ModelException {

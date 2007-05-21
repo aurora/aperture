@@ -10,14 +10,15 @@
 <h1>General Structure of Aperture Components</h1>
 
 <p>
-Aperture consists of a number of APIs that each fulfill a type of service, e.g. text and
-metadata extraction, crawling of an information source or identifying a file's MIME type.
+Aperture consists of a number of APIs each fulfilling a different type of service, e.g. text and
+metadata extraction, crawling data in a data source or identifying a file's MIME type.
 The code involved in implementing and managing such a service is typically organized
 in a particular way. Once you know how this structure works,&nbsp; you will be better able to quickly
-find your way around using Aperture or extending Aperture. The following image 
+find your way around Aperture. The following image 
 shows how the components work together in a typical application:</p>
+
 <p align="center">
-<img border="0" src="aperture-architecture.png" width="952" height="537"></p>
+<img border="0" src="aperture-architecture2.png"></p>
 
 <p align="left">
 Aperture operates on existing data sources, many types are supported out of the
@@ -25,9 +26,16 @@ box (like file-systems with files or IMAP servers), other may easily be added.
 For each of these data source types, Aperture provides a 
 crawler, which reads data from the source and converts it to a standardized 
 format - <a href="http://www.w3.org/RDF/">RDF</a>. 
-A the most basic level <a href="http://www.w3.org/RDF/">RDF</a> is a data structure
-comparable to a Java Hashset, but with much more possibilities, see 
-<a href="http://www.w3.org/RDF/">here</a>. 
+A the most basic level <a href="http://www.w3.org/RDF/">RDF</a> is a data structure that
+stores information about various resources in a manner
+comparable to a Java Hashset, but with much more possibilities. The resources can
+be linked with each other into a network. Moreover RDF gives a well-specified
+meaning to each piece of data that allows it to be used by all RDF-aware applications
+You should really get acquainted with the power of RDF
+in order to make full use of Aperture. The rest of this tutorial assumes that you
+are familiar at least with the basic concepts like graph, triple, URI, literal etc.
+Please refer to the <a href="http://www.w3.org/RDF/">RDF homepage</a> for more details and pointers
+to further reading.
 </p>
 
 <p align="left">
@@ -119,12 +127,12 @@ additional measures to select the best one or simply take the first one availabl
 
 <p>
 This service-factory-registry approach has been inspired by <a href="http://www.osgi.org/">OSGi</a>,
-a platform for using service-oriented architectures inside a Java application.
-In an OSGi application using Aperture, the HtmlExtractor and its factory would be bundled
-as a jar file together with a class implementing OSGi's BundleActivator interface. 
-The activator will be responsible for letting the rest of the system know
-that an ExtractorFactory has appeared and is ready to use. The Factory would
-be detected by a Registry. Any application using the registry will now 
+a platform for building component-oriented Java applications.
+It enables new factories to be added at runtime. (In OSGI it can be implemented
+by bundling new factories in separate bundles and registering them as services
+on startup. This feature could also be explored in "normal" desktop applications.) 
+When a new factory is registered in a registry - any application 
+using the registry will now 
 transparently begin to use the new factory. That's the reason why factory 
 instantiation should be as cheap as possible, as
 they may all be instantiated during startup.

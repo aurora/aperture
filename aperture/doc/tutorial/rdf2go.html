@@ -99,7 +99,7 @@ RDF2Go models often need certain resources to work. These may include opened
 files, database connections, http connections or anything else the underlying
 implementation might need. As such it is necessary to explicitly acquire those
 resources before using the model and return them when they are no longer needed.
-This is a price you have to pay for having a single unified interface to access
+This is a price you have to pay for having a single unified API to access
 a simple in-memory model with 5 triples and a massive database with millions of
 them.
 </p>
@@ -124,12 +124,11 @@ Model model = <font color="#ff00ff">null</font>;
 <font color="#804040"><b>try</b></font> {
     model = prepareTheModelAndTheUnderlyingImplementation();
     model.open(); <font color="#0000ff">// 'open' the model and aquire all necessary system resources</font>
-    doYourWork(model);
-    model.close(); <font color="#0000ff">// return the resources...</font>
+    doYourWork(model); 
 } <font color="#804040"><b>catch</b></font> (Exception e) {
     doSomethingWithTheException(e);
 } <font color="#804040"><b>finally</b></font> {
-    <font color="#804040"><b>if</b></font> (model != <font color="#ff00ff">null</font>) model.close();
+    <font color="#804040"><b>if</b></font> (model != <font color="#ff00ff">null</font>) model.close(); <font color="#0000ff">// return the resources...</font>
 }
 </pre>
 
@@ -143,7 +142,7 @@ important, because it implied other design decisions in Aperture.
 
 <p>
 RDFContainer wraps a model. As such in order to work with the container the
-model has to be opened. That's why remeber that when you pass the model to
+model has to be opened. Remeber that when you pass the model to
 the RDFContainer constructor - the model is opened automatically, at least in
 the default implementation. 
 </p>
