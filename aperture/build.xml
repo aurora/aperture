@@ -24,17 +24,17 @@ your copy of ANT at http://ant.apache.org/
 		<!-- versions -->
 		<property name="project.version.major" value="2006" />
 		<property name="project.version.minor" value="1" />
-		<property name="version-status" value="-alpha-3" />
+		<property name="version-status" value="alpha-4" />
 		<property name="project.version.full" 
-			      value="${project.version.major}.${project.version.minor}${version-status}" />
+			      value="${project.version.major}.${project.version.minor}-${version-status}" />
 		
 		<!-- input dirs -->
 		<property name="src.dir" value="${basedir}/src" />
 		<property name="src.java.dir" value="${src.dir}/java" />
 		<property name="src.test.dir" value="${src.dir}/test" />
 		<property name="src.examples.dir" value="${src.dir}/examples" />
-		<property name="src.activators.dir" value="${src.dir}/activators" />
-		<property name="bin.dir" value="${basedir}/bin" />
+		<property name="src.activators.dir" value="${src.dir}/activators" />		
+	    <property name="bin.dir" value="${basedir}/bin" />
 		<property name="lib.dir" value="${basedir}/lib" />
 		<property name="doc.dir" value="${basedir}/doc" />
 		<property name="manifest.dir" value="${src.dir}/manifest" />
@@ -48,8 +48,8 @@ your copy of ANT at http://ant.apache.org/
 		
 		<!-- dist dirs -->
 		<property name="dist.dir" value="${build.dir}/dist" />
-		<property name="dist.lib.dir" value="${dist.dir}/lib" />
-		<property name="dist.bundle.dir" value="${dist.dir}/bundles" />
+		<property name="dist.lib.dir" value="${dist.dir}/plainjars" />
+		<property name="dist.bundle.dir" value="${dist.dir}/osgibundles" />
 		<property name="javadoc.dir" value="${dist.dir}/api" />
 		
 		<!-- dist files -->
@@ -304,7 +304,7 @@ your copy of ANT at http://ant.apache.org/
 					<selector refid="bundle.exclude.resources.selector" />
 				</and>
 			</fileset>
-			<fileset dir="${lib.dir}">
+			<fileset dir="${basedir}">
 				<selector refid="bundle.core.coarsegrained.selector" />
 			</fileset>	
 		</jar>
@@ -335,7 +335,7 @@ your copy of ANT at http://ant.apache.org/
 					<selector refid="bundle.exclude.resources.selector" />
 				</and>
 			</fileset>
-			<fileset dir="${lib.dir}">
+			<fileset dir="${basedir}">
 				<selector refid="bundle.impl.coarsegrained.selector" />
 			</fileset>	
 		</jar>

@@ -14,25 +14,25 @@
     
     <selector id="jars.poi.selector">
         <or>
-            <filename name="poi-3.0-alpha2-20060616.jar" />
-            <filename name="poi-contrib-3.0-alpha2-20060616.jar" />
-            <filename name="poi-scratchpad-3.0-alpha2-20060616.jar" />
+            <filename name="lib/poi-3.0-alpha2-20060616.jar" />
+            <filename name="lib/poi-contrib-3.0-alpha2-20060616.jar" />
+            <filename name="lib/poi-scratchpad-3.0-alpha2-20060616.jar" />
         </or>
     </selector>
     
     <selector id="jars.pdfbox.selector">
         <or>
-            <filename name="pdfbox-0.7.3.jar" />
-            <filename name="fontbox-0.1.0-dev.jar" />
-            <filename name="bcmail-jdk14-132.jar" />
-            <filename name="bcprov-jdk14-132.jar" />
+            <filename name="lib/pdfbox-0.7.3.jar" />
+            <filename name="lib/fontbox-0.1.0-dev.jar" />
+            <filename name="lib/bcmail-jdk14-132.jar" />
+            <filename name="lib/bcprov-jdk14-132.jar" />
         </or>   
     </selector>
     
     <selector id="jars.mail.selector">
         <or>
-            <filename name="mail-1.4.jar" />
-            <filename name="activation-1.0.2-upd2.jar" />
+            <filename name="lib/mail-1.4.jar" />
+            <filename name="lib/activation-1.0.2-upd2.jar" />
         </or>
     </selector>
     
@@ -164,7 +164,7 @@
         	<or>
 	            <filename name="org/semanticdesktop/aperture/util/*" />
 	            <filename name="org/semanticdesktop/aperture/util/ontology/*" />
-	            <filename name="applewrapper-0.2.jar" />
+	            <filename name="lib/applewrapper-0.2.jar" />
 	        </or>
             <not>
                 <or>
@@ -194,8 +194,8 @@
         <and>
             <or>
                 <filename name="org/semanticdesktop/aperture/addressbook/**" />
-                <filename name="applewrapper-0.2.jar" />
-                <filename name="demork-2.0.jar" />
+                <filename name="lib/applewrapper-0.2.jar" />
+                <filename name="lib/demork-2.0.jar" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>
@@ -206,7 +206,7 @@
             <or>
                 <filename name="org/semanticdesktop/aperture/crawler/ical/*" />
                 <filename name="org/semanticdesktop/aperture/datasource/ical/*" />
-                <filename name="ical4j-cvs20061019.jar" />
+                <filename name="lib/ical4j-cvs20061019.jar" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>      
@@ -372,7 +372,7 @@
             <or>
                 <filename name="org/semanticdesktop/aperture/extractor/util/*" />
                 <selector refid="jars.poi.selector" />
-                <filename name="htmlparser-1.6.jar" />
+                <filename name="lib/htmlparser-1.6.jar" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>      
@@ -410,8 +410,8 @@
         <and>
             <or>
                 <filename name="org/semanticdesktop/aperture/outlook/*" />
-                <filename name="jacob-1.10-pre4.jar" />
-                <filename name="jacob.dll" />
+                <filename name="lib/jacob-1.10-pre4.jar" />
+                <filename name="lib/jacob.dll" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>
