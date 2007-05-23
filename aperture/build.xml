@@ -70,6 +70,11 @@ your copy of ANT at http://ant.apache.org/
 			      value="${project.bundlename}.impl_${project.version.full}.jar" />
 		<property name="impl.manifest.mf" 
 			      value="${manifest.dir}/impl.manifest.mf" />
+	    
+		<property name="bundle.example.jar" 
+			      value="${project.bundlename}.example_${project.version.full}.jar" />
+		<property name="example.manifest.mf" 
+			      value="${manifest.dir}/aperture.example.manifest.mf" />
 		
 		<!-- release dirs and files -->
 		<property name="release.dir" value="${build.dir}/release" />
@@ -346,9 +351,9 @@ your copy of ANT at http://ant.apache.org/
 			    depends="compile.examples" 
 			    description="create the bundle with an example">
 			<mkdir dir="${dist.bundle.dir}" />	
-			<jar destfile="${dist.bundle.dir}/aperture-example.jar" 
+			<jar destfile="${dist.bundle.dir}/${bundle.example.jar}" 
 				 compress="no" 
-				 manifest="${manifest.dir}/aperture.example.manifest.mf">
+				 manifest="${example.manifest.mf}">
 				<fileset dir="${classes.examples.dir}">
 					<filename name="org/semanticdesktop/aperture/examples/osgi/*" />
 				</fileset>	

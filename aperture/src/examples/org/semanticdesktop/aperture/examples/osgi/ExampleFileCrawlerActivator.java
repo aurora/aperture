@@ -17,6 +17,8 @@ import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierRegistry;
 
 public class ExampleFileCrawlerActivator implements BundleActivator {
 
+    public static final String DIRECTORY = System.getProperty("user.home");
+    
     private CrawlerRegistry crawlerRegistry;
 
     private DataAccessorRegistry dataAccessorRegistry;
@@ -60,6 +62,6 @@ public class ExampleFileCrawlerActivator implements BundleActivator {
         exCrawler.setIdentifyingMimeType(true);
         exCrawler.setExtractingContents(true);
         exCrawler.setVerbose(true);
-        exCrawler.crawl("/home/antheque/cvcover", "/home/antheque/repo.rdf");
+        exCrawler.crawl(DIRECTORY);
     }
 }

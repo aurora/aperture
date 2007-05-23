@@ -11,6 +11,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Set;
 
@@ -46,13 +47,9 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
 
     private ExtractorRegistry extractorRegistry;
 
-    private File outputFile;
-
-    public SimpleCrawlerHandler(MimeTypeIdentifier mimeTypeIdentifier, ExtractorRegistry extractorRegistry,
-            File outputFile) {
+    public SimpleCrawlerHandler(MimeTypeIdentifier mimeTypeIdentifier, ExtractorRegistry extractorRegistry) {
         this.mimeTypeIdentifier = mimeTypeIdentifier;
         this.extractorRegistry = extractorRegistry;
-        this.outputFile = outputFile;
 
         // create a ModelSet that will gather all extracted metadata
         ModelFactory factory = RDF2Go.getModelFactory();
@@ -126,13 +123,12 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
 
     public void crawlStopped(Crawler crawler, ExitCode exitCode) {
         try {
-            Writer writer = new BufferedWriter(new FileWriter(outputFile));
+            Writer writer = new OutputStreamWriter(System.out);
             modelSet.writeTo(writer, Syntax.Trix);
             writer.close();
             modelSet.close();
 
             System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
-            System.out.println("Saved RDF model to " + outputFile);
         }
         catch (Exception e) {
             e.printStackTrace();

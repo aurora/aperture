@@ -39,8 +39,6 @@ public class ExampleFileCrawler {
 
     private File rootFile;
 
-    private File outputFile;
-
     private boolean identifyingMimeType = false;
 
     private boolean extractingContents = false;
@@ -75,10 +73,6 @@ public class ExampleFileCrawler {
         return identifyingMimeType;
     }
 
-    public File getOutputFile() {
-        return outputFile;
-    }
-
     public File getRootFile() {
         return rootFile;
     }
@@ -95,10 +89,6 @@ public class ExampleFileCrawler {
         this.identifyingMimeType = identifyingMimeType;
     }
 
-    public void setOutputFile(File outputFile) {
-        this.outputFile = outputFile;
-    }
-
     public void setRootFile(File rootFile) {
         this.rootFile = rootFile;
     }
@@ -107,23 +97,20 @@ public class ExampleFileCrawler {
         this.verbose = verbose;
     }
 
-    public void crawl(String rootDir, String outputFile) {
+    public void crawl(String rootDir) {
         System.out.println("Trying to crawl the dir: " + rootDir);
-        System.out.println("RDF will be saved to: " + outputFile);
+        System.out.println("RDF will be printed to the standard output");
         setRootFile(new File(rootDir));
-        setOutputFile(new File(outputFile));
 
         if (rootFile == null) {
             throw new IllegalArgumentException("root file cannot be null");
-        }
-        if (getOutputFile() == null) {
-            throw new IllegalArgumentException("output file cannot be null");
         }
 
         // create a data source configuration
         RDFContainerFactoryImpl factory = new RDFContainerFactoryImpl();
         RDFContainer configuration = factory.newInstance("source:testsource");
         ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
+        ConfigurationUtil.setMaximumDepth(1, configuration);
 
         // create the data source
         DataSourceFactory sourceFactory = (DataSourceFactory) dataSourceRegistry.get(
@@ -137,7 +124,7 @@ public class ExampleFileCrawler {
         MimeTypeIdentifierFactory mimeIdentifierFactory = (MimeTypeIdentifierFactory) it.next();
         MimeTypeIdentifier mimeIdentifier = mimeIdentifierFactory.get();
 
-        handler = new SimpleCrawlerHandler(mimeIdentifier, extractorRegistry, getOutputFile());
+        handler = new SimpleCrawlerHandler(mimeIdentifier, extractorRegistry);
 
         // setup a crawler that can handle this type of DataSource
         it = crawlerRegistry.get(DATASOURCE.FileSystemDataSource).iterator();
