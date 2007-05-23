@@ -8,13 +8,22 @@
 
 <body>
 
-<h1>Aperture in OSGi bundles</h1>
+<h1>Aperture in OSGi</h1>
 
-In order to use Aperture in an OSGI environment, you need to package it as a bundle. Fortunately you don't need to do it yourself.
-The build.xml ant script provides a target osgi.dist. Just invoke it and in the directory build/dist/bundles - you will get three
-jar files: aperture-core, aperture-impl and aperture-example. Their contents and intended usage is summarized below:
+Using Aperture in OSGI requires a certain environment to be set. You need to include RDF2Go, a triple store implementation with it's driver and
+dependencies, the SLF4J Logging API and some logging implementation. It is all summarized on a diagram below.
 
-<h2>aperture-core</h2>
+<div align="center">
+<img src="osgideps.png"/>
+</div>
+
+The aperture bundles are generated automatically by the build.xml ant script.
+Just invoke it and in the directory build/dist/bundles - you will get three
+jar files whose names begin with: org.semanticdesktop.aperture, 
+org.semanticdesktop.aperture.impl and org.semanticdesktop.aperture.example. 
+
+
+<h2>org.semanticdesktop.aperture</h2>
 
 <p>
 This is the bundle that contains all the core interfaces, services, vocabularies and utility classes. It doesn't contain any implementations.
@@ -41,7 +50,7 @@ These registries will listen for appropriate factories appearing in the environm
 </p>
 
 <a name="aperture-impl" />
-<h2>aperture-impl</h2>
+<h2>org.semanticdesktop.aperture.impl</h2>
 
 <p>
 This bundle contains all implementations. Every implementation depends on core. The activator of this bundle registers services under
@@ -50,6 +59,14 @@ of the generic interface it implements (e.g. a FileSystemCrawlerFactory is regis
 automatic detection.
 </p>
 
+<h2>org.semanticdesktop.aperture</h2>
+
+<p>
+This bundle contains a quick example how Aperture can be used in OSGI environment. It can be used as a test to determine if you set
+up your environment correctly. When you start this bundle, it will begin crawling your home directory and extracting all
+information it can. It won't dig into subdirectories so it shouldn't last too long. After the crawler has finished, you should see
+the RDF information printed on your screen. 
+</p>
 
 <h1>Build infrastructure</h1>
 
@@ -59,15 +76,16 @@ to all that need to include aperture in their own projects  and would like to in
 </p>
 
 <p>
-It was required that the OSGi packaging be as unobtrusive as possible. It has been decided that the structure of the source tree must not 
+The OSGi packaging had to be as unobtrusive as possible. It has been decided that the structure of the source tree must not 
 be altered, and that the former packaging method (as a plain jar) must remain available. 
 </p>
 
 <h2>build.xml script</h2>
 
 <p>
-Classes for the bundles are picked one-by-one. A sophisticated system of selectors has been introduced in the ant build script. It is
-now over 1000 lines longer. Aperture has been conceptually divided into ca. 40 'elementary' bundles. In this division the vocabulary and
+Classes that should fall within a bundle are chosen one-by-one. A sophisticated system of selectors has been introduced in the ant build 
+script. Those selectors have been extracted into the selectors.xml file. Aperture has been conceptually divided into ca. 40 'elementary' 
+bundles. In this division the vocabulary and
 utility classes are in separate bundles. Every Registry service and every implementation has it's own bundle.  Every 'elementary'
 bundle has:
 </p>
