@@ -22,7 +22,7 @@ your copy of ANT at http://ant.apache.org/
 		<property name="project.bundlename" value="org.semanticdesktop.aperture" />
 		
 		<!-- versions -->
-		<property name="project.version.major" value="2006" />
+		<property name="project.version.major" value="2007" />
 		<property name="project.version.minor" value="1" />
 		<property name="version-status" value="alpha-4" />
 		<property name="project.version.full" 
