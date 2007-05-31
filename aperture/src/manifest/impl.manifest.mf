@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Aperture implementations
 Bundle-SymbolicName: org.semanticdesktop.aperture.impl
-Bundle-Version: 2006.1.0.alpha-4
+Bundle-Version: 2007.1.0.alpha-4
 Bundle-Localization: plugin
 Bundle-ClassPath: .,
  lib/activation-1.0.2-upd2.jar,
