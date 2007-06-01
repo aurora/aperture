@@ -12,6 +12,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
 
@@ -43,7 +44,7 @@ public class OutlookActivator implements BundleActivator {
 		dataSourceServiceReference = registration.getReference();
 		
 		accessorFactory = new OutlookAccessorFactory();
-		registration = bc.registerService(DataSourceFactory.class.getName(), dataSourceFactory,
+		registration = bc.registerService(DataAccessorFactory.class.getName(), accessorFactory,
 			new Hashtable());
 		accessorServiceReference = registration.getReference();
 	}
