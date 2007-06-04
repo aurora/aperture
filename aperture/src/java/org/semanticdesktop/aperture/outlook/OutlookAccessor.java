@@ -9,6 +9,7 @@ package org.semanticdesktop.aperture.outlook;
 import java.io.IOException;
 import java.util.Map;
 
+import org.ontoware.rdf2go.model.impl.StatementImpl;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
@@ -155,6 +156,9 @@ public class OutlookAccessor implements DataAccessor {
 			metadata.add(RDF.type, resource.getType());
 			if (parent != null)
 				metadata.add(DATA.partOf, URIImpl.createURIWithoutChecking(parent.getUri()));
+            else 
+                // no parent, this is  the root
+                metadata.add(DATA.rootFolderOf, crawler.getDataSource().getID());
 
 			// get the details
 			resource.addData(metadata);
