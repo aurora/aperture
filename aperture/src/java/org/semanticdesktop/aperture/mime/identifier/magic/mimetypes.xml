@@ -216,6 +216,15 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 </description>
 
 <description>
+	<!-- This description is necessary to prevent XHTML files starting with <?xml...
+	     rather than <!DOCTYPE... to be reported as text/xml. Still, this only works when
+	     they *have* a file name extension. -->
+	<mimeType>application/xhtml+xml</mimeType>
+	<extensions>html,htm,htc,shtml,jsp,jspf,php,asp,xhtml</extensions>
+	<parentType>text/xml</parentType>
+</description>
+
+<description>
 	<mimeType>application/xslt+xml</mimeType>
 	<extensions>xsl,xslt</extensions>
 	<parentType>text/xml</parentType>
