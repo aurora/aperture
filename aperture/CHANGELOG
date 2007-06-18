@@ -95,7 +95,7 @@ bug fixes:
 - made sure ThreadedExtractorWrapper redirects all Exceptions of the wrapped Extractor
 
 ----------------------------------
-version 2006.1-alpha-4, (not released yet)
+version 2006.1-alpha-4
 ----------------------------------
 
 The entire Aperture Framework has been rewritten to utilize the RDF2Go framework.
@@ -126,3 +126,9 @@ Updated dependencies
 - removed the original commons-codec.jar and replaced with an OSGI-friendly
   bundle org.apache.commons.codec_1.2.0.jar
 - org.apache.httpclient_3.0.0.rc2.jar  
+
+----------------------------------
+version 2006.1-alpha-5 (to be announced)
+----------------------------------
+
+* added SynchronizedAccessData class
