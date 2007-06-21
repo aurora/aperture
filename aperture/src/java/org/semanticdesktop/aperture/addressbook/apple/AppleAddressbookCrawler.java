@@ -82,13 +82,14 @@ public class AppleAddressbookCrawler extends AddressbookCrawler {
 
         // System.err.println(rdfxml);
 
-        Model model = createSimpleModel();
-        model.readFrom(new StringReader(rdfxml), Syntax.RdfXml);
-
+        Model model = null;
         List<DataObject> res = new Vector<DataObject>();
 
         ClosableIterator<? extends Statement> i = null;
         try {
+            model = createSimpleModel();
+            model.readFrom(new StringReader(rdfxml), Syntax.RdfXml);
+            
             i = model.findStatements(Variable.ANY, RDF.type,
                 VCARD.VCard);
             while (i.hasNext()) {
@@ -110,6 +111,9 @@ public class AppleAddressbookCrawler extends AddressbookCrawler {
         finally {
             if (i != null) {
                 i.close();
+            }
+            if (model != null) {
+                model.close();
             }
         }
 
