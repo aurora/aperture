@@ -9,7 +9,6 @@ package org.semanticdesktop.aperture.outlook;
 import java.io.IOException;
 import java.util.Map;
 
-import org.ontoware.rdf2go.model.impl.StatementImpl;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
