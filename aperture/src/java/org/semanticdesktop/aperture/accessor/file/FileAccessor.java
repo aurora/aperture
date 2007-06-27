@@ -193,9 +193,12 @@ public class FileAccessor implements DataAccessor {
 		// add file-specific metadata
 		if (isFile) {
 			long length = file.length();
-			if (length != 0l) {
-				metadata.add(DATA.byteSize, length);
-			}
+            // NOTE: The bytesize of 0 is an important information we should generate.
+            // When people search for files with size 0, they should be able to do so.
+            // Therefore LeoSauermann changed this code to return 0 on 27.06.2007
+			//if (length != 0l) {
+			    metadata.add(DATA.byteSize, length);
+			//}
 		}
 
 		// add folder-specific metadata

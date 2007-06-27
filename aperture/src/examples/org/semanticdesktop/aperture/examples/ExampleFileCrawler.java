@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Set;
 
 import org.ontoware.rdf2go.ModelFactory;
@@ -21,6 +23,8 @@ import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.ModelSet;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.repository.Repository;
+import org.openrdf.repository.RepositoryException;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -46,17 +50,25 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * Example class that crawls a file system and stores all extracted metadata in a RDF file.
+ * @author fluit, sauermann, klinkigt
  */
 public class ExampleFileCrawler {
 
+    // if the IDENTIFY_MIME_TYPE_OPTION is set (commando line call -identifyMimeType)
+    // the mime type of the files will be detected
     public static final String IDENTIFY_MIME_TYPE_OPTION = "-identifyMimeType";
 
+    // if the EXTRACT_CONTENTS_OPTION is set (commando line call -extractContents)
+    // the content of the files will be scanned
     public static final String EXTRACT_CONTENTS_OPTION = "-extractContents";
 
     public static final String VERBOSE_OPTION = "-verbose";
 
+    public static final String NOOUTPUT_OPTION = "-nooutput";
+
     private File rootFile;
 
+    // the result will be stored in outputFile
     private File outputFile;
 
     private boolean identifyingMimeType = false;
@@ -64,6 +76,8 @@ public class ExampleFileCrawler {
     private boolean extractingContents = false;
 
     private boolean verbose = false;
+
+    private boolean noOutput = false;
 
     public boolean isExtractingContents() {
         return extractingContents;
@@ -148,6 +162,9 @@ public class ExampleFileCrawler {
             else if (VERBOSE_OPTION.equals(arg)) {
                 crawler.setVerbose(true);
             }
+            else if (NOOUTPUT_OPTION.equals(arg)) {
+                crawler.setNoOutput(true);
+            }
             else if (arg.startsWith("-")) {
                 System.err.println("Unknown option: " + arg);
                 exitWithUsageMessage();
@@ -164,7 +181,8 @@ public class ExampleFileCrawler {
         }
 
         // check that all required fields are available
-        if (crawler.getRootFile() == null || crawler.getOutputFile() == null) {
+        if (crawler.getRootFile() == null || 
+                (!crawler.noOutput && (crawler.getOutputFile() == null))) {
             exitWithUsageMessage();
         }
 
@@ -176,6 +194,13 @@ public class ExampleFileCrawler {
         System.err.println("Usage: java " + ExampleFileCrawler.class.getName() + " ["
                 + IDENTIFY_MIME_TYPE_OPTION + "] [" + EXTRACT_CONTENTS_OPTION + "] [" + VERBOSE_OPTION
                 + "] rootDirectory outputFile");
+        System.err.println("  "+IDENTIFY_MIME_TYPE_OPTION+": if set, the mime type of the files will be detected");
+        System.err.println("  "+EXTRACT_CONTENTS_OPTION+": if set, the content of the files will be scanned");
+        System.err.println("  "+VERBOSE_OPTION+": if set, messages are printed");
+        System.err.println("  "+NOOUTPUT_OPTION+": if set, no outputFile is used, the folders are crawled and the\n" +
+                           "     extracted content is discarded. This is used for performance testing");
+        System.err.println("  rootDirectory: the directory to start crawling");
+        System.err.println("  outputFile: the file where to store the RDF using TRIX");
         System.exit(-1);
     }
 
@@ -183,7 +208,29 @@ public class ExampleFileCrawler {
 
         private ModelSet modelSet;
 
+        // number of objects which were crawled
         private int nrObjects;
+        
+        // the time which is needed for crawling the all files
+        // uses the java System.nanoTime(), because we have only interest
+        // in the elapsed time therefore a correct timestamp is not needed
+        private long crawlingTime;
+        
+        // the time which is need for crawling one file
+        private long crawlingOneFile;
+                
+        // variables needed for statistic
+        int nrFiles;
+        long fileSize; // size of one file
+                
+        // the mean of the crawling time and file size for one file
+        double timeMean, fileSizeMean;
+        
+        // variable needed for calculation the standard deviation after Knuth
+        double timeS, fileSizeS;
+        
+        // the delta which is needed for the calculation of the standard Deviation in Knuth's algorithm
+        double timeDelta, fileSizeDelta;
 
         private MimeTypeIdentifier mimeTypeIdentifier;
 
@@ -206,6 +253,14 @@ public class ExampleFileCrawler {
 
         public void crawlStarted(Crawler crawler) {
             nrObjects = 0;
+            nrFiles = 0;
+            crawlingTime = 0;
+            timeMean = 0.0;
+            timeDelta = 0.0;
+            timeS = 0.0;
+            fileSizeMean = 0.0;
+            fileSizeDelta = 0.0;
+            fileSizeS = 0.0;
         }
 
         public void accessingObject(Crawler crawler, String url) {
@@ -216,19 +271,43 @@ public class ExampleFileCrawler {
 
         public void objectNew(Crawler dataCrawler, DataObject object) {
             nrObjects++;
-
+            
             // process the contents of an InputStream, if available
             if (object instanceof FileDataObject) {
+                nrFiles++;
+                crawlingOneFile = -1*System.nanoTime();
+                String s = null;
                 try {
+                    s = (object.getMetadata().getString(DATA.byteSize));
+                    fileSize = Long.parseLong(s);
                     process((FileDataObject) object);
                 }
                 catch (Exception e) {
-                    System.err.println("Exception while processing " + object.getID());
+                    System.err.println("Exception while processing file size ("+s+") of " + object.getID());
                     e.printStackTrace();
                 }
-            }
+                crawlingOneFile += System.nanoTime();
+                crawlingTime += crawlingOneFile;
 
+                // calculate the Standard Deviation after Knuth
+                // time
+                timeDelta = crawlingOneFile - timeMean;
+                timeMean += timeDelta/nrFiles;
+                timeS += timeDelta*(crawlingOneFile - timeMean);
+                // file size
+                fileSizeDelta = fileSize - fileSizeMean;
+                fileSizeMean += fileSizeDelta/nrFiles;
+                fileSizeS += fileSizeDelta*(fileSize - fileSizeMean);
+            }
+            // really dispose the RDFContainer when noOutput
             object.dispose();
+            if (noOutput)
+                try {
+                    ((Repository)object.getMetadata().getModel().getUnderlyingModelImplementation()).shutDown();
+                }
+                catch (RepositoryException e) {
+                    e.printStackTrace();
+                }
         }
 
         private void process(FileDataObject object) throws IOException, ExtractorException, ModelException {
@@ -309,7 +388,9 @@ public class ExampleFileCrawler {
             // note: by using ModelSet.getModel, all statements added to this Model are added to the ModelSet
             // automatically, unlike ModelFactory.createModel, which creates stand-alone models.
 
-            Model model = modelSet.getModel(uri);
+            // when running performance tests, we dump the dataobjects,
+            // otherwise we channel the triples into the modelSet
+            Model model = (noOutput) ? RDF2Go.getModelFactory().createModel() : modelSet.getModel(uri);
             model.open();
             return new RDFContainerImpl(model, uri);
         }
@@ -321,12 +402,27 @@ public class ExampleFileCrawler {
 
         public void crawlStopped(Crawler crawler, ExitCode exitCode) {
             try {
-                Writer writer = new BufferedWriter(new FileWriter(outputFile));
-                modelSet.writeTo(writer, Syntax.Trix);
-                writer.close();
+                double standardDeviationTime = Math.sqrt(timeS/(nrFiles-1));
+                double standardDeviationTimeIn_ms = Math.round(standardDeviationTime / 1000000*100.)/100.;
+                double standardDeviationFileSize = Math.round(Math.sqrt(fileSizeS/(nrFiles-1)));
+                double timeMeanIn_ms = Math.round(timeMean/1000000*100.)/100.;
+                DecimalFormat f = new DecimalFormat("0.##");
                 
-                System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
-                System.out.println("Saved RDF model to " + outputFile);
+                System.out.println("Crawled " + nrObjects + " objects in " + crawlingTime/1000000
+                    + " ms (exit code: " + exitCode + ")");
+                System.out.println("Statistics:");
+                System.out.println(" mean crawling time: " + timeMeanIn_ms + " ms/file");
+                System.out.println(" standard Deviation crawling time: " + standardDeviationTimeIn_ms + " ms");
+                System.out.println(" mean file size in byte: " + f.format(fileSizeMean));
+                System.out.println(" standard Deviation file size in byte: " + f.format(standardDeviationFileSize));
+                if (!noOutput)
+                {
+                    Writer writer = new BufferedWriter(new FileWriter(outputFile));
+                    modelSet.writeTo(writer, Syntax.Trix);
+                    writer.close();
+                    System.out.println("Saved RDF model to " + outputFile);
+                }
+                    System.out.println("Output discarded");
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -334,5 +430,15 @@ public class ExampleFileCrawler {
             
             modelSet.close();
         }
+    }
+
+    
+    public boolean isNoOutput() {
+        return noOutput;
+    }
+
+    
+    public void setNoOutput(boolean noOutput) {
+        this.noOutput = noOutput;
     }
 }
