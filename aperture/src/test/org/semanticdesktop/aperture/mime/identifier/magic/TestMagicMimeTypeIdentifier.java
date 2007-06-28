@@ -56,6 +56,7 @@ public class TestMagicMimeTypeIdentifier extends ApertureTestBase {
 
 		// some regular checks
 		checkMimeType("plain-text.txt", "text/plain", identifier);
+        checkMimeType("plain-text-without-extension", "text/plain", identifier);
 		checkMimeType("html-handwritten.html", "text/html", identifier);
 		checkMimeType("xml-handwritten.xml", "text/xml", identifier);
 		checkMimeType("rtf-word-2000.rtf", "text/rtf", identifier);
