@@ -38,6 +38,8 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 
     private static final String MIME_TYPES_RESOURCE = "org/semanticdesktop/aperture/mime/identifier/magic/mimetypes.xml";
 
+    private static final int PLAIN_TEXT_TEST_ARRAY_LENGTH = 100; 
+    
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private ArrayList mimeTypeDescriptions;
@@ -338,7 +340,7 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
     }
 
     private void determineMinArrayLength() {
-        minArrayLength = 0;
+        minArrayLength = PLAIN_TEXT_TEST_ARRAY_LENGTH;
 
         // loop over all MimeTypeDescriptions
         int nrDescriptions = mimeTypeDescriptions.size();
@@ -424,6 +426,12 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
         // if we could not find a matching description but a UTF BOM was found, the least we know is that it's
         // a textual format
         if (mimeType == null && bom != null) {
+            return "text/plain";
+        }
+        // if we didn't find a BOM but the first bytes look like readable characters (no control characters),
+        // we report it as plain text anyway. This may not work for UTF-8 files without a BOM that use
+        // characters outside the ASCII set.
+        else if (mimeType == null && isReadableASCII(firstBytes)) {
             return "text/plain";
         }
         else {
@@ -528,5 +536,26 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 
         // the MIME type was not found in this branch
         return null;
+    }
+
+    /**
+     * Determines whether the specified bytes appear to be readable ASCII characters.
+     */
+    private boolean isReadableASCII(byte[] bytes) {
+        if (bytes == null) {
+            return false;
+        }
+        
+        for (int i = 0; i < bytes.length; i++) {
+            if (!isReadableASCII(bytes[i])) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    private boolean isReadableASCII(int b) {
+        return b == 9 || b == 10 || b == 13 || (b >= 32 && b <= 126);
     }
 }
