@@ -271,6 +271,9 @@ public class ExampleFileCrawler {
 
         public void objectNew(Crawler dataCrawler, DataObject object) {
             nrObjects++;
+            if (nrObjects % 300 == 0)
+                // call garbage collector from time to time
+                System.gc();
             
             // process the contents of an InputStream, if available
             if (object instanceof FileDataObject) {

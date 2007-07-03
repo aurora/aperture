@@ -9,16 +9,22 @@ package org.semanticdesktop.aperture.examples.fileinspector;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.StringWriter;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
@@ -46,6 +52,10 @@ public class StatementsPanel extends JPanel {
 
     private JLabel warningLabel = null;
 
+	private JButton buttonSaveAs = null;
+
+    protected JFileChooser fileChooser;
+
     /**
      * This is the default constructor
      */
@@ -60,6 +70,11 @@ public class StatementsPanel extends JPanel {
      * @return void
      */
     private void initialize() {
+        GridBagConstraints gridBagConstraints12 = new GridBagConstraints();
+        gridBagConstraints12.gridx = 1;
+        gridBagConstraints12.gridwidth = 2;
+        gridBagConstraints12.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints12.gridy = 2;
         GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
         gridBagConstraints11.gridx = 0;
         gridBagConstraints11.anchor = java.awt.GridBagConstraints.WEST;
@@ -86,7 +101,7 @@ public class StatementsPanel extends JPanel {
         formatLabel.setText("Serialization Format:");
         GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
         gridBagConstraints3.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints3.gridy = 2;
+        gridBagConstraints3.gridy = 3;
         gridBagConstraints3.weightx = 1.0;
         gridBagConstraints3.weighty = 1.0;
         gridBagConstraints3.gridwidth = 3;
@@ -106,6 +121,7 @@ public class StatementsPanel extends JPanel {
         this.add(formatLabel, gridBagConstraints);
         this.add(getFormatBox(), gridBagConstraints1);
         this.add(warningLabel, gridBagConstraints11);
+        this.add(getButtonSaveAs(), gridBagConstraints12);
     }
 
     public void setRepository(Repository repository) {
@@ -263,5 +279,62 @@ public class StatementsPanel extends JPanel {
             return renderer;
         }
     }
+
+	/**
+	 * This method initializes buttonSaveAs	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getButtonSaveAs() {
+	    if (buttonSaveAs == null) {
+	        buttonSaveAs = new JButton();
+	        buttonSaveAs.setText("save as...");
+	        buttonSaveAs.addActionListener(new java.awt.event.ActionListener() {
+
+                public void actionPerformed(java.awt.event.ActionEvent event) {
+                    if (fileChooser == null) {
+                        fileChooser = new JFileChooser();
+                    }
+                    int result = fileChooser.showSaveDialog(SwingUtilities.windowForComponent(StatementsPanel.this));
+                    if (result == JFileChooser.APPROVE_OPTION) {
+                        // save
+                        File f = fileChooser.getSelectedFile();
+                        if (f==null)
+                            return;
+                        RepositoryConnection connection = null;
+                        RDFWriter writer = null;
+                        FileWriter out = null;
+
+                        if (repository != null) {
+                            try {
+                                // determine the selected RDFFormat
+                                RDFFormat format = (RDFFormat) formatBoxModel.getSelectedItem();
+
+                                // create an RDFWriter based on the chosen format
+                                out = new FileWriter(f);
+                                try {
+                                    writer = Rio.createWriter(format, out);
+    
+                                    // export the statements
+                                    connection = repository.getConnection();
+                                    connection.export(writer);
+                                } finally {
+                                    out.close();
+                                }
+                                JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(StatementsPanel.this), "saved.");
+                            }
+                            catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            finally {
+                                closeConnection(connection);
+                            }
+                        }
+                    }
+	            }
+	        });
+	    }
+	    return buttonSaveAs;
+	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"
