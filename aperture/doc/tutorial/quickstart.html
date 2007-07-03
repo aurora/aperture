@@ -28,7 +28,7 @@ data source boils down to five lines of code:
 </p>
 
 <pre class="code">
-<font color="#804040">1 </font>Model model = RDF2Go.getModelFactory().getModel();
+<font color="#804040">1 </font>Model model = RDF2Go.getModelFactory().createModel();
 <font color="#804040">2 </font>RDFContainer configuration = new RDFContainerImpl(model,new URIImpl(&quot;source:testSource&quot;));
 <font color="#804040">3 </font>ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
 <font color="#804040">4 </font>DataSource source = new FileSystemDataSource();
