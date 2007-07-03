@@ -80,6 +80,9 @@ public class ApertureTestBase extends TestCase {
 		}
 
 		// see if any of the found properties contains the specified substring
+        if (!encounteredSubstring)
+            fail("Expected substring '"+substring+
+                "' in property "+property+" not found");
 		assertTrue(encounteredSubstring);
 	}
 

@@ -28,6 +28,8 @@ public class PdfExtractorTest extends ExtractorTestBase {
     
     private static final String PDF_WRITER_DOC = DOCS_PATH + "pdf-word-2000-pdfwriter-7.0.pdf";
     
+    private static final String PDF_DISTILLER_WEIRDCHARS_DOC = DOCS_PATH + "pdf-distiller-6-weirdchars.pdf";
+    
     private RDFContainer container;
     
     
@@ -91,6 +93,19 @@ public class PdfExtractorTest extends ExtractorTestBase {
         checkStatement(DATA.date, "2005", container);
         checkStatement(DATA.created, "2005", container);
         checkStatement(DATA.pageCount, "1", container);
+    }
+    
+    public void testDistiller6() throws ExtractorException, IOException, ModelException {
+        container = getStatements(PDF_DISTILLER_WEIRDCHARS_DOC);
+        
+        checkStatement(DATA.title, "Microsoft Word - wp618-kessell.doc", container);
+        checkStatement(DATA.creator, "Angela Kessell", container);
+        checkStatement(DATA.generator, "PScript5.dll Version 5.2.2", container);
+        checkStatement(DATA.generator, "Acrobat Distiller 6.0 (Windows)", container);
+        checkStatement(DATA.date, "2006-02-18T20:44:22", container);
+        checkStatement(DATA.created, "2006-02-18T20:44:22", container);
+        checkStatement(DATA.pageCount, "6", container);
+        checkStatement(DATA.fullText, "of people’s recorded tasks", container);
     }
     
     private void checkOmnipresentStatements(RDFContainer container) throws ModelException {
