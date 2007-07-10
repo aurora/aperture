@@ -157,7 +157,7 @@ public class OutlookAccessor implements DataAccessor {
 				metadata.add(DATA.partOf, URIImpl.createURIWithoutChecking(parent.getUri()));
             else 
                 // no parent, this is  the root
-                metadata.add(DATA.rootFolderOf, crawler.getDataSource().getID());
+                metadata.add(DATA.rootFolderOf, source.getID());
 
 			// get the details
 			resource.addData(metadata);
@@ -182,6 +182,7 @@ public class OutlookAccessor implements DataAccessor {
 			if (crawler != null) {
 				crawler.endCall();
 				crawler.release();
+                resource.release();
 			}
 		}
 	}

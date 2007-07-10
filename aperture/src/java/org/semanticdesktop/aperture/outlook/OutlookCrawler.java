@@ -222,14 +222,18 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 		beginCall();
 		try {
 			OutlookResource.RootFolder root = new OutlookResource.RootFolder(this);
-			// init some other params
-			params = new HashMap(2);
-			// crawl the outlook tree
-			boolean crawlCompleted = crawlRoot(root);
-			// clean-up
-			params = null;
-			// determine the exit code
-			return crawlCompleted ? ExitCode.COMPLETED : ExitCode.STOP_REQUESTED;
+            try {
+    			// init some other params
+    			params = new HashMap(2);
+    			// crawl the outlook tree
+    			boolean crawlCompleted = crawlRoot(root);
+    			// clean-up
+    			params = null;
+    			// determine the exit code
+    			return crawlCompleted ? ExitCode.COMPLETED : ExitCode.STOP_REQUESTED;
+            } finally {
+                root.release();
+            }
 		}
 		finally {
 			endCall();

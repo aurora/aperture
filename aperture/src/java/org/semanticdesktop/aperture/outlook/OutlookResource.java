@@ -769,8 +769,8 @@ public abstract class OutlookResource {
 	 */
 	protected void finalize() throws Throwable {
 		if (resource != null) {
+		    logger.warn("This resource was not released, but in finalize: " + getUri());
 			release();
-			logger.warn("finalize released " + getUri());
 		}
 		super.finalize();
 	}
@@ -932,6 +932,9 @@ public abstract class OutlookResource {
 
 /*
  * $Log$
+ * Revision 1.11  2007/07/10 15:05:29  leo_sauermann
+ * Fixed the example aperture crawler, found a memory leak :-/
+ *
  * Revision 1.10  2007/03/08 22:03:40  cfmfluit
  * replaced java.util.logging-based logging with SLF4J
  *
