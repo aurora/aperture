@@ -6,47 +6,15 @@
  */
 package org.semanticdesktop.aperture.examples;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Set;
 
-import org.ontoware.rdf2go.ModelFactory;
-import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.ModelSet;
-import org.ontoware.rdf2go.model.Syntax;
-import org.ontoware.rdf2go.model.node.URI;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryException;
-import org.semanticdesktop.aperture.accessor.DataObject;
-import org.semanticdesktop.aperture.accessor.FileDataObject;
-import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
-import org.semanticdesktop.aperture.crawler.Crawler;
-import org.semanticdesktop.aperture.crawler.CrawlerHandler;
-import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.filesystem.FileSystemCrawler;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
-import org.semanticdesktop.aperture.extractor.Extractor;
-import org.semanticdesktop.aperture.extractor.ExtractorException;
-import org.semanticdesktop.aperture.extractor.ExtractorFactory;
-import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
-import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
-import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
-import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
-import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
-import org.semanticdesktop.aperture.util.IOUtil;
-import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * Example class that crawls a file system and stores all extracted metadata in a RDF file.
@@ -54,16 +22,27 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
  */
 public class ExampleFileCrawler {
 
-    // if the IDENTIFY_MIME_TYPE_OPTION is set (commando line call -identifyMimeType)
-    // the mime type of the files will be detected
+    /** The command line flag that states if the MIME types of the encountered
+     * DataObjects are to be identified or not. 
+     * if the IDENTIFY_MIME_TYPE_OPTION is set (commando line call -identifyMimeType)
+     * the mime type of the files will be detected 
+     */
     public static final String IDENTIFY_MIME_TYPE_OPTION = "-identifyMimeType";
 
-    // if the EXTRACT_CONTENTS_OPTION is set (commando line call -extractContents)
-    // the content of the files will be scanned
+    /** if the EXTRACT_CONTENTS_OPTION is set (commando line call -extractContents)
+       the content of the files will be scanned */
     public static final String EXTRACT_CONTENTS_OPTION = "-extractContents";
 
+    /**
+     * if the VERBOSE_OPTION is set (command line switch '-verbose') the crawler
+     * will print more verbose information about what it's doing
+     */
     public static final String VERBOSE_OPTION = "-verbose";
 
+    /**
+     * If the NOOUTPUT_OPTION is set (command line switch -nooutput), the crawler
+     * will not save the generated RDF in a file
+     */
     public static final String NOOUTPUT_OPTION = "-nooutput";
 
     private File rootFile;
@@ -79,6 +58,7 @@ public class ExampleFileCrawler {
 
     private boolean noOutput = false;
 
+    
     public boolean isExtractingContents() {
         return extractingContents;
     }
@@ -140,12 +120,17 @@ public class ExampleFileCrawler {
         FileSystemCrawler crawler = new FileSystemCrawler();
         crawler.setDataSource(source);
         crawler.setDataAccessorRegistry(new DefaultDataAccessorRegistry());
-        crawler.setCrawlerHandler(new SimpleCrawlerHandler());
+        crawler.setCrawlerHandler(new SimpleCrawlerHandler(identifyingMimeType,extractingContents,verbose,outputFile));
 
         // start crawling
         crawler.crawl();
     }
 
+    /**
+     * The main method
+     * @param args command line arguments
+     * @throws ModelException
+     */
     public static void main(String[] args) throws ModelException {
         // create a new ExampleFileCrawler instance
         ExampleFileCrawler crawler = new ExampleFileCrawler();
@@ -204,238 +189,10 @@ public class ExampleFileCrawler {
         System.exit(-1);
     }
 
-    private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
-
-        private ModelSet modelSet;
-
-        // number of objects which were crawled
-        private int nrObjects;
-        
-        // the time which is needed for crawling the all files
-        // uses the java System.nanoTime(), because we have only interest
-        // in the elapsed time therefore a correct timestamp is not needed
-        private long crawlingTime;
-        
-        // the time which is need for crawling one file
-        private long crawlingOneFile;
-                
-        // variables needed for statistic
-        int nrFiles;
-        long fileSize; // size of one file
-                
-        // the mean of the crawling time and file size for one file
-        double timeMean, fileSizeMean;
-        
-        // variable needed for calculation the standard deviation after Knuth
-        double timeS, fileSizeS;
-        
-        // the delta which is needed for the calculation of the standard Deviation in Knuth's algorithm
-        double timeDelta, fileSizeDelta;
-
-        private MimeTypeIdentifier mimeTypeIdentifier;
-
-        private ExtractorRegistry extractorRegistry;
-
-        public SimpleCrawlerHandler() throws ModelException {
-            // create a ModelSet that will hold the RDF Models of all crawled files and folders
-            ModelFactory factory = RDF2Go.getModelFactory();
-            modelSet = factory.createModelSet();
-            modelSet.open();
-
-            // create some identification and extraction components
-            if (identifyingMimeType) {
-                mimeTypeIdentifier = new MagicMimeTypeIdentifier();
-            }
-            if (extractingContents) {
-                extractorRegistry = new DefaultExtractorRegistry();
-            }
-        }
-
-        public void crawlStarted(Crawler crawler) {
-            nrObjects = 0;
-            nrFiles = 0;
-            crawlingTime = 0;
-            timeMean = 0.0;
-            timeDelta = 0.0;
-            timeS = 0.0;
-            fileSizeMean = 0.0;
-            fileSizeDelta = 0.0;
-            fileSizeS = 0.0;
-        }
-
-        public void accessingObject(Crawler crawler, String url) {
-            if (verbose) {
-                System.out.println("Processing file " + nrObjects + ": " + url + "...");
-            }
-        }
-
-        public void objectNew(Crawler dataCrawler, DataObject object) {
-            nrObjects++;
-            if (nrObjects % 300 == 0)
-                // call garbage collector from time to time
-                System.gc();
-            
-            // process the contents of an InputStream, if available
-            if (object instanceof FileDataObject) {
-                nrFiles++;
-                crawlingOneFile = -1*System.nanoTime();
-                String s = null;
-                try {
-                    s = (object.getMetadata().getString(DATA.byteSize));
-                    fileSize = Long.parseLong(s);
-                    process((FileDataObject) object);
-                }
-                catch (Exception e) {
-                    System.err.println("Exception while processing file size ("+s+") of " + object.getID());
-                    e.printStackTrace();
-                }
-                crawlingOneFile += System.nanoTime();
-                crawlingTime += crawlingOneFile;
-
-                // calculate the Standard Deviation after Knuth
-                // time
-                timeDelta = crawlingOneFile - timeMean;
-                timeMean += timeDelta/nrFiles;
-                timeS += timeDelta*(crawlingOneFile - timeMean);
-                // file size
-                fileSizeDelta = fileSize - fileSizeMean;
-                fileSizeMean += fileSizeDelta/nrFiles;
-                fileSizeS += fileSizeDelta*(fileSize - fileSizeMean);
-            }
-            // really dispose the RDFContainer when noOutput
-            object.dispose();
-            if (noOutput)
-                try {
-                    ((Repository)object.getMetadata().getModel().getUnderlyingModelImplementation()).shutDown();
-                }
-                catch (RepositoryException e) {
-                    e.printStackTrace();
-                }
-        }
-
-        private void process(FileDataObject object) throws IOException, ExtractorException, ModelException {
-            // we cannot do anything when MIME type identification is disabled
-            if (!identifyingMimeType) {
-                return;
-            }
-
-            URI id = object.getID();
-
-            // Create a buffer around the object's stream large enough to be able to reset the stream
-            // after MIME type identification has taken place. Add some extra to the minimum array
-            // length required by the MimeTypeIdentifier for safety.
-            int minimumArrayLength = mimeTypeIdentifier.getMinArrayLength();
-            int bufferSize = Math.max(minimumArrayLength, 8192);
-            BufferedInputStream buffer = new BufferedInputStream(object.getContent(), bufferSize);
-            buffer.mark(minimumArrayLength + 10); // add some for safety
-
-            // apply the MimeTypeIdentifier
-            byte[] bytes = IOUtil.readBytes(buffer, minimumArrayLength);
-            String mimeType = mimeTypeIdentifier.identify(bytes, null, id);
-
-            if (mimeType != null) {
-                // add the MIME type to the metadata
-                RDFContainer metadata = object.getMetadata();
-                metadata.add(DATA.mimeType, mimeType);
-
-                // apply an Extractor if available
-                if (extractingContents) {
-                    buffer.reset();
-
-                    Set extractors = extractorRegistry.get(mimeType);
-                    if (!extractors.isEmpty()) {
-                        ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
-                        Extractor extractor = factory.get();
-                        extractor.extract(id, buffer, null, mimeType, metadata);
-                    }
-                }
-            }
-        }
-
-        public void objectChanged(Crawler dataCrawler, DataObject object) {
-            // as we do not use incremental crawling, this should not happen
-            object.dispose();
-            printUnexpectedEventWarning("changed");
-        }
-
-        public void objectNotModified(Crawler crawler, String url) {
-            // as we do not use incremental crawling, this should not happen
-            printUnexpectedEventWarning("unmodified");
-        }
-
-        public void objectRemoved(Crawler dataCrawler, String url) {
-            // as we do not use incremental crawling, this should not happen
-            printUnexpectedEventWarning("removed");
-        }
-
-        public void clearStarted(Crawler crawler) {
-            // as we do not use incremental crawling, this should not happen
-            printUnexpectedEventWarning("clearStarted");
-        }
-
-        public void clearingObject(Crawler crawler, String url) {
-            // as we do not use incremental crawling, this should not happen
-            printUnexpectedEventWarning("clearingObject");
-        }
-
-        public void clearFinished(Crawler crawler, ExitCode exitCode) {
-            // as we do not use incremental crawling, this should not happen
-            printUnexpectedEventWarning("clear finished");
-        }
-
-        public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
-            return this;
-        }
-
-        public RDFContainer getRDFContainer(URI uri) {
-            // note: by using ModelSet.getModel, all statements added to this Model are added to the ModelSet
-            // automatically, unlike ModelFactory.createModel, which creates stand-alone models.
-
-            // when running performance tests, we dump the dataobjects,
-            // otherwise we channel the triples into the modelSet
-            Model model = (noOutput) ? RDF2Go.getModelFactory().createModel() : modelSet.getModel(uri);
-            model.open();
-            return new RDFContainerImpl(model, uri);
-        }
-
-        private void printUnexpectedEventWarning(String event) {
-            // as we don't keep track of access data in this example code, some events should never occur
-            System.err.println("encountered unexpected event (" + event + ") with non-incremental crawler");
-        }
-
-        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-            try {
-                double standardDeviationTime = Math.sqrt(timeS/(nrFiles-1));
-                double standardDeviationTimeIn_ms = Math.round(standardDeviationTime / 1000000*100.)/100.;
-                double standardDeviationFileSize = Math.round(Math.sqrt(fileSizeS/(nrFiles-1)));
-                double timeMeanIn_ms = Math.round(timeMean/1000000*100.)/100.;
-                DecimalFormat f = new DecimalFormat("0.##");
-                
-                System.out.println("Crawled " + nrObjects + " objects in " + crawlingTime/1000000
-                    + " ms (exit code: " + exitCode + ")");
-                System.out.println("Statistics:");
-                System.out.println(" mean crawling time: " + timeMeanIn_ms + " ms/file");
-                System.out.println(" standard Deviation crawling time: " + standardDeviationTimeIn_ms + " ms");
-                System.out.println(" mean file size in byte: " + f.format(fileSizeMean));
-                System.out.println(" standard Deviation file size in byte: " + f.format(standardDeviationFileSize));
-                if (!noOutput)
-                {
-                    Writer writer = new BufferedWriter(new FileWriter(outputFile));
-                    modelSet.writeTo(writer, Syntax.Trix);
-                    writer.close();
-                    System.out.println("Saved RDF model to " + outputFile);
-                }
-                    System.out.println("Output discarded");
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-            
-            modelSet.close();
-        }
-    }
-
-    
+    /**
+     * returns 'true' if the crawler is in the 'no output' mode
+     * @return 'true' if the crawler is in the 'no output' mode
+     */
     public boolean isNoOutput() {
         return noOutput;
     }

@@ -180,7 +180,7 @@ public class ExampleWebCrawler {
         crawler.setDataAccessorRegistry(new DefaultDataAccessorRegistry());
         crawler.setMimeTypeIdentifier(new MagicMimeTypeIdentifier());
         crawler.setLinkExtractorRegistry(new DefaultLinkExtractorRegistry());
-        crawler.setCrawlerHandler(new SimpleCrawlerHandler());
+        crawler.setCrawlerHandler(new SimpleCrawlerHandler(true,extractingContents,verbose,outputFile));
 
         // start crawling
         crawler.crawl();
@@ -327,7 +327,7 @@ public class ExampleWebCrawler {
         System.exit(-1);
     }
 
-    private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
+/*    private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
         private ModelSet modelSet;
 
@@ -448,5 +448,5 @@ public class ExampleWebCrawler {
             // as we don't keep track of access data in this example code, some events should never occur
             System.err.println("encountered unexpected event (" + event + ") with non-incremental crawler");
         }
-    }
+    }*/
 }

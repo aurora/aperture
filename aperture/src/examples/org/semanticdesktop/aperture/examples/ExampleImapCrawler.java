@@ -237,7 +237,7 @@ public class ExampleImapCrawler {
         // set up an IMAP crawler
         crawler = new ImapCrawler();
         crawler.setDataSource(dataSource);
-        crawler.setCrawlerHandler(new SimpleCrawlerHandler());
+        crawler.setCrawlerHandler(new SimpleCrawlerHandler(identifyingMimeType,extractingContents,true,outputFile));
         crawler.crawl();
     }
 
@@ -333,7 +333,7 @@ public class ExampleImapCrawler {
         }
     }
 
-    private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
+    /*private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
         private ModelSet modelSet;
 
@@ -518,5 +518,5 @@ public class ExampleImapCrawler {
             // as we don't keep track of access data in this example code, some events should never occur
             System.err.println("encountered unexpected event (" + event + ") with non-incremental crawler");
         }
-    }
+    } */
 }
