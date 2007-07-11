@@ -65,3 +65,4 @@ Export-Package: org.semanticdesktop.aperture.accessor.file,
  org.semanticdesktop.aperture.security.socketfactory.standard,
  org.semanticdesktop.aperture.security.trustdecider.dialog,
  org.semanticdesktop.aperture.security.trustmanager.standard
+Eclipse-LazyStart: true
