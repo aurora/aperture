@@ -21,22 +21,17 @@ public class HttpAccessorActivator implements BundleActivator {
 
 	private HttpAccessorFactory factory;
 
-	private ServiceReference reference;
+	private ServiceRegistration registration;
 
 	public void start(BundleContext context) throws Exception {
-		
-
 		HttpAccessorActivator.bc = context;
-
 		factory = new HttpAccessorFactory();
-		ServiceRegistration registration = bc.registerService(DataAccessorFactory.class.getName(), factory,
+		registration = bc.registerService(DataAccessorFactory.class.getName(), factory,
 			new Hashtable());
-		reference = registration.getReference();
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(reference);
+		registration.unregister();
 	}
 
 }

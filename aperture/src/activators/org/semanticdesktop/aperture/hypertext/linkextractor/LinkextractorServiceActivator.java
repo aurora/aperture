@@ -20,7 +20,7 @@ public class LinkextractorServiceActivator implements BundleActivator, ServiceLi
 
 	public static BundleContext bc = null;
 
-	private ServiceReference reference;
+    private ServiceRegistration registration;
 
 	private LinkExtractorRegistry registry;
 
@@ -28,9 +28,9 @@ public class LinkextractorServiceActivator implements BundleActivator, ServiceLi
 		
 		bc = context;
 		registry = new LinkExtractorRegistryImpl();
-		ServiceRegistration registration = bc.registerService(LinkExtractorRegistry.class.getName(), registry,
+		registration = bc.registerService(LinkExtractorRegistry.class.getName(), registry,
 			new Hashtable());
-		reference = registration.getReference();
+		
 
 		String filter = "(objectclass=" + LinkExtractorFactory.class.getName() + ")";
 		bc.addServiceListener(this, filter);
@@ -44,13 +44,10 @@ public class LinkextractorServiceActivator implements BundleActivator, ServiceLi
 		
 	}
 
-	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(reference);
-		
-		reference = null;
-		bc = null;
-	}
+    public void stop(BundleContext context) throws Exception {
+        registration.unregister();
+        bc = null;
+    }
 
 	public void serviceChanged(ServiceEvent event) {
 		LinkExtractorFactory factory;

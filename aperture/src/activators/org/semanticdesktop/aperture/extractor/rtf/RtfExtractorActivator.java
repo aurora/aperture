@@ -16,25 +16,21 @@ import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 
 public class RtfExtractorActivator implements BundleActivator {
 
-	public static BundleContext bc;
+    public static BundleContext bc;
 
-	private ExtractorFactory factory;
+    private ExtractorFactory factory;
 
-	private ServiceReference reference;
+    private ServiceRegistration registration;
 
-	public void start(BundleContext context) throws Exception {
-		
+    public void start(BundleContext context) throws Exception {
 
-		RtfExtractorActivator.bc = context;
+        RtfExtractorActivator.bc = context;
 
-		factory = new RtfExtractorFactory();
-		ServiceRegistration registration = bc.registerService(ExtractorFactory.class.getName(), factory,
-			new Hashtable());
-		reference = registration.getReference();
-	}
+        factory = new RtfExtractorFactory();
+        registration = bc.registerService(ExtractorFactory.class.getName(), factory, new Hashtable());
+    }
 
-	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(reference);
-	}
+    public void stop(BundleContext context) throws Exception {
+        registration.unregister();
+    }
 }

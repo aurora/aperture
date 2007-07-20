@@ -19,7 +19,7 @@ import org.semanticdesktop.aperture.mime.identifier.impl.MimeTypeIdentifierRegis
 public class MimeIdentifierServiceActivator implements BundleActivator, ServiceListener {
 	public static BundleContext bc = null;
 
-	private ServiceReference reference;
+    private ServiceRegistration registration;
 
 	private MimeTypeIdentifierRegistry registry;
 
@@ -27,9 +27,9 @@ public class MimeIdentifierServiceActivator implements BundleActivator, ServiceL
 		
 		bc = context;
 		registry = new MimeTypeIdentifierRegistryImpl();
-		ServiceRegistration registration = bc.registerService(MimeTypeIdentifierRegistry.class.getName(), registry,
+		registration = bc.registerService(MimeTypeIdentifierRegistry.class.getName(), registry,
 			new Hashtable());
-		reference = registration.getReference();
+		
 
 		String filter = "(objectclass=" + MimeTypeIdentifierFactory.class.getName() + ")";
 		bc.addServiceListener(this, filter);
@@ -43,13 +43,10 @@ public class MimeIdentifierServiceActivator implements BundleActivator, ServiceL
 		
 	}
 
-	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(reference);
-		
-		reference = null;
-		bc = null;
-	}
+    public void stop(BundleContext context) throws Exception {
+        registration.unregister();
+        bc = null;
+    }
 
 	public void serviceChanged(ServiceEvent event) {
 		MimeTypeIdentifierFactory factory;

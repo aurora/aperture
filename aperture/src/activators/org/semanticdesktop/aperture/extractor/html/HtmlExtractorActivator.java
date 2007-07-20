@@ -21,22 +21,17 @@ public class HtmlExtractorActivator implements BundleActivator {
 
 	private HtmlExtractorFactory factory;
 
-	private ServiceReference reference;
+    private ServiceRegistration registration;
 
 	public void start(BundleContext context) throws Exception {
-		
-
 		HtmlExtractorActivator.bc = context;
-
 		factory = new HtmlExtractorFactory();
-		ServiceRegistration registration = bc.registerService(ExtractorFactory.class.getName(), factory,
+		registration = bc.registerService(ExtractorFactory.class.getName(), factory,
 			new Hashtable());
-		reference = registration.getReference();
 	}
-
-	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(reference);
-	}
+    
+    public void stop(BundleContext context) throws Exception {
+        registration.unregister();
+    }
 }
 

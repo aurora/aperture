@@ -20,7 +20,7 @@ public class DataSourceServiceActivator implements BundleActivator, ServiceListe
 
 	public static BundleContext bc = null;
 
-	private ServiceReference reference;
+	private ServiceRegistration registration;
 
 	private DataSourceRegistry registry;
 
@@ -28,9 +28,8 @@ public class DataSourceServiceActivator implements BundleActivator, ServiceListe
 		
 		bc = context;
 		registry = new DataSourceRegistryImpl();
-		ServiceRegistration registration = bc.registerService(DataSourceRegistry.class.getName(), registry,
+		registration = bc.registerService(DataSourceRegistry.class.getName(), registry,
 			new Hashtable());
-		reference = registration.getReference();
 
 		String filter = "(objectclass=" + DataSourceFactory.class.getName() + ")";
 		bc.addServiceListener(this, filter);
@@ -45,10 +44,7 @@ public class DataSourceServiceActivator implements BundleActivator, ServiceListe
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(reference);
-		
-		reference = null;
+		registration.unregister();
 		bc = null;
 	}
 

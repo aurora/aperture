@@ -20,21 +20,16 @@ public class HttpOpenerActivator implements BundleActivator {
 
 	private DataOpenerFactory factory;
 
-	private ServiceReference reference;
+	private ServiceRegistration registration;
 
 	public void start(BundleContext context) throws Exception {
-		
-
 		HttpOpenerActivator.bc = context;
-
 		factory = new HttpOpenerFactory();
-		ServiceRegistration registration = bc.registerService(DataOpenerFactory.class.getName(), factory,
+		registration = bc.registerService(DataOpenerFactory.class.getName(), factory,
 			new Hashtable());
-		reference = registration.getReference();
 	}
 
-	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(reference);
-	}
+    public void stop(BundleContext context) throws Exception {
+        registration.unregister();
+    }
 }

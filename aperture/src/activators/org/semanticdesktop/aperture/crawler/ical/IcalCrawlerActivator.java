@@ -10,7 +10,6 @@ import java.util.Hashtable;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
@@ -25,8 +24,8 @@ public class IcalCrawlerActivator implements BundleActivator {
 
 	private IcalDataSourceFactory dataSourceFactory;
 
-	private ServiceReference crawlerServiceReference;
-	private ServiceReference dataSourceServiceReference;
+	private ServiceRegistration crawlerServiceRegistration;
+	private ServiceRegistration dataSourceServiceRegistration;
 
 	public void start(BundleContext context) throws Exception {
 		
@@ -34,20 +33,17 @@ public class IcalCrawlerActivator implements BundleActivator {
 		IcalCrawlerActivator.bc = context;
 
 		crawlerFactory = new IcalCrawlerFactory();
-		ServiceRegistration registration = bc.registerService(CrawlerFactory.class.getName(), crawlerFactory,
+		crawlerServiceRegistration = bc.registerService(CrawlerFactory.class.getName(), crawlerFactory,
 			new Hashtable());
-		crawlerServiceReference = registration.getReference();
 		
 		dataSourceFactory = new IcalDataSourceFactory();
-		registration = bc.registerService(DataSourceFactory.class.getName(), dataSourceFactory,
+		dataSourceServiceRegistration = bc.registerService(DataSourceFactory.class.getName(), dataSourceFactory,
 			new Hashtable());
-		dataSourceServiceReference = registration.getReference();
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(crawlerServiceReference);
-		bc.ungetService(dataSourceServiceReference);
+		crawlerServiceRegistration.unregister();
+        dataSourceServiceRegistration.unregister();
 	}
 }
 

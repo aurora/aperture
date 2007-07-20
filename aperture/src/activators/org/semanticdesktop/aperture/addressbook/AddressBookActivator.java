@@ -10,7 +10,6 @@ import java.util.Hashtable;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.semanticdesktop.aperture.addressbook.apple.AppleAddressbookCrawlerFactory;
 import org.semanticdesktop.aperture.addressbook.apple.AppleAddressbookDataSourceFactory;
@@ -31,45 +30,41 @@ public class AddressBookActivator implements BundleActivator {
 
     private ThunderbirdAddressbookDataSourceFactory thunderbirdDataSourceFactory;
 
-    private ServiceReference appleCrawlerServiceReference;
+    private ServiceRegistration appleCrawlerServiceRegistration;
 
-    private ServiceReference appleDataSourceServiceReference;
+    private ServiceRegistration appleDataSourceServiceRegistration;
     
-    private ServiceReference thunderbirdCrawlerServiceReference;
+    private ServiceRegistration thunderbirdCrawlerServiceRegistration;
     
-    private ServiceReference thunderbirdDataSourceServiceReference;
+    private ServiceRegistration thunderbirdDataSourceServiceRegistration;
 
     public void start(BundleContext context) throws Exception {
 
         AddressBookActivator.bc = context;
 
         appleCrawlerFactory = new AppleAddressbookCrawlerFactory();
-        ServiceRegistration registration = bc.registerService(CrawlerFactory.class.getName(),
+        appleCrawlerServiceRegistration = bc.registerService(CrawlerFactory.class.getName(),
             appleCrawlerFactory, new Hashtable());
-        appleCrawlerServiceReference = registration.getReference();
 
         appleDataSourceFactory = new AppleAddressbookDataSourceFactory();
-        registration = bc.registerService(DataSourceFactory.class.getName(), appleDataSourceFactory,
+        appleDataSourceServiceRegistration = bc.registerService(DataSourceFactory.class.getName(), appleDataSourceFactory,
             new Hashtable());
-        appleDataSourceServiceReference = registration.getReference();
         
         thunderbirdCrawlerFactory = new ThunderbirdAddressbookCrawlerFactory();
-        registration = bc.registerService(CrawlerFactory.class.getName(),
+        thunderbirdCrawlerServiceRegistration = bc.registerService(CrawlerFactory.class.getName(),
             thunderbirdCrawlerFactory, new Hashtable());
-        thunderbirdCrawlerServiceReference = registration.getReference();
 
         thunderbirdDataSourceFactory = new ThunderbirdAddressbookDataSourceFactory();
-        registration = bc.registerService(DataSourceFactory.class.getName(), thunderbirdDataSourceFactory,
+        thunderbirdDataSourceServiceRegistration = bc.registerService(DataSourceFactory.class.getName(), thunderbirdDataSourceFactory,
             new Hashtable());
-        thunderbirdDataSourceServiceReference = registration.getReference();
 
         
     }
 
     public void stop(BundleContext context) throws Exception {
-        bc.ungetService(appleCrawlerServiceReference);
-        bc.ungetService(appleDataSourceServiceReference);
-        bc.ungetService(thunderbirdCrawlerServiceReference);
-        bc.ungetService(thunderbirdDataSourceServiceReference);
+        appleCrawlerServiceRegistration.unregister();
+        appleDataSourceServiceRegistration.unregister();
+        thunderbirdCrawlerServiceRegistration.unregister();
+        thunderbirdDataSourceServiceRegistration.unregister();
     }
 }

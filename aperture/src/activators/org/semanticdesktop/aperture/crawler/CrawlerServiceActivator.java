@@ -20,7 +20,7 @@ public class CrawlerServiceActivator implements BundleActivator, ServiceListener
 
 	public static BundleContext bc = null;
 
-	private ServiceReference reference;
+	private ServiceRegistration registration;
 
 	private CrawlerRegistry registry;
 
@@ -28,9 +28,8 @@ public class CrawlerServiceActivator implements BundleActivator, ServiceListener
 		
 		bc = context;
 		registry = new CrawlerRegistryImpl();
-		ServiceRegistration registration = bc.registerService(CrawlerRegistry.class.getName(), registry,
+		registration = bc.registerService(CrawlerRegistry.class.getName(), registry,
 			new Hashtable());
-		reference = registration.getReference();
 
 		String filter = "(objectclass=" + CrawlerFactory.class.getName() + ")";
 		bc.addServiceListener(this, filter);
@@ -45,10 +44,7 @@ public class CrawlerServiceActivator implements BundleActivator, ServiceListener
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(reference);
-		
-		reference = null;
+		registration.unregister();
 		bc = null;
 	}
 

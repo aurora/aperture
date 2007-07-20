@@ -25,29 +25,24 @@ public class WebCrawlerActivator implements BundleActivator {
 
 	private WebDataSourceFactory dataSourceFactory;
 
-	private ServiceReference crawlerServiceReference;
-	private ServiceReference dataSourceServiceReference;
+	private ServiceRegistration crawlerServiceRegistration;
+	private ServiceRegistration dataSourceServiceRegistration;
 
 	public void start(BundleContext context) throws Exception {
-		
-
 		WebCrawlerActivator.bc = context;
 
 		crawlerFactory = new WebCrawlerFactory();
-		ServiceRegistration registration = bc.registerService(CrawlerFactory.class.getName(), crawlerFactory,
+		crawlerServiceRegistration = bc.registerService(CrawlerFactory.class.getName(), crawlerFactory,
 			new Hashtable());
-		crawlerServiceReference = registration.getReference();
 		
 		dataSourceFactory = new WebDataSourceFactory();
-		registration = bc.registerService(DataSourceFactory.class.getName(), dataSourceFactory,
+		dataSourceServiceRegistration = bc.registerService(DataSourceFactory.class.getName(), dataSourceFactory,
 			new Hashtable());
-		dataSourceServiceReference = registration.getReference();
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(crawlerServiceReference);
-		bc.ungetService(dataSourceServiceReference);
+		crawlerServiceRegistration.unregister();
+        dataSourceServiceRegistration.unregister();
 	}
 }
 

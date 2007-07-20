@@ -20,21 +20,16 @@ public class MagicMimeIdentifierActivator implements BundleActivator {
 
 	private MimeTypeIdentifierFactory factory;
 
-	private ServiceReference reference;
+	private ServiceRegistration registration;
 
 	public void start(BundleContext context) throws Exception {
-		
-
 		MagicMimeIdentifierActivator.bc = context;
-
 		factory = new MagicMimeTypeIdentifierFactory();
-		ServiceRegistration registration = bc.registerService(MimeTypeIdentifierFactory.class.getName(), factory,
+		registration = bc.registerService(MimeTypeIdentifierFactory.class.getName(), factory,
 			new Hashtable());
-		reference = registration.getReference();
 	}
 
-	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(reference);
-	}
+    public void stop(BundleContext context) throws Exception {
+        registration.unregister();
+    }
 }

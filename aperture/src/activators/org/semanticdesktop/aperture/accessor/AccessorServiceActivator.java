@@ -20,7 +20,7 @@ public class AccessorServiceActivator implements BundleActivator, ServiceListene
 
 	public static BundleContext bc = null;
 
-	private ServiceReference reference;
+	private ServiceRegistration registration;
 
 	private DataAccessorRegistry registry;
 
@@ -28,9 +28,8 @@ public class AccessorServiceActivator implements BundleActivator, ServiceListene
 		
 		bc = context;
 		registry = new DataAccessorRegistryImpl();
-		ServiceRegistration registration = bc.registerService(DataAccessorRegistry.class.getName(), registry,
+		registration = bc.registerService(DataAccessorRegistry.class.getName(), registry,
 			new Hashtable());
-		reference = registration.getReference();
 
 		String filter = "(objectclass=" + DataAccessorFactory.class.getName() + ")";
 		bc.addServiceListener(this, filter);
@@ -45,10 +44,8 @@ public class AccessorServiceActivator implements BundleActivator, ServiceListene
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(reference);
-		
-		reference = null;
+		registration.unregister();
+        registration = null;
 		bc = null;
 	}
 

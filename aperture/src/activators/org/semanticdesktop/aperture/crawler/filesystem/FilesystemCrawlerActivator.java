@@ -25,8 +25,8 @@ public class FilesystemCrawlerActivator implements BundleActivator {
 
 	private FileSystemDataSourceFactory dataSourceFactory;
 
-	private ServiceReference crawlerServiceReference;
-	private ServiceReference dataSourceServiceReference;
+	private ServiceRegistration crawlerServiceRegistration;
+	private ServiceRegistration dataSourceServiceRegistration;
 
 	public void start(BundleContext context) throws Exception {
 		
@@ -34,21 +34,17 @@ public class FilesystemCrawlerActivator implements BundleActivator {
 		FilesystemCrawlerActivator.bc = context;
 
 		crawlerFactory = new FileSystemCrawlerFactory();
-		ServiceRegistration registration = bc.registerService(CrawlerFactory.class.getName(), crawlerFactory,
+		crawlerServiceRegistration = bc.registerService(CrawlerFactory.class.getName(), crawlerFactory,
 			new Hashtable());
-		crawlerServiceReference = registration.getReference();
 		
 		dataSourceFactory = new FileSystemDataSourceFactory();
-		registration = bc.registerService(DataSourceFactory.class.getName(), dataSourceFactory,
+		dataSourceServiceRegistration = bc.registerService(DataSourceFactory.class.getName(), dataSourceFactory,
 			new Hashtable());
-		dataSourceServiceReference = registration.getReference();
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(crawlerServiceReference);
-		bc.ungetService(dataSourceServiceReference);
+		crawlerServiceRegistration.unregister();
+        dataSourceServiceRegistration.unregister();
 	}
-
 }
 

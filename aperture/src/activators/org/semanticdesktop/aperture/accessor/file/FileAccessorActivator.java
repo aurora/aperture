@@ -20,20 +20,18 @@ public class FileAccessorActivator implements BundleActivator {
 
 	private FileAccessorFactory factory;
 
-	private ServiceReference reference;
+	private ServiceRegistration registration;
 
 	public void start(BundleContext context) throws Exception {
 
 		FileAccessorActivator.bc = context;
 
 		factory = new FileAccessorFactory();
-		ServiceRegistration registration = bc.registerService(DataAccessorFactory.class.getName(), factory,
+		registration = bc.registerService(DataAccessorFactory.class.getName(), factory,
 			new Hashtable());
-		reference = registration.getReference();
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(reference);
+		registration.unregister();
 	}
 }

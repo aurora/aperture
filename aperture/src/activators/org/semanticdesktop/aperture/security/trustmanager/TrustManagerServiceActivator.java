@@ -20,7 +20,7 @@ public class TrustManagerServiceActivator implements BundleActivator, ServiceLis
 
 	public static BundleContext bc = null;
 
-	private ServiceReference reference;
+    private ServiceRegistration registration;
 
 	private TrustManagerRegistry registry;
 
@@ -28,9 +28,9 @@ public class TrustManagerServiceActivator implements BundleActivator, ServiceLis
 		
 		bc = context;
 		registry = new TrustManagerRegistryImpl();
-		ServiceRegistration registration = bc.registerService(TrustManagerRegistry.class.getName(), registry,
+		registration = bc.registerService(TrustManagerRegistry.class.getName(), registry,
 			new Hashtable());
-		reference = registration.getReference();
+		
 
 		String filter = "(objectclass=" + TrustManagerFactory.class.getName() + ")";
 		bc.addServiceListener(this, filter);
@@ -44,13 +44,10 @@ public class TrustManagerServiceActivator implements BundleActivator, ServiceLis
 		
 	}
 
-	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(reference);
-		
-		reference = null;
-		bc = null;
-	}
+    public void stop(BundleContext context) throws Exception {
+        registration.unregister();
+        bc = null;
+    }
 
 	public void serviceChanged(ServiceEvent event) {
 		TrustManagerFactory factory;

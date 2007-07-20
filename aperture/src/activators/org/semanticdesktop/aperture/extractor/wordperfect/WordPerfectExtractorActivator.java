@@ -20,7 +20,7 @@ public class WordPerfectExtractorActivator implements BundleActivator {
 
 	private ExtractorFactory factory;
 
-	private ServiceReference reference;
+    private ServiceRegistration registration;
 
 	public void start(BundleContext context) throws Exception {
 		
@@ -28,14 +28,13 @@ public class WordPerfectExtractorActivator implements BundleActivator {
 		WordPerfectExtractorActivator.bc = context;
 
 		factory = new WordPerfectExtractorFactory();
-		ServiceRegistration registration = bc.registerService(ExtractorFactory.class.getName(), factory,
+
+        registration = bc.registerService(ExtractorFactory.class.getName(), factory,
 			new Hashtable());
-		reference = registration.getReference();
 	}
 
-	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(reference);
-	}
+    public void stop(BundleContext context) throws Exception {
+        registration.unregister();
+    }
 
 }

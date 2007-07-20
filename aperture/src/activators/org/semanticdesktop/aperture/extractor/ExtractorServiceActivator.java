@@ -20,7 +20,7 @@ public class ExtractorServiceActivator implements BundleActivator, ServiceListen
 
 	public static BundleContext bc = null;
 
-	private ServiceReference reference;
+    private ServiceRegistration registration;
 
 	private ExtractorRegistry registry;
 
@@ -28,9 +28,9 @@ public class ExtractorServiceActivator implements BundleActivator, ServiceListen
 		
 		bc = context;
 		registry = new ExtractorRegistryImpl();
-		ServiceRegistration registration = bc.registerService(ExtractorRegistry.class.getName(), registry,
+		registration = bc.registerService(ExtractorRegistry.class.getName(), registry,
 			new Hashtable());
-		reference = registration.getReference();
+		
 
 		String filter = "(objectclass=" + ExtractorFactory.class.getName() + ")";
 		bc.addServiceListener(this, filter);
@@ -44,13 +44,10 @@ public class ExtractorServiceActivator implements BundleActivator, ServiceListen
 		
 	}
 
-	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(reference);
-		
-		reference = null;
-		bc = null;
-	}
+    public void stop(BundleContext context) throws Exception {
+        registration.unregister();
+        bc = null;
+    }
 
 	public void serviceChanged(ServiceEvent event) {
 		ExtractorFactory factory;

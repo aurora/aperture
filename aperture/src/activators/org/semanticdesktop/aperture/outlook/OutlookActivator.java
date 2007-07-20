@@ -15,6 +15,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
+import org.semanticdesktop.aperture.opener.DataOpenerFactory;
 
 public class OutlookActivator implements BundleActivator {
 
@@ -23,36 +24,35 @@ public class OutlookActivator implements BundleActivator {
 	private OutlookCrawlerFactory crawlerFactory;
 	private OutlookDataSourceFactory dataSourceFactory;
 	private OutlookAccessorFactory accessorFactory;
+    private OutlookOpenerFactory openerFactory;
 
-	private ServiceReference crawlerServiceReference;
-	private ServiceReference dataSourceServiceReference;
-	private ServiceReference accessorServiceReference;
+	private ServiceRegistration crawlerServiceRegistration;
+	private ServiceRegistration dataSourceServiceRegistration;
+	private ServiceRegistration accessorServiceRegistration;
+    private ServiceRegistration openerServiceRegistration;
 
 	public void start(BundleContext context) throws Exception {
-		
+        OutlookActivator.bc = context;
+        crawlerFactory = new OutlookCrawlerFactory();
+        crawlerServiceRegistration = bc.registerService(CrawlerFactory.class.getName(), crawlerFactory,
+            new Hashtable());
 
-		OutlookActivator.bc = context;
+        dataSourceFactory = new OutlookDataSourceFactory();
+        dataSourceServiceRegistration = bc.registerService(DataSourceFactory.class.getName(), dataSourceFactory,
+            new Hashtable());
 
-		crawlerFactory = new OutlookCrawlerFactory();
-		ServiceRegistration registration = bc.registerService(CrawlerFactory.class.getName(), crawlerFactory,
-			new Hashtable());
-		crawlerServiceReference = registration.getReference();
-		
-		dataSourceFactory = new OutlookDataSourceFactory();
-		registration = bc.registerService(DataSourceFactory.class.getName(), dataSourceFactory,
-			new Hashtable());
-		dataSourceServiceReference = registration.getReference();
-		
-		accessorFactory = new OutlookAccessorFactory();
-		registration = bc.registerService(DataAccessorFactory.class.getName(), accessorFactory,
-			new Hashtable());
-		accessorServiceReference = registration.getReference();
-	}
+        accessorFactory = new OutlookAccessorFactory();
+        accessorServiceRegistration = bc.registerService(DataAccessorFactory.class.getName(), accessorFactory,
+            new Hashtable());
+
+        openerFactory = new OutlookOpenerFactory();
+        openerServiceRegistration = bc.registerService(DataOpenerFactory.class.getName(), openerFactory, new Hashtable());
+    }
 
 	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(crawlerServiceReference);
-		bc.ungetService(dataSourceServiceReference);
-		bc.ungetService(accessorServiceReference);
+		crawlerServiceRegistration.unregister();
+        dataSourceServiceRegistration.unregister();
+        accessorServiceRegistration.unregister();
+        openerServiceRegistration.unregister();
 	}
 }

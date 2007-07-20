@@ -20,7 +20,7 @@ public class DataOpenerServiceActivator implements BundleActivator, ServiceListe
 
 	public static BundleContext bc = null;
 
-	private ServiceReference reference;
+    private ServiceRegistration registration;
 
 	private DataOpenerRegistry registry;
 
@@ -28,9 +28,9 @@ public class DataOpenerServiceActivator implements BundleActivator, ServiceListe
 		
 		bc = context;
 		registry = new DataOpenerRegistryImpl();
-		ServiceRegistration registration = bc.registerService(DataOpenerRegistry.class.getName(), registry,
+		registration = bc.registerService(DataOpenerRegistry.class.getName(), registry,
 			new Hashtable());
-		reference = registration.getReference();
+		
 
 		String filter = "(objectclass=" + DataOpenerFactory.class.getName() + ")";
 		bc.addServiceListener(this, filter);
@@ -44,13 +44,10 @@ public class DataOpenerServiceActivator implements BundleActivator, ServiceListe
 		
 	}
 
-	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(reference);
-		
-		reference = null;
-		bc = null;
-	}
+    public void stop(BundleContext context) throws Exception {
+        registration.unregister();
+        bc = null;
+    }
 
 	public void serviceChanged(ServiceEvent event) {
 		DataOpenerFactory factory;

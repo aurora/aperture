@@ -20,7 +20,7 @@ public class TrustDeciderServiceActivator implements BundleActivator, ServiceLis
 
 	public static BundleContext bc = null;
 
-	private ServiceReference reference;
+    private ServiceRegistration registration;
 
 	private TrustDeciderRegistry registry;
 
@@ -28,9 +28,9 @@ public class TrustDeciderServiceActivator implements BundleActivator, ServiceLis
 		
 		bc = context;
 		registry = new TrustDeciderRegistryImpl();
-		ServiceRegistration registration = bc.registerService(TrustDeciderRegistry.class.getName(), registry,
+		registration = bc.registerService(TrustDeciderRegistry.class.getName(), registry,
 			new Hashtable());
-		reference = registration.getReference();
+		
 
 		String filter = "(objectclass=" + TrustDeciderFactory.class.getName() + ")";
 		bc.addServiceListener(this, filter);
@@ -44,13 +44,10 @@ public class TrustDeciderServiceActivator implements BundleActivator, ServiceLis
 		
 	}
 
-	public void stop(BundleContext context) throws Exception {
-		
-		bc.ungetService(reference);
-		
-		reference = null;
-		bc = null;
-	}
+    public void stop(BundleContext context) throws Exception {
+        registration.unregister();
+        bc = null;
+    }
 
 	public void serviceChanged(ServiceEvent event) {
 		TrustDeciderFactory factory;
