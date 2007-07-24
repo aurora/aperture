@@ -9,6 +9,8 @@ package org.semanticdesktop.aperture.outlook;
 import java.io.IOException;
 import java.util.Map;
 
+import org.ontoware.rdf2go.RDF2Go;
+import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
@@ -21,6 +23,7 @@ import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.vocabulary.DATA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,94 +100,113 @@ public class OutlookAccessor implements DataAccessor {
 		return getDataObjectIfModifiedOutlook(url, source, accessData, params, containerFactory, res, parent);
 	}
 
-	public DataObject getDataObjectIfModifiedOutlook(String url, DataSource source, AccessData accessData,
-			Map params, RDFContainerFactory containerFactory, OutlookResource resource, OutlookResource parent)
-			throws UrlNotFoundException, IOException {
-		logger.info("get data of " + url);
+    public DataObject getDataObjectIfModifiedOutlook(String url, DataSource source, AccessData accessData,
+            Map params, RDFContainerFactory containerFactory, OutlookResource resource, OutlookResource parent)
+            throws UrlNotFoundException, IOException {
+        logger.info("get data of " + url);
 
-		// check if I have to crawl this first
-		OutlookCrawler crawler = null;
-		try {
-			if (resource == null) {
-				crawler = new OutlookCrawler();
-				crawler.setDataSource(source);
-				crawler.beginCall();
-				resource = OutlookResource.createWrapperFor(crawler, url, logger);
-				if (resource == null)
-					throw new UrlNotFoundException(url, "cannot crawl " + url + ", not found in Outlook.");
-			}
+        // check if I have to crawl this first
+        OutlookCrawler crawler = null;
+        boolean crappyHack = false;
+        try {
+            if (resource == null) {
+                crawler = new OutlookCrawler();
+                // this is a really crappy hack...
+                if (source == null) {
+                    source = createDummyDataSource(url);
+                    crappyHack = true;
+                }
+                crawler.setDataSource(source);
+                crawler.beginCall();
+                resource = OutlookResource.createWrapperFor(crawler, url, logger);
+                if (resource == null)
+                    throw new UrlNotFoundException(url, "cannot crawl " + url + ", not found in Outlook.");
+            }
 
-			// check date
-			if (accessData != null) {
-				// determine when the OutlookResource was last modified
-				long lastModified = resource.getLastModified();
+            // check date
+            if (accessData != null) {
+                // determine when the OutlookResource was last modified
+                long lastModified = resource.getLastModified();
 
-				// check whether it has been modified
-				String value = accessData.get(url, AccessData.DATE_KEY);
-				if (value != null) {
-					try {
-						long registeredDate = Long.parseLong(value);
+                // check whether it has been modified
+                String value = accessData.get(url, AccessData.DATE_KEY);
+                if (value != null) {
+                    try {
+                        long registeredDate = Long.parseLong(value);
 
-						// now that we now its previous last modified date, see if it has been modified
-						if (registeredDate == lastModified) {
-							logger.info(url + " not modified - reg:" + registeredDate);
-							// the file has not been modified
-							return null;
-						}
-						else
-							logger
-									.info(url + " was modified - reg:" + registeredDate + " new:"
-											+ lastModified);
+                        // now that we now its previous last modified date, see if it has been modified
+                        if (registeredDate == lastModified) {
+                            logger.info(url + " not modified - reg:" + registeredDate);
+                            // the file has not been modified
+                            return null;
+                        }
+                        else
+                            logger
+                                    .info(url + " was modified - reg:" + registeredDate + " new:"
+                                            + lastModified);
 
-					}
-					catch (NumberFormatException e) {
-						logger.warn("illegal long: " + value, e);
-					}
-				}
+                    }
+                    catch (NumberFormatException e) {
+                        logger.warn("illegal long: " + value, e);
+                    }
+                }
 
-				// It has been modified; register the new modification date.
-				accessData.put(url, AccessData.DATE_KEY, String.valueOf(lastModified));
+                // It has been modified; register the new modification date.
+                accessData.put(url, AccessData.DATE_KEY, String.valueOf(lastModified));
 
-			}
+            }
 
-			// create the metadata
-			URI id = URIImpl.createURIWithoutChecking(url);
-			RDFContainer metadata = containerFactory.getRDFContainer(id);
+            // create the metadata
+            URI id = URIImpl.createURIWithoutChecking(url);
+            RDFContainer metadata = containerFactory.getRDFContainer(id);
 
-			// basic info
-			metadata.add(RDF.type, resource.getType());
-			if (parent != null)
-				metadata.add(DATA.partOf, URIImpl.createURIWithoutChecking(parent.getUri()));
+            // basic info
+            metadata.add(RDF.type, resource.getType());
+            if (parent != null)
+                metadata.add(DATA.partOf, URIImpl.createURIWithoutChecking(parent.getUri()));
             else 
                 // no parent, this is  the root
                 metadata.add(DATA.rootFolderOf, source.getID());
 
-			// get the details
-			resource.addData(metadata);
+            // get the details
+            resource.addData(metadata);
 
-			// create the DataObject
-			DataObject result = null;
+            // create the DataObject
+            DataObject result = null;
 
-			if (resource.isFolder()) {
-				result = new FolderDataObjectBase(id, source, metadata);
-				// RDF typing is added in the folderdata object itself.
-			}
-			else {
-				result = new DataObjectBase(id, source, metadata);
-				// This is also rdf typed to being a dataobjectbase.
-			}
+            if (resource.isFolder()) {
+                result = new FolderDataObjectBase(id, source, metadata);
+                // RDF typing is added in the folderdata object itself.
+            }
+            else {
+                result = new DataObjectBase(id, source, metadata);
+                // This is also rdf typed to being a dataobjectbase.
+            }
 
-			// done!
-			return result;
+            // done!
+            return result;
 
-		}
-		finally {
-			if (crawler != null) {
-				crawler.endCall();
-				crawler.release();
-                resource.release();
-			}
-		}
-	}
+        }
+        finally {
+            if (crawler != null) {
+                crawler.endCall();
+                crawler.release();
+                if (resource != null) {
+                    resource.release();
+                }
+                if (crappyHack) {
+                    source.getConfiguration().dispose();
+                }
+            }
+        }
+    }
 
+    private DataSource createDummyDataSource(String url) {
+        Model model = RDF2Go.getModelFactory().createModel();
+        model.open();
+        RDFContainer container = new RDFContainerImpl(model,url);
+        DataSource source = new OutlookDataSource();
+        source.setConfiguration(container);
+        return source;
+    }
 }

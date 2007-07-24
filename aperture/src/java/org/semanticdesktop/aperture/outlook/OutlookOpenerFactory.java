@@ -43,7 +43,7 @@ public class OutlookOpenerFactory implements DataOpenerFactory {
         RDFContainer configuration = new RDFContainerImpl(dummyModel,"urn:" + UUID.randomUUID().toString());
         source.setConfiguration(configuration);
         resultCrawler.setDataSource(source);
-        return crawler;
+        return resultCrawler;
     }
 
     public Set getSupportedSchemes() {
