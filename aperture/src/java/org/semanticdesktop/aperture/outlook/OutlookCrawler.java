@@ -473,8 +473,9 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 	public void open(URI uri) throws IOException {
 		logger.info("Outlook: opening uri " + uri);
 		beginCall();
+        OutlookResource resource = null;
 		try {
-			OutlookResource resource = OutlookResource.createWrapperFor(this, uri.toString(), logger);
+			resource = OutlookResource.createWrapperFor(this, uri.toString(), logger);
 			if (resource == null)
 				throw new IOException("outlook: cannot found uri " + uri);
 			try {
@@ -493,6 +494,9 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 			}
 		}
 		finally {
+            if (resource != null) {
+                resource.release();
+            }
 			endCall();
 		}
 	}
