@@ -407,12 +407,15 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 						continue;
 
 					OutlookResource item = OutlookResource.createWrapperFor(this, dItem, logger);
-					try {
-						crawlSingleResource(item, folder);
-					}
-					finally {
-						item.release();
-					}
+                    if (item != null)
+                    {
+    					try {
+    						crawlSingleResource(item, folder);
+    					}
+    					finally {
+    						item.release();
+    					}
+                    }
 				}
 				// scan has been completed when i has reached the end of the array successfully
 				if (i <= count)

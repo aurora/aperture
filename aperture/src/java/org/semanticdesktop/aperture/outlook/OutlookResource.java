@@ -529,6 +529,7 @@ public abstract class OutlookResource {
 	/**
 	 * Factory method to create Wrappers. this looks at the passed Dispatch and sees what type it is and
 	 * creates an according OutlookResource subclass
+     * @return the wrapper or null, if the resource cannot be wrapped.
 	 */
 	public static OutlookResource createWrapperFor(OutlookCrawler crawler, Dispatch resource, Logger logger) {
 		try {
