@@ -1,0 +1,32 @@
+/* basic elements */
+body {
+	font: times;
+	background: #fffff1;
+	text-align: center;
+}
+
+h1 {
+	font: bold 16pt;
+	letter-spacing: 1px;
+	margin-bottom: 100pt;
+	text-align: center;
+}
+
+
+.fileupload {
+	display: block;
+	background-color: #ffffff;
+	width: 80%;
+	border-style: solid;
+	text-align: center;
+	margin: 20pt;
+}
+
+.htmlupload {
+	display: block;
+	background-color: #ffffff;
+	width: 80%;
+	border-style: solid;
+	text-align: center;
+	margin: 20pt;
+}
