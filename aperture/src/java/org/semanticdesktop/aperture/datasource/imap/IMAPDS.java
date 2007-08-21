@@ -7,8 +7,8 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Aug 17 11:39:04 CEST 2007
- * input file: D:\workspace\aperture-nie/src/java/org/semanticdesktop/aperture/datasource/imap/imapDataSource.ttl
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:49:40 CEST 2007
+ * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/imap/imapDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/12/imapds#
  */
 public class IMAPDS {
@@ -38,6 +38,8 @@ public class IMAPDS {
     public static final URI NS_IMAPDS = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/imapds#");
     /**
      * Type: Class <br/>
+     * Label: IMAP Account Data Source  <br/>
+     * Comment: Describes a mailbox accessible with the IMAP protocol  <br/>
      */
     public static final URI ImapDataSource = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/imapds#ImapDataSource");
     /**

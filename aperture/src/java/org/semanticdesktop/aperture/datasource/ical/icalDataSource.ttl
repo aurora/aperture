@@ -8,7 +8,9 @@
 @prefix : <http://aperture.semanticdesktop.org/ontology/2007/08/12/icalds#> .
 
 :IcalDataSource a rdfs:Class ;
-	rdfs:subClassOf nie:DataSource .
+	rdfs:subClassOf nie:DataSource ;
+	rdfs:label "ICAL Calendar Data Source" ;
+	rdfs:comment "Describes a calendar stored in file in the iCalendar format" .
 
 :IcalDataSourceLens rdf:type fresnel:Lens ;
 					fresnel:purpose fresnel:defaultLens ;

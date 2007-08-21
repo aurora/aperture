@@ -7,12 +7,13 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Thu Aug 09 17:41:34 CEST 2007
- * input file: D:\workspace\aperture-nie/doc/ontology/nie.rdfs
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:33 CEST 2007
+ * input file: D:\workspace\aperture/doc/ontology/nie.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#
  */
 public class NIE {
 
+    /** Path to the ontology resource */
     public static final String NIE_RESOURCE_PATH = 
       NIE.class.getPackage().getName().replace('.', '/') + "/nie.rdfs";
 

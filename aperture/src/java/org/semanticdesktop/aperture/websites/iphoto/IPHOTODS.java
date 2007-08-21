@@ -7,8 +7,8 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Aug 13 17:51:22 CEST 2007
- * input file: D:\workspace\aperture-nie/src/java/org/semanticdesktop/aperture/websites/iphoto/iphotoDataSource.ttl
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:55 CEST 2007
+ * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/iphoto/iphotoDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/11/iphotods#
  */
 public class IPHOTODS {
@@ -38,6 +38,8 @@ public class IPHOTODS {
     public static final URI NS_IPHOTODS = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/iphotods#");
     /**
      * Type: Class <br/>
+     * Label: IPhoto Keyword Data Source  <br/>
+     * Comment: Describes the IPhoto application.  <br/>
      */
     public static final URI IPhotoKeywordDataSource = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/iphotods#IPhotoKeywordDataSource");
 }

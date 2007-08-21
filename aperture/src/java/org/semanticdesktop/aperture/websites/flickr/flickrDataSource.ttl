@@ -9,7 +9,9 @@
 @prefix : <http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#> .
 
 :FlickrDataSource a rdfs:Class ;
-	rdfs:subClassOf nie:DataSource .
+	rdfs:subClassOf nie:DataSource ;
+	rdfs:label "Flickr Data Source" ;
+	rdfs:comment "Describes a Flickr account" .
 
 :FlickrDataSourceLens rdf:type fresnel:Lens ;
                    fresnel:purpose fresnel:defaultLens ;

@@ -7,8 +7,8 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Aug 17 14:12:51 CEST 2007
- * input file: D:\workspace\aperture-nie/doc/ontology/source2.rdfs
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:41:09 CEST 2007
+ * input file: D:\workspace\aperture/doc/ontology/source2.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/12/source#
  */
 public class DATASOURCE {
@@ -87,17 +87,17 @@ public class DATASOURCE {
     public static final URI condition = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/source#condition");
     /**
      * Type: Property <br/>
-     * Label: dataSourceComment  <br/>
+     * Label: Data Source Comment  <br/>
      * Comment: A comment about the datasource.  <br/>
-     * Domain: http://aperture.semanticdesktop.org/ontology/2007/08/12/source#DataSourceDescription  <br/>
+     * Domain: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataSource  <br/>
      * Range: http://www.w3.org/2000/01/rdf-schema#Literal  <br/>
      */
     public static final URI dataSourceComment = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/source#dataSourceComment");
     /**
      * Type: Property <br/>
-     * Label: dataSourceName  <br/>
+     * Label: Data Source Name  <br/>
      * Comment: Name of the type of datasource. For example "Local File System".  <br/>
-     * Domain: http://aperture.semanticdesktop.org/ontology/2007/08/12/source#DataSourceDescription  <br/>
+     * Domain: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataSource  <br/>
      * Range: http://www.w3.org/2000/01/rdf-schema#Literal  <br/>
      */
     public static final URI dataSourceName = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/source#dataSourceName");
@@ -111,23 +111,23 @@ public class DATASOURCE {
     public static final URI describedDataSourceType = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/source#describedDataSourceType");
     /**
      * Type: Property <br/>
-     * Label: excludePattern  <br/>
-     * Comment: Patterns to exclude from this datasource  <br/>
+     * Label: Exclusion Pattern  <br/>
+     * Comment: Pattern to exclude from this datasource  <br/>
      * Domain: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataSource  <br/>
      * Range: http://aperture.semanticdesktop.org/ontology/2007/08/12/source#Pattern  <br/>
      */
     public static final URI excludePattern = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/source#excludePattern");
     /**
      * Type: Property <br/>
-     * Label: includePattern  <br/>
-     * Comment: patterns to include in this datasource  <br/>
+     * Label: Inclusion Pattern  <br/>
+     * Comment: Pattern to include in this datasource  <br/>
      * Domain: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataSource  <br/>
      * Range: http://aperture.semanticdesktop.org/ontology/2007/08/12/source#Pattern  <br/>
      */
     public static final URI includePattern = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/source#includePattern");
     /**
      * Type: Property <br/>
-     * Label: timeout  <br/>
+     * Label: Timeout  <br/>
      * Comment: The timeout between two consecutive crawls (in miliseconds)  <br/>
      * Domain: http://aperture.semanticdesktop.org/ontology/2007/08/12/source#DataSource  <br/>
      * Range: http://www.w3.org/2000/01/rdf-schema#Literal  <br/>
@@ -135,7 +135,7 @@ public class DATASOURCE {
     public static final URI timeout = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/source#timeout");
     /**
      * Type: Property <br/>
-     * Label: username  <br/>
+     * Label: Username  <br/>
      * Comment: Username used for authentication in a data source  <br/>
      * Domain: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataSource  <br/>
      * Range: http://www.w3.org/2001/XMLSchema#string  <br/>
@@ -143,7 +143,7 @@ public class DATASOURCE {
     public static final URI username = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/source#username");
     /**
      * Type: Property <br/>
-     * Label: password  <br/>
+     * Label: Password  <br/>
      * Comment: The Password used to access this datasource.  <br/>
      * Domain: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataSource  <br/>
      * Range: http://www.w3.org/2001/XMLSchema#string  <br/>

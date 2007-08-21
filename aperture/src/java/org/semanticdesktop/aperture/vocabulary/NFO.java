@@ -7,12 +7,13 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Thu Aug 09 17:41:35 CEST 2007
- * input file: D:\workspace\aperture-nie/doc/ontology/nfo.rdfs
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:34 CEST 2007
+ * input file: D:\workspace\aperture/doc/ontology/nfo.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#
  */
 public class NFO {
 
+    /** Path to the ontology resource */
     public static final String NFO_RESOURCE_PATH = 
       NFO.class.getPackage().getName().replace('.', '/') + "/nfo.rdfs";
 

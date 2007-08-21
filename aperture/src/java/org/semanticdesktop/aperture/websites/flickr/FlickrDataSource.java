@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Fri Aug 17 14:26:29 CEST 2007
- * input file: D:\workspace\aperture-nie/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Tue Aug 21 16:32:53 CEST 2007
+ * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#FlickrDataSource
  */
 public class FlickrDataSource extends DataSourceBase {

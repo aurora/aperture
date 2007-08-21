@@ -7,8 +7,8 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Aug 17 14:24:47 CEST 2007
- * input file: D:\workspace\aperture-nie/doc/ontology/sourceformat.rdfs
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:37 CEST 2007
+ * input file: D:\workspace\aperture/doc/ontology/sourceformat.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/sourceformat#
  */
 public class SOURCEFORMAT {

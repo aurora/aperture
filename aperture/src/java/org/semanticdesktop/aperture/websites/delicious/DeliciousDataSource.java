@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Fri Aug 17 11:42:45 CEST 2007
- * input file: D:\workspace\aperture-nie/src/java/org/semanticdesktop/aperture/websites/delicious/deliciousDataSource.ttl
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Tue Aug 21 16:32:56 CEST 2007
+ * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/delicious/deliciousDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/11/deliciousds#DeliciousDataSource
  */
 public class DeliciousDataSource extends DataSourceBase {

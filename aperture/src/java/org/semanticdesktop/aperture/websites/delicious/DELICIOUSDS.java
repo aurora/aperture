@@ -7,8 +7,8 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Aug 17 11:42:44 CEST 2007
- * input file: D:\workspace\aperture-nie/src/java/org/semanticdesktop/aperture/websites/delicious/deliciousDataSource.ttl
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:55 CEST 2007
+ * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/delicious/deliciousDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/11/deliciousds#
  */
 public class DELICIOUSDS {
@@ -38,6 +38,8 @@ public class DELICIOUSDS {
     public static final URI NS_DELICIOUSDS = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/deliciousds#");
     /**
      * Type: Class <br/>
+     * Label: del.icio.us Data Source  <br/>
+     * Comment: Describes a del.icio.us account  <br/>
      */
     public static final URI DeliciousDataSource = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/deliciousds#DeliciousDataSource");
 }

@@ -7,12 +7,13 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Thu Aug 09 17:41:39 CEST 2007
- * input file: D:\workspace\aperture-nie/doc/ontology/geo.rdfs
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:37 CEST 2007
+ * input file: D:\workspace\aperture/doc/ontology/geo.rdfs
  * namespace: http://www.w3.org/2003/01/geo/wgs84_pos#
  */
 public class GEO {
 
+    /** Path to the ontology resource */
     public static final String GEO_RESOURCE_PATH = 
       GEO.class.getPackage().getName().replace('.', '/') + "/geo.rdfs";
 

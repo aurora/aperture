@@ -7,8 +7,8 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Aug 17 14:26:28 CEST 2007
- * input file: D:\workspace\aperture-nie/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:52 CEST 2007
+ * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#
  */
 public class FLICKRDS {
@@ -38,6 +38,8 @@ public class FLICKRDS {
     public static final URI NS_FLICKRDS = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#");
     /**
      * Type: Class <br/>
+     * Label: Flickr Data Source  <br/>
+     * Comment: Describes a Flickr account  <br/>
      */
     public static final URI FlickrDataSource = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#FlickrDataSource");
     /**

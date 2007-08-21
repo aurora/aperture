@@ -7,8 +7,8 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Aug 13 17:51:24 CEST 2007
- * input file: D:\workspace\aperture-nie/src/java/org/semanticdesktop/aperture/datasource/ical/icalDataSource.ttl
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:56 CEST 2007
+ * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/ical/icalDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/12/icalds#
  */
 public class ICALDS {
@@ -38,6 +38,8 @@ public class ICALDS {
     public static final URI NS_ICALDS = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/icalds#");
     /**
      * Type: Class <br/>
+     * Label: ICAL Calendar Data Source  <br/>
+     * Comment: Describes a calendar stored in file in the iCalendar format  <br/>
      */
     public static final URI IcalDataSource = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/icalds#IcalDataSource");
     /**

@@ -7,8 +7,8 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Aug 13 18:09:51 CEST 2007
- * input file: D:\workspace\aperture-nie/src/java/org/semanticdesktop/aperture/datasource/web/webDataSource.ttl
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:59 CEST 2007
+ * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/web/webDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/12/webds#
  */
 public class WEBDS {
@@ -38,6 +38,8 @@ public class WEBDS {
     public static final URI NS_WEBDS = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/webds#");
     /**
      * Type: Class <br/>
+     * Label: Website Data Source  <br/>
+     * Comment: Describes a website  <br/>
      */
     public static final URI WebDataSource = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/webds#WebDataSource");
     /**

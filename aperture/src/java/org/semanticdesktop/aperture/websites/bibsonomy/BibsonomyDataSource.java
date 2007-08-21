@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Fri Aug 17 14:25:17 CEST 2007
- * input file: D:\workspace\aperture-nie/src/java/org/semanticdesktop/aperture/websites/bibsonomy/bibsonomyDataSource.ttl
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Tue Aug 21 16:32:54 CEST 2007
+ * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/bibsonomy/bibsonomyDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#BibsonomyDataSource
  */
 public class BibsonomyDataSource extends DataSourceBase {

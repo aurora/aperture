@@ -55,14 +55,14 @@
 </rdf:Property>
 <rdf:Property rdf:about="&source;dataSourceComment"
 	 rdfs:comment="A comment about the datasource."
-	 rdfs:label="dataSourceComment">
-	<rdfs:domain rdf:resource="&source;DataSourceDescription"/>
+	 rdfs:label="Data Source Comment">
+	<rdfs:domain rdf:resource="&nie;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source;dataSourceName"
-	 rdfs:label="dataSourceName">
+	 rdfs:label="Data Source Name">
 	<rdfs:comment>Name of the type of datasource. For example "Local File System".</rdfs:comment>
-	<rdfs:domain rdf:resource="&source;DataSourceDescription"/>
+	<rdfs:domain rdf:resource="&nie;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source;describedDataSourceType"
@@ -72,32 +72,32 @@
 	<rdfs:domain rdf:resource="&source;DataSourceDescription"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source;excludePattern"
-	 rdfs:comment="Patterns to exclude from this datasource"
-	 rdfs:label="excludePattern">
+	 rdfs:comment="Pattern to exclude from this datasource"
+	 rdfs:label="Exclusion Pattern">
 	<rdfs:domain rdf:resource="&nie;DataSource"/>
 	<rdfs:range rdf:resource="&source;Pattern"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source;includePattern"
-	 rdfs:comment="patterns to include in this datasource"
-	 rdfs:label="includePattern">
+	 rdfs:comment="Pattern to include in this datasource"
+	 rdfs:label="Inclusion Pattern">
 	<rdfs:domain rdf:resource="&nie;DataSource"/>
 	<rdfs:range rdf:resource="&source;Pattern"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source;timeout"
 	 rdfs:comment="The timeout between two consecutive crawls (in miliseconds)"
-	 rdfs:label="timeout">
+	 rdfs:label="Timeout">
 	<rdfs:domain rdf:resource="&source;DataSource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source;username"
-	 rdfs:label="username"
+	 rdfs:label="Username"
 	 rdfs:comment="Username used for authentication in a data source">
 	<rdfs:domain rdf:resource="&nie;DataSource"/>
 	<rdfs:range rdf:resource="&xsd;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source;password"
 	 rdfs:comment="The Password used to access this datasource."
-	 rdfs:label="password">
+	 rdfs:label="Password">
 	<rdfs:domain rdf:resource="&nie;DataSource"/>
 	<rdfs:range rdf:resource="&xsd;string"/>
 </rdf:Property>

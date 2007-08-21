@@ -7,12 +7,13 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Thu Aug 09 17:41:36 CEST 2007
- * input file: D:\workspace\aperture-nie/doc/ontology/nexif.rdfs
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:35 CEST 2007
+ * input file: D:\workspace\aperture/doc/ontology/nexif.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#
  */
 public class NEXIF {
 
+    /** Path to the ontology resource */
     public static final String NEXIF_RESOURCE_PATH = 
       NEXIF.class.getPackage().getName().replace('.', '/') + "/nexif.rdfs";
 

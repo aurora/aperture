@@ -96,7 +96,7 @@
     <sourceformat:valueWidget rdf:parseType="Resource">
         <rdf:type rdf:resource="&sourceformat;PatternWidget"/>
     </sourceformat:valueWidget>
-    <fresnel:propertyFormatDomain rdf:resource="&source;#includePattern"/>
+    <fresnel:propertyFormatDomain rdf:resource="&source;includePattern"/>
 </fresnel:Format>
 <fresnel:Format rdf:about="&source;excludePatternFormat">
     <sourceformat:valueWidget rdf:parseType="Resource">

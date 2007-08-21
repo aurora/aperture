@@ -7,8 +7,8 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Aug 17 14:25:17 CEST 2007
- * input file: D:\workspace\aperture-nie/src/java/org/semanticdesktop/aperture/websites/bibsonomy/bibsonomyDataSource.ttl
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:54 CEST 2007
+ * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/bibsonomy/bibsonomyDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#
  */
 public class BIBSONOMYDS {
@@ -38,6 +38,8 @@ public class BIBSONOMYDS {
     public static final URI NS_BIBSONOMYDS = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#");
     /**
      * Type: Class <br/>
+     * Label: Bibsonomy Data Source  <br/>
+     * Comment: Describes a bibsonomy account  <br/>
      */
     public static final URI BibsonomyDataSource = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#BibsonomyDataSource");
     /**

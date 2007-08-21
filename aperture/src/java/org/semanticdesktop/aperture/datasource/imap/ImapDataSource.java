@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Fri Aug 17 13:55:47 CEST 2007
- * input file: src/java/org/semanticdesktop/aperture/datasource/imap/imapDataSource.ttl
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Tue Aug 21 16:49:41 CEST 2007
+ * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/imap/imapDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/12/imapds#ImapDataSource
  */
 public class ImapDataSource extends DataSourceBase {
