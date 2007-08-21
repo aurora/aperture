@@ -76,12 +76,12 @@ public class ExampleOutlookCrawler extends AbstractExampleCrawler {
 
     @Override
     protected String getSpecificExplanationPart() {
-        return "[-rooturl uriprefix]";
+        return "  -rooturl: define the prefix used for outlook resource URIs. Should begin with 'outlook:' (optional)";
     }
 
     @Override
     protected String getSpecificSyntaxPart() {
-        return "  -rooturl: define the prefix used for outlook resource URIs. Should begin with 'outlook:' (optional)";
+        return "[-rooturl uriprefix]";
     }
 }
 

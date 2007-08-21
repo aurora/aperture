@@ -87,11 +87,12 @@ public class ExampleBibsonomyCrawler extends AbstractExampleCrawler {
 
     @Override
     protected String getSpecificExplanationPart() {
-        return "username";
+        return "    username - your bibsonomy user name";
     }
 
     @Override
     protected String getSpecificSyntaxPart() {
-        return "    username - your bibsonomy user name";
+        return "username";
+        
     }
 }

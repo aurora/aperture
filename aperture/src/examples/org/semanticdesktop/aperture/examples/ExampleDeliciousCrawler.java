@@ -108,12 +108,12 @@ public class ExampleDeliciousCrawler extends AbstractExampleCrawler {
 
     @Override
     protected String getSpecificExplanationPart() {
-        return "username password";
+        return "   username - your del.icio.us user name\n" +
+        "   password - your del.icio.us password";
     }
 
     @Override
     protected String getSpecificSyntaxPart() {
-        return "   username - your del.icio.us user name\n" +
-        "   password - your del.icio.us password";
+        return "username password";
     }
 }

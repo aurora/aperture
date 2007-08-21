@@ -83,11 +83,11 @@ public class ExampleIcalCrawler extends AbstractExampleCrawler {
 
     @Override
     protected String getSpecificExplanationPart() {
-        return "icalFile";
+        return "  icalFile - the path to the ical file to be crawled";
     }
 
     @Override
     protected String getSpecificSyntaxPart() {
-        return "  icalFile - the path to the ical file to be crawled";
+        return "icalFile";
     }
 }
