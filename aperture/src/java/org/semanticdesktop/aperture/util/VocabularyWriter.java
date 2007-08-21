@@ -7,14 +7,26 @@
 package org.semanticdesktop.aperture.util;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Reader;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
-import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.model.Model;
@@ -53,6 +65,22 @@ Example values:
  */
 public class VocabularyWriter {
 	
+    public static final String [] JAVA_RESERVED_WORDS = {
+        "abstract",    "continue",    "for", "new", "switch",
+        "assert",   "default", "goto",   "package", "synchronized",
+        "boolean", "do",  "if",  "private", "this",
+        "break",   "double",  "implements",  "protected",   "throw",
+        "byte",    "else",    "import",  "public",  "throws",
+        "case",    "enum",    "instanceof",  "return",  "transient", 
+        "catch",   "extends", "int", "short",   "try",
+        "char",    "final",  "interface",   "static",  "void",
+        "class",   "finally", "long",    "strictfp",  "volatile",
+        "const",  "float",   "native",  "super",   "while"
+    };
+    
+    public static final Set<String> JAVA_RESERVED_WORDS_SET = prepareJavaKeywordSet(); 
+        
+    
 	String inputRdf = null;
 	String outputDir = null;
 	String outputFileN = null;
@@ -66,51 +94,151 @@ public class VocabularyWriter {
 	File inputRdfF;
 	File outputDirF;
 	File outputF;
+    File outputOntologyFile;
     Boolean namespacestrict = false;
+    Syntax syntax;
     
     // avoid duplicates
     HashMap<String, String> uriToLocalName = new HashMap<String, String>();
 
+    // flag that forces the source generation even if the generated class file 
+    // is newer than the ontology file
+    private boolean forceGeneration;
 
 	public VocabularyWriter() {
 		super();
-		// TODO Auto-generated constructor stub
+		forceGeneration = false;
 	}
 	
-	public void go(String[] args) throws Exception 
+	private static Set<String> prepareJavaKeywordSet() {
+        Set<String> result = new HashSet<String>(100);
+        for (String keyword : JAVA_RESERVED_WORDS) {
+            result.add(keyword);
+        }
+        return (Set<String>)Collections.unmodifiableSet(result);
+    }
+
+    public void go(String[] args) throws Exception 
 	{
 		getOpt(args);
+		
+		if (ontologyUpToDate()) {
+		    return;
+		}
 		loadOnt();
 		writeVocab();
 	}
 	
-	private void loadOnt()  throws Exception  {
+	private boolean ontologyUpToDate() {
+        if (outputF.canRead() && !forceGeneration) {
+            long input = inputRdfF.lastModified();
+            long output = outputF.lastModified();
+            return output >= input;
+        } else {
+            return false;
+        }
+    }
+
+    private void loadOnt()  throws Exception  {
 		// read
         myModel = RDF2Go.getModelFactory().createModel();
         myModel.open();
-		System.out.println("reading from "+inputRdfF.getAbsolutePath()+" in format "+ Syntax.RdfXml);
+        syntax = getSyntax(inputRdf);
+		//System.out.println("reading from "+inputRdfF.getAbsolutePath()+" in format " + syntax);
 		Reader reader = new BufferedReader(new FileReader(inputRdfF));
-		myModel.readFrom(reader, Syntax.RdfXml);
+		myModel.readFrom(reader, syntax);
 		reader.close();
+        copyFile(inputRdfF,outputOntologyFile);
 	}
 
-	private void writeVocab() throws Exception {
+	private Syntax getSyntax(String fileName) {
+        int lastDot = fileName.lastIndexOf('.');
+        if (lastDot == -1) {
+            return Syntax.RdfXml;
+        } else {
+            String extension = fileName.substring(lastDot + 1);
+            if ("rdf".equals(extension) || "rdfs".equals(extension)) {
+                return Syntax.RdfXml;
+            } else if ("ttl".equals(extension) || "nt".equals(extension) || "n3".equals(extension)) {
+                return Syntax.Turtle;
+            } else if ("trix".equals(extension)) {
+                return Syntax.Trix;
+            } else if ("trig".equals(extension)) {
+                return Syntax.Trig;
+            }
+        }
+        return null;
+    }
+
+    private void copyFile(File in, File out) {
+        byte [] buffer = new byte[4096];
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        try {
+            if (in.getCanonicalPath().equals(out.getCanonicalPath())) {
+                return;
+            }
+            inputStream = new FileInputStream(in);
+            outputStream = new FileOutputStream(out);
+            int bytesRead = 0;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        }
+        catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            closeStream(inputStream);
+            closeStream(outputStream);
+        }
+    }
+
+    private void closeStream(Closeable closable) {
+        if (closable != null) {
+            try {
+                closable.close();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        }
+    }
+
+    private void writeVocab() throws Exception {
 		
 		// prepare output
 		outP = new PrintStream(outputF);
 		try 
 		{
 			// preamble
-			outP.println("package "+packagen+";\n");
+			outP.println("package "+packagen+";");
+            outP.println("import java.io.InputStream;");
+            outP.println("import java.io.FileNotFoundException;");
+            outP.println("import org.ontoware.rdf2go.model.Model;");
+            outP.println("import org.ontoware.rdf2go.model.Syntax;");
 			outP.println("import org.ontoware.rdf2go.model.node.URI;");
-			outP.println("import org.ontoware.rdf2go.model.node.impl.URIImpl;\n");
+			outP.println("import org.ontoware.rdf2go.model.node.impl.URIImpl;");
+            outP.println("import org.semanticdesktop.aperture.util.ResourceUtil;");
 			outP.println("/**");
 			outP.println(" * Vocabulary File. Created by " + VocabularyWriter.class.getName()+" on "+new Date());
 			outP.println(" * input file: "+inputRdf);
 			outP.println(" * namespace: "+ns);
 			outP.println(" */");
-			outP.println("public interface "+outputFileN+" {");
-			outP.println("	public static final URI NS_" + outputFileN + " = URIImpl.createURIWithoutChecking(\""+ns+"\");\n");
+			outP.println("public class "+outputFileN+" {");
+            outP.println();
+            outP.println("    /** Path to the ontology resource */");
+            outP.println("    public static final String " + outputFileN + "_RESOURCE_PATH = ");
+            outP.print("      " + outputFileN + ".class.getPackage().getName().replace('.', '/') + ");
+            outP.println("\"/" + inputRdfF.getName() + "\";");
+            outP.println();
+            writeGetOntologyMethod();
+            outP.println();
+            outP.println("    /** The namespace for " + outputFileN + " */");
+			outP.println("    public static final URI NS_" + outputFileN + " = new URIImpl(\""+ns+"\");");
 		
 			// iterate through classes
 			generateElement(RDFS.Class, false);
@@ -128,10 +256,46 @@ public class VocabularyWriter {
 		}
 		System.out.println("successfully wrote file to "+outputF);
 	}
+
+    private void writeGetOntologyMethod() {
+        outP.println("    /**");
+        outP.println("     * Puts the " + outputFileN + " ontology into the given model.");
+        outP.println("     * @param model The model for the source ontology to be put into.");
+        outP.println("     * @throws Exception if something goes wrong.");
+        outP.println("     */");
+        outP.println("    public static void get" + outputFileN + "Ontology(Model model) {");
+        outP.println("        try {");
+        outP.println("            InputStream stream = ResourceUtil.getInputStream(" + outputFileN + "_RESOURCE_PATH, " + outputFileN + ".class);");
+        outP.println("            if (stream == null) {");
+        outP.println("                throw new FileNotFoundException(\"couldn't find resource \" + " + outputFileN + "_RESOURCE_PATH);");
+        outP.println("             }");
+        outP.println("            model.readFrom(stream, Syntax." + getSyntaxName() + ");");
+        outP.println("        } catch(Exception e) {");
+        outP.println("             throw new RuntimeException(e);");
+        outP.println("        }");
+        outP.println("    }");
+    }
 	
-	public void generateElement(URI type, boolean isProperty) throws Exception
+	private String getSyntaxName() {
+        if (syntax.equals(Syntax.RdfXml)) {
+            return "RdfXml";
+        } else if (syntax.equals(Syntax.Ntriples)) {
+            return "Ntriples";
+        } else if (syntax.equals(Syntax.Trig)) {
+            return "Trig";
+        } else if (syntax.equals(Syntax.Trix)) {
+            return "Trix";
+        } else if (syntax.equals(Syntax.Turtle)) {
+            return "Turtle";
+        } else {
+            return null;
+        }
+    }
+
+    public void generateElement(URI type, boolean isProperty) throws Exception
 	{
         ClosableIterator<? extends Statement> queryC = myModel.findStatements(Variable.ANY,RDF.type,type);
+        List<URI> classesList = new LinkedList<URI>();
 		try {
 		    while (queryC.hasNext()) {
 		        Statement answer = queryC.next();
@@ -142,7 +306,8 @@ public class VocabularyWriter {
 		        URI vx = (URI) rx;
 		        String uri = vx.toString();
 		        String localName = getLocalName(vx);
-		        String javalocalName = asLegalJavaID(localName, !isProperty);
+		        //String javalocalName = asLegalJavaID(localName, !isProperty); don't capitalize, what for?
+		        String javalocalName = asLegalJavaID(localName, false);
                 if (uriToLocalName.containsKey(uri))
                     continue;
                 uriToLocalName.put(uri, javalocalName);
@@ -152,12 +317,15 @@ public class VocabularyWriter {
 		        outP.println("    /**");
 		        printCommentAndLabel(vx);
 		        outP.println("     */");
-		        outP.println("    public static final URI " + javalocalName +
-		        	" = URIImpl.createURIWithoutChecking(\"" + uri + "\");\n");
+		        outP.println("    public static final URI " + javalocalName +" = new URIImpl(\"" + uri + "\");");
+		        classesList.add(vx);
 		    }
 		}
 		finally {
 			queryC.close();
+		}
+		for (URI uri : classesList) {
+		    generateElement(uri, false);
 		}
 	}
 	
@@ -189,66 +357,54 @@ public class VocabularyWriter {
 	 */
 	public void printCommentAndLabel(URI uri) throws Exception {
 
-        ClosableIterator<? extends Statement> queryC = myModel.findStatements(uri,RDFS.label,Variable.ANY);
+        ClosableIterator<? extends Statement> queryC = myModel.findStatements(uri,RDF.type,Variable.ANY);
 		try {
 			String l = "";
 		    while (queryC.hasNext()) {
 		    	Statement answer = queryC.next();;
 		        Node vl = answer.getObject();
-		        l += vl.toString()+" "; 
+                if (vl instanceof URI) {
+                    URI vlUri = (URI)vl;
+                    if (vl.equals(RDFS.Class)) {
+                        l = "Class";
+                    } else if (vl.equals(RDF.Property)) {
+                        l = "Property";
+                    } else {
+                        l = "Instance of " + vl.toString();
+                    }
+                } else {
+                    l += vl.toString()+" ";
+                }
 		    }
 		    if (l.length() > 0)
-		    	outP.println("     * Label: "+l);
+		    	outP.println("     * Type: "+l + " <br/>");
 		}
 		finally {
 			queryC.close();
 		}
-
-		queryC = myModel.findStatements(uri,RDFS.comment,Variable.ANY);
-		try {
-			String l = "";
-		    while (queryC.hasNext()) {
-		    	Statement answer = queryC.next();;
-		        Node vl = answer.getObject();
-		        l += vl.toString()+" "; 
-		    }
-		    if (l.length() > 0)
-		    	outP.println("     * Comment: "+l);
-		}
-		finally {
-			queryC.close();
-		}
-		
-		queryC = myModel.findStatements(uri,RDFS.domain,Variable.ANY);
-		try {
-			String l = "";
-		    while (queryC.hasNext()) {
-		    	Statement answer = queryC.next();;
-		        Node vl = answer.getObject();
-		        l += vl.toString()+" "; 
-		    }
-		    if (l.length() > 0)
-		    	outP.println("     * Comment: "+l);
-		}
-		finally {
-			queryC.close();
-		}
-		
-		queryC = myModel.findStatements(uri,RDFS.range,Variable.ANY);
-		try {
-			String l = "";
-		    while (queryC.hasNext()) {
-		    	Statement answer = queryC.next();;
-		        Node vl = answer.getObject();
-		        l += vl.toString()+" "; 
-		    }
-		    if (l.length() > 0)
-		    	outP.println("     * Range: "+l);
-		}
-		finally {
-			queryC.close();
-		}
+        
+        addJavadocLine(uri, RDFS.label, "Label");
+        addJavadocLine(uri,RDFS.comment,"Comment");        
+        addJavadocLine(uri,RDFS.domain,"Domain");
+        addJavadocLine(uri,RDFS.range,"Range");
 	}
+    
+    private void addJavadocLine(URI uri,URI property, String title) {
+        ClosableIterator<? extends Statement> queryC = myModel.findStatements(uri,property,Variable.ANY);
+        try {
+            String l = "";
+            while (queryC.hasNext()) {
+                Statement answer = queryC.next();;
+                Node vl = answer.getObject();
+                l += vl.toString()+" "; 
+            }
+            if (l.length() > 0)
+                outP.println("     * " + title + ": "+l + " <br/>");
+        }
+        finally {
+            queryC.close();
+        }
+    }
 
 	public void getOpt(String[] args) throws Exception 
 	{
@@ -280,7 +436,9 @@ public class VocabularyWriter {
             {
                 i++;
                 packagen = args[i];
-            } else if (args[i].equals("-namespacestrict"))         
+            } else if (args[i].equals("-f")) {
+                forceGeneration = true;
+		    } else if (args[i].equals("-namespacestrict"))         
             {
                 i++;
                 String s = args[i];
@@ -307,8 +465,18 @@ public class VocabularyWriter {
 		
 		// transform variables
 		inputRdfF = new File(inputRdf);
+		System.out.println("input file: " + inputRdf);
+        if (!inputRdfF.canRead()) {
+            usage("cannot read the input file");
+        }
+        
 		outputDirF = new File(outputDir);
+        if (!outputDirF.canWrite()) {
+            usage("cannot write to the output directory");
+        }
+        
 		outputF = new File(outputDir, outputFileN+".java");
+        outputOntologyFile = new File(outputDir, inputRdfF.getName());        
 	}
 
 	private void help() {
@@ -350,8 +518,10 @@ public class VocabularyWriter {
         
         // check standard name
         String result = buf.toString();
-        if (result.equals("class") || result.equals("abstract"))
+        if (JAVA_RESERVED_WORDS_SET.contains(result)) {
         	result = result + "_";
+        }
+        	
         return result;
     }
 

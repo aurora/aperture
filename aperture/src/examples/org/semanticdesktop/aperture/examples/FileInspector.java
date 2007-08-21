@@ -21,7 +21,7 @@ import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifie
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
 import org.semanticdesktop.aperture.util.IOUtil;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 /**
  * The source code of this class shows how to use a MimeTypeIdentifier and a collection of Extractors to get
@@ -86,7 +86,7 @@ public class FileInspector {
             }
             
             // add the MIME type as an additional statement to the RDF model
-            container.add(DATA.mimeType, mimeType);
+            container.add(NIE.mimeType, mimeType);
 
             // report the output to System.out
             container.getModel().writeTo(System.out, Syntax.Turtle);

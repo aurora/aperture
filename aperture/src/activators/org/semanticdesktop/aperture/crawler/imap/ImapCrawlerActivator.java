@@ -6,12 +6,10 @@
  */
 package org.semanticdesktop.aperture.crawler.imap;
 
-import java.util.Hashtable;
-
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
 import org.semanticdesktop.aperture.datasource.imap.ImapDataSourceFactory;
@@ -26,24 +24,34 @@ public class ImapCrawlerActivator implements BundleActivator {
 	private ImapDataSourceFactory dataSourceFactory;
 
 	private ServiceRegistration crawlerServiceRegistration;
+	private ServiceRegistration accessorServiceRegistration;
 	private ServiceRegistration dataSourceServiceRegistration;
 
-	public void start(BundleContext context) throws Exception {
-		
-
-		ImapCrawlerActivator.bc = context;
+	/**
+	 * Starts the imap bundle, registers the crawler, accessor and datasource factories.
+	 * @param context the bundle context
+	 */
+	public void start(BundleContext context) {
+        ImapCrawlerActivator.bc = context;
 
 		crawlerFactory = new ImapCrawlerFactory();
 		crawlerServiceRegistration = bc.registerService(CrawlerFactory.class.getName(), crawlerFactory,
-			new Hashtable());
+			null);
+		accessorServiceRegistration = bc.registerService(DataAccessorFactory.class.getName(), crawlerFactory,
+            null);
 		
 		dataSourceFactory = new ImapDataSourceFactory();
 		dataSourceServiceRegistration = bc.registerService(DataSourceFactory.class.getName(), dataSourceFactory,
-			new Hashtable());
+			null);
 	}
 
+	/**
+     * Starts the imap bundle, unregisters the crawler, accessor and datasource factories.
+     * @param context the bundle context
+     */
 	public void stop(BundleContext context) throws Exception {
 		crawlerServiceRegistration.unregister();
+		accessorServiceRegistration.unregister();
         dataSourceServiceRegistration.unregister();
 	}
 }

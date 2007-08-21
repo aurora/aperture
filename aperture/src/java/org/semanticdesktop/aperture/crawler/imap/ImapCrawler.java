@@ -64,11 +64,13 @@ import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
+import org.semanticdesktop.aperture.datasource.imap.IMAPDS;
+import org.semanticdesktop.aperture.datasource.imap.ImapDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.security.trustmanager.standard.StandardTrustManager;
 import org.semanticdesktop.aperture.util.HttpClientUtil;
-import org.semanticdesktop.aperture.vocabulary.DATA;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +79,7 @@ import com.sun.mail.imap.IMAPFolder;
 /**
  * A Combined Crawler and DataAccessor implementation for IMAP.
  */
+@SuppressWarnings("unchecked")
 public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -91,7 +94,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
     // The source whose properties we're currently using. A separate DataSource is necessary as the
     // DataAccessor implementation may be passed a different DataSource.
-    private DataSource configuredDataSource;
+    private ImapDataSource configuredDataSource;
 
     // A Property instance holding *extra* properties to use when a Session is initiated.
     // This can be used in apps running on Java < 5.0 to instruct to use a different SocketFactory,
@@ -130,10 +133,18 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
     private boolean includeInbox;
 
+    /**
+     * Sets the session properties
+     * @param sessionProperties the new session properties
+     */
     public void setSessionProperties(Properties sessionProperties) {
         this.sessionProperties = sessionProperties;
     }
 
+    /**
+     * Returns the session properties
+     * @return the session properties
+     */
     public Properties getSessionProperties() {
         return sessionProperties;
     }
@@ -207,24 +218,23 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
 
         // retrieve the DataSource's configuration object
-        configuredDataSource = dataSource;
-        RDFContainer config = dataSource.getConfiguration();
+        configuredDataSource = (ImapDataSource)dataSource;
 
         // fetch some trivial settings
-        hostName = ConfigurationUtil.getHostname(config);
-        userName = ConfigurationUtil.getUsername(config);
-        password = ConfigurationUtil.getPassword(config);
+        hostName = configuredDataSource.getHostname();
+        userName = configuredDataSource.getUsername();
+        password = configuredDataSource.getPassword();
 
         port = -1;
-        Integer configuredPort = ConfigurationUtil.getPort(config);
+        Integer configuredPort = configuredDataSource.getPort();
         if (configuredPort != null) {
             port = configuredPort.intValue();
         }
 
         baseFolders.clear();
-        baseFolders.addAll(ConfigurationUtil.getBasepaths(config));
+        baseFolders.addAll(configuredDataSource.getAllBasepaths());
 
-        Boolean includeInboxB = config.getBoolean(DATASOURCE.includeInbox);
+        Boolean includeInboxB = configuredDataSource.getIncludeInbox();
         if (includeInboxB == null) {
             includeInbox = false;
         }
@@ -232,7 +242,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             includeInbox = includeInboxB.booleanValue();
         }
 
-        Integer maxDepthI = ConfigurationUtil.getMaximumDepth(config);
+        Integer maxDepthI = configuredDataSource.getMaximumDepth();
 
         if (maxDepthI == null) {
             maxDepth = -1;
@@ -242,30 +252,30 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
 
         // determine the connection type
-        String securityType = ConfigurationUtil.getConnectionSecurity(config);
-        if (securityType == null || DATASOURCE.PLAIN.toString().equals(securityType)) {
+        URI securityType = configuredDataSource.getConnectionSecurity().toUri();
+        if (securityType == null || IMAPDS.PLAIN.equals(securityType)) {
             connectionType = "imap";
         }
-        else if (DATASOURCE.SSL.toString().equals(securityType)
-                || DATASOURCE.SSL_NO_CERT.toString().equals(securityType)) {
+        else if (IMAPDS.SSL.equals(securityType)
+                || IMAPDS.SSL_NO_CERT.equals(securityType)) {
             connectionType = "imaps";
         }
         else {
             throw new IllegalArgumentException("Illegal connection security type: " + securityType);
         }
 
-        if (DATASOURCE.SSL_NO_CERT.toString().equals(securityType)) {
+        if (IMAPDS.SSL_NO_CERT.toString().equals(securityType)) {
             ignoreSSLCertificates = true;
         }
 
-        if (config.getString(DATASOURCE.sslFileName) != null) {
+        if (configuredDataSource.getSslFileName() != null) {
             useSSLCertificateFile = true;
-            SSLCertificateFile = config.getString(DATASOURCE.sslFileName);
-            SSLCertificatePassword = config.getString(DATASOURCE.sslFilePassword);
+            SSLCertificateFile = configuredDataSource.getSslFileName();
+            SSLCertificatePassword = configuredDataSource.getSslFilePassword();
         }
 
         // determine the maximum byte size
-        Long maximumSize = ConfigurationUtil.getMaximumByteSize(config);
+        Long maximumSize = configuredDataSource.getMaximumSize();
         if (maximumSize == null) {
             maximumByteSize = Long.MAX_VALUE;
         }
@@ -365,6 +375,9 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
     /**
      * Does this folder hold any subfolders?
+     * @param folder the folder to be checked
+     * @return true if this folder has any subfolders, false otherwise
+     * @throws MessagingException if it prooves impossible to find out
      */
     public static boolean holdsFolders(Folder folder) throws MessagingException {
         return (folder.getType() & Folder.HOLDS_FOLDERS) == Folder.HOLDS_FOLDERS;
@@ -372,6 +385,9 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
     /**
      * Does this folder hold any messages?
+     * @param folder the folder to be checked
+     * @return true if this folder has any messages, false otherwise
+     * @throws MessagingException if it prooves impossible to find out
      */
     public static boolean holdsMessages(Folder folder) throws MessagingException {
         return (folder.getType() & Folder.HOLDS_MESSAGES) == Folder.HOLDS_MESSAGES;
@@ -483,6 +499,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         return buffer.toString();
     }
 
+    /**
+     * Returns the name of the folder with the given URL
+     * @param url the url of the folder
+     * @return the name of the folder with the given URL
+     */
     public static String getFolderName(String url) {
         if (!url.startsWith("imap://")) {
             return null;
@@ -505,8 +526,12 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
     }
 
-    // does the same as HttpClientUtil.formUrlEncode (i.e. RFC 1738) except for encoding the slash,
-    // which should not be encoded according to RFC 2192.
+    /** 
+     * Does the same as HttpClientUtil.formUrlEncode (i.e. RFC 1738) except for encoding the slash,
+     * which should not be encoded according to RFC 2192.
+     * @param string the string to be encoded
+     * @return the encoded folder name
+     */
     public static String encodeFolderName(String string) {
         int length = string.length();
         StringBuilder buffer = new StringBuilder(length + 10);
@@ -522,7 +547,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 buffer.append('+');
             }
             else {
-                int cInt = (int) c;
+                int cInt = c;
                 if (cInt >= 48 && cInt <= 57 || cInt >= 65 && cInt <= 90 || cInt >= 97 && cInt <= 122
                         || cInt == 46) {
                     // alphanumeric character or slash
@@ -531,7 +556,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 else {
                     // escape all non-alphanumerics
                     buffer.append('%');
-                    String hexVal = Integer.toHexString((int) c);
+                    String hexVal = Integer.toHexString(c);
 
                     // ensure use of two characters
                     if (hexVal.length() == 1) {
@@ -748,7 +773,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
     private URI getParent(DataObject object) {
         // query for all parents
-        Collection parentIDs = object.getMetadata().getAll(DATA.partOf);
+        Collection parentIDs = object.getMetadata().getAll(NIE.isPartOf);
 
         // determine all unique parent URIs (the same partOf statement may be returned more than once due
         // to the use of context in the underlying model)
@@ -788,7 +813,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
             if (accessData.isKnownId(parentID)) {
                 if (parentID.equals(childID)) {
-                    logger.error("cyclical " + DATA.partOf + " property for " + parentID + ", ignoring");
+                    logger.error("cyclical " + NIE.isPartOf + " property for " + parentID + ", ignoring");
                 }
                 else {
                     accessData.putReferredID(parentID, childID);
@@ -807,10 +832,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         // query for all child URIs
         ClosableIterator<? extends Statement> statements = null;
         try {
-            statements = metadata.findStatements(Variable.ANY, DATA.partOf, object.getID());
+            statements = metadata.findStatements(Variable.ANY, NIE.isPartOf, object.getID());
             // queue these URIs
             while (statements.hasNext()) {
-                Statement statement = (Statement) statements.next();
+                Statement statement = statements.next();
                 Resource resource = statement.getSubject();
 
                 if (resource instanceof URI) {
@@ -836,15 +861,21 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
     /* ----------------------------- DataAccessor implementation ----------------------------- */
 
-    public DataObject getDataObject(String url, DataSource source, Map params,
+    /**
+     * @see DataAccessor#getDataObject(String, DataSource, Map, RDFContainerFactory)
+     */
+    public DataObject getDataObject(String url, DataSource dataSource, Map params,
             RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException {
-        return getDataObjectIfModified(url, source, null, params, containerFactory);
+        return getDataObjectIfModified(url, dataSource, null, params, containerFactory);
     }
 
-    public DataObject getDataObjectIfModified(String url, DataSource source, AccessData accessData,
+    /**
+     * @see DataAccessor#getDataObjectIfModified(String, DataSource, AccessData, Map, RDFContainerFactory)
+     */
+    public DataObject getDataObjectIfModified(String url, DataSource dataSource, AccessData newAccessData,
             Map params, RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException {
         // reconfigure for the specified DataSource if necessary
-        retrieveConfigurationData(source);
+        retrieveConfigurationData(dataSource);
 
         try {
             // make sure we have a connection to the mail store
@@ -898,11 +929,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 MimeMessage message = (MimeMessage) ((UIDFolder) folder).getMessageByUID(messageUID);
 
                 // create a DataObject for the requested message or message part
-                return getObject(message, url, getURI(folder), source, accessData, containerFactory);
+                return getObject(message, url, getURI(folder), dataSource, newAccessData, containerFactory);
             }
             else {
                 // create a DataObject for this Folder
-                return getObject(folder, url, source, accessData, containerFactory);
+                return getObject(folder, url, dataSource, newAccessData, containerFactory);
             }
         }
         catch (MessagingException e) {
@@ -912,13 +943,13 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
     }
 
-    private DataObject getObject(MimeMessage message, String url, URI folderUri, DataSource source,
-            AccessData accessData, RDFContainerFactory containerFactory) throws MessagingException,
+    private DataObject getObject(MimeMessage message, String url, URI folderUri, DataSource dataSource,
+            AccessData newAccessData, RDFContainerFactory containerFactory) throws MessagingException,
             IOException {
         // See if this url has been accessed before so that we can stop immediately. Note
         // that no check on message date is done as messages are immutable. Therefore we only have to
         // check whether the AccessData knows this ID.
-        if (accessData != null && accessData.get(url, ACCESSED_KEY) != null) {
+        if (newAccessData != null && newAccessData.get(url, ACCESSED_KEY) != null) {
             return null;
         }
 
@@ -943,7 +974,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             // create DataObjects for the mail and its attachments
             DataObjectFactory factory = new DataObjectFactory();
             List objects = factory
-                    .createDataObjects(message, messageUrl, folderUri, source, containerFactory);
+                    .createDataObjects(message, messageUrl, folderUri, dataSource, containerFactory);
 
             // register the created DataObjects in the cache map
             Iterator iterator = objects.iterator();
@@ -963,14 +994,14 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
 
         // register the access of this url
-        if (accessData != null) {
-            accessData.put(url, ACCESSED_KEY, "");
+        if (newAccessData != null) {
+            newAccessData.put(url, ACCESSED_KEY, "");
         }
 
         return result;
     }
 
-    private FolderDataObject getObject(Folder folder, String url, DataSource source, AccessData accessData,
+    private FolderDataObject getObject(Folder folder, String url, DataSource dataSource, AccessData newAccessData,
             RDFContainerFactory containerFactory) throws MessagingException {
         // See if this url has been accessed before and hasn't changed in the mean time.
         // A check for the next UID guarantees that no mails have been added (see RFC 3501).
@@ -980,15 +1011,15 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         Message[] messages = null;
 
         // check if the folder has changed
-        if (accessData != null) {
+        if (newAccessData != null) {
             // the results default to 'true'; unless we can find complete evidence that the folder has not
             // changed, we will always access the folder
             boolean messagesChanged = true;
             boolean foldersChanged = true;
 
             if (holdsMessages(folder)) {
-                String nextUIDString = accessData.get(url, NEXT_UID_KEY);
-                String sizeString = accessData.get(url, SIZE_KEY);
+                String nextUIDString = newAccessData.get(url, NEXT_UID_KEY);
+                String sizeString = newAccessData.get(url, SIZE_KEY);
 
                 // note: this is -1 for servers that don't support retrieval of a next UID, meaning that the
                 // folder will always be reported as changed when it should have been unmodified
@@ -1019,7 +1050,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             }
 
             if (holdsFolders(folder)) {
-                String registeredSubFolders = accessData.get(url, SUBFOLDERS_KEY);
+                String registeredSubFolders = newAccessData.get(url, SUBFOLDERS_KEY);
 
                 if (registeredSubFolders != null) {
                     String subfolders = getSubFoldersString(folder);
@@ -1039,14 +1070,14 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
 
         // register the folder's name
-        URI folderURI = URIImpl.createURIWithoutChecking(url);
+        URI folderURI = new URIImpl(url);
         RDFContainer metadata = containerFactory.getRDFContainer(folderURI);
-        metadata.add(DATA.name, folder.getName());
+        metadata.add(NFO.fileName, folder.getName());
 
         // register the folder's parent
         Folder parent = folder.getParent();
         if (parent != null) {
-            metadata.add(DATA.partOf, getURI(parent));
+            metadata.add(NIE.isPartOf, getURI(parent));
         }
 
         // add message URIs as children
@@ -1071,7 +1102,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                     long messageID = imapFolder.getUID(message);
                     try {
                         URI messageURI = metadata.getValueFactory().createURI(uriPrefix + messageID);
-                        metadata.add(metadata.getValueFactory().createStatement(messageURI, DATA.partOf,
+                        metadata.add(metadata.getValueFactory().createStatement(messageURI, NIE.isPartOf,
                             folderURI));
                     }
                     catch (ModelException e) {
@@ -1086,39 +1117,40 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         for (int i = 0; i < subFolders.length; i++) {
             Folder subFolder = subFolders[i];
             if (subFolder.exists()) {
-                metadata.add(metadata.getValueFactory().createStatement(getURI(subFolder), DATA.partOf,
+                metadata.add(metadata.getValueFactory().createStatement(getURI(subFolder), NIE.isPartOf,
                     folderURI));
             }
         }
 
         // register the access data of this url
-        if (accessData != null) {
+        if (newAccessData != null) {
             if (holdsMessages(folder)) {
                 // getUIDNext may return -1 (unknown), be careful not to store that
                 long uidNext = imapFolder.getUIDNext();
                 if (uidNext != -1L) {
-                    accessData.put(url, NEXT_UID_KEY, String.valueOf(imapFolder.getUIDNext()));
+                    newAccessData.put(url, NEXT_UID_KEY, String.valueOf(imapFolder.getUIDNext()));
                 }
 
                 int messageCount = getMessageCount(messages);
-                accessData.put(url, SIZE_KEY, String.valueOf(messageCount));
+                newAccessData.put(url, SIZE_KEY, String.valueOf(messageCount));
             }
             if (holdsFolders(folder)) {
-                accessData.put(url, SUBFOLDERS_KEY, getSubFoldersString(folder));
+                newAccessData.put(url, SUBFOLDERS_KEY, getSubFoldersString(folder));
             }
         }
 
+        // TODO get back to it after introducing rootFolderOf
         // if this is a base folder then add some metadata
-        if (baseFolders.contains(folder.getFullName())) {
-            metadata.add(DATA.rootFolderOf, source.getID());
-        }
+        //if (baseFolders.contains(folder.getFullName())) {
+        //    metadata.add(DATA.rootFolderOf, dataSource.getID());
+        // }
 
         // create the resulting FolderDataObject instance
-        return new FolderDataObjectBase(folderURI, source, metadata);
+        return new FolderDataObjectBase(folderURI, dataSource, metadata);
     }
 
     private URI getURI(Folder folder) throws MessagingException {
-        return URIImpl.create(getURIPrefix(folder) + ";TYPE=LIST");
+        return new URIImpl(getURIPrefix(folder) + ";TYPE=LIST");
     }
 
     private String getSubFoldersString(Folder folder) throws MessagingException {
@@ -1157,7 +1189,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 SSLContext sslcontext = SSLContext.getInstance("TLS");
 
                 sslcontext.init(null, new TrustManager[] { new NaiveTrustManager() }, null);
-                factory = (SSLSocketFactory) sslcontext.getSocketFactory();
+                factory = sslcontext.getSocketFactory();
             }
             catch (Exception e) {
                 logger.error("Exception while setting up SimpleSocketFactory", e);
@@ -1176,7 +1208,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 StandardTrustManager trustManager = new StandardTrustManager(certificateFile, password
                         .toCharArray());
                 sslcontext.init(null, new TrustManager[] { trustManager }, null);
-                factory = (SSLSocketFactory) sslcontext.getSocketFactory();
+                factory = sslcontext.getSocketFactory();
             }
             catch (Exception e) {
 
@@ -1184,54 +1216,130 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             }
         }
 
+        /** 
+         * Returns the default socket factory
+         * @return the default socket factory 
+         */
         public static SocketFactory getDefault() {
             return new SimpleSocketFactory();
         }
 
+        /**
+         * Creates a socket
+         * @return a newly created socket
+         * @throws IOException if na I/O error occurs
+         */
         public Socket createSocket() throws IOException {
             return factory.createSocket();
         }
 
+        /**
+         * Creates a socket with the given parameters.
+         * @param socket the parent socket
+         * @param host the host address
+         * @param port the port number
+         * @param flag the flag
+         * @return a newly created socket
+         * @throws IOException if something goes wrong in the process
+         */
         public Socket createSocket(Socket socket, String host, int port, boolean flag) throws IOException {
             return factory.createSocket(socket, host, port, flag);
         }
 
+        /**
+         * Creates a socket with the given parameters.
+         * @param address the internet address
+         * @param localAddress the local address
+         * @param port the remote port number
+         * @param localPort the local port number
+         * @return a newly created socket
+         * @throws IOException if something goes wrong in the process
+         */
         public Socket createSocket(InetAddress address, int port, InetAddress localAddress, int localPort)
                 throws IOException {
             return factory.createSocket(address, port, localAddress, localPort);
         }
 
+        /**
+         * Creates a socket with the given parameters.
+         * @param host the internet address
+         * @param port the remote port number
+         * @return a newly created socket
+         * @throws IOException if something goes wrong in the process
+         */
         public Socket createSocket(InetAddress host, int port) throws IOException {
             return factory.createSocket(host, port);
         }
 
+        /**
+         * Creates a socket with the given parameters.
+         * @param host the internet address
+         * @param port the remote port number
+         * @param localHost the local address
+         * @param localPort the local port number
+         * @return a newly created socket
+         * @throws IOException if something goes wrong in the process
+         */
         public Socket createSocket(String host, int port, InetAddress localHost, int localPort)
                 throws IOException {
             return factory.createSocket(host, port, localHost, localPort);
         }
 
+        /**
+         * Creates a socket with the given parameters.
+         * @param host the internet address
+         * @param port the remote port number
+         * @return a newly created socket
+         * @throws IOException if something goes wrong in the process
+         */
         public Socket createSocket(String host, int port) throws IOException {
             return factory.createSocket(host, port);
         }
 
+        /**
+         * Returns an array of default cipher suites.
+         * @return an array of default cipher suites.
+         */
         public String[] getDefaultCipherSuites() {
             return factory.getDefaultCipherSuites();
         }
 
+        /**
+         * Returns an array of supported cipher suites.
+         * @return an array of supported cipher suites.
+         */
         public String[] getSupportedCipherSuites() {
             return factory.getSupportedCipherSuites();
         }
 
         private class NaiveTrustManager implements X509TrustManager {
+            
+            /** Default constructor */
+            public NaiveTrustManager() {
+                // do nothing
+            }
 
+            /**
+             * Checks if a certificate can be trusted. This naive implementation accepts all certificates.
+             * @see X509TrustManager#checkClientTrusted(X509Certificate[], String)
+             */
             public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
             // accept everything
             }
 
+            
+            /**
+             * Checks if a certificate can be trusted. This naive implementation accepts all certificates.
+             * @see X509TrustManager#checkServerTrusted(X509Certificate[], String)
+             */
             public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
             // accept everything
             }
 
+            /**
+             * Returns null
+             * @see X509TrustManager#getAcceptedIssuers()
+             */
             public X509Certificate[] getAcceptedIssuers() {
                 return null;
             }

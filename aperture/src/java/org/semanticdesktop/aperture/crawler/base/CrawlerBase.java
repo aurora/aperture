@@ -84,42 +84,87 @@ public abstract class CrawlerBase implements Crawler {
 
 	private DomainBoundaries domain;
 
+	/**
+	 * The default constructor
+	 */
 	public CrawlerBase() {
 		this.stopRequested = false;
 	}
 
+	/**
+	 * Sets the data source
+	 * @param source the new data source
+	 */
 	public void setDataSource(DataSource source) {
 		this.source = source;
 	}
 
+	/**
+	 * Returns the data source
+	 * @return the data source
+	 * @see Crawler#getDataSource()
+	 */
 	public DataSource getDataSource() {
 		return source;
 	}
 
+	/**
+	 * Sets the data accessor registry
+	 * @param accessorRegistry the new data accessor registry
+	 * @see Crawler#setDataAccessorRegistry(DataAccessorRegistry)
+	 */
 	public void setDataAccessorRegistry(DataAccessorRegistry accessorRegistry) {
 		this.accessorRegistry = accessorRegistry;
 	}
 
+	/**
+	 * Returns the data accessor registry
+	 * @return the data accessor registry
+	 * @see Crawler#getDataAccessorRegistry()
+	 */
 	public DataAccessorRegistry getDataAccessorRegistry() {
 		return accessorRegistry;
 	}
 
+	/**
+	 * Sets the AccessData instance to be used by the crawler
+	 * @param accessData the AccessData instance to be used by the crawler
+	 * @see Crawler#setAccessData(AccessData)
+	 */
 	public void setAccessData(AccessData accessData) {
 		this.accessData = accessData;
 	}
 
+	/**
+	 * Returns the AccessData instance used by the crawler
+	 * @return the AccessData instance used by the crawler
+	 * @see Crawler#getAccessData()
+	 */
 	public AccessData getAccessData() {
 		return accessData;
 	}
 
+	/**
+	 * Sets the crawler handler
+	 * @param handler the crawler handler
+	 * @see Crawler#setCrawlerHandler(CrawlerHandler)
+	 */
 	public void setCrawlerHandler(CrawlerHandler handler) {
 		this.handler = handler;
 	}
 
+	/**
+	 * Returns the crawler handler
+	 * @return the crawler handler
+	 * @see Crawler#getCrawlerHandler()
+	 */
 	public CrawlerHandler getCrawlerHandler() {
 		return handler;
 	}
 
+	/**
+	 * @see Crawler#crawl()
+	 */
 	@SuppressWarnings("unchecked")
 	public synchronized void crawl() {
 		// set up a new CrawlReport
@@ -190,10 +235,17 @@ public abstract class CrawlerBase implements Crawler {
 	 */
 	protected abstract ExitCode crawlObjects();
 
+	/**
+	 * @see Crawler#stop()
+	 */
 	public void stop() {
 		stopRequested = true;
 	}
 
+	/**
+	 * Returns true if the crawler is currently stopping, false otherwise
+	 * @return true if the crawler is currently stopping, false otherwise
+	 */
 	public boolean isStopRequested() {
 		return stopRequested;
 	}
@@ -239,14 +291,25 @@ public abstract class CrawlerBase implements Crawler {
 		handler.clearingObject(this, url);
 	}
 
+	/**
+	 * Sets the file where the crawl report is to be saved
+	 * @param file the file where the crawl report is to be saved
+	 */
 	public void setCrawlReportFile(File file) {
 		this.crawlReportFile = file;
 	}
 
+	/**
+	 * Returns the file where the crawl report is to be saved
+	 * @return the file where the crawl report is to be saved
+	 */
 	public File getCrawlReportFile() {
 		return crawlReportFile;
 	}
 
+	/**
+	 * @see Crawler#getCrawlReport()
+	 */
 	public CrawlReport getCrawlReport() {
 		if (crawlReport == null && crawlReportFile != null && crawlReportFile.exists()) {
 			try {

@@ -20,7 +20,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -29,7 +32,10 @@ import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.util.SimpleSAXAdapter;
 import org.semanticdesktop.aperture.util.SimpleSAXParser;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.util.UriUtil;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -78,6 +84,12 @@ public class OpenDocumentExtractor implements Extractor {
 		catch (IOException e) {
 			throw new ExtractorException(e);
 		}
+        
+        // determine the type of the document
+        // TODO there is no document type determination
+        {
+            result.add(RDF.type,NFO.Document);
+        }
 
 		// extract the document text
 		if (contentBytes != null) {
@@ -120,7 +132,7 @@ public class OpenDocumentExtractor implements Extractor {
 		// put the extracted full-text in the RDF container
 		String contents = contentExtractor.getContents();
 		if (contents != null && !contents.equals("")) {
-			result.add(DATA.fullText, contents);
+			result.add(NIE.plainTextContent, contents);
 		}
 	}
 
@@ -166,34 +178,36 @@ public class OpenDocumentExtractor implements Extractor {
 
 			// determine which metadata property we're dealing with
 			if ("dc:creator".equals(name)) {
-				addStatement(DATA.creator, metaChild.getFirstChild(), result);
+				addContactStatement(NCO.creator, metaChild.getFirstChild().getNodeValue(), result);
 			}
 			else if ("meta:initial-creator".equals(name)) {
-				addStatement(DATA.creator, metaChild.getFirstChild(), result);
+				addContactStatement(NCO.creator, metaChild.getFirstChild().getNodeValue(), result);
 			}
 			else if ("dc:title".equals(name)) {
-				addStatement(DATA.title, metaChild.getFirstChild(), result);
+				addStatement(NIE.title, metaChild.getFirstChild(), result);
 			}
 			else if ("dc:description".equals(name)) {
-				addStatement(DATA.description, metaChild.getFirstChild(), result);
+				addStatement(NIE.description, metaChild.getFirstChild(), result);
 			}
 			else if ("dc:subject".equals(name)) {
-				addStatement(DATA.subject, metaChild.getFirstChild(), result);
+				addStatement(NIE.subject, metaChild.getFirstChild(), result);
 			}
-			else if ("dc:date".equals(name)) {
-				addDateStatement(DATA.date, metaChild.getFirstChild(), result);
+            else if ("dc:date".equals(name)) {
+				addDateStatement(NIE.informationElementDate, metaChild.getFirstChild(), result);
 			}
 			else if ("meta:creation-date".equals(name)) {
-				addDateStatement(DATA.created, metaChild.getFirstChild(), result);
+				addDateStatement(NIE.contentCreated, metaChild.getFirstChild(), result);
 			}
+            // TODO get back to it after introducing nie:printdate
 			else if ("meta:print-date".equals(name)) {
-				addDateStatement(DATA.printDate, metaChild.getFirstChild(), result);
+			    addDateStatement(NIE.informationElementDate, metaChild.getFirstChild(), result);
+				//addDateStatement(DATA.printDate, metaChild.getFirstChild(), result);
 			}
 			else if ("dc:language".equals(name)) {
-				addStatement(DATA.language, metaChild.getFirstChild(), result);
+				addStatement(NIE.language, metaChild.getFirstChild(), result);
 			}
 			else if ("meta:generator".equals(name)) {
-				addStatement(DATA.generator, metaChild.getFirstChild(), result);
+				addStatement(NIE.generator, metaChild.getFirstChild(), result);
 			}
 			else if ("meta:keywords".equals(name)) {
 				// handles OpenOffice 1.x keywords
@@ -202,13 +216,13 @@ public class OpenDocumentExtractor implements Extractor {
 				for (int j = 0; j < nrKeywordNodes; j++) {
 					Node keywordNode = keywordNodes.item(j);
 					if ("meta:keyword".equals(keywordNode.getNodeName())) {
-						addStatement(DATA.keyword, keywordNode.getFirstChild(), result);
+						addStatement(NIE.keyword, keywordNode.getFirstChild(), result);
 					}
 				}
 			}
 			else if ("meta:keyword".equals(name)) {
 				// handles OpenOffice 2.x, i.e. OpenDocument
-				addStatement(DATA.keyword, metaChild.getFirstChild(), result);
+				addStatement(NIE.keyword, metaChild.getFirstChild(), result);
 			}
 			else if ("meta:document-statistic".equals(name)) {
 				NamedNodeMap attributes = metaChild.getAttributes();
@@ -219,7 +233,8 @@ public class OpenDocumentExtractor implements Extractor {
 						if (pageNodeValue != null) {
 							try {
 								int pageCount = Integer.parseInt(pageNodeValue);
-								result.add(DATA.pageCount, pageCount);
+                                result.add(RDF.type,NFO.PaginatedTextDocument);
+								result.add(NFO.pageCount, pageCount);
 							}
 							catch (NumberFormatException e) {
 								// ignore
@@ -257,6 +272,14 @@ public class OpenDocumentExtractor implements Extractor {
 			}
 		}
 	}
+    
+    private void addContactStatement(URI uri, String fullname, RDFContainer container) {
+        Model model = container.getModel();
+        Resource contactResource = UriUtil.generateRandomResource(model);
+        model.addStatement(contactResource,RDF.type,NCO.Contact);
+        model.addStatement(contactResource,NCO.fullname,fullname);
+        container.add(uri,contactResource);
+    }
 
 	/**
 	 * Inner class for extracting full-text from the content.xml part of an OpenDocument/OpenOffice/StarOffice

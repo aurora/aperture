@@ -14,7 +14,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class WordPerfectExtractorTest extends ExtractorTestBase {
 
@@ -36,8 +36,8 @@ public class WordPerfectExtractorTest extends ExtractorTestBase {
 		RDFContainer container = extract(resourceName, extractor);
 
 		// check the extraction results
-		checkStatement(DATA.fullText, "WordPerfect", container);
-		
+		checkStatement(NIE.plainTextContent, "WordPerfect", container);
+		validate(container);
 		container.dispose();
 	}
 }

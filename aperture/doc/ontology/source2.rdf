@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE rdf:RDF [
+	 <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+	 <!ENTITY source 'http://aperture.semanticdesktop.org/ontology/2007/08/12/source#'>
+	 <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema#'>
+]>
+<rdf:RDF xmlns:rdf="&rdf;"
+	 xmlns:source="&source;"
+	 xmlns:rdfs="&rdfs;">
+<source:DataSourceDescription rdf:about="&source;FileSystemDataSourcesourceDescription"
+	 source:dataSourceComment="Datasource to crawl files from your filesystem"
+	 source:dataSourceName="Filesystem datasource"
+	 rdfs:label="FileSystemDataSourcesourceDescription">
+	<source:describedDataSourceType rdf:resource="&source;FileSystemDataSource"/>
+</source:DataSourceDescription>
+<source:DataSourceDescription rdf:about="&source;IMAPDataSourceDescription"
+	 source:dataSourceComment="Crawl an IMAP e-mail account."
+	 source:dataSourceName="IMAP email server"
+	 rdfs:label="IMAPDataSourceDescription">
+	<source:describedDataSourceType rdf:resource="&source;IMAPDataSource"/>
+</source:DataSourceDescription>
+<source:DataSourceDescription rdf:about="&source;IcalDataSourceDescription"
+	 source:dataSourceComment="ICalendar file."
+	 source:dataSourceName="ICalendar"
+	 rdfs:label="IcalDataSourceDescription">
+	<source:describedDataSourceType rdf:resource="&source;IcalDataSource"/>
+</source:DataSourceDescription>
+<source:DataSourceDescription rdf:about="&source;MicrosoftOutlookDataSourceDescription"
+	 source:dataSourceName="Microsoft Outlook"
+	 rdfs:label="MicrosoftOutlookDataSourceDescription">
+	<source:dataSourceComment>Data from Microsoft Outlook. Works with Outlook XP and 2003. Install outlook redemption to increase features.</source:dataSourceComment>
+	<source:describedDataSourceType rdf:resource="&source;MicrosoftOutlookDataSource"/>
+</source:DataSourceDescription>
+<source:DataSourceDescription rdf:about="&source;WebDataSourceDescription"
+	 source:dataSourceComment="Crawl a web-site."
+	 source:dataSourceName="Web Crawler"
+	 rdfs:label="WebDataSourceDescription">
+	<source:describedDataSourceType rdf:resource="&source;WebDataSource"/>
+</source:DataSourceDescription>
+</rdf:RDF>

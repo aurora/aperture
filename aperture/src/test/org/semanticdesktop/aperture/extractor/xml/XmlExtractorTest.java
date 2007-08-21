@@ -14,7 +14,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class XmlExtractorTest extends ExtractorTestBase {
 
@@ -25,11 +25,11 @@ public class XmlExtractorTest extends ExtractorTestBase {
         RDFContainer container = extract(DOCS_PATH + "xml-handwritten.xml", extractor);
 
         // check the extraction results
-        checkStatement(DATA.fullText, "handwritten", container);
-        checkStatement(DATA.fullText, "Nested", container);
-        checkStatement(DATA.fullText, "More", container);
-        checkStatement(DATA.fullText, "value", container);
-        
+        checkStatement(NIE.plainTextContent, "handwritten", container);
+        checkStatement(NIE.plainTextContent, "Nested", container);
+        checkStatement(NIE.plainTextContent, "More", container);
+        checkStatement(NIE.plainTextContent, "value", container);
+        validate(container);
         container.dispose();
     }        
 }

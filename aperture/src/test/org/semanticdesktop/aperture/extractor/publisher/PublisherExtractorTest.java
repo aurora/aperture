@@ -14,7 +14,8 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class PublisherExtractorTest extends ExtractorTestBase {
 
@@ -25,14 +26,14 @@ public class PublisherExtractorTest extends ExtractorTestBase {
         RDFContainer container = extract(DOCS_PATH + "microsoft-publisher-2003.pub", extractor);
 
         // check the extraction results
-        checkStatement(DATA.fullText, "Example", container);
-        checkStatement(DATA.title, "Publisher", container);
-        checkStatement(DATA.subject, "document", container);
-        checkStatement(DATA.description, "comments", container);
-        checkStatement(DATA.creator, "Wester", container);
-        checkStatement(DATA.keyword, "test", container);
-        checkStatement(DATA.keyword, "rdf", container);
-        
+        checkStatement(NIE.plainTextContent, "Example", container);
+        checkStatement(NIE.title, "Publisher", container);
+        checkStatement(NIE.subject, "document", container);
+        checkStatement(NIE.description, "comments", container);
+        checkSimpleContact(NCO.creator, "Jeroen Wester", container);
+        checkStatement(NIE.keyword, "test", container);
+        checkStatement(NIE.keyword, "rdf", container);
+        validate(container);
         container.dispose();
     }        
 }

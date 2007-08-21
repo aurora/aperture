@@ -34,7 +34,7 @@ import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.util.FileUtil;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.ModelUtil;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NFO;
 
 public class TestFileSystemCrawler extends ApertureTestBase {
 
@@ -70,7 +70,7 @@ public class TestFileSystemCrawler extends ApertureTestBase {
         IOUtil.writeString("test file 4", tmpFile4);
 
         // put another folder containing another file in it
-        subDir = new File(tmpDir, "dir");
+        subDir = new File(tmpDir, "subdir");
         subDir.mkdir();
 
         tmpFile3 = File.createTempFile("file-", ".txt", subDir);
@@ -86,16 +86,18 @@ public class TestFileSystemCrawler extends ApertureTestBase {
     public void testCrawler() throws ModelException {
         // create a DataSource
         RDFContainer configuration = createRDFContainer("urn:test:dummySource");
-        ConfigurationUtil.setRootFolder(tmpDir.getAbsolutePath(), configuration);
-        ConfigurationUtil.setMaximumDepth(1, configuration);
+        FileSystemDataSource dataSource = new FileSystemDataSource();
+        dataSource.setConfiguration(configuration);
+        
+        dataSource.setRootFolder(tmpDir.getAbsolutePath());
+        dataSource.setMaximumDepth(1);
         DomainBoundaries domain = ConfigurationUtil.getDomainBoundaries(configuration);
         domain.addExcludePattern(new SubstringPattern("skipme", SubstringCondition.CONTAINS));
-        ConfigurationUtil.setDomainBoundaries(domain, configuration);
+        dataSource.setDomainBoundaries(domain);
 
         // configuration.getModel().writeTo(new PrintWriter(System.out),Syntax.Trix);
 
-        DataSource dataSource = new FileSystemDataSource();
-        dataSource.setConfiguration(configuration);
+        
 
         // create a Crawler for this DataSource
         FileSystemCrawler crawler = new FileSystemCrawler();
@@ -120,21 +122,78 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
         // model.writeTo(new PrintWriter(System.out),Syntax.Trix);
 
-        checkStatement(toURI(tmpDir), DATA.rootFolderOf, dataSource.getID(), model);
+        // TODO get back here after introducing rootFolderOf
+        //checkStatement(toURI(tmpDir), DATA.rootFolderOf, dataSource.getID(), model);
 
-        checkStatement(toURI(tmpFile1), DATA.name, ModelUtil.createLiteral(model, tmpFile1.getName()), model);
-        checkStatement(toURI(tmpFile2), DATA.name, ModelUtil.createLiteral(model, tmpFile2.getName()), model);
-        checkStatement(toURI(subDir), DATA.name, ModelUtil.createLiteral(model, subDir.getName()), model);
+        checkStatement(toURI(tmpFile1), NFO.fileName, ModelUtil.createLiteral(model, tmpFile1.getName()), model);
+        checkStatement(toURI(tmpFile2), NFO.fileName, ModelUtil.createLiteral(model, tmpFile2.getName()), model);
+        checkStatement(toURI(subDir), NFO.fileName, ModelUtil.createLiteral(model, subDir.getName()), model);
 
         // This should not be found because of maximum depth restrictions: this file should not be
         // reached. We deliberately check for a specific property rather than doing hasStatement(URI,
         // null, null) as the URI of the skipped file will still be part of the metadata of the
         // containing Folder.
-        assertFalse(ModelUtil.hasStatement(model, toURI(tmpFile3), DATA.name, null));
+        assertFalse(ModelUtil.hasStatement(model, toURI(tmpFile3), NFO.fileName, null));
 
         // This should no be found as it is excluded by the domain boundaries
-        assertFalse(ModelUtil.hasStatement(model, toURI(tmpFile4), DATA.name, null));
+        assertFalse(ModelUtil.hasStatement(model, toURI(tmpFile4), NFO.fileName, null));
+        validate(model);
+        model.close();
+        configuration.getModel().close();
+    }
+    
+    public void testFolderExclusion() throws ModelException {
+        // create a DataSource
+        FileSystemDataSource dataSource = new FileSystemDataSource();
+        RDFContainer configuration = createRDFContainer("urn:test:dummySource");
+        dataSource.setConfiguration(configuration);
+        
+        dataSource.setRootFolder(tmpDir.getAbsolutePath());
+        DomainBoundaries domain = ConfigurationUtil.getDomainBoundaries(configuration);
+        domain.addExcludePattern(new SubstringPattern("subdir", SubstringCondition.CONTAINS));
+        ConfigurationUtil.setDomainBoundaries(domain, configuration);
 
+        // configuration.getModel().writeTo(new PrintWriter(System.out),Syntax.Trix);
+
+        
+        
+
+        // create a Crawler for this DataSource
+        FileSystemCrawler crawler = new FileSystemCrawler();
+        crawler.setDataSource(dataSource);
+
+        // setup a DataAccessorRegistry
+        DataAccessorRegistryImpl registry = new DataAccessorRegistryImpl();
+        registry.add(new FileAccessorFactory());
+        crawler.setDataAccessorRegistry(registry);
+
+        // setup a CrawlerHandler
+        SimpleCrawlerHandler crawlerHandler = new SimpleCrawlerHandler();
+        crawler.setCrawlerHandler(crawlerHandler);
+
+        // start Crawling
+        crawler.crawl();
+
+        // inspect results
+        assertEquals(4, crawlerHandler.getObjectCount());
+
+        Model model = crawlerHandler.getModel();
+
+        // model.writeTo(new PrintWriter(System.out),Syntax.Trix);
+
+        // TODO get back here after introducing rootFolderOf
+        //checkStatement(toURI(tmpDir), DATA.rootFolderOf, dataSource.getID(), model);
+
+        checkStatement(toURI(tmpFile1), NFO.fileName, ModelUtil.createLiteral(model, tmpFile1.getName()), model);
+        checkStatement(toURI(tmpFile2), NFO.fileName, ModelUtil.createLiteral(model, tmpFile2.getName()), model);
+
+        // This should not be found because of the domain boundaries restrictions
+        // We deliberately check for a specific property rather than doing hasStatement(URI,
+        // null, null) as the URI of the skipped file will still be part of the metadata of the
+        // containing Folder.
+        assertFalse(ModelUtil.hasStatement(model, toURI(tmpFile3), NFO.fileName, null));
+        assertFalse(ModelUtil.hasStatement(model, toURI(subDir), NFO.fileName, null));
+        validate(model);
         model.close();
         configuration.getModel().close();
     }

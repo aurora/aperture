@@ -12,7 +12,10 @@ import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.StringTokenizer;
 
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.pdfbox.exceptions.CryptographyException;
 import org.pdfbox.exceptions.InvalidPasswordException;
 import org.pdfbox.pdfparser.PDFParser;
@@ -22,7 +25,10 @@ import org.pdfbox.util.PDFTextStripper;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.util.UriUtil;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +74,7 @@ public class PdfExtractor implements Extractor {
         // try to decrypt it, if necessary
         if (document.isEncrypted()) {
             try {
-            	// As of PDFBox 0.7.3, it is no longer possible to check if the passwords are emtpy.
+                // As of PDFBox 0.7.3, it is no longer possible to check if the passwords are emtpy.
                 // if (document.isOwnerPassword("") || document.isUserPassword("")) {
                 logger.info("Trying to decrypt " + id);
                 document.decrypt("");
@@ -91,7 +97,7 @@ public class PdfExtractor implements Extractor {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
             if (text != null) {
-                result.add(DATA.fullText, text);
+                result.add(NIE.plainTextContent, text);
             }
         }
         catch (IOException e) {
@@ -106,49 +112,49 @@ public class PdfExtractor implements Extractor {
         PDDocumentInformation metadata = document.getDocumentInformation();
 
         try {
-            addStringMetadata(DATA.creator, metadata.getAuthor(), result);
+            addContactStatement(NCO.creator, metadata.getAuthor(), result);
         }
         catch (Exception e) {
             logger.warn("Exception while extracting author of " + id, e);
         }
 
         try {
-            addStringMetadata(DATA.title, metadata.getTitle(), result);
+            addStringMetadata(NIE.title, metadata.getTitle(), result);
         }
         catch (Exception e) {
             logger.warn("Exception while extracting title of " + id, e);
         }
 
         try {
-            addStringMetadata(DATA.subject, metadata.getSubject(), result);
+            addStringMetadata(NIE.subject, metadata.getSubject(), result);
         }
         catch (Exception e) {
             logger.warn("Exception while extracting subject of " + id, e);
         }
 
         try {
-            addStringMetadata(DATA.generator, metadata.getCreator(), result);
+            addStringMetadata(NIE.generator, metadata.getCreator(), result);
         }
         catch (Exception e) {
             logger.warn("Exception while extracting creator of " + id, e);
         }
 
         try {
-            addStringMetadata(DATA.generator, metadata.getProducer(), result);
+            addStringMetadata(NIE.generator, metadata.getProducer(), result);
         }
         catch (Exception e) {
             logger.warn("Exception while extracting producer of " + id, e);
         }
 
         try {
-            addCalendarMetadata(DATA.created, metadata.getCreationDate(), result);
+            addCalendarMetadata(NIE.contentCreated, metadata.getCreationDate(), result);
         }
         catch (Exception e) {
             logger.warn("Exception while extracting creation date of " + id, e);
         }
 
         try {
-            addCalendarMetadata(DATA.date, metadata.getModificationDate(), result);
+            addCalendarMetadata(NIE.contentLastModified, metadata.getModificationDate(), result);
         }
         catch (Exception e) {
             logger.warn("Exception while extracting modification date of " + id, e);
@@ -157,7 +163,8 @@ public class PdfExtractor implements Extractor {
         try {
             int nrPages = document.getNumberOfPages();
             if (nrPages >= 0) {
-                result.add(DATA.pageCount, nrPages);
+                result.add(RDF.type, NFO.PaginatedTextDocument);
+                result.add(NFO.pageCount, nrPages);
             }
         }
         catch (Exception e) {
@@ -171,7 +178,7 @@ public class PdfExtractor implements Extractor {
                 while (tokenizer.hasMoreTokens()) {
                     String keyword = tokenizer.nextToken();
                     if (keyword != null) {
-                        result.add(DATA.keyword, keyword);
+                        result.add(NIE.keyword, keyword);
                     }
                 }
             }
@@ -190,6 +197,16 @@ public class PdfExtractor implements Extractor {
     private void addCalendarMetadata(URI property, Calendar value, RDFContainer result) {
         if (value != null) {
             result.add(property, value);
+        }
+    }
+
+    private void addContactStatement(URI uri, String fullname, RDFContainer container) {
+        if (fullname != null) {
+            Model model = container.getModel();
+            Resource contactResource = UriUtil.generateRandomResource(model);
+            model.addStatement(contactResource, RDF.type, NCO.Contact);
+            model.addStatement(contactResource, NCO.fullname, fullname);
+            container.add(uri, contactResource);
         }
     }
 }

@@ -1,0 +1,43 @@
+@prefix fresnel:  <http://www.w3.org/2004/09/fresnel#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix sourceformat: <http://aperture.semanticdesktop.org/ontology/sourceformat#> .
+@prefix source: <http://aperture.semanticdesktop.org/ontology/2007/08/12/source#> .
+@prefix nie:     <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#> .
+@prefix tagging: <http://aperture.sourceforge.net/ontologies/tagging#> .
+@prefix : <http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#> .
+
+:BibsonomyDataSource a rdfs:Class ;
+	rdfs:subClassOf nie:DataSource .
+
+:BibsonomyDataSourceLens rdf:type fresnel:Lens ;
+                   fresnel:purpose fresnel:defaultLens ;
+                   fresnel:classLensDomain :BibsonomyDataSource ;
+                   fresnel:showProperties ( source:username 
+                   				            :crawlType ) .
+
+:crawlType a rdf:Property ;
+	rdfs:domain :BibsonomyDataSource ;
+	rdfs:range :CrawlType .
+	
+:CrawlType a rdfs:Class .
+:ItemsAndTagsCrawlType a :CrawlType .
+:ItemsOnlyCrawlType a :CrawlType .
+
+:crawlTypeFormat rdf:type fresnel:Format ;
+    fresnel:propertyFormatDomain :crawlType ;
+    sourceformat:valueWidget [
+    	a sourceformat:ComboBoxWidget;
+		sourceformat:hasEntry [ 
+			a sourceformat:ComboBoxEntry ;
+			sourceformat:label "Items and tags" ;
+			sourceformat:value :ItemsAndTagsCrawlType  
+		] ;
+		sourceformat:hasEntry [ 
+			a sourceformat:ComboBoxEntry ;
+			sourceformat:label "Items only" ;
+			sourceformat:value :ItemsOnlyCrawlType 
+		] 
+    ] . 
+    

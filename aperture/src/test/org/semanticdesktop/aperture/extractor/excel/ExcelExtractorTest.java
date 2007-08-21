@@ -9,12 +9,15 @@ package org.semanticdesktop.aperture.extractor.excel;
 import java.io.IOException;
 
 import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.model.Syntax;
+import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class ExcelExtractorTest extends ExtractorTestBase {
 
@@ -25,14 +28,15 @@ public class ExcelExtractorTest extends ExtractorTestBase {
         RDFContainer container = extract(DOCS_PATH + "microsoft-excel-2000.xls", extractor);
 
         // check the extraction results
-        checkStatement(DATA.fullText, "spreadsheet", container);
-        checkStatement(DATA.title, "Excel", container);
-        checkStatement(DATA.subject, "document", container);
-        checkStatement(DATA.description, "comments", container);
-        checkStatement(DATA.generator, "Excel", container);
-        checkStatement(DATA.creator, "Fluit", container);
-        checkStatement(DATA.keyword, "test", container);
-        checkStatement(DATA.keyword, "rdf", container);
+        checkStatement(NIE.plainTextContent, "spreadsheet", container);
+        checkStatement(NIE.title, "Excel", container);
+        checkStatement(NIE.subject, "document", container);
+        checkStatement(NIE.description, "comments", container);
+        checkStatement(NIE.generator, "Excel", container);
+        checkSimpleContact(NCO.creator, "Christiaan Fluit", container);
+        checkStatement(NIE.keyword, "test", container);
+        checkStatement(NIE.keyword, "rdf", container);
+        validate(container);
         container.dispose();
-    }        
+    }
 }

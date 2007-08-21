@@ -11,8 +11,12 @@ import java.util.Date;
 import java.util.Map;
 
 import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.node.Node;
+import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.vocabulary.RDF;
+import org.ontoware.rdf2go.vocabulary.XSD;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -21,10 +25,12 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.ValueFactory;
 import org.semanticdesktop.aperture.util.DateUtil;
-import org.semanticdesktop.aperture.vocabulary.DATA;
-import org.semanticdesktop.aperture.vocabulary.DATA_GEN;
-import org.semanticdesktop.aperture.vocabulary.ICAL;
-import org.semanticdesktop.aperture.vocabulary.VCARD;
+import org.semanticdesktop.aperture.util.UriUtil;
+import org.semanticdesktop.aperture.vocabulary.NCAL;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
+import org.semanticdesktop.aperture.vocabulary.NMO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,26 +89,27 @@ public abstract class OutlookResource {
 			// type is already added by AccessData.
 
 			// add label
-			addPropertyIfNotNull(rdf, DATA.title, resource, "Subject");
+            
+			addPropertyIfNotNull(rdf, NIE.title, resource, "Subject");
 			// body
-			addPropertyIfNotNull(rdf, DATA_GEN.fullText, resource, "Body");
+			addPropertyIfNotNull(rdf, NIE.plainTextContent, resource, "Body");
 
 			// uid
-			addPropertyIfNotNull(rdf, DATA_GEN.msOLUID, resource, "EntryID");
+			addPropertyIfNotNull(rdf, NIE.identifier, resource, "EntryID");
 
 			// dtstamp, this is UTZ, so no Timezone?
-			addDateIfNotNull(rdf, ICAL.dtstamp, resource, "CreationTime");
-			addDateIfNotNull(rdf, ICAL.lastModified, resource, "LastModificationTime");
+			addDateIfNotNull(rdf, NCAL.dtstamp, resource, "CreationTime");
+			addDateIfNotNull(rdf, NCAL.lastModified, resource, "LastModificationTime");
+			
 			// dtstart in local time, lets assume you are all in vienna
-			addDateIfNotNull(rdf, ICAL.dtstart, resource, "Start");
-			addDateIfNotNull(rdf, ICAL.dtend, resource, "End");
-			addDateIfNotNull(rdf, ICAL.dtstamp, resource, "CreationTime");
+			addNcalDateTimeIfNotNull(rdf, NCAL.dtstart, resource, "Start");
+			addNcalDateTimeIfNotNull(rdf, NCAL.dtend, resource, "End");
 			// location
-			addPropertyIfNotNull(rdf, ICAL.location, resource, "Location");
+			addPropertyIfNotNull(rdf, NCAL.location, resource, "Location");
 		}
 
 		public URI getType() {
-			return ICAL.Vevent;
+			return NCAL.Event;
 		}
 	}
 
@@ -135,39 +142,52 @@ public abstract class OutlookResource {
 			// save dispatch
 			Dispatch resource = getSaveResource();
 			// title
-			addPropertyIfNotNull(rdf, DATA.title, resource, "Subject");
+			addPropertyIfNotNull(rdf, NIE.title, resource, "Subject");
 
 			// email(s)
-			addPropertyIfNotNull(rdf, DATA_GEN.emailAddress, resource, "Email1Address");
-			addPropertyIfNotNull(rdf, DATA_GEN.emailAddress, resource, "Email2Address");
-			addPropertyIfNotNull(rdf, DATA_GEN.emailAddress, resource, "Email3Address");
-			addPropertyIfNotNull(rdf, DATA_GEN.homepage, resource, "WebPage");
+			Model model = rdf.getModel();
+			URI uri = rdf.getDescribedUri();
+			addEmailAddressIfNotNull(model, uri, resource, "Email1Address");
+			addEmailAddressIfNotNull(model, uri, resource, "Email2Address");
+			addEmailAddressIfNotNull(model, uri, resource, "Email3Address");
+			addPropertyIfNotNull(rdf, NCO.websiteUrl, resource, "WebPage");
 
 			// VCARD
-			addPropertyIfNotNull(rdf, VCARD.nameFamily, resource, "LastName");
-			addPropertyIfNotNull(rdf, VCARD.nameGiven, resource, "FirstName");
-			addPropertyIfNotNull(rdf, VCARD.nameAdditional, resource, "Title");
-			addPropertyIfNotNull(rdf, VCARD.fullname, resource, "Fullname");
-			addPropertyIfNotNull(rdf, VCARD.org, resource, "Companies");
-			addPropertyIfNotNull(rdf, VCARD.title, resource, "Title");
-			addPropertyIfNotNull(rdf, VCARD.note, getSaveResource(), "Body");
-			addPropertyIfNotNull(rdf, VCARD.telWork, resource, "BusinessTelephoneNumber");
-			addPropertyIfNotNull(rdf, VCARD.telHome, resource, "HomeTelephoneNumber");
-			addPropertyIfNotNull(rdf, VCARD.telCell, resource, "MobileTelephoneNumber");
+			addPropertyIfNotNull(rdf, NCO.nameFamily, resource, "LastName");
+			addPropertyIfNotNull(rdf, NCO.nameGiven, resource, "FirstName");
+			addPropertyIfNotNull(rdf, NCO.nameAdditional, resource, "Title");
+			addPropertyIfNotNull(rdf, NCO.fullname, resource, "Fullname");
+			addPropertyIfNotNull(rdf, NCO.title, resource, "Title");
+			addPropertyIfNotNull(rdf, NCO.note, getSaveResource(), "Body");
+			addTelephoneNumberIfNotNull(model, uri, resource, "BusinessTelephoneNumber", "work", NCO.PhoneNumber);
+			addTelephoneNumberIfNotNull(model, uri, resource, "HomeTelephoneNumber", "home", NCO.PhoneNumber);
+			addTelephoneNumberIfNotNull(model, uri, resource, "MobileTelephoneNumber", "cell", NCO.CellPhoneNumber);
 
 			// Address(es)
 			// Business Address
-			readAddress(resource, "BusinessAddress", rdf, VCARD.addressWork);
+			readAddress(resource, "BusinessAddress", rdf, "work");
 			// Home Address
-			readAddress(resource, "HomeAddress", rdf, VCARD.addressHome);
+			readAddress(resource, "HomeAddress", rdf, "home");
 			// MailingAddress
-			readAddress(resource, "MailingAddress", rdf, VCARD.addressPostal);
+			readAddress(resource, "MailingAddress", rdf, "mailing");
 			// Other
-			readAddress(resource, "OtherAddress", rdf, VCARD.address);
+			readAddress(resource, "OtherAddress", rdf, "other");
+			
+			// organization
+			String org = getLiteralOf(resource, "Companies");
+			if (org != null) {
+			    Resource affiliationResource = UriUtil.generateRandomResource(model);
+			    addStatement(rdf, uri, NCO.hasAffiliation, affiliationResource);
+			    addStatement(rdf, affiliationResource, RDF.type, NCO.Affiliation);
+			    Resource organizationContactResource = UriUtil.generateRandomResource(model);
+			    addStatement(rdf, affiliationResource, NCO.org, organizationContactResource);
+			    addStatement(rdf, organizationContactResource, RDF.type, NCO.OrganizationContact);
+			    addStatement(rdf, organizationContactResource, NCO.fullname, org);
+			}
 		}
 
 		public URI getType() {
-			return VCARD.VCard;
+			return NCO.Contact;
 		}
 
 		/**
@@ -176,7 +196,7 @@ public abstract class OutlookResource {
 		 * @param d dispatch with person
 		 * @param prefix "business" etc
 		 */
-		public void readAddress(Dispatch d, String prefix, RDFContainer rdf, URI addressRelation) {
+		public void readAddress(Dispatch d, String prefix, RDFContainer rdf, String comment) {
 			Variant var = Dispatch.get(d, prefix + "City");
 			ValueFactory vf = rdf.getValueFactory();
 			String city = (var == null) ? null : var.getString();
@@ -209,23 +229,27 @@ public abstract class OutlookResource {
                 try {
                     // create address
                     URI address = rdf.getValueFactory().createURI(getUri() + "_" + prefix);
-                    rdf.add(vf.createStatement(address, RDF.type, VCARD.Address));
-                    rdf.add(vf.createStatement(address, RDF.type, VCARD.Address));
+                    rdf.add(vf.createStatement(address, RDF.type, NCO.PostalAddress));
 
                     if (city != null)
-                        rdf.add(vf.createStatement(address, VCARD.locality, vf.createLiteral(city)));
+                        rdf.add(vf.createStatement(address, NCO.locality, vf.createLiteral(city)));
                     if (country != null)
-                        rdf.add(vf.createStatement(address, VCARD.country, vf.createLiteral(country)));
+                        rdf.add(vf.createStatement(address, NCO.country, vf.createLiteral(country)));
                     if (pobox != null)
-                        rdf.add(vf.createStatement(address, VCARD.pobox, vf.createLiteral(pobox)));
+                        rdf.add(vf.createStatement(address, NCO.pobox, vf.createLiteral(pobox)));
                     if (plz != null)
-                        rdf.add(vf.createStatement(address, VCARD.postalcode, vf.createLiteral(plz)));
+                        rdf.add(vf.createStatement(address, NCO.postalcode, vf.createLiteral(plz)));
                     if (state != null)
-                        rdf.add(vf.createStatement(address, VCARD.region, vf.createLiteral(state)));
+                        rdf.add(vf.createStatement(address, NCO.region, vf.createLiteral(state)));
                     if (street != null)
-                        rdf.add(vf.createStatement(address, VCARD.streetAddress, vf.createLiteral(street)));
+                        rdf.add(vf.createStatement(address, NCO.streetAddress, vf.createLiteral(street)));
+                     
+                    if (comment != null) {
+                        addStatement(rdf, address, NCO.contactMediumComment, comment);
+                    }
+                    
                     // add the ano-statement to the result
-                    rdf.add(addressRelation, address);
+                    rdf.add(NCO.hasPostalAddress, address);
                 }
                 catch (ModelException e) {
                     logger.error("ModelException while adding statements", e);
@@ -249,7 +273,7 @@ public abstract class OutlookResource {
 		}
 
 		public URI getType() {
-			return DATA_GEN.MSOLDistList;
+			return NCO.ContactGroup;
 		}
 	}
 
@@ -263,12 +287,12 @@ public abstract class OutlookResource {
 
 		protected void addData(RDFContainer rdf) throws IOException {
 			Dispatch resource = getResource();
-			addPropertyIfNotNull(rdf, DATA.title, resource, "Subject");
-			addPropertyIfNotNull(rdf, DATA_GEN.fullText, resource, "Body");
+			addPropertyIfNotNull(rdf, NIE.title, resource, "Subject");
+			addPropertyIfNotNull(rdf, NIE.plainTextContent, resource, "Body");
 		}
 
 		public URI getType() {
-			return DATA_GEN.Document;
+			return NFO.TextDocument;
 		}
 	}
 
@@ -289,7 +313,7 @@ public abstract class OutlookResource {
 		}
 
 		protected void addData(RDFContainer rdf) throws IOException {
-			addPropertyIfNotNull(rdf, DATA.title, getResource(), "Name");
+			addPropertyIfNotNull(rdf, NIE.title, getResource(), "Name");
 
 		}
 
@@ -298,7 +322,7 @@ public abstract class OutlookResource {
 		}
 
 		public URI getType() {
-			return DATA_GEN.FolderDataObject;
+			return NFO.Folder;
 		}
 
 		public boolean isFolder() {
@@ -320,24 +344,26 @@ public abstract class OutlookResource {
 			Dispatch resource = getSaveResource();
 			ValueFactory vf = rdf.getValueFactory();
 			
-			addPropertyIfNotNull(rdf, DATA.subject, resource, "Subject");
-			addPropertyIfNotNull(rdf, DATA.title, resource, "Subject");
-			addDateIfNotNull(rdf, DATA_GEN.receivedDate, resource, "ReceivedTime");
-			addDateIfNotNull(rdf, DATA_GEN.sentDate, resource, "SentOn");
-			addPropertyIfNotNull(rdf, DATA_GEN.fullText, resource, "Body");
+			addPropertyIfNotNull(rdf, NMO.messageSubject, resource, "Subject");
+			addDateIfNotNull(rdf, NMO.receivedDate, resource, "ReceivedTime");
+			addDateIfNotNull(rdf, NMO.sentDate, resource, "SentOn");
+			addPropertyIfNotNull(rdf, NMO.plainTextMessageContent, resource, "Body");
 
 			String name = getLiteralOf(getSaveResource(), "SenderName");
 			String mailbox = getLiteralOf(getSaveResource(), "SenderEmailAddress");
 			if (!(name == null && mailbox == null)) {
                 try {
                     URI from = vf.createURI(getUri() + "_FROM");
-                    rdf.add(vf.createStatement(from, RDF.type, DATA_GEN.Agent));
+                    rdf.add(vf.createStatement(from, RDF.type, NCO.Contact));
                     if (name != null)
-                        rdf.add(vf.createStatement(from, DATA_GEN.name, vf.createLiteral(name)));
+                        rdf.add(vf.createStatement(from, NCO.fullname, vf.createLiteral(name)));
                     if (mailbox != null) {
-                        rdf.add(vf.createStatement(from, DATA_GEN.emailAddress, vf.createLiteral(mailbox)));
+                        Resource emailAddressResource = UriUtil.generateRandomResource(rdf.getModel());
+                        addStatement(rdf, from, NCO.hasEmailAddress, emailAddressResource);
+                        addStatement(rdf, emailAddressResource, RDF.type, NCO.EmailAddress);
+                        addStatement(rdf, emailAddressResource, NCO.emailAddress, vf.createLiteral(mailbox));
                     }
-                    rdf.add(DATA_GEN.from, from);
+                    rdf.add(NMO.from, from);
                 }
                 catch (ModelException e) {
                     logger.error("ModelException while adding statements", e);
@@ -362,21 +388,24 @@ public abstract class OutlookResource {
 						mailbox = getLiteralOf(recipient, "Address");
 						if (!(name == null && mailbox == null)) {
 							URI rec = vf.createURI(getUri() + "_recipient" + i);
-							rdf.add(vf.createStatement(rec, RDF.type, DATA_GEN.Agent));
+							rdf.add(vf.createStatement(rec, RDF.type, NCO.Contact));
 							if (name != null)
-								rdf.add(vf.createStatement(rec, DATA_GEN.name, vf.createLiteral(name)));
+								rdf.add(vf.createStatement(rec, NCO.fullname, vf.createLiteral(name)));
 							if (mailbox != null) {
-								rdf.add(vf.createStatement(rec, DATA_GEN.emailAddress, vf.createLiteral(mailbox)));
+							    Resource emailAddressResource = UriUtil.generateRandomResource(rdf.getModel());
+							    addStatement(rdf, rec, NCO.hasEmailAddress, emailAddressResource);
+							    addStatement(rdf, emailAddressResource, RDF.type, NCO.EmailAddress);
+							    addStatement(rdf, emailAddressResource, NCO.emailAddress, vf.createLiteral(mailbox));
 							}
 
 							if (type.equals(Integer.toString(OlObjectClass.olTo))) {
-								rdf.add(DATA_GEN.to, rec);
+								rdf.add(NMO.to, rec);
 							}
 							else if (type.equals(Integer.toString(OlObjectClass.olCC))) {
-								rdf.add(DATA_GEN.cc, rec);
+								rdf.add(NMO.cc, rec);
 							}
 							else if (type.equals(Integer.toString(OlObjectClass.olBCC))) {
-								rdf.add(DATA_GEN.bcc, rec);
+								rdf.add(NMO.bcc, rec);
 							}
 						}
 					}
@@ -388,7 +417,7 @@ public abstract class OutlookResource {
 		}
 
 		public URI getType() {
-			return DATA_GEN.Email;
+			return NMO.Email;
 		}
 
 	}
@@ -403,12 +432,13 @@ public abstract class OutlookResource {
 
 		protected void addData(RDFContainer rdf) throws IOException {
 			Dispatch resource = getResource();
-			addPropertyIfNotNull(rdf, DATA.title, resource, "Subject");
-			addPropertyIfNotNull(rdf, DATA_GEN.fullText, resource, "Body");
+			addPropertyIfNotNull(rdf, NIE.title, resource, "Subject");
+			addPropertyIfNotNull(rdf, NIE.plainTextContent, resource, "Body");
 		}
 
 		public URI getType() {
-			return DATA_GEN.MSOLNote;
+		    // TODO get back here after introducing nfo:Note
+			return NFO.TextDocument;
 		}
 	}
 
@@ -475,7 +505,7 @@ public abstract class OutlookResource {
 		}
 
 		protected void addData(RDFContainer rdf) throws IOException {
-			rdf.add(DATA.title, "Outlook root folder");
+			rdf.add(NIE.title, "Outlook root folder");
 		}
 
 		public long getLastModified() {
@@ -483,7 +513,7 @@ public abstract class OutlookResource {
 		}
 
 		public URI getType() {
-			return DATA_GEN.FolderDataObject;
+			return NFO.Folder;
 		}
 
 		public boolean isFolder() {
@@ -503,16 +533,16 @@ public abstract class OutlookResource {
 
 		protected void addData(RDFContainer rdf) throws IOException {
 			Dispatch resource = getSaveResource();
-			addPropertyIfNotNull(rdf, DATA.title, resource, "Subject");
-			addPropertyIfNotNull(rdf, DATA_GEN.fullText, resource, "Body");
+			addPropertyIfNotNull(rdf, NIE.title, resource, "Subject");
+			addPropertyIfNotNull(rdf, NIE.plainTextContent, resource, "Body");
 			
 			// task-specific
-			addDateIfNotNull(rdf, DATA_GEN.msolCompletedDate, resource, "DateCompleted");
-			addDateIfNotNull(rdf, DATA_GEN.msolDueDate, resource, "DueDate");
+			addDateIfNotNull(rdf, NCAL.completed, resource, "DateCompleted");
+			addNcalDateTimeIfNotNull(rdf, NCAL.due, resource, "DueDate");
 		}
 
 		public URI getType() {
-			return DATA_GEN.MSOLTask;
+			return NCAL.Todo;
 		}
 
 	}
@@ -751,6 +781,35 @@ public abstract class OutlookResource {
 			rdf.add(property, date);
 		}
 	}
+	
+	protected void addNcalDateTimeIfNotNull(RDFContainer rdf, URI property, Dispatch resource, String dispName) {
+	    Date date = getDateOf(resource, dispName);
+	    if (date != null) {
+            Resource ncalDateTimeResource = UriUtil.generateRandomResource(rdf.getModel());
+            rdf.add(property, ncalDateTimeResource);
+            addStatement(rdf, ncalDateTimeResource, RDF.type, NCAL.NcalDateTime);
+            addStatement(rdf, ncalDateTimeResource, NCAL.dateTime, DateUtil.dateTime2String(date), XSD._dateTime);
+        }
+	}
+	
+	protected void addEmailAddressIfNotNull(Model model, Resource parentNode, Dispatch resource, String dispName) {
+	    String addressString = getLiteralOf(resource, dispName);
+	    Resource emailAddressNode = UriUtil.generateRandomResource(model);
+	    model.addStatement(parentNode,NCO.hasEmailAddress,emailAddressNode);
+	    model.addStatement(emailAddressNode, RDF.type, NCO.EmailAddress);
+	    model.addStatement(emailAddressNode, NCO.emailAddress, addressString);
+	}
+	
+	protected void addTelephoneNumberIfNotNull(Model model, Resource parentNode, Dispatch resource, String dispName, String comment, URI type) {
+        String telephoneString = getLiteralOf(resource, dispName);
+        Resource telephoneNumberNode = UriUtil.generateRandomResource(model);
+        model.addStatement(parentNode,NCO.hasPhoneNumber,telephoneNumberNode);
+        model.addStatement(telephoneNumberNode, RDF.type, type);
+        model.addStatement(telephoneNumberNode, NCO.phoneNumber, telephoneString);
+        if (comment != null) {
+            model.addStatement(telephoneNumberNode, NCO.contactMediumComment, comment);
+        }
+    }
 
 	/**
 	 * protected helper method. Extract the value of the DispName from the disp d. If it is not null, create a
@@ -761,6 +820,18 @@ public abstract class OutlookResource {
 		if (s != null)
 			rdf.add(property, s);
 	}
+	
+	protected void addStatement(RDFContainer rdf, Resource subject, URI predicate, String label, URI datatype) {
+	    addStatement(rdf,subject,predicate,rdf.getModel().createDatatypeLiteral(label, datatype));
+	}
+	
+	protected void addStatement(RDFContainer rdf, Resource subject, URI predicate, String label) {
+        addStatement(rdf,subject,predicate,rdf.getModel().createPlainLiteral(label));
+    }
+	
+    protected void addStatement(RDFContainer rdf, Resource subject, URI predicate, Node object) {
+        rdf.getModel().addStatement(subject, predicate, object);
+    }
 
 	/**
 	 * finalizer for releasing the activeX

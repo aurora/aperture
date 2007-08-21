@@ -6,30 +6,15 @@
  */
 package org.semanticdesktop.aperture.examples;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Set;
+import java.util.Iterator;
+import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
-import org.ontoware.rdf2go.ModelFactory;
-import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.ModelSet;
-import org.ontoware.rdf2go.model.Syntax;
-import org.ontoware.rdf2go.model.node.URI;
-import org.semanticdesktop.aperture.accessor.DataObject;
-import org.semanticdesktop.aperture.accessor.FileDataObject;
-import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
-import org.semanticdesktop.aperture.crawler.Crawler;
-import org.semanticdesktop.aperture.crawler.CrawlerHandler;
-import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.web.WebCrawler;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;
@@ -37,17 +22,11 @@ import org.semanticdesktop.aperture.datasource.config.RegExpPattern;
 import org.semanticdesktop.aperture.datasource.config.SubstringCondition;
 import org.semanticdesktop.aperture.datasource.config.SubstringPattern;
 import org.semanticdesktop.aperture.datasource.web.WebDataSource;
-import org.semanticdesktop.aperture.extractor.Extractor;
-import org.semanticdesktop.aperture.extractor.ExtractorException;
-import org.semanticdesktop.aperture.extractor.ExtractorFactory;
-import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
-import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
+import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.hypertext.linkextractor.impl.DefaultLinkExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
-import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
-import org.semanticdesktop.aperture.vocabulary.DATA;
 
 /**
  * Example class that crawls a web site or locally stored hypertext graph and dumps all extracted information
@@ -63,7 +42,7 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
  * is because MIME type detection is already a crucial part of the WebCrawler's operation (needed for
  * determining an appropriate LinkExtractor), there is no need to redo it.
  */
-public class ExampleWebCrawler {
+public class ExampleWebCrawler extends AbstractExampleCrawler {
 
     public static final String DEPTH_OPTION = "-depth";
 
@@ -73,23 +52,13 @@ public class ExampleWebCrawler {
 
     public static final String INCLUDE_EMBEDDED_RESOURCES_OPTION = "-includeEmbeddedResources";
 
-    public static final String EXTRACT_CONTENTS_OPTION = "-extractContents";
-
-    public static final String VERBOSE_OPTION = "-verbose";
-
     private String startUrl;
-
-    private File outputFile;
 
     private int depth = -1;
 
     private DomainBoundaries boundaries;
 
     private boolean includeEmbeddedResources = false;
-
-    private boolean extractingContents = false;
-
-    private boolean verbose = false;
 
     public DomainBoundaries getBoundaries() {
         return boundaries;
@@ -107,28 +76,12 @@ public class ExampleWebCrawler {
         this.depth = depth;
     }
 
-    public boolean isExtractingContents() {
-        return extractingContents;
-    }
-
-    public void setExtractingContents(boolean extractingContents) {
-        this.extractingContents = extractingContents;
-    }
-
     public boolean isIncludeEmbeddedResources() {
         return includeEmbeddedResources;
     }
 
     public void setIncludeEmbeddedResources(boolean includeEmbeddedResources) {
         this.includeEmbeddedResources = includeEmbeddedResources;
-    }
-
-    public File getOutputFile() {
-        return outputFile;
-    }
-
-    public void setOutputFile(File outputFile) {
-        this.outputFile = outputFile;
     }
 
     public String getStartUrl() {
@@ -139,40 +92,30 @@ public class ExampleWebCrawler {
         this.startUrl = startUrl;
     }
 
-    public boolean isVerbose() {
-        return verbose;
-    }
-
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
-    }
-
     public void crawl() throws ModelException {
         if (startUrl == null) {
             throw new IllegalArgumentException("start URL cannot be null");
-        }
-        if (outputFile == null) {
-            throw new IllegalArgumentException("output file cannot be null");
         }
 
         // create a data source configuration
         RDFContainerFactoryImpl factory = new RDFContainerFactoryImpl();
         RDFContainer config = factory.newInstance("urn:test:exampleimapsource");
-
-        ConfigurationUtil.setRootUrl(startUrl, config);
-        ConfigurationUtil.setIncludeEmbeddedResources(includeEmbeddedResources, config);
+        WebDataSource source = new WebDataSource();
+        source.setConfiguration(config);
+        
+        source.setRootUrl(startUrl);
+        source.setIncludeEmbeddedResources(includeEmbeddedResources);
 
         if (depth >= 0) {
-            ConfigurationUtil.setMaximumDepth(depth, config);
+            source.setMaximumDepth(depth);
         }
 
         if (boundaries != null) {
-            ConfigurationUtil.setDomainBoundaries(boundaries, config);
+            source.setDomainBoundaries(boundaries);
         }
 
         // create the DataSource
-        WebDataSource source = new WebDataSource();
-        source.setConfiguration(config);
+        
 
         // setup a crawler that can handle this type of DataSource
         WebCrawler crawler = new WebCrawler();
@@ -180,13 +123,13 @@ public class ExampleWebCrawler {
         crawler.setDataAccessorRegistry(new DefaultDataAccessorRegistry());
         crawler.setMimeTypeIdentifier(new MagicMimeTypeIdentifier());
         crawler.setLinkExtractorRegistry(new DefaultLinkExtractorRegistry());
-        crawler.setCrawlerHandler(new SimpleCrawlerHandler(true,extractingContents,verbose,outputFile));
+        crawler.setCrawlerHandler(getHandler());
 
         // start crawling
         crawler.crawl();
     }
 
-    public static void main(String[] args) throws ModelException {
+    public static void main(String[] args) throws Exception {
         // create a new ExampleWebCrawler instance
         ExampleWebCrawler crawler = new ExampleWebCrawler();
 
@@ -197,95 +140,86 @@ public class ExampleWebCrawler {
         crawler.crawl();
     }
 
-    private static void parseArgs(String[] args, ExampleWebCrawler crawler) {
+    private static void parseArgs(String[] arguments, ExampleWebCrawler crawler) throws Exception {
         // create an empty DomainBoundaries
         DomainBoundaries boundaries = new DomainBoundaries();
+        
+        List<String> remainingOptions = crawler.processCommonOptions(arguments);
+        
+        Iterator<String> iterator = remainingOptions.iterator();
 
         // parse the command-line options
-        for (int i = 0; i < args.length; i++) {
-            String arg = args[i];
-            String nextArg = i < args.length - 1 ? args[i + 1] : null;
+        while (iterator.hasNext()) {
+            String arg = iterator.next();
+            String nextArg = null;
 
-            if (EXTRACT_CONTENTS_OPTION.equals(arg)) {
-                crawler.setExtractingContents(true);
-            }
-            else if (INCLUDE_EMBEDDED_RESOURCES_OPTION.equals(arg)) {
+            if (INCLUDE_EMBEDDED_RESOURCES_OPTION.equals(arg)) {
                 crawler.setIncludeEmbeddedResources(true);
-            }
-            else if (VERBOSE_OPTION.equals(arg)) {
-                crawler.setVerbose(true);
             }
             else if (DEPTH_OPTION.equals(arg)) {
                 try {
-                    if (nextArg == null) {
+                    if (!iterator.hasNext()) {
                         System.err.println("missing value for option " + DEPTH_OPTION);
-                        exitWithUsageMessage();
+                        crawler.exitWithUsageMessage();
                     }
                     else {
-                        i++;
+                        nextArg = iterator.next();
                         crawler.setDepth(Integer.parseInt(nextArg));
                     }
                 }
                 catch (NumberFormatException e) {
                     System.err.println("illegal depth: " + nextArg);
-                    exitWithUsageMessage();
+                    crawler.exitWithUsageMessage();
                 }
             }
             else if (INCLUDE_OPTION.endsWith(arg)) {
-                if (nextArg == null) {
+                if (!iterator.hasNext()) {
                     System.err.println("missing value for option " + INCLUDE_OPTION);
-                    exitWithUsageMessage();
+                    crawler.exitWithUsageMessage();
                 }
                 else {
                     try {
-                        i++;
+                        nextArg = iterator.next();
                         boundaries.addIncludePattern(new RegExpPattern(nextArg));
                     }
                     catch (PatternSyntaxException e) {
                         System.err.println("illegal regular expression: " + nextArg);
-                        exitWithUsageMessage();
+                        crawler.exitWithUsageMessage();
                     }
                 }
             }
             else if (EXCLUDE_OPTION.endsWith(arg)) {
-                if (nextArg == null) {
+                if (!iterator.hasNext()) {
                     System.err.println("missing value for option " + EXCLUDE_OPTION);
-                    exitWithUsageMessage();
+                    crawler.exitWithUsageMessage();
                 }
                 else {
                     try {
-                        i++;
+                        nextArg = iterator.next();
                         boundaries.addExcludePattern(new RegExpPattern(nextArg));
                     }
                     catch (PatternSyntaxException e) {
                         System.err.println("illegal regular expression: " + nextArg);
-                        exitWithUsageMessage();
+                        crawler.exitWithUsageMessage();
                     }
                 }
             }
             else if (arg.startsWith("-")) {
                 System.err.println("Unknown option: " + arg);
-                exitWithUsageMessage();
+                crawler.exitWithUsageMessage();
             }
             else if (crawler.getStartUrl() == null) {
                 crawler.setStartUrl(arg);
             }
-            else if (crawler.getOutputFile() == null) {
-                crawler.setOutputFile(new File(arg));
-            }
             else {
-                exitWithUsageMessage();
+                crawler.exitWithUsageMessage();
             }
         }
 
         // make sure that the required properties have been set
         if (crawler.getStartUrl() == null) {
             System.err.println("Missing start URL");
-            exitWithUsageMessage();
-        }
-        if (crawler.getOutputFile() == null) {
-            System.err.println("Missing output file");
-            exitWithUsageMessage();
+            crawler.exitWithUsageMessage();
         }
 
         // if the domain boundaries is still empty, initialize it with the start URL's path to prevent
@@ -308,7 +242,7 @@ public class ExampleWebCrawler {
                 }
                 catch (MalformedURLException e) {
                     System.err.println("invalid URL: " + includePath);
-                    exitWithUsageMessage();
+                    crawler.exitWithUsageMessage();
                 }
             }
 
@@ -319,134 +253,24 @@ public class ExampleWebCrawler {
         crawler.setBoundaries(boundaries);
     }
 
-    private static void exitWithUsageMessage() {
-        System.err.println("Usage: java " + ExampleWebCrawler.class.getName() + " startURL outputFile ["
-                + DEPTH_OPTION + " depth] [" + INCLUDE_OPTION + " includePattern] [" + EXCLUDE_OPTION
-                + " exludePattern] [" + INCLUDE_EMBEDDED_RESOURCES_OPTION + "] [" + EXTRACT_CONTENTS_OPTION
-                + "] [" + VERBOSE_OPTION + "]");
-        System.exit(-1);
+    @Override
+    protected String getSpecificSyntaxPart() {
+        return "[" + DEPTH_OPTION + " depth] " +
+            "[" + INCLUDE_OPTION + " includePattern] " +
+            "[" + EXCLUDE_OPTION + " exludePattern] " +
+            "[" + INCLUDE_EMBEDDED_RESOURCES_OPTION + "]" +
+            "startUrl";
     }
-
-/*    private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
-
-        private ModelSet modelSet;
-
-        private int nrObjects;
-
-        private ExtractorRegistry extractorRegistry;
-
-        public SimpleCrawlerHandler() throws ModelException {
-            // create a ModelSet that will hold the RDF Models of all crawled files and folders
-            ModelFactory factory = RDF2Go.getModelFactory();
-            modelSet = factory.createModelSet();
-            modelSet.open();
-
-            // create some identification and extraction components
-            if (extractingContents) {
-                extractorRegistry = new DefaultExtractorRegistry();
-            }
-        }
-
-        public void accessingObject(Crawler crawler, String url) {
-            if (verbose) {
-                System.out.println("Processing URL " + ++nrObjects + ": " + url + "...");
-            }
-        }
-
-        public void objectNew(Crawler dataCrawler, DataObject object) {
-            // process the contents on an InputStream, if available
-            if (object instanceof FileDataObject) {
-                try {
-                    process((FileDataObject) object);
-                }
-                catch (Exception e) {
-                    System.err.println("IOException while processing " + object.getID());
-                    e.printStackTrace();
-                }
-            }
-
-            object.dispose();
-        }
-
-        private void process(FileDataObject object) throws IOException, ExtractorException {
-            // instead of using the MIME type returned by the web server, we could also use the
-            // MimeTypeIdentifier, as we do in the other examples. We do it this way to demonstrate
-            // that both are possible.
-            URI id = object.getID();
-            String mimeType = object.getMetadata().getString(DATA.mimeType);
-            if (mimeType != null) {
-                if (extractingContents) {
-                    Set extractors = extractorRegistry.get(mimeType);
-                    if (!extractors.isEmpty()) {
-                        ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
-                        Extractor extractor = factory.get();
-                        extractor.extract(id, object.getContent(), null, mimeType, object.getMetadata());
-                    }
-                }
-            }
-        }
-
-        public void crawlStarted(Crawler crawler) {
-            nrObjects = 0;
-        }
-
-        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-            try {
-                Writer writer = new BufferedWriter(new FileWriter(outputFile));
-                modelSet.writeTo(writer, Syntax.Trix);
-                writer.close();
-
-                System.out.println("Crawled " + nrObjects + " objects (exit code: " + exitCode + ")");
-                System.out.println("Saved RDF model to " + outputFile);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-            
-            modelSet.close();
-        }
-
-        public void objectChanged(Crawler dataCrawler, DataObject object) {
-            object.dispose();
-            printUnexpectedEventWarning("changed");
-        }
-
-        public void objectNotModified(Crawler crawler, String url) {
-            printUnexpectedEventWarning("unmodified");
-        }
-
-        public void objectRemoved(Crawler dataCrawler, String url) {
-            printUnexpectedEventWarning("removed");
-        }
-
-        public void clearStarted(Crawler crawler) {
-            printUnexpectedEventWarning("clearStarted");
-        }
-
-        public void clearingObject(Crawler crawler, String url) {
-            printUnexpectedEventWarning("clearingObject");
-        }
-
-        public void clearFinished(Crawler crawler, ExitCode exitCode) {
-            printUnexpectedEventWarning("clear finished");
-        }
-
-        public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
-            return this;
-        }
-
-        public RDFContainer getRDFContainer(URI uri) {
-            // note: by using ModelSet.getModel, all statements added to this Model are added to the ModelSet
-            // automatically, unlike ModelFactory.createModel, which creates stand-alone models.
-
-            Model model = modelSet.getModel(uri);
-            model.open();
-            return new RDFContainerImpl(model, uri);
-       }
-
-        private void printUnexpectedEventWarning(String event) {
-            // as we don't keep track of access data in this example code, some events should never occur
-            System.err.println("encountered unexpected event (" + event + ") with non-incremental crawler");
-        }
-    }*/
+    
+    @Override
+    protected String getSpecificExplanationPart() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("   " + DEPTH_OPTION + " - crawl depth (optional)\n");
+        builder.append("   " + INCLUDE_OPTION + " - regular expression for URLs that are to be INCLUDED in the crawl\n" +
+        		       "                   (optional, can be specified multple times)\n");
+        builder.append("   " + EXCLUDE_OPTION + " - regular expression for URLs that are to be EXCLUDED from the crawl\n" +
+                       "                   (optional, can be specified multiple times)\n");
+        builder.append("   " + INCLUDE_EMBEDDED_RESOURCES_OPTION + " - if specified, the embedded resources will be included in the crawl");
+        return builder.toString();
+    }
 }

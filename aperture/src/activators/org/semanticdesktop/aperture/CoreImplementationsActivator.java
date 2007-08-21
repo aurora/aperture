@@ -10,7 +10,8 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.semanticdesktop.aperture.accessor.file.FileAccessorActivator;
 import org.semanticdesktop.aperture.accessor.http.HttpAccessorActivator;
-import org.semanticdesktop.aperture.addressbook.AddressBookActivator;
+import org.semanticdesktop.aperture.addressbook.apple.AppleAddressBookActivator;
+import org.semanticdesktop.aperture.addressbook.thunderbird.ThunderbirdAddressBookActivator;
 import org.semanticdesktop.aperture.crawler.filesystem.FilesystemCrawlerActivator;
 import org.semanticdesktop.aperture.crawler.ical.IcalCrawlerActivator;
 import org.semanticdesktop.aperture.crawler.imap.ImapCrawlerActivator;
@@ -37,6 +38,10 @@ import org.semanticdesktop.aperture.extractor.xml.XmlExtractorActivator;
 import org.semanticdesktop.aperture.opener.file.FileOpenerActivator;
 import org.semanticdesktop.aperture.opener.http.HttpOpenerActivator;
 import org.semanticdesktop.aperture.outlook.OutlookActivator;
+import org.semanticdesktop.aperture.websites.bibsonomy.BibsonomyActivator;
+import org.semanticdesktop.aperture.websites.delicious.DeliciousActivator;
+import org.semanticdesktop.aperture.websites.flickr.FlickrActivator;
+import org.semanticdesktop.aperture.websites.iphoto.IPhotoActivator;
 
 public class CoreImplementationsActivator implements BundleActivator {
 
@@ -49,7 +54,14 @@ public class CoreImplementationsActivator implements BundleActivator {
 	private IcalCrawlerActivator icalCrawlerActivator;
 	private ImapCrawlerActivator imapCrawlerActivator;
 	private WebCrawlerActivator	webCrawlerActivator;
-	
+	private AppleAddressBookActivator appleAddressBookActivator;
+    private ThunderbirdAddressBookActivator thunderbirdAddressbookActivator;
+    private OutlookActivator outlookActivator;
+	private BibsonomyActivator bibsonomyActivator;
+	private DeliciousActivator deliciousActivator;
+	private FlickrActivator flickrActivator;
+	private IPhotoActivator iphotoActivator;
+    
 	private ExcelExtractorActivator excelExtractorActivator;
 	private HtmlExtractorActivator htmlExtractorActivator;
 	private MimeExtractorActivator mimeExtractorActivator;
@@ -73,10 +85,8 @@ public class CoreImplementationsActivator implements BundleActivator {
 	
 	private FileOpenerActivator fileOpenerActivator;
 	private HttpOpenerActivator httpOpenerActivator;
-	
-    private AddressBookActivator addressbookActivator;
     
-    private OutlookActivator outlookActivator;
+    
     
 	public void start(BundleContext context) throws Exception {
 		fileAccessorActivator = new FileAccessorActivator();
@@ -92,7 +102,21 @@ public class CoreImplementationsActivator implements BundleActivator {
 		imapCrawlerActivator.start(context);
 		webCrawlerActivator = new WebCrawlerActivator();
 		webCrawlerActivator.start(context);
-		
+		appleAddressBookActivator = new AppleAddressBookActivator();
+		appleAddressBookActivator.start(context);
+		thunderbirdAddressbookActivator = new ThunderbirdAddressBookActivator();
+		thunderbirdAddressbookActivator.start(context);
+		outlookActivator = new OutlookActivator();
+        outlookActivator.start(context);
+		bibsonomyActivator = new BibsonomyActivator();
+		bibsonomyActivator.start(context);
+		deliciousActivator = new DeliciousActivator();
+        deliciousActivator.start(context);
+        flickrActivator = new FlickrActivator();
+        flickrActivator.start(context);
+        iphotoActivator = new IPhotoActivator();
+        iphotoActivator.start(context);
+        
 		excelExtractorActivator = new ExcelExtractorActivator();
 		excelExtractorActivator.start(context);
 		htmlExtractorActivator = new HtmlExtractorActivator();
@@ -137,12 +161,6 @@ public class CoreImplementationsActivator implements BundleActivator {
 		fileOpenerActivator.start(context);
 		httpOpenerActivator = new HttpOpenerActivator();
 		httpOpenerActivator.start(context);
-
-        addressbookActivator = new AddressBookActivator();
-        addressbookActivator.start(context);
-        
-        outlookActivator = new OutlookActivator();
-        outlookActivator.start(context);
         
 		bc = context;	
 	}
@@ -161,7 +179,21 @@ public class CoreImplementationsActivator implements BundleActivator {
 		imapCrawlerActivator = null;
 		webCrawlerActivator.stop(context);
 		webCrawlerActivator = null;
-		
+		appleAddressBookActivator.stop(context);
+		appleAddressBookActivator = null;
+		thunderbirdAddressbookActivator.stop(context);
+		thunderbirdAddressbookActivator = null;
+		outlookActivator.stop(context);
+        outlookActivator = null;
+        bibsonomyActivator.stop(context);
+        bibsonomyActivator = null;
+        deliciousActivator.stop(context);
+        deliciousActivator = null;
+        flickrActivator.stop(context);
+        flickrActivator = null;
+        iphotoActivator.stop(context);
+        iphotoActivator = null;
+        
 		excelExtractorActivator.stop(context);
 		excelExtractorActivator = null;
 		htmlExtractorActivator.stop(context);
@@ -207,12 +239,6 @@ public class CoreImplementationsActivator implements BundleActivator {
 		httpOpenerActivator.stop(context);
 		httpOpenerActivator = null;
 		
-        addressbookActivator.stop(context);
-        addressbookActivator = null;
-        
-        outlookActivator.stop(context);
-        outlookActivator = null;
-        
 		bc = null;	
 	}
 }

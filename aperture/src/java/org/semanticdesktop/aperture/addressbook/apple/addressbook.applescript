@@ -87,23 +87,28 @@ tell application "Finder"
 end tell
 
 tell application "Address Book"
-	set out to "<rdf:RDF xmlns:data='http://aperture.semanticdesktop.org/ontology/data#' xmlns:foaf='http://xmlns.com/foaf/0.1/' xmlns:vcard='http://www.gnowsis.org/ont/vcard#' xmlns:rdfs='http://www.w3.org/2000/01/rdf-schema#' xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>" & return
+	set out to "<rdf:RDF xmlns:foaf='http://xmlns.com/foaf/0.1/' xmlns:nco='http://www.semanticdesktop.org/ontologies/2007/03/22/nco#"' xmlns:rdfs='http://www.w3.org/2000/01/rdf-schema#' xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>" & return
 	repeat with p in people
-		set out to out & "<vcard:vCard rdf:about='urn:mac:addressbook:" & my urlencode(name of p) & "'>" & return 
+		set out to out & "<nco:Contact rdf:about='urn:mac:addressbook:" & my urlencode(name of p) & "'>" & return 
 		set person_name to my xmlescape(name of p)
-		set out to out & "  <vcard:fullname>" & (person_name) & "</vcard:fullname>" & return 
+		set out to out & "  <nco:fullname>" & (person_name) & "</nco:fullname>" & return 
 		set out to out & "  <rdfs:label>" & (person_name) & "</rdfs:label>" & return 
 		
 		repeat with e in emails of p
 			set em to my trim_line(my xmlescape(value of e)," ",2)
-			set out to out & "  <vcard:email>" & em & "</vcard:email>" & return 
-			set out to out & "  <data:emailAddress>" & em & "</data:emailAddress>" & return 
+			set out to out & "  <nco:hasEmailAddress rdf:parseType='Resource'>" & return 
+			set out to out & "      <nco:emailAddress>" & em & "</nco:emailAddress>" & return 
+			set out to out & "      <rdf:type rdf:resource='http://www.semanticdesktop.org/ontologies/2007/03/22/nco#EmailAddress' />" & return 
+			set out to out & "  </nco:hasEmailAddress>" & return 
 		end repeat
 		repeat with g in groups of p 
 			set gt to my trim_line(my xmlescape(name of g), " ", 2)
-		 	set out to out & "  <data:group>" & gt & "</data:group>" & return 
+		 	set out to out & "  <nco:belongsToGroup rdf:parseType='Resource'>" & gt & "</nco:belongsToGroup>" & return 
+			set out to out & "      <rdf:type rdf:resource='http://www.semanticdesktop.org/ontologies/2007/03/22/nco#ContactGroup' />"  & return 		 	
+		 	set out to out & "      <nco:contactGroupName>" & gt & "</nco:contactGroupName>" & return 
+		 	set out to out & "  </nco:belongsToGroup>" & return 
 		end repeat 
-		set out to out & "</vcard:vCard>" & return 
+		set out to out & "</nco:Contact>" & return 
 	end repeat
 	set out to out & "</rdf:RDF>"
 

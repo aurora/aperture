@@ -13,11 +13,15 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 
 import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.Literal;
+import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.util.UriUtil;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NMO;
 
 /**
  * Utility methods for JavaMail.
@@ -25,19 +29,24 @@ import org.semanticdesktop.aperture.vocabulary.DATA;
 public class MailUtil {
 
 	/**
-	 * Returns the steroetypical date of a Message. This is equal to the sent date or, if not available, the
-	 * received date or, if not available, the retrieval date (i.e., "new Date()").
+	 * Adds the information about dates pertaining to the given message. In compliance with the previous
+     * versions of this method, it adds the current date as the received date of the message if neither
+     * the sent date nor the received date are specified.
+     * @param message the message
+     * @param container the container where the metadata should be stored
 	 */
-	public static Date getDate(Message message) throws MessagingException {
-		Date result = message.getSentDate();
-		if (result == null) {
-			result = message.getReceivedDate();
-			if (result == null) {
-				result = new Date();
-			}
-		}
-
-		return result;
+	public static void getDates(Message message, RDFContainer container) throws MessagingException {
+		Date sentDate = message.getSentDate();
+        if (sentDate != null) {
+            container.add(NMO.sentDate, sentDate);
+        }
+        Date receivedDate = message.getReceivedDate();
+        if (receivedDate != null) {
+            container.add(NMO.receivedDate, receivedDate);
+        }
+        if (sentDate == null && receivedDate == null) {
+            container.add(NMO.receivedDate, new Date());
+        }
 	}
 
 	/**
@@ -66,22 +75,27 @@ public class MailUtil {
 		// proceed when at least one has a reasonable value
 		if (hasRealValue(name) || hasRealValue(emailAddress)) {
 			// create a URI for this address
-			URI person = metadata.getValueFactory().createURI(getPersonURI(emailAddress, name));
+            Model model = metadata.getModel();
+			URI contact = model.createURI(getPersonURI(emailAddress, name));
 
 			// connect the person resource to the mail resource
-			metadata.add(predicate, person);
-			metadata.add(metadata.getValueFactory().createStatement(person, RDF.type, DATA.Agent));
+			model.addStatement(contact, RDF.type, NCO.Contact);
 
 			// add name and address details
 			if (hasRealValue(name)) {
 				Literal literal = metadata.getValueFactory().createLiteral(name);
-				metadata.add(metadata.getValueFactory().createStatement(person, DATA.name, literal));
+				model.addStatement(contact, NCO.fullname, literal);
 			}
 
 			if (hasRealValue(emailAddress)) {
 				Literal literal = metadata.getValueFactory().createLiteral(emailAddress);
-				metadata.add(metadata.getValueFactory().createStatement(person, DATA.emailAddress, literal));
+                Resource emailResource = UriUtil.generateRandomResource(model);
+				model.addStatement(contact, NCO.hasEmailAddress, emailResource);
+                model.addStatement(emailResource, RDF.type, NCO.EmailAddress);
+                model.addStatement(emailResource, NCO.emailAddress, literal);
 			}
+            
+            metadata.add(predicate, contact);
 		}
 	}
 

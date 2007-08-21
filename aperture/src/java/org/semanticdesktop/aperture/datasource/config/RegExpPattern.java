@@ -17,7 +17,7 @@ import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.ontoware.rdf2go.vocabulary.XSD;
 import org.semanticdesktop.aperture.util.ModelUtil;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 /**
  * A UrlPattern implementation using a regular expression evaluation strategy.
@@ -57,7 +57,7 @@ public class RegExpPattern extends UrlPattern {
 	public Collection<Statement> getStatements(Model model, Resource subject) {
 		ArrayList<Statement> result = new ArrayList<Statement>();
 
-		result.add(ModelUtil.createStatement(model, subject, RDF.type, DATASOURCE_GEN.RegExpPattern));
+		result.add(ModelUtil.createStatement(model, subject, RDF.type, DATASOURCE.RegExpPattern));
         
 		try {
             result.add(ModelUtil.createStatement(model, subject, RDF.value, ModelUtil.createLiteral(model,

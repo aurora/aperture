@@ -24,7 +24,8 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 import org.semanticdesktop.aperture.accessor.AccessData;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.MAD;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 /**
  * RepositoryAccessData provides an AccessData implementation storing its information to and retrieving it
@@ -149,7 +150,7 @@ public class RepositoryAccessData implements AccessData {
         HashSet<String> result = null;
 
         try {
-            resultIterator = connection.getStatements(new URIImpl(id), toSesameURI(DATA.linksTo), null, false, context);
+            resultIterator = connection.getStatements(new URIImpl(id), toSesameURI(MAD.linksTo), null, false, context);
             while (resultIterator.hasNext()) {
                 Statement statement = resultIterator.next();
                 Value value = statement.getObject();
@@ -237,11 +238,11 @@ public class RepositoryAccessData implements AccessData {
         remove(subject, predicate);
 
         // add the new statement
-        if (predicate == DATA.redirectsTo) {
+        if (predicate == MAD.redirectsTo) {
             add(new StatementImpl(subject, predicate, new URIImpl(value)));
         }
         else {
-            URI dataType = (predicate == DATA.date || predicate == DATA.byteSize) ? XMLSchema.LONG
+            URI dataType = (predicate == NIE.contentCreated || predicate == NIE.byteSize) ? XMLSchema.LONG
                     : XMLSchema.STRING;
             Literal object = new LiteralImpl(value, dataType);
             add(new StatementImpl(subject, predicate, object));
@@ -249,7 +250,7 @@ public class RepositoryAccessData implements AccessData {
     }
 
     public void putReferredID(String id, String referredID) {
-        add(new StatementImpl(new URIImpl(id), toSesameURI(DATA.linksTo), new URIImpl(referredID)));
+        add(new StatementImpl(new URIImpl(id), toSesameURI(MAD.linksTo), new URIImpl(referredID)));
     }
 
     public void remove(String id, String key) {
@@ -264,7 +265,7 @@ public class RepositoryAccessData implements AccessData {
         commit();
 
         try {
-            connection.remove(new URIImpl(id), toSesameURI(DATA.linksTo), new URIImpl(referredID), context);
+            connection.remove(new URIImpl(id), toSesameURI(MAD.linksTo), new URIImpl(referredID), context);
         }
         catch (RepositoryException e) {
             throw new RuntimeException(e);
@@ -272,7 +273,7 @@ public class RepositoryAccessData implements AccessData {
     }
 
     public void removeReferredIDs(String id) {
-        remove(new URIImpl(id), toSesameURI(DATA.linksTo));
+        remove(new URIImpl(id), toSesameURI(MAD.linksTo));
     }
 
     public void store() throws IOException {
@@ -290,13 +291,13 @@ public class RepositoryAccessData implements AccessData {
 
     private URI toURI(String key) {
         if (key == AccessData.DATE_KEY) {
-            return toSesameURI(DATA.date);
+            return toSesameURI(NIE.contentCreated);
         }
         else if (key == AccessData.BYTE_SIZE_KEY) {
-            return toSesameURI(DATA.byteSize);
+            return toSesameURI(NIE.byteSize);
         }
         else if (key == AccessData.REDIRECTS_TO_KEY) {
-            return toSesameURI(DATA.redirectsTo);
+            return toSesameURI(MAD.redirectsTo);
         }
         else {
             return new URIImpl(URI_PREFIX + key);

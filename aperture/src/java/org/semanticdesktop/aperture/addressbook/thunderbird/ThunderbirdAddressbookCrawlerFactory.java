@@ -17,7 +17,7 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 public class ThunderbirdAddressbookCrawlerFactory implements CrawlerFactory {
 
 	public Set getSupportedTypes() {
-		return Collections.singleton(DATASOURCE.ThunderbirdAddressbookDataSource);
+		return Collections.singleton(THUNDERBIRDADDRESSBOOKDS.ThunderbirdAddressbookDataSource);
 	}
 
 	public Crawler getCrawler(DataSource dataSource) {

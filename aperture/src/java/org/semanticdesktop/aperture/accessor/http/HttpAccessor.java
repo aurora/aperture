@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -29,7 +30,8 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.HttpClientUtil;
 import org.semanticdesktop.aperture.util.UrlUtil;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,33 +54,58 @@ public class HttpAccessor implements DataAccessor {
 
 	private int readTimeout = 20000;
 
+	/**
+	 * Sets the connection timeout 
+	 * @param timeout timeout in miliseconds
+	 */
 	public void setConnectTimeout(int timeout) {
 		this.connectTimeout = timeout;
 	}
 
+	/**
+	 * Returns the connection timeout
+	 * @return the connectino timeout
+	 */
 	public int getConnectTimeout() {
 		return connectTimeout;
 	}
 
+	/**
+	 * Sets the read timeout
+	 * @param timeout timeout in miliseconds
+	 */
 	public void setReadTimeout(int timeout) {
 		this.readTimeout = timeout;
 	}
 
+	/**
+	 * Returns the read timeout
+	 * @return the read timeout
+	 */
 	public int getReadTimeout() {
 		return readTimeout;
 	}
 
-	public DataObject getDataObject(String url, DataSource source, Map params,
+	/**
+	 * @see DataAccessor#getDataObject(String, DataSource, Map, RDFContainerFactory)
+	 */
+	@SuppressWarnings("unchecked") // to allow for an unchecked Map
+    public DataObject getDataObject(String url, DataSource source, Map params,
 			RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException {
 		return get(url, source, null, params, containerFactory);
 	}
 
-	public DataObject getDataObjectIfModified(String url, DataSource source, AccessData accessData,
+	/**
+	 * @see DataAccessor#getDataObjectIfModified(String, DataSource, AccessData, Map, RDFContainerFactory)
+	 */
+	@SuppressWarnings("unchecked") // to allow for an unchecked Map
+    public DataObject getDataObjectIfModified(String url, DataSource source, AccessData accessData,
 			Map params, RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException {
 		return get(url, source, accessData, params, containerFactory);
 	}
 
-	private DataObject get(String urlString, DataSource source, AccessData accessData, Map params,
+	@SuppressWarnings("unchecked") // to allow for an unchecked Map
+    private DataObject get(String urlString, DataSource source, AccessData accessData, Map params,
 			RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException {
 		// keep a backup of the originally passed url
 		String originalUrlString = urlString;
@@ -225,7 +252,7 @@ public class HttpAccessor implements DataAccessor {
 	private DataObject createDataObject(String url, DataSource source, HttpURLConnection connection,
 			RDFContainerFactory containerFactory) throws IOException {
 		// create the resulting instance
-		URI uri = URIImpl.createURIWithoutChecking(url);
+		URI uri = new URIImpl(url);
 		RDFContainer metadata = containerFactory.getRDFContainer(uri);
 
 		InputStream stream = HttpClientUtil.getInputStream(connection);
@@ -251,31 +278,35 @@ public class HttpAccessor implements DataAccessor {
 			characterSet = "ISO-8859-1";
 		}
 
-		metadata.add(DATA.characterSet, characterSet);
+        metadata.add(RDF.type, NFO.RemoteDataObject);
+        metadata.add(RDF.type, NIE.InformationElement);
+		metadata.add(NIE.characterSet, characterSet);
 
 		if (mimeType != null) {
-			metadata.add(DATA.mimeType, mimeType);
+			metadata.add(NIE.mimeType, mimeType);
 		}
 
 		long contentLength = connection.getContentLength();
 		if (contentLength >= 0l) {
-			metadata.add(DATA.byteSize, contentLength);
+			metadata.add(NIE.byteSize, contentLength);
 		}
 
-		long retrieved = connection.getDate();
-		if (retrieved != 0L) {
-			metadata.add(DATA.retrievalDate, new Date(retrieved));
-		}
+        // TODO get back to it after introducing nfo:retrievalDate
+//		long retrieved = connection.getDate();
+//		if (retrieved != 0L) {
+//			metadata.add(DATA.retrievalDate, new Date(retrieved));
+//		}
 
 		long lastModified = connection.getLastModified();
 		if (lastModified != 0L) {
-			metadata.add(DATA.date, new Date(lastModified));
+			metadata.add(NIE.contentLastModified, new Date(lastModified));
 		}
 
-		long expires = connection.getExpiration();
-		if (expires != 0L) {
-			metadata.add(DATA.expirationDate, new Date(expires));
-		}
+        // TODO get back to it after introducing nfo:expirationDate
+//		long expires = connection.getExpiration();
+//		if (expires != 0L) {
+//			metadata.add(DATA.expirationDate, new Date(expires));
+//		}
 
 		return object;
 	}

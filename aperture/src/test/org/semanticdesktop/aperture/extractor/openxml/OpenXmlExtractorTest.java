@@ -14,7 +14,8 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class OpenXmlExtractorTest extends ExtractorTestBase {
 
@@ -47,7 +48,8 @@ public class OpenXmlExtractorTest extends ExtractorTestBase {
         for (int i = 0; i < RESOURCES.length; i++) {
             // check of any document text is extracted
             RDFContainer container = getStatements(DOCS_PATH + RESOURCES[i]);
-            checkStatement(DATA.fullText, "This", container);
+            checkStatement(NIE.plainTextContent, "This", container);
+            validate(container,false);
             container.dispose();
         }
     }
@@ -60,7 +62,7 @@ public class OpenXmlExtractorTest extends ExtractorTestBase {
 
     public void testMetadataExtraction() throws ExtractorException, IOException, ModelException {
         testMetadataExtraction(WORDS_DOC);
-        testMetadataExtraction(EXCEL_DOC);
+        testExcelExtraction(EXCEL_DOC);
         testMetadataExtraction(POWERPOINT_DOC);
     }
 
@@ -70,15 +72,31 @@ public class OpenXmlExtractorTest extends ExtractorTestBase {
         RDFContainer container = getStatements(resourceName);
 
         // check for all properties that we're sure of exist in this example document
-        checkStatement(DATA.title, "Example", container);
-        checkStatement(DATA.subject, "testing", container);
-        checkStatement(DATA.keyword, "rdf", container);
-        checkStatement(DATA.keyword, "test", container);
-        checkStatement(DATA.description, "comments", container);
-        checkStatement(DATA.creator, "Christiaan Fluit", container);
-        checkStatement(DATA.date, "2006", container);
-        checkStatement(DATA.created, "2006", container);
-
+        checkStatement(NIE.title, "Example", container);
+        checkStatement(NIE.subject, "testing", container);
+        checkStatement(NIE.keyword, "rdf", container);
+        checkStatement(NIE.keyword, "test", container);
+        checkStatement(NIE.description, "comments", container);
+        checkSimpleContact(NCO.creator, "Christiaan Fluit", container);
+        //checkStatement(DATA.date, "2006", container);
+        checkStatement(NIE.contentCreated, "2006", container);
+        validate(container,false);
+        container.getModel().close();
+    }
+    
+    private void testExcelExtraction(String resourceName) throws ExtractorException, IOException, ModelException {
+        RDFContainer container = getStatements(resourceName);
+        
+        // check for all properties that we're sure of exist in this example document
+        checkStatement(NIE.title, "Example", container);
+        checkStatement(NIE.subject, "testing", container);
+        checkStatement(NIE.keyword, "rdf", container);
+        checkStatement(NIE.keyword, "test", container);
+        checkStatement(NIE.description, "comments", container);
+        checkSimpleContact(NCO.contributor, "Christiaan Fluit", container);
+        //checkStatement(DATA.date, "2006", container);
+        checkStatement(NIE.contentCreated, "2006", container);
+        validate(container,false);
         container.getModel().close();
     }
 }

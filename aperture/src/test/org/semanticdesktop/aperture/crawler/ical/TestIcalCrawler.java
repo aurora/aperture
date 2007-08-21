@@ -10,41 +10,46 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.QueryResultTable;
+import org.ontoware.rdf2go.model.QueryRow;
 import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.DatatypeLiteral;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
+import org.ontoware.rdf2go.vocabulary.RDFS;
 import org.ontoware.rdf2go.vocabulary.XSD;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
-import org.semanticdesktop.aperture.vocabulary.ICALTZD;
+import org.semanticdesktop.aperture.vocabulary.GEO;
+import org.semanticdesktop.aperture.vocabulary.NCAL;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class TestIcalCrawler extends ApertureTestBase {
-
-	public static final String ICAL_TESTDATA_PATH = DOCS_PATH + "icaltestdata/";
+    
+	public static final String ICAL_TESTICAL_PATH = DOCS_PATH + "icaltestdata/";
 	public static final String TEMP_FILE_NAME = "temp-calendar.ics";
 
 	private Model model;
 	private Model model2;
 	
 	public void setUp() {
-		
+		// nothing needed
 	}
 	
 	public void tearDown() {
 		if (model != null) {
+		    validate(model);
 			model.close();
 		}
 		model = null;
@@ -59,252 +64,325 @@ public class TestIcalCrawler extends ApertureTestBase {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public void testCalendarComponent() throws Exception {
-		Model model = readIcalFile("basicCalendar.ics");
+	    model = readIcalFile("basicCalendar.ics");
 
 		Resource calendarNode = findMainCalendarNode(model);
-
-		assertSingleValueProperty(model, calendarNode, ICALTZD.calscale, "GREGORIAN");
-		assertSingleValueProperty(model, calendarNode, ICALTZD.version, "2.0");
-		assertSingleValueProperty(model, calendarNode, ICALTZD.method, "PUBLISH");
+		    
+		assertSingleValueProperty(model, calendarNode, NCAL.calscale, NCAL.gregorianCalendarScale);
+		assertSingleValueProperty(model, calendarNode, NCAL.version, "2.0");
+		assertSingleValueProperty(model, calendarNode, NCAL.method, "PUBLISH");
 
 		// note that the comma is escaped in the original file, this is
 		// compatible with the RFC 2445 4.3.11
-		assertSingleValueProperty(model, calendarNode, ICALTZD.prodid,
+		assertSingleValueProperty(model, calendarNode, NCAL.prodid,
 			"-//Apple Computer, Inc//iCal 1.0//EN");
 
-		assertMultiValueProperty(model, calendarNode, RDF.type, DATA.DataObject);
-		assertMultiValueProperty(model, calendarNode, RDF.type, ICALTZD.Vcalendar);
-		assertEquals(countOutgoingTriples(model, calendarNode, RDF.type), 2);
+		assertMultiValueProperty(model, calendarNode, RDF.type, NIE.DataObject);
+		assertMultiValueProperty(model, calendarNode, RDF.type, NCAL.CalendarDataObject);
+		assertMultiValueProperty(model, calendarNode, RDF.type, NCAL.Calendar);
+		assertEquals(countOutgoingTriples(model, calendarNode, RDF.type), 3);
 
-		assertEquals(countStatements(model), 6);
+		assertEquals(countStatements(model), 7);
 	}
 	
-	public void testValarmComponent() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	public void testAlarmComponent() throws Exception {
+	    model = readIcalFile("cal01.ics");
+	    
 		Resource veventNode = findComponentByUid(model, "20020630T230445Z-3895-69-1-7@jammer");
-		Resource valarmNode = findSingleNode(model,veventNode,ICALTZD.component);
+		Resource valarmNode = findSingleNode(model,veventNode,NCAL.hasAlarm);
 		
-		Resource triggerBNode = findSingleNode(model,valarmNode,ICALTZD.trigger);
-		assertSingleValueProperty(model,valarmNode,ICALTZD.action, "DISPLAY");
-		assertSingleValueProperty(model,valarmNode,ICALTZD.description, "Federal Reserve Board Meeting");
-		assertSingleValueURIProperty(model,valarmNode,RDF.type,ICALTZD.Valarm.toString());
+		assertSingleValueURIProperty(model,valarmNode,NCAL.action, NCAL.displayAction.toString());
+		assertSingleValueProperty(model,valarmNode,NCAL.description, "Federal Reserve Board Meeting");
+		assertSingleValueURIProperty(model,valarmNode,RDF.type,NCAL.Alarm.toString());
 		assertEquals(countOutgoingTriples(model, valarmNode),4);
 		
-		assertSingleValueProperty(model,triggerBNode,ICALTZD.related,"START");
-		assertSingleValueProperty(model,triggerBNode,ICALTZD.value,"-PT30M",XSD._duration);
+		Resource triggerBNode = findSingleNode(model,valarmNode,NCAL.trigger);
+		assertSingleValueURIProperty(model,triggerBNode,NCAL.related,NCAL.startTriggerRelation.toString());
+		assertSingleValueProperty(model,triggerBNode,NCAL.triggerDuration,"-PT30M",IcalCrawler.XSD_DAY_TIME_DURATION);
 	}
 
 	public void testVeventComponent() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 
-		Resource veventNode = findComponentByUid(model, "20020630T230353Z-3895-69-1-0@jammer");
+	    Resource veventNode = findComponentByUid(model, "20020630T230353Z-3895-69-1-0@jammer");
 
-		assertMultiValueProperty(model, veventNode, RDF.type, DATA.DataObject);
-		assertMultiValueProperty(model, veventNode, RDF.type, ICALTZD.Vevent);		
-		assertEquals(countOutgoingTriples(model, veventNode, RDF.type), 2);
+		assertMultiValueProperty(model, veventNode, RDF.type, NIE.DataObject);
+		assertMultiValueProperty(model, veventNode, RDF.type, NCAL.CalendarDataObject);
+		assertMultiValueProperty(model, veventNode, RDF.type, NCAL.Event);				
+		assertSingleValueProperty(model, veventNode, NCAL.uid, "20020630T230353Z-3895-69-1-0@jammer");
+		assertSingleValueProperty(model, veventNode, NCAL.dtstamp, "2002-06-30T23:03:53Z", XSD._dateTime);
+        assertSingleValueURIProperty(model, veventNode, NCAL.transp, NCAL.opaqueTransparency.toString());
+        assertSingleValueProperty(model, veventNode, NCAL.sequence, "2", XSD._integer);
+        assertSingleValueProperty(model, veventNode, NCAL.summary, "Church");
+        assertSingleValueURIProperty(model, veventNode, NCAL.class_, NCAL.privateClassification.toString());
+        Resource dtStartNcalDatetimeNode = findSingleNode(model, veventNode, NCAL.dtstart);
+        Resource dtEndDatetimeNode = findSingleNode(model, veventNode, NCAL.dtend);
+        Resource recurBlankNode = findSingleNode(model, veventNode, NCAL.rrule);
+        assertEquals(countOutgoingTriples(model, veventNode, RDF.type), 3);
+        assertEquals(countOutgoingTriples(model, veventNode),12);
+        
+        assertSingleValueProperty(model, dtStartNcalDatetimeNode, NCAL.dateTime, "2002-06-30T09:00:00",XSD._dateTime);
+		Resource timezoneNode = findSingleNode(model, dtStartNcalDatetimeNode, NCAL.ncalTimezone);
+		assertTrue(timezoneNode.toString().contains("/softwarestudio.org/Olson_20011030_5/America/New_York"));
 		
-		assertSingleValueProperty(model, veventNode, ICALTZD.uid, "20020630T230353Z-3895-69-1-0@jammer");
-		assertSingleValueProperty(model, veventNode, ICALTZD.dtstamp, "2002-06-30T23:03:53Z", 
-			XSD._dateTime);
-		assertSingleValueProperty(model, veventNode, ICALTZD.dtstart, "2002-06-30T09:00:00", 
-			URIImpl.createURIWithoutChecking("http://www.w3.org/2002/12/cal/tzd/America/New_York#tz"));
-		assertSingleValueProperty(model, veventNode, ICALTZD.dtend, "2002-06-30T10:30:00", 
-			URIImpl.createURIWithoutChecking("http://www.w3.org/2002/12/cal/tzd/America/New_York#tz"));
-		assertSingleValueProperty(model, veventNode, ICALTZD.transp, "OPAQUE");
-		assertSingleValueProperty(model, veventNode, ICALTZD.sequence, "2", XSD._integer);
-		assertSingleValueProperty(model, veventNode, ICALTZD.summary, "Church");
-		assertSingleValueProperty(model, veventNode, ICALTZD.class_, "PRIVATE");
-	    
-		Resource recurBlankNode = findSingleNode(model, veventNode, ICALTZD.rrule);
-		assertSingleValueProperty(model, recurBlankNode, ICALTZD.freq, "WEEKLY");
-		assertSingleValueProperty(model, recurBlankNode, ICALTZD.interval, "1", XSD._integer);
-		assertSingleValueProperty(model, recurBlankNode, ICALTZD.byday, "SU");
-		assertEquals(countOutgoingTriples(model, recurBlankNode),3);
+        assertSingleValueProperty(model, dtEndDatetimeNode, NCAL.dateTime, "2002-06-30T10:30:00",XSD._dateTime);
+        timezoneNode = findSingleNode(model, dtStartNcalDatetimeNode, NCAL.ncalTimezone);
+        assertTrue(timezoneNode.toString().contains("/softwarestudio.org/Olson_20011030_5/America/New_York"));
 		
-		assertEquals(countOutgoingTriples(model, veventNode),11);
+		assertSingleValueURIProperty(model, recurBlankNode, NCAL.freq, NCAL.weekly.toString());
+		assertSingleValueProperty(model, recurBlankNode, NCAL.interval, "1", XSD._integer);
+		assertSingleValueURIProperty(model, recurBlankNode, RDF.type, NCAL.RecurrenceRule.toString());
+		Resource bydayRulePartNode = findSingleNode(model, recurBlankNode, NCAL.byday);
+		assertEquals(countOutgoingTriples(model, recurBlankNode),4);
+		
+		assertSingleValueURIProperty(model, bydayRulePartNode, NCAL.bydayWeekday, NCAL.sunday.toString());
+		assertSingleValueURIProperty(model, bydayRulePartNode, RDF.type, NCAL.BydayRulePart.toString());
+		assertEquals(countOutgoingTriples(model, bydayRulePartNode),2);
 	}
 	
 	public void testVFreebusyComponent() throws Exception {
-		Model model = readIcalFile("freebusy.ics");
+	    model = readIcalFile("freebusy.ics");
+	    
 		Resource vcalendarNode = findMainCalendarNode(model);
-		Resource vfreebusyNode = findSingleNode(model, vcalendarNode, ICALTZD.component);
+		Resource vfreebusyNode = findSingleNode(model, vcalendarNode, NCAL.component);
 		
-		assertMultiValueProperty(model, vfreebusyNode, RDF.type, DATA.DataObject);
-		assertMultiValueProperty(model, vfreebusyNode, RDF.type, ICALTZD.Vfreebusy);
-		assertEquals(countOutgoingTriples(model, vfreebusyNode,RDF.type),2);
-		findSingleNode(model,vfreebusyNode, ICALTZD.organizer);
-		findSingleNode(model,vfreebusyNode, ICALTZD.attendee);
-		assertMultiValueProperty(model, vfreebusyNode, ICALTZD.freebusy, "19971015T050000Z/PT8H30M");
-		assertMultiValueProperty(model, vfreebusyNode, ICALTZD.freebusy, "19971015T160000Z/PT5H30M");
-		assertMultiValueProperty(model, vfreebusyNode, ICALTZD.freebusy, "19971015T223000Z/PT6H30M");
-		assertEquals(countOutgoingTriples(model, vfreebusyNode,ICALTZD.freebusy),3);
-		assertSingleValueURIProperty(model, vfreebusyNode, ICALTZD.url, 
+		assertMultiValueProperty(model, vfreebusyNode, RDF.type, NIE.DataObject);
+		assertMultiValueProperty(model, vfreebusyNode, RDF.type, NCAL.Freebusy);
+		assertMultiValueProperty(model, vfreebusyNode, RDF.type, NCAL.CalendarDataObject);
+		assertEquals(countOutgoingTriples(model, vfreebusyNode,RDF.type),3);
+		findSingleNode(model,vfreebusyNode, NCAL.organizer);
+		findSingleNode(model,vfreebusyNode, NCAL.attendee);
+		
+		assertSparqlQuery(model, "" +
+				"PREFIX xsd: <" + XSD.XSD_NS + "> " +
+				"SELECT ?v1 ?v2 " +
+				"WHERE " +
+                "{ " + vfreebusyNode.toSPARQL() + " " + NCAL.freebusy.toSPARQL() + " ?x ." +
+                "      ?x " + RDF.type.toSPARQL() + " " + NCAL.FreebusyPeriod.toSPARQL() + " . " +
+                "      ?x " + NCAL.periodBegin.toSPARQL() + " ?v1 . " +
+                "      ?x " + NCAL.periodDuration.toSPARQL() + " ?v2 . " +
+                "      FILTER(regex(str(?v1),\"1997-10-15T05:00:00Z\") &&" +
+                "             regex(str(?v2),\"PT8H30M\") && " +
+                "             datatype(?v1) = xsd:dateTime &&" +
+                "             datatype(?v2) = xsd:dayTimeDuration)}");
+        
+        assertSparqlQuery(model, "" +
+            "PREFIX xsd: <" + XSD.XSD_NS + "> " +
+            "SELECT ?v1 ?v2 " +
+            "WHERE " +
+            "{ " + vfreebusyNode.toSPARQL() + " " + NCAL.freebusy.toSPARQL() + " ?x ." +
+            "      ?x " + RDF.type.toSPARQL() + " " + NCAL.FreebusyPeriod.toSPARQL() + " . " +
+            "      ?x " + NCAL.periodBegin.toSPARQL() + " ?v1 . " +
+            "      ?x " + NCAL.periodDuration.toSPARQL() + " ?v2 . " +
+            "      FILTER(regex(str(?v1),\"1997-10-15T16:00:00Z\") &&" +
+            "             regex(str(?v2),\"PT5H30M\") && " +
+            "             datatype(?v1) = xsd:dateTime &&" +
+            "             datatype(?v2) = xsd:dayTimeDuration)}");
+        
+        assertSparqlQuery(model, "" +
+            "PREFIX xsd: <" + XSD.XSD_NS + "> " +
+            "SELECT ?v1 ?v2 " +
+            "WHERE " +
+            "{ " + vfreebusyNode.toSPARQL() + " " + NCAL.freebusy.toSPARQL() + " ?x ." +
+            "      ?x " + RDF.type.toSPARQL() + " " + NCAL.FreebusyPeriod.toSPARQL() + " . " +
+            "      ?x " + NCAL.periodBegin.toSPARQL() + " ?v1 . " +
+            "      ?x " + NCAL.periodDuration.toSPARQL() + " ?v2 . " +
+            "      FILTER(regex(str(?v1),\"1997-10-15T22:30:00Z\") &&" +
+            "             regex(str(?v2),\"PT6H30M\") && " +
+            "             datatype(?v1) = xsd:dateTime &&" +
+            "             datatype(?v2) = xsd:dayTimeDuration)}");
+
+		assertEquals(countOutgoingTriples(model, vfreebusyNode,NCAL.freebusy),3);
+		
+		assertSingleValueURIProperty(model, vfreebusyNode, NCAL.url, 
 				"http://host2.com/pub/busy/jpublic-01.ifb");
-		assertSingleValueProperty(model, vfreebusyNode, ICALTZD.comment,
+		assertSingleValueProperty(model, vfreebusyNode, NCAL.comment,
 				"This iCalendar file contains busy time information forthe next three months.");
-		assertEquals(countOutgoingTriples(model, vfreebusyNode),10);
+		assertEquals(countOutgoingTriples(model, vfreebusyNode),11);
 	}
 	
-	public void testVJournalComponent() throws Exception {
-		Model model = readIcalFile("korganizer-jicaltest-vjournal.ics");
+	private void assertMultiValueIntermediateNodeProperty(Model model3, Resource vfreebusyNode, URI firstProperty,
+	        URI nodeType, URI secondProperty, String value) {
+        String sparqlQuery = "SELECT ?value WHERE " +
+        		"{ " + vfreebusyNode.toSPARQL() + " " + firstProperty.toSPARQL() + " ?x ." +
+        		"      ?x " + secondProperty.toSPARQL() + " ?value . FILTER(regex(str(?value),\""+ value +"\"))}";
+        QueryResultTable table = model.sparqlSelect(sparqlQuery);
+        ClosableIterator<QueryRow> queryIterator = table.iterator();
+        assertTrue(queryIterator.hasNext());
+        queryIterator.close();
+    }
+
+    public void testVJournalComponent() throws Exception {
+	    model = readIcalFile("korganizer-jicaltest-vjournal.ics");
 		Resource vjournalNode = findComponentByUid(model, "KOrganizer-948365006.348");
 		
-		assertMultiValueProperty(model,vjournalNode,RDF.type,ICALTZD.Vjournal);
-		assertMultiValueProperty(model,vjournalNode,RDF.type,DATA.DataObject);
-		assertEquals(countOutgoingTriples(model,vjournalNode,RDF.type),2);
-		assertSingleValueProperty(model, vjournalNode, ICALTZD.created, "2003-02-27T11:07:15Z",
+		assertMultiValueProperty(model,vjournalNode,RDF.type,NCAL.Journal);
+		assertMultiValueProperty(model,vjournalNode,RDF.type,NIE.DataObject);
+        assertMultiValueProperty(model,vjournalNode,RDF.type,NCAL.CalendarDataObject);
+		assertEquals(countOutgoingTriples(model,vjournalNode,RDF.type),3);
+        
+		assertSingleValueProperty(model, vjournalNode, NCAL.created, "2003-02-27T11:07:15Z",
 			XSD._dateTime);
-		assertSingleValueProperty(model, vjournalNode, ICALTZD.uid, "KOrganizer-948365006.348");
-		assertSingleValueProperty(model, vjournalNode, ICALTZD.sequence, "0", XSD._integer);
-		assertSingleValueProperty(model, vjournalNode, ICALTZD.lastModified, "2003-02-27T11:07:15Z",
+		assertSingleValueProperty(model, vjournalNode, NCAL.uid, "KOrganizer-948365006.348");
+		assertSingleValueProperty(model, vjournalNode, NCAL.sequence, "0", XSD._integer);
+		assertSingleValueProperty(model, vjournalNode, NCAL.lastModified, "2003-02-27T11:07:15Z",
 			XSD._dateTime);
-		assertSingleValueProperty(model, vjournalNode, ICALTZD.dtstamp, "2003-02-27T11:07:15Z",
+		assertSingleValueProperty(model, vjournalNode, NCAL.dtstamp, "2003-02-27T11:07:15Z",
 			XSD._dateTime);
-		findSingleNode(model, vjournalNode, ICALTZD.organizer);
-		assertSingleValueProperty(model, vjournalNode, ICALTZD.description, "journal\n");
-		assertSingleValueProperty(model, vjournalNode, ICALTZD.class_, "PUBLIC");
-		assertSingleValueProperty(model, vjournalNode, ICALTZD.priority, "3", XSD._integer);
-		assertSingleValueProperty(model, vjournalNode, ICALTZD.dtstart, "2003-02-24",XSD._date);
-		assertEquals(countOutgoingTriples(model,vjournalNode),12);
+		findSingleNode(model, vjournalNode, NCAL.organizer);
+		assertSingleValueProperty(model, vjournalNode, NCAL.description, "journal\n");
+		assertSingleValueProperty(model, vjournalNode, NCAL.class_, NCAL.publicClassification);
+		assertEquals(countOutgoingTriples(model,vjournalNode),11);
 	}
 	
 	public void testVTimezoneComponent() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource vtimezoneNode = findSingleTimezone(model);
 		
 		assertTrue(vtimezoneNode instanceof URI);
-		assertEquals(vtimezoneNode.toString(),"http://www.w3.org/2002/12/cal/tzd/America/New_York#tz");
+		assertTrue(vtimezoneNode.toString().contains("America/New_York"));
 		
-		assertMultiValueProperty(model,vtimezoneNode,RDF.type,ICALTZD.Vtimezone);
-		assertMultiValueProperty(model,vtimezoneNode,RDF.type,DATA.DataObject);
-		assertEquals(countOutgoingTriples(model,vtimezoneNode,RDF.type),2);
-		
-		assertSingleValueProperty(model,vtimezoneNode,ICALTZD.tzid,
+		assertMultiValueProperty(model,vtimezoneNode,RDF.type,NCAL.Timezone);
+		assertMultiValueProperty(model,vtimezoneNode,RDF.type,NIE.DataObject);
+        assertMultiValueProperty(model,vtimezoneNode,RDF.type,NCAL.CalendarDataObject);
+		assertEquals(countOutgoingTriples(model,vtimezoneNode,RDF.type),3);
+		assertSingleValueProperty(model,vtimezoneNode,NCAL.tzid,
 			"/softwarestudio.org/Olson_20011030_5/America/New_York");
-		assertSingleValueURIProperty(model,vtimezoneNode,ICALTZD.tzurl,
+		assertSingleValueURIProperty(model,vtimezoneNode,NCAL.tzurl,
 			"http://timezones.r.us.net/tz/US-California-Los_Angeles");
-		Resource standardNode = findSingleNode(model, vtimezoneNode, ICALTZD.standard);
-		Resource daylightNode = findSingleNode(model, vtimezoneNode, ICALTZD.daylight);
-		assertEquals(countOutgoingTriples(model, vtimezoneNode),6);
+		Resource standardObservanceNode = findSingleNode(model, vtimezoneNode, NCAL.standard);
+		Resource daylightObservanceNode = findSingleNode(model, vtimezoneNode, NCAL.daylight);
+		assertEquals(countOutgoingTriples(model, vtimezoneNode),7);
 		
-		assertSingleValueProperty(model,standardNode,ICALTZD.tzoffsetfrom,"-0400");
-		assertSingleValueProperty(model,standardNode,ICALTZD.tzoffsetto,"-0500");
-		assertSingleValueProperty(model,standardNode,ICALTZD.tzname,"EST");
-		assertSingleValueProperty(model,standardNode,ICALTZD.dtstart,"1970-10-25T02:00:00",
-			XSD._dateTime);
-		Resource standardRRuleNode = findSingleNode(model,standardNode,ICALTZD.rrule);
-		assertEquals(countOutgoingTriples(model,standardNode),5);
+        assertSingleValueProperty(model,standardObservanceNode,RDF.type,NCAL.TimezoneObservance);
+		assertSingleValueProperty(model,standardObservanceNode,NCAL.tzoffsetfrom,"-0400");
+		assertSingleValueProperty(model,standardObservanceNode,NCAL.tzoffsetto,"-0500");
+		assertSingleValueProperty(model,standardObservanceNode,NCAL.tzname,"EST");
+        assertNcalDateTime(model,standardObservanceNode,NCAL.dtstart,"1970-10-25T02:00:00");
+		Resource standardRRuleNode = findSingleNode(model,standardObservanceNode,NCAL.rrule);
+		assertEquals(countOutgoingTriples(model,standardObservanceNode),6);
 		
-		assertSingleValueProperty(model,daylightNode,ICALTZD.tzoffsetfrom,"-0500");
-		assertSingleValueProperty(model,daylightNode,ICALTZD.tzoffsetto,"-0400");
-		assertSingleValueProperty(model,daylightNode,ICALTZD.tzname,"EDT");
-		assertSingleValueProperty(model,daylightNode,ICALTZD.dtstart,"1970-04-05T02:00:00",
-			XSD._dateTime);
-		Resource daylightRRuleNode = findSingleNode(model,daylightNode,ICALTZD.rrule);
-		assertEquals(countOutgoingTriples(model,daylightNode),5);
+        assertSingleValueProperty(model,daylightObservanceNode,RDF.type,NCAL.TimezoneObservance);
+		assertSingleValueProperty(model,daylightObservanceNode,NCAL.tzoffsetfrom,"-0500");
+		assertSingleValueProperty(model,daylightObservanceNode,NCAL.tzoffsetto,"-0400");
+		assertSingleValueProperty(model,daylightObservanceNode,NCAL.tzname,"EDT");
+		assertNcalDateTime(model,daylightObservanceNode,NCAL.dtstart,"1970-04-05T02:00:00");
+		Resource daylightRRuleNode = findSingleNode(model,daylightObservanceNode,NCAL.rrule);
+		assertEquals(countOutgoingTriples(model,daylightObservanceNode),6);
 		
-		assertSingleValueProperty(model,standardRRuleNode,ICALTZD.freq,"YEARLY");
-		assertSingleValueProperty(model,standardRRuleNode,ICALTZD.interval,"1", XSD._integer);
-		assertSingleValueProperty(model,standardRRuleNode,ICALTZD.byday,"-1SU");
-		assertSingleValueProperty(model,standardRRuleNode,ICALTZD.bymonth,"10");
-		assertEquals(countOutgoingTriples(model,standardRRuleNode),4);
+        assertSingleValueProperty(model,standardRRuleNode,RDF.type, NCAL.RecurrenceRule);
+		assertSingleValueProperty(model,standardRRuleNode,NCAL.freq, NCAL.yearly);
+		assertSingleValueProperty(model,standardRRuleNode,NCAL.interval,"1", XSD._integer);
+		assertBydayRulePart(model,standardRRuleNode,NCAL.sunday,"-1");
+		assertSingleValueProperty(model,standardRRuleNode,NCAL.bymonth,"10", XSD._integer);
+		assertEquals(countOutgoingTriples(model,standardRRuleNode),5);
 		
-		assertSingleValueProperty(model,daylightRRuleNode,ICALTZD.freq,"YEARLY");
-		assertSingleValueProperty(model,daylightRRuleNode,ICALTZD.interval,"1", XSD._integer);
-		assertSingleValueProperty(model,daylightRRuleNode,ICALTZD.byday,"1SU");
-		assertSingleValueProperty(model,daylightRRuleNode,ICALTZD.bymonth,"4");
-		assertEquals(countOutgoingTriples(model,daylightRRuleNode),4);
+        assertSingleValueProperty(model,daylightRRuleNode,RDF.type, NCAL.RecurrenceRule);
+		assertSingleValueProperty(model,daylightRRuleNode,NCAL.freq, NCAL.yearly);
+		assertSingleValueProperty(model,daylightRRuleNode,NCAL.interval,"1", XSD._integer);
+        assertBydayRulePart(model,daylightRRuleNode,NCAL.sunday,"1");
+		assertSingleValueProperty(model,daylightRRuleNode,NCAL.bymonth,"4", XSD._integer);
+		assertEquals(countOutgoingTriples(model,daylightRRuleNode),5);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// PROPERTY TESTS //////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	public void testActionProperty() throws Exception {
-		Model model = readIcalFile("simplevevent.ics");
+    public void testActionProperty() throws Exception {
+	    model = readIcalFile("simplevevent.ics");
 		Resource calendarNode = findMainCalendarNode(model);
-		Resource veventNode = findSingleNode(model, calendarNode, ICALTZD.component);
-		Resource valarmNode = findSingleNode(model, veventNode, ICALTZD.component);
-		assertSingleValueProperty(model, valarmNode, ICALTZD.action, "AUDIO");
+		Resource veventNode = findComponentByUid(model, "EB825E41-23CE-11D7-B93D-003065B0C95E");
+		Resource valarmNode = findSingleNode(model, veventNode, NCAL.hasAlarm);
+		assertSingleValueProperty(model, valarmNode, NCAL.action, NCAL.audioAction);
 	}
 
 	public void testAttachProperty() throws Exception {
-		Model model = readIcalFile("simplevevent.ics");
+	    model = readIcalFile("simplevevent.ics");
 		Resource veventNode = findComponentByUid(model, "EB825E41-23CE-11D7-B93D-003065B0C95E");
-		Resource valarmNode = findSingleNode(model, veventNode, ICALTZD.component);
-		assertSingleValueURIProperty(model, valarmNode, ICALTZD.attach, "uri:Ping");
+		Resource valarmNode = findSingleNode(model, veventNode, NCAL.hasAlarm);
+        Resource attachmentNode = findSingleNode(model, valarmNode, NCAL.attach);
+		assertSingleValueURIProperty(model, attachmentNode, NCAL.attachmentUri, "http://www.w3.org/index.html");
+        Resource pingUri = findSingleNode(model,attachmentNode, NCAL.attachmentUri);
+        assertSingleValueURIProperty(model,pingUri, RDF.type, RDFS.Resource.toString());
 	}
 
 	public void testAttendeeProperty() throws Exception {
-		Model model = readIcalFile("simplevevent.ics");
+	    model = readIcalFile("simplevevent.ics");
 		Resource calendarNode = findMainCalendarNode(model);
-		Resource veventNode = findSingleNode(model, calendarNode, ICALTZD.component);
-		Resource attendeeBlankNode = findSingleNode(model, veventNode, ICALTZD.attendee);
-		assertSingleValueProperty(model, attendeeBlankNode, ICALTZD.cn, "Libby Miller");
-		assertSingleValueProperty(model, attendeeBlankNode, ICALTZD.calAddress,
-			"mailto:libby.miller@bristol.ac.uk");
-		assertEquals(countOutgoingTriples(model, attendeeBlankNode), 2);
+        Resource veventNode = findComponentByUid(model, "EB825E41-23CE-11D7-B93D-003065B0C95E");
+		Resource attendeeBlankNode = findSingleNode(model, veventNode, NCAL.attendee);
+        
+        assertSingleValueProperty(model, attendeeBlankNode, RDF.type, NCAL.Attendee);
+        Resource contactNode = findSingleNode(model, attendeeBlankNode, NCAL.involvedContact);
+        assertEquals(countOutgoingTriples(model, attendeeBlankNode), 2);
+        
+        assertSingleValueProperty(model, contactNode, NCO.fullname, "Libby Miller");
+        Resource emailNode = findSingleNode(model, contactNode, NCO.hasEmailAddress);
+        assertSingleValueProperty(model, emailNode, NCO.emailAddress, "libby.miller@bristol.ac.uk");
+		
 	}
 
 	public void testCalScaleProperty() throws Exception {
-		Model model = readIcalFile("basicCalendar.ics");
+	    model = readIcalFile("basicCalendar.ics");
 		Resource calendarNode = findMainCalendarNode(model);
-		assertSingleValueProperty(model, calendarNode, ICALTZD.calscale, "GREGORIAN");
+		assertSingleValueProperty(model, calendarNode, NCAL.calscale, NCAL.gregorianCalendarScale);
 	}
 
 	public void testCategoriesProperty() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230445Z-3895-69-1-7@jammer");
-		assertSingleValueProperty(model, veventNode, ICALTZD.categories, "Miscellaneous");
+		assertSingleValueProperty(model, veventNode, NCAL.categories, "Miscellaneous");
 	}
 
 	public void testClassProperty() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230445Z-3895-69-1-7@jammer");
-		assertSingleValueProperty(model, veventNode, ICALTZD.class_, "PUBLIC");
+		assertSingleValueProperty(model, veventNode, NCAL.class_, NCAL.publicClassification);
 	}
 
 	public void testCommentProperty() throws Exception {
-		Model model = readIcalFile("calconnect7.ics");
+	    model = readIcalFile("calconnect7.ics");
+        
 		Resource veventNode = findComponentByUid(model,
 			"6BA1ECA4D58B306C85256FDB0071B664-Lotus_Notes_Generated");
-		assertSingleValueProperty(model, veventNode, ICALTZD.comment,
+		assertSingleValueProperty(model, veventNode, NCAL.comment,
 			"Another single instance reschedule - time only (+2 hrs)");
 	}
 
 	public void testCompletedProperty() throws Exception {
-		Model model = readIcalFile("Todos1.ics");
+	    model = readIcalFile("Todos1.ics");
 		Resource veventNode = findComponentByUid(model, "76116BB6-5338-11D8-A876-000A958826AA");
-		assertSingleValueProperty(model, veventNode, ICALTZD.completed, "2003-11-25T13:00:00Z",
+		assertSingleValueProperty(model, veventNode, NCAL.completed, "2003-11-25T13:00:00Z",
 			XSD._dateTime);
 	}
 
 	public void testContactProperty() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230445Z-3895-69-1-7@jammer");
-		assertSingleValueProperty(model, veventNode, ICALTZD.contact,
+		assertSingleValueProperty(model, veventNode, NCAL.contact,
 			"Jim Dolittle, ABC Industries, +1-919-555-1234");
 	}
 
 	public void testCreatedProperty() throws Exception {
-		Model model = readIcalFile("test-created.ics");
+	    model = readIcalFile("test-created.ics");
 		Resource veventNode = findComponentByUid(model, "A0831EE4-73D1-11D9-B5C3-000393CD78B4");
-		assertSingleValueProperty(model, veventNode, ICALTZD.created, "2004-12-23T13:52:26",
+		assertSingleValueProperty(model, veventNode, NCAL.created, "2004-12-23T13:52:26",
 			XSD._dateTime);
 	}
 
 	public void testDescriptionProperty() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230445Z-3895-69-1-7@jammer");
-		Resource valarmNode = findSingleNode(model, veventNode, ICALTZD.component);
-		assertSingleValueProperty(model, valarmNode, ICALTZD.description,
+		Resource valarmNode = findSingleNode(model, veventNode, NCAL.hasAlarm);
+		assertSingleValueProperty(model, valarmNode, NCAL.description,
 			"Federal Reserve Board Meeting");
 	}
 
 	public void testDtEndPropertyUTCTimeNoValueParameter() throws Exception {
-		Model model = readIcalFile("gkexample.ics");
+	    model = readIcalFile("gkexample.ics");
 		Resource veventWithDtStart = null;
-        ClosableIterator<? extends Statement> iterator = model.findStatements(null, RDF.type, ICALTZD.Vevent);
+        ClosableIterator<? extends Statement> iterator = model.findStatements(null, RDF.type, NCAL.Event);
 		Statement statement = null;
 		while (iterator.hasNext()) {
 			// we rely on the fact, that the first node returned by this iterator
@@ -313,34 +391,38 @@ public class TestIcalCrawler extends ApertureTestBase {
 			veventWithDtStart = statement.getSubject();
 		}
 		iterator.close();
-		assertSingleValueProperty(model, veventWithDtStart, ICALTZD.dtend, "2002-12-01T22:00:00Z",
+		Resource ncalDateTimeResource = findSingleNode(model, veventWithDtStart, NCAL.dtend);
+		assertSingleValueProperty(model, ncalDateTimeResource, NCAL.dateTime, "2002-12-01T22:00:00Z",
 			XSD._dateTime);
 	}
 
 	public void testDtEndPropertyDateValueParameter() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230445Z-3895-69-1-7@jammer");
-		assertSingleValueProperty(model, veventNode, ICALTZD.dtend, "2002-07-06", XSD._date);
+		Resource ncalDateTime = findSingleNode(model, veventNode, NCAL.dtend);
+		assertSingleValueProperty(model, ncalDateTime, NCAL.date, "2002-07-06", XSD._date);
 	}
 
 	public void testDtEndPropertyWithTimeZoneId() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230353Z-3895-69-1-0@jammer");
-		assertSingleValueProperty(model, veventNode, ICALTZD.dtend, "2002-06-30T10:30:00", URIImpl.createURIWithoutChecking(
-				"http://www.w3.org/2002/12/cal/tzd/America/New_York#tz"));
+		Resource ncalDateTime = findSingleNode(model, veventNode, NCAL.dtend);
+		assertSingleValueProperty(model, ncalDateTime, NCAL.dateTime, "2002-06-30T10:30:00", XSD._dateTime);
+		Resource timezone = findSingleNode(model, ncalDateTime, NCAL.ncalTimezone);
+		assertTrue(timezone.toString().contains("America/New_York"));
 	}
 
 	public void testDtStampProperty() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230445Z-3895-69-1-7@jammer");
-		assertSingleValueProperty(model, veventNode, ICALTZD.dtstamp, "2002-06-30T23:04:45Z",
+		assertSingleValueProperty(model, veventNode, NCAL.dtstamp, "2002-06-30T23:04:45Z",
 			XSD._dateTime);
 	}
 
 	public void testDtStartPropertyUTCTimeNoValueParameter() throws Exception {
-		Model model = readIcalFile("gkexample.ics");
+	    model = readIcalFile("gkexample.ics");
 		Resource veventWithDtStart = null;
-        ClosableIterator<? extends Statement> iterator = model.findStatements(Variable.ANY, RDF.type, ICALTZD.Vevent);
+        ClosableIterator<? extends Statement> iterator = model.findStatements(Variable.ANY, RDF.type, NCAL.Event);
 		Statement statement = null;
 		while (iterator.hasNext()) {
 			// we rely on the fact, that the nodes returned by this iterator
@@ -349,313 +431,400 @@ public class TestIcalCrawler extends ApertureTestBase {
 			veventWithDtStart = statement.getSubject();
 		}
 		iterator.close();
-		assertSingleValueProperty(model, veventWithDtStart, ICALTZD.dtstart, "2002-12-01T16:00:00Z",
+		Resource node = findSingleNode(model, veventWithDtStart, NCAL.dtstart);
+		assertSingleValueProperty(model, node, NCAL.dateTime, "2002-12-01T16:00:00Z",
 			XSD._dateTime);
 	}
 
 	public void testDtStartPropertyDateValueParameter() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230445Z-3895-69-1-7@jammer");
-		assertSingleValueProperty(model, veventNode, ICALTZD.dtstart, "2002-07-03", XSD._date);
+		Resource resource = findSingleNode(model, veventNode, NCAL.dtstart);
+		assertSingleValueProperty(model, resource, NCAL.date, "2002-07-03", XSD._date);
 	}
 
 	public void testDtStartPropertyWithTimeZoneId() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230353Z-3895-69-1-0@jammer");
-		assertSingleValueProperty(model, veventNode, ICALTZD.dtstart, "2002-06-30T09:00:00",
-			URIImpl.createURIWithoutChecking("http://www.w3.org/2002/12/cal/tzd/America/New_York#tz"));
+		Resource ncalDateTime = findSingleNode(model, veventNode, NCAL.dtstart);		
+		assertSingleValueProperty(model, ncalDateTime, NCAL.dateTime, "2002-06-30T09:00:00", XSD._dateTime);
+        Resource timezone = findSingleNode(model, ncalDateTime, NCAL.ncalTimezone);
+        assertTrue(timezone.toString().contains("America/New_York"));
 	}
 
 	public void testDuePropertyUTCTimeNoValueParameter() throws Exception {
-		Model model = readIcalFile("Todos1.ics");
+	    model = readIcalFile("Todos1.ics");
 		Resource veventNode = findComponentByUid(model, "7611710A-5338-11D8-A876-000A958826AA");
-		assertSingleValueProperty(model, veventNode, ICALTZD.due, "2003-12-16T00:00:00Z",
+		Resource ncalDateTime = findSingleNode(model, veventNode, NCAL.due);
+		assertSingleValueProperty(model, ncalDateTime, NCAL.dateTime, "2003-12-16T00:00:00Z",
 			XSD._dateTime);
 	}
 
 	public void testDuePropertyDateValueParameter() throws Exception {
-		Model model = readIcalFile("sunbird_sample.ics");
+	    model = readIcalFile("sunbird_sample.ics");
 		Resource veventNode = findComponentByUid(model, "1E2C09FC-FBA7-11D7-B98C-000A958D1EFE");
-		assertSingleValueProperty(model, veventNode, ICALTZD.due, "2003-10-18", XSD._date);
+		Resource ncaldateTime = findSingleNode(model, veventNode, NCAL.due);
+		assertSingleValueProperty(model, ncaldateTime, NCAL.date, "2003-10-18", XSD._date);
 	}
 
 	public void testDuePropertyWithTimeZoneId() throws Exception {
-		Model model = readIcalFile("sunbird_sample.ics");
+	    model = readIcalFile("sunbird_sample.ics");
 		Resource veventNode = findComponentByUid(model, "7A0EDDE6-FF8A-11D7-8061-000A958D1EFE");
-		assertSingleValueProperty(model, veventNode, ICALTZD.due, "2003-10-23T00:00:00", URIImpl.createURIWithoutChecking(
-				"http://www.w3.org/2002/12/cal/tzd/America/New_York#tz"));
+		Resource ncalDateTime = findSingleNode(model, veventNode, NCAL.due);      
+        assertSingleValueProperty(model, ncalDateTime, NCAL.dateTime, "2003-10-23T00:00:00", XSD._dateTime);
+        Resource timezone = findSingleNode(model, ncalDateTime, NCAL.ncalTimezone);
+        assertTrue(timezone.toString().contains("America/New_York"));
 	}
 
 	public void testDurationProperty() throws Exception {
-		Model model = readIcalFile("simplevevent.ics");
+	    model = readIcalFile("simplevevent.ics");
 		Resource veventNode = findComponentByUid(model, "EB825E41-23CE-11D7-B93D-003065B0C95E");
-		Resource durationNode = findSingleNode(model, veventNode, ICALTZD.duration);
-		assertSingleValueProperty(model, durationNode, ICALTZD.value, "PT1H", XSD._duration);
+		assertSingleValueProperty(model, veventNode, NCAL.duration, "PT1H", IcalCrawler.XSD_DAY_TIME_DURATION);
 	}
 
 	// This test should also be repeated three times (like the tests for
 	// DUE and DTSTART) with varying types and VALUE parameters.
 	public void testExDate() throws Exception {
-		Model model = readIcalFile("tag-bug.ics");
+	    model = readIcalFile("tag-bug.ics");
 		Resource veventNode = findComponentByUid(model, "78492d2f-aacd-40e3-80cc-4f078d1516e0");
-		assertSingleValueProperty(model, veventNode, ICALTZD.exdate, "2002-02-25", XSD._date);
+		Resource ncalDateTime = findSingleNode(model, veventNode, NCAL.exdate);
+		assertSingleValueProperty(model, ncalDateTime, NCAL.date, "2002-02-25", XSD._date);
 	}
 
 	public void testExRule() throws Exception {
-		Model model = readIcalFile("cal01-exrule.ics");
+	    model = readIcalFile("cal01-exrule.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230353Z-3895-69-1-0@jammer");
-		Resource recurrenceNode = findSingleNode(model, veventNode, ICALTZD.exrule);
-		assertSingleValueProperty(model, recurrenceNode, ICALTZD.freq, "WEEKLY");
-		assertSingleValueProperty(model, recurrenceNode, ICALTZD.interval, "5", XSD._integer);
-		assertSingleValueProperty(model, recurrenceNode, ICALTZD.byday, "SU");
-		assertEquals(countOutgoingTriples(model, recurrenceNode), 3);
+		Resource recurrenceNode = findSingleNode(model, veventNode, NCAL.exrule);
+		assertSingleValueProperty(model, recurrenceNode, RDF.type, NCAL.RecurrenceRule);
+		assertSingleValueProperty(model, recurrenceNode, NCAL.freq, NCAL.weekly);
+		assertSingleValueProperty(model, recurrenceNode, NCAL.interval, "5", XSD._integer);
+		Resource bydayRulePart = findSingleNode(model, recurrenceNode, NCAL.byday);
+		assertSingleValueProperty(model, bydayRulePart, NCAL.bydayWeekday, NCAL.sunday);
+		assertEquals(countOutgoingTriples(model, recurrenceNode), 4);
 	}
 
 	public void testFreeBusyProperty() throws Exception {
-		Model model = readIcalFile("freebusy.ics");
+	    model = readIcalFile("freebusy.ics");
 		Resource calendarNode = findMainCalendarNode(model);
-		Resource vfreebusyNode = findSingleNode(model, calendarNode, ICALTZD.component);
-		assertMultiValueProperty(model, vfreebusyNode, ICALTZD.freebusy, "19971015T050000Z/PT8H30M");
-		assertMultiValueProperty(model, vfreebusyNode, ICALTZD.freebusy, "19971015T160000Z/PT5H30M");
-		assertMultiValueProperty(model, vfreebusyNode, ICALTZD.freebusy, "19971015T223000Z/PT6H30M");
-		assertEquals(countOutgoingTriples(model, vfreebusyNode,ICALTZD.freebusy),3);
+		Resource vfreebusyNode = findSingleNode(model, calendarNode, NCAL.component);
+		
+		
+		assertSparqlQuery(model, "" +
+            "PREFIX xsd: <" + XSD.XSD_NS + "> " +
+            "SELECT ?v1 ?v2 " +
+            "WHERE " +
+            "{ " + vfreebusyNode.toSPARQL() + " " + NCAL.freebusy.toSPARQL() + " ?x ." +
+            "      ?x " + RDF.type.toSPARQL() + " " + NCAL.FreebusyPeriod.toSPARQL() + " . " +
+            "      ?x " + NCAL.periodBegin.toSPARQL() + " ?v1 . " +
+            "      ?x " + NCAL.periodDuration.toSPARQL() + " ?v2 . " +
+            "      FILTER(regex(str(?v1),\"1997-10-15T05:00:00Z\") &&" +
+            "             regex(str(?v2),\"PT8H30M\") && " +
+            "             datatype(?v1) = xsd:dateTime &&" +
+            "             datatype(?v2) = xsd:dayTimeDuration)}");
+    
+    assertSparqlQuery(model, "" +
+        "PREFIX xsd: <" + XSD.XSD_NS + "> " +
+        "SELECT ?v1 ?v2 " +
+        "WHERE " +
+        "{ " + vfreebusyNode.toSPARQL() + " " + NCAL.freebusy.toSPARQL() + " ?x ." +
+        "      ?x " + RDF.type.toSPARQL() + " " + NCAL.FreebusyPeriod.toSPARQL() + " . " +
+        "      ?x " + NCAL.periodBegin.toSPARQL() + " ?v1 . " +
+        "      ?x " + NCAL.periodDuration.toSPARQL() + " ?v2 . " +
+        "      FILTER(regex(str(?v1),\"1997-10-15T16:00:00Z\") &&" +
+        "             regex(str(?v2),\"PT5H30M\") && " +
+        "             datatype(?v1) = xsd:dateTime &&" +
+        "             datatype(?v2) = xsd:dayTimeDuration)}");
+    
+    assertSparqlQuery(model, "" +
+        "PREFIX xsd: <" + XSD.XSD_NS + "> " +
+        "SELECT ?v1 ?v2 " +
+        "WHERE " +
+        "{ " + vfreebusyNode.toSPARQL() + " " + NCAL.freebusy.toSPARQL() + " ?x ." +
+        "      ?x " + RDF.type.toSPARQL() + " " + NCAL.FreebusyPeriod.toSPARQL() + " . " +
+        "      ?x " + NCAL.periodBegin.toSPARQL() + " ?v1 . " +
+        "      ?x " + NCAL.periodDuration.toSPARQL() + " ?v2 . " +
+        "      FILTER(regex(str(?v1),\"1997-10-15T22:30:00Z\") &&" +
+        "             regex(str(?v2),\"PT6H30M\") && " +
+        "             datatype(?v1) = xsd:dateTime &&" +
+        "             datatype(?v2) = xsd:dayTimeDuration)}");
+		
+		assertEquals(countOutgoingTriples(model, vfreebusyNode,NCAL.freebusy),3);
 	}
 
 	public void testGeoProperty() throws Exception {
-		Model model = readIcalFile("geo1.ics");
+	    model = readIcalFile("geo1.ics");
 		Resource veventNode = findComponentByUid(model, "CDC474D4-1393-11D7-9A2C-000393914268");
-		Resource firstListNode = findSingleNode(model, veventNode, ICALTZD.geo);
+		Resource geoPointNode = findSingleNode(model, veventNode, NCAL.geo);
 
-		assertSingleValueProperty(model, firstListNode, RDF.first, "40.442673", XSD._double);
-		assertEquals(countOutgoingTriples(model, firstListNode), 2);
-		Resource secondListNode = findSingleNode(model, firstListNode, RDF.rest);
-		assertSingleValueProperty(model, secondListNode, RDF.first, "-79.945815", XSD._double);
-		assertSingleValueProperty(model, secondListNode, RDF.rest, RDF.nil);
-		assertEquals(countOutgoingTriples(model, secondListNode), 2);
+		assertSingleValueProperty(model, geoPointNode, RDF.type, GEO.Point);
+		assertSingleValueProperty(model, geoPointNode, GEO.lat, "40.442673", XSD._decimal);
+		assertSingleValueProperty(model, geoPointNode, GEO.long_, "-79.945815", XSD._decimal);
+		assertEquals(countOutgoingTriples(model, geoPointNode), 3);
 	}
 
 	public void testLastModifiedProperty() throws Exception {
-		Model model = readIcalFile("test-created.ics");
+	    model = readIcalFile("test-created.ics");
 		Resource veventNode = findComponentByUid(model, "A0831EE4-73D1-11D9-B5C3-000393CD78B4");
-		assertSingleValueProperty(model, veventNode, ICALTZD.lastModified, "2004-12-23T15:17:52",
+		assertSingleValueProperty(model, veventNode, NCAL.lastModified, "2004-12-23T15:17:52",
 			XSD._dateTime);
 	}
 
 	public void testLocationProperty() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230445Z-3895-69-1-7@jammer");
-		assertSingleValueProperty(model, veventNode, ICALTZD.location, "San Francisco");
+		assertSingleValueProperty(model, veventNode, NCAL.location, "San Francisco");
 	}
 
 	public void testMethodProperty() throws Exception {
-		Model model = readIcalFile("basicCalendar.ics");
+	    model = readIcalFile("basicCalendar.ics");
 		Resource calendarNode = findMainCalendarNode(model);
-		assertSingleValueProperty(model, calendarNode, ICALTZD.method, "PUBLISH");
+		assertSingleValueProperty(model, calendarNode, NCAL.method, "PUBLISH");
 	}
 
 	public void testOrganizerProperty() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230600Z-3895-69-1-16@jammer");
-		Resource organizerNode = findSingleNode(model, veventNode, ICALTZD.organizer);
-		assertSingleValueProperty(model, organizerNode, ICALTZD.cn, "Dan Connolly");
-		assertSingleValueProperty(model, organizerNode, ICALTZD.calAddress, "MAILTO:connolly@w3.org");
+		Resource organizerNode = findSingleNode(model, veventNode, NCAL.organizer);
+		//assertSingleValueProperty(model, organizerNode, NCAL.cn, "Dan Connolly");
+		//assertSingleValueProperty(model, organizerNode, NCAL.calAddress, "MAILTO:connolly@w3.org");
 	}
 
 	public void testPercentCompleteProperty() throws Exception {
-		Model model = readIcalFile("korganizer-jicaltest.ics");
+	    model = readIcalFile("korganizer-jicaltest.ics");
 		Resource veventNode = findComponentByUid(model, "KOrganizer-1573136895.534");
-		assertSingleValueProperty(model, veventNode, ICALTZD.percentComplete, "0", XSD._integer);
+		assertSingleValueProperty(model, veventNode, NCAL.percentComplete, "0", XSD._integer);
 	}
 
 	public void testPriorityProperty() throws Exception {
-		Model model = readIcalFile("Todos1.ics");
+	    model = readIcalFile("Todos1.ics");
 		Resource vtodoNode = findComponentByUid(model, "76116BB6-5338-11D8-A876-000A958826AA");
-		assertSingleValueProperty(model, vtodoNode, ICALTZD.priority, "2", XSD._integer);
+		assertSingleValueProperty(model, vtodoNode, NCAL.priority, "2", XSD._integer);
 	}
 
 	public void testProdIdProperty() throws Exception {
-		Model model = readIcalFile("Todos1.ics");
+	    model = readIcalFile("Todos1.ics");
 		Resource vcalendarNode = findMainCalendarNode(model);
-		assertSingleValueProperty(model, vcalendarNode, ICALTZD.prodid,
+		assertSingleValueProperty(model, vcalendarNode, NCAL.prodid,
 			"-//Apple Computer, Inc//iCal 1.5//EN");
 	}
 
 	public void testRecurrenceRule1() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230353Z-3895-69-1-0@jammer");
-		Resource recurrenceNode = findSingleNode(model, veventNode, ICALTZD.rrule);
-		assertSingleValueProperty(model, recurrenceNode, ICALTZD.freq, "WEEKLY");
-		assertSingleValueProperty(model, recurrenceNode, ICALTZD.interval, "1", XSD._integer);
-		assertSingleValueProperty(model, recurrenceNode, ICALTZD.byday, "SU");
-		assertEquals(countOutgoingTriples(model, recurrenceNode), 3);
+		Resource recurrenceNode = findSingleNode(model, veventNode, NCAL.rrule);
+		assertSingleValueProperty(model, recurrenceNode, RDF.type, NCAL.RecurrenceRule);
+		assertSingleValueProperty(model, recurrenceNode, NCAL.freq, NCAL.weekly);
+		assertSingleValueProperty(model, recurrenceNode, NCAL.interval, "1", XSD._integer);
+		Resource bydayRulePart = findSingleNode(model, recurrenceNode, NCAL.byday);
+		assertSingleValueProperty(model, bydayRulePart, NCAL.bydayWeekday, NCAL.sunday);
+		assertEquals(countOutgoingTriples(model, recurrenceNode), 4);
 	}
 
 	public void testRecurrenceRule2() throws Exception {
-		Model model = readIcalFile("gkexample.ics");
+	    model = readIcalFile("gkexample.ics");
+	    
 		Resource veventNode = findComponentByUid(model, "20020630T230353Z-3895-69-1-0@antoni");
-		Resource recurrenceNode = findSingleNode(model, veventNode, ICALTZD.rrule);
-		assertSingleValueProperty(model, recurrenceNode, ICALTZD.freq, "WEEKLY");
-		assertSingleValueProperty(model, recurrenceNode, ICALTZD.byday, "SA,SU");
-		assertEquals(countOutgoingTriples(model, recurrenceNode), 2);
+		Resource recurrenceNode = findSingleNode(model, veventNode, NCAL.rrule);
+		assertSingleValueProperty(model, recurrenceNode, RDF.type, NCAL.RecurrenceRule);
+        assertSingleValueProperty(model, recurrenceNode, NCAL.freq, NCAL.weekly);
+        assertEquals(countOutgoingTriples(model, recurrenceNode), 4);
+        
+        assertSparqlQuery(model, "" +
+            "SELECT ?x " +
+            "WHERE " +
+            "{ " + recurrenceNode.toSPARQL() + " " + NCAL.byday.toSPARQL() + " ?x . " +
+            "      ?x " + RDF.type.toSPARQL() + " " + NCAL.BydayRulePart.toSPARQL() + " . " +
+            "      ?x " + NCAL.bydayWeekday.toSPARQL() + " " + NCAL.sunday.toSPARQL() + " . }");
+        
+        assertSparqlQuery(model, "" +
+            "SELECT ?x " +
+            "WHERE " +
+            "{ " + recurrenceNode.toSPARQL() + " " + NCAL.byday.toSPARQL() + " ?x ." +
+            "      ?x " + RDF.type.toSPARQL() + " " + NCAL.BydayRulePart.toSPARQL() + " . " +
+            "      ?x " + NCAL.bydayWeekday.toSPARQL() + " " + NCAL.saturday.toSPARQL() + " . }");
 	}
 
 	public void testRDateProperty() throws Exception {
-		Model model = readIcalFile("calconnect9.ics");
+	    model = readIcalFile("calconnect9.ics");
 		Resource veventNode = findComponentByUid(model,
 			"6BA1ECA4D58B306C85256FDB0071B664-Lotus_Notes_Generated");
-		assertMultiValueProperty(model, veventNode, ICALTZD.rdate, "20050425T090000/20050425T091500");
-		assertMultiValueProperty(model, veventNode, ICALTZD.rdate, "20050426T090000/20050426T091500");
-		assertMultiValueProperty(model, veventNode, ICALTZD.rdate, "20050427T090000/20050427T091500");
-		assertMultiValueProperty(model, veventNode, ICALTZD.rdate, "20050428T090000/20050428T091500");
-		assertMultiValueProperty(model, veventNode, ICALTZD.rdate, "20050429T090000/20050429T091500");
-		assertEquals(countOutgoingTriples(model, veventNode, ICALTZD.rdate), 5);
+		
+		assertPeriod(model, veventNode, NCAL.rdate, "2005-04-25T09:00:00", "2005-04-25T09:15:00");
+		assertPeriod(model, veventNode, NCAL.rdate, "2005-04-26T09:00:00", "2005-04-26T09:15:00");
+		assertPeriod(model, veventNode, NCAL.rdate, "2005-04-27T09:00:00", "2005-04-27T09:15:00");
+		assertPeriod(model, veventNode, NCAL.rdate, "2005-04-28T09:00:00", "2005-04-28T09:15:00");
+		assertPeriod(model, veventNode, NCAL.rdate, "2005-04-29T09:00:00", "2005-04-29T09:15:00");
+		assertEquals(countOutgoingTriples(model, veventNode, NCAL.rdate), 5);
+	}
+	
+	private void assertPeriod(Model model, Resource resource, URI property, String begin, String end) {
+	    assertSparqlQuery(model, "" +
+            "PREFIX xsd: <" + XSD.XSD_NS + "> " +
+            "SELECT ?v1 ?v2 " +
+            "WHERE " +
+            "{ " + resource.toSPARQL() + " " + property.toSPARQL() + " ?x ." +
+            "      ?x " + RDF.type.toSPARQL() + " " + NCAL.NcalPeriod.toSPARQL() + " . " +
+            "      ?x " + NCAL.periodBegin.toSPARQL() + " ?v1 . " +
+            "      ?x " + NCAL.periodEnd.toSPARQL() + " ?v2 . " +
+            "      FILTER(regex(str(?v1),\"" + begin + "\") &&" +
+            "             regex(str(?v2),\"" + end + "\") && " +
+            "             datatype(?v1) = xsd:dateTime &&" +
+            "             datatype(?v2) = xsd:dateTime)}");
 	}
 
 	public void testRecurrenceIdProperty() throws Exception {
-		Model model = readIcalFile("calconnect7.ics");
+	    model = readIcalFile("calconnect7.ics");
 		Resource veventNode = findComponentByUid(model,
 			"6BA1ECA4D58B306C85256FDB0071B664-Lotus_Notes_Generated");
-		Resource recurrenceBlankNode = findSingleNode(model, veventNode, ICALTZD.recurrenceId);
-		assertSingleValueProperty(model, recurrenceBlankNode, ICALTZD.value, "2005-04-28T13:00:00Z",
+		Resource recurrenceBlankNode = findSingleNode(model, veventNode, NCAL.recurrenceId);
+		Resource ncalDateTime = findSingleNode(model, recurrenceBlankNode, NCAL.recurrenceIdDateTime);
+		assertSingleValueProperty(model, ncalDateTime, NCAL.dateTime, "2005-04-28T13:00:00Z",
 			XSD._dateTime);
 	}
 
 	public void testRelatedToProperty() throws Exception {
-		Model model = readIcalFile("calconnect7.ics");
+	    model = readIcalFile("calconnect7.ics");
 		Resource veventNode = findComponentByUid(model,
 			"6BA1ECA4D58B306C85256FDB0071B664-Lotus_Notes_Generated");
-		assertSingleValueProperty(model, veventNode, ICALTZD.relatedTo,
+		assertSingleValueProperty(model, veventNode, NCAL.relatedToParent,
 			"<jsmith.part7.19960817T083000.xyzMail@host3.com>");
 	}
 
 	public void testRepeatProperty() throws Exception {
-		Model model = readIcalFile("php-flp.ics");
+	    model = readIcalFile("php-flp.ics");
 		Resource veventNode = findComponentByUid(model, "TPACTIDSTREAMTASKID");
-		Resource valarmNode = findSingleNode(model, veventNode, ICALTZD.component);
-		assertSingleValueProperty(model, valarmNode, ICALTZD.repeat, "3", XSD._integer);
+		Resource valarmNode = findSingleNode(model, veventNode, NCAL.hasAlarm);
+		assertSingleValueProperty(model, valarmNode, NCAL.repeat, "3", XSD._integer);
 	}
 
 	public void testRequestStatusProperty() throws Exception {
-		Model model = readIcalFile("incoming.ics");
+	    model = readIcalFile("incoming.ics");
 		Resource calendarNode = findMainCalendarNode(model);
-		Resource veventNode = findSingleNode(model, calendarNode, ICALTZD.component);
-		assertSingleValueProperty(model, veventNode, ICALTZD.requestStatus, "2.0;Success");
+		Resource veventNode = findSingleNode(model, calendarNode, NCAL.component);
+		Resource requestStatus = findSingleNode(model, veventNode, NCAL.requestStatus);
+		assertSingleValueProperty(model, requestStatus, NCAL.returnStatus, "2.0");
+		assertSingleValueProperty(model, requestStatus, NCAL.statusDescription, "Success");
 	}
 
 	public void testResourcesProperty() throws Exception {
-		Model model = readIcalFile("php-flp.ics");
+	    model = readIcalFile("php-flp.ics");
 		Resource veventNode = findComponentByUid(model, "TPACTIDSTREAMTASKID");
-		assertSingleValueProperty(model, veventNode, ICALTZD.resources, "EASEL,PROJECTOR,VCR");
+		assertMultiValueProperty(model, veventNode, NCAL.resources, "EASEL");
+		assertMultiValueProperty(model, veventNode, NCAL.resources, "PROJECTOR");
+		assertMultiValueProperty(model, veventNode, NCAL.resources, "VCR");
+		assertEquals(countOutgoingTriples(model, veventNode, NCAL.resources),3);
 	}
 
 	public void testSequenceProperty() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230445Z-3895-69-1-7@jammer");
-		assertSingleValueProperty(model, veventNode, ICALTZD.sequence, "2", XSD._integer);
+		assertSingleValueProperty(model, veventNode, NCAL.sequence, "2", XSD._integer);
 	}
 
 	public void testStatusProperty() throws Exception {
-		Model model = readIcalFile("Todos1.ics");
+	    model = readIcalFile("Todos1.ics");
 		Resource vtodoNode = findComponentByUid(model, "76116BB6-5338-11D8-A876-000A958826AA");
-		assertSingleValueProperty(model, vtodoNode, ICALTZD.status, "COMPLETED");
+		assertSingleValueProperty(model, vtodoNode, NCAL.todoStatus, NCAL.completedStatus);
 	}
 
 	public void testSummaryProperty() throws Exception {
 		// we deliberately chose an example with disregarded params
-		Model model = readIcalFile("php-flp.ics");
+	    model = readIcalFile("php-flp.ics");
 		Resource veventNode = findComponentByUid(model, "TPACTIDSTREAMTASKID");
-		assertSingleValueProperty(model, veventNode, ICALTZD.summary,
+		assertSingleValueProperty(model, veventNode, NCAL.summary,
 			"TP for Act ID XXXXX -- Not important : Stream -- Task ID");
 	}
 
 	public void testTranspProperty() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230445Z-3895-69-1-7@jammer");
-		assertSingleValueProperty(model, veventNode, ICALTZD.transp, "OPAQUE");
+		assertSingleValueProperty(model, veventNode, NCAL.transp, NCAL.opaqueTransparency);
 	}
 
 	public void testTriggerPropertyWithDefinedDateTimeType() throws Exception {
-		Model model = readIcalFile("simplevevent.ics");
+	    model = readIcalFile("simplevevent.ics");
 		Resource calendarNode = findMainCalendarNode(model);
-		Resource veventNode = findSingleNode(model, calendarNode, ICALTZD.component);
-		Resource valarmNode = findSingleNode(model, veventNode, ICALTZD.component);
-		Resource triggerBlankNode = findSingleNode(model, valarmNode, ICALTZD.trigger);
-		assertSingleValueProperty(model, triggerBlankNode, ICALTZD.value, "2006-04-12T23:00:00Z",
+		Resource veventNode = findComponentByUid(model, "EB825E41-23CE-11D7-B93D-003065B0C95E");
+		Resource valarmNode = findSingleNode(model, veventNode, NCAL.hasAlarm);
+		Resource triggerBlankNode = findSingleNode(model, valarmNode, NCAL.trigger);
+		assertSingleValueProperty(model, triggerBlankNode, NCAL.triggerDateTime, "2006-04-12T23:00:00Z",
 			XSD._dateTime);
 	}
 
 	public void testTriggerPropertyWithSomeParams() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230600Z-3895-69-1-16@jammer");
-		Resource valarmNode = findSingleNode(model, veventNode, ICALTZD.component);
-		Resource triggerBlankNode = findSingleNode(model, valarmNode, ICALTZD.trigger);
-		assertSingleValueProperty(model, triggerBlankNode, ICALTZD.value, "-PT15M", XSD._duration);
-		assertSingleValueProperty(model, triggerBlankNode, ICALTZD.related, "START");
-		assertEquals(countOutgoingTriples(model, triggerBlankNode), 2);
+		Resource valarmNode = findSingleNode(model, veventNode, NCAL.hasAlarm);
+		Resource triggerBlankNode = findSingleNode(model, valarmNode, NCAL.trigger);
+		assertSingleValueProperty(model, triggerBlankNode, RDF.type, NCAL.Trigger);
+		assertSingleValueProperty(model, triggerBlankNode, NCAL.triggerDuration, "-PT15M", IcalCrawler.XSD_DAY_TIME_DURATION);
+		assertSingleValueProperty(model, triggerBlankNode, NCAL.related, NCAL.startTriggerRelation);
+		assertEquals(countOutgoingTriples(model, triggerBlankNode), 3);
 	}
 
 	public void testTriggerPropertyWithoutDefinedType() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230445Z-3895-69-1-7@jammer");
-		Resource valarmNode = findSingleNode(model, veventNode, ICALTZD.component);
-		Resource triggerBlankNode = findSingleNode(model, valarmNode, ICALTZD.trigger);
-		assertSingleValueProperty(model, triggerBlankNode, ICALTZD.value, "-PT30M", XSD._duration);
-		assertSingleValueProperty(model, triggerBlankNode, ICALTZD.related, "START");
-		assertEquals(countOutgoingTriples(model, triggerBlankNode), 2);
+		Resource valarmNode = findSingleNode(model, veventNode, NCAL.hasAlarm);
+		Resource triggerBlankNode = findSingleNode(model, valarmNode, NCAL.trigger);
+		assertSingleValueProperty(model, triggerBlankNode, RDF.type, NCAL.Trigger);
+		assertSingleValueProperty(model, triggerBlankNode, NCAL.triggerDuration, "-PT30M", IcalCrawler.XSD_DAY_TIME_DURATION);
+		assertSingleValueProperty(model, triggerBlankNode, NCAL.related, NCAL.startTriggerRelation);
+		assertEquals(countOutgoingTriples(model, triggerBlankNode), 3);
 	}
 
 	public void testTzidProperty() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource vtimezoneNode = findSingleTimezone(model);
-		assertSingleValueProperty(model, vtimezoneNode, ICALTZD.tzid,
+		assertSingleValueProperty(model, vtimezoneNode, NCAL.tzid,
 			"/softwarestudio.org/Olson_20011030_5/America/New_York");
 	}
 
 	public void testTzNameProperty() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource vtimezoneNode = findSingleTimezone(model);
-		Resource daylightNode = findSingleNode(model, vtimezoneNode, ICALTZD.daylight);
-		assertSingleValueProperty(model, daylightNode, ICALTZD.tzname, "EDT");
+		Resource daylightNode = findSingleNode(model, vtimezoneNode, NCAL.daylight);
+		assertSingleValueProperty(model, daylightNode, NCAL.tzname, "EDT");
 	}
 
 	public void testTzOffsetFromProperty() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource vtimezoneNode = findSingleTimezone(model);
-		Resource daylightNode = findSingleNode(model, vtimezoneNode, ICALTZD.daylight);
-		assertSingleValueProperty(model, daylightNode, ICALTZD.tzoffsetfrom, "-0500");
+		Resource daylightNode = findSingleNode(model, vtimezoneNode, NCAL.daylight);
+		assertSingleValueProperty(model, daylightNode, NCAL.tzoffsetfrom, "-0500");
 	}
 
 	public void testTzOffsetToProperty() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource vtimezoneNode = findSingleTimezone(model);
-		Resource daylightNode = findSingleNode(model, vtimezoneNode, ICALTZD.daylight);
-		assertSingleValueProperty(model, daylightNode, ICALTZD.tzoffsetto, "-0400");
+		Resource daylightNode = findSingleNode(model, vtimezoneNode, NCAL.daylight);
+		assertSingleValueProperty(model, daylightNode, NCAL.tzoffsetto, "-0400");
 	}
 
 	public void testTzUrlProperty() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource vtimezoneNode = findSingleTimezone(model);
-		assertSingleValueURIProperty(model, vtimezoneNode, ICALTZD.tzurl,
+		assertSingleValueURIProperty(model, vtimezoneNode, NCAL.tzurl,
 			"http://timezones.r.us.net/tz/US-California-Los_Angeles");
 	}
 
 	public void testUidProperty() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230445Z-3895-69-1-7@jammer");
-		assertSingleValueProperty(model, veventNode, ICALTZD.uid, "20020630T230445Z-3895-69-1-7@jammer");
+		assertSingleValueProperty(model, veventNode, NCAL.uid, "20020630T230445Z-3895-69-1-7@jammer");
 	}
 
 	public void testUrlProperty() throws Exception {
-		Model model = readIcalFile("geo1.ics");
+	    model = readIcalFile("geo1.ics");
 		Resource veventNode = findComponentByUid(model, "CDC474D4-1393-11D7-9A2C-000393914268");
-		assertSingleValueURIProperty(model, veventNode, ICALTZD.url,
+		assertSingleValueURIProperty(model, veventNode, NCAL.url,
 			"http://kanzaki.com/works/2004/cal/0406vocab.html");
 	}
 
 	public void testVersionProperty() throws Exception {
-		Model model = readIcalFile("geo1.ics");
+	    model = readIcalFile("geo1.ics");
 		Resource calendarNode = findMainCalendarNode(model);
-		assertSingleValueProperty(model, calendarNode, ICALTZD.version, "2.0");
+		assertSingleValueProperty(model, calendarNode, NCAL.version, "2.0");
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -663,18 +832,19 @@ public class TestIcalCrawler extends ApertureTestBase {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public void testCnParameter() throws Exception {
-		Model model = readIcalFile("simplevevent.ics");
+	    model = readIcalFile("simplevevent.ics");
 		Resource calendarNode = findMainCalendarNode(model);
-		Resource veventNode = findSingleNode(model, calendarNode, ICALTZD.component);
-		Resource attendeeBlankNode = findSingleNode(model, veventNode, ICALTZD.attendee);
-		assertSingleValueProperty(model, attendeeBlankNode, ICALTZD.cn, "Libby Miller");
+		Resource veventNode = findComponentByUid(model, "EB825E41-23CE-11D7-B93D-003065B0C95E");
+		Resource attendeeBlankNode = findSingleNode(model, veventNode, NCAL.attendee);
+		Resource contact = findSingleNode(model, attendeeBlankNode, NCAL.involvedContact);
+		assertSingleValueProperty(model, contact, NCO.fullname, "Libby Miller");
 	}
 
 	public void testCuTypeParameter() throws Exception {
-		Model model = readIcalFile("cal01.ics");
+	    model = readIcalFile("cal01.ics");
 		Resource veventNode = findComponentByUid(model, "20020630T230600Z-3895-69-1-16@jammer");
-		Resource attendeeBlankNode = findOneOfMultipleNodes(model, veventNode, ICALTZD.attendee);
-		assertSingleValueProperty(model, attendeeBlankNode, ICALTZD.cutype, "INDIVIDUAL");
+		Resource attendeeBlankNode = findOneOfMultipleNodes(model, veventNode, NCAL.attendee);
+		assertSingleValueProperty(model, attendeeBlankNode, NCAL.cutype, NCAL.individualUserType);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -687,15 +857,17 @@ public class TestIcalCrawler extends ApertureTestBase {
 	 * @return Model with generated RDF triples
 	 */
 	private Model readIcalFile(String fileName) throws Exception {
-		InputStream fileStream = ClassLoader.getSystemResourceAsStream(ICAL_TESTDATA_PATH + fileName);
+		InputStream fileStream = ClassLoader.getSystemResourceAsStream(ICAL_TESTICAL_PATH + fileName);
 		assertNotNull(fileStream);
 		File file = createTempFile(fileStream);
 		assertTrue(file.canRead());
-		RDFContainer configurationContainer = createRDFContainer("source:testsource");
-		ConfigurationUtil.setRootUrl(file.getAbsolutePath(), configurationContainer);
-
+		
 		IcalDataSource icalDataSource = new IcalDataSource();
+		RDFContainer configurationContainer = createRDFContainer("source:testsource");
 		icalDataSource.setConfiguration(configurationContainer);
+		
+		
+		icalDataSource.setRootUrl(file.getAbsolutePath());
 
 		IcalTestSimpleCrawlerHandler testCrawlerHandler = new IcalTestSimpleCrawlerHandler();
 
@@ -768,7 +940,7 @@ public class TestIcalCrawler extends ApertureTestBase {
 
 	private Resource findMainCalendarNode(Model model) throws ModelException {
         ClosableIterator<? extends Statement> iterator 
-				= model.findStatements(Variable.ANY, RDF.type, ICALTZD.Vcalendar);
+				= model.findStatements(Variable.ANY, RDF.type, NCAL.Calendar);
 		assertTrue(iterator.hasNext());
 		Statement statement = iterator.next();
 		assertFalse(iterator.hasNext());
@@ -777,7 +949,7 @@ public class TestIcalCrawler extends ApertureTestBase {
 	}
 
 	private Resource findSingleTimezone(Model model) throws ModelException {
-        ClosableIterator<? extends Statement> iterator = model.findStatements(Variable.ANY, RDF.type, ICALTZD.Vtimezone);
+        ClosableIterator<? extends Statement> iterator = model.findStatements(Variable.ANY, RDF.type, NCAL.Timezone);
 		assertTrue(iterator.hasNext());
 		Statement statement = iterator.next();
 		assertFalse(iterator.hasNext());
@@ -786,7 +958,7 @@ public class TestIcalCrawler extends ApertureTestBase {
 	}
 
 	private Resource findComponentByUid(Model model, String uid) throws ModelException {
-        ClosableIterator<? extends Statement> iterator = model.findStatements(Variable.ANY, ICALTZD.uid, Variable.ANY);
+        ClosableIterator<? extends Statement> iterator = model.findStatements(Variable.ANY, NCAL.uid, Variable.ANY);
 		boolean found = false;
 		Statement statement = null;
 		while (iterator.hasNext()) {
@@ -855,7 +1027,6 @@ public class TestIcalCrawler extends ApertureTestBase {
 		Resource attachedUri = findSingleNode(model, parentNode, predicate);
 		assertTrue(attachedUri instanceof URI);
 		assertEquals(attachedUri.toString(), label);
-		assertEquals(countOutgoingTriples(model, attachedUri), 0);
 	}
 
 	/**
@@ -887,6 +1058,39 @@ public class TestIcalCrawler extends ApertureTestBase {
 		assertTrue(iterator.hasNext());
 		iterator.close();
 	}
+    
+    private void assertNcalDateTime(Model testModel, Resource resource, URI property, String dateTimeValue) {
+        assertSparqlQuery(testModel, "" +
+            "PREFIX xsd: <" + XSD.XSD_NS + "> " +
+            "SELECT ?v1  " +
+            "WHERE " +
+            "{ " + resource.toSPARQL() + " " + property.toSPARQL() + " ?x ." +
+            "      ?x " + RDF.type.toSPARQL() + " " + NCAL.NcalDateTime.toSPARQL() + " . " +
+            "      ?x " + NCAL.dateTime.toSPARQL() + " ?v1 . " +
+            "      FILTER(regex(str(?v1),\"" + dateTimeValue + "\") &&" +
+            "             datatype(?v1) = xsd:dateTime )}");
+    }
+    
+    private void assertBydayRulePart(Model testModel, Resource resource, URI weekdayURI, String modifierValue) {
+        assertSparqlQuery(testModel, "" +
+            "PREFIX xsd: <" + XSD.XSD_NS + "> \n" +
+            "SELECT ?x  \n" +
+            "WHERE \n" +
+            "{ " + resource.toSPARQL() + " " + NCAL.byday.toSPARQL() + " ?x .\n" +
+            "      ?x " + RDF.type.toSPARQL() + " " + NCAL.BydayRulePart.toSPARQL() + " . \n" +
+            "      ?x " + NCAL.bydayWeekday.toSPARQL() + " " + weekdayURI.toSPARQL() + " . \n" +
+            ((modifierValue != null) ? 
+                    "?x " + NCAL.bydayModifier.toSPARQL() + " ?y \n" +
+                    " FILTER(regex(str(?y),\"" + modifierValue + "\") && datatype(?y) = xsd:integer )\n" : "\n") +
+            "}");
+    }
+    
+    private void assertSparqlQuery(Model model, String query) {
+        QueryResultTable table = model.sparqlSelect(query);
+        ClosableIterator<QueryRow> queryIterator = table.iterator();
+        assertTrue(queryIterator.hasNext());
+        queryIterator.close();
+    }
 	
 	public File createTempFile(InputStream fis) throws Exception {
 		File outFile = File.createTempFile("temp", ".ics");

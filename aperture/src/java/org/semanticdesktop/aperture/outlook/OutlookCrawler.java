@@ -545,7 +545,7 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 		super.setDataSource(source);
 
 		// read uriprefix
-		uriPrefix = ConfigurationUtil.getRootUrl(source.getConfiguration());
+		uriPrefix = ((OutlookDataSource)source).getRootUrl();
 		if (uriPrefix == null) {
 			uriPrefix = "outlook://localhost/outlook/";
 			logger.warn("Outlook adapter missing the rootUrl property. Using " + uriPrefix + " instead.");

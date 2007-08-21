@@ -12,590 +12,628 @@ You will need Apache ANT to execute this script, please get
 your copy of ANT at http://ant.apache.org/
 -->
 
-<project name="aperture" basedir="." default="cleanandbuild">
+<project name="aperture" basedir="." default="build">
 
-	<!-- define properties and paths -->
-	<target name="init" description="initialize variables used in all other targets">
-		<!-- names -->
-		<property name="project.longname" value="Aperture Crawling and Extraction Framework" />
-		<property name="project.shortname" value="aperture" />
-		<property name="project.bundlename" value="org.semanticdesktop.aperture" />
-		
-		<!-- versions -->
-		<property name="project.version.major" value="2007" />
-		<property name="project.version.minor" value="1" />
-		<property name="version-status" value="alpha-4" />
-		<property name="project.version.full" 
-			      value="${project.version.major}.${project.version.minor}-${version-status}" />
-		
-		<!-- input dirs -->
-		<property name="src.dir" value="${basedir}/src" />
-		<property name="src.java.dir" value="${src.dir}/java" />
-		<property name="src.test.dir" value="${src.dir}/test" />
-		<property name="src.examples.dir" value="${src.dir}/examples" />
-		<property name="src.activators.dir" value="${src.dir}/activators" />		
-	    <property name="bin.dir" value="${basedir}/bin" />
-		<property name="lib.dir" value="${basedir}/lib" />
-		<property name="doc.dir" value="${basedir}/doc" />
-		<property name="manifest.dir" value="${src.dir}/manifest" />
-					
-		<!-- build dirs -->
-		<property name="build.dir" value="${basedir}/build" />
-		<property name="classes.java.dir" value="${build.dir}/classes" />
-		<property name="classes.test.dir" value="${build.dir}/classes-test" />
-		<property name="classes.examples.dir" value="${build.dir}/classes-examples" />
-		<property name="classes.activators.dir" value="${build.dir}/classes-activators" />
-		
-		<!-- dist dirs -->
-		<property name="dist.dir" value="${build.dir}/dist" />
-		<property name="dist.lib.dir" value="${dist.dir}/plainjars" />
-		<property name="dist.bundle.dir" value="${dist.dir}/osgibundles" />
-		<property name="javadoc.dir" value="${dist.dir}/api" />
-		
-		<!-- dist files -->
-		<property name="project.jar" 
-			      value="${project.shortname}-${project.version.full}.jar" />
-		<property name="project-test.jar" 
-			      value="${project.shortname}-test-${project.version.full}.jar" />
-		<property name="project-examples.jar" 
-			      value="${project.shortname}-examples-${project.version.full}.jar" />
+    <!-- define properties and paths -->
+    <target name="init"
+            description="initialize variables used in all other targets">
+        <!-- names -->
+        <property name="project.longname"
+                  value="Aperture Crawling and Extraction Framework" />
+        <property name="project.shortname" value="aperture" />
+        <property name="project.bundlename"
+                  value="org.semanticdesktop.aperture" />
 
-		<!-- osgi bundle properties -->
-		<property name="bundle.core.jar" 
-			      value="${project.bundlename}_${project.version.full}.jar" />
-		<property name="core.manifest.mf" 
-			      value="${manifest.dir}/core.manifest.mf" />
-		
-		<property name="bundle.impl.jar" 
-			      value="${project.bundlename}.impl_${project.version.full}.jar" />
-		<property name="impl.manifest.mf" 
-			      value="${manifest.dir}/impl.manifest.mf" />
-	    
-		<property name="bundle.example.jar" 
-			      value="${project.bundlename}.example_${project.version.full}.jar" />
-		<property name="example.manifest.mf" 
-			      value="${manifest.dir}/aperture.example.manifest.mf" />
-		
-		<!-- release dirs and files -->
-		<property name="release.dir" value="${build.dir}/release" />
-		<property name="release.lib.dir" value="${release.dir}/lib" />
-		<property name="release.lib.licenses.dir" value="${release.lib.dir}/licenses" />
-		<property name="release.bin.dir" value="${release.dir}/bin" />
-		<property name="release.doc.dir" value="${release.dir}/doc" />
-		<property name="release.doc.api.dir" value="${release.doc.dir}/api" />
-		<property name="release.src.zip" value="${release.dir}/src.zip" />
-	    
-	    <!-- osgi release dirs and files -->
-	    
-		<property name="osgirelease.dir" value="${build.dir}/osgirelease" />
-		<property name="osgirelease.lib.dir" value="${osgirelease.dir}/lib" />
-		<property name="osgirelease.lib.licenses.dir" value="${osgirelease.lib.dir}/licenses" />
-		<property name="osgirelease.bin.dir" value="${osgirelease.dir}/bin" />
-		<property name="osgirelease.doc.dir" value="${osgirelease.dir}/doc" />
-		<property name="osgirelease.doc.api.dir" value="${osgirelease.doc.dir}/api" />
-		<property name="osgirelease.src.zip" value="${osgirelease.dir}/src.zip" />
-		
-		<!-- package dirs and files -->
-		<property name="package.dir" value="${build.dir}/package" />
-		<property name="package.prefix" value="${project.shortname}-${project.version.full}" />
-		<property name="package.zip" value="${package.dir}/${package.prefix}.zip" />
-		<property name="package.tgz" value="${package.dir}/${package.prefix}.tar.gz" />
-	    
-		<property name="osgipackage.zip" value="${package.dir}/${package.prefix}-osgi.zip" />
-		<property name="osgipackage.tgz" value="${package.dir}/${package.prefix}-osgi.tar.gz" />
-		
-		<!-- compilation flags -->		
-		<property name="compile.debug" value="true" />
-		<property name="compile.debuglevel" value="source,lines,var" />
-		<property name="compile.deprecation" value="false" />
-		<property name="compile.optimize" value="true" />
-		<property name="java.source.version" value="1.5" />
-		<property name="java.target.version" value="1.5" />
+        <!-- versions -->
+        <property name="project.version.major" value="2007" />
+        <property name="project.version.minor" value="1" />
+        <property name="version-status" value="alpha-4" />
+        <property name="project.version.full"
+                  value="${project.version.major}.${project.version.minor}-${version-status}" />
 
-		<!-- main compilation classpath -->
-		<path id="classpath">
-			<fileset dir="${lib.dir}">
-				<include name="*.jar" />
-			</fileset>
-		</path>
+        <!-- input dirs -->
+        <property name="src.dir" value="${basedir}/src" />
+        <property name="src.java.dir" value="${src.dir}/java" />
+        <property name="src.java.mainpackage.dir"
+                  value="${src.java.dir}/org/semanticdesktop/aperture" />
+        <property name="src.java.mainpackage"
+                  value="org.semanticdesktop.aperture" />
+        <property name="src.test.dir" value="${src.dir}/test" />
+        <property name="src.examples.dir" value="${src.dir}/examples" />
+        <property name="src.activators.dir" value="${src.dir}/activators" />
+        <property name="manifest.dir" value="${src.dir}/manifest" />
 
-		<!-- classpath to compile tests -->
-		<path id="classpath.test">
-			<path refid="classpath" />
-			<pathelement location="${classes.java.dir}" />
-		</path>
+        <property name="bin.dir" value="${basedir}/bin" />
+        <property name="lib.dir" value="${basedir}/lib" />
+        <property name="doc.dir" value="${basedir}/doc" />
+        <property name="doc.ontologies.dir" value="${doc.dir}/ontology" />
 
-		<!-- classpath to compile examples -->
-		<path id="classpath.examples">
-			<path refid="classpath" />
-			<pathelement location="${classes.java.dir}" />
-		</path>
-		
-		<!-- classpath to compile activators -->
-		<path id="classpath.activators">
-			<path refid="classpath.test" />
-			<pathelement location="${classes.test.dir}" />
-		</path>
-		
-		<!-- classpath to run unit tests -->
-		<path id="classpath.junit">
-			<path refid="classpath.test" />
-			<pathelement location="${classes.test.dir}" />
-		</path>
-		
-		<!-- pattern to define resource files -->
-		<patternset id="resources">
-			<include name="**" />
-			<exclude name="**/*.java" />
-			<exclude name="**/CVS, **/.svn/**" />
-			<exclude name="**/*.pst" />
-		</patternset>
-	</target>
-	
-	<target name="clean" 
-		    depends="init" 
-		    description="delete generated classes and distribution results">
-		<delete includeemptydirs="true" dir="${build.dir}" />
-	</target>
-	
-    <target name="copyontologies"
-            description="Copies the aperture ontologies from doc/ontology to util/ontology">
-    	<copy todir="${src.java.dir}/org/semanticdesktop/aperture/util/ontology">
-    	    <fileset dir="${doc.dir}/ontology">
-    	        <include name="*.rdfs" />
-    	        <include name="*.owl" />
-    	        <include name="*.n3" />
-    	    </fileset>
-    	</copy>
+        <!-- build dirs -->
+        <property name="build.dir" value="${basedir}/build" />
+        <property name="classes.java.dir" value="${build.dir}/classes" />
+        <property name="classes.test.dir" value="${build.dir}/classes-test" />
+        <property name="classes.examples.dir"
+                  value="${build.dir}/classes-examples" />
+        <property name="classes.activators.dir"
+                  value="${build.dir}/classes-activators" />
+
+        <!-- dist dirs -->
+        <property name="dist.dir" value="${build.dir}/dist" />
+        <property name="dist.lib.dir" value="${dist.dir}/plainjars" />
+        <property name="dist.bundle.dir" value="${dist.dir}/osgibundles" />
+        <property name="javadoc.dir" value="${dist.dir}/api" />
+
+        <!-- dist files -->
+        <property name="project.jar"
+                  value="${project.shortname}-${project.version.full}.jar" />
+        <property name="project-test.jar"
+                  value="${project.shortname}-test-${project.version.full}.jar" />
+        <property name="project-examples.jar"
+                  value="${project.shortname}-examples-${project.version.full}.jar" />
+
+        <!-- osgi bundle properties -->
+        <property name="bundle.core.jar"
+                  value="${project.bundlename}_${project.version.full}.jar" />
+        <property name="core.manifest.mf"
+                  value="${manifest.dir}/core.manifest.mf" />
+
+        <property name="bundle.impl.jar"
+                  value="${project.bundlename}.impl_${project.version.full}.jar" />
+        <property name="impl.manifest.mf"
+                  value="${manifest.dir}/impl.manifest.mf" />
+
+        <property name="bundle.example.jar"
+                  value="${project.bundlename}.example_${project.version.full}.jar" />
+        <property name="example.manifest.mf"
+                  value="${manifest.dir}/aperture.example.manifest.mf" />
+
+        <!-- release dirs and files -->
+        <property name="release.dir" value="${build.dir}/release" />
+        <property name="release.lib.dir" value="${release.dir}/lib" />
+        <property name="release.lib.licenses.dir"
+                  value="${release.lib.dir}/licenses" />
+        <property name="release.bin.dir" value="${release.dir}/bin" />
+        <property name="release.doc.dir" value="${release.dir}/doc" />
+        <property name="release.doc.api.dir" value="${release.doc.dir}/api" />
+        <property name="release.src.zip" value="${release.dir}/src.zip" />
+
+        <!-- osgi release dirs and files -->
+
+        <property name="osgirelease.dir" value="${build.dir}/osgirelease" />
+        <property name="osgirelease.lib.dir" value="${osgirelease.dir}/lib" />
+        <property name="osgirelease.lib.licenses.dir"
+                  value="${osgirelease.lib.dir}/licenses" />
+        <property name="osgirelease.bin.dir" value="${osgirelease.dir}/bin" />
+        <property name="osgirelease.doc.dir" value="${osgirelease.dir}/doc" />
+        <property name="osgirelease.doc.api.dir"
+                  value="${osgirelease.doc.dir}/api" />
+        <property name="osgirelease.src.zip"
+                  value="${osgirelease.dir}/src.zip" />
+
+        <!-- package dirs and files -->
+        <property name="package.dir" value="${build.dir}/package" />
+        <property name="package.prefix"
+                  value="${project.shortname}-${project.version.full}" />
+        <property name="package.zip"
+                  value="${package.dir}/${package.prefix}.zip" />
+        <property name="package.tgz"
+                  value="${package.dir}/${package.prefix}.tar.gz" />
+
+        <property name="osgipackage.zip"
+                  value="${package.dir}/${package.prefix}-osgi.zip" />
+        <property name="osgipackage.tgz"
+                  value="${package.dir}/${package.prefix}-osgi.tar.gz" />
+
+        <!-- compilation flags -->
+        <property name="compile.debug" value="true" />
+        <property name="compile.debuglevel" value="source,lines,var" />
+        <property name="compile.deprecation" value="false" />
+        <property name="compile.optimize" value="true" />
+        <property name="java.source.version" value="1.5" />
+        <property name="java.target.version" value="1.5" />
+        <property name="javac.encoding" value="UTF-8" />
+
+        <!-- main compilation classpath -->
+        <path id="classpath">
+            <fileset dir="${lib.dir}">
+                <include name="*.jar" />
+            </fileset>
+        </path>
+
+        <!-- classpath to compile tests -->
+        <path id="classpath.test">
+            <path refid="classpath" />
+            <pathelement location="${classes.java.dir}" />
+        </path>
+
+        <!-- classpath to compile examples -->
+        <path id="classpath.examples">
+            <path refid="classpath" />
+            <pathelement location="${classes.java.dir}" />
+        </path>
+
+        <!-- classpath to compile activators -->
+        <path id="classpath.activators">
+            <path refid="classpath.test" />
+            <pathelement location="${classes.test.dir}" />
+        </path>
+
+        <!-- classpath to run unit tests -->
+        <path id="classpath.junit">
+            <path refid="classpath.test" />
+            <pathelement location="${classes.test.dir}" />
+        </path>
+
+        <!-- pattern to define resource files -->
+        <patternset id="resources">
+            <include name="**" />
+            <exclude name="**/*.java" />
+            <exclude name="**/CVS, **/.svn/**" />
+            <exclude name="**/*.pst" />
+        </patternset>
     </target>
-    
-	<target name="compile" 
-		    depends="init,copyontologies" 
-		    description="compile Aperture core classes">
-		<!-- compile core classes -->
-		<mkdir dir="${classes.java.dir}" />
-		<javac source="${java.source.version}" 
-			   target="${java.target.version}" 
-			   srcdir="${src.java.dir}" 
-			   destdir="${classes.java.dir}" 
-			   classpathref="classpath" 
-			   debug="${compile.debug}" 
-			   debuglevel="${compile.debuglevel}" 
-			   deprecation="${compile.deprecation}" 
-			   optimize="${compile.optimize}" 
-		/>
-		
-		<!-- copy resources to classes dir -->
-		<copy todir="${classes.java.dir}">
-			<fileset dir="${src.java.dir}">
-				<patternset refid="resources" />
-			</fileset>
-		</copy>
-	</target>
 
-	<target name="compile.examples" 
-		    depends="init, compile" 
-		    description="compile Aperture examples classes">
-		<!-- compile example classes -->
-		<mkdir dir="${classes.examples.dir}" />
-		<javac source="${java.source.version}" 
-			   target="${java.target.version}" 
-			   srcdir="${src.examples.dir}" 
-			   destdir="${classes.examples.dir}" 
-			   classpathref="classpath.examples" 
-			   debug="${compile.debug}" 
-			   debuglevel="${compile.debuglevel}" 
-			   deprecation="${compile.deprecation}" 
-			   optimize="${compile.optimize}" />
-		
-		<!-- copy resource files -->
-		<copy todir="${classes.examples.dir}">
-			<fileset dir="${src.examples.dir}">
-				<patternset refid="resources" />
-			</fileset>
-		</copy>
-	</target>
+    <target name="clean"
+            depends="init"
+            description="delete generated classes and distribution results">
+        <delete includeemptydirs="true" dir="${build.dir}" />
+    </target>
 
-	<target name="compile.test" 
-		    depends="init, compile" 
-		    description="compile Aperture unit tests">
-		<!-- compile unit tests -->		
-		<mkdir dir="${classes.test.dir}" />
-		<javac source="${java.source.version}" 
-			   target="${java.target.version}" 
-			   srcdir="${src.test.dir}" 
-			   destdir="${classes.test.dir}" 
-			   classpathref="classpath.test" 
-			   debug="${compile.debug}" 
-			   debuglevel="${compile.debuglevel}" 
-			   deprecation="${compile.deprecation}" 
-			   optimize="${compile.optimize}" 
-		/>
-		
-		<!-- copy resource files -->
-		<copy todir="${classes.test.dir}">
-			<fileset dir="${src.test.dir}">
-				<patternset refid="resources" />
-			</fileset>
-		</copy>
-	</target>
-	
-	<target name="compile.activators" 
-		    depends="init, compile" 
-		    description="compile Aperture bundle activators">
-		<!-- compule unit tests -->		
-		<mkdir dir="${classes.activators.dir}" />
-		<javac source="${java.source.version}" 
-			   target="${java.target.version}" 
-			   srcdir="${src.activators.dir}" 
-			   destdir="${classes.activators.dir}" 
-			   classpathref="classpath.activators" 
-			   debug="${compile.debug}" 
-			   debuglevel="${compile.debuglevel}" 
-			   deprecation="${compile.deprecation}" 
-			   optimize="${compile.optimize}" 
-		/>
-		
-		<!-- copy resource files -->
-		<copy todir="${classes.activators.dir}">
-			<fileset dir="${src.activators.dir}">
-				<patternset refid="resources" />
-			</fileset>
-		</copy>
-	</target>
-	
-	<target name="jar" 
-		    depends="compile" 
-		    description="create a jar file with the Aperture core classes">
-		<mkdir dir="${dist.lib.dir}" />
-		<jar destfile="${dist.lib.dir}/${project.jar}" compress="no">
-			<fileset dir="${classes.java.dir}" />
-		</jar>
-	</target>
-	
-	<target name="jar.examples" 
-		    depends="compile.examples" 
-		    description="create a jar file with the Aperture example classes">
-		<mkdir dir="${dist.lib.dir}" />
-		<jar destfile="${dist.lib.dir}/${project-examples.jar}" compress="no">
-			<fileset dir="${classes.examples.dir}" />
-		</jar>
-	</target>
+    <target name="compileutils"
+            depends="init"
+            description="Compiles the VocabularyWriter, necessary to generate the vocabulary classes">
+        <mkdir dir="${classes.java.dir}" />
+        <javac source="${java.source.version}"
+               target="${java.target.version}"
+               srcdir="${src.dir}"
+               includes="**/util/*.java,**/vocabulary/*.java"
+               excludes="**/extractor/**"
+               destdir="${classes.java.dir}"
+               classpathref="classpath"
+               debug="${compile.debug}"
+               debuglevel="${compile.debuglevel}"
+               deprecation="${compile.deprecation}"
+               optimize="${compile.optimize}"
+        	   encoding="${javac.encoding}"/>
+        <!-- copy resources to classes dir -->
+        <copy todir="${classes.java.dir}">
+            <fileset dir="${src.java.dir}">
+                <patternset refid="resources" />
+            </fileset>
+        </copy>
+    </target>
 
-	<target name="jar.test" 
-		    depends="compile.test" 
-		    description="create a jar file with the Aperture unit test classes">
-		<mkdir dir="${dist.lib.dir}" />
-		<jar destfile="${dist.lib.dir}/${project-test.jar}" compress="no">
-			<fileset dir="${classes.test.dir}" />
-		</jar>
-	</target>
-	
-	<!-- include the selectors -->
+    <target name="compile"
+            depends="init"
+            description="compile Aperture core classes">
+        <!-- compile core classes -->
+        <mkdir dir="${classes.java.dir}" />
+        <javac source="${java.source.version}"
+               target="${java.target.version}"
+               srcdir="${src.java.dir}"
+               destdir="${classes.java.dir}"
+               classpathref="classpath"
+               debug="${compile.debug}"
+               debuglevel="${compile.debuglevel}"
+               deprecation="${compile.deprecation}"
+               optimize="${compile.optimize}"
+               encoding="${javac.encoding}"/>
+        <!-- copy resources to classes dir -->
+        <copy todir="${classes.java.dir}">
+            <fileset dir="${src.java.dir}">
+                <patternset refid="resources" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="compile.examples"
+            depends="init, compile"
+            description="compile Aperture examples classes">
+        <!-- compile example classes -->
+        <mkdir dir="${classes.examples.dir}" />
+        <javac source="${java.source.version}"
+               target="${java.target.version}"
+               srcdir="${src.examples.dir}"
+               destdir="${classes.examples.dir}"
+               classpathref="classpath.examples"
+               debug="${compile.debug}"
+               debuglevel="${compile.debuglevel}"
+               deprecation="${compile.deprecation}"
+               optimize="${compile.optimize}"
+               encoding="${javac.encoding}"/>
+
+        <!-- copy resource files -->
+        <copy todir="${classes.examples.dir}">
+            <fileset dir="${src.examples.dir}">
+                <patternset refid="resources" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="compile.test"
+            depends="init, compile"
+            description="compile Aperture unit tests">
+        <!-- compile unit tests -->
+        <mkdir dir="${classes.test.dir}" />
+        <javac source="${java.source.version}"
+               target="${java.target.version}"
+               srcdir="${src.test.dir}"
+               destdir="${classes.test.dir}"
+               classpathref="classpath.test"
+               debug="${compile.debug}"
+               debuglevel="${compile.debuglevel}"
+               deprecation="${compile.deprecation}"
+               optimize="${compile.optimize}" 
+               encoding="${javac.encoding}"/>
+
+        <!-- copy resource files -->
+        <copy todir="${classes.test.dir}">
+            <fileset dir="${src.test.dir}">
+                <patternset refid="resources" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="compile.activators"
+            depends="init, compile"
+            description="compile Aperture bundle activators">
+        <!-- compule unit tests -->
+        <mkdir dir="${classes.activators.dir}" />
+        <javac source="${java.source.version}"
+               target="${java.target.version}"
+               srcdir="${src.activators.dir}"
+               destdir="${classes.activators.dir}"
+               classpathref="classpath.activators"
+               debug="${compile.debug}"
+               debuglevel="${compile.debuglevel}"
+               deprecation="${compile.deprecation}"
+               optimize="${compile.optimize}" 
+               encoding="${javac.encoding}"/>
+        <!-- copy resource files -->
+        <copy todir="${classes.activators.dir}">
+            <fileset dir="${src.activators.dir}">
+                <patternset refid="resources" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="jar"
+            depends="compile"
+            description="create a jar file with the Aperture core classes">
+        <mkdir dir="${dist.lib.dir}" />
+        <jar destfile="${dist.lib.dir}/${project.jar}" compress="no">
+            <fileset dir="${classes.java.dir}" />
+        </jar>
+    </target>
+
+    <target name="jar.examples"
+            depends="compile.examples"
+            description="create a jar file with the Aperture example classes">
+        <mkdir dir="${dist.lib.dir}" />
+        <jar destfile="${dist.lib.dir}/${project-examples.jar}" compress="no">
+            <fileset dir="${classes.examples.dir}" />
+        </jar>
+    </target>
+
+    <target name="jar.test"
+            depends="compile.test"
+            description="create a jar file with the Aperture unit test classes">
+        <mkdir dir="${dist.lib.dir}" />
+        <jar destfile="${dist.lib.dir}/${project-test.jar}" compress="no">
+            <fileset dir="${classes.test.dir}" />
+        </jar>
+    </target>
+
+    <!-- include the selectors -->
 	
 	&selectors;
 	
 	<!-- targets for jar files at the highest level -->
-	
-	<target name="bundle.core.jar" 
-		    depends="compile.activators" 
-		    description="create the core aperture bundle">
-		<mkdir dir="${dist.bundle.dir}" />
-		<jar destfile="${dist.bundle.dir}/${bundle.core.jar}" 
-			 compress="no" 
-			 manifest="${core.manifest.mf}">
-			<fileset dir="${classes.java.dir}">
-				<selector refid="bundle.core.coarsegrained.selector" />
-			</fileset>	
-			<fileset dir="${src.java.dir}">
-				<and>
-					<selector refid="bundle.core.coarsegrained.selector" />
-					<selector refid="bundle.exclude.resources.selector" />
-				</and>
-			</fileset>
-			<fileset dir="${classes.activators.dir}">
-				<selector refid="bundle.core.coarsegrained.selector" />
-			</fileset>	
-			<fileset dir="${src.activators.dir}">
-				<and>
-					<selector refid="bundle.core.coarsegrained.selector" />
-					<selector refid="bundle.exclude.resources.selector" />
-				</and>
-			</fileset>
-			<fileset dir="${basedir}">
-				<selector refid="bundle.core.coarsegrained.selector" />
-			</fileset>	
-		</jar>
-	</target>
-	
-	<target name="bundle.impl.jar" 
-		    depends="compile.activators" 
-		    description="create the aperture implementation bundle">
-		<mkdir dir="${dist.bundle.dir}" />	
-		<jar destfile="${dist.bundle.dir}/${bundle.impl.jar}" 
-			 compress="no" 
-			 manifest="${impl.manifest.mf}">
-			<fileset dir="${classes.java.dir}">
-				<selector refid="bundle.impl.coarsegrained.selector" />
-			</fileset>	
-			<fileset dir="${src.java.dir}">
-				<and>
-					<selector refid="bundle.impl.coarsegrained.selector" />
-					<selector refid="bundle.exclude.resources.selector" />
-				</and>
-			</fileset>
-			<fileset dir="${classes.activators.dir}">
-				<selector refid="bundle.impl.coarsegrained.selector" />
-			</fileset>	
-			<fileset dir="${src.activators.dir}">
-				<and>
-					<selector refid="bundle.impl.coarsegrained.selector" />
-					<selector refid="bundle.exclude.resources.selector" />
-				</and>
-			</fileset>
-			<fileset dir="${basedir}">
-				<selector refid="bundle.impl.coarsegrained.selector" />
-			</fileset>	
-		</jar>
-	</target>
-	
-			
-	<target name="bundle.example.jar" 
-			    depends="compile.examples" 
-			    description="create the bundle with an example">
-			<mkdir dir="${dist.bundle.dir}" />	
-			<jar destfile="${dist.bundle.dir}/${bundle.example.jar}" 
-				 compress="no" 
-				 manifest="${example.manifest.mf}">
-				<fileset dir="${classes.examples.dir}">
-					<filename name="org/semanticdesktop/aperture/examples/osgi/*" />
-				</fileset>	
-			</jar>
-		</target>
-	
-	<target name="jar.bundles" 
-		    depends="bundle.core.jar,bundle.impl.jar,bundle.example.jar" 
-		    description="create aperture OSGi bundles" />
-			
-	<target name="build" 
-		    depends="jar, jar.examples, jar.test" 
-		    description="incrementally builds all Aperture jar files" />
-    
-    <target name="cleanandbuild"
-    		depends="clean, build" />
-    
-    <target name="osgi"
-     	    depends="jar.bundles" />
-    
-	<target name="javadoc" 
-		    depends="init" 
-		    description="create the javadoc for the core classes">
-		<!-- create javadoc files -->
-		<mkdir dir="${javadoc.dir}" />
-		<javadoc destdir="${javadoc.dir}" 
-			     sourcepath="${src.java.dir}" 
-		         author="true" 
-		         version="true" 
-			     additionalparam="-breakiterator" 
-			     use="true" 
-			     classpathref="classpath" 
-			     source="${java.src.version}" 
-			     windowtitle="${project.longname} API release ${project.version.full}" 
-			     doctitle="${project.longname} API release ${project.version.full}"
-			     packagenames="org.semanticdesktop.aperture.*"
-			     excludepackagenames="org.semanticdesktop.aperture.opener.*">
-			<link href="http://www.openrdf.org/doc/sesame2/api/" />
-			<link href="http://jena.sourceforge.net/javadoc/" />
-			<link href="http://java.sun.com/j2se/1.4.2/docs/api" />
-		</javadoc>
-	</target>
-	
-	<target name="javadoc_limitedfornepomuk" 
-		    depends="init" 
-		    description="create the javadoc for the interfaces, but not the impl. documentation input for the nepomuk consortium.">
-		<mkdir dir="${javadoc.dir}" />
-		<javadoc destdir="${javadoc.dir}" 
-			     sourcepath="${src.java.dir}" 
-			     author="true" 
-			     version="true" 
-			     additionalparam="-breakiterator" 
-			     use="true" 
-			     classpathref="classpath" 
-			     source="${java.src.version}" 
-			     windowtitle="${project.longname} API release ${project.version.full}" 
-			     doctitle="${project.longname} API release ${project.version.full}">
-			<package name="org.semanticdesktop.aperture.accessor"/>
-			<package name="org.semanticdesktop.aperture.crawler"/>
-			<package name="org.semanticdesktop.aperture.datasource"/>
-			<package name="org.semanticdesktop.aperture.extractor"/>
-			<package name="org.semanticdesktop.aperture.mime.identifier"/>
-			<package name="org.semanticdesktop.aperture.rdf"/>
-			<package name="org.semanticdesktop.aperture.vocabulary"/>
-			<link href="http://www.openrdf.org/doc/sesame2/api/" />
-			<link href="http://jena.sourceforge.net/javadoc/" />
-			<link href="http://java.sun.com/j2se/1.4.2/docs/api" />
-		</javadoc>
-	</target>
-	
-	<target name="dist" 
-		    description="build the jar and javadoc files" 
-		    depends="build, test, javadoc" />
 
-	<target name="release" 
-		    depends="dist" 
-		    description="builds a directory tree containing a complete Aperture distro">
-		<!-- copy README-like files -->
-		<mkdir dir="${release.dir}" />
-		<copy todir="${release.dir}">
-			<fileset file="${basedir}/README" />
-			<fileset file="${basedir}/LICENSE" />
-			<fileset file="${basedir}/CHANGELOG" />
-		</copy>
+    <target name="bundle.core.jar"
+            depends="compile.activators"
+            description="create the core aperture bundle">
+        <mkdir dir="${dist.bundle.dir}" />
+        <jar destfile="${dist.bundle.dir}/${bundle.core.jar}"
+             compress="no"
+             manifest="${core.manifest.mf}">
+            <fileset dir="${classes.java.dir}">
+                <selector refid="bundle.core.coarsegrained.selector" />
+            </fileset>
+            <fileset dir="${src.java.dir}">
+                <and>
+                    <selector refid="bundle.core.coarsegrained.selector" />
+                    <selector refid="bundle.exclude.resources.selector" />
+                </and>
+            </fileset>
+            <fileset dir="${classes.activators.dir}">
+                <selector refid="bundle.core.coarsegrained.selector" />
+            </fileset>
+            <fileset dir="${src.activators.dir}">
+                <and>
+                    <selector refid="bundle.core.coarsegrained.selector" />
+                    <selector refid="bundle.exclude.resources.selector" />
+                </and>
+            </fileset>
+            <fileset dir="${basedir}">
+                <selector refid="bundle.core.coarsegrained.selector" />
+            </fileset>
+        </jar>
+    </target>
 
-		<!-- copy Aperture jar files -->
-		<mkdir dir="${release.lib.dir}" />
-		<copy todir="${release.lib.dir}">
-			<fileset dir="${dist.lib.dir}" />
-		</copy>
-		
-		<!-- copy third party libs -->
-		<copy todir="${release.lib.dir}">
-			<fileset dir="${lib.dir}">
-				<include name="*.jar" />
-			</fileset>
-		</copy>		
-		
-		<!-- copy licenses of third party libs -->
-		<mkdir dir="${release.lib.licenses.dir}" />
-		<copy todir="${release.lib.licenses.dir}">
-			<fileset dir="${lib.dir}">
-				<include name="*.txt" />
-			</fileset>
-		</copy>
-		
-		<!-- copy jacob.dll to the release's root dir -->
-		<copy todir="${release.dir}" file="jacob.dll" />
-		
-		<!-- copy bin files -->
-		<mkdir dir="${release.bin.dir}" />
-		<copy todir="${release.bin.dir}">
-			<fileset dir="${bin.dir}">
-				<exclude name="Generate*.launch" />  <!-- only used for generated source code -->
-			</fileset>
-		</copy>
-		
-		<!-- copy documentation files -->
-		<mkdir dir="${release.doc.dir}" />
-		<copy todir="${release.doc.dir}">
-			<fileset dir="${doc.dir}">
-				<include name="**" />
-				<exclude name="aperture_overview.ppt" />  <!-- file is not uptodate yet -->
-			</fileset>
-		</copy>
-		
-		<mkdir dir="${release.doc.api.dir}" />
-		<copy todir="${release.doc.api.dir}">
-			<fileset dir="${javadoc.dir}" />
-		</copy>
-		
-		<!-- create src.zip file -->
-		<zip destfile="${release.src.zip}" basedir="${basedir}">
-			<include name="src/**" />
-			<include name="build.xml" />
-			
-			<!-- this seems to be default behaviour but it doesn't hurt to be explicit -->
-			<exclude name="**/CVS, **/.svn/**" />
-			
-			<!-- The following files are exluded while their APIs are still under heavy revision.
+    <target name="bundle.impl.jar"
+            depends="compile.activators"
+            description="create the aperture implementation bundle">
+        <mkdir dir="${dist.bundle.dir}" />
+        <jar destfile="${dist.bundle.dir}/${bundle.impl.jar}"
+             compress="no"
+             manifest="${impl.manifest.mf}">
+            <fileset dir="${classes.java.dir}">
+                <selector refid="bundle.impl.coarsegrained.selector" />
+            </fileset>
+            <fileset dir="${src.java.dir}">
+                <and>
+                    <selector refid="bundle.impl.coarsegrained.selector" />
+                    <selector refid="bundle.exclude.resources.selector" />
+                </and>
+            </fileset>
+            <fileset dir="${classes.activators.dir}">
+                <selector refid="bundle.impl.coarsegrained.selector" />
+            </fileset>
+            <fileset dir="${src.activators.dir}">
+                <and>
+                    <selector refid="bundle.impl.coarsegrained.selector" />
+                    <selector refid="bundle.exclude.resources.selector" />
+                </and>
+            </fileset>
+            <fileset dir="${basedir}">
+                <selector refid="bundle.impl.coarsegrained.selector" />
+            </fileset>
+        </jar>
+    </target>
+
+
+    <target name="bundle.example.jar"
+            depends="compile.examples"
+            description="create the bundle with an example">
+        <mkdir dir="${dist.bundle.dir}" />
+        <jar destfile="${dist.bundle.dir}/${bundle.example.jar}"
+             compress="no"
+             manifest="${example.manifest.mf}">
+            <fileset dir="${classes.examples.dir}">
+                <filename name="org/semanticdesktop/aperture/examples/osgi/*" />
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="jar.bundles"
+            depends="bundle.core.jar,bundle.impl.jar,bundle.example.jar"
+            description="create aperture OSGi bundles" />
+
+    <target name="build"
+            depends="jar, jar.examples, jar.test"
+            description="incrementally builds all Aperture jar files" />
+
+    <target name="cleanandbuild" depends="clean, build" />
+
+    <target name="osgi" depends="jar.bundles" />
+
+    <target name="javadoc"
+            depends="init"
+            description="create the javadoc for the core classes">
+        <!-- create javadoc files -->
+        <mkdir dir="${javadoc.dir}" />
+        <javadoc destdir="${javadoc.dir}"
+                 sourcepath="${src.java.dir}"
+                 author="true"
+                 version="true"
+                 additionalparam="-breakiterator"
+                 use="true"
+                 classpathref="classpath"
+                 source="${java.src.version}"
+                 windowtitle="${project.longname} API release ${project.version.full}"
+                 doctitle="${project.longname} API release ${project.version.full}"
+                 packagenames="org.semanticdesktop.aperture.*"
+                 excludepackagenames="org.semanticdesktop.aperture.opener.*">
+            <link href="http://www.openrdf.org/doc/sesame2/api/" />
+            <link href="http://jena.sourceforge.net/javadoc/" />
+            <link href="http://java.sun.com/j2se/1.4.2/docs/api" />
+        </javadoc>
+    </target>
+
+    <target name="javadoc_limitedfornepomuk"
+            depends="init"
+            description="create the javadoc for the interfaces, but not the impl. documentation input for the nepomuk consortium.">
+        <mkdir dir="${javadoc.dir}" />
+        <javadoc destdir="${javadoc.dir}"
+                 sourcepath="${src.java.dir}"
+                 author="true"
+                 version="true"
+                 additionalparam="-breakiterator"
+                 use="true"
+                 classpathref="classpath"
+                 source="${java.src.version}"
+                 windowtitle="${project.longname} API release ${project.version.full}"
+                 doctitle="${project.longname} API release ${project.version.full}">
+            <package name="org.semanticdesktop.aperture.accessor" />
+            <package name="org.semanticdesktop.aperture.crawler" />
+            <package name="org.semanticdesktop.aperture.datasource" />
+            <package name="org.semanticdesktop.aperture.extractor" />
+            <package name="org.semanticdesktop.aperture.mime.identifier" />
+            <package name="org.semanticdesktop.aperture.rdf" />
+            <package name="org.semanticdesktop.aperture.vocabulary" />
+            <link href="http://www.openrdf.org/doc/sesame2/api/" />
+            <link href="http://jena.sourceforge.net/javadoc/" />
+            <link href="http://java.sun.com/j2se/1.4.2/docs/api" />
+        </javadoc>
+    </target>
+
+    <target name="dist"
+            description="build the jar and javadoc files"
+            depends="build, test, javadoc" />
+
+    <target name="release"
+            depends="dist"
+            description="builds a directory tree containing a complete Aperture distro">
+        <!-- copy README-like files -->
+        <mkdir dir="${release.dir}" />
+        <copy todir="${release.dir}">
+            <fileset file="${basedir}/README" />
+            <fileset file="${basedir}/LICENSE" />
+            <fileset file="${basedir}/CHANGELOG" />
+        </copy>
+
+        <!-- copy Aperture jar files -->
+        <mkdir dir="${release.lib.dir}" />
+        <copy todir="${release.lib.dir}">
+            <fileset dir="${dist.lib.dir}" />
+        </copy>
+
+        <!-- copy third party libs -->
+        <copy todir="${release.lib.dir}">
+            <fileset dir="${lib.dir}">
+                <include name="*.jar" />
+            </fileset>
+        </copy>
+
+        <!-- copy licenses of third party libs -->
+        <mkdir dir="${release.lib.licenses.dir}" />
+        <copy todir="${release.lib.licenses.dir}">
+            <fileset dir="${lib.dir}">
+                <include name="*.txt" />
+            </fileset>
+        </copy>
+
+        <!-- copy jacob.dll to the release's root dir -->
+        <copy todir="${release.dir}" file="jacob.dll" />
+
+        <!-- copy bin files -->
+        <mkdir dir="${release.bin.dir}" />
+        <copy todir="${release.bin.dir}">
+            <fileset dir="${bin.dir}">
+                <exclude name="Generate*.launch" />
+                <!-- only used for generated source code -->
+            </fileset>
+        </copy>
+
+        <!-- copy documentation files -->
+        <mkdir dir="${release.doc.dir}" />
+        <copy todir="${release.doc.dir}">
+            <fileset dir="${doc.dir}">
+                <include name="**" />
+                <exclude name="aperture_overview.ppt" />
+                <!-- file is not uptodate yet -->
+            </fileset>
+        </copy>
+
+        <mkdir dir="${release.doc.api.dir}" />
+        <copy todir="${release.doc.api.dir}">
+            <fileset dir="${javadoc.dir}" />
+        </copy>
+
+        <!-- create src.zip file -->
+        <zip destfile="${release.src.zip}" basedir="${basedir}">
+            <include name="src/**" />
+            <include name="build.xml" />
+
+            <!-- this seems to be default behaviour but it doesn't hurt to be explicit -->
+            <exclude name="**/CVS, **/.svn/**" />
+
+            <!-- The following files are exluded while their APIs are still under heavy revision.
 			     Note that this exludes both core code and unit tests. -->
-			<exclude name="**/org/semanticdesktop/aperture/opener/**" />
-		</zip>
-	</target>
-		
-    <target name="osgirelease"
-    	depends="release, jar.bundles"
-    	description="builds the normal release and adds the osgi bundles zip">
-       
-		<!-- copy README-like files -->
-		<mkdir dir="${osgirelease.dir}" />
-		<copy todir="${osgirelease.dir}">
-			<fileset file="${basedir}/README" />
-			<fileset file="${basedir}/LICENSE" />
-			<fileset file="${basedir}/CHANGELOG" />
-		</copy>
+            <exclude name="**/org/semanticdesktop/aperture/opener/**" />
+        </zip>
+    </target>
 
-		<!-- copy Aperture jar files -->
-		<mkdir dir="${osgirelease.lib.dir}" />
-		<copy todir="${osgirelease.lib.dir}">
-			<fileset dir="${dist.bundle.dir}" />
-		</copy>
-        
+    <target name="osgirelease"
+            depends="release, jar.bundles"
+            description="builds the normal release and adds the osgi bundles zip">
+
+        <!-- copy README-like files -->
+        <mkdir dir="${osgirelease.dir}" />
+        <copy todir="${osgirelease.dir}">
+            <fileset file="${basedir}/README" />
+            <fileset file="${basedir}/LICENSE" />
+            <fileset file="${basedir}/CHANGELOG" />
+        </copy>
+
+        <!-- copy Aperture jar files -->
+        <mkdir dir="${osgirelease.lib.dir}" />
+        <copy todir="${osgirelease.lib.dir}">
+            <fileset dir="${dist.bundle.dir}" />
+        </copy>
+
         <!-- copy osgi bundles necessary to have a full-blown osgi environment -->
         <copy todir="${osgirelease.lib.dir}">
             <fileset file="${lib.dir}/rdf2go-4.4.1.jar" />
             <fileset file="${lib.dir}/rdf2go-impl-base-4.4.1.jar" />
             <fileset file="${lib.dir}/slf4j-api-1.3.0.jar" />
-    		<fileset file="${lib.dir}/slf4j-simple-1.3.0.jar" />
+            <fileset file="${lib.dir}/slf4j-simple-1.3.0.jar" />
             <fileset file="${lib.dir}/org.openrdf.rdf2go-4.4.1.2682.jar" />
-   			<fileset file="${lib.dir}/org.apache.commons.httpclient_3.0.0.rc2.jar" />
+            <fileset file="${lib.dir}/org.apache.commons.httpclient_3.0.0.rc2.jar" />
             <fileset file="${lib.dir}/org.apache.commons.codec_1.2.0.jar" />
             <fileset file="${lib.dir}/openrdf-sesame-2.0-beta4-onejar.jar" />
             <fileset file="${lib.dir}/jcl104-over-slf4j-1.3.0.jar" />
         </copy>
-        	
-		<!-- copy licenses of third party libs -->
-		<mkdir dir="${osgirelease.lib.licenses.dir}" />
-		<copy todir="${osgirelease.lib.licenses.dir}">
-			<fileset dir="${lib.dir}">
-				<include name="*.txt" />
-			</fileset>
-		</copy>
-		
-		<!-- copy documentation files -->
-		<mkdir dir="${osgirelease.doc.dir}" />
-		<copy todir="${osgirelease.doc.dir}">
-			<fileset dir="${doc.dir}">
-				<include name="**" />
-				<exclude name="aperture_overview.ppt" />  <!-- file is not uptodate yet -->
-			</fileset>
-		</copy>
-		
-		<mkdir dir="${osgirelease.doc.api.dir}" />
-		<copy todir="${osgirelease.doc.api.dir}">
-			<fileset dir="${javadoc.dir}" />
-		</copy>
-    </target>
-    
-	<target name="package" depends="release" description="create zipped release files, to be uploaded to sourceforge.net">
-		<mkdir dir="${package.dir}" />
-		
-		<!-- put the contents of the release dir in a zip file, with the project name as path prefix -->
-		<zip destfile="${package.zip}">
-			<zipfileset dir="${release.dir}" prefix="${package.prefix}" />
-		</zip>
-		
-		<!-- do basically the same to create a tar file -->
-		<tar destfile="${package.tgz}" compression="gzip" longfile="gnu">
-			<tarfileset dir="${release.dir}" prefix="${package.prefix}" />
-		</tar>
-	</target>
-	
-	<target name="osgipackage" depends="osgirelease" description="create zipped osgi release files, to be uploaded to sourceforge.net">
-		<mkdir dir="${package.dir}" />
-		
-		<!-- put the contents of the release dir in a zip file, with the project name as path prefix -->
-		<zip destfile="${osgipackage.zip}">
-			<zipfileset dir="${osgirelease.dir}" prefix="${package.prefix}" />
-		</zip>
-		
-		<!-- do basically the same to create a tar file -->
-		<tar destfile="${osgipackage.tgz}" compression="gzip" longfile="gnu">
-			<tarfileset dir="${osgirelease.dir}" prefix="${package.prefix}" />
-		</tar>
-	</target>
 
-    
-	<!--
+        <!-- copy licenses of third party libs -->
+        <mkdir dir="${osgirelease.lib.licenses.dir}" />
+        <copy todir="${osgirelease.lib.licenses.dir}">
+            <fileset dir="${lib.dir}">
+                <include name="*.txt" />
+            </fileset>
+        </copy>
+
+        <!-- copy documentation files -->
+        <mkdir dir="${osgirelease.doc.dir}" />
+        <copy todir="${osgirelease.doc.dir}">
+            <fileset dir="${doc.dir}">
+                <include name="**" />
+                <exclude name="aperture_overview.ppt" />
+                <!-- file is not uptodate yet -->
+            </fileset>
+        </copy>
+
+        <mkdir dir="${osgirelease.doc.api.dir}" />
+        <copy todir="${osgirelease.doc.api.dir}">
+            <fileset dir="${javadoc.dir}" />
+        </copy>
+    </target>
+
+    <target name="package"
+            depends="release"
+            description="create zipped release files, to be uploaded to sourceforge.net">
+        <mkdir dir="${package.dir}" />
+
+        <!-- put the contents of the release dir in a zip file, with the project name as path prefix -->
+        <zip destfile="${package.zip}">
+            <zipfileset dir="${release.dir}" prefix="${package.prefix}" />
+        </zip>
+
+        <!-- do basically the same to create a tar file -->
+        <tar destfile="${package.tgz}" compression="gzip" longfile="gnu">
+            <tarfileset dir="${release.dir}" prefix="${package.prefix}" />
+        </tar>
+    </target>
+
+    <target name="osgipackage"
+            depends="osgirelease"
+            description="create zipped osgi release files, to be uploaded to sourceforge.net">
+        <mkdir dir="${package.dir}" />
+
+        <!-- put the contents of the release dir in a zip file, with the project name as path prefix -->
+        <zip destfile="${osgipackage.zip}">
+            <zipfileset dir="${osgirelease.dir}" prefix="${package.prefix}" />
+        </zip>
+
+        <!-- do basically the same to create a tar file -->
+        <tar destfile="${osgipackage.tgz}" compression="gzip" longfile="gnu">
+            <tarfileset dir="${osgirelease.dir}" prefix="${package.prefix}" />
+        </tar>
+    </target>
+
+
+    <!--
 	  To get this to work in Eclipse, either put JUnit into your global ant dependencies or local ant dependencies. 
 	  
       A - global dependencies:
@@ -609,22 +647,31 @@ your copy of ANT at http://ant.apache.org/
           This menu is also available on the "run external tools" button.
           There, switch to the "classpath" tab and add the /aperture/lib/junit.jar to the ant classpath. 
 	-->
-	<target name="test" depends="compile.test" description="test the Aperture core classes">
-		<junit fork="yes" printsummary="withOutAndErr" failureproperty="unit.test.failed" showoutput="yes">
-			<classpath refid="classpath.junit" />
-			<test name="org.semanticdesktop.aperture.TestAll" outfile="result" />
-		</junit>
-		<fail if="unit.test.failed" message="Tests failed." />
-	</target>
+    <target name="test"
+            depends="compile.test"
+            description="test the Aperture core classes">
+        <junit fork="yes"
+               printsummary="withOutAndErr"
+               failureproperty="unit.test.failed"
+               showoutput="yes">
+            <classpath refid="classpath.junit" />
+            <test name="org.semanticdesktop.aperture.TestAll"
+                  outfile="result" />
+        </junit>
+        <fail if="unit.test.failed" message="Tests failed." />
+    </target>
+    
+    <target name="changelog" description="build an overview of commits">
+        <cvschangelog dir="${basedir}" destfile="changelog.xml" />
+        <style in="changelog.xml"
+               out="changelog.html"
+               style="${ant.home}/etc/changelog.xsl">
+            <param name="title" expression="Aperture ChangeLog" />
+            <param name="module" expression="aperture" />
+            <param name="cvsweb"
+                   expression="http://cvs.sourceforge.net/viewcvs.py/aperture/" />
+        </style>
+        <delete file="changelog.xml" />
+    </target>
 
-	<target name="changelog" description="build an overview of commits">
-		<cvschangelog dir="${basedir}" destfile="changelog.xml"/>
-		<style in="changelog.xml" out="changelog.html" style="${ant.home}/etc/changelog.xsl">
-			<param name="title" expression="Aperture ChangeLog"/>
-			<param name="module" expression="aperture"/>
-			<param name="cvsweb" expression="http://cvs.sourceforge.net/viewcvs.py/aperture/"/>
-		</style>
-		<delete file="changelog.xml"/>
-	</target>
-	
 </project>

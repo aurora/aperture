@@ -6,25 +6,25 @@
  */
 package org.semanticdesktop.aperture.util.ontology;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.Syntax;
-import org.semanticdesktop.aperture.util.ResourceUtil;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.semanticdesktop.aperture.vocabulary.NCAL;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NEXIF;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NID3;
+import org.semanticdesktop.aperture.vocabulary.NIE;
+import org.semanticdesktop.aperture.vocabulary.NMO;
+import org.semanticdesktop.aperture.vocabulary.SOURCEFORMAT;
+import org.semanticdesktop.aperture.vocabulary.TAGGING;
 
+/**
+ * Provides convenience methods to get actual content of ontologies. This class
+ * is deprecated please use get...Ontology methods in appropriate vocabulary 
+ * classes.
+ * @deprecated
+ */
 public class OntologyUtil {
-
-    private static final String RESOURCE_PACKAGE = OntologyUtil.class.getPackage().getName()
-            .replace('.', '/');
-
-    private static final String SOURCE_ONTOLOGY = RESOURCE_PACKAGE + "/source.rdfs";
-
-    private static final String SOURCEFORMAT_ONTOLOGY = RESOURCE_PACKAGE + "/sourceformat.rdfs";
-
-    private static final String SOURCEOPTIONSFORMATS = RESOURCE_PACKAGE + "/sourceoptionsformats.n3";
 
     /**
      * Puts the source ontology into the given model.
@@ -32,26 +32,47 @@ public class OntologyUtil {
      * @throws Exception if something goes wrong.
      */
     public static void getSourceOntology(Model model) throws Exception {
-        readFileFromResource(model, SOURCE_ONTOLOGY, Syntax.RdfXml);
+        DATASOURCE.getDATASOURCEOntology(model);
     }
 
     /**
      * Puts the source ontology into the given model.
      * @param model The model for the source ontology to be put into.
-     * @throws Ex
-     * dfception if something goes wrong.
+     * @throws Exception if something goes wrong.
      */
     public static void getSourceFormatOntology(Model model) throws Exception {
-        readFileFromResource(model, SOURCEFORMAT_ONTOLOGY, Syntax.RdfXml);
-        readFileFromResource(model, SOURCEOPTIONSFORMATS, Syntax.Turtle);
+        SOURCEFORMAT.getSOURCEFORMATOntology(model);
     }
-
-    private static void readFileFromResource(Model model, String path, Syntax syntax)
-            throws FileNotFoundException, IOException, ModelException {
-        InputStream stream = ResourceUtil.getInputStream(path, OntologyUtil.class);
-        if (stream == null) {
-            throw new FileNotFoundException("couldn't find resource " + path);
-        }
-        model.readFrom(stream, syntax);
+    
+    public static void getNIEOntology(Model model) throws Exception {
+        NIE.getNIEOntology(model);
+    }
+    
+    public static void getNFOOntology(Model model) throws Exception {
+        NFO.getNFOOntology(model);
+    }
+    
+    public static void getNCOOntology(Model model) throws Exception {
+        NCO.getNCOOntology(model);
+    }
+    
+    public static void getNMOOntology(Model model) throws Exception {
+        NMO.getNMOOntology(model);
+    }
+    
+    public static void getNCALOntology(Model model) throws Exception {
+        NCAL.getNCALOntology(model);
+    }
+    
+    public static void getNEXIFOntology(Model model) throws Exception {
+        NEXIF.getNEXIFOntology(model);
+    }
+    
+    public static void getNID3Ontology(Model model) throws Exception {
+        NID3.getNID3Ontology(model);
+    }
+    
+    public static void getTAGGINGOntology(Model model) throws Exception {
+        TAGGING.getTAGGINGOntology(model);
     }
 }

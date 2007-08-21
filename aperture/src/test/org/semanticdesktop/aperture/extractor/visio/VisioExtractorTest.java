@@ -9,12 +9,14 @@ package org.semanticdesktop.aperture.extractor.visio;
 import java.io.IOException;
 
 import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.model.Syntax;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class VisioExtractorTest extends ExtractorTestBase {
 
@@ -23,16 +25,15 @@ public class VisioExtractorTest extends ExtractorTestBase {
         ExtractorFactory factory = new VisioExtractorFactory();
         Extractor extractor = factory.get();
         RDFContainer container = extract(DOCS_PATH + "microsoft-visio.vsd", extractor);
-
         // check the extraction results
-        checkStatement(DATA.fullText, "developers", container);
-        checkStatement(DATA.title, "Title", container);
-        checkStatement(DATA.subject, "Topic", container);
-        checkStatement(DATA.description, "abstract", container);
-        checkStatement(DATA.creator, "Leo", container);
-        checkStatement(DATA.keyword, "visio", container);
-        checkStatement(DATA.keyword, "aperture", container);
-        
+        checkStatement(NIE.plainTextContent, "developers", container);
+        checkStatement(NIE.title, "Title", container);
+        checkStatement(NIE.subject, "Topic", container);
+        checkStatement(NIE.description, "abstract", container);
+        checkSimpleContact(NCO.creator, "TheAuthor-LeoSauermann", container);
+        checkStatement(NIE.keyword, "visio", container);
+        checkStatement(NIE.keyword, "aperture", container);
+        validate(container);
         container.dispose();
     }        
 }

@@ -10,16 +10,23 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A utility class for working with mimeTypes and content type headers.
+ */
+@SuppressWarnings("unchecked")
 public class ContentType {
 
 	/**
      * Extracts the mime type from a content type header.
+     * @param contentType the contentType
+     * @return the mimeType
      */
 	public static String getMimeType(String contentType) {
 		ContentType ct = new ContentType(contentType);
 		return ct.getMimeType();
 	}
 
+	/** The used with the parameters Map to obtain the charset */
 	public static final String CHARSET_KEY = "charset";
 
 	private String mimeType;
@@ -31,23 +38,40 @@ public class ContentType {
      * 
      * @param contentType A Content-Type header field value.
      */
-	public ContentType(String contentType) {
+    public ContentType(String contentType) {
 		parameterMap = new HashMap(4);
 		processContentType(contentType);
 	}
 
+	/**
+	 * Returns the mime type
+	 * @return the mime type
+	 */
 	public String getMimeType() {
 		return mimeType;
 	}
 
+	/**
+	 * Returns the parameter with the given key
+	 * @param key the key
+	 * @return the parameter with the given key
+	 */
 	public String getParameter(String key) {
 		return (String) parameterMap.get(key.toLowerCase());
 	}
 
-	public Map getParameters() {
+	/**
+	 * Returns a map of all parameters
+	 * @return a map of all parameters
+	 */
+    public Map getParameters() {
 		return Collections.unmodifiableMap(parameterMap);
 	}
 
+	/**
+	 * Returns the charset.
+	 * @return the charset
+	 */
 	public String getCharset() {
 		return getParameter(CHARSET_KEY);
 	}
@@ -80,7 +104,7 @@ public class ContentType {
      * Parses a Content-Type parameter. If the parameter specifies a character set, then this character
      * set is stored in the parameter map.
      */
-	private void processParameter(String param) {
+    private void processParameter(String param) {
 		// the equals sign separates the key from the value:
 		int equalsIdx = param.indexOf('=');
 

@@ -15,12 +15,14 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.UtfUtil;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +84,8 @@ public class PlainTextExtractor implements Extractor {
 			String remainingChars = IOUtil.readString(reader);
 
 			if (firstChars.length() > 0 || remainingChars.length() > 0) {
-				result.add(DATA.fullText, firstChars + remainingChars);
+                result.add(RDF.type,NFO.PlainTextDocument);
+				result.add(NIE.plainTextContent, firstChars + remainingChars);
 			}
 		}
 		catch (IOException e) {

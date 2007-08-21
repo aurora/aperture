@@ -28,7 +28,8 @@ import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,7 +134,7 @@ public class FileAccessor implements DataAccessor {
 			result = new FileDataObjectBase(id, source, metadata, contentStream);
 			// Add type info. (type, File) cannot be added in the FileDataObject class itself because it is
 			// also used for things like email Messages with content, that are strictly speaking not files.
-			result.getMetadata().add(RDF.type, DATA.FileDataObject);
+			result.getMetadata().add(RDF.type, NFO.FileDataObject);
 		}
 		else if (isFolder) {
 			result = new FolderDataObjectBase(id, source, metadata);
@@ -177,17 +178,18 @@ public class FileAccessor implements DataAccessor {
 		// create regular File metadata first
 		long lastModified = file.lastModified();
 		if (lastModified != 0l) {
-			metadata.add(DATA.date, new Date(lastModified));
+			metadata.add(NFO.fileLastModified, new Date(lastModified));
 		}
 
 		String name = file.getName();
 		if (name != null) {
-			metadata.add(DATA.name, name);
+			metadata.add(NFO.fileName, name);
 		}
 
 		File parent = file.getParentFile();
 		if (parent != null) {
-			metadata.add(DATA.partOf, toURI(parent));
+			metadata.add(NFO.belongsToContainer, toURI(parent));
+            metadata.add(metadata.getModel().createStatement(toURI(parent), RDF.type, NFO.Folder));
 		}
 
 		// add file-specific metadata
@@ -197,7 +199,7 @@ public class FileAccessor implements DataAccessor {
             // When people search for files with size 0, they should be able to do so.
             // Therefore LeoSauermann changed this code to return 0 on 27.06.2007
 			//if (length != 0l) {
-			    metadata.add(DATA.byteSize, length);
+			    metadata.add(NFO.fileSize, length);
 			//}
 		}
 
@@ -209,7 +211,8 @@ public class FileAccessor implements DataAccessor {
 				for (int i = 0; i < children.length; i++) {
 					File child = children[i];
 					if (child != null) {
-						metadata.add(metadata.getValueFactory().createStatement(toURI(child), DATA.partOf, id));
+                        metadata.add(NIE.hasPart, toURI(child));
+                        metadata.add(metadata.getModel().createStatement(toURI(child), RDF.type, NFO.FileDataObject));
 					}
 				}
 			}

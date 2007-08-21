@@ -11,6 +11,10 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,19 +22,26 @@ import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.SimpleSAXAdapter;
 import org.semanticdesktop.aperture.util.SimpleSAXListener;
 import org.semanticdesktop.aperture.util.SimpleSAXParser;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.util.UriUtil;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -39,6 +50,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
+
+import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 
 /**
  * Extracts full-text and metadata from Office Open XML documents, the XML- and ZIP-based format introduced by
@@ -253,7 +266,7 @@ public class OpenXmlExtractor implements Extractor {
         // add the extracted text to the metadata
         String text = fullText.toString();
         if (text.length() > 0) {
-            result.add(DATA.fullText, text);
+            result.add(NIE.plainTextContent, text);
         }
     }
 
@@ -353,7 +366,7 @@ public class OpenXmlExtractor implements Extractor {
     private void extractMetadata(InputStream stream, RDFContainer metadata) throws ExtractorException {
         Document document = getDocument(stream, true);
         Element root = document.getDocumentElement();
-
+        metadata.add(RDF.type,NFO.Document);
         // loop over all elements below the document element
         NodeList children = root.getChildNodes();
         int nrChildren = children.getLength();
@@ -393,34 +406,36 @@ public class OpenXmlExtractor implements Extractor {
 
         // note this tests for both core and app properties
         if ("title".equals(localName)) {
-            metadata.add(DATA.title, value);
+            metadata.add(NIE.title, value);
         }
         else if ("subject".equals(localName)) {
-            metadata.add(DATA.subject, value);
+            metadata.add(NIE.subject, value);
         }
         else if ("created".equals(localName)) {
-            metadata.add(DATA.created, value);
-            metadata.add(DATA.date, value);
+            metadata.add(NIE.contentCreated, convertStringToDate(value));
+            //metadata.add(DATA.date, value);
         }
         else if ("creator".equals(localName)) {
-            metadata.add(DATA.creator, value);
+            addContactStatement(NCO.creator, value, metadata);
         }
         else if ("description".equals(localName)) {
-            metadata.add(DATA.description, value);
+            metadata.add(NIE.description, value);
         }
         else if ("lastModifiedBy".equals(localName)) {
-            metadata.add(DATA.creator, value);
+            addContactStatement(NCO.contributor, value, metadata);
         }
         else if ("modified".equals(localName)) {
-            metadata.add(DATA.modified, value);
-            metadata.add(DATA.date, value);
+            metadata.add(NIE.contentLastModified, convertStringToDate(value));
+            //metadata.add(DATA.date, value);
         }
         else if ("Application".equals(localName)) {
-            metadata.add(DATA.generator, value);
+            metadata.add(NIE.generator, value);
         }
-        else if ("Pages".equals(localName) || "Slides".equals(localName)) {
+        // TODO get back to it when you add number of slides to a presentation
+        else if ("Pages".equals(localName)) {  // || "Slides".equals(localName)) {
             try {
-                metadata.add(DATA.pageCount, Integer.parseInt(value));
+                metadata.add(RDF.type,NFO.PaginatedTextDocument);
+                metadata.add(NFO.pageCount, Integer.parseInt(value));
             }
             catch (NumberFormatException e) {
                 // ignore
@@ -430,9 +445,37 @@ public class OpenXmlExtractor implements Extractor {
             StringTokenizer tokenizer = new StringTokenizer(value, " \t.,;|/\\", false);
             while (tokenizer.hasMoreTokens()) {
                 String keyword = tokenizer.nextToken();
-                metadata.add(DATA.keyword, keyword);
+                metadata.add(NIE.keyword, keyword);
             }
         }
+    }
+    
+    private Date convertStringToDate(String value) {
+        DateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        Date date = null;
+        try {
+            date = utcFormat.parse(value);
+            return date;
+        } catch (ParseException pe) {
+            // nothing happens
+        }
+        DateFormat timezoneFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        try {
+            date = timezoneFormat.parse(value);
+            return date;
+        } catch (ParseException pe) {
+            // well what the hell
+        }
+        // if no of the formats fit then return null;
+        return null;
+    }
+
+    private void addContactStatement(URI uri, String fullname, RDFContainer container) {
+        Model model = container.getModel();
+        Resource contactResource = UriUtil.generateRandomResource(model);
+        model.addStatement(contactResource,RDF.type,NCO.Contact);
+        model.addStatement(contactResource,NCO.fullname,fullname);
+        container.add(uri,contactResource);
     }
 
     private String getText(Element element) {

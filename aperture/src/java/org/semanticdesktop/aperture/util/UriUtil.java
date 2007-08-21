@@ -6,6 +6,11 @@
  */
 package org.semanticdesktop.aperture.util;
 
+import java.util.UUID;
+
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.node.Resource;
+
 /**
  * Methods related to actions on URIs. The definition of a URI is taken from <a
  * href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396: URI Generic Syntax</a>.
@@ -104,4 +109,17 @@ public final class UriUtil {
 
 		buffer.append(uri.substring(startIdx));
 	}
+    
+    /**
+     * This method creates resources that are used by the framework wherever
+     * a blank node is needed. This method currently creates uris of the form
+     * urn:uuid: with a random UUID at the end. In the future some way to
+     * configure the behaviour of this method may be implemented. For instance
+     * blank nodes may be used.
+     * @param model a model for which the random resource should be generated
+     * @return a random resource.
+     */
+    public static Resource generateRandomResource(Model model) {
+        return model.createURI("urn:uuid:" + UUID.randomUUID().toString());
+    }
 }

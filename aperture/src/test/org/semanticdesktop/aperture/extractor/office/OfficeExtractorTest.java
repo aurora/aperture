@@ -14,7 +14,8 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class OfficeExtractorTest extends ExtractorTestBase {
 
@@ -25,15 +26,15 @@ public class OfficeExtractorTest extends ExtractorTestBase {
         RDFContainer container = extract(DOCS_PATH + "microsoft-word-2000.doc", extractor);
 
         // check the extraction results
-        checkStatement(DATA.fullText, "Microsoft", container);
-        checkStatement(DATA.title, "Word", container);
-        checkStatement(DATA.subject, "document", container);
-        checkStatement(DATA.description, "comments", container);
-        checkStatement(DATA.generator, "Word", container);
-        checkStatement(DATA.creator, "Fluit", container);
-        checkStatement(DATA.keyword, "test", container);
-        checkStatement(DATA.keyword, "rdf", container);
-        
+        checkStatement(NIE.plainTextContent, "Microsoft", container);
+        checkStatement(NIE.title, "Word", container);
+        checkStatement(NIE.subject, "document", container);
+        checkStatement(NIE.description, "comments", container);
+        checkStatement(NIE.generator, "Word", container);
+        checkSimpleContact(NCO.creator, "Christiaan Fluit", container);
+        checkStatement(NIE.keyword, "test", container);
+        checkStatement(NIE.keyword, "rdf", container);
+        validate(container);
         container.dispose();
     }        
 }

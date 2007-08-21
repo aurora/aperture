@@ -31,28 +31,40 @@ import org.xml.sax.SAXException;
  */
 public class CrawlReportBase implements CrawlReport {
 
+    /** main CrawlReport XML tag */
     public static final String CRAWL_REPORT_TAG = "crawlReport";
 
+    /** crawl report version XML attribute */
     public static final String VERSION_ATTR = "version";
 
+    /** Crawl started tag - contains the date and time when the crawl has been started */
     public static final String CRAWL_STARTED_TAG = "crawlStarted";
 
+    /** Crawl stopped tag - contains the date and time when the crawl has been stopped */
     public static final String CRAWL_STOPPED_TAG = "crawlStopped";
 
+    /** Exit code tag - contains the exit code */
     public static final String EXIT_CODE_TAG = "exitCode";
 
+    /** constant used to signify a successfully completed crawl */
     public static final String COMPLETED_VALUE = "completed";
 
+    /** constant used to signify a crawl that has been interrupted by the user */
     public static final String STOP_REQUESTED_VALUE = "stopRequested";
 
+    /** constant used to signify a crawl interrupted due to a fatal error */
     public static final String FATAL_ERROR_VALUE = "fatalError";
 
+    /** tag containing the number of new objects */
     public static final String NEW_COUNT_TAG = "newCount";
 
+    /** tag containing the number of changed objects */
     public static final String CHANGED_COUNT_TAG = "changedCount";
 
+    /** tag containing the number of removed objects */
     public static final String REMOVED_COUNT_TAG = "removedCount";
 
+    /** tag containing the number of unchanged objects */
     public static final String UNCHANGED_COUNT_TAG = "unchangedCount";
 
     private long crawlStarted;
@@ -69,6 +81,7 @@ public class CrawlReportBase implements CrawlReport {
 
     private int unchangedCount;
 
+    /** Default constructor */
     public CrawlReportBase() {
         crawlStarted = -1l;
         crawlStopped = -1l;

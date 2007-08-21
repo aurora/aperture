@@ -16,9 +16,15 @@ import org.apache.poi.hpsf.PropertySetFactory;
 import org.apache.poi.hpsf.SummaryInformation;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.util.UriUtil;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
 
 /**
@@ -96,15 +102,15 @@ public class PoiUtil {
 	public static void extractMetadata(POIFSFileSystem poiFileSystem, RDFContainer container) {
 		SummaryInformation summary = getSummaryInformation(poiFileSystem);
 		if (summary != null) {
-			copyString(summary.getTitle(), DATA.title, container);
-			copyString(summary.getSubject(), DATA.subject, container);
-			copyString(summary.getComments(), DATA.description, container);
-			copyString(summary.getApplicationName(), DATA.generator, container);
-			copyString(summary.getAuthor(), DATA.creator, container);
-			copyString(summary.getLastAuthor(), DATA.creator, container);
+			copyString(summary.getTitle(), NIE.title, container);
+			copyString(summary.getSubject(), NIE.subject, container);
+			copyString(summary.getComments(), NIE.description, container);
+			copyString(summary.getApplicationName(), NIE.generator, container);
+			copyContact(summary.getAuthor(), NCO.creator, container);
+			copyContact(summary.getLastAuthor(), NCO.contributor, container);
 
-			copyDate(summary.getCreateDateTime(), DATA.created, container);
-			copyDate(summary.getLastSaveDateTime(), DATA.date, container);
+			copyDate(summary.getCreateDateTime(), NIE.contentCreated, container);
+			copyDate(summary.getLastSaveDateTime(), NIE.contentLastModified, container);
 
 			int nrPages = summary.getPageCount();
 			if (nrPages > 1) {
@@ -112,7 +118,8 @@ public class PoiUtil {
 				// '1' is often erroneously returned and can thus not be trusted
 				// higher values tend to be right (not seen a counter example yet) and are
 				// therefore included
-				container.add(DATA.pageCount, nrPages);
+                container.add(RDF.type,NFO.PaginatedTextDocument);
+				container.add(NFO.pageCount, nrPages);
 			}
 
 			String keywords = summary.getKeywords();
@@ -120,13 +127,13 @@ public class PoiUtil {
 				StringTokenizer tokenizer = new StringTokenizer(keywords, " \t.,;|/\\", false);
 				while (tokenizer.hasMoreTokens()) {
 					String keyword = tokenizer.nextToken();
-					container.add(DATA.keyword, keyword);
+					container.add(NIE.keyword, keyword);
 				}
 			}
 		}
 	}
 
-	private static void copyString(String value, URI property, RDFContainer container) {
+    private static void copyString(String value, URI property, RDFContainer container) {
 		if (value != null) {
 			value = value.trim();
 			if (!value.equals("")) {
@@ -141,6 +148,16 @@ public class PoiUtil {
 			container.add(property, date);
 		}
 	}
+    
+    private static void copyContact(String name, URI property, RDFContainer container) {
+        if (name != null) {
+            Model model = container.getModel();
+            Resource resource = UriUtil.generateRandomResource(model);
+            model.addStatement(container.getDescribedUri(), property, resource);
+            model.addStatement(resource,RDF.type,NCO.Contact);
+            model.addStatement(resource,NCO.fullname,name);
+        }
+    }
 
 	/**
 	 * Extract full-text and metadata from an MS Office document contained in the specified stream. A
@@ -200,7 +217,7 @@ public class PoiUtil {
 		if (text != null) {
 			text = text.trim();
 			if (!text.equals("")) {
-				container.add(DATA.fullText, text);
+				container.add(NIE.plainTextContent, text);
 			}
 		}
 	}

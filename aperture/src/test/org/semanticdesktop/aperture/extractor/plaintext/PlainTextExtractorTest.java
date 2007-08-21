@@ -13,15 +13,16 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class PlainTextExtractorTest extends ExtractorTestBase {
 
 	public void testRegularExtraction() throws ExtractorException, IOException {
 		// apply the extractor on a text file
 		RDFContainer container = getStatements(DOCS_PATH + "plain-text.txt");
-		String text = container.getString(DATA.fullText);
+		String text = container.getString(NIE.plainTextContent);
 		assertTrue((text.indexOf("plain text") != -1));
+        validate(container);
 		container.dispose();
 	}
 
@@ -36,8 +37,9 @@ public class PlainTextExtractorTest extends ExtractorTestBase {
 		// assert that the extracted text exactly equals "test" (i.e. not just contains "test"), so that we
 		// are sure there are no garbage chars resulting from the presence of UTF Byte Order Marks
 		RDFContainer container = getStatements(DOCS_PATH + fileName);
-		String text = container.getString(DATA.fullText);
+		String text = container.getString(NIE.plainTextContent);
 		assertEquals("test", text);
+        validate(container);
 		container.dispose();
 	}
 
@@ -52,7 +54,8 @@ public class PlainTextExtractorTest extends ExtractorTestBase {
 
 	public void testFailingExtraction(String fileName) throws ExtractorException, IOException {
 		RDFContainer container = getStatements(DOCS_PATH + fileName);
-		assertEquals(null, container.getString(DATA.fullText));
+		assertEquals(null, container.getString(NIE.plainTextContent));
+        validate(container);
 		container.dispose();
 	}
 

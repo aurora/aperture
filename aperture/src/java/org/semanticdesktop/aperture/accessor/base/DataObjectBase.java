@@ -11,7 +11,7 @@ import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ public class DataObjectBase implements DataObject {
         this.dataSource = dataSource;
         this.metadata = metadata;
         disposed = false;
-        metadata.add(RDF.type, DATA.DataObject);
+        metadata.add(RDF.type, NIE.DataObject);
     }
 
     public void finalize() throws Throwable {

@@ -22,7 +22,7 @@ import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.vocabulary.XSD;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.util.ModelUtil;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.MAD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,7 +126,7 @@ public class ModelAccessData implements AccessData {
         try {
             URI idURI = ModelUtil.createURI(model, id);
 
-            iterator = model.findStatements(idURI, DATA.linksTo, Variable.ANY);
+            iterator = model.findStatements(idURI, MAD.linksTo, Variable.ANY);
             while (iterator.hasNext()) {
                 Statement statement = iterator.next();
                 Node value = statement.getObject();
@@ -217,11 +217,11 @@ public class ModelAccessData implements AccessData {
             remove(subject, predicate);
 
             // add the new statement
-            if (predicate == DATA.redirectsTo) {
+            if (predicate == MAD.redirectsTo) {
                 add(ModelUtil.createStatement(model, subject, predicate, ModelUtil.createURI(model, value)));
             }
             else {
-                URI dataType = (predicate == DATA.dateAsNumber || predicate == DATA.byteSize) ? XSD._long
+                URI dataType = (predicate == MAD.dateAsNumber || predicate == MAD.byteSize) ? XSD._long
                         : XSD._string;
                 Literal object = ModelUtil.createLiteral(model, value, dataType);
                 add(ModelUtil.createStatement(model, subject, predicate, object));
@@ -236,7 +236,7 @@ public class ModelAccessData implements AccessData {
         try {
             URI subject = ModelUtil.createURI(model, id);
             URI object = ModelUtil.createURI(model, referredID);
-            add(ModelUtil.createStatement(model, subject, DATA.linksTo, object));
+            add(ModelUtil.createStatement(model, subject, MAD.linksTo, object));
         }
         catch (ModelException e) {
             logger.error("Could not store referred ID for ID " + id, e);
@@ -267,7 +267,7 @@ public class ModelAccessData implements AccessData {
         try {
             URI subject = ModelUtil.createURI(model, id);
             URI object = ModelUtil.createURI(model, referredID);
-            Statement statement = ModelUtil.createStatement(model, subject, DATA.linksTo, object);
+            Statement statement = ModelUtil.createStatement(model, subject, MAD.linksTo, object);
 
             model.removeStatement(statement);
         }
@@ -278,7 +278,7 @@ public class ModelAccessData implements AccessData {
 
     public void removeReferredIDs(String id) {
         try {
-            remove(ModelUtil.createURI(model, id), DATA.linksTo);
+            remove(ModelUtil.createURI(model, id), MAD.linksTo);
         }
         catch (ModelException e) {
             logger.error("Could not remove referred IDs for ID " + id, e);
@@ -293,13 +293,13 @@ public class ModelAccessData implements AccessData {
 
     private URI toURI(String key) throws ModelException {
         if (key == AccessData.DATE_KEY) {
-            return DATA.dateAsNumber;
+            return MAD.dateAsNumber;
         }
         else if (key == AccessData.BYTE_SIZE_KEY) {
-            return DATA.byteSize;
+            return MAD.byteSize;
         }
         else if (key == AccessData.REDIRECTS_TO_KEY) {
-            return DATA.redirectsTo;
+            return MAD.redirectsTo;
         }
         else {
             return ModelUtil.createURI(model, URI_PREFIX + key);

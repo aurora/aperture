@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 
+import org.omg.CosNaming.NamingContextOperations;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
@@ -29,6 +30,7 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 
 public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerHandler, RDFContainerFactory {
@@ -58,10 +60,13 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
 	
 	public void testThunderbird() throws Exception { 
 		
-		DataSource ds=new ThunderbirdAddressbookDataSource();
+		ThunderbirdAddressbookDataSource ds=new ThunderbirdAddressbookDataSource();
 		
 		ds.setConfiguration(createRDFContainer("urn:TestThunderBirdDataSource"));
-		ConfigurationUtil.setBasepath(makeFileFromResource(data),ds.getConfiguration());
+        
+		//ConfigurationUtil.setBasepath(makeFileFromResource(data),ds.getConfiguration());
+        ds.setThunderbirdAddressbookPath(makeFileFromResource(data));
+        
         // Removed by Antoni Mylka on 15.01.2007 - after the refactoring we don't need this anymore
 		// ds.getConfiguration().put(DATASOURCE.flavour,"thunderbird");
 		
@@ -73,7 +78,6 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
 		c.setCrawlerHandler(this);
 		
         model = createModel();
-		
 		c.crawl();
 
 		assertEquals(objects,179);
@@ -86,22 +90,16 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
 		
 		FileWriter writer = new FileWriter(tmpfile);
 		model.writeTo(writer,Syntax.RdfXml);
+        model.writeTo(System.out, Syntax.Turtle);
+        validate(model,true);
 		writer.close();
-		
-		Model model2 = createModel();
-		
-		FileReader reader = new FileReader(tmpfile);
-		assertTrue(reader.ready());
-		model2.readFrom(reader,Syntax.RdfXml);
-		reader.close();
 
 		//tmpfile.deleteOnExit();
 		model.close();
-        model2.close();
 	}
 
 	public RDFContainer getRDFContainer(URI uri) {
-		return new RDFContainerImpl(model,uri);
+		return new RDFContainerImpl(model,uri,true);
 	}
 
 	public void crawlStarted(Crawler crawler) {

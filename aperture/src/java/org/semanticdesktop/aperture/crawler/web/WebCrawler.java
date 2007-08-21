@@ -31,6 +31,7 @@ import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;
+import org.semanticdesktop.aperture.datasource.web.WebDataSource;
 import org.semanticdesktop.aperture.hypertext.linkextractor.LinkExtractor;
 import org.semanticdesktop.aperture.hypertext.linkextractor.LinkExtractorFactory;
 import org.semanticdesktop.aperture.hypertext.linkextractor.LinkExtractorRegistry;
@@ -38,7 +39,7 @@ import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.UrlUtil;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,17 +154,17 @@ public class WebCrawler extends CrawlerBase {
         crawledUrls = new HashSet<String>(1024);
 
         // fetch crawl instructions from the RDF configuration model
-        RDFContainer configuration = getDataSource().getConfiguration();
-        String startUrl = ConfigurationUtil.getRootUrl(configuration);
-        domainBoundaries = ConfigurationUtil.getDomainBoundaries(configuration);
-        includeEmbeddedResources = ConfigurationUtil.getIncludeEmbeddedResourceS(configuration);
+        WebDataSource source = (WebDataSource)getDataSource();
+        String startUrl = source.getRootUrl();
+        domainBoundaries = source.getDomainBoundaries();
+        includeEmbeddedResources = source.getIncludeEmbeddedResources();
 
-        Integer integer = ConfigurationUtil.getMaximumDepth(configuration);
+        Integer integer = source.getMaximumDepth();
         int crawlDepth = integer == null ? Integer.MAX_VALUE : integer.intValue();
 
         initialDepth = crawlDepth;
 
-        Long l = ConfigurationUtil.getMaximumByteSize(configuration);
+        Long l = source.getMaximumSize();
         maxByteSize = l == null ? Long.MAX_VALUE : l.longValue();
 
         // schedule the start URL
@@ -282,9 +283,10 @@ public class WebCrawler extends CrawlerBase {
                     // we have a new or changed object
                     else {
                         // if this is the root URI, add that metadata
-                        if (depth == initialDepth) {
-                            dataObject.getMetadata().add(DATA.rootFolderOf, source.getID());
-                        }
+                        // TODO get back to it after introducing nfo:rootFolderOf property
+                        //if (depth == initialDepth) {
+                        //    dataObject.getMetadata().add(DATA.rootFolderOf, source.getID());
+                        //}
 
                         // As the URL may have lead to redirections, the ID of the resulting DataObject may be
                         // different. Make sure this URL is never scheduled or reported during this crawl.
@@ -351,7 +353,7 @@ public class WebCrawler extends CrawlerBase {
         }
         // now check whether the size is below the threshold
         else {
-            Long l = dataObject.getMetadata().getLong(DATA.byteSize);
+            Long l = dataObject.getMetadata().getLong(NIE.byteSize);
             return l == null ? true : l.longValue() <= maxByteSize;
         }
     }
@@ -446,12 +448,12 @@ public class WebCrawler extends CrawlerBase {
 
         // fall-back to what the server returned
         if (mimeType == null) {
-            mimeType = object.getMetadata().getString(DATA.mimeType);
+            mimeType = object.getMetadata().getString(NIE.mimeType);
         }
         else {
             // overrule the DataObject's MIME type: magic-number based determination is much more reliable
             // than what web servers return, especially for non-web formats
-            object.getMetadata().put(DATA.mimeType, mimeType);
+            object.getMetadata().put(NIE.mimeType, mimeType);
         }
 
         // bail out if MIME type determination has still not produced anything

@@ -1,0 +1,85 @@
+@prefix fresnel:  <http://www.w3.org/2004/09/fresnel#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix sourceformat: <http://aperture.semanticdesktop.org/ontology/sourceformat#> .
+@prefix source: <http://aperture.semanticdesktop.org/ontology/2007/08/12/source#> .
+@prefix nie:     <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#> .
+@prefix : <http://aperture.semanticdesktop.org/ontology/2007/08/12/filesystemds#> .
+
+:FileSystemDataSource a rdfs:Class ;
+	rdfs:subClassOf nie:DataSource ;
+	rdfs:label "Filesystem Data Source" ;
+	rdfs:comment "A data source describing a folder or a filesystem containing files" .
+
+:FileSystemDataSourceLens rdf:type fresnel:Lens ;
+                   fresnel:purpose fresnel:defaultLens ;
+                   fresnel:classLensDomain :FileSystemDataSource ;
+                   fresnel:showProperties ( :rootFolder 
+                                            :maximumDepth
+                                            :maximumSize
+                                            :includeHiddenResources
+                                            :followSymbolicLinks
+                                            source:includePattern
+                                            source:excludePattern ) .
+                                            
+:rootFolder a rdf:Property ;
+    rdfs:label "Root Folder" ;
+    rdfs:comment "Path to the root of the folder tree to be crawled" ;
+    rdfs:domain :FileSystemDataSource ;
+    rdfs:range xsd:string .
+    
+:rootFolderFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+    	a sourceformat:TextFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :rootFolder .
+    
+
+:maximumDepth a rdf:Property ;
+    rdfs:label "Maximum Depth" ;
+    rdfs:comment "How many levels below the root folder should the crawled descend." ;
+    rdfs:domain :FileSystemDataSource ;
+    rdfs:range xsd:integer .
+    
+:maximumDepthFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+    	a sourceformat:IntegerFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :maximumDepth .
+    
+:maximumSize a rdf:Property ;
+    rdfs:label "Maximum Size" ;
+    rdfs:comment "Maximum size (in bytes) of files reported by the crawler" ;
+    rdfs:domain :FileSystemDataSource ;
+    rdfs:range xsd:long .
+    
+:maximumSizeFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+    	a sourceformat:IntegerFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :maximumSize .
+    
+:includeHiddenResources a rdf:Property ;
+    rdfs:label "Include hidden resources" ;
+    rdfs:comment "Should the hidden files and folders be included in crawl results?" ;
+    rdfs:domain :FileSystemDataSource ;
+    rdfs:range xsd:boolean .
+    
+:includeHiddenResourcesFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+    	a sourceformat:CheckBoxWidget 
+    ] ;
+    fresnel:propertyFormatDomain :includeHiddenResources .
+    
+:followSymbolicLinks a rdf:Property ;
+    rdfs:label "Follow symbolic links" ;
+    rdfs:comment "Should the crawler follow symbolic links?" ;
+    rdfs:domain :FileSystemDataSource ;
+    rdfs:range xsd:boolean .
+    
+:followSymbolicLinksFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+    	a sourceformat:CheckBoxWidget 
+    ] ;
+    fresnel:propertyFormatDomain :followSymbolicLinks .  

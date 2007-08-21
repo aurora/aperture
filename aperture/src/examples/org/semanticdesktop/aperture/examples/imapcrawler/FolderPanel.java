@@ -53,8 +53,6 @@ public class FolderPanel extends JPanel {
 
     /**
      * This method initializes this
-     * 
-     * @return void
      */
     private void initialize() {
         GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
@@ -96,7 +94,7 @@ public class FolderPanel extends JPanel {
      * 
      * @return javax.swing.JTree
      */
-    private JTree getFolderTree() {
+    protected JTree getFolderTree() {
         if (folderTree == null) {
             folderTree = new JTree();
             folderTree.setModel(null);
@@ -215,6 +213,10 @@ public class FolderPanel extends JPanel {
 
     private static class FolderRenderer extends DefaultTreeCellRenderer {
 
+        public FolderRenderer() {
+            // do nothing
+        }
+        
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
                 boolean expanded, boolean leaf, int row, boolean hasFocus) {
             FolderRenderer result = (FolderRenderer) super.getTreeCellRendererComponent(tree, value,
@@ -243,6 +245,10 @@ public class FolderPanel extends JPanel {
     private static class FolderComparator implements Comparator {
 
         private Collator collator = Collator.getInstance();
+        
+        public FolderComparator() {
+            // do nothing
+        }
         
         public int compare(Object object1, Object object2) {
             String name1 = ((Folder) object1).getName();

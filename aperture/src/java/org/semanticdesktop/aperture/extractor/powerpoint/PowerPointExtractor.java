@@ -12,11 +12,13 @@ import java.nio.charset.Charset;
 
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.PoiUtil;
 import org.semanticdesktop.aperture.extractor.util.PoiUtil.TextExtractor;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.NFO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +29,7 @@ public class PowerPointExtractor implements Extractor {
 	public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
 			throws ExtractorException {
 		PoiUtil.extractAll(stream, new PowerPointTextExtractor(), result, logger);
+        result.add(RDF.type,NFO.Presentation);
 	}
 
 	private static class PowerPointTextExtractor implements TextExtractor {

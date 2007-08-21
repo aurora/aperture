@@ -6,12 +6,15 @@
  */
 package org.semanticdesktop.aperture.util;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.BlankNode;
@@ -21,6 +24,8 @@ import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.vocabulary.XSD;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class contains utility methods that facilitate the generation of various values from an RDF2Go model.
@@ -29,6 +34,8 @@ import org.ontoware.rdf2go.vocabulary.XSD;
  */
 public class ModelUtil {
 
+    private static Logger log = LoggerFactory.getLogger(ModelUtil.class);
+    
     public static Literal createLiteral(Model model, String label) throws ModelException {
         return model.createPlainLiteral(label);
     }
@@ -139,5 +146,167 @@ public class ModelUtil {
             }
         }
         return result;
+    }
+    
+    /**
+     * Returns a resource that has a given property with the given value. This
+     * method assumes that the inverse of this property is obligatory and
+     * functional. That is exactly one such subject must exist. In other cases
+     * (no subject or more than one subject) an exception is thrown.
+     * @param model
+     * @param predicate
+     * @param object
+     * @return
+     */
+    public static Resource getSingleSubjectWithProperty(
+        Model model,
+        URI predicate,
+        Node object) {
+        
+        if (model == null || predicate == null || object == null) {
+            throw new NullPointerException("All parameters of the " +
+                    "getSingleSubjectWithProperty method must be non-null");
+        }
+        
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model
+                .findStatements(Variable.ANY, predicate, object);
+            if (!iterator.hasNext()) {
+                throw new ModelException(
+                    "There are no subjects for property: " + predicate + 
+                    " object: " + object);
+            }
+            Statement statement = iterator.next();
+            if (iterator.hasNext()) {
+                throw new ModelException("There are multiple subjects for "
+                    + "the given property");
+            }
+            return statement.getSubject().asResource();
+        } catch (ModelException me) {
+            log.warn("Couldn't get the subject for the given "
+                + "property", me);
+        } finally {
+            closeClosable(iterator);
+        }
+        return null;
+    }
+    
+    /**
+     * @param model The model to work with.
+     * @param subject The subject.
+     * @param predicate The property we would like to find.
+     * @return the value of a given property applied to the given subject. If 
+     *         there is more than value, one of the values is returned, if there
+     *         is none, null is returned.
+     */
+    public static Node getPropertyValue(
+        Model model,
+        Resource subject,
+        URI predicate) {
+        
+        if (model == null || subject == null || predicate == null) {
+            throw new NullPointerException("All arguments of the " +
+                    "getPropertyValue method must be non-null");
+        }
+        
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model
+                .findStatements(subject, predicate, Variable.ANY);
+            if (!iterator.hasNext()) {
+                return null;
+            }
+            Statement statement = iterator.next();
+            return statement.getObject();
+        } catch (ModelRuntimeException me) {
+            log.warn("Couldn't get the subject for the given "
+                + "property", me);
+        } finally {
+            closeClosable(iterator);
+        }
+        return null;
+    }
+    
+    /**
+     * Returns all values of a given property for the given resource.
+     * @param model The model in which to look for values.
+     * @param subject The resource.
+     * @param predicate The property.
+     * @return A list of values for of the given property for the given resource.
+     */
+    public static List<Node> getAllPropertyValues(
+        Model model,
+        Resource subject,
+        URI predicate) {
+        List<Node> resultList = new LinkedList<Node>();
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model.findStatements(subject,predicate,Variable.ANY);
+            while (iterator.hasNext()) {
+                Statement statement = iterator.next();
+                resultList.add(statement.getObject());
+            }
+        } catch (ModelRuntimeException me) {
+            log.warn("Couldn't get all property values",me);
+        } finally {
+            closeClosable(iterator);
+        }
+        return resultList;
+    }
+    
+    private static void closeClosable(ClosableIterator iterator) {
+        if (iterator != null) {
+            iterator.close();
+        }
+    }
+    
+    /**
+     * Converts a node to an instance of the given class. 
+     * @param node the node
+     * @param clazz class to which the node should be converted, currently only primitive types are supported
+     *    and following RDF2Go classes: URI, Node and Literal
+     * @return the converted object or null if the conversion doesn't work
+     */
+    public static Object convertNode(Node node, Class<?> clazz) {
+        try {
+            if (clazz.equals(String.class)) {
+                return node.toString();
+            } else if (clazz.equals(Node.class)) {
+                return node;
+            } else if (clazz.equals(Resource.class)) {
+                return node;
+            } else if (clazz.equals(URI.class)) {
+                return node;
+            } else if (clazz.equals(Literal.class)) {
+                return node;
+            } else if (clazz.equals(Integer.class)) {
+                return new Integer(node.toString());
+            } else if (clazz.equals(Long.class)) {
+                return new Long(node.toString());
+            } else if (clazz.equals(Boolean.class)) {
+                String string = node.toString();
+                if (string.equals("1")) {
+                    return Boolean.TRUE;
+                } else if (string.equals("0")) {
+                    return Boolean.FALSE;
+                }
+                return new Boolean(node.toString());
+            } else if (clazz.equals(Byte.class)) {
+                return new Byte(node.toString());
+            } else if (clazz.equals(Short.class)) {
+                return new Short(node.toString());
+            } else if (clazz.equals(Float.class)) {
+                return new Float(node.toString());
+            } else if (clazz.equals(Double.class)) {
+                return new Double(node.toString());
+            } else {
+                log.warn("Unknown class to convert node: " + node + ", clazz: " + clazz.getName());
+                return null;
+            }
+        } catch (Exception e) {
+            log.debug("Conversion failed. node: " + node + ", clazz: " + clazz.getName());
+            return null;
+        }
     }
 }

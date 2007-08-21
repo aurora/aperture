@@ -13,6 +13,7 @@ import org.semanticdesktop.aperture.crawler.filesystem.TestFileSystemCrawler;
 import org.semanticdesktop.aperture.crawler.ical.TestIcalCrawler;
 import org.semanticdesktop.aperture.crawler.ical.TestIcalCrawlerIncremental;
 import org.semanticdesktop.aperture.crawler.impl.TestDefaultCrawlerRegistry;
+import org.semanticdesktop.aperture.crawler.ical.DurationConversionTest;
 
 /**
  * Tests all Crawler implementations and related classes.
@@ -29,5 +30,6 @@ public class TestCrawlers extends TestSuite {
         addTest(new TestSuite(TestDefaultCrawlerRegistry.class));
         addTest(new TestSuite(TestIcalCrawler.class));
         addTest(new TestSuite(TestIcalCrawlerIncremental.class));
+        addTest(new TestSuite(DurationConversionTest.class));
     }
 }

@@ -14,7 +14,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NMO;
 
 public class MimeExtractorTest extends ExtractorTestBase {
 
@@ -25,12 +25,13 @@ public class MimeExtractorTest extends ExtractorTestBase {
 		RDFContainer container = extract(DOCS_PATH + "mail-thunderbird-1.5.eml", extractor);
 
 		// check the extraction results
-		checkStatement(DATA.fullText, "test body", container);
-		checkStatement(DATA.title, "test subject", container);
-		checkStatement(DATA.date, "2006", container);
+		checkStatement(NMO.plainTextMessageContent, "test body", container);
+		checkStatement(NMO.messageSubject, "test subject", container);
+		checkStatement(NMO.sentDate, "2006", container);
 
-		assertEquals("email:christiaan.fluit@aduna.biz", container.getURI(DATA.from).toString());
-		assertEquals("email:Christiaan.Fluit@aduna.biz", container.getURI(DATA.to).toString());
+		assertEquals("email:christiaan.fluit@aduna.biz", container.getURI(NMO.from).toString());
+		assertEquals("email:Christiaan.Fluit@aduna.biz", container.getURI(NMO.to).toString());
+        validate(container);
 		container.dispose();
 	}
 	
@@ -43,7 +44,7 @@ public class MimeExtractorTest extends ExtractorTestBase {
 		ExtractorFactory factory = new MimeExtractorFactory();
 		Extractor extractor = factory.get();
 		RDFContainer container = extract(DOCS_PATH + fileName, extractor);
-		String fullText = container.getString(DATA.fullText);
+		String fullText = container.getString(NMO.plainTextMessageContent);
 		
 		// check that relevant content was extracted
 		assertTrue(fullText.contains("Project name"));
@@ -53,6 +54,7 @@ public class MimeExtractorTest extends ExtractorTestBase {
 		// check that HTML markup was removed
 		assertFalse(fullText.contains("<P>"));
 		assertFalse(fullText.contains("<p>"));
-		container.getModel().close();
+        validate(container);
+		container.dispose();
 	}
 }

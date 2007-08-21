@@ -27,11 +27,13 @@ import javax.mail.internet.MimeUtility;
 
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.HtmlParserUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NIE;
+import org.semanticdesktop.aperture.vocabulary.NMO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,12 +61,14 @@ public class MimeExtractor implements Extractor {
             // parse the stream
             MimeMessage message = new MimeMessage(null, stream);
 
+            result.add(RDF.type, NMO.Email);
+            
             // extract the full-text
             StringBuilder buffer = new StringBuilder(10000);
             processContent(message.getContent(), buffer);
             String text = buffer.toString().trim();
             if (text.length() > 0) {
-                result.add(DATA.fullText, text);
+                result.add(NMO.plainTextMessageContent, text);
             }
 
             // extract other metadata
@@ -72,25 +76,23 @@ public class MimeExtractor implements Extractor {
             if (title != null) {
                 title = title.trim();
                 if (title.length() > 0) {
-                    result.add(DATA.title, title);
+                    result.add(NMO.messageSubject, title);
                 }
             }
 
             try {
-                copyAddress(message.getFrom(), DATA.from, result);
+                copyAddress(message.getFrom(), NMO.from, result);
             }
             catch (AddressException e) {
                 // ignore
             }
 
-            copyAddress(getRecipients(message, RecipientType.TO), DATA.to, result);
-            copyAddress(getRecipients(message, RecipientType.CC), DATA.cc, result);
-            copyAddress(getRecipients(message, RecipientType.BCC), DATA.bcc, result);
+            copyAddress(getRecipients(message, RecipientType.TO), NMO.to, result);
+            copyAddress(getRecipients(message, RecipientType.CC), NMO.cc, result);
+            copyAddress(getRecipients(message, RecipientType.BCC), NMO.bcc, result);
 
-            Date date = MailUtil.getDate(message);
-            if (date != null) {
-                result.add(DATA.date, date);
-            }
+            MailUtil.getDates(message,result);
+            
         }
         catch (MessagingException e) {
             throw new ExtractorException(e);

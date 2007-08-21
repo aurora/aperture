@@ -4,10 +4,18 @@
 	 <!ENTITY sourceformat 'http://aperture.semanticdesktop.org/ontology/sourceformat#'>
 	 <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema#'>
 	 <!ENTITY fresnel 'http://www.w3.org/2004/09/fresnel#'>
+	 <!ENTITY source 'http://aperture.semanticdesktop.org/ontology/2007/08/12/source#'>
+	 <!ENTITY tagging 'http://aperture.sourceforge.net/ontologies/tagging#'>
 ]>
-<rdf:RDF xmlns:rdf="&rdf;"
-	 xmlns:sourceformat="&sourceformat;"
-	 xmlns:rdfs="&rdfs;">
+	 
+<rdf:RDF xmlns="&sourceformat;"
+    xmlns:fresnel="http://www.w3.org/2004/09/fresnel#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="&rdfs;"
+    xmlns:source="http://aperture.semanticdesktop.org/ontology/2007/08/12/source#"
+    xmlns:sourceformat="&sourceformat;"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#">	 
+	 
 <rdfs:Class rdf:about="&sourceformat;CheckBoxWidget"
 	 rdfs:label="CheckBoxWidget">
 	<rdfs:comment>Use boolean checkbox to style the property. checked = boolean:true, unchecked=boolean:false.</rdfs:comment>
@@ -36,6 +44,16 @@
 	 rdfs:label="TextFieldWidget">
 	<rdfs:subClassOf rdf:resource="&sourceformat;UIWidget"/>
 </rdfs:Class>
+<rdfs:Class rdf:about="&sourceformat;MultipleTextFieldWidget"
+	 rdfs:comment="A textfield for a multi-valued property"
+	 rdfs:label="MultipleTextFieldWidget">
+	<rdfs:subClassOf rdf:resource="&sourceformat;UIWidget"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&sourceformat;PatternWidget"
+	 rdfs:comment="A domain boundaries pattern widget"
+	 rdfs:label="PatternWidget">
+	<rdfs:subClassOf rdf:resource="&sourceformat;UIWidget"/>
+</rdfs:Class>
 <rdfs:Class rdf:about="&sourceformat;UIWidget"
 	 rdfs:label="UIWidget">
 	<rdfs:comment>Superclass of UI widgets. Use instances of widgets to configure gui.</rdfs:comment>
@@ -55,11 +73,35 @@
 <rdf:Property rdf:about="&sourceformat;value"
 	 rdfs:label="value">
 	<rdfs:domain rdf:resource="&sourceformat;ComboBoxEntry"/>
-	<rdfs:range rdf:resource="&rdfs;Literal"/>
+	<rdfs:range rdf:resource="&rdfs;Resource"/>
 </rdf:Property>
 <rdf:Property rdf:about="&sourceformat;valueWidget"
 	 rdfs:label="valueWidget">
 	<rdfs:range rdf:resource="&sourceformat;UIWidget"/>
 	<rdfs:domain rdf:resource="&fresnel;Format" />
 </rdf:Property>
+<fresnel:Format rdf:about="&source;passwordFormat">
+    <sourceformat:valueWidget rdf:parseType="Resource">
+        <rdf:type rdf:resource="&sourceformat;PasswordTextFieldWidget"/>
+    </sourceformat:valueWidget>
+    <fresnel:propertyFormatDomain rdf:resource="&source;password"/>
+</fresnel:Format>
+<fresnel:Format rdf:about="&source;usernameFormat">
+    <sourceformat:valueWidget rdf:parseType="Resource">
+        <rdf:type rdf:resource="&sourceformat;TextFieldWidget"/>
+    </sourceformat:valueWidget>
+    <fresnel:propertyFormatDomain rdf:resource="&source;username"/>
+</fresnel:Format>
+<fresnel:Format rdf:about="&source;includePatternFormat">
+    <sourceformat:valueWidget rdf:parseType="Resource">
+        <rdf:type rdf:resource="&sourceformat;PatternWidget"/>
+    </sourceformat:valueWidget>
+    <fresnel:propertyFormatDomain rdf:resource="&source;#includePattern"/>
+</fresnel:Format>
+<fresnel:Format rdf:about="&source;excludePatternFormat">
+    <sourceformat:valueWidget rdf:parseType="Resource">
+        <rdf:type rdf:resource="&sourceformat;PatternWidget"/>
+    </sourceformat:valueWidget>
+    <fresnel:propertyFormatDomain rdf:resource="&source;excludePattern"/>
+</fresnel:Format>
 </rdf:RDF>

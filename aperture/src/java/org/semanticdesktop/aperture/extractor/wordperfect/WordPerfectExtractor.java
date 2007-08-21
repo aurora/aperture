@@ -11,11 +11,13 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.WPStringExtractor;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 /**
  * An Extractor implementation for WordPerfect documents.
@@ -41,7 +43,8 @@ public class WordPerfectExtractor implements Extractor {
 			WPStringExtractor extractor = new WPStringExtractor();
 			String text = extractor.extract(stream).trim();
 			if (text.length() > 0) {
-				result.add(DATA.fullText, text);
+				result.add(NIE.plainTextContent, text);
+                result.add(RDF.type,NFO.PaginatedTextDocument);
 			}
 		}
 		catch (IOException e) {

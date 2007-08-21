@@ -51,7 +51,7 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.util.IOUtil;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class CrawlerPanel extends JPanel {
 
@@ -246,11 +246,11 @@ public class CrawlerPanel extends JPanel {
         File rootFile = new File(inputPanel.getFolderField().getText());
         RDFContainerFactoryImpl containerFactory = new RDFContainerFactoryImpl();
         RDFContainer configuration = containerFactory.newInstance("source:testsource");
-        ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
-
         // create the data source
         FileSystemDataSource source = new FileSystemDataSource();
         source.setConfiguration(configuration);
+        
+        source.setRootFolder(rootFile.getAbsolutePath());
 
         // setup a crawler that can handle this type of DataSource
         crawler = new FileSystemCrawler();
@@ -410,7 +410,7 @@ public class CrawlerPanel extends JPanel {
                 if (mimeType != null) {
                     // add the mime type to the metadata
                     RDFContainer metadata = object.getMetadata();
-                    metadata.add(DATA.mimeType, mimeType);
+                    metadata.add(NIE.mimeType, mimeType);
 
                     // apply an Extractor if available
                     if (extractContents) {

@@ -24,6 +24,7 @@ import org.semanticdesktop.aperture.crawler.filesystem.FileSystemCrawler;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
+import org.semanticdesktop.aperture.examples.handler.CrawlerHandlerBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 
@@ -47,13 +48,14 @@ public class TutorialCrawlingExample {
         ModelFactory factory = RDF2Go.getModelFactory();
         Model model = factory.createModel();
         model.open();
-        RDFContainer configuration = new RDFContainerImpl(model, URIImpl.create("source:testSource"), false);
-        ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
+        RDFContainer configuration = new RDFContainerImpl(model, new URIImpl("source:testSource"), false);
 
         // create the data source
-        DataSource source = new FileSystemDataSource();
+        FileSystemDataSource source = new FileSystemDataSource();
         source.setConfiguration(configuration);
 
+        source.setRootFolder(rootFile.getAbsolutePath());
+        
         // setup a crawler that can handle this type of DataSource
         FileSystemCrawler crawler = new FileSystemCrawler();
         crawler.setDataSource(source);

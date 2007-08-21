@@ -6,10 +6,15 @@
  */
 package org.semanticdesktop.aperture.util;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
 import java.util.zip.GZIPInputStream;
+
+import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Syntax;
 
 /**
  * Utility methods for clients dealing with HTTP communication.

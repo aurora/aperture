@@ -782,7 +782,7 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 
 <description>
 	<mimeType>image/x-portable-bitmap</mimeType>
-	<extensions>pgm</extensions>
+	<extensions>pbm</extensions>
 	<magicNumber encoding="string">P1</magicNumber>
 	<magicNumber encoding="string">P4</magicNumber>
 </description>

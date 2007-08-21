@@ -14,7 +14,8 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class PresentationsExtractorTest extends ExtractorTestBase {
 
@@ -26,8 +27,8 @@ public class PresentationsExtractorTest extends ExtractorTestBase {
 		RDFContainer container = extract(DOCS_PATH + "corel-presentations-3.0.shw", extractor);
 
 		// check the extraction results
-		checkStatement(DATA.fullText, "example", container);
-		
+		checkStatement(NIE.plainTextContent, "example", container);
+		validate(container);
 		container.dispose();
 	}
 
@@ -39,14 +40,14 @@ public class PresentationsExtractorTest extends ExtractorTestBase {
 		RDFContainer container = extract(DOCS_PATH + "corel-presentations-x3.shw", extractor);
 
 		// check the extraction results
-		checkStatement(DATA.fullText, "Presentation", container);
-		checkStatement(DATA.title, "Example", container);
-		checkStatement(DATA.subject, "Testing", container);
-		checkStatement(DATA.description, "comments", container);
-		checkStatement(DATA.creator, "Fluit", container);
-		checkStatement(DATA.keyword, "test", container);
-		checkStatement(DATA.keyword, "rdf", container);
-		
+		checkStatement(NIE.plainTextContent, "Presentation", container);
+		checkStatement(NIE.title, "Example", container);
+		checkStatement(NIE.subject, "Testing", container);
+		checkStatement(NIE.description, "comments", container);
+		checkSimpleContact(NCO.creator, "Christiaan Fluit", container);
+		checkStatement(NIE.keyword, "test", container);
+		checkStatement(NIE.keyword, "rdf", container);
+		validate(container);
 		container.dispose();
 	}
 }

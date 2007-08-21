@@ -8,7 +8,6 @@ package org.semanticdesktop.aperture.extractor.works;
 
 import java.io.IOException;
 
-import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
@@ -21,7 +20,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.ValueFactory;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class WorksExtractorTest extends ExtractorTestBase {
 
@@ -47,11 +46,11 @@ public class WorksExtractorTest extends ExtractorTestBase {
 		// fetch the full-text property
 		String uriString = container.getDescribedUri().toString();
         ClosableIterator<? extends Statement> statements = model.findStatements(valueFactory.createURI(uriString),
-			DATA.fullText, Variable.ANY);
+			NIE.plainTextContent, Variable.ANY);
 		try {
 			// check predicate
 			Statement statement = (Statement) statements.next();
-			assertTrue(statement.getPredicate().equals(DATA.fullText));
+			assertTrue(statement.getPredicate().equals(NIE.plainTextContent));
 
 			// check number of statements
 			assertFalse(statements.hasNext());
@@ -63,6 +62,7 @@ public class WorksExtractorTest extends ExtractorTestBase {
 		}
 		finally {
 			statements.close();
+            validate(container);
 			container.dispose();
 		}
 	}

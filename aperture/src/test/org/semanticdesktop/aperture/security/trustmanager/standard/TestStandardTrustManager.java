@@ -147,7 +147,7 @@ public class TestStandardTrustManager extends ApertureTestBase {
         // check that the keystore is now non-empty (i.e. the previously accepted certificate is stored)
         long size = tmpFile.length();
         tmpFile.delete();
-        assertTrue(size > 10l); // use an arbitrary file size that's still smaller than what a single 
+        assertTrue(size > 10l); // use an arbitrary file size that's still smaller than what a single
     }
 
     private StandardTrustManager getTrustManager() {

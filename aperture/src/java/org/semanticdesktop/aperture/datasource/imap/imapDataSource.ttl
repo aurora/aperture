@@ -1,0 +1,159 @@
+@prefix fresnel:  <http://www.w3.org/2004/09/fresnel#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix sourceformat: <http://aperture.semanticdesktop.org/ontology/sourceformat#> .
+@prefix source: <http://aperture.semanticdesktop.org/ontology/2007/08/12/source#> .
+@prefix nie:     <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#> .
+@prefix : <http://aperture.semanticdesktop.org/ontology/2007/08/12/imapds#> .
+
+:ImapDataSource a rdfs:Class ;
+	rdfs:subClassOf nie:DataSource .
+
+:ImapDataSourceLens rdf:type fresnel:Lens ;
+                    fresnel:purpose fresnel:defaultLens ;
+                    fresnel:classLensDomain :ImapDataSource ;
+                    fresnel:showProperties ( :hostname
+                                             :port
+                                             source:username
+                                             source:password
+                                             :basepath
+                                             :includeInbox
+                                             :maximumSize
+                                             :maximumDepth
+                                             :connectionSecurity 
+                                             :sslFileName
+                                             :sslFilePassword 
+                                             source:includePattern
+                                             source:excludePattern ) .
+                                             
+:hostname a rdf:Property ; 
+    rdfs:label "Host name" ;
+    rdfs:comment "The host name of the IMAP server" ;
+    rdfs:domain :IMAPDataSource ;
+    rdfs:range xsd:string .
+    
+:hostnameFolderFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+        a sourceformat:TextFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :hostname .                                             
+
+:port a rdf:Property ;
+    rdfs:label "Port number" ;
+    rdfs:comment "The port number where the IMAP server is listening for connections" ;
+    rdfs:domain :IMAPDataSource ;
+    rdfs:range xsd:integer .
+    
+:portFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+        a sourceformat:TextFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :port  .
+
+:basepath a rdf:Property ;
+    rdfs:label "Base Path" ;
+    rdfs:comment "The base path of the IMAP data source" ;
+    rdfs:domain :IMAPDataSource ;
+    rdfs:range xsd:string .
+    
+:basepathFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+        a sourceformat:MultipleTextFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :basepath .
+    
+:includeInbox a rdf:Property ;
+    rdfs:label "Include Inbox?" ;
+    rdfs:comment "Should the inbox itself be included in the crawl results?" ;
+    rdfs:domain :IMAPDataSource ;
+    rdfs:range xsd:boolean .
+    
+:includeInboxFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+        a sourceformat:CheckBoxWidget 
+    ] ;
+    fresnel:propertyFormatDomain :includeInbox .
+
+:maximumDepth a rdf:Property ;
+    rdfs:label "Maximum Depth" ;
+    rdfs:comment "Maximum depth of the crawl" ;
+    rdfs:domain :IMAPDataSource ;
+    rdfs:range xsd:integer .
+    
+:maximumDepthFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+        a sourceformat:IntegerFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :maximumDepth .
+    
+:maximumSize a rdf:Property ;
+    rdfs:label "Maximum Size" ;
+    rdfs:comment "Maximum size (in bytes) of the attachments that are to be reported by the crawler" ;
+    rdfs:domain :IMAPDataSource ;
+    rdfs:range xsd:long .
+    
+:maximumSizeFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+        a sourceformat:IntegerFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :maximumSize .
+    
+:connectionSecurity a rdf:Property ;
+	rdfs:label "Connection security" ;
+	rdfs:comment "The level of security for the connection" ;
+	rdfs:domain :IMAPDataSource ;
+	rdfs:range :ConnectionSecurity .    
+    
+:ConnectionSecurity a rdfs:Class ;
+	rdfs:subClassOf rdfs:Resource ;
+	rdfs:comment "Type of connection security, instances of this class serve as values for the connectionSecurity property " .
+
+:PLAIN a :ConnectionSecurity .
+:SSL a :ConnectionSecurity .
+:SSL_NO_CERT a :ConnectionSecurity .
+
+:connectionSecurityFormat rdf:type fresnel:Format ;
+	fresnel:propertyFormatDomain :connectionSecurity ;
+	sourceformat:valueWidget [ 
+		a sourceformat:ComboBoxWidget;
+		sourceformat:hasEntry [ 
+			a sourceformat:ComboBoxEntry ;
+			sourceformat:label "No security" ;
+			sourceformat:value :PLAIN 
+		] ;
+		sourceformat:hasEntry [ 
+			a sourceformat:ComboBoxEntry ;
+			sourceformat:label "SSL (with certificate)" ;
+			sourceformat:value :SSL
+		] ;
+		sourceformat:hasEntry [ 
+			a sourceformat:ComboBoxEntry ;
+			sourceformat:label "SSL (without certificate)" ;
+			sourceformat:value :SSL_NO_CERT  
+		] 
+	] .
+
+:sslFileName a rdf:Property ;
+    rdfs:label "SSL File Name" ;
+    rdfs:comment "The path to the ssl keyfile" ;
+    rdfs:domain :IMAPDataSource ;
+    rdfs:range xsd:string .
+    
+:sslFileNameFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+        a sourceformat:TextFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :sslFileName .
+
+:sslFilePassword a rdf:Property ;
+    rdfs:label "SSL File Password" ;
+    rdfs:comment "Keyphrase for the SSL keyfile" ;
+    rdfs:domain :IMAPDataSource ;
+    rdfs:range xsd:string .
+    
+:sslFilePasswordFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+        a sourceformat:PasswordWidget 
+    ] ;
+    fresnel:propertyFormatDomain :sslFilePassword .

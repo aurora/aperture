@@ -19,16 +19,15 @@ import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
-import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 import org.semanticdesktop.aperture.util.OSUtils;
-import org.semanticdesktop.aperture.vocabulary.DATA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * A Crawler implementation for crawling file system sources modeled by a FileSystemDataSource.
  */
+@SuppressWarnings("unchecked")
 public class FileSystemCrawler extends CrawlerBase {
 
     private static final boolean DEFAULT_IGNORE_HIDDEN_FILES = true;
@@ -52,18 +51,25 @@ public class FileSystemCrawler extends CrawlerBase {
     private HashMap params;
 
     private File root;
+    
+    private FileSystemDataSource source;
 
-    protected ExitCode crawlObjects() {
+    protected ExitCode crawlObjects() {        
         // fetch the source and its configuration
-        DataSource source = getDataSource();
-        RDFContainer configuration = source.getConfiguration();
-
+        DataSource dataSource = getDataSource();
+        if (!(dataSource instanceof FileSystemDataSource)) {
+            logger.error("wrong data source type");
+            return ExitCode.FATAL_ERROR;
+        }
+        
+        source = (FileSystemDataSource)dataSource;
+        
         // determine the root file
-        String rootFolder = ConfigurationUtil.getRootFolder(configuration);
+        String rootFolder = source.getRootFolder();
         if (rootFolder == null) {
             // treat this as an error rather than an "empty source" to prevent information loss when e.g. a
             // network drive is temporarily unavailable
-            logger.warn("missing root folder");
+            logger.error("missing root folder");
             return ExitCode.FATAL_ERROR;
         }
         root = new File(rootFolder);
@@ -88,19 +94,19 @@ public class FileSystemCrawler extends CrawlerBase {
         }
 
         // determine the maximum depth
-        Integer i = ConfigurationUtil.getMaximumDepth(configuration);
+        Integer i = source.getMaximumDepth();
         int maxDepth = i == null ? DEFAULT_MAX_DEPTH : i.intValue();
 
         // determine the maximum byte size
-        Long l = ConfigurationUtil.getMaximumByteSize(configuration);
+        Long l = source.getMaximumSize();
         maximumSize = l == null ? DEFAULT_MAX_SIZE : l.longValue();
 
         // determine whether we should crawl hidden files and directories
-        Boolean b = ConfigurationUtil.getIncludeHiddenResources(configuration);
+        Boolean b = source.getIncludeHiddenResources();
         ignoreHiddenFiles = b == null ? DEFAULT_IGNORE_HIDDEN_FILES : b.booleanValue();
 
         // determine whether we should crawl symbolic links
-        b = ConfigurationUtil.getFollowSymbolicLinks(configuration);
+        b = source.getFollowSymbolicLinks();
         followSymbolicLinks = b == null ? DEFAULT_FOLLOW_SYMBOLIC_LINKS : b.booleanValue();
 
         // init some other params
@@ -186,8 +192,8 @@ public class FileSystemCrawler extends CrawlerBase {
             if (OSUtils.isMac() && OSUtils.isMacOSXBundle(file))
                 return true;
 
-            // report nested Files
-            if (depth > 0) {
+            // report nested Files (if the folder itself is in the domain)
+            if (depth > 0 && inDomain(file.toURI().toString())) {
                 File[] nestedFiles = file.listFiles();
 
                 if (nestedFiles == null) {
@@ -256,9 +262,10 @@ public class FileSystemCrawler extends CrawlerBase {
             else {
 
                 // If this is the root folder, add that info to the metadata
-                if (file.equals(root)) {
-                    dataObject.getMetadata().add(DATA.rootFolderOf, source.getID());
-                }
+                // TODO get back to it after introducing rootFolder
+                //if (file.equals(root)) {
+                //    dataObject.getMetadata().add(DATA.rootFolderOf, source.getID());
+                //}
 
                 // we scanned a new or changed object
                 if (knownObject) {

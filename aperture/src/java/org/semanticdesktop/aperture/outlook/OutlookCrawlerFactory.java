@@ -12,7 +12,6 @@ import java.util.Set;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 
 /**
@@ -23,25 +22,28 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
  */
 public class OutlookCrawlerFactory implements CrawlerFactory {
 	
-	private HashSet supported;
+	@SuppressWarnings("unchecked")
+    private HashSet supported;
 
 	/**
-	 * 
+	 * constructor
 	 */
-	public OutlookCrawlerFactory() {
+	@SuppressWarnings("unchecked")
+    public OutlookCrawlerFactory() {
 		super();
 		supported = new HashSet();
-		supported.add(DATASOURCE_GEN.MicrosoftOutlookDataSource);
+		supported.add(OUTLOOKDS.OutlookDataSource);
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see org.semanticdesktop.aperture.crawler.CrawlerFactory#getSupportedTypes()
 	 */
-	public Set getSupportedTypes() {
+	@SuppressWarnings("unchecked")
+    public Set getSupportedTypes() {
 		return supported;
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see org.semanticdesktop.aperture.crawler.CrawlerFactory#getCrawler(org.semanticdesktop.aperture.datasource.DataSource)
 	 */
 	public Crawler getCrawler(DataSource dataSource) {

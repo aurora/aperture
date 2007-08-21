@@ -18,6 +18,8 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
 import org.semanticdesktop.aperture.datasource.DataSourceRegistry;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
+import org.semanticdesktop.aperture.datasource.filesystem.FILESYSTEMDS;
+import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierFactory;
@@ -109,14 +111,16 @@ public class ExampleFileCrawler {
         // create a data source configuration
         RDFContainerFactoryImpl factory = new RDFContainerFactoryImpl();
         RDFContainer configuration = factory.newInstance("source:testsource");
-        ConfigurationUtil.setRootFolder(rootFile.getAbsolutePath(), configuration);
-        ConfigurationUtil.setMaximumDepth(1, configuration);
+        
 
         // create the data source
         DataSourceFactory sourceFactory = (DataSourceFactory) dataSourceRegistry.get(
-            DATASOURCE.FileSystemDataSource).iterator().next();
-        DataSource source = sourceFactory.newInstance();
+            FILESYSTEMDS.FileSystemDataSource).iterator().next();
+        FileSystemDataSource source = (FileSystemDataSource)sourceFactory.newInstance();
         source.setConfiguration(configuration);
+        
+        source.setRootFolder(rootFile.getAbsolutePath());
+        source.setMaximumDepth(1);
 
         CrawlerHandler handler = null;
 
@@ -127,7 +131,7 @@ public class ExampleFileCrawler {
         handler = new SimpleCrawlerHandler(mimeIdentifier, extractorRegistry);
 
         // setup a crawler that can handle this type of DataSource
-        it = crawlerRegistry.get(DATASOURCE.FileSystemDataSource).iterator();
+        it = crawlerRegistry.get(FILESYSTEMDS.FileSystemDataSource).iterator();
         Crawler crawler = ((CrawlerFactory) it.next()).getCrawler(source);
         crawler.setDataAccessorRegistry(accessorRegistry);
         crawler.setCrawlerHandler(handler);

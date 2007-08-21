@@ -12,7 +12,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Vector;
 
-import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
@@ -30,7 +29,7 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.FileUtil;
 import org.semanticdesktop.aperture.util.ModelUtil;
-import org.semanticdesktop.aperture.vocabulary.VCARD;
+import org.semanticdesktop.aperture.vocabulary.NCO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +38,10 @@ public class AppleAddressbookCrawler extends AddressbookCrawler {
     public static final String TYPE = "macosxaddressbook";
 
     private Logger logger = LoggerFactory.getLogger(getClass());
+    
+    public AppleAddressbookCrawler() {
+        super();
+    }
     
     public AppleAddressbookCrawler(DataSource dataSource) {
         super();
@@ -91,7 +94,7 @@ public class AppleAddressbookCrawler extends AddressbookCrawler {
             model.readFrom(new StringReader(rdfxml), Syntax.RdfXml);
             
             i = model.findStatements(Variable.ANY, RDF.type,
-                VCARD.VCard);
+                NCO.Contact);
             while (i.hasNext()) {
                 Statement s = i.next();
                 URI uri = new URIImpl(s.getSubject().toString(),false);

@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+	<!ENTITY selectors SYSTEM "selectors.xml">
+]>
+
+<!--
+ANT Build Script for compiling, distributing and testing
+the Aperture data extraction framework.
+
+You will need Apache ANT to execute this script, please get
+your copy of ANT at http://ant.apache.org/
+-->
+
+<project name="aperture" basedir="." default="updatevocabularies">
+
+    <!-- define properties and paths -->
+    <target name="init"
+            description="initialize variables used in all other targets">
+
+        <!-- input dirs -->
+        <property name="src.dir" value="${basedir}/src" />
+        <property name="src.java.dir" value="${src.dir}/java" />
+        <property name="src.java.mainpackage.dir"
+                  value="${src.java.dir}/org/semanticdesktop/aperture" />
+        <property name="src.java.mainpackage"
+                  value="org.semanticdesktop.aperture" />
+
+        <property name="bin.dir" value="${basedir}/bin" />
+        <property name="lib.dir" value="${basedir}/lib" />
+        <property name="doc.dir" value="${basedir}/doc" />
+        <property name="doc.ontologies.dir" value="${doc.dir}/ontology" />
+
+        <!-- build dirs -->
+        <property name="build.dir" value="${basedir}/build" />
+        <property name="classes.java.dir" value="${build.dir}/classes" />
+
+        <!-- compilation flags -->
+        <property name="compile.debug" value="true" />
+        <property name="compile.debuglevel" value="source,lines,var" />
+        <property name="compile.deprecation" value="false" />
+        <property name="compile.optimize" value="true" />
+        <property name="java.source.version" value="1.5" />
+        <property name="java.target.version" value="1.5" />
+
+        <!-- main compilation classpath -->
+        <path id="classpath">
+            <fileset dir="${lib.dir}">
+                <include name="*.jar" />
+            </fileset>
+        </path>
+
+        <!-- pattern to define resource files -->
+        <patternset id="resources">
+            <include name="**" />
+            <exclude name="**/*.java" />
+            <exclude name="**/CVS, **/.svn/**" />
+            <exclude name="**/*.pst" />
+        </patternset>
+    </target>
+
+    <target name="clean"
+            depends="init"
+            description="delete generated classes and distribution results">
+        <delete includeemptydirs="true" dir="${build.dir}" />
+    </target>
+
+    <target name="compileutils"
+            depends="init"
+            description="Compiles the VocabularyWriter, necessary to generate the vocabulary classes">
+        <mkdir dir="${classes.java.dir}" />
+        <javac source="${java.source.version}"
+               target="${java.target.version}"
+               srcdir="${src.dir}"
+               includes="**/util/*.java,**/vocabulary/*.java"
+               excludes="**/extractor/**"
+               destdir="${classes.java.dir}"
+               classpathref="classpath"
+               debug="${compile.debug}"
+               debuglevel="${compile.debuglevel}"
+               deprecation="${compile.deprecation}"
+               optimize="${compile.optimize}" />
+        <!-- copy resources to classes dir -->
+        <copy todir="${classes.java.dir}">
+            <fileset dir="${src.java.dir}">
+                <patternset refid="resources" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="createvocabulary"
+            description="generates a single vocabulary class">
+        <java classname="org.semanticdesktop.aperture.util.VocabularyWriter">
+            <arg value="-i" />
+            <arg value="${doc.ontologies.dir}/${vocabulary.input.file}" />
+            <arg value="-o" />
+            <arg value="src/java/org/semanticdesktop/aperture/vocabulary" />
+            <arg value="-a" />
+            <arg value="${vocabulary.namespace}" />
+            <arg value="-n" />
+            <arg value="${vocabulary.classname}" />
+            <arg value="--package" />
+            <arg value="org.semanticdesktop.aperture.vocabulary" />
+            <classpath>
+                <path refid="classpath" />
+                <pathelement location="${classes.java.dir}" />
+            </classpath>
+        </java>
+    </target>
+
+    <target name="updatevocabularies"
+            depends="compileutils"
+            description="Copies the aperture ontologies from doc/ontology to util/ontology">
+        <antcall target="createvocabulary">
+            <param name="vocabulary.input.file" value="tagging.rdfs" />
+            <param name="vocabulary.namespace"
+                   value="http://aperture.sourceforge.net/ontologies/taggingl#" />
+            <param name="vocabulary.classname" value="TAGGING" />
+        </antcall>
+        <antcall target="createvocabulary">
+            <param name="vocabulary.input.file" value="nie.rdfs" />
+            <param name="vocabulary.namespace"
+                   value="http://www.semanticdesktop.org/ontologies/2007/01/19/nie#" />
+            <param name="vocabulary.classname" value="NIE" />
+        </antcall>
+        <antcall target="createvocabulary">
+            <param name="vocabulary.input.file" value="nco.rdfs" />
+            <param name="vocabulary.namespace"
+                   value="http://www.semanticdesktop.org/ontologies/2007/03/22/nco#" />
+            <param name="vocabulary.classname" value="NCO" />
+        </antcall>
+        <antcall target="createvocabulary">
+            <param name="vocabulary.input.file" value="nfo.rdfs" />
+            <param name="vocabulary.namespace"
+                   value="http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#" />
+            <param name="vocabulary.classname" value="NFO" />
+        </antcall>
+        <antcall target="createvocabulary">
+            <param name="vocabulary.input.file" value="nmo.rdfs" />
+            <param name="vocabulary.namespace"
+                   value="http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#" />
+            <param name="vocabulary.classname" value="NMO" />
+        </antcall>
+        <antcall target="createvocabulary">
+            <param name="vocabulary.input.file" value="nexif.rdfs" />
+            <param name="vocabulary.namespace"
+                   value="http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#" />
+            <param name="vocabulary.classname" value="NEXIF" />
+        </antcall>
+        <antcall target="createvocabulary">
+            <param name="vocabulary.input.file" value="nid3.rdfs" />
+            <param name="vocabulary.namespace"
+                   value="http://www.semanticdesktop.org/ontologies/2007/05/10/nid3#" />
+            <param name="vocabulary.classname" value="NID3" />
+        </antcall>
+        <antcall target="createvocabulary">
+            <param name="vocabulary.input.file" value="ncal.rdfs" />
+            <param name="vocabulary.namespace"
+                   value="http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#" />
+            <param name="vocabulary.classname" value="NCAL" />
+        </antcall>
+        <antcall target="createvocabulary">
+            <param name="vocabulary.input.file" value="source2.rdfs" />
+            <param name="vocabulary.namespace"
+                   value="http://aperture.semanticdesktop.org/ontology/2007/08/12/source#" />
+            <param name="vocabulary.classname" value="DATASOURCE" />
+        </antcall>
+        <antcall target="createvocabulary">
+            <param name="vocabulary.input.file" value="fresnel.owl" />
+            <param name="vocabulary.namespace"
+                   value="http://www.w3.org/2004/09/fresnel#" />
+            <param name="vocabulary.classname" value="FRESNEL" />
+        </antcall>
+        <antcall target="createvocabulary">
+            <param name="vocabulary.input.file" value="sourceformat.rdfs" />
+            <param name="vocabulary.namespace"
+                   value="http://aperture.semanticdesktop.org/ontology/sourceformat#" />
+            <param name="vocabulary.classname" value="SOURCEFORMAT" />
+        </antcall>
+        <antcall target="createvocabulary">
+            <param name="vocabulary.input.file" value="geo.rdfs" />
+            <param name="vocabulary.namespace"
+                   value="http://www.w3.org/2003/01/geo/wgs84_pos#" />
+            <param name="vocabulary.classname" value="GEO" />
+        </antcall>
+    </target>
+
+</project>

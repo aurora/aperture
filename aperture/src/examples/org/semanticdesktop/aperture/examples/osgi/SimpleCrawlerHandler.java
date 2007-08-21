@@ -7,9 +7,6 @@
 package org.semanticdesktop.aperture.examples.osgi;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -35,7 +32,7 @@ import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.util.IOUtil;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
 
@@ -101,7 +98,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         if (mimeType != null) {
             // add the mime type to the metadata
             RDFContainer metadata = object.getMetadata();
-            metadata.add(DATA.mimeType, mimeType);
+            metadata.add(NIE.mimeType, mimeType);
 
             // apply an Extractor if available
             if (extractorRegistry != null) {

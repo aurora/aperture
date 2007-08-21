@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -25,7 +26,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 
-import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
@@ -35,7 +36,9 @@ import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
+import org.semanticdesktop.aperture.vocabulary.NMO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +56,7 @@ import org.slf4j.LoggerFactory;
  * holding all the mail metadata (sender, receiver, etc) as well as an InputStream accessing the simplest of
  * the two body parts (typically the text/plain part).
  */
+@SuppressWarnings("unchecked")
 public class DataObjectFactory {
 
     // TODO: we could use the URL format specified in RFC 2192 to construct a proper IMAP4 URL.
@@ -91,7 +95,7 @@ public class DataObjectFactory {
      * Returns a list of DataObjects that have been created based on the contents of the specified
      * MimeMessage. The order of the DataObjects reflects the order of the message parts they represent, i.e.
      * the first DataObject represents the entire message, subsequent DataObjects represent attachments in a
-     * depth first orderseveral layers of attachments can exist when forwarding messages containing
+     * depth first order several layers of attachments can exist when forwarding messages containing
      * attachments).
      * 
      * @param message The MimeMessage to interpret.
@@ -99,22 +103,22 @@ public class DataObjectFactory {
      *            be derived from this URI.
      * @param folderUri The URI of the Folder from which these MimeMessages were obtained. The root DataObject
      *            will have this URI as parent.
-     * @param source The DataSource that the DataObjects will return as source.
-     * @param containerFactory An RDFContainerFactory that can deliver RDFContainer to be used in the returned
+     * @param dataSource The DataSource that the DataObjects will return as source.
+     * @param factory An RDFContainerFactory that can deliver RDFContainer to be used in the returned
      *            DataObjects.
      * @return A List of DataObjects derived from the specified MimeMessage. The order of the DataObjects
      *         reflects the order of the message parts they represent.
      * @throws MessagingException Thrown when accessing the mail contents.
      * @throws IOException Thrown when accessing the mail contents.
      */
-    public List createDataObjects(MimeMessage message, String messageUri, URI folderUri, DataSource source,
-            RDFContainerFactory containerFactory) throws MessagingException, IOException {
+    public List createDataObjects(MimeMessage message, String messageUri, URI folderUri, DataSource dataSource,
+            RDFContainerFactory factory) throws MessagingException, IOException {
         // initialize variables
-        this.source = source;
-        this.containerFactory = containerFactory;
+        this.source = dataSource;
+        this.containerFactory = factory;
 
         // create a HashMap representation of this message and all its nested parts
-        HashMap map = handleMailPart(message, URIImpl.createURIWithoutChecking(messageUri), MailUtil
+        HashMap map = handleMailPart(message, new URIImpl(messageUri), MailUtil
                 .getDate(message));
 
         // convert the HashMap representation to a DataObject representation
@@ -123,11 +127,11 @@ public class DataObjectFactory {
 
         // The first object is the Message itself, add RDF type to it
         RDFContainer msgObject = ((DataObject) result.get(0)).getMetadata();
-        msgObject.add(RDF.type, DATA.Email);
+        msgObject.add(RDF.type, NMO.Email);
 
         String messageID = message.getMessageID();
         if (messageID != null) {
-            msgObject.add(DATA.messageID, messageID);
+            msgObject.add(NMO.messageId, messageID);
         }
 
         return result;
@@ -216,7 +220,7 @@ public class DataObjectFactory {
             result.put(CONTENTS_KEY, mailPart.getInputStream());
 
             if (charsetStr != null) {
-                result.put(DATA.characterSet, charsetStr);
+                result.put(NIE.characterSet, charsetStr);
             }
 
             String fileName = mailPart.getFileName();
@@ -227,43 +231,43 @@ public class DataObjectFactory {
                 catch (MessagingException e) {
                     // happens on unencoded file names! so just ignore it and leave the file name as it is
                 }
-                result.put(DATA.name, fileName);
+                result.put(NFO.fileName, fileName);
             }
         }
 
         // set some generally applicable metadata properties
         int size = mailPart.getSize();
         if (size >= 0) {
-            result.put(DATA.byteSize, new Integer(size));
+            result.put(NIE.byteSize, new Integer(size));
         }
 
-        result.put(DATA.date, date);
+        result.put(NIE.contentCreated, date);
 
         // Differentiate between Messages and other types of mail parts. We don't use the Part.getHeader
         // method as they don't decode non-ASCII 'encoded words' (see RFC 2047).
         if (mailPart instanceof Message) {
             // the data object's primary mimetype is message/rfc822. The MIME type of the InputStream
             // (most often text/plain or text/html) is modeled as a secondary MIME type
-            result.put(DATA.mimeType, "message/rfc822");
-            result.put(DATA.contentMimeType, mimeType);
+            result.put(NIE.mimeType, "message/rfc822");
+            result.put(NMO.contentMimeType, mimeType);
 
             // add message metadata
             Message message = (Message) mailPart;
-            addIfNotNull(DATA.subject, message.getSubject(), result);
-            addIfNotNull(DATA.from, message.getFrom(), result);
-            addIfNotNull(DATA.to, message.getRecipients(RecipientType.TO), result);
-            addIfNotNull(DATA.cc, message.getRecipients(RecipientType.CC), result);
-            addIfNotNull(DATA.bcc, message.getRecipients(RecipientType.BCC), result);
+            addIfNotNull(NIE.subject, message.getSubject(), result);
+            addContactArrayIfNotNull(NMO.from, message.getFrom(), result);
+            addContactArrayIfNotNull(NMO.to, message.getRecipients(RecipientType.TO), result);
+            addContactArrayIfNotNull(NMO.cc, message.getRecipients(RecipientType.CC), result);
+            addContactArrayIfNotNull(NMO.bcc, message.getRecipients(RecipientType.BCC), result);
 
             if (message instanceof MimeMessage) {
                 MimeMessage mimeMessage = (MimeMessage) message;
-                addIfNotNull(DATA.sender, mimeMessage.getSender(), result);
+                addIfNotNull(NMO.from, mimeMessage.getSender(), result);
             }
         }
         else {
             // this is most likely an attachment: set the InputStream's mime type as the data object's
             // primary MIME type
-            result.put(DATA.mimeType, mimeType);
+            result.put(NIE.mimeType, mimeType);
         }
 
         // done!
@@ -331,7 +335,7 @@ public class DataObjectFactory {
                 continue;
             }
 
-            URI bodyURI = URIImpl.createURIWithoutChecking(uriPrefix + i);
+            URI bodyURI = new URIImpl(uriPrefix + i);
             HashMap childResult = handleMailPart(bodyPart, bodyURI, date);
 
             if (childResult != null) {
@@ -344,7 +348,7 @@ public class DataObjectFactory {
         int nrChildren = children.size();
         for (int i = 0; i < nrChildren; i++) {
             HashMap child = (HashMap) children.get(i);
-            Object bodyMimeType = child.get(DATA.mimeType);
+            Object bodyMimeType = child.get(NIE.mimeType);
 
             if ("text/plain".equals(bodyMimeType) || "text/html".equals(bodyMimeType)) {
                 children.remove(i);
@@ -434,7 +438,7 @@ public class DataObjectFactory {
             }
 
             // derive a URI
-            URI bodyURI = URIImpl.createURIWithoutChecking(bodyURIPrefix + i);
+            URI bodyURI = new URIImpl(bodyURIPrefix + i);
 
             // interpret this part
             HashMap child = handleMailPart(bodyPart, bodyURI, date);
@@ -492,7 +496,7 @@ public class DataObjectFactory {
             BodyPart bodyPart = part.getBodyPart(i);
 
             // interpret this body part
-            URI bodyURI = URIImpl.createURIWithoutChecking(bodyURIPrefix + i);
+            URI bodyURI = new URIImpl(bodyURIPrefix + i);
             HashMap child = handleMailPart(bodyPart, bodyURI, date);
 
             // append it to the part object in the appropriate way
@@ -578,7 +582,7 @@ public class DataObjectFactory {
 
         // the optional third part contains the (partial) returned message and will become an attachment
         if (count > 2) {
-            URI nestedURI = URIImpl.createURIWithoutChecking(getBodyPartURIPrefix(uri) + "0");
+            URI nestedURI = new URIImpl(getBodyPartURIPrefix(uri) + "0");
             HashMap returnedMessage = handleMailPart(part.getBodyPart(2), nestedURI, date);
             if (returnedMessage != null) {
                 ArrayList children = new ArrayList();
@@ -623,24 +627,24 @@ public class DataObjectFactory {
 
         // extend metadata with additional properties
         if (parentUri != null) {
-            metadata.add(DATA.partOf, parentUri);
+            metadata.add(NIE.isPartOf, parentUri);
         }
 
-        copyString(DATA.characterSet, map, metadata);
-        copyString(DATA.mimeType, map, metadata);
-        copyString(DATA.contentMimeType, map, metadata);
-        copyString(DATA.subject, map, metadata);
-        copyString(DATA.name, map, metadata);
+        copyString(NIE.characterSet, map, metadata);
+        copyString(NIE.mimeType, map, metadata);
+        copyString(NMO.contentMimeType, map, metadata);
+        copyString(NIE.subject, map, metadata);
+        //copyString(DATA.name, map, metadata);
 
-        copyInt(DATA.byteSize, map, metadata);
+        copyInt(NIE.byteSize, map, metadata);
 
-        copyDate(DATA.date, map, metadata);
+        copyDate(NIE.contentCreated, map, metadata);
 
-        copyAddresses(DATA.from, map, metadata);
-        copyAddresses(DATA.sender, map, metadata);
-        copyAddresses(DATA.to, map, metadata);
-        copyAddresses(DATA.cc, map, metadata);
-        copyAddresses(DATA.bcc, map, metadata);
+        copyAddresses(NMO.from, map, metadata);
+        //copyAddresses(DATA.sender, map, metadata);
+        copyAddresses(NMO.to, map, metadata);
+        copyAddresses(NMO.cc, map, metadata);
+        copyAddresses(NMO.bcc, map, metadata);
 
         // repeat recursively on children
         ArrayList children = (ArrayList) map.get(CHILDREN_KEY);
@@ -651,7 +655,7 @@ public class DataObjectFactory {
 
                 // also register the child in the parent's metadata
                 URI childID = (URI) child.get(ID_KEY);
-                metadata.add(metadata.getValueFactory().createStatement(childID, DATA.partOf, id));
+                metadata.add(metadata.getValueFactory().createStatement(childID, NIE.isPartOf, id));
 
                 createDataObjects(child, id, result);
             }
@@ -696,7 +700,7 @@ public class DataObjectFactory {
                 logger.warn("Unknown address class: " + value.getClass().getName());
             }
         }
-        catch (ModelException e) {
+        catch (ModelRuntimeException e) {
             logger.error("ModelException while handling address metadata", e);
         }
     }
@@ -724,6 +728,14 @@ public class DataObjectFactory {
         return charsetStr;
     }
 
+    private void addContactArrayIfNotNull(URI predicate, Address[] addresses, HashMap result) {
+        if (addresses != null) {
+            for (Address address : addresses) {
+                addIfNotNull(predicate, address, result);
+            }
+        }
+    }
+    
     private void addIfNotNull(URI predicate, Object value, HashMap map) {
         if (value != null) {
             map.put(predicate, value);
@@ -747,10 +759,10 @@ public class DataObjectFactory {
         }
 
         // transfer mime type, carefully placing it as mime type or content mime type
-        Object fromType = fromObject.get(DATA.mimeType);
+        Object fromType = fromObject.get(NIE.mimeType);
         if (fromType != null) {
-            Object toType = toObject.get(DATA.mimeType);
-            URI predicate = "message/rfc822".equals(toType) ? DATA.contentMimeType : DATA.mimeType;
+            Object toType = toObject.get(NIE.mimeType);
+            URI predicate = "message/rfc822".equals(toType) ? NMO.contentMimeType : NIE.mimeType;
             toObject.put(predicate, fromType);
         }
 

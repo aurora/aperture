@@ -19,10 +19,12 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -112,7 +114,8 @@ public class XmlExtractor implements Extractor {
             // store the extracted text
             String text = listener.getText();
             if (!text.equals("")) {
-                result.add(DATA.fullText, text);
+                result.add(NIE.plainTextContent, text);
+                result.add(RDF.type,NFO.PlainTextDocument);
             }
         }
         catch (ParserConfigurationException e) {

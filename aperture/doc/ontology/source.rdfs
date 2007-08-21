@@ -11,6 +11,13 @@
 	 rdfs:label="AppleAddressbookDataSource">
 	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
 </rdfs:Class>
+<rdfs:Class rdf:about="&source_;ConnectionSecurity"
+	 rdfs:label="ConnectionSecurity">
+	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
+</rdfs:Class>
+<source_:ConnectionSecurity rdf:about="&source_;PLAIN" />
+<source_:ConnectionSecurity rdf:about="&source_;SSL" />
+<source_:ConnectionSecurity rdf:about="&source_;SSL_NO_CERT" />
 <rdfs:Class rdf:about="&source_;DataSource"
 	 rdfs:label="DataSource">
 	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
@@ -48,6 +55,22 @@
 	 rdfs:label="SubstringPattern">
 	<rdfs:subClassOf rdf:resource="&source_;Pattern"/>
 </rdfs:Class>
+<rdfs:Class rdf:about="&source_;STARTS_WITH"
+	 rdfs:label="STARTS_WITH">
+	<rdfs:subClassOf rdf:resource="&source_;SubstringPattern"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&source_;ENDS_WITH"
+	 rdfs:label="ENDS_WITH">
+	<rdfs:subClassOf rdf:resource="&source_;SubstringPattern"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&source_;CONTAINS"
+	 rdfs:label="CONTAINS">
+	<rdfs:subClassOf rdf:resource="&source_;SubstringPattern"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&source_;DOES_NOT_CONTAIN"
+	 rdfs:label="DOES_NOT_CONTAIN">
+	<rdfs:subClassOf rdf:resource="&source_;SubstringPattern"/>
+</rdfs:Class>
 <rdfs:Class rdf:about="&source_;ThunderbirdAddressbookDataSource"
 	 rdfs:label="ThunderbirdAddressbookDataSource">
 	<rdfs:subClassOf rdf:resource="&source_;DataSource"/>
@@ -71,7 +94,7 @@
 <rdf:Property rdf:about="&source_;connectionSecurity"
 	 rdfs:label="connectionSecurity">
 	<rdfs:domain rdf:resource="&source_;DataSource"/>
-	<rdfs:range rdf:resource="&rdfs;Literal"/>
+	<rdfs:range rdf:resource="&source_;ConnectionSecurity"/>
 </rdf:Property>
 <rdf:Property rdf:about="&source_;dataSourceComment"
 	 rdfs:comment="A comment about the datasource."

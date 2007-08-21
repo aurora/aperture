@@ -24,7 +24,7 @@ import org.semanticdesktop.aperture.accessor.base.FileAccessData;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.FileUtil;
 import org.semanticdesktop.aperture.util.IOUtil;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NFO;
 
 public class TestFileAccessor extends ApertureTestBase {
 
@@ -64,13 +64,14 @@ public class TestFileAccessor extends ApertureTestBase {
         assertTrue(dataObject instanceof FileDataObject);
 
         // check its metadata
-        checkStatement(DATA.name, "file-", dataObject.getMetadata());
+        checkStatement(NFO.fileName, "file-", dataObject.getMetadata());
 
         URI parentURI = dataObject.getMetadata().getValueFactory().createURI(tmpDir.toURI().toString());
-        checkStatement(DATA.partOf, parentURI, dataObject.getMetadata());
+        checkStatement(NFO.belongsToContainer, parentURI, dataObject.getMetadata());
         
         // we don't need to dispose the DataSource because we passed null as the value of DataSource to the
         // extract method
+        validate(dataObject.getMetadata());
         dataObject.dispose();
     }
 
@@ -82,10 +83,11 @@ public class TestFileAccessor extends ApertureTestBase {
         assertTrue(dataObject instanceof FolderDataObject);
 
         // check its metadata
-        checkStatement(DATA.name, "TestFileAccessor", dataObject.getMetadata());
+        checkStatement(NFO.fileName, "TestFileAccessor", dataObject.getMetadata());
         
         // we don't need to dispose the DataSource because we passed null as the value of DataSource to the
         // extract method
+        validate(dataObject.getMetadata());
         dataObject.dispose();
     }
 
@@ -110,6 +112,7 @@ public class TestFileAccessor extends ApertureTestBase {
         
         // we don't need to dispose the DataSource because we passed null as the value of DataSource to the
 		// extract method
+        validate(object2.getMetadata());
 		object2.dispose();
     }
     

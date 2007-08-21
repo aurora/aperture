@@ -14,7 +14,9 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class OpenDocumentExtractorTest extends ExtractorTestBase {
 
@@ -26,7 +28,6 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
         DOCS_PATH + "openoffice-2.0-formula.odf",
         DOCS_PATH + "openoffice-2.0-impress.odp",
         DOCS_PATH + "openoffice-2.0-impress-template.otp",
-        DOCS_PATH + "openoffice-2.0-writer.odt",
         DOCS_PATH + "openoffice-2.0-writer-template.ott",
         DOCS_PATH + "openoffice-1.1.5-calc.sxc",
         DOCS_PATH + "openoffice-1.1.5-calc-template.stc",
@@ -47,7 +48,8 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
         for (int i = 0; i < RESOURCES.length; i++) {
             // check of any document text is extracted
             RDFContainer container = getStatements(RESOURCES[i]);
-            checkStatement(DATA.fullText, "This", container);
+            checkStatement(NIE.plainTextContent, "This", container);
+            validate(container);
             container.dispose();
         }
     }
@@ -69,19 +71,20 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
         RDFContainer container = getStatements(resourceName);
 
         // check for all properties that we're sure of exist in this example document
-        checkStatement(DATA.title, "Example", container);
-        checkStatement(DATA.subject, "Testing", container);
-        checkStatement(DATA.keyword, "rdf", container);
-        checkStatement(DATA.keyword, "test", container);
-        checkStatement(DATA.description, "comments", container);
-        checkStatement(DATA.creator, "Christiaan Fluit", container);
-        checkStatement(DATA.date, "2005", container);
-        checkStatement(DATA.created, "2005", container);
-        checkStatement(DATA.printDate, "2005", container);
-        checkStatement(DATA.language, "en-US", container);
-        checkStatement(DATA.pageCount, "1", container);
-        checkStatement(DATA.generator, "OpenOffice", container);
-        
-        container.getModel().close();
+        checkStatement(NIE.title, "Example", container);
+        checkStatement(NIE.subject, "Testing", container);
+        checkStatement(NIE.keyword, "rdf", container);
+        checkStatement(NIE.keyword, "test", container);
+        checkStatement(NIE.description, "comments", container);
+        checkMultipleSimpleContacts(NCO.creator, "Christiaan Fluit", container);
+        checkStatement(NIE.informationElementDate, "2005", container);
+        checkStatement(NIE.contentCreated, "2005", container);
+        // TODO get back to it after introducing nie:printDate
+        //checkStatement(DATA.printDate, "2005", container);
+        checkStatement(NIE.language, "en-US", container);
+        checkStatement(NFO.pageCount, "1", container);
+        checkStatement(NIE.generator, "OpenOffice", container);
+        validate(container);
+        container.dispose();
     }
 }

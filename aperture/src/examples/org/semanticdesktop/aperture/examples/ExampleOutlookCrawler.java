@@ -6,94 +6,82 @@
  */
 package org.semanticdesktop.aperture.examples;
 
-import java.io.File;
+import java.util.Iterator;
+import java.util.List;
 
 import org.ontoware.rdf2go.exception.ModelException;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.outlook.OutlookCrawler;
 import org.semanticdesktop.aperture.outlook.OutlookDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
 
 
-public class ExampleOutlookCrawler {
+public class ExampleOutlookCrawler extends AbstractExampleCrawler {
     
     /**
      * Pass a ROOT_URL that will be the prefix
      */
     public static final String ROOT_URL_OPTION = "-rooturl";
     
+    OutlookDataSource source = new OutlookDataSource();
     
-//  create a data source configuration
-    RDFContainerFactoryImpl factory = new RDFContainerFactoryImpl();
-    RDFContainer configuration = factory.newInstance("source:testSource");
-
-    private File outputFile;
-
-    public File getOutputFile() {
-        return outputFile;
+    public ExampleOutlookCrawler() {
+        // create the data source
+        RDFContainerFactoryImpl factory = new RDFContainerFactoryImpl();
+        RDFContainer configuration = factory.newInstance("source:testSource");
+        source = new OutlookDataSource();
+        source.setConfiguration(configuration);
     }
-
-    public void setOutputFile(File file) {
-        this.outputFile = file;
-    }
-
-    public static void main(String[] args) throws ModelException {
+    
+    public static void main(String[] args) throws Exception {
         // create a new ExampleFileCrawler instance
         ExampleOutlookCrawler crawler = new ExampleOutlookCrawler();
+        
+        List<String> remainingOptions = crawler.processCommonOptions(args);
         
         String rootUrl = "semdesk:outlook:";
 
         // parse the command line options
-        for (int i = 0; i < args.length; i++) {
-            String arg = args[i];
+        Iterator<String> iterator = remainingOptions.iterator();
+        if (iterator.hasNext()) {
+            String arg = iterator.next();
             if (ROOT_URL_OPTION.equals(arg)) {
-                if (i == args.length-1)
-                    exitWithUsageMessage();
-                i++;
-                rootUrl = args[i];
-            }
-            if (crawler.getOutputFile() == null) {
-                crawler.setOutputFile(new File(arg));
+                if (!iterator.hasNext())
+                    crawler.exitWithUsageMessage();
+                rootUrl = iterator.next();
             }
             else {
-                exitWithUsageMessage();
+                crawler.exitWithUsageMessage();
             }
         }
-
-        // check that all required fields are available
-        if (crawler.getOutputFile() == null) {
-            exitWithUsageMessage();
+        if (rootUrl != null) {
+            crawler.source.setRootUrl(rootUrl);
         }
-        
-        // set config
-        ConfigurationUtil.setRootUrl(rootUrl, crawler.configuration);
 
         // start crawling and exit afterwards
         crawler.crawl();
     }
 
-    private static void exitWithUsageMessage() {
-        System.err.println("Usage: java " + ExampleOutlookCrawler.class.getName() + " [-rooturl uriprefix] outputFile");
-        System.err.println(" -rooturl: define the prefix used for outlook resource URIs.");
-        System.exit(-1);
-    }
-
     public void crawl() throws ModelException {
-        // create the data source
-        OutlookDataSource source = new OutlookDataSource();
-        source.setConfiguration(configuration);
-
         // setup a crawler that can handle this type of DataSource
         OutlookCrawler crawler = new OutlookCrawler();
         crawler.setDataSource(source);
         crawler.setDataAccessorRegistry(new DefaultDataAccessorRegistry());
-        crawler.setCrawlerHandler(new SimpleCrawlerHandler(false,false,false,outputFile));
+        crawler.setCrawlerHandler(getHandler());
 
         // start crawling
         crawler.crawl();
     }
 
+    @Override
+    protected String getSpecificExplanationPart() {
+        return "[-rooturl uriprefix]";
+    }
+
+    @Override
+    protected String getSpecificSyntaxPart() {
+        return "  -rooturl: define the prefix used for outlook resource URIs. Should begin with 'outlook:' (optional)";
+    }
 }
 

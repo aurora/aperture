@@ -12,11 +12,13 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.PoiUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
+import org.semanticdesktop.aperture.vocabulary.NFO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +48,7 @@ public class QuattroExtractor implements Extractor {
 			if (hasMSOfficeMagicNumber(stream)) {
 				PoiUtil.extractAll(stream, null, result, logger);
 			}
+            result.add(RDF.type,NFO.Spreadsheet);
 		}
 		catch (IOException e) {
 			throw new ExtractorException(e);

@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,6 +20,10 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
+
+import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Syntax;
 
 /**
  * I/O utility methods for working with Readers, Writers, InputStreams, OutputStreams and URLs.
@@ -252,5 +257,23 @@ public class IOUtil {
         }
 
         return result;
+    }
+
+    /**
+     * Reads rdf from the resource at the given resource path to the given model
+     * @param model the model where the RDF data should be stored
+     * @param path the resource path
+     * @param syntax the syntax
+     * @throws FileNotFoundException if the resource has not been foud
+     * @throws IOException if an I/O error occurs in the process
+     * @throws ModelException ...
+     */
+    public static void readFileFromResource(Model model, String path, Syntax syntax)
+            throws FileNotFoundException, IOException, ModelException {
+        InputStream stream = ResourceUtil.getInputStream(path, IOUtil.class);
+        if (stream == null) {
+            throw new FileNotFoundException("couldn't find resource " + path);
+        }
+        model.readFrom(stream, syntax);
     }
 }

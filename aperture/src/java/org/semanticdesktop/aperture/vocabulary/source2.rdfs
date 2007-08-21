@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE rdf:RDF [
+	 <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+	 <!ENTITY source 'http://aperture.semanticdesktop.org/ontology/2007/08/12/source#'>
+	 <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema#'>
+	 <!ENTITY nie 'http://www.semanticdesktop.org/ontologies/2007/01/19/nie#'>
+	 <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
+	 <!ENTITY sourceformat 'http://aperture.semanticdesktop.org/ontology/sourceformat#'>
+	 <!ENTITY fresnel 'http://www.w3.org/2004/09/fresnel#'>
+	 <!ENTITY tagging 'http://aperture.sourceforge.net/ontologies/tagging#'>
+]>
+<rdf:RDF xmlns:rdf="&rdf;"
+	 xmlns:source="&source;"
+	 xmlns:rdfs="&rdfs;"
+	 xmlns:fresnel="&fresnel;"
+	 xmlns:sourceformat="&sourceformat;">
+<rdfs:Class rdf:about="&source;DataSourceDescription"
+	 rdfs:label="DataSourceDescription">
+	<rdfs:comment>A human-readable description of a datasource. Adds icons, texts etc.</rdfs:comment>
+	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&source;Pattern"
+	 rdfs:label="Pattern">
+	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&source;RegExpPattern" 
+	 rdfs:label="RegExpPattern">
+	<rdfs:subClassOf rdf:resource="&source;Pattern"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&source;SubstringPattern"
+	 rdfs:label="SubstringPattern">
+	<rdfs:subClassOf rdf:resource="&source;Pattern"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&source;STARTS_WITH"
+	 rdfs:label="STARTS_WITH">
+	<rdfs:subClassOf rdf:resource="&source;SubstringPattern"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&source;ENDS_WITH"
+	 rdfs:label="ENDS_WITH">
+	<rdfs:subClassOf rdf:resource="&source;SubstringPattern"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&source;CONTAINS"
+	 rdfs:label="CONTAINS">
+	<rdfs:subClassOf rdf:resource="&source;SubstringPattern"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&source;DOES_NOT_CONTAIN"
+	 rdfs:label="DOES_NOT_CONTAIN">
+	<rdfs:subClassOf rdf:resource="&source;SubstringPattern"/>
+</rdfs:Class>
+<rdf:Property rdf:about="&source;condition"
+	 rdfs:comment="the condition for this pattern to match"
+	 rdfs:label="condition">
+	<rdfs:domain rdf:resource="&source;Pattern"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&source;dataSourceComment"
+	 rdfs:comment="A comment about the datasource."
+	 rdfs:label="dataSourceComment">
+	<rdfs:domain rdf:resource="&source;DataSourceDescription"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&source;dataSourceName"
+	 rdfs:label="dataSourceName">
+	<rdfs:comment>Name of the type of datasource. For example "Local File System".</rdfs:comment>
+	<rdfs:domain rdf:resource="&source;DataSourceDescription"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&source;describedDataSourceType"
+	 rdfs:comment="The datasource described"
+	 rdfs:label="describedDataSourceType">
+	<rdfs:range rdf:resource="&nie;DataSource"/>
+	<rdfs:domain rdf:resource="&source;DataSourceDescription"/>
+</rdf:Property>
+<rdf:Property rdf:about="&source;excludePattern"
+	 rdfs:comment="Patterns to exclude from this datasource"
+	 rdfs:label="excludePattern">
+	<rdfs:domain rdf:resource="&nie;DataSource"/>
+	<rdfs:range rdf:resource="&source;Pattern"/>
+</rdf:Property>
+<rdf:Property rdf:about="&source;includePattern"
+	 rdfs:comment="patterns to include in this datasource"
+	 rdfs:label="includePattern">
+	<rdfs:domain rdf:resource="&nie;DataSource"/>
+	<rdfs:range rdf:resource="&source;Pattern"/>
+</rdf:Property>
+<rdf:Property rdf:about="&source;timeout"
+	 rdfs:comment="The timeout between two consecutive crawls (in miliseconds)"
+	 rdfs:label="timeout">
+	<rdfs:domain rdf:resource="&source;DataSource"/>
+	<rdfs:range rdf:resource="&rdfs;Literal"/>
+</rdf:Property>
+<rdf:Property rdf:about="&source;username"
+	 rdfs:label="username"
+	 rdfs:comment="Username used for authentication in a data source">
+	<rdfs:domain rdf:resource="&nie;DataSource"/>
+	<rdfs:range rdf:resource="&xsd;string"/>
+</rdf:Property>
+<rdf:Property rdf:about="&source;password"
+	 rdfs:comment="The Password used to access this datasource."
+	 rdfs:label="password">
+	<rdfs:domain rdf:resource="&nie;DataSource"/>
+	<rdfs:range rdf:resource="&xsd;string"/>
+</rdf:Property>
+</rdf:RDF>

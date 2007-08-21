@@ -16,6 +16,7 @@ import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 /**
  * Returns HttpAccessor instances. 
  */
+@SuppressWarnings("unchecked")
 public class HttpAccessorFactory implements DataAccessorFactory {
 
     private static final Set SUPPORTED_SCHEMES;
@@ -29,10 +30,16 @@ public class HttpAccessorFactory implements DataAccessorFactory {
     
     private HttpAccessor accessor;
 
+    /**
+     * @see DataAccessorFactory#getSupportedSchemes()
+     */
     public Set getSupportedSchemes() {
         return SUPPORTED_SCHEMES;
     }
     
+    /**
+     * @see DataAccessorFactory#get()
+     */
     public DataAccessor get() {
         if (accessor == null) {
             accessor = new HttpAccessor();

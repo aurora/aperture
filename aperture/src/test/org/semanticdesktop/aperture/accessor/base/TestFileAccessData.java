@@ -54,4 +54,23 @@ public class TestFileAccessData extends TestCase {
 		String value = accessData.get("urn:test", AccessData.DATE_KEY);
 		assertEquals("12", value);
 	}
+	
+	public void testAutoSaveFeature() throws Exception {
+	    long beginLastModified = accessDataFile.lastModified();
+	    FileAccessData accessData = new FileAccessData(accessDataFile, 100);
+	    accessData.initialize();
+	    
+	    for (int i = 0; i < 100; i++) {
+	        accessData.put("urn:test", AccessData.DATE_KEY, String.valueOf(i));
+	        int j = Integer.parseInt(accessData.get("urn:test", AccessData.DATE_KEY));
+	        assertEquals(i,j);
+	        Thread.sleep(1);
+	    }
+	    
+	    long endLastModified = accessDataFile.lastModified();
+	    // an autosave should have occured in the meantime, so the lastModifiedDate should be later
+	    assertTrue(endLastModified > beginLastModified);
+	    
+	    accessData.store();
+	}
 }

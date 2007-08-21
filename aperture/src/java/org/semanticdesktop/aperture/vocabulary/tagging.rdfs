@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE rdf:RDF [
+	 <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+	 <!ENTITY tagging 'http://aperture.sourceforge.net/ontologies/tagging#'>
+	 <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema#'>
+	 <!ENTITY sourceformat 'http://aperture.semanticdesktop.org/ontology/sourceformat#'>
+	 <!ENTITY fresnel 'http://www.w3.org/2004/09/fresnel#'>
+]>
+<rdf:RDF xmlns:rdf="&rdf;"
+	 xmlns:tagging="&tagging;"
+	 xmlns:rdfs="&rdfs;"
+	 xmlns:fresnel="&fresnel;"
+	 xmlns:sourceformat="&sourceformat;">
+<rdfs:Class rdf:about="&tagging;Item"
+	 rdfs:comment="An item that may be tagged, links, photos, etc."
+	 rdfs:label="Item">
+	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&tagging;Link"
+	 rdfs:label="Link">
+	<rdfs:subClassOf rdf:resource="&tagging;Item"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&tagging;Photo"
+	 rdfs:label="Photo">
+	<rdfs:subClassOf rdf:resource="&tagging;Item"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&tagging;Tag"
+	 rdfs:comment="A Tag."
+	 rdfs:label="Tag">
+	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
+</rdfs:Class>
+<rdf:Property rdf:about="&tagging;hasTag"
+	 rdfs:comment="this item was tagged with the this tag"
+	 rdfs:label="hasTag">
+	<rdfs:domain rdf:resource="&tagging;Item"/>
+	<rdfs:range rdf:resource="&tagging;Tag"/>
+</rdf:Property>
+</rdf:RDF>

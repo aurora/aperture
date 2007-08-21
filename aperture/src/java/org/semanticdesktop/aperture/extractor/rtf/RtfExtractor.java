@@ -15,10 +15,12 @@ import javax.swing.text.Document;
 import javax.swing.text.rtf.RTFEditorKit;
 
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +42,8 @@ public class RtfExtractor implements Extractor {
 		try {
 			rtfParser.read(stream, document, 0);
 			String text = document.getText(0, document.getLength());
-			result.add(DATA.fullText, text);
+			result.add(NIE.plainTextContent, text);
+            result.add(RDF.type,NFO.TextDocument);
 		}
 		catch (BadLocationException e) {
 			// problem relates to the file contents: just log and ignore

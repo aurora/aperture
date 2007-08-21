@@ -16,7 +16,7 @@ import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.ontoware.rdf2go.vocabulary.XSD;
 import org.semanticdesktop.aperture.util.ModelUtil;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
+import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 /**
  * A UrlPattern implementation using a substring test evaluation strategy.
@@ -55,7 +55,7 @@ public class SubstringPattern extends UrlPattern {
 	public Collection<Statement> getStatements(Model model, Resource subject) {
 		ArrayList<Statement> result = new ArrayList<Statement>();
 
-		result.add(ModelUtil.createStatement(model, subject, RDF.type, DATASOURCE_GEN.SubstringPattern));
+		result.add(ModelUtil.createStatement(model, subject, RDF.type, DATASOURCE.SubstringPattern));
         
 		try {
             result.add(ModelUtil.createStatement(model, subject, RDF.value, ModelUtil.createLiteral(model,
@@ -67,7 +67,7 @@ public class SubstringPattern extends UrlPattern {
         }
 
         
-		result.add(ModelUtil.createStatement(model, subject, DATASOURCE_GEN.condition, condition.toNode()));
+		result.add(ModelUtil.createStatement(model, subject, DATASOURCE.condition, condition.toNode()));
 
 		return result;
 	}

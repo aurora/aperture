@@ -12,12 +12,13 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 
-import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.node.Literal;
+import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.util.UriUtil;
+import org.semanticdesktop.aperture.vocabulary.NCO;
 
 /**
  * Utility methods for JavaMail.
@@ -27,6 +28,9 @@ public class MailUtil {
     /**
      * Returns the steroetypical date of a Message. This is equal to the sent date or, if not available, the
      * received date or, if not available, the retrieval date (i.e., "new Date()").
+     * @param message the message we want to get the date for
+     * @return the stereotypical date of a message
+     * @throws MessagingException
      */
     public static Date getDate(Message message) throws MessagingException {
         Date result = message.getSentDate();
@@ -50,8 +54,7 @@ public class MailUtil {
      * @param metadata The RDFContainer that will receive the RDF statements and whose described URI is
      *            expected to represent the mail resource.
      */
-    public static void addAddressMetadata(InternetAddress address, URI predicate, RDFContainer metadata)
-            throws ModelException {
+    public static void addAddressMetadata(InternetAddress address, URI predicate, RDFContainer metadata) {
         // fetch the name
         String name = address.getPersonal();
         if (name != null) {
@@ -67,21 +70,24 @@ public class MailUtil {
         // proceed when at least one has a reasonable value
         if (hasRealValue(name) || hasRealValue(emailAddress)) {
             // create a URI for this address
-            URI person = metadata.getValueFactory().createURI(getPersonURI(emailAddress, name));
+            URI person = metadata.getModel().createURI(getPersonURI(emailAddress, name));
 
             // connect the person resource to the mail resource
             metadata.add(predicate, person);
-            metadata.add(metadata.getValueFactory().createStatement(person, RDF.type, DATA.Agent));
+            metadata.getModel().addStatement(person, RDF.type, NCO.Contact);
 
             // add name and address details
             if (hasRealValue(name)) {
-                Literal literal = metadata.getValueFactory().createLiteral(name);
-                metadata.add(metadata.getValueFactory().createStatement(person, DATA.name, literal));
+                Literal literal = metadata.getModel().createPlainLiteral(name);
+                metadata.getModel().addStatement(person, NCO.fullname, literal);
             }
 
             if (hasRealValue(emailAddress)) {
-                Literal literal = metadata.getValueFactory().createLiteral(emailAddress);
-                metadata.add(metadata.getValueFactory().createStatement(person, DATA.emailAddress, literal));
+                Literal literal = metadata.getModel().createPlainLiteral(emailAddress);
+                Resource emailResource = UriUtil.generateRandomResource(metadata.getModel());
+                metadata.getModel().addStatement(person, NCO.hasEmailAddress, emailResource);
+                metadata.getModel().addStatement(emailResource, RDF.type, NCO.EmailAddress);
+                metadata.getModel().addStatement(emailResource, NCO.emailAddress, literal);
             }
         }
     }

@@ -1,0 +1,261 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+	<!ENTITY selectors SYSTEM "selectors.xml">
+]>
+
+<!--
+ANT Build Script for compiling, distributing and testing
+the Aperture data extraction framework.
+
+You will need Apache ANT to execute this script, please get
+your copy of ANT at http://ant.apache.org/
+-->
+
+<project name="aperture" basedir="." default="updatevocabularies">
+
+    <!-- define properties and paths -->
+    <target name="init"
+            description="initialize variables used in all other targets">
+
+        <!-- input dirs -->
+        <property name="src.dir" value="${basedir}/src" />
+        <property name="src.java.dir" value="${src.dir}/java" />
+        <property name="src.java.mainpackage.dir"
+                  value="${src.java.dir}/org/semanticdesktop/aperture" />
+        <property name="src.java.mainpackage"
+                  value="org.semanticdesktop.aperture" />
+
+        <property name="bin.dir" value="${basedir}/bin" />
+        <property name="lib.dir" value="${basedir}/lib" />
+        <property name="doc.dir" value="${basedir}/doc" />
+        <property name="doc.ontologies.dir" value="${doc.dir}/ontology" />
+
+        <!-- build dirs -->
+        <property name="build.dir" value="${basedir}/build" />
+        <property name="classes.java.dir" value="${build.dir}/classes" />
+
+        <!-- compilation flags -->
+        <property name="compile.debug" value="true" />
+        <property name="compile.debuglevel" value="source,lines,var" />
+        <property name="compile.deprecation" value="false" />
+        <property name="compile.optimize" value="true" />
+        <property name="java.source.version" value="1.5" />
+        <property name="java.target.version" value="1.5" />
+
+        <!-- main compilation classpath -->
+        <path id="classpath">
+            <fileset dir="${lib.dir}">
+                <include name="*.jar" />
+            </fileset>
+        </path>
+
+        <!-- pattern to define resource files -->
+        <patternset id="resources">
+            <include name="**" />
+            <exclude name="**/*.java" />
+            <exclude name="**/CVS, **/.svn/**" />
+            <exclude name="**/*.pst" />
+        </patternset>
+    </target>
+
+    <target name="clean"
+            depends="init"
+            description="delete generated classes and distribution results">
+        <delete includeemptydirs="true" dir="${build.dir}" />
+    </target>
+
+    <target name="compileutils"
+            depends="init"
+            description="Compiles the VocabularyWriter, necessary to generate the vocabulary classes">
+        <mkdir dir="${classes.java.dir}" />
+        <javac source="${java.source.version}"
+               target="${java.target.version}"
+               srcdir="${src.dir}"
+               includes="**/util/*.java,**/vocabulary/*.java"
+               excludes="**/extractor/**"
+               destdir="${classes.java.dir}"
+               classpathref="classpath"
+               debug="${compile.debug}"
+               debuglevel="${compile.debuglevel}"
+               deprecation="${compile.deprecation}"
+               optimize="${compile.optimize}" />
+        <!-- copy resources to classes dir -->
+        <copy todir="${classes.java.dir}">
+            <fileset dir="${src.java.dir}">
+                <patternset refid="resources" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="createdatasourcevocabulary"
+            description="generates a single vocabulary class">
+        <java classname="org.semanticdesktop.aperture.util.VocabularyWriter">
+            <arg value="-i" />
+            <arg value="${vocabulary.package.dir}/${vocabulary.input.file}" />
+            <arg value="-o" />
+            <arg value="${vocabulary.package.dir}" />
+            <arg value="-a" />
+            <arg value="${vocabulary.namespace}" />
+            <arg value="-n" />
+            <arg value="${vocabulary.classname}" />
+            <arg value="--package" />
+            <arg value="${vocabulary.package}" />
+            <classpath>
+                <path refid="classpath" />
+                <pathelement location="${classes.java.dir}" />
+            </classpath>
+        </java>
+        <java classname="org.semanticdesktop.aperture.util.DataSourceClassGenerator">
+            <arg value="-i" />
+            <arg value="${vocabulary.package.dir}/${vocabulary.input.file}" />
+            <arg value="-o" />
+            <arg value="${vocabulary.package.dir}" />
+            <arg value="-c" />
+            <arg value="${vocabulary.namespace}${vocabulary.ont.class}" />
+            <arg value="-n" />
+            <arg value="${vocabulary.classname}" />
+            <arg value="--package" />
+            <arg value="${vocabulary.package}" />
+            <classpath>
+                <path refid="classpath" />
+                <pathelement location="${classes.java.dir}" />
+            </classpath>
+        </java>
+    </target>
+
+    <target name="updatevocabularies"
+            depends="compileutils"
+            description="Copies the aperture ontologies from doc/ontology to util/ontology">
+        <antcall target="createdatasourcevocabulary">
+            <param name="vocabulary.input.file" value="flickrDataSource.ttl" />
+            <param name="vocabulary.package.dir"
+                   value="${src.java.mainpackage.dir}/websites/flickr" />
+            <param name="vocabulary.package"
+                   value="${src.java.mainpackage}.websites.flickr" />
+            <param name="vocabulary.namespace"
+                   value="http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#" />
+            <param name="vocabulary.ont.class" value="FlickrDataSource" />
+            <param name="vocabulary.classname" value="FLICKRDS" />
+        </antcall>
+        <antcall target="createdatasourcevocabulary">
+            <param name="vocabulary.input.file"
+                   value="bibsonomyDataSource.ttl" />
+            <param name="vocabulary.package.dir"
+                   value="${src.java.mainpackage.dir}/websites/bibsonomy" />
+            <param name="vocabulary.package"
+                   value="${src.java.mainpackage}.websites.bibsonomy" />
+            <param name="vocabulary.namespace"
+                   value="http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#" />
+            <param name="vocabulary.ont.class" value="BibsonomyDataSource" />
+            <param name="vocabulary.classname" value="BIBSONOMYDS" />
+        </antcall>
+        <antcall target="createdatasourcevocabulary">
+            <param name="vocabulary.input.file" value="iphotoDataSource.ttl" />
+            <param name="vocabulary.package.dir"
+                   value="${src.java.mainpackage.dir}/websites/iphoto" />
+            <param name="vocabulary.package"
+                   value="${src.java.mainpackage}.websites.iphoto" />
+            <param name="vocabulary.namespace"
+                   value="http://aperture.semanticdesktop.org/ontology/2007/08/11/iphotods#" />
+            <param name="vocabulary.ont.class"
+                   value="IPhotoKeywordDataSource" />
+            <param name="vocabulary.classname" value="IPHOTODS" />
+        </antcall>
+        <antcall target="createdatasourcevocabulary">
+            <param name="vocabulary.input.file"
+                   value="deliciousDataSource.ttl" />
+            <param name="vocabulary.package.dir"
+                   value="${src.java.mainpackage.dir}/websites/delicious" />
+            <param name="vocabulary.package"
+                   value="${src.java.mainpackage}.websites.delicious" />
+            <param name="vocabulary.namespace"
+                   value="http://aperture.semanticdesktop.org/ontology/2007/08/11/deliciousds#" />
+            <param name="vocabulary.ont.class" value="DeliciousDataSource" />
+            <param name="vocabulary.classname" value="DELICIOUSDS" />
+        </antcall>
+        <antcall target="createdatasourcevocabulary">
+            <param name="vocabulary.input.file"
+                   value="filesystemDataSource.ttl" />
+            <param name="vocabulary.package.dir"
+                   value="${src.java.mainpackage.dir}/datasource/filesystem" />
+            <param name="vocabulary.package"
+                   value="${src.java.mainpackage}.datasource.filesystem" />
+            <param name="vocabulary.namespace"
+                   value="http://aperture.semanticdesktop.org/ontology/2007/08/12/filesystemds#" />
+            <param name="vocabulary.ont.class" value="FileSystemDataSource" />
+            <param name="vocabulary.classname" value="FILESYSTEMDS" />
+        </antcall>
+        <antcall target="createdatasourcevocabulary">
+            <param name="vocabulary.input.file" value="icalDataSource.ttl" />
+            <param name="vocabulary.package.dir"
+                   value="${src.java.mainpackage.dir}/datasource/ical" />
+            <param name="vocabulary.package"
+                   value="${src.java.mainpackage}.datasource.ical" />
+            <param name="vocabulary.namespace"
+                   value="http://aperture.semanticdesktop.org/ontology/2007/08/12/icalds#" />
+            <param name="vocabulary.ont.class" value="IcalDataSource" />
+            <param name="vocabulary.classname" value="ICALDS" />
+        </antcall>
+        <antcall target="createdatasourcevocabulary">
+            <param name="vocabulary.input.file" value="imapDataSource.ttl" />
+            <param name="vocabulary.package.dir"
+                   value="${src.java.mainpackage.dir}/datasource/imap" />
+            <param name="vocabulary.package"
+                   value="${src.java.mainpackage}.datasource.imap" />
+            <param name="vocabulary.namespace"
+                   value="http://aperture.semanticdesktop.org/ontology/2007/08/12/imapds#" />
+            <param name="vocabulary.ont.class" value="ImapDataSource" />
+            <param name="vocabulary.classname" value="IMAPDS" />
+        </antcall>
+        <antcall target="createdatasourcevocabulary">
+            <param name="vocabulary.input.file" value="webDataSource.ttl" />
+            <param name="vocabulary.package.dir"
+                   value="${src.java.mainpackage.dir}/datasource/web" />
+            <param name="vocabulary.package"
+                   value="${src.java.mainpackage}.datasource.web" />
+            <param name="vocabulary.namespace"
+                   value="http://aperture.semanticdesktop.org/ontology/2007/08/12/webds#" />
+            <param name="vocabulary.ont.class" value="WebDataSource" />
+            <param name="vocabulary.classname" value="WEBDS" />
+        </antcall>
+        <antcall target="createdatasourcevocabulary">
+            <param name="vocabulary.input.file" value="outlookDataSource.ttl" />
+            <param name="vocabulary.package.dir"
+                   value="${src.java.mainpackage.dir}/outlook" />
+            <param name="vocabulary.package"
+                   value="${src.java.mainpackage}.outlook" />
+            <param name="vocabulary.namespace"
+                   value="http://aperture.semanticdesktop.org/ontology/2007/08/12/outlookds#" />
+            <param name="vocabulary.ont.class" value="OutlookDataSource" />
+            <param name="vocabulary.classname" value="OUTLOOKDS" />
+        </antcall>
+        <antcall target="createdatasourcevocabulary">
+            <param name="vocabulary.input.file"
+                   value="AppleAddressbookDataSource.ttl" />
+            <param name="vocabulary.package.dir"
+                   value="${src.java.mainpackage.dir}/addressbook/apple" />
+            <param name="vocabulary.package"
+                   value="${src.java.mainpackage}.addressbook.apple" />
+            <param name="vocabulary.namespace"
+                   value="http://aperture.semanticdesktop.org/ontology/2007/08/12/appleaddresbookds#" />
+            <param name="vocabulary.ont.class"
+                   value="AppleAddressbookDataSource" />
+            <param name="vocabulary.classname" value="APPLEADDRESSBOOKDS" />
+        </antcall>
+        <antcall target="createdatasourcevocabulary">
+            <param name="vocabulary.input.file"
+                   value="ThunderbirdAddressbookDataSource.ttl" />
+            <param name="vocabulary.package.dir"
+                   value="${src.java.mainpackage.dir}/addressbook/thunderbird" />
+            <param name="vocabulary.package"
+                   value="${src.java.mainpackage}.addressbook.thunderbird" />
+            <param name="vocabulary.namespace"
+                   value="http://aperture.semanticdesktop.org/ontology/2007/08/12/thunderbirdaddresbookds#" />
+            <param name="vocabulary.ont.class"
+                   value="ThunderbirdAddressbookDataSource" />
+            <param name="vocabulary.classname"
+                   value="THUNDERBIRDADDRESSBOOKDS" />
+        </antcall>
+    </target>
+</project>

@@ -19,7 +19,7 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class MetadataModel {
 
@@ -50,7 +50,7 @@ public class MetadataModel {
 			fullText = null;
 		}
 		else {
-			URI fullTextUri = new URIImpl(DATA.fullText.toString());
+			URI fullTextUri = new URIImpl(NIE.plainTextContent.toString());
 			RepositoryResult<Statement> statements = null; 
 			RepositoryConnection connection = null;
 			try {

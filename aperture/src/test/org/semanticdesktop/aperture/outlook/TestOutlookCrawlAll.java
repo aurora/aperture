@@ -39,7 +39,7 @@ import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
  */
 public class TestOutlookCrawlAll extends ApertureTestBase {
 
-    public static URI TESTID = URIImpl.createURIWithoutChecking("urn:test:outlookdatasource");
+    public static URI TESTID = new URIImpl("urn:test:outlookdatasource");
 
     public static String TESTROOT = "test:local:outlook:";
 
@@ -50,7 +50,7 @@ public class TestOutlookCrawlAll extends ApertureTestBase {
     protected void setUp() throws Exception {
         olds = new OutlookDataSource();
         RDFContainer config = createRDFContainer(TESTID);
-        ConfigurationUtil.setRootUrl(TESTROOT, config);
+        olds.setRootUrl(TESTROOT);
         olds.setConfiguration(config);
 
         // create a Crawler for this DataSource (hardcoded for now)

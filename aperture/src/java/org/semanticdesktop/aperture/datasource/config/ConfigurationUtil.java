@@ -22,11 +22,12 @@ import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
+import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.ModelUtil;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE_GEN;
 
 /**
  * ConfigurationUtil provides utility methods for setting and retrieving standard DataSource configuration
@@ -38,52 +39,64 @@ public class ConfigurationUtil {
     // prevent instantiation
     }
 
+    /**
+     * Sets the name of the datasource
+     * @deprecated use {@link DataSource#setName(String)} instead
+     * @param name
+     * @param configuration
+     */
     public static void setName(String name, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.name, name);
+        configuration.put(DATASOURCE.dataSourceName, name);
     }
-
+    
+    /**
+     * Returns the name of the datasource
+     * @deprecated use {@link DataSource#getName(String)} instead
+     * @param configuration
+     * @return
+     */
     public static String getName(RDFContainer configuration) {
-        return configuration.getString(DATASOURCE_GEN.name);
+        return configuration.getString(DATASOURCE.dataSourceName);
     }
-
+/*
     public static void setRootUrl(String url, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.rootUrl, url);
+        configuration.put(DATASOURCE.rootUrl, url);
     }
 
     public static String getRootUrl(RDFContainer configuration) {
-        return configuration.getString(DATASOURCE_GEN.rootUrl);
+        return configuration.getString(DATASOURCE.rootUrl);
     }
 
     public static void setRootFolder(String folder, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.rootFolder, folder);
+        configuration.put(DATASOURCE.rootFolder, folder);
     }
 
     public static String getRootFolder(RDFContainer configuration) {
-        return configuration.getString(DATASOURCE_GEN.rootFolder);
+        return configuration.getString(DATASOURCE.rootFolder);
     }
 
     public static void setHostname(String hostname, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.hostname, hostname);
+        configuration.put(DATASOURCE.hostname, hostname);
     }
 
     public static String getHostname(RDFContainer configuration) {
-        return configuration.getString(DATASOURCE_GEN.hostname);
+        return configuration.getString(DATASOURCE.hostname);
     }
 
     public static void setPort(int port, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.port, port);
+        configuration.put(DATASOURCE.port, port);
     }
 
     public static Integer getPort(RDFContainer configuration) {
-        return configuration.getInteger(DATASOURCE_GEN.port);
+        return configuration.getInteger(DATASOURCE.port);
     }
 
     public static void setBasepath(String basepath, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.basepath, basepath);
+        configuration.put(DATASOURCE.basepath, basepath);
     }
 
     public static String getBasepath(RDFContainer configuration) {
-        return configuration.getString(DATASOURCE_GEN.basepath);
+        return configuration.getString(DATASOURCE.basepath);
     }
 
     public static void setBasepaths(Collection basepaths, RDFContainer configuration) {
@@ -95,7 +108,7 @@ public class ConfigurationUtil {
         while (iterator.hasNext()) {
             String oldPath = (String) iterator.next();
             try {
-                configuration.remove(configuration.getValueFactory().createStatement(id, DATASOURCE_GEN.basepath,
+                configuration.remove(configuration.getValueFactory().createStatement(id, DATASOURCE.basepath,
                     configuration.getValueFactory().createLiteral(oldPath)));
             }
             catch (ModelException e) {
@@ -107,14 +120,14 @@ public class ConfigurationUtil {
         iterator = basepaths.iterator();
         while (iterator.hasNext()) {
             String path = (String) iterator.next();
-            configuration.add(DATASOURCE_GEN.basepath, path);
+            configuration.add(DATASOURCE.basepath, path);
         }
     }
 
     public static Collection getBasepaths(RDFContainer configuration) {
         ArrayList result = new ArrayList();
 
-        Collection values = configuration.getAll(DATASOURCE_GEN.basepath);
+        Collection values = configuration.getAll(DATASOURCE.basepath);
         Iterator iterator = values.iterator();
         while (iterator.hasNext()) {
             Node value = (Node) iterator.next();
@@ -124,95 +137,96 @@ public class ConfigurationUtil {
         }
 
         return result;
-    }
+    } */
 
     public static void setUsername(String username, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.username, username);
+        configuration.put(DATASOURCE.username, username);
     }
 
     public static String getUsername(RDFContainer configuration) {
-        return configuration.getString(DATASOURCE_GEN.username);
+        return configuration.getString(DATASOURCE.username);
     }
-
+   
     public static void setPassword(String password, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.password, password);
+        configuration.put(DATASOURCE.password, password);
     }
 
     public static String getPassword(RDFContainer configuration) {
-        return configuration.getString(DATASOURCE_GEN.password);
+        return configuration.getString(DATASOURCE.password);
     }
-
+    
+    /*
     public static void setMaximumDepth(int maximumDepth, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.maximumDepth, maximumDepth);
+        configuration.put(DATASOURCE.maximumDepth, maximumDepth);
     }
 
     public static Integer getMaximumDepth(RDFContainer configuration) {
-        return configuration.getInteger(DATASOURCE_GEN.maximumDepth);
+        return configuration.getInteger(DATASOURCE.maximumDepth);
     }
 
     public static void setMaximumByteSize(long maximumSize, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.maximumSize, maximumSize);
+        configuration.put(DATASOURCE.maximumSize, maximumSize);
     }
 
     public static Long getMaximumByteSize(RDFContainer configuration) {
-        return configuration.getLong(DATASOURCE_GEN.maximumSize);
+        return configuration.getLong(DATASOURCE.maximumSize);
     }
 
     public static void setIncludeHiddenResources(boolean value, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.includeHiddenResources, value);
+        configuration.put(DATASOURCE.includeHiddenResources, value);
     }
 
     public static Boolean getIncludeHiddenResources(RDFContainer configuration) {
-        return configuration.getBoolean(DATASOURCE_GEN.includeHiddenResources);
+        return configuration.getBoolean(DATASOURCE.includeHiddenResources);
     }
 
     public static void setFollowSymbolicLinks(boolean value, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.followSymbolicLinks, value);
+        configuration.put(DATASOURCE.followSymbolicLinks, value);
     }
 
     public static Boolean getFollowSymbolicLinks(RDFContainer configuration) {
-        return configuration.getBoolean(DATASOURCE_GEN.followSymbolicLinks);
+        return configuration.getBoolean(DATASOURCE.followSymbolicLinks);
     }
 
     public static void setIncludeEmbeddedResources(boolean value, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.includeEmbeddedResources, value);
+        configuration.put(DATASOURCE.includeEmbeddedResources, value);
     }
 
     public static Boolean getIncludeEmbeddedResourceS(RDFContainer configuration) {
-        return configuration.getBoolean(DATASOURCE_GEN.includeEmbeddedResources);
+        return configuration.getBoolean(DATASOURCE.includeEmbeddedResources);
     }
 
     public static void setConnectionSecurity(String securityType, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.connectionSecurity, securityType);
+        configuration.put(DATASOURCE.connectionSecurity, securityType);
     }
 
     public static String getConnectionSecurity(RDFContainer configuration) {
-        return configuration.getString(DATASOURCE_GEN.connectionSecurity);
+        return configuration.getString(DATASOURCE.connectionSecurity);
     }
 
     public static void setSSLFileName(String sslfilename, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.sslFileName, sslfilename);
+        configuration.put(DATASOURCE.sslFileName, sslfilename);
     }
 
     public static String getSSLFileName(RDFContainer configuration) {
-        return configuration.getString(DATASOURCE_GEN.sslFileName);
+        return configuration.getString(DATASOURCE.sslFileName);
     }
 
     public static void setSSLPassword(String sslpword, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.sslFilePassword, sslpword);
+        configuration.put(DATASOURCE.sslFilePassword, sslpword);
     }
 
     public static String getSSLPassword(RDFContainer configuration) {
-        return configuration.getString(DATASOURCE_GEN.sslFilePassword);
+        return configuration.getString(DATASOURCE.sslFilePassword);
     }
 
     public static Boolean getIncludeInbox(RDFContainer configuration) {
-        return configuration.getBoolean(DATASOURCE_GEN.includeInbox);
+        return configuration.getBoolean(DATASOURCE.includeInbox);
     }
 
     public static void setIncludeInbox(boolean value, RDFContainer configuration) {
-        configuration.put(DATASOURCE_GEN.includeInbox, value);
-    }
+        configuration.put(DATASOURCE.includeInbox, value);
+    }/*
 
     /**
      * Stores the specified DomainBoundaries in the specified configuration. This method will overwrite a
@@ -230,9 +244,9 @@ public class ConfigurationUtil {
 
             // add statements reflecting the specified DomainBoundaries
             if (boundaries != null) {
-                addPatternStatements(id, boundaries.getIncludePatterns(), DATASOURCE_GEN.includePattern,
+                addPatternStatements(id, boundaries.getIncludePatterns(), DATASOURCE.includePattern,
                     model);
-                addPatternStatements(id, boundaries.getExcludePatterns(), DATASOURCE_GEN.excludePattern,
+                addPatternStatements(id, boundaries.getExcludePatterns(), DATASOURCE.excludePattern,
                     model);
             }
         }
@@ -338,8 +352,8 @@ public class ConfigurationUtil {
         Model model = (Model) configuration.getModel();
 
         // fetch all UrlPatterns
-        List includePatterns = getPatterns(id, DATASOURCE_GEN.includePattern, model);
-        List excludePatterns = getPatterns(id, DATASOURCE_GEN.excludePattern, model);
+        List includePatterns = getPatterns(id, DATASOURCE.includePattern, model);
+        List excludePatterns = getPatterns(id, DATASOURCE.excludePattern, model);
 
         // return the UrlPatterns as a DomainBoundaries instance
         return new DomainBoundaries(includePatterns, excludePatterns);
@@ -373,12 +387,12 @@ public class ConfigurationUtil {
                     String patternString = ((Literal) patternValue).getValue();
 
                     // create the appropriate UrlPattern
-                    if (DATASOURCE_GEN.RegExpPattern.equals(typeValue)) {
+                    if (DATASOURCE.RegExpPattern.equals(typeValue)) {
                         result.add(new RegExpPattern(patternString));
                     }
-                    else if (DATASOURCE_GEN.SubstringPattern.equals(typeValue)) {
+                    else if (DATASOURCE.SubstringPattern.equals(typeValue)) {
                         // also fetch the condition statement
-                        Node conditionValue = getSingleValue(patternResource, DATASOURCE_GEN.condition, model);
+                        Node conditionValue = getSingleValue(patternResource, DATASOURCE.condition, model);
                         SubstringCondition condition = resolveCondition(conditionValue);
                         if (condition != null) {
                             result.add(new SubstringPattern(patternString, condition));
@@ -435,4 +449,13 @@ public class ConfigurationUtil {
             return null;
         }
     }
+    
+    // I KNOW THIS IS CRAPPY, THIS WILL BE REPLACED WHEN
+    // a. RDFREACTOR runtime will not be dependent on Jena
+    // b. they will implement a way to map dependencies between ontologies to
+    //    dependencies between normal java classes
+    
+    private static final URI IcalDataSource = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/icalds#IcalDataSource");
+    private static final URI ical_rootUrl = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/icalds#rootUrl");
+    
 }

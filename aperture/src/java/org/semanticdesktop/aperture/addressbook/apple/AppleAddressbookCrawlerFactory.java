@@ -17,7 +17,7 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 public class AppleAddressbookCrawlerFactory implements CrawlerFactory {
 
 	public Set getSupportedTypes() {
-		return Collections.singleton(DATASOURCE.AppleAddressbookDataSource);
+		return Collections.singleton(APPLEADDRESSBOOKDS.AppleAddressbookDataSource);
 	}
 
 	public Crawler getCrawler(DataSource dataSource) {

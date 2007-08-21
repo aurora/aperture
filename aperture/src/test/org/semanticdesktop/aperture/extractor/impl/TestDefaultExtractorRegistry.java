@@ -17,5 +17,6 @@ public class TestDefaultExtractorRegistry extends ApertureTestBase {
         assertEquals(1, registry.get("application/pdf").size());
         assertEquals(1, registry.get("application/vnd.oasis.opendocument.text").size());
         assertEquals(1, registry.get("application/vnd.sun.xml.writer").size());
+        assertEquals(1, registry.get("image/jpg").size());
     }
 }

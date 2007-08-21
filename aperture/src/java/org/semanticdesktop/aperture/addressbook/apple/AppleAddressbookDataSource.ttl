@@ -1,0 +1,18 @@
+@prefix fresnel:  <http://www.w3.org/2004/09/fresnel#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix sourceformat: <http://aperture.semanticdesktop.org/ontology/sourceformat#> .
+@prefix source: <http://aperture.semanticdesktop.org/ontology/2007/08/12/source#> .
+@prefix nie:     <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#> .
+@prefix : <http://aperture.semanticdesktop.org/ontology/2007/08/12/appleaddresbookds#> .
+
+:AppleAddressbookDataSource a rdfs:Class ;
+	rdfs:subClassOf nie:DataSource ;
+	rdfs:label "Apple Addresbook Data Source" ;
+	rdfs:comment "Describes an apple addresbook" .
+
+:AppleDataSourceLens rdf:type fresnel:Lens ;
+					fresnel:purpose fresnel:defaultLens ;
+					fresnel:classLensDomain :AppleAddressbookDataSource ;
+					fresnel:showProperties ( ) .

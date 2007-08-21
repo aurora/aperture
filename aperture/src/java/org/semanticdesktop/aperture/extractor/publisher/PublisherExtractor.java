@@ -11,12 +11,14 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.PoiUtil;
 import org.semanticdesktop.aperture.extractor.util.StringExtractor;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 /**
  * An Extractor implementation for MS Publisher documents. This implementation uses heuristic string
@@ -42,8 +44,9 @@ public class PublisherExtractor implements Extractor {
 		try {
 			String text = extractor.extract(stream).trim();
 			if (text.length() > 0) {
-				result.add(DATA.fullText, text);
+				result.add(NIE.plainTextContent, text);
 			}
+            result.add(RDF.type,NFO.TextDocument);
 		}
 		catch (IOException e) {
 			throw new ExtractorException(e);

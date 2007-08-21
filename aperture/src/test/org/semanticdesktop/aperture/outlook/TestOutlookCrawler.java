@@ -32,7 +32,7 @@ import org.semanticdesktop.aperture.datasource.config.SubstringPattern;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 /**
  * Crawl through the locally installed outlook.
@@ -47,7 +47,7 @@ public class TestOutlookCrawler extends ApertureTestBase {
 
     public static URI TESTID = new URIImpl("urn:test:outlookdatasource",false);
 
-    public static String TESTROOT = "test:local:outlook:";
+    public static String TESTROOT = "outlook:test:local";
 
     public static String TESTAPPOINTMENTURI = TESTROOT + OutlookResource.Appointment.ITEMTYPE
             + "/00000000B2CDC30BFF2EED4ABA9C61436A07FE3384002000";
@@ -62,7 +62,8 @@ public class TestOutlookCrawler extends ApertureTestBase {
     protected void setUp() throws Exception {
         olds = new OutlookDataSource();
         RDFContainer config = createRDFContainer(TESTID);
-        ConfigurationUtil.setRootUrl(TESTROOT, config);
+        olds.setRootUrl(TESTROOT);
+
         // exclude leo's normal outlook file
         DomainBoundaries bound = new DomainBoundaries();
         // 
@@ -133,7 +134,7 @@ public class TestOutlookCrawler extends ApertureTestBase {
         OutlookAccessor access = new OutlookAccessor();
         DataObject o = access.getDataObject(TESTAPPOINTMENTURI, olds, null, new RDFContainerFactoryImpl());
         RDFContainer rdf = o.getMetadata();
-        String s = rdf.getString(DATA.title);
+        String s = rdf.getString(NIE.title);
         assertEquals("title wrong", "Test Termin", s);
         o.dispose();
         rdf.getModel().close();
@@ -145,7 +146,7 @@ public class TestOutlookCrawler extends ApertureTestBase {
             DataObject o = access
                     .getDataObject(TESTAPPOINTMENTURI, olds, null, new RDFContainerFactoryImpl());
             RDFContainer rdf = o.getMetadata();
-            String s = rdf.getString(DATA.title);
+            String s = rdf.getString(NIE.title);
             assertEquals("title wrong", "Test Termin", s);
             o.dispose();
             rdf.getModel().close();
@@ -153,7 +154,7 @@ public class TestOutlookCrawler extends ApertureTestBase {
         {
             DataObject o = access.getDataObject(TESTTASKURI, olds, null, new RDFContainerFactoryImpl());
             RDFContainer rdf = o.getMetadata();
-            String s = rdf.getString(DATA.title);
+            String s = rdf.getString(NIE.title);
             assertEquals("title wrong", "Test this stuff now", s);
             o.dispose();
             rdf.getModel().close();
@@ -162,7 +163,7 @@ public class TestOutlookCrawler extends ApertureTestBase {
             DataObject o = access
                     .getDataObject(TESTAPPOINTMENTURI, olds, null, new RDFContainerFactoryImpl());
             RDFContainer rdf = o.getMetadata();
-            String s = rdf.getString(DATA.title);
+            String s = rdf.getString(NIE.title);
             assertEquals("title wrong", "Test Termin", s);
             o.dispose();
             rdf.getModel().close();

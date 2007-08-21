@@ -23,8 +23,8 @@ import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
-import org.semanticdesktop.aperture.vocabulary.DATA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,12 +162,17 @@ public class OutlookAccessor implements DataAccessor {
 
             // basic info
             metadata.add(RDF.type, resource.getType());
-            if (parent != null)
-                metadata.add(DATA.partOf, URIImpl.createURIWithoutChecking(parent.getUri()));
-            else 
+            if (parent != null) {
+                URI parentURI = new URIImpl(parent.getUri());
+				metadata.add(NIE.isPartOf, parentURI);
+                metadata.add(metadata.getModel().createStatement(parentURI, RDF.type, NIE.InformationElement));
+            }
+            else { 
+                // TODO get back here after introducing nfo:rootFolderOf data source property
                 // no parent, this is  the root
-                metadata.add(DATA.rootFolderOf, source.getID());
-
+                //metadata.add(DATA.rootFolderOf, source.getID());
+            }
+            
             // get the details
             resource.addData(metadata);
 

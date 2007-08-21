@@ -1,0 +1,70 @@
+@prefix fresnel:  <http://www.w3.org/2004/09/fresnel#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix sourceformat: <http://aperture.semanticdesktop.org/ontology/sourceformat#> .
+@prefix source: <http://aperture.semanticdesktop.org/ontology/2007/08/12/source#> .
+@prefix nie:     <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#> .
+@prefix : <http://aperture.semanticdesktop.org/ontology/2007/08/12/webds#> .
+
+:WebDataSource a rdfs:Class ;
+	rdfs:subClassOf nie:DataSource .
+
+:WebDataSourceLens rdf:type fresnel:Lens ;
+                   fresnel:purpose fresnel:defaultLens ;
+                   fresnel:classLensDomain :WebDataSource ;
+                   fresnel:showProperties ( :rootUrl 
+                                            :includeEmbeddedResources 
+                                            :maximumDepth
+                                            :maximumSize
+                                            source:includePattern
+                                            source:excludePattern ) .
+                                            
+:rootUrl a rdf:Property ;
+    rdfs:label "Root URL" ;
+    rdfs:comment "URL of the webpage were the crawling should begin" ;
+    rdfs:domain :WebDataSource ;
+    rdfs:range xsd:string .
+    
+:rootUrlFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+    	a sourceformat:TextFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :rootUrl .
+
+:includeEmbeddedResources a rdf:Property ;
+	rdfs:label "Include Embedded Resources" ;
+	rdfs:comment "Should the embedded resources (images, sounds, flash animations etc.) be included in the crawl results" ;
+	rdfs:domain :WebDataSource ;
+	rdfs:range xsd:boolean .
+	
+:includeEmbeddedResourcesFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+    	a sourceformat:CheckBoxWidget 
+    ] ;
+    fresnel:propertyFormatDomain :includeEmbeddedResources .
+    
+:maximumDepth a rdf:Property ;
+    rdfs:label "Maximum Depth" ;
+    rdfs:comment "How many levels of link references should the crawler cover." ;
+    rdfs:domain :WebDataSource ;
+    rdfs:range xsd:integer .
+    
+:maximumDepthFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+    	a sourceformat:IntegerFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :maximumDepth .
+    
+:maximumSize a rdf:Property ;
+    rdfs:label "Maximum Size" ;
+    rdfs:comment "Maximum size (in bytes) of resources reported by the crawler" ;
+    rdfs:domain :WebDataSource ;
+    rdfs:range xsd:long .
+    
+:maximumSizeFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+    	a sourceformat:IntegerFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :maximumSize .
+	                     

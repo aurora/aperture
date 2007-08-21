@@ -14,7 +14,8 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATA;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class HtmlExtractorTest extends ExtractorTestBase {
     
@@ -32,12 +33,13 @@ public class HtmlExtractorTest extends ExtractorTestBase {
         ExtractorFactory factory = new HtmlExtractorFactory();
         Extractor extractor = factory.get();
         RDFContainer container = extract(resourceName, extractor);
-        checkStatement(DATA.fullText, "text", container);
-        checkStatement(DATA.title, "document", container);
-        checkStatement(DATA.creator, "Chris", container);
-        checkStatement(DATA.keyword, "test", container);
-        checkStatement(DATA.keyword, "rdf", container);
-        checkStatement(DATA.description, "testing", container);
+        checkStatement(NIE.plainTextContent, "text", container);
+        checkStatement(NIE.title, "document", container);
+        checkSimpleContact(NCO.creator, "Chris", container);
+        checkStatement(NIE.keyword, "test", container);
+        checkStatement(NIE.keyword, "rdf", container);
+        checkStatement(NIE.description, "testing", container);
+        validate(container);
         container.dispose();
     }
 }
