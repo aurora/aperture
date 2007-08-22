@@ -9,15 +9,28 @@ package org.semanticdesktop.aperture.examples.handler;
 import java.io.File;
 import java.util.List;
 
+import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.crawler.Crawler;
+import org.semanticdesktop.aperture.vocabulary.GEO;
+import org.semanticdesktop.aperture.vocabulary.NCAL;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NEXIF;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NID3;
+import org.semanticdesktop.aperture.vocabulary.NIE;
+import org.semanticdesktop.aperture.vocabulary.NMO;
+import org.semanticdesktop.aperture.vocabulary.TAGGING;
 import org.semanticdesktop.nepomuk.nrl.validator.StandaloneValidator;
 import org.semanticdesktop.nepomuk.nrl.validator.ValidationMessage;
 import org.semanticdesktop.nepomuk.nrl.validator.ValidationReport;
 import org.semanticdesktop.nepomuk.nrl.validator.exception.StandaloneValidatorException;
+import org.semanticdesktop.nepomuk.nrl.validator.impl.NRLModelTester;
+import org.semanticdesktop.nepomuk.nrl.validator.impl.StandaloneValidatorImpl;
 
 /**
  * An an extension of the SimpleCrawlerHandler that validates each DataObject
@@ -39,9 +52,15 @@ public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
      *            useful for performance measurements.
      * @throws ModelException
      */
-    public ValidatingCrawlerHandler(boolean identifyingMimeType, boolean extractingContents, boolean verbose, File outputFile)
-            throws ModelException {
-        super(identifyingMimeType,extractingContents,verbose,outputFile);
+    public ValidatingCrawlerHandler(boolean identifyingMimeType, boolean extractingContents, boolean verbose,
+            File outputFile) throws ModelException {
+        super(identifyingMimeType, extractingContents, verbose, outputFile);
+        try {
+            initializeValidator();
+        }
+        catch (StandaloneValidatorException sve) {
+            throw new RuntimeException(sve);
+        }
     }
 
     /**
@@ -55,15 +74,15 @@ public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
         try {
             Model model = object.getMetadata().getModel();
             boolean wasOpen = model.isOpen();
-            
+
             if (!wasOpen) {
                 model.open();
             }
-            
+
             ValidationReport report = validator.validate(object.getMetadata().getModel());
             System.out.println("Validation report for: " + object.getID());
             printValidationReport(report);
-            
+
             if (!wasOpen) {
                 model.close();
             }
@@ -78,7 +97,7 @@ public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
         List<ValidationMessage> messages = report.getMessages();
         int i = 1;
         for (ValidationMessage msg : messages) {
-            System.out.print  ("" + i + ": ");
+            System.out.print("" + i + ": ");
             System.out.println(msg.getMessageType().toString() + " ");
             System.out.println("   " + msg.getMessageTitle() + " ");
             System.out.println("   " + msg.getMessage() + " ");
@@ -89,5 +108,55 @@ public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
             }
             i++;
         }
+    }
+
+    private void initializeValidator() throws StandaloneValidatorException {
+        validator = new StandaloneValidatorImpl();
+        Model tempModel = RDF2Go.getModelFactory().createModel();
+        tempModel.open();
+
+        NIE.getNIEOntology(tempModel);
+        validator.addOntology(tempModel, getOntUriFromNs(NIE.NS_NIE));
+        tempModel.removeAll();
+
+        NCO.getNCOOntology(tempModel);
+        validator.addOntology(tempModel, getOntUriFromNs(NCO.NS_NCO));
+        tempModel.removeAll();
+
+        NFO.getNFOOntology(tempModel);
+        validator.addOntology(tempModel, getOntUriFromNs(NFO.NS_NFO));
+        tempModel.removeAll();
+
+        NMO.getNMOOntology(tempModel);
+        validator.addOntology(tempModel, getOntUriFromNs(NMO.NS_NMO));
+        tempModel.removeAll();
+
+        NCAL.getNCALOntology(tempModel);
+        validator.addOntology(tempModel, getOntUriFromNs(NCAL.NS_NCAL));
+        tempModel.removeAll();
+
+        NEXIF.getNEXIFOntology(tempModel);
+        validator.addOntology(tempModel, getOntUriFromNs(NEXIF.NS_NEXIF));
+        tempModel.removeAll();
+
+        NID3.getNID3Ontology(tempModel);
+        validator.addOntology(tempModel, getOntUriFromNs(NID3.NS_NID3));
+        tempModel.removeAll();
+
+        TAGGING.getTAGGINGOntology(tempModel);
+        validator.addOntology(tempModel, getOntUriFromNs(TAGGING.NS_TAGGING));
+        tempModel.removeAll();
+
+        GEO.getGEOOntology(tempModel);
+        validator.addOntology(tempModel, getOntUriFromNs(TAGGING.NS_TAGGING));
+        tempModel.removeAll();
+
+        tempModel.close();
+
+        validator.setModelTester(new NRLModelTester());
+    }
+    
+    private String getOntUriFromNs(URI uri) {
+        return uri.toString().substring(0, uri.toString().length() - 1);
     }
 }

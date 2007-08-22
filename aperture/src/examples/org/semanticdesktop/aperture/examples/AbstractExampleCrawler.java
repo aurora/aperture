@@ -108,14 +108,35 @@ public abstract class AbstractExampleCrawler {
     public static String getCommonExplanationPart() {
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
-        writer.println("  --validate    - turns on validation, every DataObject is validated (conflicts with --performance)");
-        writer.println("  --performance - turns on performance measuring - (conflicts with --validate)");
-        writer.println("  -i            - turns on MIME type identification");
-        writer.println("  -x            - if specified - the program will try to extract the content of");
-        writer.println("                  all files encountered by the crawler (implies -i)");
-        writer.println("  -v            - verbose output");
-        writer.println("  -o path       - path to the output file (optional if --performance is specified)");
+        writer.println(getAlignedOption("--validate") + "turns on validation, every DataObject is validated");
+        writer.println(getAlignedOption(null) + "(conflicts with --performance)");
+        writer.println(getAlignedOption("--performance") + "turns on performance measuring");
+        writer.println(getAlignedOption("-i") + "turns on MIME type identification");
+        writer.println(getAlignedOption("-x") + "if specified - the program will try to extract the content of");
+        writer.println(getAlignedOption("-v") + "verbose output");
+        writer.println(getAlignedOption("-o path") + "path to the output file");
+        writer.println(getAlignedOption(null) + "optional if --performance is specified)");
         return stringWriter.toString();
+    }
+    
+    protected static String getAlignedOption(String option) {
+        StringBuilder builder = new StringBuilder(30);
+        int startPoint = 0;
+        if (option != null) {
+            builder.append("  " + option);
+            startPoint = option.length() + 2;
+        }
+        for (int i = startPoint; i <= 15; i++) {
+            builder.append(" ");
+        }
+        
+        if (option == null) {
+            builder.append("   ");
+        } else {
+            builder.append(" - ");
+        }
+        
+        return builder.toString();
     }
     
     public File getOutputFile() {

@@ -258,19 +258,19 @@ public class ExampleWebCrawler extends AbstractExampleCrawler {
         return "[" + DEPTH_OPTION + " depth] " +
             "[" + INCLUDE_OPTION + " includePattern] " +
             "[" + EXCLUDE_OPTION + " exludePattern] " +
-            "[" + INCLUDE_EMBEDDED_RESOURCES_OPTION + "]" +
+            "[" + INCLUDE_EMBEDDED_RESOURCES_OPTION + "] " +
             "startUrl";
     }
     
     @Override
     protected String getSpecificExplanationPart() {
         StringBuilder builder = new StringBuilder();
-        builder.append("   " + DEPTH_OPTION + " - crawl depth (optional)\n");
-        builder.append("   " + INCLUDE_OPTION + " - regular expression for URLs that are to be INCLUDED in the crawl\n" +
-        		       "                   (optional, can be specified multple times)\n");
-        builder.append("   " + EXCLUDE_OPTION + " - regular expression for URLs that are to be EXCLUDED from the crawl\n" +
-                       "                   (optional, can be specified multiple times)\n");
-        builder.append("   " + INCLUDE_EMBEDDED_RESOURCES_OPTION + " - if specified, the embedded resources will be included in the crawl");
+        builder.append("  " + DEPTH_OPTION + "        - crawl depth (optional)\n");
+        builder.append("  " + INCLUDE_OPTION + "      - regular expression for URLs that are to be INCLUDED in the crawl\n" +
+        		       "                  (optional, can be specified multple times)\n");
+        builder.append("  " + EXCLUDE_OPTION + "      - regular expression for URLs that are to be EXCLUDED from the crawl\n" +
+                       "                  (optional, can be specified multiple times)\n");
+        builder.append("  " + INCLUDE_EMBEDDED_RESOURCES_OPTION + " - if specified, the embedded resources will be included in the crawl");
         return builder.toString();
     }
 }
