@@ -21,7 +21,9 @@
                                             :crawlType ) .
                                             
 :crawlType a rdf:Property ;
-	rdfs:domain :BibsonomyDataSource ;
+	rdfs:label "Crawl type" ;
+	rdfs:comment "Type of crawl" ;
+	rdfs:domain :FlickrDataSource ;
 	rdfs:range :CrawlType .
 	
 :CrawlType a rdfs:Class .

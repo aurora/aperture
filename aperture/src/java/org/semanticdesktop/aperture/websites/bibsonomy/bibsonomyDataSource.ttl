@@ -20,6 +20,8 @@
                    				            :crawlType ) .
 
 :crawlType a rdf:Property ;
+	rdfs:label "Crawl type" ;
+	rdfs:comment "Type of crawl" ;
 	rdfs:domain :BibsonomyDataSource ;
 	rdfs:range :CrawlType .
 	

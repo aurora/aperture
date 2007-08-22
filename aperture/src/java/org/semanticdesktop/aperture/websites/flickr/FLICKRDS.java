@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:52 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Aug 22 19:06:51 CEST 2007
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#
  */
@@ -56,7 +56,9 @@ public class FLICKRDS {
     public static final URI ItemsOnlyCrawlType = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#ItemsOnlyCrawlType");
     /**
      * Type: Property <br/>
-     * Domain: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#BibsonomyDataSource  <br/>
+     * Label: Crawl type  <br/>
+     * Comment: Type of crawl  <br/>
+     * Domain: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#FlickrDataSource  <br/>
      * Range: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#CrawlType  <br/>
      */
     public static final URI crawlType = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#crawlType");

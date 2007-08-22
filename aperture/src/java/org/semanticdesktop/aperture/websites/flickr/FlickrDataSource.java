@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Wed Aug 22 12:39:58 CEST 2007
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Wed Aug 22 19:06:51 CEST 2007
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#FlickrDataSource
  */
@@ -113,9 +113,9 @@ public class FlickrDataSource extends DataSourceBase {
      }
 
     /**
-     * Returns the 
+     * Returns the Type of crawl
      * 
-     * @return the  or null if no value has been set
+     * @return the Type of crawl or null if no value has been set
      * @throws NullPointerException if no configuration has been set, use
      *             {@link #setConfiguration(RDFContainer)} before calling this method
      */
@@ -125,9 +125,9 @@ public class FlickrDataSource extends DataSourceBase {
 
 
     /**
-     * Sets the 
+     * Sets the Type of crawl
      * 
-     * @param crawlType , can be null in which case any previous setting will be removed
+     * @param crawlType Type of crawl, can be null in which case any previous setting will be removed
      * @throws NullPointerException if no configuration has been set, use
      *             {@link #setConfiguration(RDFContainer)} before calling this method
      */
