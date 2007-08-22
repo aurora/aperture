@@ -86,8 +86,7 @@ public class PerformanceMeasuringCrawlerHandler extends SimpleCrawlerHandler {
      *            useful for performance measurements.
      * @throws ModelException
      */
-    public PerformanceMeasuringCrawlerHandler(boolean identifyingMimeType, boolean extractingContents, boolean verbose, File outputFile)
-            throws ModelException {
+    public PerformanceMeasuringCrawlerHandler(boolean identifyingMimeType, boolean extractingContents, boolean verbose, File outputFile){
         super(identifyingMimeType,extractingContents,verbose,outputFile);
     }
 

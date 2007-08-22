@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Tue Aug 21 16:32:53 CEST 2007
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Wed Aug 22 12:39:58 CEST 2007
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#FlickrDataSource
  */
@@ -86,7 +86,10 @@ public class FlickrDataSource extends DataSourceBase {
          ItemsOnlyCrawlType;
 
          public static CrawlType fromUri(URI uri) {
-             if (uri.equals(FLICKRDS.ItemsAndTagsCrawlType)) {
+             if (uri == null) {
+                 return null;
+             }
+             else if (uri.equals(FLICKRDS.ItemsAndTagsCrawlType)) {
                  return ItemsAndTagsCrawlType;
              }
              else if (uri.equals(FLICKRDS.ItemsOnlyCrawlType)) {

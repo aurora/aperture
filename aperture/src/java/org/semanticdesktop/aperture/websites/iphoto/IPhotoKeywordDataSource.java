@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Tue Aug 21 16:32:55 CEST 2007
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Wed Aug 22 12:39:59 CEST 2007
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/iphoto/iphotoDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/11/iphotods#IPhotoKeywordDataSource
  */

@@ -73,7 +73,7 @@ public class BibsonomyCrawler extends AbstractTagCrawler {
             "PREFIX rss: <http://purl.org/rss/1.0/> \n" + 
             "PREFIX taxo: <" + TAXO_NS + "> \n" + 
             "PREFIX rdf: <" + RDF.RDF_NS + "> \n" + 
-            "SELECT ?i,?l,?t \n" + 
+            "SELECT ?i ?l ?t \n" + 
             "WHERE { ?i rss:title ?l . \n" + 
             "        ?i taxo:topics ?blank . \n" + 
             "        ?blank ?predicate ?t . \n" + 

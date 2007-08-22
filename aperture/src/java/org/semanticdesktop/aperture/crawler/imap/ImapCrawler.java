@@ -63,9 +63,8 @@ import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
-import org.semanticdesktop.aperture.datasource.imap.IMAPDS;
 import org.semanticdesktop.aperture.datasource.imap.ImapDataSource;
+import org.semanticdesktop.aperture.datasource.imap.ImapDataSource.ConnectionSecurity;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.security.trustmanager.standard.StandardTrustManager;
 import org.semanticdesktop.aperture.util.HttpClientUtil;
@@ -252,19 +251,19 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
 
         // determine the connection type
-        URI securityType = configuredDataSource.getConnectionSecurity().toUri();
-        if (securityType == null || IMAPDS.PLAIN.equals(securityType)) {
+        ConnectionSecurity securityType = configuredDataSource.getConnectionSecurity();
+        if (securityType == null || securityType.equals(ConnectionSecurity.PLAIN)) {
             connectionType = "imap";
         }
-        else if (IMAPDS.SSL.equals(securityType)
-                || IMAPDS.SSL_NO_CERT.equals(securityType)) {
+        else if (securityType.equals(ConnectionSecurity.SSL)
+                || securityType.equals(ConnectionSecurity.SSL_NO_CERT)) {
             connectionType = "imaps";
         }
         else {
             throw new IllegalArgumentException("Illegal connection security type: " + securityType);
         }
 
-        if (IMAPDS.SSL_NO_CERT.toString().equals(securityType)) {
+        if (securityType != null && securityType.equals(ConnectionSecurity.SSL_NO_CERT)) {
             ignoreSSLCertificates = true;
         }
 

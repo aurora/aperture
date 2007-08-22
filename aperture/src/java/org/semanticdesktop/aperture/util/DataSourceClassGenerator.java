@@ -356,8 +356,6 @@ public class DataSourceClassGenerator {
 
         Node rangeNode = ModelUtil.getPropertyValue(myModel, propertyUri, RDFS.range);
         URI range = ((rangeNode != null) ? rangeNode.asURI() : null);
-        System.out.println("property: " + propertyUri);
-        System.out.println("range:" + range);
         
         String rangeLocalName = getLocalName(range.toString());
 
@@ -386,7 +384,11 @@ public class DataSourceClassGenerator {
         if (iterator.hasNext()) {
             Map.Entry<String, String> entry = iterator.next();
             String comboBoxEntryLocalName = getLocalName(entry.getKey());
-            outputStream.println("             if (uri.equals(" + currentVocabularyClassName + "."
+            System.out.println("A ku ku ");
+            outputStream.println("             if (uri == null) {");
+            outputStream.println("                 return null;");
+            outputStream.println("             }");
+            outputStream.println("             else if (uri.equals(" + currentVocabularyClassName + "."
                     + comboBoxEntryLocalName + ")) {");
             outputStream.println("                 return " + comboBoxEntryLocalName + ";");
             outputStream.println("             }");

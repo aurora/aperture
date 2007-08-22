@@ -52,8 +52,7 @@ public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
      *            useful for performance measurements.
      * @throws ModelException
      */
-    public ValidatingCrawlerHandler(boolean identifyingMimeType, boolean extractingContents, boolean verbose,
-            File outputFile) throws ModelException {
+    public ValidatingCrawlerHandler(boolean identifyingMimeType, boolean extractingContents, boolean verbose, File outputFile) {
         super(identifyingMimeType, extractingContents, verbose, outputFile);
         try {
             initializeValidator();

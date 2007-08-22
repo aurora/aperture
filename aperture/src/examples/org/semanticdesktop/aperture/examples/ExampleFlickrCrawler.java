@@ -1,6 +1,8 @@
 package org.semanticdesktop.aperture.examples;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,16 +39,30 @@ public class ExampleFlickrCrawler extends AbstractExampleCrawler {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public void setUserName(String user) {
+	public void setUsername(String user) {
 		this.username = user;
+	}
+	
+	public String getUsername() {
+	    return username;
 	}
 	
 	
 	public static void main(String[] args) throws Exception {
         // create a new ExampleWebCrawler instance
 		ExampleFlickrCrawler crawler = new ExampleFlickrCrawler();
-		crawler.setUserName("gromgull");
+		List<String> remainingOptions = crawler.processCommonOptions(args);
 
+		Iterator<String> iterator = remainingOptions.iterator();
+		while (iterator.hasNext()) {
+		    String arg = iterator.next();
+		    if (crawler.getUsername() == null) {
+		        crawler.setUsername(arg);
+		    } else {
+		        crawler.exitWithUsageMessage();
+		    }
+		}
+		
         // start crawling and exit afterwards
         crawler.crawl();
     }
@@ -76,11 +92,11 @@ public class ExampleFlickrCrawler extends AbstractExampleCrawler {
 
     @Override
     protected String getSpecificExplanationPart() {
-        return "username";
+        return "  username     - your Flickr username";
     }
 
     @Override
     protected String getSpecificSyntaxPart() {
-        return "    username - your Flickr username";
+        return "username";
     }
 }

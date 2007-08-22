@@ -70,9 +70,10 @@ public class ExampleBibsonomyCrawler extends AbstractExampleCrawler {
         // create the DataSource
         BibsonomyDataSource source = new BibsonomyDataSource();
         //set the Bibsonomy Username
+        source.setConfiguration(configuration);
         source.setUsername(username);
         source.setCrawlType(BibsonomyDataSource.CrawlType.ItemsAndTagsCrawlType);
-        source.setConfiguration(configuration);
+        
         
         // setup a crawler that can handle this type of DataSource
         BibsonomyCrawler crawler = new BibsonomyCrawler(source);

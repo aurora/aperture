@@ -49,8 +49,8 @@ public abstract class AbstractExampleCrawler {
         System.err.println("This program accepts following arguments:");
         System.err.println("  " + getCommonSyntaxPart() + " " + getSpecificSyntaxPart());
         System.err.println("Explanation:");
-        System.err.println(getCommonExplanationPart());
-        System.err.println(getSpecificExplanationPart());
+        System.err.print(getCommonExplanationPart());
+        System.err.print(getSpecificExplanationPart());
         System.exit(-1);
     }
     
@@ -102,7 +102,7 @@ public abstract class AbstractExampleCrawler {
     }
     
     public static String getCommonSyntaxPart() {
-        return "[--validate] [--performance] [-i] [-x] [-v] -o <output-file-path> ";
+        return "[--validate] [--performance] [-i] [-x] [-v] -o <output-file-path>";
     }
     
     public static String getCommonExplanationPart() {

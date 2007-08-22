@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Tue Aug 21 16:49:41 CEST 2007
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Wed Aug 22 12:40:02 CEST 2007
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/imap/imapDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/12/imapds#ImapDataSource
  */
@@ -252,7 +252,10 @@ public class ImapDataSource extends DataSourceBase {
          SSL_NO_CERT;
 
          public static ConnectionSecurity fromUri(URI uri) {
-             if (uri.equals(IMAPDS.PLAIN)) {
+             if (uri == null) {
+                 return null;
+             }
+             else if (uri.equals(IMAPDS.PLAIN)) {
                  return PLAIN;
              }
              else if (uri.equals(IMAPDS.SSL)) {

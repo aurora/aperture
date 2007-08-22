@@ -59,7 +59,7 @@ your copy of ANT at http://ant.apache.org/
 
         <!-- dist dirs -->
         <property name="dist.dir" value="${build.dir}/dist" />
-        <property name="dist.lib.dir" value="${dist.dir}/plainjars" />
+        <property name="dist.plainjars.dir" value="${dist.dir}/plainjars" />
         <property name="dist.bundle.dir" value="${dist.dir}/osgibundles" />
         <property name="javadoc.dir" value="${dist.dir}/api" />
 
@@ -300,8 +300,8 @@ your copy of ANT at http://ant.apache.org/
     <target name="jar"
             depends="compile"
             description="create a jar file with the Aperture core classes">
-        <mkdir dir="${dist.lib.dir}" />
-        <jar destfile="${dist.lib.dir}/${project.jar}" compress="no">
+        <mkdir dir="${dist.plainjars.dir}" />
+        <jar destfile="${dist.plainjars.dir}/${project.jar}" compress="no">
             <fileset dir="${classes.java.dir}" />
         </jar>
     </target>
@@ -309,8 +309,8 @@ your copy of ANT at http://ant.apache.org/
     <target name="jar.examples"
             depends="compile.examples"
             description="create a jar file with the Aperture example classes">
-        <mkdir dir="${dist.lib.dir}" />
-        <jar destfile="${dist.lib.dir}/${project-examples.jar}" compress="no">
+        <mkdir dir="${dist.plainjars.dir}" />
+        <jar destfile="${dist.plainjars.dir}/${project-examples.jar}" compress="no">
             <fileset dir="${classes.examples.dir}" />
         </jar>
     </target>
@@ -318,8 +318,8 @@ your copy of ANT at http://ant.apache.org/
     <target name="jar.test"
             depends="compile.test"
             description="create a jar file with the Aperture unit test classes">
-        <mkdir dir="${dist.lib.dir}" />
-        <jar destfile="${dist.lib.dir}/${project-test.jar}" compress="no">
+        <mkdir dir="${dist.plainjars.dir}" />
+        <jar destfile="${dist.plainjars.dir}/${project-test.jar}" compress="no">
             <fileset dir="${classes.test.dir}" />
         </jar>
     </target>
@@ -413,8 +413,17 @@ your copy of ANT at http://ant.apache.org/
     <target name="build"
             depends="jar, jar.examples, jar.test"
             description="incrementally builds all Aperture jar files" />
-
-    <target name="cleanandbuild" depends="clean, build" />
+    
+    <target name="testbuild"
+    		depends="build"
+    		description="Builds plain jars and copies them to the lib folder">
+    	<copy todir="${lib.dir}">
+        	<fileset dir="${dist.plainjars.dir}">
+        	    <include name="${project.jar}"/>
+        	    <include name="${project-examples.jar}"/>
+    	    </fileset>
+        </copy>
+    </target>
 
     <target name="osgi" depends="jar.bundles" />
 
@@ -486,7 +495,7 @@ your copy of ANT at http://ant.apache.org/
         <!-- copy Aperture jar files -->
         <mkdir dir="${release.lib.dir}" />
         <copy todir="${release.lib.dir}">
-            <fileset dir="${dist.lib.dir}" />
+            <fileset dir="${dist.plainjars.dir}" />
         </copy>
 
         <!-- copy third party libs -->

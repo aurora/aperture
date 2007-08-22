@@ -22,6 +22,7 @@ import javax.swing.Timer;
 
 import org.ontoware.rdf2go.exception.ModelException;
 import org.semanticdesktop.aperture.examples.ExampleImapCrawler;
+import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 
 public class CrawlerWizard extends JPanel {
 
@@ -374,6 +375,7 @@ public class CrawlerWizard extends JPanel {
         crawler.setOutputFile(outputFile);
         crawler.setIdentifyingMimeType(identifyMimeType);
         crawler.setExtractingContents(extractContents);
+        crawler.setHandler(new SimpleCrawlerHandler(identifyMimeType,extractContents,false,outputFile));
 
         return true;
     }

@@ -80,8 +80,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
      *            useful for performance measurements.
      * @throws ModelException
      */
-    public SimpleCrawlerHandler(boolean identifyingMimeType, boolean extractingContents, boolean verbose, File outputFile)
-            throws ModelException {
+    public SimpleCrawlerHandler(boolean identifyingMimeType, boolean extractingContents, boolean verbose, File outputFile) {
         // create a ModelSet that will hold the RDF Models of all crawled files and folders
         ModelFactory factory = RDF2Go.getModelFactory();
         modelSet = factory.createModelSet();
@@ -316,7 +315,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         try {
             if (!noOutput) {
                 Writer writer = new BufferedWriter(new FileWriter(outputFile));
-                modelSet.writeTo(writer, Syntax.Trix);
+                modelSet.writeTo(writer, Syntax.RdfXml);
                 writer.close();
                 System.out.println("Saved RDF model to " + outputFile);
             } else {

@@ -238,11 +238,11 @@ public class ExampleImapCrawler extends AbstractExampleCrawler {
     @Override
     protected String getSpecificExplanationPart() {
         StringBuilder builder = new StringBuilder();
-        builder.append("  " + SERVER_OPTION + " - specifies the hostname of the server");
-        builder.append("  " + USERNAME_OPTION + " - the username");
-        builder.append("  " + PASSWORD_OPTION + " - the password");
-        builder.append("  " + FOLDER_OPTION + " - the folder on the server where the crawling should start");
-        return null;
+        builder.append("  " + SERVER_OPTION + " - specifies the hostname of the server\n");
+        builder.append("  " + USERNAME_OPTION + " - the username\n");
+        builder.append("  " + PASSWORD_OPTION + " - the password\n");
+        builder.append("  " + FOLDER_OPTION + " - the folder on the server where the crawling should start\n");
+        return builder.toString();
     }
 
     @Override
