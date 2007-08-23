@@ -29,8 +29,8 @@ import org.semanticdesktop.nepomuk.nrl.validator.StandaloneValidator;
 import org.semanticdesktop.nepomuk.nrl.validator.ValidationMessage;
 import org.semanticdesktop.nepomuk.nrl.validator.ValidationReport;
 import org.semanticdesktop.nepomuk.nrl.validator.exception.StandaloneValidatorException;
-import org.semanticdesktop.nepomuk.nrl.validator.impl.NRLModelTester;
 import org.semanticdesktop.nepomuk.nrl.validator.impl.StandaloneValidatorImpl;
+import org.semanticdesktop.nepomuk.nrl.validator.testers.NRLClosedWorldModelTester;
 
 /**
  * An an extension of the SimpleCrawlerHandler that validates each DataObject
@@ -152,7 +152,7 @@ public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
 
         tempModel.close();
 
-        validator.setModelTester(new NRLModelTester());
+        validator.setModelTester(new NRLClosedWorldModelTester());
     }
     
     private String getOntUriFromNs(URI uri) {

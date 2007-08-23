@@ -41,8 +41,8 @@ import org.semanticdesktop.nepomuk.nrl.validator.StandaloneValidator;
 import org.semanticdesktop.nepomuk.nrl.validator.ValidationMessage;
 import org.semanticdesktop.nepomuk.nrl.validator.ValidationReport;
 import org.semanticdesktop.nepomuk.nrl.validator.exception.StandaloneValidatorException;
-import org.semanticdesktop.nepomuk.nrl.validator.impl.NRLModelTester;
 import org.semanticdesktop.nepomuk.nrl.validator.impl.StandaloneValidatorImpl;
+import org.semanticdesktop.nepomuk.nrl.validator.testers.NRLClosedWorldModelTester;
 
 public class ApertureTestBase extends TestCase {
 
@@ -254,7 +254,7 @@ public class ApertureTestBase extends TestCase {
         
         tempModel.close();
         
-        validator.setModelTester(new NRLModelTester());
+        validator.setModelTester(new NRLClosedWorldModelTester());
     }
     
     private String getOntUriFromNs(URI uri) {
