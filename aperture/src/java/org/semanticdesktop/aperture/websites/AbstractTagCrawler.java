@@ -15,7 +15,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.ontoware.rdf2go.util.RDFTool;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.ontoware.rdf2go.vocabulary.RDFS;
 import org.semanticdesktop.aperture.accessor.AccessData;
@@ -31,6 +30,8 @@ import org.semanticdesktop.aperture.vocabulary.TAGGING;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import com.aetrion.flickr.FlickrException;
 
 
 /**
@@ -70,7 +71,7 @@ public abstract class AbstractTagCrawler extends CrawlerBase {
 					DataObject o=new DataObjectBase(turi,localSource,rdf);
 					rdf.add(RDF.type,TAGGING.Tag);
 					//rdf.add(RDFS.LABEL,turi.getLocalName());
-					rdf.add(RDFS.label,URLDecoder.decode(RDFTool.getShortName(turi.toString()),"utf-8"));
+					rdf.add(RDFS.label,URLDecoder.decode(getShortName(turi.toString()),"utf-8"));
 					handler.objectNew(this,o);
 				}
 				current.add(t);
@@ -144,5 +145,22 @@ public abstract class AbstractTagCrawler extends CrawlerBase {
 	 * @throws ParserConfigurationException
 	 */
 	protected abstract List<String> crawlTags(String username, String password) throws Exception;
+
+	/**
+     * The passed uri identifies something on the web, probably a namespace. To
+     * shorten this, parse the url for something like a localname. Returns the
+     * last string after a '#' or a '/'.
+     * 
+     * @param uri
+     *            a URI
+     * @return a short name for it, for display.
+     */
+    private String getShortName(String uri) {
+        if (uri.indexOf('#') > 0)
+            uri = uri.substring(uri.lastIndexOf('#') + 1);
+        else if (uri.indexOf('/') > 0)
+            uri = uri.substring(uri.lastIndexOf('/') + 1);
+        return uri;
+    }
 	
 }
