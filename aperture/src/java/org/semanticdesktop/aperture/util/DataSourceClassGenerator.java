@@ -306,22 +306,15 @@ public class DataSourceClassGenerator {
         outputStream.println("    /**");
         outputStream.println("     * Returns a collection of all values of " + comment);
         outputStream.println("     * ");
-        outputStream.println("     * @return a collection of all values of " + comment
-                + " the collection may be empty if no values have been set");
+        outputStream.println("     * @return a collection of all values of " + comment + " the collection may be empty if no values have been set");
         outputStream.println("     * @throws NullPointerException if no configuration has been set, use");
-        outputStream
-                .println("     *             {@link #setConfiguration(RDFContainer)} before calling this method");
+        outputStream.println("     *             {@link #setConfiguration(RDFContainer)} before calling this method");
         outputStream.println("     */");
-        outputStream.println("     public Collection<" + javaRangeType + "> getAll" + capitalizedLocalName
-                + "s() {");
-        outputStream
-                .println("          Collection<Node> collection = (Collection<Node>)getConfiguration().getAll("
-                        + currentVocabularyClassName + "." + localName + ");");
-        outputStream.println("          List<" + javaRangeType + "> result = new LinkedList<" + javaRangeType
-                + ">();");
+        outputStream.println("     public Collection<" + javaRangeType + "> getAll" + capitalizedLocalName + "s() {");
+        outputStream.println("          Collection<Node> collection = (Collection<Node>)getConfiguration().getAll(" + currentVocabularyClassName + "." + localName + ");");
+        outputStream.println("          List<" + javaRangeType + "> result = new LinkedList<" + javaRangeType + ">();");
         outputStream.println("          for (Node node : collection) {");
-        outputStream.println("              " + javaRangeType + " object = (" + javaRangeType
-                + ")ModelUtil.convertNode(node," + javaRangeType + ".class);");
+        outputStream.println("              " + javaRangeType + " object = (" + javaRangeType + ")ModelUtil.convertNode(node," + javaRangeType + ".class);");
         outputStream.println("              if (object != null) {");
         outputStream.println("                   result.add(object);");
         outputStream.println("              }");
@@ -333,20 +326,15 @@ public class DataSourceClassGenerator {
         outputStream.println("    /**");
         outputStream.println("     * Sets the " + comment);
         outputStream.println("     * ");
-        outputStream.println("     * @param " + localName + " " + comment
-                + ", can be null in which case any previous setting will be removed");
+        outputStream.println("     * @param " + localName + " " + comment + ", can be null in which case any previous setting will be removed");
         outputStream.println("     * @throws NullPointerException if no configuration has been set, use");
-        outputStream
-                .println("     *             {@link #setConfiguration(RDFContainer)} before calling this method");
+        outputStream.println("     *             {@link #setConfiguration(RDFContainer)} before calling this method");
         outputStream.println("     */");
-        outputStream.println("     public void set" + capitalizedLocalName + "(" + javaRangeType + " "
-                + localName + ") {");
+        outputStream.println("     public void set" + capitalizedLocalName + "(" + javaRangeType + " " + localName + ") {");
         outputStream.println("         if ( " + localName + " == null) {");
-        outputStream.println("             getConfiguration().remove(" + currentVocabularyClassName + "."
-                + localName + ");");
+        outputStream.println("             getConfiguration().remove(" + currentVocabularyClassName + "." + localName + ");");
         outputStream.println("         } else {");
-        outputStream.println("             getConfiguration().put(" + currentVocabularyClassName + "."
-                + localName + "," + localName + ");");
+        outputStream.println("             getConfiguration().put(" + currentVocabularyClassName + "." + localName + "," + localName + ");");
         outputStream.println("         }");
         outputStream.println("     }");
     }
