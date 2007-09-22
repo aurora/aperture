@@ -6,12 +6,13 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
 import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
+import org.semanticdesktop.aperture.util.ModelUtil;
 import java.util.Collection;
 import java.util.List;
 import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Wed Aug 22 12:40:02 CEST 2007
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Sat Sep 22 20:25:06 CEST 2007
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/imap/imapDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/12/imapds#ImapDataSource
  */
@@ -153,12 +154,31 @@ public class ImapDataSource extends DataSourceBase {
      * @param basepath The base path of the IMAP data source, can be null in which case any previous setting will be removed
      * @throws NullPointerException if no configuration has been set, use
      *             {@link #setConfiguration(RDFContainer)} before calling this method
+     * @throws MultipleValuesException if this property had more that one value before this method was called
      */
      public void setBasepath(String basepath) {
          if ( basepath == null) {
              getConfiguration().remove(IMAPDS.basepath);
          } else {
              getConfiguration().put(IMAPDS.basepath,basepath);
+         }
+     }
+
+    /**
+     * Sets all The base path of the IMAP data sources at once
+     * 
+     * @param basepath The base path of the IMAP data source, can be null in which case any previous setting will be removed
+     * @throws NullPointerException if no configuration has been set, use
+     *             {@link #setConfiguration(RDFContainer)} before calling this method
+     */
+     public void setAllBasepaths(List<String> basepath) {
+         if ( basepath == null) {
+             ModelUtil.removeAllPropertyValues(getConfiguration().getModel(),getConfiguration().getDescribedUri(),IMAPDS.basepath);
+         } else {
+             ModelUtil.removeAllPropertyValues(getConfiguration().getModel(),getConfiguration().getDescribedUri(),IMAPDS.basepath);
+             for(String value : basepath) {
+                 getConfiguration().add(IMAPDS.basepath,value);
+             }
          }
      }
 

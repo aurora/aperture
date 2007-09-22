@@ -9,9 +9,7 @@ package org.semanticdesktop.aperture.util;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
-import java.util.logging.Level;
 
-import org.ontoware.aifbcommons.collection.ClosableIterable;
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
@@ -253,6 +251,32 @@ public class ModelUtil {
             closeClosable(iterator);
         }
         return resultList;
+    }
+    
+    /**
+     * Removes all values of the given property for the given resource.
+     * @param model the model in which to look for values
+     * @param subject the resource
+     * @param predicate the property
+     */
+    public static void removeAllPropertyValues(Model model, Resource subject, URI predicate) {
+        ClosableIterator<? extends Statement> iterator = null;
+        List<Statement> statementsToRemove = new LinkedList<Statement>();
+        try {
+            iterator = model.findStatements(subject,predicate,Variable.ANY);
+            while (iterator.hasNext()) {
+                Statement statement = iterator.next();
+                statementsToRemove.add(statement);
+            }
+            iterator.close();
+            for (Statement statement : statementsToRemove) {
+                model.removeStatement(statement);
+            }
+        } catch (ModelRuntimeException me) {
+            log.warn("Couldn't remove all property values",me);
+        } finally {
+            closeClosable(iterator);
+        }
     }
     
     private static void closeClosable(ClosableIterator iterator) {

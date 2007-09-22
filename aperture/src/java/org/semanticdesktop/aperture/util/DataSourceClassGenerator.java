@@ -188,6 +188,7 @@ public class DataSourceClassGenerator {
             outputStream.println("import org.semanticdesktop.aperture.datasource.base.DataSourceBase;");
             outputStream.println("import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;");
             outputStream.println("import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;");
+            outputStream.println("import org.semanticdesktop.aperture.util.ModelUtil;");
             outputStream.println("import java.util.Collection;");
             outputStream.println("import java.util.List;");
             outputStream.println("import java.util.LinkedList;");
@@ -320,7 +321,7 @@ public class DataSourceClassGenerator {
         outputStream.println("              }");
         outputStream.println("          }");
         outputStream.println("          return result;");
-        outputStream.println("     }");
+        outputStream.println("     }");        
 
         outputStream.println();
         outputStream.println("    /**");
@@ -329,12 +330,32 @@ public class DataSourceClassGenerator {
         outputStream.println("     * @param " + localName + " " + comment + ", can be null in which case any previous setting will be removed");
         outputStream.println("     * @throws NullPointerException if no configuration has been set, use");
         outputStream.println("     *             {@link #setConfiguration(RDFContainer)} before calling this method");
+        outputStream.println("     * @throws MultipleValuesException if this property had more that one value before this method was called");
         outputStream.println("     */");
         outputStream.println("     public void set" + capitalizedLocalName + "(" + javaRangeType + " " + localName + ") {");
         outputStream.println("         if ( " + localName + " == null) {");
         outputStream.println("             getConfiguration().remove(" + currentVocabularyClassName + "." + localName + ");");
         outputStream.println("         } else {");
         outputStream.println("             getConfiguration().put(" + currentVocabularyClassName + "." + localName + "," + localName + ");");
+        outputStream.println("         }");
+        outputStream.println("     }");
+       
+        outputStream.println();
+        outputStream.println("    /**");
+        outputStream.println("     * Sets all " + comment + "s at once");
+        outputStream.println("     * ");
+        outputStream.println("     * @param " + localName + " " + comment + ", can be null in which case any previous setting will be removed");
+        outputStream.println("     * @throws NullPointerException if no configuration has been set, use");
+        outputStream.println("     *             {@link #setConfiguration(RDFContainer)} before calling this method");
+        outputStream.println("     */");
+        outputStream.println("     public void setAll" + capitalizedLocalName + "s(List<" + javaRangeType + "> " + localName + ") {");
+        outputStream.println("         if ( " + localName + " == null) {");
+        outputStream.println("             ModelUtil.removeAllPropertyValues(getConfiguration().getModel(),getConfiguration().getDescribedUri()," + currentVocabularyClassName + "." + localName + ");");
+        outputStream.println("         } else {");
+        outputStream.println("             ModelUtil.removeAllPropertyValues(getConfiguration().getModel(),getConfiguration().getDescribedUri()," + currentVocabularyClassName + "." + localName + ");");        
+        outputStream.println("             for(" + javaRangeType + " value : " + localName + ") {");
+        outputStream.println("                 getConfiguration().add(" + currentVocabularyClassName + "." + localName + ",value);");
+        outputStream.println("             }");
         outputStream.println("         }");
         outputStream.println("     }");
     }
