@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:33 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sat Sep 22 18:43:35 CEST 2007
  * input file: D:\workspace\aperture/doc/ontology/nie.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#
  */
@@ -279,6 +279,14 @@ public class NIE {
      * Range: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataObject  <br/>
      */
     public static final URI relatedTo = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/01/19/nie#relatedTo");
+    /**
+     * Type: Property <br/>
+     * Label: rootElementOf  <br/>
+     * Comment: DataObjects extracted from a single data source are organized into a containment tree. This property links the root of that tree with the datasource it has been extracted from  <br/>
+     * Domain: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#InformationElement  <br/>
+     * Range: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataSource  <br/>
+     */
+    public static final URI rootElementOf = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/01/19/nie#rootElementOf");
     /**
      * Type: Property <br/>
      * Label: subject  <br/>

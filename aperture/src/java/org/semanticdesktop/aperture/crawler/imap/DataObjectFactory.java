@@ -261,7 +261,7 @@ public class DataObjectFactory {
 
             if (message instanceof MimeMessage) {
                 MimeMessage mimeMessage = (MimeMessage) message;
-                addObjectIfNotNull(NMO.from, mimeMessage.getSender(), result);
+                addObjectIfNotNull(NMO.sender, mimeMessage.getSender(), result);
             }
         }
         else {
@@ -642,7 +642,7 @@ public class DataObjectFactory {
         copyDate(NIE.contentCreated, map, metadata);
 
         copyAddresses(NMO.from, map, metadata);
-        //copyAddresses(DATA.sender, map, metadata);
+        copyAddresses(NMO.sender, map, metadata);
         copyAddresses(NMO.to, map, metadata);
         copyAddresses(NMO.cc, map, metadata);
         copyAddresses(NMO.bcc, map, metadata);

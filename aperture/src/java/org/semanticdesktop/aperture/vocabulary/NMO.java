@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:34 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sat Sep 22 18:43:36 CEST 2007
  * input file: D:\workspace\aperture/doc/ontology/nmo.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#
  */
@@ -225,6 +225,14 @@ content defaults to the value specified by the 'mimeType' property.  <br/>
      * Range: http://www.semanticdesktop.org/ontologies/2007/03/22/nco#Contact  <br/>
      */
     public static final URI secondaryRecipient = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#secondaryRecipient");
+    /**
+     * Type: Property <br/>
+     * Label: sender  <br/>
+     * Comment: The person or agent submitting the message to the network, if other from the one given with the nmo:from property. Defined in RFC 822 sec. 4.4.2  <br/>
+     * Domain: http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#Message  <br/>
+     * Range: http://www.semanticdesktop.org/ontologies/2007/03/22/nco#Contact  <br/>
+     */
+    public static final URI sender = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#sender");
     /**
      * Type: Property <br/>
      * Label: sentDate  <br/>

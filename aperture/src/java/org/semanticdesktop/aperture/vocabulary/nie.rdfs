@@ -6,6 +6,7 @@
 	 <!ENTITY a 'http://protege.stanford.edu/system#'>
 	 <!ENTITY nie 'http://www.semanticdesktop.org/ontologies/2007/01/19/nie#'>
 	 <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
+	 <!ENTITY nao 'http://www.semanticdesktop.org/ontologies/2007/08/15/nao#'>
 	 <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema#'>
 ]>
 <rdf:RDF xmlns:terms="&terms;"
@@ -14,7 +15,8 @@
 	 xmlns:a="&a;"
 	 xmlns:dc="&dc;"
 	 xmlns:xsd="&xsd;"
-	 xmlns:rdfs="&rdfs;">
+	 xmlns:rdfs="&rdfs;"
+	 xmlns:nao="&nao;">
 <rdfs:Class rdf:about="&nie;DataObject"
 	 rdfs:label="DataObject">
 	<rdfs:comment>A unit of data that is created, annotated and processed on the user desktop. It represents a native structure the user works with. The usage of the term 'native' is important. It means that a DataObject can be directly mapped to a data structure maintained by a native application. This may be a file, a set of files or a part of a file. The granularity depends on the user. This class is not intended to be instantiated by itself. Use more specific subclasses.</rdfs:comment>
@@ -137,6 +139,7 @@
 	<rdfs:comment>An unambiguous reference to the InformationElement within a given context. Recommended best practice is to identify the resource by means of a string conforming to a formal identification system.</rdfs:comment>
 	<rdfs:subPropertyOf rdf:resource="&dc;identifier"/>
 	<rdfs:domain rdf:resource="&nie;InformationElement"/>
+	<rdfs:subPropertyOf rdf:resource="&nao;identifier"/>
 	<rdfs:range rdf:resource="&xsd;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nie;informationElementDate"
@@ -225,6 +228,12 @@
 	<rdfs:comment>A common superproperty for all relations between a piece of content and other pieces of data (which may be interpreted as other pieces of content).</rdfs:comment>
 	<rdfs:subPropertyOf rdf:resource="&dc;relation"/>
 	<rdfs:range rdf:resource="&nie;DataObject"/>
+	<rdfs:domain rdf:resource="&nie;InformationElement"/>
+</rdf:Property>
+<rdf:Property rdf:about="&nie;rootElementOf"
+	 rdfs:label="rootElementOf">
+	<rdfs:comment>DataObjects extracted from a single data source are organized into a containment tree. This property links the root of that tree with the datasource it has been extracted from</rdfs:comment>
+	<rdfs:range rdf:resource="&nie;DataSource"/>
 	<rdfs:domain rdf:resource="&nie;InformationElement"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nie;subject"
