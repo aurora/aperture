@@ -253,7 +253,7 @@ public class DataObjectFactory {
 
             // add message metadata
             Message message = (Message) mailPart;
-            addIfNotNull(NIE.subject, message.getSubject(), result);
+            addIfNotNull(NMO.messageSubject, message.getSubject(), result);
             addContactArrayIfNotNull(NMO.from, message.getFrom(), result);
             addContactArrayIfNotNull(NMO.to, message.getRecipients(RecipientType.TO), result);
             addContactArrayIfNotNull(NMO.cc, message.getRecipients(RecipientType.CC), result);
@@ -633,7 +633,7 @@ public class DataObjectFactory {
         copyString(NIE.characterSet, map, metadata);
         copyString(NIE.mimeType, map, metadata);
         copyString(NMO.contentMimeType, map, metadata);
-        copyString(NIE.subject, map, metadata);
+        copyString(NMO.messageSubject, map, metadata);
         //copyString(DATA.name, map, metadata);
 
         copyInt(NIE.byteSize, map, metadata);

@@ -26,7 +26,7 @@ import org.semanticdesktop.aperture.vocabulary.NCO;
 public class MailUtil {
 
     /**
-     * Returns the steroetypical date of a Message. This is equal to the sent date or, if not available, the
+     * Returns the stereotypical date of a Message. This is equal to the sent date or, if not available, the
      * received date or, if not available, the retrieval date (i.e., "new Date()").
      * @param message the message we want to get the date for
      * @return the stereotypical date of a message
