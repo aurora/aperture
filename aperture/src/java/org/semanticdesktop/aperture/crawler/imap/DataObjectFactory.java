@@ -253,7 +253,7 @@ public class DataObjectFactory {
 
             // add message metadata
             Message message = (Message) mailPart;
-            addIfNotNull(NMO.messageSubject, message.getSubject(), result);
+            addObjectIfNotNull(NMO.messageSubject, message.getSubject(), result);
             addContactArrayIfNotNull(NMO.from, message.getFrom(), result);
             addContactArrayIfNotNull(NMO.to, message.getRecipients(RecipientType.TO), result);
             addContactArrayIfNotNull(NMO.cc, message.getRecipients(RecipientType.CC), result);
@@ -261,7 +261,7 @@ public class DataObjectFactory {
 
             if (message instanceof MimeMessage) {
                 MimeMessage mimeMessage = (MimeMessage) message;
-                addIfNotNull(NMO.from, mimeMessage.getSender(), result);
+                addObjectIfNotNull(NMO.from, mimeMessage.getSender(), result);
             }
         }
         else {
@@ -740,15 +740,7 @@ public class DataObjectFactory {
 
     private void addContactArrayIfNotNull(URI predicate, Address[] addresses, HashMap result) {
         if (addresses != null) {
-            for (Address address : addresses) {
-                addIfNotNull(predicate, address, result);
-            }
-        }
-    }
-    
-    private void addIfNotNull(URI predicate, Object value, HashMap map) {
-        if (value != null) {
-            map.put(predicate, value);
+            result.put(predicate, addresses);
         }
     }
 
@@ -817,5 +809,11 @@ public class DataObjectFactory {
     private String getHeader(Part mailPart, String headerName) throws MessagingException {
         String[] headerValues = mailPart.getHeader(headerName);
         return (headerValues != null && headerValues.length > 0) ? headerValues[0] : null;
+    }
+    
+    private void addObjectIfNotNull(URI predicate, Object value, HashMap map) {
+        if (value != null) {
+            map.put(predicate, value);
+        }
     }
 }
