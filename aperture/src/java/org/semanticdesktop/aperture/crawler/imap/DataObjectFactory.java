@@ -268,6 +268,7 @@ public class DataObjectFactory {
             // this is most likely an attachment: set the InputStream's mime type as the data object's
             // primary MIME type
             result.put(NIE.mimeType, mimeType);
+            result.put(RDF.type, NFO.Attachment);
         }
 
         // done!
@@ -634,7 +635,7 @@ public class DataObjectFactory {
         copyString(NIE.mimeType, map, metadata);
         copyString(NMO.contentMimeType, map, metadata);
         copyString(NMO.messageSubject, map, metadata);
-        //copyString(DATA.name, map, metadata);
+        copyString(NFO.fileName, map, metadata);
 
         copyInt(NIE.byteSize, map, metadata);
 
@@ -645,6 +646,8 @@ public class DataObjectFactory {
         copyAddresses(NMO.to, map, metadata);
         copyAddresses(NMO.cc, map, metadata);
         copyAddresses(NMO.bcc, map, metadata);
+        
+        copyUri(RDF.type, map, metadata);
 
         // repeat recursively on children
         ArrayList children = (ArrayList) map.get(CHILDREN_KEY);
@@ -680,6 +683,13 @@ public class DataObjectFactory {
         Date value = (Date) map.get(predicate);
         if (value != null) {
             metadata.add(predicate, value);
+        }
+    }
+    
+    private void copyUri(URI predicate, HashMap map, RDFContainer metadata) {
+        URI uri = (URI) map.get(predicate);
+        if (uri != null) {
+            metadata.add(predicate,uri);
         }
     }
 
