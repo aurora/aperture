@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.util;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -188,6 +189,38 @@ public class ModelUtil {
             closeClosable(iterator);
         }
         return null;
+    }
+    
+    /**
+     * Returns all resources that have a given property with the given value.
+     * @param model
+     * @param predicate
+     * @param object
+     * @return
+     */
+    public static Collection<Resource> getAllSubjectsWithProperty(
+        Model model,
+        URI predicate,
+        Node object) {
+        
+        if (model == null || predicate == null || object == null) {
+            throw new NullPointerException("All parameters of the " +
+                    "getSingleSubjectWithProperty method must be non-null");
+        }
+        
+        ClosableIterator<? extends Statement> iterator = null;
+        List<Resource> result = new LinkedList<Resource>();
+        try {
+            iterator = model
+                .findStatements(Variable.ANY, predicate, object);
+            while (iterator.hasNext()) {
+                Statement statement = iterator.next();
+                result.add(statement.getSubject());
+            }
+            return result;
+        } finally {
+            closeClosable(iterator);
+        }
     }
     
     /**

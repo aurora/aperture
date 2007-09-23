@@ -37,6 +37,7 @@ import org.semanticdesktop.aperture.vocabulary.NID3;
 import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.semanticdesktop.aperture.vocabulary.NMO;
 import org.semanticdesktop.aperture.vocabulary.TAGGING;
+import org.semanticdesktop.nepomuk.nrl.validator.ModelTester;
 import org.semanticdesktop.nepomuk.nrl.validator.StandaloneValidator;
 import org.semanticdesktop.nepomuk.nrl.validator.ValidationMessage;
 import org.semanticdesktop.nepomuk.nrl.validator.ValidationReport;
@@ -180,18 +181,43 @@ public class ApertureTestBase extends TestCase {
     }
     
     public void validate(RDFContainer container, boolean print) {
-        validate(container.getModel(), print);
+        validate(container.getModel(), print, null);
     }
 
     public void validate(Model model) {
-        validate(model,true);
+        validate(model,true, null);
     }
     
     public void validate(Model model, boolean print) {
+        validate(model,print,null);
+    }
+    
+    public void validate(Model model, boolean print, URI dataSourceUri) {
+        boolean removeFlag = false;
+        Statement statement = null;
+        if (dataSourceUri != null) {
+            statement = model.createStatement(dataSourceUri, RDF.type, NIE.DataSource);
+            if (model.contains(statement)) {
+                removeFlag = false;
+            } else {
+                model.addStatement(statement);
+                removeFlag = true;
+            }            
+        }
+        
+        validateWithTester(model,print,new NRLClosedWorldModelTester());
+        
+        if (removeFlag) {
+            model.removeStatement(statement);
+        }
+    }
+
+    private void validateWithTester(Model model, boolean print, ModelTester tester) {
         try {
             if (validator == null) {
                 initializeValidator();
             }
+            validator.setModelTester(tester);
             ValidationReport report = validator.validate(model);
             if ( !report.isValid() || (report.getMessages().size() > 0 && print)) {
                 printValidationReport(report);
@@ -199,6 +225,7 @@ public class ApertureTestBase extends TestCase {
             if (!report.isValid()) {
                 fail();
             } 
+            
         } catch (StandaloneValidatorException sve) {
             sve.printStackTrace();
             if (sve.getCause() != null) {
@@ -210,7 +237,7 @@ public class ApertureTestBase extends TestCase {
             fail();
         }
     }
-
+    
     private void initializeValidator() throws Exception {
         validator = new StandaloneValidatorImpl();        
         Model tempModel  = RDF2Go.getModelFactory().createModel();
@@ -253,8 +280,6 @@ public class ApertureTestBase extends TestCase {
         tempModel.removeAll();
         
         tempModel.close();
-        
-        validator.setModelTester(new NRLClosedWorldModelTester());
     }
     
     private String getOntUriFromNs(URI uri) {

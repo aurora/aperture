@@ -35,6 +35,7 @@ import org.semanticdesktop.aperture.util.FileUtil;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.ModelUtil;
 import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class TestFileSystemCrawler extends ApertureTestBase {
 
@@ -122,8 +123,7 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
         // model.writeTo(new PrintWriter(System.out),Syntax.Trix);
 
-        // TODO get back here after introducing rootFolderOf
-        //checkStatement(toURI(tmpDir), DATA.rootFolderOf, dataSource.getID(), model);
+        checkStatement(toURI(tmpDir), NIE.rootElementOf, dataSource.getID(), model);
 
         checkStatement(toURI(tmpFile1), NFO.fileName, ModelUtil.createLiteral(model, tmpFile1.getName()), model);
         checkStatement(toURI(tmpFile2), NFO.fileName, ModelUtil.createLiteral(model, tmpFile2.getName()), model);
@@ -137,7 +137,7 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
         // This should no be found as it is excluded by the domain boundaries
         assertFalse(ModelUtil.hasStatement(model, toURI(tmpFile4), NFO.fileName, null));
-        validate(model);
+        validate(model,true,configuration.getDescribedUri());
         model.close();
         configuration.getModel().close();
     }
@@ -181,8 +181,7 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
         // model.writeTo(new PrintWriter(System.out),Syntax.Trix);
 
-        // TODO get back here after introducing rootFolderOf
-        //checkStatement(toURI(tmpDir), DATA.rootFolderOf, dataSource.getID(), model);
+        checkStatement(toURI(tmpDir), NIE.rootElementOf, dataSource.getID(), model);
 
         checkStatement(toURI(tmpFile1), NFO.fileName, ModelUtil.createLiteral(model, tmpFile1.getName()), model);
         checkStatement(toURI(tmpFile2), NFO.fileName, ModelUtil.createLiteral(model, tmpFile2.getName()), model);
@@ -193,7 +192,7 @@ public class TestFileSystemCrawler extends ApertureTestBase {
         // containing Folder.
         assertFalse(ModelUtil.hasStatement(model, toURI(tmpFile3), NFO.fileName, null));
         assertFalse(ModelUtil.hasStatement(model, toURI(subDir), NFO.fileName, null));
-        validate(model);
+        validate(model,true,configuration.getDescribedUri());
         model.close();
         configuration.getModel().close();
     }

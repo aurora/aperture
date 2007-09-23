@@ -283,10 +283,9 @@ public class WebCrawler extends CrawlerBase {
                     // we have a new or changed object
                     else {
                         // if this is the root URI, add that metadata
-                        // TODO get back to it after introducing nfo:rootFolderOf property
-                        //if (depth == initialDepth) {
-                        //    dataObject.getMetadata().add(DATA.rootFolderOf, source.getID());
-                        //}
+                        if (depth == initialDepth) {
+                            dataObject.getMetadata().add(NIE.rootElementOf, source.getID());
+                        }
 
                         // As the URL may have lead to redirections, the ID of the resulting DataObject may be
                         // different. Make sure this URL is never scheduled or reported during this crawl.

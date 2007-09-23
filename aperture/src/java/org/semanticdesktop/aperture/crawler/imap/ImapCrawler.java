@@ -1138,11 +1138,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             }
         }
 
-        // TODO get back to it after introducing rootFolderOf
         // if this is a base folder then add some metadata
-        //if (baseFolders.contains(folder.getFullName())) {
-        //    metadata.add(DATA.rootFolderOf, dataSource.getID());
-        // }
+        if (baseFolders.contains(folder.getFullName())) {
+            metadata.add(NIE.rootElementOf, dataSource.getID());
+        }
 
         // create the resulting FolderDataObject instance
         return new FolderDataObjectBase(folderURI, dataSource, metadata);

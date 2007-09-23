@@ -21,6 +21,7 @@ import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 import org.semanticdesktop.aperture.util.OSUtils;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -262,10 +263,9 @@ public class FileSystemCrawler extends CrawlerBase {
             else {
 
                 // If this is the root folder, add that info to the metadata
-                // TODO get back to it after introducing rootFolder
-                //if (file.equals(root)) {
-                //    dataObject.getMetadata().add(DATA.rootFolderOf, source.getID());
-                //}
+                if (file.equals(root)) {
+                    dataObject.getMetadata().add(NIE.rootElementOf, source.getID());
+                }
 
                 // we scanned a new or changed object
                 if (knownObject) {

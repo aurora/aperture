@@ -168,9 +168,7 @@ public class OutlookAccessor implements DataAccessor {
                 metadata.add(metadata.getModel().createStatement(parentURI, RDF.type, NIE.InformationElement));
             }
             else { 
-                // TODO get back here after introducing nfo:rootFolderOf data source property
-                // no parent, this is  the root
-                //metadata.add(DATA.rootFolderOf, source.getID());
+                metadata.add(NIE.rootElementOf, source.getID());
             }
             
             // get the details
