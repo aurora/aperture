@@ -298,6 +298,12 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<extensions>url</extensions>
 </description>
 
+<description>
+	<mimeType>application/vnd.adobe.air-application-installer-package+zip</mimeType>
+	<extensions>air</extensions>
+	<parentType>application/zip</parentType>
+</description>
+
 <!-- ================== OpenOffice 1.x/StarOffice 6.x-7.x Types ================== -->
 
 <description>
@@ -454,6 +460,11 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<mimeType>application/x-mspublisher</mimeType>
 	<parentType>application/vnd.ms-office</parentType>
 	<extensions>pub</extensions>
+</description>
+
+<description>
+	<mimeType>application/x-slk</mimeType>
+	<extensions>slk,sylk</extensions>
 </description>
 
 <!-- ================== MS Office 2007/OpenXML/XPS Types ================== -->
@@ -732,6 +743,11 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<magicString>#!/usr/bin/tsh</magicString>
 </description>
 
+<description>
+	<mimeType>application/x-applescript</mimeType>
+	<extensions>scpt</extensions>
+</description>
+
 <!-- ================== Image Types ================== -->
 
 <description>
@@ -806,6 +822,12 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<extensions>tif,tiff</extensions>
 	<magicNumber encoding="hex">4d 4d 00 2a</magicNumber>
 	<magicNumber encoding="hex">49 49 2a 00</magicNumber>
+</description>
+
+<description>
+	<mimeType>image/dng</mimeType>
+	<extensions>dng</extensions>
+	<parentType>image/tiff</parentType>
 </description>
 
 <description>
@@ -1014,6 +1036,23 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<parentType>application/zip</parentType>
 </description>
 
+<description>
+	<mimeType>video/x-flv</mimeType>
+	<extensions>flv</extensions>
+	<magicNumber encoding="string">FLV</magicNumber>
+</description>
+
+<description>
+	<mimeType>audio/flac</mimeType>
+	<extensions>flac</extensions>
+	<magicNumber encoding="hex">66 4c 61 43 00 00 00 22</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/smil</mimeType>
+	<extensions>smi,smil</extensions>
+</description>
+
 <!-- ================== Play List Types ================== -->
 
 <description>
@@ -1023,9 +1062,39 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 </description>
 
 <description>
+	<mimeType>audio/x-b4s</mimeType>
+	<parentType>text/xml</parentType>
+	<extensions>b4s</extensions>
+</description>
+
+<description>
+	<mimeType>application/xspf+xml</mimeType>
+	<parentType>text/xml</parentType>
+	<extensions>xspf</extensions>
+</description>
+
+<description>
 	<mimeType>audio/x-scpls</mimeType>
 	<extensions>pls</extensions>
 	<magicNumber encoding="string">[playlist]</magicNumber>
+</description>
+
+<description>
+	<mimeType>audio/x-kpl</mimeType>
+	<extensions>kpl</extensions>
+	<magicNumber encoding="string">[Metadata] artist=</magicNumber>
+</description>
+
+<description>
+	<mimeType>audio/x-kapsule</mimeType>
+	<parentType>text/xml</parentType>
+	<extensions>p2p</extensions>
+</description>
+
+<description>
+	<mimeType>audio/x-magma</mimeType>
+	<extensions>magma</extensions>
+	<magicString>#MAGMA</magicString>
 </description>
 
 <description>
@@ -1093,6 +1162,12 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<mimeType>application/x-ms-wmz</mimeType>
 	<extensions>wmz</extensions>
 	<parentType>application/zip</parentType>
+</description>
+
+<description>
+	<mimeType>text/x-vcard</mimeType>
+	<extensions>vcf,vcard</extensions>
+	<magicString>BEGIN:VCARD</magicString>
 </description>
 
 </mimeTypes>
