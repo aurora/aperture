@@ -66,10 +66,8 @@ public class JpgHeaderExtractor {
 			this.metadata = JpegMetadataReader.readMetadata(jpegFile);
 			this.exifDirectory = this.metadata.getDirectory(ExifDirectory.class);
 		} catch (JpegProcessingException e) {
-			logger.error("error extracting metadata");
-			e.printStackTrace();
+			logger.warn("error extracting metadata",e);
 		}
-		
 	}
 	
 	/**

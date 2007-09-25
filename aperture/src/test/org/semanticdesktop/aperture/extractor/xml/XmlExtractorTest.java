@@ -31,5 +31,17 @@ public class XmlExtractorTest extends ExtractorTestBase {
         checkStatement(NIE.plainTextContent, "value", container);
         validate(container);
         container.dispose();
-    }        
+    }
+    
+    public void donttestNonExistentDtd() throws ExtractorException, IOException, ModelException {
+        // apply the extractor on an example file
+        ExtractorFactory factory = new XmlExtractorFactory();
+        Extractor extractor = factory.get();
+        RDFContainer container = extract(DOCS_PATH + "xml-nonexistent-dtd.xml", extractor);
+
+        // check the extraction results
+        checkStatement(NIE.plainTextContent, "This is an XML document", container);
+        validate(container);
+        container.dispose();
+    }
 }

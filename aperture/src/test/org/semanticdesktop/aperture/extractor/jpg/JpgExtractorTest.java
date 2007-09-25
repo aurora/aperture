@@ -17,21 +17,29 @@ import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.NEXIF;
 
+import com.drew.imaging.jpeg.JpegProcessingException;
+
 public class JpgExtractorTest extends ExtractorTestBase {
-    
+
     public void testExtraction() throws ExtractorException, IOException, ModelException {
-    // apply the extractor on an example file
-    ExtractorFactory factory = new JpgExtractorFactory();
-    Extractor extractor = factory.get();
-    RDFContainer container = extract(DOCS_PATH + "jpg-exif-img_9367.JPG", extractor);
+        // apply the extractor on an example file
+        ExtractorFactory factory = new JpgExtractorFactory();
+        Extractor extractor = factory.get();
+        RDFContainer container = extract(DOCS_PATH + "jpg-exif-img_9367.JPG", extractor);
 
-    // check the extraction results
-    checkStatement(NEXIF.width,"100",container);
-    checkStatement(NEXIF.height,"67",container);
-    checkStatement(NEXIF.flash,"16",container);
-    validate(container);
-    container.dispose();
-}        
+        // check the extraction results
+        checkStatement(NEXIF.width, "100", container);
+        checkStatement(NEXIF.height, "67", container);
+        checkStatement(NEXIF.flash, "16", container);
+        validate(container);
+        container.dispose();
+    }
 
+    public void testZeroLength() throws ExtractorException, IOException {
+        ExtractorFactory factory = new JpgExtractorFactory();
+        Extractor extractor = factory.get();
+        RDFContainer container = extract(DOCS_PATH + "jpg-exif-zerolength.jpg", extractor);
+        validate(container);
+        container.dispose();
+    }
 }
-
