@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.examples;
+package org.semanticdesktop.aperture.examples.tutorials;
 
 import java.io.File;
 
@@ -65,8 +65,9 @@ public class TutorialCrawlingExample {
         // start crawling
         crawler.crawl();
     }
+}
 
-private class TutorialCrawlerHandler extends CrawlerHandlerBase {
+class TutorialCrawlerHandler extends CrawlerHandlerBase {
 
     // our 'persistent' modelSet
     private ModelSet modelSet;
@@ -118,5 +119,4 @@ private class TutorialCrawlerHandler extends CrawlerHandlerBase {
     public void objectRemoved(Crawler crawler, URI uri) {
         modelSet.removeModel(uri);
     }
-}
 }
