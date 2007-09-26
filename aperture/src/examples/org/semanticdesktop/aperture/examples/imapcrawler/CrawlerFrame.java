@@ -159,7 +159,7 @@ public class CrawlerFrame extends JFrame {
 
 				// The trust manager will decide on which certificates are trusted and will store
 				// decisions taken on certificates. Permanently accepted certificates are stored in an
-				// imapcertificates file in the working dir.
+				// imap certificates file in the working dir.
 				StandardTrustManager trustManager = new StandardTrustManager(new File("imapcertificates"),
 						"@pertur3".toCharArray());
 

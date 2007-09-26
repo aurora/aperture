@@ -49,8 +49,18 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     // The main model set, that will contain all data 
     private ModelSet modelSet;
 
-    // number of objects which were crawled 
+    
+    ////////////////// OBSERVABLE PROPERTIES ///////////////////// 
     private int nrObjects;
+
+    private long startTime = 0L;
+
+    private long finishTime = 0L;
+
+    private String currentURL;
+
+    private ExitCode exitCode;
+    
 
     // the mime type identifier
     private MimeTypeIdentifier mimeTypeIdentifier;
@@ -114,6 +124,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
      */
     public void crawlStarted(Crawler crawler) {
         nrObjects = 0;
+        startTime = System.currentTimeMillis();
     }
 
     /**
@@ -123,6 +134,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
      * @param url the URI of the object
      */
     public void accessingObject(Crawler crawler, String url) {
+        this.currentURL = url;
         if (verbose) {
             System.out.println("Processing file " + nrObjects + ": " + url + "...");
         }
@@ -136,6 +148,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
      */
     public void objectNew(Crawler dataCrawler, DataObject object) {
         nrObjects++;
+        this.currentURL = object.getID().toString();
         if (nrObjects % 300 == 0)
             // call garbage collector from time to time
             System.gc();
@@ -216,6 +229,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     public void objectChanged(Crawler dataCrawler, DataObject object) {
         // as we do not use incremental crawling, this should not happen
         object.dispose();
+        this.currentURL = object.getID().toString();
         printUnexpectedEventWarning("changed");
     }
 
@@ -227,6 +241,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
      */
     public void objectNotModified(Crawler crawler, String url) {
         // as we do not use incremental crawling, this should not happen
+        this.currentURL = url;
         printUnexpectedEventWarning("unmodified");
     }
 
@@ -240,6 +255,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     public void objectRemoved(Crawler dataCrawler, String url) {
         // as we do not use incremental crawling, this should not happen
         printUnexpectedEventWarning("removed");
+        this.currentURL = url;
     }
 
     /**
@@ -305,10 +321,12 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     /**
      * This method gets called when the crawler finishes crawling a data source
      * @param crawler the crawler
-     * @param exitCode the exit code.
+     * @param code the exit code.
      */
-    public void crawlStopped(Crawler crawler, ExitCode exitCode) {
+    public void crawlStopped(Crawler crawler, ExitCode code) {
         printAndCloseModelSet();
+        this.finishTime = System.currentTimeMillis();
+        this.exitCode = code;
     }
     
     protected void printAndCloseModelSet() {
@@ -330,5 +348,45 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     
     protected ModelSet getModelSet() {
         return modelSet;
+    }
+
+    
+    /**
+     * @return Returns the startTime.
+     */
+    public long getStartTime() {
+        return startTime;
+    }
+
+    
+    /**
+     * @return Returns the finishTime.
+     */
+    public long getFinishTime() {
+        return finishTime;
+    }
+
+    
+    /**
+     * @return Returns the currentURL.
+     */
+    public String getCurrentURL() {
+        return currentURL;
+    }
+
+    
+    /**
+     * @return Returns the exitCode.
+     */
+    public ExitCode getExitCode() {
+        return exitCode;
+    }
+
+    
+    /**
+     * @return Returns the nrObjects.
+     */
+    public int getNrObjects() {
+        return nrObjects;
     }
 }

@@ -21,7 +21,7 @@ public abstract class AbstractExampleCrawler {
 
     private File outputFile;
     
-    private CrawlerHandler handler;
+    private SimpleCrawlerHandler handler;
     
     private boolean verbose;
     
@@ -151,7 +151,7 @@ public abstract class AbstractExampleCrawler {
     /**
      * @return Returns the handler.
      */
-    public CrawlerHandler getHandler() {
+    public SimpleCrawlerHandler getHandler() {
         return handler;
     }
 
@@ -159,7 +159,7 @@ public abstract class AbstractExampleCrawler {
     /**
      * @param handler The handler to set.
      */
-    public void setHandler(CrawlerHandler handler) {
+    public void setHandler(SimpleCrawlerHandler handler) {
         this.handler = handler;
     }
 

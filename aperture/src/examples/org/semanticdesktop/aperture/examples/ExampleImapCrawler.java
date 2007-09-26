@@ -65,20 +65,7 @@ public class ExampleImapCrawler extends AbstractExampleCrawler {
      */
     private boolean secureConnection = false;
 
-    // /////////////// Observable properties /////////////////
-
     private ImapCrawler crawler;
-
-    private int nrObjects = 0;
-
-    private long startTime = 0L;
-
-    private long finishTime = 0L;
-
-    private String currentURL;
-
-    private ExitCode exitCode;
-
 
     public String getFolder() {
         return folder;
@@ -101,23 +88,23 @@ public class ExampleImapCrawler extends AbstractExampleCrawler {
     }
 
     public String getCurrentURL() {
-        return currentURL;
+        return getHandler() != null ? getHandler().getCurrentURL() : null;
     }
 
     public ExitCode getExitCode() {
-        return exitCode;
+        return getHandler() != null ? getHandler().getExitCode() : null;
     }
 
     public int getNrObjects() {
-        return nrObjects;
+        return getHandler() != null ? getHandler().getNrObjects() : -1 ;
     }
 
     public long getStartTime() {
-        return startTime;
+        return getHandler() != null ? getHandler().getStartTime() : 0L ;
     }
 
     public long getFinishTime() {
-        return finishTime;
+        return getHandler() != null ? getHandler().getFinishTime() : 0L ;
     }
 
     public void setFolder(String folder) {
