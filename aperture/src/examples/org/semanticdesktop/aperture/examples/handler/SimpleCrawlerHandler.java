@@ -7,10 +7,11 @@
 package org.semanticdesktop.aperture.examples.handler;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
+import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Writer;
 import java.util.Set;
 
@@ -332,9 +333,9 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     protected void printAndCloseModelSet() {
         try {
             if (!noOutput) {
-                Writer writer = new BufferedWriter(new FileWriter(outputFile));
-                modelSet.writeTo(writer, Syntax.RdfXml);
-                writer.close();
+                OutputStream stream = new BufferedOutputStream(new FileOutputStream(outputFile));
+                modelSet.writeTo(stream, Syntax.RdfXml);
+                stream.close();
                 System.out.println("Saved RDF model to " + outputFile);
             } else {
                 System.out.println("Output discarded");
