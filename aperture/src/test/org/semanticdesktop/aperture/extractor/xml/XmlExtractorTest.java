@@ -33,11 +33,47 @@ public class XmlExtractorTest extends ExtractorTestBase {
         container.dispose();
     }
     
-    public void donttestNonExistentDtd() throws ExtractorException, IOException, ModelException {
+    public void testNonExistentDtd() throws ExtractorException, IOException, ModelException {
         // apply the extractor on an example file
         ExtractorFactory factory = new XmlExtractorFactory();
         Extractor extractor = factory.get();
         RDFContainer container = extract(DOCS_PATH + "xml-nonexistent-dtd.xml", extractor);
+
+        // check the extraction results
+        checkStatement(NIE.plainTextContent, "This is an XML document", container);
+        validate(container);
+        container.dispose();
+    }
+    
+    public void testNonExistentRemoteDtd() throws ExtractorException, IOException, ModelException {
+        // apply the extractor on an example file
+        ExtractorFactory factory = new XmlExtractorFactory();
+        Extractor extractor = factory.get();
+        RDFContainer container = extract(DOCS_PATH + "xml-nonexistent-remote-dtd.xml", extractor);
+
+        // check the extraction results
+        checkStatement(NIE.plainTextContent, "This is an XML document", container);
+        validate(container);
+        container.dispose();
+    }
+    
+    public void testNonExistentXsd() throws ExtractorException, IOException, ModelException {
+        // apply the extractor on an example file
+        ExtractorFactory factory = new XmlExtractorFactory();
+        Extractor extractor = factory.get();
+        RDFContainer container = extract(DOCS_PATH + "xml-nonexistent-xsd.xml", extractor);
+
+        // check the extraction results
+        checkStatement(NIE.plainTextContent, "This is an XML document", container);
+        validate(container);
+        container.dispose();
+    }
+    
+    public void testNonExistentRemoteXsd() throws ExtractorException, IOException, ModelException {
+        // apply the extractor on an example file
+        ExtractorFactory factory = new XmlExtractorFactory();
+        Extractor extractor = factory.get();
+        RDFContainer container = extract(DOCS_PATH + "xml-nonexistent-remote-xsd.xml", extractor);
 
         // check the extraction results
         checkStatement(NIE.plainTextContent, "This is an XML document", container);
