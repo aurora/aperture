@@ -105,9 +105,10 @@ public class XmlExtractor implements Extractor {
                 }
                 catch (SAXException se) {
                     // the FNFE is probably more worthy to report than the SAXException
+                    // Antoni: 2007-09-26, probably not, It is misguiding
                     Logger logger = LoggerFactory.getLogger(getClass());
-                    logger.error("FileNotFoundException while parsing document and unable "
-                            + "to disable loading of external resources for " + id.toString(), e);
+                    logger.error("FileNotFoundException while parsing document " + id.toString(), e);
+                    logger.error("While trying to reparse the file without loading external DTDs following error occured",se);
                 }
             }
 
