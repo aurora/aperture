@@ -20,6 +20,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
@@ -36,11 +37,15 @@ import org.semanticdesktop.aperture.util.UriUtil;
 import org.semanticdesktop.aperture.vocabulary.NCO;
 import org.semanticdesktop.aperture.vocabulary.NFO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
 /**
@@ -51,6 +56,8 @@ public class OpenDocumentExtractor implements Extractor {
 
 	// used to append to extracted text, to make it more readable
 	private static final String END_OF_LINE = System.getProperty("line.separator", "\n");
+	
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	// used to fool the parser, when it tries to load the system dtd.
 	// seems to work better than tricks such as providing a dummy EntityResolver, which is probably parser
@@ -59,6 +66,9 @@ public class OpenDocumentExtractor implements Extractor {
 	private static final String SYSTEM_ID =
 		ResourceUtil.getURL("org/semanticdesktop/aperture/extractor/opendocument/office.dtd",OpenDocumentExtractor.class).toString();
 
+	/**
+	 * @see {@link Extractor#extract(URI, InputStream, Charset, String, RDFContainer)}
+	 */
 	public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
 			throws ExtractorException {
 		byte[] contentBytes = null;
@@ -142,6 +152,7 @@ public class OpenDocumentExtractor implements Extractor {
 	private void extractMetadata(byte[] bytes, RDFContainer result) throws ExtractorException {
 		// create a DocumentBuilder instance
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+		docBuilderFactory.setNamespaceAware(true);
 		docBuilderFactory.setValidating(false);
 		docBuilderFactory.setExpandEntityReferences(false);
 		DocumentBuilder docBuilder;
@@ -174,78 +185,142 @@ public class OpenDocumentExtractor implements Extractor {
 
 		for (int i = 0; i < nrChildren; i++) {
 			Node metaChild = metaChildren.item(i);
-			String name = metaChild.getNodeName();
-
-			// determine which metadata property we're dealing with
-			if ("dc:creator".equals(name)) {
-				addContactStatement(NCO.creator, metaChild.getFirstChild().getNodeValue(), result);
-			}
-			else if ("meta:initial-creator".equals(name)) {
-				addContactStatement(NCO.creator, metaChild.getFirstChild().getNodeValue(), result);
-			}
-			else if ("dc:title".equals(name)) {
-				addStatement(NIE.title, metaChild.getFirstChild(), result);
-			}
-			else if ("dc:description".equals(name)) {
-				addStatement(NIE.description, metaChild.getFirstChild(), result);
-			}
-			else if ("dc:subject".equals(name)) {
-				addStatement(NIE.subject, metaChild.getFirstChild(), result);
-			}
-            else if ("dc:date".equals(name)) {
-				addDateStatement(NIE.informationElementDate, metaChild.getFirstChild(), result);
-			}
-			else if ("meta:creation-date".equals(name)) {
-				addDateStatement(NIE.contentCreated, metaChild.getFirstChild(), result);
-			}
-            // TODO get back to it after introducing nie:printdate
-			else if ("meta:print-date".equals(name)) {
-			    addDateStatement(NIE.informationElementDate, metaChild.getFirstChild(), result);
-				//addDateStatement(DATA.printDate, metaChild.getFirstChild(), result);
-			}
-			else if ("dc:language".equals(name)) {
-				addStatement(NIE.language, metaChild.getFirstChild(), result);
-			}
-			else if ("meta:generator".equals(name)) {
-				addStatement(NIE.generator, metaChild.getFirstChild(), result);
-			}
-			else if ("meta:keywords".equals(name)) {
-				// handles OpenOffice 1.x keywords
-				NodeList keywordNodes = metaChild.getChildNodes();
-				int nrKeywordNodes = keywordNodes.getLength();
-				for (int j = 0; j < nrKeywordNodes; j++) {
-					Node keywordNode = keywordNodes.item(j);
-					if ("meta:keyword".equals(keywordNode.getNodeName())) {
-						addStatement(NIE.keyword, keywordNode.getFirstChild(), result);
-					}
-				}
-			}
-			else if ("meta:keyword".equals(name)) {
-				// handles OpenOffice 2.x, i.e. OpenDocument
-				addStatement(NIE.keyword, metaChild.getFirstChild(), result);
-			}
-			else if ("meta:document-statistic".equals(name)) {
-				NamedNodeMap attributes = metaChild.getAttributes();
-				if (attributes != null) {
-					Node pageNode = attributes.getNamedItem("meta:page-count");
-					if (pageNode != null) {
-						String pageNodeValue = pageNode.getNodeValue();
-						if (pageNodeValue != null) {
-							try {
-								int pageCount = Integer.parseInt(pageNodeValue);
-                                result.add(RDF.type,NFO.PaginatedTextDocument);
-								result.add(NFO.pageCount, pageCount);
-							}
-							catch (NumberFormatException e) {
-								// ignore
-							}
-						}
-					}
-				}
-			}
+			addOasisMetadataPropertyToRdfContainer(metaChild, result);
+			mapToApertureProperty(metaChild,result);
 		}
 	}
+	
+	private void addOasisMetadataPropertyToRdfContainer(Node node, RDFContainer result) {
+	    String nameSpace = node.getNamespaceURI();
+        if (nameSpace != null) {
+            if (!nameSpace.endsWith("/")) {
+                nameSpace += "/";
+            }
 
+            try {
+                String uriString = nameSpace + node.getLocalName();
+                String text = getText(node);
+                URI predicate = result.getValueFactory().createURI(uriString);
+                
+                if (text != null) {
+                    result.add(predicate, text);
+                } 
+            }
+            catch (ModelException e) {
+                logger.error("ModelException while adding statement, ignoring", e);
+            }
+        }
+
+	}
+	
+   private String getText(Node node) {
+        if (node instanceof Attr) {
+            return ((Attr)node).getValue();
+        }
+        
+        Node child = node.getFirstChild();
+        if (child instanceof Text) {
+            return ((Text) child).getWholeText();
+        }
+        else {
+            return null;
+        }
+    }
+	
+	private void mapToApertureProperty(Node metaChild, RDFContainer result) {
+	    String name = metaChild.getNodeName();
+
+        // determine which metadata property we're dealing with
+        if ("dc:creator".equals(name)) {
+            addContactStatement(NCO.creator, metaChild.getFirstChild().getNodeValue(), result);
+        }
+        else if ("meta:initial-creator".equals(name)) {
+            addContactStatement(NCO.creator, metaChild.getFirstChild().getNodeValue(), result);
+        }
+        else if ("dc:title".equals(name)) {
+            addStatement(NIE.title, metaChild.getFirstChild(), result);
+        }
+        else if ("dc:description".equals(name)) {
+            addStatement(NIE.description, metaChild.getFirstChild(), result);
+        }
+        else if ("dc:subject".equals(name)) {
+            addStatement(NIE.subject, metaChild.getFirstChild(), result);
+        }
+        else if ("dc:date".equals(name)) {
+            addDateStatement(NIE.informationElementDate, metaChild.getFirstChild(), result);
+        }
+        else if ("meta:creation-date".equals(name)) {
+            addDateStatement(NIE.contentCreated, metaChild.getFirstChild(), result);
+        }
+        // TODO get back to it after introducing nie:printdate
+        else if ("meta:print-date".equals(name)) {
+            addDateStatement(NIE.informationElementDate, metaChild.getFirstChild(), result);
+            //addDateStatement(DATA.printDate, metaChild.getFirstChild(), result);
+        }
+        else if ("dc:language".equals(name)) {
+            addStatement(NIE.language, metaChild.getFirstChild(), result);
+        }
+        else if ("meta:generator".equals(name)) {
+            addStatement(NIE.generator, metaChild.getFirstChild(), result);
+        }
+        else if ("meta:user-defined".equals(name)) {
+            // user-defined properties are NOT supported
+            // TODO clarify this issue with the Nepomuk Consortium
+        }
+        else if ("meta:keywords".equals(name)) {
+            // handles OpenOffice 1.x keywords
+            NodeList keywordNodes = metaChild.getChildNodes();
+            int nrKeywordNodes = keywordNodes.getLength();
+            for (int j = 0; j < nrKeywordNodes; j++) {
+                Node keywordNode = keywordNodes.item(j);
+                if ("meta:keyword".equals(keywordNode.getNodeName())) {
+                    addStatement(NIE.keyword, keywordNode.getFirstChild(), result);
+                }
+            }
+        }
+        else if ("meta:keyword".equals(name)) {
+            // handles OpenOffice 2.x, i.e. OpenDocument
+            addStatement(NIE.keyword, metaChild.getFirstChild(), result);
+        }
+        else if ("meta:document-statistic".equals(name)) {
+            NamedNodeMap attributes = metaChild.getAttributes();
+            if (attributes != null) {
+                for (int i = 0; i<attributes.getLength(); i++) {
+                    Node node = attributes.item(i);
+                    addOasisMetadataPropertyToRdfContainer(node, result);
+                    if (node instanceof Attr) {
+                        mapStatisticsAttributeToApertureProperty((Attr)node, result);
+                    }
+                }
+            }
+        }
+	}
+
+	/**
+	 * Many kinds of document statics fields are stored in the document metadata.
+	 * @param statisticsAttribute
+	 * @param result
+	 */
+    private void mapStatisticsAttributeToApertureProperty(Attr statisticsAttribute, 
+           RDFContainer result) {
+        String name = statisticsAttribute.getNodeName();
+
+        // determine which metadata property we're dealing with
+        if ("meta:page-count".equals(name)) {
+            String pageNodeValue = statisticsAttribute.getValue();
+            if (pageNodeValue != null) {
+                try {
+                    int pageCount = Integer.parseInt(pageNodeValue);
+                    result.add(RDF.type,NFO.PaginatedTextDocument);
+                    result.add(NFO.pageCount, pageCount);
+                }
+                catch (NumberFormatException e) {
+                    // ignore
+                }
+             }
+         }
+     }
+	
 	private void addStatement(URI uri, Node node, RDFContainer container) {
 		if (node != null) {
 			addStatement(uri, node.getNodeValue(), container);

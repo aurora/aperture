@@ -49,7 +49,7 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
             // check of any document text is extracted
             RDFContainer container = getStatements(RESOURCES[i]);
             checkStatement(NIE.plainTextContent, "This", container);
-            validate(container);
+            validate(container, false);
             container.dispose();
         }
     }
@@ -84,7 +84,7 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
         checkStatement(NIE.language, "en-US", container);
         checkStatement(NFO.pageCount, "1", container);
         checkStatement(NIE.generator, "OpenOffice", container);
-        validate(container);
+        validate(container, false);
         container.dispose();
     }
 }

@@ -141,41 +141,28 @@ public class OpenXmlExtractor implements Extractor {
         TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.presentationml.comments+xml");
         TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.presentationml.slide+xml");
         TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml");
-        TEXT_ELEMENT_TYPES
-                .add("application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml");
-        TEXT_ELEMENT_TYPES
-                .add("application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml");
-        TEXT_ELEMENT_TYPES
-                .add("application/vnd.openxmlformats-officedocument.presentationml.handoutMaster+xml");
+        TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml");
+        TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml");
+        TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.presentationml.handoutMaster+xml");
         TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml");
-        TEXT_ELEMENT_TYPES
-                .add("application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml");
+        TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml");
         TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml");
         TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml");
         TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml");
         TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml");
         TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml");
-        TEXT_ELEMENT_TYPES
-                .add("application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml");
+        TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml");
         TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml");
         TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.wordprocessingml.main+xml");
-        TEXT_ELEMENT_TYPES
-                .add("application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml");
-        TEXT_ELEMENT_TYPES
-                .add("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
-        TEXT_ELEMENT_TYPES
-                .add("application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml");
+        TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml");
+        TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
+        TEXT_ELEMENT_TYPES.add("application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml");
 
-        TEXT_ATTRIBUTE_TYPES.put(
-            "application/vnd.openxmlformats-officedocument.presentationml.commentAuthors+xml", "p:cmAuthor");
-        TEXT_ATTRIBUTE_TYPES.put("application/vnd.openxmlformats-officedocument.spreadsheetml.main+xml",
-            "sheet");
-        TEXT_ATTRIBUTE_TYPES.put(
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.template.main+xml", "sheet");
-        TEXT_ATTRIBUTE_TYPES.put("application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml",
-            "tableColumn");
-        TEXT_ATTRIBUTE_TYPES.put(
-            "application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml", "p:cSld");
+        TEXT_ATTRIBUTE_TYPES.put("application/vnd.openxmlformats-officedocument.presentationml.commentAuthors+xml", "p:cmAuthor");
+        TEXT_ATTRIBUTE_TYPES.put("application/vnd.openxmlformats-officedocument.spreadsheetml.main+xml","sheet");
+        TEXT_ATTRIBUTE_TYPES.put("application/vnd.openxmlformats-officedocument.spreadsheetml.template.main+xml", "sheet");
+        TEXT_ATTRIBUTE_TYPES.put("application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml","tableColumn");
+        TEXT_ATTRIBUTE_TYPES.put("application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml", "p:cSld");
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
