@@ -44,16 +44,18 @@ public class TutorialCrawlingExample {
     }
 
     public void doCrawling(File rootFile) throws Exception {
-        // create a data source configuration
-        ModelFactory factory = RDF2Go.getModelFactory();
-        Model model = factory.createModel();
+        // create a model that will store the data source configuration
+        Model model = RDF2Go.getModelFactory().createModel();
+        // open the model
         model.open();
+        // .. and wrap it in an RDFContainer
         RDFContainer configuration = new RDFContainerImpl(model, new URIImpl("source:testSource"), false);
-
-        // create the data source
+        
+        // now create the data source
         FileSystemDataSource source = new FileSystemDataSource();
+        // and set the configuration container
         source.setConfiguration(configuration);
-
+        // now we can call the type-specific setters in each DataSource class
         source.setRootFolder(rootFile.getAbsolutePath());
         
         // setup a crawler that can handle this type of DataSource
@@ -84,13 +86,15 @@ class TutorialCrawlerHandler extends CrawlerHandlerBase {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
-        
-        modelSet.close();
+        finally {
+            modelSet.close();
+        }
     }
 
     public RDFContainer getRDFContainer(URI uri) {
         // we create a new in-memory temporary model for each data source
         Model model = RDF2Go.getModelFactory().createModel(uri);
+        // A model needs to be opened before being wrapped in an RDFContainer
         model.open();
         return new RDFContainerImpl(model, uri);
     }
@@ -100,7 +104,7 @@ class TutorialCrawlerHandler extends CrawlerHandlerBase {
         processBinary(object);
         // then we add this information to our persistent model
         modelSet.addModel(object.getMetadata().getModel());
-        // don't forget to dipose of the DataObject
+        // don't forget to dispose of the DataObject
         object.dispose();
     }
 
@@ -117,6 +121,7 @@ class TutorialCrawlerHandler extends CrawlerHandlerBase {
     }
     
     public void objectRemoved(Crawler crawler, URI uri) {
+        // an object has been removed, we delete it from the rdf store
         modelSet.removeModel(uri);
     }
 }
