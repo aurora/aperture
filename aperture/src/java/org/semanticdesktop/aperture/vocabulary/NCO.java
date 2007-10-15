@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:33 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Oct 15 17:30:15 CEST 2007
  * input file: D:\workspace\aperture/doc/ontology/nco.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/03/22/nco#
  */
@@ -99,7 +99,7 @@ public class NCO {
     /**
      * Type: Class <br/>
      * Label: EmailAddress  <br/>
-     * Comment: An email address.  <br/>
+     * Comment: An email address. The recommended best practice is to use mailto: uris for instances of this class.  <br/>
      */
     public static final URI EmailAddress = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/03/22/nco#EmailAddress");
     /**

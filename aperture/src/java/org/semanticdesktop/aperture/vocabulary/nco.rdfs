@@ -1,22 +1,22 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE rdf:RDF [
 	 <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
-	 <!ENTITY dc 'http://purl.org/dc/elements/1.1/'>
-	 <!ENTITY a 'http://protege.stanford.edu/system#'>
-	 <!ENTITY geo 'http://www.w3.org/2003/01/geo/wgs84_pos#'>
 	 <!ENTITY nco 'http://www.semanticdesktop.org/ontologies/2007/03/22/nco#'>
-	 <!ENTITY XMLSchema 'http://www.w3.org/2001/XMLSchema#'>
+	 <!ENTITY nrl 'http://www.semanticdesktop.org/ontologies/2006/11/24/nrl#'>
+	 <!ENTITY dc 'http://purl.org/dc/elements/1.1/'>
 	 <!ENTITY nie 'http://www.semanticdesktop.org/ontologies/2007/01/19/nie#'>
+	 <!ENTITY geo 'http://www.w3.org/2003/01/geo/wgs84_pos#'>
+	 <!ENTITY XMLSchema 'http://www.w3.org/2001/XMLSchema#'>
 	 <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema#'>
 ]>
-<rdf:RDF xmlns:rdf="&rdf;"
-	 xmlns:a="&a;"
+<rdf:RDF xmlns:nco="&nco;"
+	 xmlns:rdf="&rdf;"
+	 xmlns:nie="&nie;"
 	 xmlns:dc="&dc;"
-	 xmlns:nco="&nco;"
+	 xmlns:nrl="&nrl;"
 	 xmlns:geo="&geo;"
 	 xmlns:XMLSchema="&XMLSchema;"
-	 xmlns:rdfs="&rdfs;"
-	 xmlns:nie="&nie;">
+	 xmlns:rdfs="&rdfs;">
 <rdfs:Class rdf:about="&nco;Affiliation"
 	 rdfs:label="Affiliation">
 	<rdfs:comment>Aggregates three properties defined in RFC2426. Originally all three were attached directly to a person. One person could have only one title and one role within one organization. This class is intended to lift this limitation.</rdfs:comment>
@@ -70,7 +70,7 @@
 	<rdfs:subClassOf rdf:resource="&nco;PostalAddress"/>
 </rdfs:Class>
 <rdfs:Class rdf:about="&nco;EmailAddress"
-	 rdfs:comment="An email address."
+	 rdfs:comment="An email address. The recommended best practice is to use mailto: uris for instances of this class."
 	 rdfs:label="EmailAddress">
 	<rdfs:subClassOf rdf:resource="&nco;ContactMedium"/>
 </rdfs:Class>
@@ -165,22 +165,19 @@
 	<rdfs:subClassOf rdf:resource="&nco;PhoneNumber"/>
 </rdfs:Class>
 <rdf:Property rdf:about="&nco;addressLocation"
-	 
 	 rdfs:comment="The geographical location of a postal address."
 	 rdfs:label="addressLocation">
 	<rdfs:domain rdf:resource="&nco;PostalAddress"/>
 	<rdfs:range rdf:resource="&geo;Point"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;birthDate"
-	 
 	 rdfs:label="birthDate">
 	<rdfs:comment>Birth date of the object represented by this Contact. An equivalent of the 'BDAY' property as defined in RFC 2426 Sec. 3.1.5.</rdfs:comment>
-	<rdfs:domain rdf:resource="&nco;Contact"/>
 	<rdfs:subPropertyOf rdf:resource="&dc;date"/>
+	<rdfs:domain rdf:resource="&nco;Contact"/>
 	<rdfs:range rdf:resource="&XMLSchema;date"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;blogUrl"
-	 
 	 rdfs:comment="A Blog url."
 	 rdfs:label="blogUrl">
 	<rdfs:domain rdf:resource="&nco;Role"/>
@@ -192,19 +189,17 @@
 	<rdfs:comment>The name of the contact group. This property was NOT defined 
     in the VCARD standard. See documentation of the 'ContactGroup' class for 
     details</rdfs:comment>
-	<rdfs:domain rdf:resource="&nco;ContactGroup"/>
 	<rdfs:subPropertyOf rdf:resource="&dc;title"/>
+	<rdfs:domain rdf:resource="&nco;ContactGroup"/>
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;contactMediumComment"
-	 
 	 rdfs:comment="A comment about the contact medium."
 	 rdfs:label="contactMediumComment">
 	<rdfs:domain rdf:resource="&nco;ContactMedium"/>
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;contactUID"
-	 
 	 rdfs:label="contactUID">
 	<rdfs:comment>A value that represents a globally unique  identifier corresponding to the individual or resource associated with the Contact. An equivalent of the 'UID' property defined in RFC 2426 Sec. 3.6.7</rdfs:comment>
 	<rdfs:subPropertyOf rdf:resource="&nie;identifier"/>
@@ -212,7 +207,6 @@
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;containsContact"
-	 
 	 rdfs:label="containsContact">
 	<rdfs:comment>A property used to group contacts into contact groups. This 
     property was NOT defined in the VCARD standard. See documentation for the 
@@ -224,9 +218,9 @@
 <rdf:Property rdf:about="&nco;contributor"
 	 rdfs:label="contributor">
 	<rdfs:comment>An entity responsible for making contributions to the content of the InformationElement.</rdfs:comment>
-	<rdfs:range rdf:resource="&nco;Contact"/>
 	<rdfs:subPropertyOf rdf:resource="&dc;contributor"/>
-    <rdfs:domain rdf:resource="&nie;InformationElement"/>
+	<rdfs:range rdf:resource="&nco;Contact"/>
+	<rdfs:domain rdf:resource="&nie;InformationElement"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;country"
 	 rdfs:label="country">
@@ -235,23 +229,21 @@
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;creator"
-	 
 	 rdfs:label="creator">
 	<rdfs:comment>Creator of a data object, an entity primarily responsible for the creation of the content of the data object.</rdfs:comment>
+	<rdfs:subPropertyOf rdf:resource="&dc;creator"/>
 	<rdfs:range rdf:resource="&nco;Contact"/>
 	<rdfs:subPropertyOf rdf:resource="&nco;contributor"/>
-	<rdfs:subPropertyOf rdf:resource="&dc;creator"/>
-    <rdfs:domain rdf:resource="&nie;InformationElement"/>
+	<rdfs:domain rdf:resource="&nie;InformationElement"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;department"
-	 a:maxCardinality="1"
+	 nrl:maxCardinality="1"
 	 rdfs:comment="Department. The organizational unit within the organization."
 	 rdfs:label="department">
 	<rdfs:domain rdf:resource="&nco;Affiliation"/>
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;emailAddress"
-	 
 	 rdfs:label="emailAddress">
 	<rdfs:domain rdf:resource="&nco;EmailAddress"/>
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
@@ -263,7 +255,6 @@
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;foafUrl"
-	 
 	 rdfs:comment="The URL of the FOAF file."
 	 rdfs:label="foafUrl">
 	<rdfs:domain rdf:resource="&nco;Role"/>
@@ -273,33 +264,29 @@
 <rdf:Property rdf:about="&nco;fullname"
 	 rdfs:label="fullname">
 	<rdfs:comment>To specify the formatted text corresponding to the name of the object the Contact represents. An equivalent of the FN property as defined in RFC 2426 Sec. 3.1.1.</rdfs:comment>
-	<rdfs:domain rdf:resource="&nco;Contact"/>
 	<rdfs:subPropertyOf rdf:resource="&dc;title"/>
+	<rdfs:domain rdf:resource="&nco;Contact"/>
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;gender"
-	 
 	 rdfs:comment="Gender of the given contact."
 	 rdfs:label="gender">
 	<rdfs:range rdf:resource="&nco;Gender"/>
 	<rdfs:domain rdf:resource="&nco;PersonContact"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;hasAffiliation"
-	 
 	 rdfs:comment="Links a PersonContact with an Affiliation."
 	 rdfs:label="hasAffiliation">
 	<rdfs:range rdf:resource="&nco;Affiliation"/>
 	<rdfs:domain rdf:resource="&nco;PersonContact"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;hasContactMedium"
-	 
 	 rdfs:label="hasContactMedium">
 	<rdfs:comment>A superProperty for all properties linking a Contact to an instance of a contact medium.</rdfs:comment>
 	<rdfs:range rdf:resource="&nco;ContactMedium"/>
 	<rdfs:domain rdf:resource="&nco;Role"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;hasEmailAddress"
-	 
 	 rdfs:label="hasEmailAddress">
 	<rdfs:comment>An address for electronic mail communication with the object specified by this contact. An equivalent of the 'EMAIL' property as defined in RFC 2426 Sec. 3.3.1.</rdfs:comment>
 	<rdfs:range rdf:resource="&nco;EmailAddress"/>
@@ -307,34 +294,30 @@
 	<rdfs:subPropertyOf rdf:resource="&nco;hasContactMedium"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;hasIMAccount"
-	 
 	 rdfs:label="hasIMAccount">
 	<rdfs:comment>Indicates that an Instant Messaging account owned by an entity represented by this contact.</rdfs:comment>
 	<rdfs:range rdf:resource="&nco;IMAccount"/>
-	<rdfs:subPropertyOf rdf:resource="&nco;hasContactMedium"/>
 	<rdfs:domain rdf:resource="&nco;Role"/>
+	<rdfs:subPropertyOf rdf:resource="&nco;hasContactMedium"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;hasLocation"
-	 
 	 rdfs:label="hasLocation">
 	<rdfs:comment>Geographical location of the contact. Inspired by the 'GEO' property specified in RFC 2426 Sec. 3.4.2</rdfs:comment>
 	<rdfs:domain rdf:resource="&nco;Contact"/>
 	<rdfs:range rdf:resource="&geo;Point"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;hasPhoneNumber"
-	 
 	 rdfs:label="hasPhoneNumber">
 	<rdfs:comment>A number for telephony communication with the object represented by this Contact. An equivalent of the 'TEL' property defined in RFC 2426 Sec. 3.3.1</rdfs:comment>
-	<rdfs:domain rdf:resource="&nco;Role"/>
 	<rdfs:range rdf:resource="&nco;PhoneNumber"/>
+	<rdfs:domain rdf:resource="&nco;Role"/>
 	<rdfs:subPropertyOf rdf:resource="&nco;hasContactMedium"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;hasPostalAddress"
-	 
 	 rdfs:label="hasPostalAddress">
 	<rdfs:comment>The default Address for a Contact. An equivalent of the 'ADR' property as defined in RFC 2426 Sec. 3.2.1.</rdfs:comment>
-	<rdfs:domain rdf:resource="&nco;Role"/>
 	<rdfs:range rdf:resource="&nco;PostalAddress"/>
+	<rdfs:domain rdf:resource="&nco;Role"/>
 	<rdfs:subPropertyOf rdf:resource="&nco;hasContactMedium"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;hobby"
@@ -344,47 +327,41 @@
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;imAccountType"
-	 
 	 rdfs:label="imAccountType">
 	<rdfs:comment>Type of the IM account. This may be the name of the service that provides the IM functionality. Examples might include Jabber, ICQ, MSN etc</rdfs:comment>
 	<rdfs:domain rdf:resource="&nco;IMAccount"/>
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;imID"
-	 
 	 rdfs:label="imID">
 	<rdfs:comment>Identifier of the IM account. Examples of such identifier might include ICQ UINs, Jabber IDs, Skype names etc.</rdfs:comment>
 	<rdfs:domain rdf:resource="&nco;IMAccount"/>
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;imNickname"
-	 
 	 rdfs:comment="A nickname attached to a particular IM Account."
 	 rdfs:label="imNickname">
 	<rdfs:domain rdf:resource="&nco;IMAccount"/>
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;imStatus"
-	 
 	 rdfs:label="imStatus">
 	<rdfs:comment>Current status of the given IM account. Values for this property may include 'Online', 'Offline', 'Do not disturb' etc. The exact choice of them is unspecified.</rdfs:comment>
 	<rdfs:domain rdf:resource="&nco;IMAccount"/>
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;imStatusMessage"
-	 
 	 rdfs:label="imStatusMessage">
 	<rdfs:comment>A feature common in most IM systems. A message left by the user for all his/her contacts to see.</rdfs:comment>
 	<rdfs:domain rdf:resource="&nco;IMAccount"/>
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;key"
-	 
 	 rdfs:label="key">
 	<rdfs:comment>An encryption key attached to a contact. Inspired by the KEY property defined in RFC 2426 sec. 3.7.2</rdfs:comment>
 	<rdfs:range rdf:resource="&nie;DataObject"/>
-	<rdfs:domain rdf:resource="&nco;Contact"/>
 	<rdfs:subPropertyOf rdf:resource="&nie;hasPart"/>
+	<rdfs:domain rdf:resource="&nco;Contact"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;locality"
 	 rdfs:label="locality">
@@ -393,7 +370,6 @@
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;logo"
-	 
 	 rdfs:label="logo">
 	<rdfs:comment>Logo of a company. Inspired by the LOGO property defined in RFC 2426 sec. 3.5.3</rdfs:comment>
 	<rdfs:range rdf:resource="&nie;DataObject"/>
@@ -431,14 +407,12 @@
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;nickname"
-	 
 	 rdfs:label="nickname">
 	<rdfs:comment>A nickname of the Object represented by this Contact. This is an equivalen of the 'NICKNAME' property as defined in RFC 2426 Sec. 3.1.3.</rdfs:comment>
 	<rdfs:domain rdf:resource="&nco;Contact"/>
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;note"
-	 
 	 rdfs:label="note">
 	<rdfs:comment>A note about the object represented by this Contact. An equivalent for the 'NOTE' property defined in RFC 2426 Sec. 3.6.2</rdfs:comment>
 	<rdfs:subPropertyOf rdf:resource="&nie;description"/>
@@ -452,13 +426,11 @@
 	<rdfs:range rdf:resource="&nco;OrganizationContact"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;phoneNumber"
-	 
 	 rdfs:label="phoneNumber">
 	<rdfs:domain rdf:resource="&nco;PhoneNumber"/>
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;photo"
-	 
 	 rdfs:label="photo">
 	<rdfs:comment>Photograph attached to a Contact. Inspired by the PHOTO property defined in RFC 2426 sec. 3.1.4</rdfs:comment>
 	<rdfs:range rdf:resource="&nie;DataObject"/>
@@ -478,12 +450,11 @@
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;publisher"
-	 
 	 rdfs:label="publisher">
 	<rdfs:comment>An entity responsible for making the InformationElement available.</rdfs:comment>
-	<rdfs:range rdf:resource="&nco;Contact"/>
 	<rdfs:subPropertyOf rdf:resource="&dc;publisher"/>
-    <rdfs:domain rdf:resource="&nie;InformationElement"/>
+	<rdfs:range rdf:resource="&nco;Contact"/>
+	<rdfs:domain rdf:resource="&nie;InformationElement"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;region"
 	 rdfs:label="region">
@@ -492,21 +463,18 @@
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;representative"
-	 
 	 rdfs:label="representative">
 	<rdfs:comment>An object that represent an object represented by this Contact. Usually this property is used to link a Contact to an organization, to a contact to the representative of this organization the user directly interacts with. An equivalent for the 'AGENT' property defined in RFC 2426 Sec. 3.5.4</rdfs:comment>
 	<rdfs:domain rdf:resource="&nco;Contact"/>
 	<rdfs:range rdf:resource="&nco;Contact"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;role"
-	 
 	 rdfs:label="role">
 	<rdfs:comment>Role an object represented by this contact represents in the organization. This might include 'Programmer', 'Manager', 'Sales Representative'. Be careful to avoid confusion with the title property. An equivalent of the 'ROLE' property as defined in RFC 2426. Sec. 3.5.2. Note the difference between nco:Role class and nco:role property.</rdfs:comment>
 	<rdfs:domain rdf:resource="&nco;Affiliation"/>
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;sound"
-	 
 	 rdfs:label="sound">
 	<rdfs:comment>Sound clip attached to a Contact. Inspired by the SOUND property defined in RFC 2425 sec. 3.6.6.</rdfs:comment>
 	<rdfs:range rdf:resource="&nie;DataObject"/>
@@ -526,21 +494,18 @@
 	<rdfs:range rdf:resource="&XMLSchema;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;url"
-	 
 	 rdfs:label="url">
 	<rdfs:comment>A uniform resource locator associated with the given role of a Contact. Inspired by the 'URL' property defined in RFC 2426 Sec. 3.6.8.</rdfs:comment>
 	<rdfs:domain rdf:resource="&nco;Role"/>
 	<rdfs:range rdf:resource="&rdfs;Resource"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;voiceMail"
-	 
 	 rdfs:label="voiceMail">
 	<rdfs:comment>Indicates if the given number accepts voice mail. (e.g. there is an answering machine). Inspired by TYPE=msg parameter of the TEL property defined in RFC 2426 sec. 3.3.1</rdfs:comment>
 	<rdfs:domain rdf:resource="&nco;VoicePhoneNumber"/>
 	<rdfs:range rdf:resource="&XMLSchema;boolean"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;websiteUrl"
-	 
 	 rdfs:comment="A url of a website."
 	 rdfs:label="websiteUrl">
 	<rdfs:domain rdf:resource="&nco;Role"/>

@@ -3,7 +3,7 @@
 	 <!ENTITY terms 'http://purl.org/dc/terms/'>
 	 <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
 	 <!ENTITY dc 'http://purl.org/dc/elements/1.1/'>
-	 <!ENTITY a 'http://protege.stanford.edu/system#'>
+	 <!ENTITY nrl 'http://www.semanticdesktop.org/ontologies/2006/11/24/nrl#'>
 	 <!ENTITY nie 'http://www.semanticdesktop.org/ontologies/2007/01/19/nie#'>
 	 <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
 	 <!ENTITY nao 'http://www.semanticdesktop.org/ontologies/2007/08/15/nao#'>
@@ -12,7 +12,7 @@
 <rdf:RDF xmlns:terms="&terms;"
 	 xmlns:rdf="&rdf;"
 	 xmlns:nie="&nie;"
-	 xmlns:a="&a;"
+	 xmlns:nrl="&nrl;"
 	 xmlns:dc="&dc;"
 	 xmlns:xsd="&xsd;"
 	 xmlns:rdfs="&rdfs;"
@@ -33,7 +33,7 @@
 	<rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
 </rdfs:Class>
 <rdf:Property rdf:about="&nie;byteSize"
-	 a:maxCardinality="1"
+	 nrl:maxCardinality="1"
 	 rdfs:label="byteSize">
 	<rdfs:comment>The overall size of the data object in bytes. That means the WHOLE data object and ONLY the data object, not of the content that is of interest to the user. For cases where the content size is different (e.g. in compressed files the content is larger, in messages the content excludes headings and is smaller) use more specific properties, not necessarily subproperties of this one.</rdfs:comment>
 	<rdfs:domain rdf:resource="&nie;DataObject"/>
@@ -52,7 +52,7 @@
 	<rdfs:range rdf:resource="&xsd;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nie;contentCreated"
-	 a:maxCardinality="1"
+	 nrl:maxCardinality="1"
 	 rdfs:label="contentCreated">
 	<rdfs:comment>The date of the content creation. This may not necessarily be equal to the date when the DataObject (i.e. the physical representation) itself was created. Compare with nie:created property.</rdfs:comment>
 	<rdfs:domain rdf:resource="&nie;InformationElement"/>
@@ -60,7 +60,7 @@
 	<rdfs:range rdf:resource="&xsd;dateTime"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nie;contentLastModified"
-	 a:maxCardinality="1"
+	 nrl:maxCardinality="1"
 	 rdfs:comment="The date of the last modification of the content."
 	 rdfs:label="contentLastModified">
 	<rdfs:domain rdf:resource="&nie;InformationElement"/>
@@ -88,7 +88,7 @@
 	<rdfs:range rdf:resource="&xsd;dateTime"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nie;dataSource"
-	 a:minCardinality="1"
+	 nrl:minCardinality="1"
 	 rdfs:label="dataSource">
 	<rdfs:comment>Marks the provenance of a DataObject, what source does a data object come from.</rdfs:comment>
 	<rdfs:subPropertyOf rdf:resource="&dc;source"/>
@@ -131,7 +131,7 @@
 	<rdfs:subPropertyOf rdf:resource="&terms;hasPart"/>
 	<rdfs:range rdf:resource="&nie;DataObject"/>
 	<rdfs:domain rdf:resource="&nie;InformationElement"/>
-	<a:inverseProperty rdf:resource="&nie;isPartOf"/>
+	<nrl:inverseProperty rdf:resource="&nie;isPartOf"/>
 	<rdfs:subPropertyOf rdf:resource="&nie;relatedTo"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nie;identifier"
@@ -143,7 +143,7 @@
 	<rdfs:range rdf:resource="&xsd;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nie;informationElementDate"
-	 a:maxCardinality="1"
+	 nrl:maxCardinality="1"
 	 rdfs:label="informationElementDate">
 	<rdfs:comment>A point or period of time associated with an event in the lifecycle of an Information Element. A common superproperty for all date-related properties of InformationElements in the NIE Framework.</rdfs:comment>
 	<rdfs:subPropertyOf rdf:resource="&dc;date"/>
@@ -156,7 +156,7 @@
 	<rdfs:subPropertyOf rdf:resource="&terms;isPartOf"/>
 	<rdfs:domain rdf:resource="&nie;DataObject"/>
 	<rdfs:range rdf:resource="&nie;InformationElement"/>
-	<a:inverseProperty rdf:resource="&nie;hasPart"/>
+	<nrl:inverseProperty rdf:resource="&nie;hasPart"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nie;isStoredIn"
 	 rdfs:label="isStoredIn">
@@ -178,7 +178,7 @@
 	<rdfs:range rdf:resource="&xsd;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nie;lastRefreshed"
-	 a:maxCardinality="1"
+	 nrl:maxCardinality="1"
 	 rdfs:label="lastRefreshed">
 	<rdfs:comment>Date when information about this data object was retrieved (for the first time) or last refreshed from the data source. This property is important for metadata extraction applications that don't receive any notifications of changes in the data source and have to poll it regularly. This may lead to information becoming out of date. In these cases this property may be used to determine the age of data, which is an important element of it's dependability. </rdfs:comment>
 	<rdfs:subPropertyOf rdf:resource="&dc;date"/>

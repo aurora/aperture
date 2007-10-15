@@ -2,7 +2,7 @@
 <!DOCTYPE rdf:RDF [
 	 <!ENTITY nmo_ 'http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#'>
 	 <!ENTITY nie 'http://www.semanticdesktop.org/ontologies/2007/01/19/nie#'>
-	 <!ENTITY a 'http://protege.stanford.edu/system#'>
+	 <!ENTITY nrl 'http://www.semanticdesktop.org/ontologies/2006/11/24/nrl#'>
 	 <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema#'>
 	 <!ENTITY nfo 'http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#'>
 	 <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
@@ -12,7 +12,7 @@
 ]>
 <rdf:RDF xmlns:nmo_="&nmo_;"
 	 xmlns:nie="&nie;"
-	 xmlns:a="&a;"
+	 xmlns:nrl="&nrl;"
 	 xmlns:rdfs="&rdfs;"
 	 xmlns:nfo="&nfo;"
 	 xmlns:xsd="&xsd;"
@@ -85,14 +85,14 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 	<rdfs:domain rdf:resource="&nmo_;Message"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nmo_;headerName"
-	 a:maxCardinality="1"
+	 nrl:maxCardinality="1"
 	 rdfs:comment="Name of the message header."
 	 rdfs:label="headerName">
 	<rdfs:domain rdf:resource="&nmo_;MessageHeader"/>
 	<rdfs:range rdf:resource="&xsd;string"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nmo_;headerValue"
-	 a:maxCardinality="1"
+	 nrl:maxCardinality="1"
 	 rdfs:comment="Value of the message header."
 	 rdfs:label="headerValue">
 	<rdfs:domain rdf:resource="&nmo_;MessageHeader"/>
@@ -111,7 +111,7 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 	<rdfs:range rdf:resource="&xsd;boolean"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nmo_;messageHeader"
-	 a:maxCardinality="1"
+	 nrl:maxCardinality="1"
 	 rdfs:comment="Links the message wiith an arbitrary message header."
 	 rdfs:label="messageHeader">
 	<rdfs:domain rdf:resource="&nmo_;Message"/>
@@ -185,7 +185,7 @@ content defaults to the value specified by the 'mimeType' property.]]></rdfs:com
 	<rdfs:subPropertyOf rdf:resource="&nmo_;recipient"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nmo_;sentDate"
-	 a:maxCardinality="1"
+	 nrl:maxCardinality="1"
 	 rdfs:comment="Date when this message was sent."
 	 rdfs:label="sentDate">
 	<rdfs:subPropertyOf rdf:resource="&nie;contentCreated"/>

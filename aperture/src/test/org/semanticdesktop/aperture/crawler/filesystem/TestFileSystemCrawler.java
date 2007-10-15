@@ -137,7 +137,7 @@ public class TestFileSystemCrawler extends ApertureTestBase {
 
         // This should no be found as it is excluded by the domain boundaries
         assertFalse(ModelUtil.hasStatement(model, toURI(tmpFile4), NFO.fileName, null));
-        validate(model,true,configuration.getDescribedUri());
+        validate(model,true,configuration.getDescribedUri(),true);
         model.close();
         configuration.getModel().close();
     }
@@ -192,7 +192,7 @@ public class TestFileSystemCrawler extends ApertureTestBase {
         // containing Folder.
         assertFalse(ModelUtil.hasStatement(model, toURI(tmpFile3), NFO.fileName, null));
         assertFalse(ModelUtil.hasStatement(model, toURI(subDir), NFO.fileName, null));
-        validate(model,true,configuration.getDescribedUri());
+        validate(model,true,configuration.getDescribedUri(),true);
         model.close();
         configuration.getModel().close();
     }

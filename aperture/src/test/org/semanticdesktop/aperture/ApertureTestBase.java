@@ -43,6 +43,7 @@ import org.semanticdesktop.nepomuk.nrl.validator.ValidationMessage;
 import org.semanticdesktop.nepomuk.nrl.validator.ValidationReport;
 import org.semanticdesktop.nepomuk.nrl.validator.exception.StandaloneValidatorException;
 import org.semanticdesktop.nepomuk.nrl.validator.impl.StandaloneValidatorImpl;
+import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTester;
 import org.semanticdesktop.nepomuk.nrl.validator.testers.NRLClosedWorldModelTester;
 
 public class ApertureTestBase extends TestCase {
@@ -181,18 +182,18 @@ public class ApertureTestBase extends TestCase {
     }
     
     public void validate(RDFContainer container, boolean print) {
-        validate(container.getModel(), print, null);
+        validate(container.getModel(), print, null, false);
     }
 
     public void validate(Model model) {
-        validate(model,true, null);
+        validate(model,true, null,false);
     }
     
     public void validate(Model model, boolean print) {
-        validate(model,print,null);
+        validate(model,print,null,false);
     }
     
-    public void validate(Model model, boolean print, URI dataSourceUri) {
+    public void validate(Model model, boolean print, URI dataSourceUri, boolean treeTest) {
         boolean removeFlag = false;
         Statement statement = null;
         if (dataSourceUri != null) {
@@ -206,6 +207,10 @@ public class ApertureTestBase extends TestCase {
         }
         
         validateWithTester(model,print,new NRLClosedWorldModelTester());
+        
+        if (treeTest) {
+            validateWithTester(model,print,new DataObjectTreeModelTester());
+        }
         
         if (removeFlag) {
             model.removeStatement(statement);
