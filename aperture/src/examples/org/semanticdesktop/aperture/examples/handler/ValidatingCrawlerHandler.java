@@ -9,13 +9,16 @@ package org.semanticdesktop.aperture.examples.handler;
 import java.io.File;
 import java.util.List;
 
+import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.ModelSet;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.crawler.Crawler;
+import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.vocabulary.GEO;
 import org.semanticdesktop.aperture.vocabulary.NCAL;
 import org.semanticdesktop.aperture.vocabulary.NCO;
@@ -30,6 +33,7 @@ import org.semanticdesktop.nepomuk.nrl.validator.ValidationMessage;
 import org.semanticdesktop.nepomuk.nrl.validator.ValidationReport;
 import org.semanticdesktop.nepomuk.nrl.validator.exception.StandaloneValidatorException;
 import org.semanticdesktop.nepomuk.nrl.validator.impl.StandaloneValidatorImpl;
+import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTester;
 import org.semanticdesktop.nepomuk.nrl.validator.testers.NRLClosedWorldModelTester;
 
 /**
@@ -78,9 +82,12 @@ public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
                 model.open();
             }
 
+            validator.setModelTester(new NRLClosedWorldModelTester());
             ValidationReport report = validator.validate(object.getMetadata().getModel());
-            System.out.println("Validation report for: " + object.getID());
-            printValidationReport(report);
+            if (report.getMessages().size() > 0) {
+                System.out.println("Validation report for: " + object.getID());
+                printValidationReport(report);
+            }
 
             if (!wasOpen) {
                 model.close();
@@ -90,6 +97,39 @@ public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
             System.err.println("validation failed uri: " + object.getID());
             e.printStackTrace();
         }
+    }
+    
+
+    /**
+     * @see SimpleCrawlerHandler#crawlStopped(Crawler, ExitCode)
+     */
+    @Override
+    public void crawlStopped(Crawler crawler, ExitCode code) {
+
+        
+        Model overallModel = RDF2Go.getModelFactory().createModel();
+        overallModel.open();
+        ModelSet modelSet = getModelSet();
+        ClosableIterator<? extends Statement> iterator = modelSet.iterator();
+        
+        while (iterator.hasNext()) {
+            Statement statement = iterator.next();
+            overallModel.addStatement(statement);
+        }
+        validator.setModelTester(new DataObjectTreeModelTester());
+        try {
+            ValidationReport report = validator.validate(overallModel);
+            if (report.getMessages().size() > 0) {
+                System.out.println("Tree structure validation report:");
+                printValidationReport(report);
+            }
+        }
+        catch (StandaloneValidatorException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        super.crawlStopped(crawler, code);
     }
 
     private void printValidationReport(ValidationReport report) {

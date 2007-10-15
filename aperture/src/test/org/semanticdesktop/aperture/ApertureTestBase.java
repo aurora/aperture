@@ -206,7 +206,7 @@ public class ApertureTestBase extends TestCase {
             }            
         }
         
-        validateWithTester(model,print,new NRLClosedWorldModelTester());
+        //validateWithTester(model,print,new NRLClosedWorldModelTester());
         
         if (treeTest) {
             validateWithTester(model,print,new DataObjectTreeModelTester());

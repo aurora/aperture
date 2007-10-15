@@ -251,6 +251,9 @@ public class FileSystemCrawler extends CrawlerBase {
         // fetch the DataObject
         DataAccessor accessor = accessorFactory.get();
         params.put("file", file);
+        if (file.equals(root)) {
+            params.put("addParent",Boolean.FALSE);
+        }
         try {
             DataObject dataObject = accessor.getDataObjectIfModified(url, source, accessData, params,
                 containerFactory);
