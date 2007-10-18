@@ -459,6 +459,7 @@ documentation of ncal:comment for details.</rdfs:comment>
 	<rdfs:comment>Links the Vcalendar instance with the calendar components. This property has no direct equivalent in the RFC specification. It has been introduced to express the containmnent relations.</rdfs:comment>
 	<rdfs:domain rdf:resource="&ncal;Calendar"/>
 	<rdfs:range rdf:resource="&ncal;CalendarDataObject"/>
+	<rdfs:subPropertyOf rdf:resource="&nie;hasPart"/>
 </rdf:Property>
 <rdf:Property rdf:about="&ncal;contact"
 	 rdfs:label="contact">
@@ -624,9 +625,10 @@ documentation of ncal:description for details.</rdfs:comment>
 </rdf:Property>
 <rdf:Property rdf:about="&ncal;hasAlarm"
 	 rdfs:label="hasAlarm">
-	<rdfs:comment>Links an event or a todo with an alarm. This property has no direct equivalent in the RFC 2445. It has been provided to express this relation.</rdfs:comment>
-	<rdfs:range rdf:resource="&ncal;Alarm"/>
-	<rdfs:domain rdf:resource="&ncal;UnionOfEventTodo"/>
+	<rdfs:comment>Links an event or a todo with a DataObject that can be interpreted as an alarm. This property has no direct equivalent in the RFC 2445. It has been provided to express this relation.</rdfs:comment>
+	<rdfs:range rdf:resource="&ncal;CalendarDataObject"/>
+	<rdfs:domain rdf:resource="&ncal;UnionOfEventTodo" />
+	<rdfs:subPropertyOf rdf:resource="&nie;hasPart" />
 </rdf:Property>
 <rdf:Property rdf:about="&ncal;interval"
 	 rdfs:label="interval">

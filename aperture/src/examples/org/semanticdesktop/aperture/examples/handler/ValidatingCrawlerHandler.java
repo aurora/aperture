@@ -82,7 +82,7 @@ public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
                 model.open();
             }
 
-            validator.setModelTester(new NRLClosedWorldModelTester());
+            validator.setModelTesters(new NRLClosedWorldModelTester());
             ValidationReport report = validator.validate(object.getMetadata().getModel());
             if (report.getMessages().size() > 0) {
                 System.out.println("Validation report for: " + object.getID());
@@ -116,7 +116,7 @@ public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
             Statement statement = iterator.next();
             overallModel.addStatement(statement);
         }
-        validator.setModelTester(new DataObjectTreeModelTester());
+        validator.setModelTesters(new NRLClosedWorldModelTester(), new DataObjectTreeModelTester());
         try {
             ValidationReport report = validator.validate(overallModel);
             if (report.getMessages().size() > 0) {
@@ -192,7 +192,7 @@ public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
 
         tempModel.close();
 
-        validator.setModelTester(new NRLClosedWorldModelTester());
+        validator.setModelTesters(new NRLClosedWorldModelTester());
     }
     
     private String getOntUriFromNs(URI uri) {

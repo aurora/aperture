@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Oct 15 17:27:39 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Thu Oct 18 18:41:12 CEST 2007
  * input file: D:\workspace\aperture/doc/ontology/ncal.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#
  */
@@ -1041,9 +1041,9 @@ documentation of ncal:description for details.  <br/>
     /**
      * Type: Property <br/>
      * Label: hasAlarm  <br/>
-     * Comment: Links an event or a todo with an alarm. This property has no direct equivalent in the RFC 2445. It has been provided to express this relation.  <br/>
+     * Comment: Links an event or a todo with a DataObject that can be interpreted as an alarm. This property has no direct equivalent in the RFC 2445. It has been provided to express this relation.  <br/>
      * Domain: http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#UnionOfEventTodo  <br/>
-     * Range: http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#Alarm  <br/>
+     * Range: http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#CalendarDataObject  <br/>
      */
     public static final URI hasAlarm = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#hasAlarm");
     /**

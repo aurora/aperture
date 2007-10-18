@@ -22,6 +22,7 @@ import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.ontoware.rdf2go.vocabulary.RDFS;
 import org.ontoware.rdf2go.vocabulary.XSD;
@@ -37,7 +38,8 @@ import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class TestIcalCrawler extends ApertureTestBase {
     
-	public static final String ICAL_TESTICAL_PATH = DOCS_PATH + "icaltestdata/";
+	private static final URI SOURCE_TESTSOURCE = new URIImpl("source:testsource");
+    public static final String ICAL_TESTICAL_PATH = DOCS_PATH + "icaltestdata/";
 	public static final String TEMP_FILE_NAME = "temp-calendar.ics";
 
 	private Model model;
@@ -49,7 +51,8 @@ public class TestIcalCrawler extends ApertureTestBase {
 	
 	public void tearDown() {
 		if (model != null) {
-		    validate(model);
+		    validate(model,true, SOURCE_TESTSOURCE,true);
+		    
 			model.close();
 		}
 		model = null;
@@ -62,7 +65,7 @@ public class TestIcalCrawler extends ApertureTestBase {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////// COMPONENT TESTS ///////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
-
+	
 	public void testCalendarComponent() throws Exception {
 	    model = readIcalFile("basicCalendar.ics");
 
@@ -82,7 +85,7 @@ public class TestIcalCrawler extends ApertureTestBase {
 		assertMultiValueProperty(model, calendarNode, RDF.type, NCAL.Calendar);
 		assertEquals(countOutgoingTriples(model, calendarNode, RDF.type), 3);
 
-		assertEquals(countStatements(model), 7);
+		assertEquals(countStatements(model), 8);
 	}
 	
 	public void testAlarmComponent() throws Exception {
@@ -93,8 +96,9 @@ public class TestIcalCrawler extends ApertureTestBase {
 		
 		assertSingleValueURIProperty(model,valarmNode,NCAL.action, NCAL.displayAction.toString());
 		assertSingleValueProperty(model,valarmNode,NCAL.description, "Federal Reserve Board Meeting");
-		assertSingleValueURIProperty(model,valarmNode,RDF.type,NCAL.Alarm.toString());
-		assertEquals(countOutgoingTriples(model, valarmNode),4);
+		assertMultiValueProperty(model,valarmNode,RDF.type,NCAL.Alarm);
+		assertMultiValueProperty(model,valarmNode,RDF.type,NCAL.CalendarDataObject);
+		assertEquals(countOutgoingTriples(model, valarmNode),5);
 		
 		Resource triggerBNode = findSingleNode(model,valarmNode,NCAL.trigger);
 		assertSingleValueURIProperty(model,triggerBNode,NCAL.related,NCAL.startTriggerRelation.toString());
@@ -863,7 +867,7 @@ public class TestIcalCrawler extends ApertureTestBase {
 		assertTrue(file.canRead());
 		
 		IcalDataSource icalDataSource = new IcalDataSource();
-		RDFContainer configurationContainer = createRDFContainer("source:testsource");
+		RDFContainer configurationContainer = createRDFContainer(SOURCE_TESTSOURCE);
 		icalDataSource.setConfiguration(configurationContainer);
 		
 		
@@ -895,82 +899,122 @@ public class TestIcalCrawler extends ApertureTestBase {
 	}
 
 	private int countOutgoingTriples(Model model, Resource resource) throws ModelException {
-        ClosableIterator<? extends Statement> iterator = model.findStatements(resource, Variable.ANY, Variable.ANY);
-		int numberOfStatements = 0;
-		while (iterator.hasNext()) {
-			numberOfStatements++;
-			iterator.next();
-		}
-		iterator.close();
-		return numberOfStatements;
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model.findStatements(resource, Variable.ANY, Variable.ANY);
+    		int numberOfStatements = 0;
+    		while (iterator.hasNext()) {
+    			numberOfStatements++;
+    			iterator.next();
+    		}
+    		iterator.close();
+    		return numberOfStatements;
+        } finally {
+            closeIterator(iterator);
+        }
 	}
 
 	private int countOutgoingTriples(Model model, Resource resource, URI predicate) throws ModelException {
-        ClosableIterator<? extends Statement> iterator = model.findStatements(resource, predicate, Variable.ANY);
-		int numberOfStatements = 0;
-		while (iterator.hasNext()) {
-			numberOfStatements++;
-			iterator.next();
-		}
-		iterator.close();
-		return numberOfStatements;
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model.findStatements(resource, predicate, Variable.ANY);
+    		int numberOfStatements = 0;
+    		while (iterator.hasNext()) {
+    			numberOfStatements++;
+    			iterator.next();
+    		}
+    		iterator.close();
+    		return numberOfStatements;
+        } finally {
+            closeIterator(iterator);
+        }
 	}
 
 	private Resource findSingleNode(Model model, Resource parentNode, URI predicate) throws ModelException {
-        ClosableIterator<? extends Statement> iterator = model.findStatements(parentNode, predicate, Variable.ANY);
-		assertTrue(iterator.hasNext());
-		Statement statement = iterator.next();
-		assertFalse(iterator.hasNext());
-		iterator.close();
-		Node value = statement.getObject();
-		assertTrue(value instanceof Resource);
-		return (Resource) value;
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model.findStatements(parentNode, predicate, Variable.ANY);
+    		assertTrue(iterator.hasNext());
+    		Statement statement = iterator.next();
+    		assertFalse(iterator.hasNext());
+    		iterator.close();
+    		Node value = statement.getObject();
+    		assertTrue(value instanceof Resource);
+    		return (Resource) value;
+        } finally {
+            closeIterator(iterator);
+        }
 	}
 
 	private Resource findOneOfMultipleNodes(Model model, Resource parentNode, URI predicate)
 			throws ModelException {
-        ClosableIterator<? extends Statement> iterator = model.findStatements(parentNode, predicate, Variable.ANY);
-		assertTrue(iterator.hasNext());
-		Statement statement = iterator.next();
-		Node value = statement.getObject();
-		assertTrue(value instanceof Resource);
-		iterator.close();
-		return (Resource) value;
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model.findStatements(parentNode, predicate, Variable.ANY);
+    		assertTrue(iterator.hasNext());
+    		Statement statement = iterator.next();
+    		Node value = statement.getObject();
+    		assertTrue(value instanceof Resource);
+    		iterator.close();
+    		return (Resource) value;
+        } finally {
+            closeIterator(iterator);
+        }
+	}
+	
+	private void closeIterator(ClosableIterator<? extends Object> iterator) {
+	    if (iterator != null) {
+	        iterator.close();
+	    }
 	}
 
 	private Resource findMainCalendarNode(Model model) throws ModelException {
-        ClosableIterator<? extends Statement> iterator 
-				= model.findStatements(Variable.ANY, RDF.type, NCAL.Calendar);
-		assertTrue(iterator.hasNext());
-		Statement statement = iterator.next();
-		assertFalse(iterator.hasNext());
-		iterator.close();
-		return statement.getSubject();
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model.findStatements(Variable.ANY, RDF.type, NCAL.Calendar);
+    		assertTrue(iterator.hasNext());
+    		Statement statement = iterator.next();
+    		assertFalse(iterator.hasNext());
+    		iterator.close();
+    		return statement.getSubject();
+        } finally {
+            closeIterator(iterator);
+        }
 	}
 
 	private Resource findSingleTimezone(Model model) throws ModelException {
-        ClosableIterator<? extends Statement> iterator = model.findStatements(Variable.ANY, RDF.type, NCAL.Timezone);
-		assertTrue(iterator.hasNext());
-		Statement statement = iterator.next();
-		assertFalse(iterator.hasNext());
-		iterator.close();
-		return statement.getSubject();
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model.findStatements(Variable.ANY, RDF.type, NCAL.Timezone);
+    		assertTrue(iterator.hasNext());
+    		Statement statement = iterator.next();
+    		assertFalse(iterator.hasNext());
+    		iterator.close();
+    		return statement.getSubject();
+        } finally {
+            closeIterator(iterator);
+        }
 	}
 
 	private Resource findComponentByUid(Model model, String uid) throws ModelException {
-        ClosableIterator<? extends Statement> iterator = model.findStatements(Variable.ANY, NCAL.uid, Variable.ANY);
-		boolean found = false;
-		Statement statement = null;
-		while (iterator.hasNext()) {
-			statement = iterator.next();
-			if (statement.getObject().toString().equals(uid)) {
-				found = true;
-				break;
-			}
-		}
-		iterator.close();
-		assertTrue(found);
-		return statement.getSubject();
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model.findStatements(Variable.ANY, NCAL.uid, Variable.ANY);
+    		boolean found = false;
+    		Statement statement = null;
+    		while (iterator.hasNext()) {
+    			statement = iterator.next();
+    			if (statement.getObject().toString().equals(uid)) {
+    				found = true;
+    				break;
+    			}
+    		}
+    		iterator.close();
+    		assertTrue(found);
+    		return statement.getSubject();
+        } finally {
+            closeIterator(iterator);
+        }
 	}
 
 	private void assertSingleValueProperty(Model model, Resource subject, URI predicate,
@@ -989,12 +1033,17 @@ public class TestIcalCrawler extends ApertureTestBase {
 	 */
 	private void assertSingleValueProperty(Model model, Resource subject, URI predicate, Node object)
 			throws ModelException {
-        ClosableIterator<? extends Statement> iterator = model.findStatements(subject, predicate, Variable.ANY);
-		assertTrue(iterator.hasNext());
-		Statement statement = iterator.next();
-		assertFalse(iterator.hasNext());
-		assertEquals(statement.getObject().toString(), object.toString());
-		iterator.close();
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model.findStatements(subject, predicate, Variable.ANY);
+    		assertTrue(iterator.hasNext());
+    		Statement statement = iterator.next();
+    		assertFalse(iterator.hasNext());
+    		assertEquals(statement.getObject().toString(), object.toString());
+    		iterator.close();
+        } finally {
+            closeIterator(iterator);
+        }
 	}
 
 	/**
@@ -1009,17 +1058,24 @@ public class TestIcalCrawler extends ApertureTestBase {
 	 */
 	private void assertSingleValueProperty(Model model, Resource subject, URI predicate,
 			String objectLabel, URI xsdDatatype) throws ModelException {
-        ClosableIterator<? extends Statement> iterator = model.findStatements(subject, predicate, Variable.ANY);
-		assertTrue(iterator.hasNext()); // statement exists
-		Statement statement = iterator.next();
-		assertFalse(iterator.hasNext()); // it is the only one
-		iterator.close();
+	    
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model.findStatements(subject, predicate, Variable.ANY);
+    		assertTrue(iterator.hasNext()); // statement exists
+    		Statement statement = iterator.next();
+    		assertFalse(iterator.hasNext()); // it is the only one
+    		iterator.close();
+    		Node object = statement.getObject();
+            assertTrue(object instanceof DatatypeLiteral); // the object is a literal
+            DatatypeLiteral literal = (DatatypeLiteral) object;
+            assertEquals(literal.getValue(), objectLabel); // it's label is as given
+            assertEquals(literal.getDatatype(), xsdDatatype); // and datatype as well
+        } finally {
+            closeIterator(iterator);
+        }
 
-		Node object = statement.getObject();
-		assertTrue(object instanceof DatatypeLiteral); // the object is a literal
-		DatatypeLiteral literal = (DatatypeLiteral) object;
-		assertEquals(literal.getValue(), objectLabel); // it's label is as given
-		assertEquals(literal.getDatatype(), xsdDatatype); // and datatype as well
+		
 	}
 
 	private void assertSingleValueURIProperty(Model model, Resource parentNode, URI predicate,
@@ -1054,9 +1110,14 @@ public class TestIcalCrawler extends ApertureTestBase {
 	 */
 	private void assertMultiValueProperty(Model model, Resource subject, URI predicate, Node value) 
 			throws ModelException {
-        ClosableIterator<? extends Statement> iterator = model.findStatements(subject, predicate, value);
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+        iterator = model.findStatements(subject, predicate, value);
 		assertTrue(iterator.hasNext());
 		iterator.close();
+        } finally {
+            closeIterator(iterator);
+        }
 	}
     
     private void assertNcalDateTime(Model testModel, Resource resource, URI property, String dateTimeValue) {
@@ -1086,10 +1147,16 @@ public class TestIcalCrawler extends ApertureTestBase {
     }
     
     private void assertSparqlQuery(Model model, String query) {
+        ClosableIterator<QueryRow> queryIterator = null;
         QueryResultTable table = model.sparqlSelect(query);
-        ClosableIterator<QueryRow> queryIterator = table.iterator();
+        try {
+        queryIterator = table.iterator();
+        
         assertTrue(queryIterator.hasNext());
         queryIterator.close();
+        } finally {
+            closeIterator(queryIterator);
+        }
     }
 	
 	public File createTempFile(InputStream fis) throws Exception {

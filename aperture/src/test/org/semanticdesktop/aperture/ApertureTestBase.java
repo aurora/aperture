@@ -206,10 +206,11 @@ public class ApertureTestBase extends TestCase {
             }            
         }
         
-        //validateWithTester(model,print,new NRLClosedWorldModelTester());
-        
         if (treeTest) {
-            validateWithTester(model,print,new DataObjectTreeModelTester());
+            validateWithTesters(model,print,new NRLClosedWorldModelTester(), 
+                new DataObjectTreeModelTester());
+        } else {
+            validateWithTesters(model,print,new NRLClosedWorldModelTester());
         }
         
         if (removeFlag) {
@@ -217,12 +218,12 @@ public class ApertureTestBase extends TestCase {
         }
     }
 
-    private void validateWithTester(Model model, boolean print, ModelTester tester) {
+    private void validateWithTesters(Model model, boolean print, ModelTester... testers) {
         try {
             if (validator == null) {
                 initializeValidator();
             }
-            validator.setModelTester(tester);
+            validator.setModelTesters(testers);
             ValidationReport report = validator.validate(model);
             if ( !report.isValid() || (report.getMessages().size() > 0 && print)) {
                 printValidationReport(report);

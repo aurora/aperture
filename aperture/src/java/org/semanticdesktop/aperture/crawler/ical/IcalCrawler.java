@@ -80,6 +80,7 @@ import org.semanticdesktop.aperture.util.UriUtil;
 import org.semanticdesktop.aperture.vocabulary.GEO;
 import org.semanticdesktop.aperture.vocabulary.NCAL;
 import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -263,6 +264,8 @@ public class IcalCrawler extends CrawlerBase {
         PropertyList propertyList = calendar.getProperties();
         crawlPropertyList(propertyList, rdfContainer.getDescribedUri(), rdfContainer, null);
 
+        rdfContainer.add(NIE.rootElementOf,getDataSource().getID());
+        
         passComponentToHandler(rdfContainer, null);
 
         ComponentList componentList = calendar.getComponents();
@@ -694,6 +697,7 @@ public class IcalCrawler extends CrawlerBase {
         crawlPropertyList(valarm, valarmParentNode, rdfContainer);
         addStatement(rdfContainer, parentNode, NCAL.hasAlarm, valarmParentNode);
         addStatement(rdfContainer, valarmParentNode, RDF.type, NCAL.Alarm);
+        addStatement(rdfContainer, valarmParentNode, RDF.type, NCAL.CalendarDataObject);
     }
 
     /**
