@@ -138,4 +138,9 @@ public class AppleAddressbookCrawler extends AddressbookCrawler {
 
     }
 
+    @Override
+    public URI getContactListUri() {
+        return new URIImpl("semdesk:macosxaddressbook");
+    }
+
 }

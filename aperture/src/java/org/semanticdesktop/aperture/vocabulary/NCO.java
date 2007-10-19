@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Oct 15 17:30:15 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Oct 19 00:12:40 CEST 2007
  * input file: D:\workspace\aperture/doc/ontology/nco.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/03/22/nco#
  */
@@ -75,9 +75,15 @@ public class NCO {
     /**
      * Type: Class <br/>
      * Label: ContactGroup  <br/>
-     * Comment: A group of Contacts. Could be used to express a group in an addressbook or on a contact list of an IM application.  <br/>
+     * Comment: A group of Contacts. Could be used to express a group in an addressbook or on a contact list of an IM application. One contact can belong to many groups.  <br/>
      */
     public static final URI ContactGroup = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/03/22/nco#ContactGroup");
+    /**
+     * Type: Class <br/>
+     * Label: ContactList  <br/>
+     * Comment: A contact list, this class represents an addressbook or a contact list of an IM application. Contacts inside a contact list can belong to contact groups.  <br/>
+     */
+    public static final URI ContactList = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/03/22/nco#ContactList");
     /**
      * Type: Class <br/>
      * Label: ContactListDataObject  <br/>
@@ -232,6 +238,14 @@ public class NCO {
     public static final URI addressLocation = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/03/22/nco#addressLocation");
     /**
      * Type: Property <br/>
+     * Label: addressLocation  <br/>
+     * Comment: Links a Contact with a ContactGroup it belongs to.  <br/>
+     * Domain: http://www.semanticdesktop.org/ontologies/2007/03/22/nco#Contact  <br/>
+     * Range: http://www.semanticdesktop.org/ontologies/2007/03/22/nco#ContactGroup  <br/>
+     */
+    public static final URI belongsToGroup = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/03/22/nco#belongsToGroup");
+    /**
+     * Type: Property <br/>
      * Label: birthDate  <br/>
      * Comment: Birth date of the object represented by this Contact. An equivalent of the 'BDAY' property as defined in RFC 2426 Sec. 3.1.5.  <br/>
      * Domain: http://www.semanticdesktop.org/ontologies/2007/03/22/nco#Contact  <br/>
@@ -278,7 +292,7 @@ public class NCO {
      * Comment: A property used to group contacts into contact groups. This 
     property was NOT defined in the VCARD standard. See documentation for the 
     'ContactGroup' class for details  <br/>
-     * Domain: http://www.semanticdesktop.org/ontologies/2007/03/22/nco#ContactGroup  <br/>
+     * Domain: http://www.semanticdesktop.org/ontologies/2007/03/22/nco#ContactList  <br/>
      * Range: http://www.semanticdesktop.org/ontologies/2007/03/22/nco#ContactListDataObject  <br/>
      */
     public static final URI containsContact = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/03/22/nco#containsContact");

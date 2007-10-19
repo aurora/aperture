@@ -51,7 +51,12 @@
 </rdfs:Class>
 <rdfs:Class rdf:about="&nco;ContactGroup"
 	 rdfs:label="ContactGroup">
-	<rdfs:comment>A group of Contacts. Could be used to express a group in an addressbook or on a contact list of an IM application.</rdfs:comment>
+	<rdfs:comment>A group of Contacts. Could be used to express a group in an addressbook or on a contact list of an IM application. One contact can belong to many groups.</rdfs:comment>
+	<rdfs:subClassOf rdf:resource="&nie;InformationElement"/>
+</rdfs:Class>
+<rdfs:Class rdf:about="&nco;ContactList"
+	 rdfs:label="ContactList">
+	<rdfs:comment>A contact list, this class represents an addressbook or a contact list of an IM application. Contacts inside a contact list can belong to contact groups.</rdfs:comment>
 	<rdfs:subClassOf rdf:resource="&nie;InformationElement"/>
 </rdfs:Class>
 <rdfs:Class rdf:about="&nco;ContactListDataObject"
@@ -170,6 +175,12 @@
 	<rdfs:domain rdf:resource="&nco;PostalAddress"/>
 	<rdfs:range rdf:resource="&geo;Point"/>
 </rdf:Property>
+<rdf:Property rdf:about="&nco;belongsToGroup"
+	 rdfs:comment="Links a Contact with a ContactGroup it belongs to."
+	 rdfs:label="addressLocation">
+	<rdfs:domain rdf:resource="&nco;Contact"/>
+	<rdfs:range rdf:resource="&nco;ContactGroup"/>
+</rdf:Property>
 <rdf:Property rdf:about="&nco;birthDate"
 	 rdfs:label="birthDate">
 	<rdfs:comment>Birth date of the object represented by this Contact. An equivalent of the 'BDAY' property as defined in RFC 2426 Sec. 3.1.5.</rdfs:comment>
@@ -212,7 +223,7 @@
     property was NOT defined in the VCARD standard. See documentation for the 
     'ContactGroup' class for details</rdfs:comment>
 	<rdfs:subPropertyOf rdf:resource="&nie;hasPart"/>
-	<rdfs:domain rdf:resource="&nco;ContactGroup"/>
+	<rdfs:domain rdf:resource="&nco;ContactList"/>
 	<rdfs:range rdf:resource="&nco;ContactListDataObject"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nco;contributor"

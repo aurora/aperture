@@ -6,18 +6,19 @@
  */
 package org.semanticdesktop.aperture.addressbook.thunderbird;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import org.omg.CosNaming.NamingContextOperations;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.Literal;
@@ -33,7 +34,6 @@ import org.semanticdesktop.aperture.addressbook.AddressbookCrawler;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.UriUtil;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 import org.semanticdesktop.aperture.vocabulary.NCO;
 import org.semanticdesktop.demork.Demork;
 import org.semanticdesktop.demork.Utils;
@@ -79,7 +79,7 @@ public class ThunderbirdCrawler extends AddressbookCrawler {
      */
     public List crawlAddressbook() throws Exception {
 
-        String abookFile = ((ThunderbirdAddressbookDataSource)getDataSource()).getThunderbirdAddressbookPath();
+        String abookFile = getAddressBookFile();
         
         if (abookFile == null) {
             throw new NullPointerException("No thunderbirdAddressbookPath option set");
@@ -107,6 +107,28 @@ public class ThunderbirdCrawler extends AddressbookCrawler {
         }
         return res;
     }
+    
+    public URI getContactListUri() {
+        String abookFile = getAddressBookFile();
+        if (abookFile == null) {
+            return null;
+        } else {
+            File file = new File(abookFile);
+            try {
+                return new URIImpl(file.toURI().toURL() + "#ThunderbirdContactList");
+            }
+            catch (MalformedURLException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+
+    
+    private String getAddressBookFile() {
+        return ((ThunderbirdAddressbookDataSource)getDataSource()).getThunderbirdAddressbookPath();
+    }
+
 
     private Resource affiliationResource;
     private Resource organizationResource;
@@ -242,6 +264,8 @@ public class ThunderbirdCrawler extends AddressbookCrawler {
                 
                 addAddress(values, uri, model, "Home", NCO.hasPostalAddress);
                 addAddress(values, uri, model, "Work", NCO.hasPostalAddress);
+                
+                model.addStatement(model.createStatement(getContactListUri(), NCO.containsContact, uri));
             }
             catch (ModelException e) {
                 logger.error("ModelException while adding statements", e);

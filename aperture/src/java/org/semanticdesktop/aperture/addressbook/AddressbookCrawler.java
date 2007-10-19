@@ -16,15 +16,25 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.BlankNode;
+import org.ontoware.rdf2go.model.node.Resource;
+import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
+import org.ontoware.rdf2go.vocabulary.RDF;
+import org.ontoware.rdf2go.vocabulary.RDFS;
 import org.semanticdesktop.aperture.accessor.DataObject;
+import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
+import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.util.UriUtil;
+import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +59,15 @@ public abstract class AddressbookCrawler extends CrawlerBase {
         try {
 
             List people = crawlAddressbook();
-
+            URI contactListUri = getContactListUri();
+            
             Set before = accessData.getStoredIDs();
             Set current = new HashSet();
+            
+            if (!accessData.isKnownId(contactListUri.toString())) {
+                reportContactListDataObject(contactListUri);
+            }
+            
             for (Iterator it = people.iterator(); it.hasNext();) {
                 DataObject o = (DataObject) it.next();
                 String sum = computeChecksum(o);
@@ -78,7 +94,6 @@ public abstract class AddressbookCrawler extends CrawlerBase {
             deprecatedUrls.addAll(before);
 
             crawlCompleted = true;
-
         }
         catch (Exception e) {
             logger.error("Could not crawl addressbook data source", e);
@@ -87,6 +102,15 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 
         // determine the exit code
         return crawlCompleted ? ExitCode.COMPLETED : ExitCode.STOP_REQUESTED;
+    }
+
+    private void reportContactListDataObject(URI contactListUri) {
+        RDFContainerFactory rdff = handler.getRDFContainerFactory(this, contactListUri.toString());
+        RDFContainer rdf = rdff.getRDFContainer(contactListUri);
+        rdf.add(RDF.type,NCO.ContactList);
+        rdf.add(NIE.rootElementOf,getDataSource().getID());
+        DataObjectBase object = new DataObjectBase(contactListUri, source, rdf);
+        handler.objectNew(this, object);
     }
 
     /**
@@ -157,4 +181,6 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 
     public abstract List crawlAddressbook() throws Exception;
 
+    public abstract URI getContactListUri();
+    
 }

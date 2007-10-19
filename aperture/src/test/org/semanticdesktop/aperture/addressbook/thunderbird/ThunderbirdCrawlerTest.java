@@ -35,7 +35,8 @@ import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerHandler, RDFContainerFactory {
 
-	private static String data="/org/semanticdesktop/aperture/docs/thunderbird-addressbook.mab";
+	private static final String URN_TEST_THUNDER_BIRD_DATA_SOURCE = "urn:TestThunderBirdDataSource";
+    private static String data="/org/semanticdesktop/aperture/docs/thunderbird-addressbook.mab";
 	private Model model;
 	private int objects;
 	
@@ -62,7 +63,7 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
 		
 		ThunderbirdAddressbookDataSource ds=new ThunderbirdAddressbookDataSource();
 		
-		ds.setConfiguration(createRDFContainer("urn:TestThunderBirdDataSource"));
+		ds.setConfiguration(createRDFContainer(URN_TEST_THUNDER_BIRD_DATA_SOURCE));
         
 		//ConfigurationUtil.setBasepath(makeFileFromResource(data),ds.getConfiguration());
         ds.setThunderbirdAddressbookPath(makeFileFromResource(data));
@@ -80,7 +81,9 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
         model = createModel();
 		c.crawl();
 
-		assertEquals(objects,179);
+		// Originally there were 179 objects, but after adding a ContactList object
+		// that contains all contacts, the number rose to 180
+		assertEquals(objects,180);
 		
 		// test serialisation and parsing
 		StringWriter xml=new StringWriter();
@@ -91,7 +94,7 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
 		FileWriter writer = new FileWriter(tmpfile);
 		model.writeTo(writer,Syntax.RdfXml);
         model.writeTo(System.out, Syntax.Turtle);
-        validate(model,true);
+        validate(model,true, model.createURI(URN_TEST_THUNDER_BIRD_DATA_SOURCE),true);
 		writer.close();
 
 		//tmpfile.deleteOnExit();
