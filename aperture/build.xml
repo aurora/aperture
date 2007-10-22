@@ -27,7 +27,7 @@ your copy of ANT at http://ant.apache.org/
         <!-- versions -->
         <property name="project.version.major" value="2007" />
         <property name="project.version.minor" value="1" />
-        <property name="version-status" value="alpha-4" />
+        <property name="version-status" value="beta-1-snapshot" />
         <property name="project.version.full"
                   value="${project.version.major}.${project.version.minor}-${version-status}" />
 
@@ -544,13 +544,16 @@ your copy of ANT at http://ant.apache.org/
         <zip destfile="${release.src.zip}" basedir="${basedir}">
             <include name="src/**" />
             <include name="build.xml" />
+            <include name="selectors.xml" />
 
             <!-- this seems to be default behaviour but it doesn't hurt to be explicit -->
             <exclude name="**/CVS, **/.svn/**" />
 
             <!-- The following files are exluded while their APIs are still under heavy revision.
 			     Note that this exludes both core code and unit tests. -->
-            <exclude name="**/org/semanticdesktop/aperture/opener/**" />
+            <!-- This exclude has been removed by Antoni Mylka on 22.10.2007 -->
+            <!-- Sourceforge Bug ID [ 1815159 ] -->
+            <!-- <exclude name="**/org/semanticdesktop/aperture/opener/**" /> -->
         </zip>
     </target>
 
