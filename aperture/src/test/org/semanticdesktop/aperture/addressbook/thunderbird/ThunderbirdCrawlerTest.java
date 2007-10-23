@@ -89,15 +89,7 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
 		StringWriter xml=new StringWriter();
 		model.writeTo(xml,Syntax.RdfXml);
 
-		File tmpfile=File.createTempFile("abook",".rdfxml");
-		
-		FileWriter writer = new FileWriter(tmpfile);
-		model.writeTo(writer,Syntax.RdfXml);
-        model.writeTo(System.out, Syntax.Turtle);
         validate(model,true, model.createURI(URN_TEST_THUNDER_BIRD_DATA_SOURCE),true);
-		writer.close();
-
-		//tmpfile.deleteOnExit();
 		model.close();
 	}
 
