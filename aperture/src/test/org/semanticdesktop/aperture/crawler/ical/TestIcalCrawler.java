@@ -16,7 +16,6 @@ import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.QueryResultTable;
 import org.ontoware.rdf2go.model.QueryRow;
 import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.DatatypeLiteral;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
@@ -28,9 +27,9 @@ import org.ontoware.rdf2go.vocabulary.RDFS;
 import org.ontoware.rdf2go.vocabulary.XSD;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.vocabulary.GEO;
 import org.semanticdesktop.aperture.vocabulary.NCAL;
 import org.semanticdesktop.aperture.vocabulary.NCO;
@@ -861,7 +860,7 @@ public class TestIcalCrawler extends ApertureTestBase {
 	 * @return Model with generated RDF triples
 	 */
 	private Model readIcalFile(String fileName) throws Exception {
-		InputStream fileStream = ClassLoader.getSystemResourceAsStream(ICAL_TESTICAL_PATH + fileName);
+		InputStream fileStream = ResourceUtil.getInputStream(ICAL_TESTICAL_PATH + fileName,this.getClass());
 		assertNotNull(fileStream);
 		File file = createTempFile(fileStream);
 		assertTrue(file.canRead());

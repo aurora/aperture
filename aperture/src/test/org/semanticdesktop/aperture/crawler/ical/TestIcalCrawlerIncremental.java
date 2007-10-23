@@ -21,6 +21,7 @@ import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
+import org.semanticdesktop.aperture.util.ResourceUtil;
 
 public class TestIcalCrawlerIncremental extends ApertureTestBase {
 
@@ -110,7 +111,7 @@ public class TestIcalCrawlerIncremental extends ApertureTestBase {
      */
     private IcalTestIncrementalCrawlerHandler readIcalFile(String fileName, AccessData accessData, File file)
             throws Exception {
-        InputStream fileStream = ClassLoader.getSystemResourceAsStream(ICAL_TESTDATA_PATH + fileName);
+        InputStream fileStream = ResourceUtil.getInputStream(ICAL_TESTDATA_PATH + fileName,this.getClass());
         assertNotNull(fileStream);
         File tempFile = null;
         if (file == null) {
