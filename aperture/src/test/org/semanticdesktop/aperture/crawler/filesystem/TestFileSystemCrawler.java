@@ -139,18 +139,6 @@ public class TestFileSystemCrawler extends ApertureTestBase {
         // This should no be found as it is excluded by the domain boundaries
         assertFalse(ModelUtil.hasStatement(model, toURI(tmpFile4), NFO.fileName, null));
         
-        try {
-            model.writeTo(System.out);
-        }
-        catch (ModelRuntimeException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        
         validate(model,true,configuration.getDescribedUri(),true);
         model.close();
         configuration.getModel().close();
