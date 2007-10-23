@@ -6,6 +6,8 @@
  */
 package org.semanticdesktop.aperture.extractor.presentations;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -46,12 +48,17 @@ public class PresentationsExtractor implements Extractor {
 		try {
 			// determine which file structure is used
 			int length = Math.max(OFFICE_MAGIC_BYTES.length, WORDPERFECT_MAGIC_BYTES.length);
+			
+			if (!stream.markSupported()) {
+			    stream = new BufferedInputStream(stream,length);
+			}
+			
 			stream.mark(length);
 			byte[] bytes = IOUtil.readBytes(stream, length);
 			stream.reset();
 
 			if (hasMagicNumber(bytes, OFFICE_MAGIC_BYTES)) {
-				PoiUtil.extractAll(stream, null, result, logger);
+				stream = PoiUtil.extractAll(stream, null, result, logger);
 			}
 			else if (hasMagicNumber(bytes, WORDPERFECT_MAGIC_BYTES)) {
 				PresentationsWPStringExtractor extractor = new PresentationsWPStringExtractor();

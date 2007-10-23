@@ -72,9 +72,12 @@ public class PoiUtil {
 	 * @param resetStream Specified whether the stream should be buffered and reset. The buffer size can be
 	 *            determined by the system property described in the class documentation.
 	 * @param container The RDFContainer to store the metadata in.
+	 * @return If the stream passed as the input parameter supported mark() it is returned, otherwise the
+	 *         stream is wrapped in a BufferedInputStream which supports mark/reset and the 
+	 *         BufferedInputStream is returned
 	 * @throws IOException When resetting of the buffer resulted in an IOException.
 	 */
-	public static void extractMetadata(InputStream stream, boolean resetStream, RDFContainer container)
+	public static InputStream extractMetadata(InputStream stream, boolean resetStream, RDFContainer container)
 			throws IOException {
 		if (resetStream) {
 			int bufferSize = getBufferSize();
@@ -90,6 +93,7 @@ public class PoiUtil {
 		if (resetStream) {
 			stream.reset();
 		}
+		return stream;
 	}
 
 	/**
@@ -163,8 +167,11 @@ public class PoiUtil {
 	 * Extract full-text and metadata from an MS Office document contained in the specified stream. A
 	 * TextExtractor is specified to handle the specifics of full-text extraction for this particular MS
 	 * Office document type.
+	 * @return If the stream passed as the input parameter supported mark() it is returned, otherwise the
+     *         stream is wrapped in a BufferedInputStream which supports mark/reset and the 
+     *         BufferedInputStream is returned
 	 */
-	public static void extractAll(InputStream stream, TextExtractor textExtractor, RDFContainer container, Logger logger) {
+	public static InputStream extractAll(InputStream stream, TextExtractor textExtractor, RDFContainer container, Logger logger) {
 		// mark the stream with a sufficiently large buffer so that, when POI chokes on a document, there is a
 		// good chance we can reset to the beginning of the buffer and apply a StringExtractor
 		int bufferSize = getBufferSize();
@@ -220,6 +227,14 @@ public class PoiUtil {
 				container.add(NIE.plainTextContent, text);
 			}
 		}
+		
+		try {
+		    stream.reset();
+		} catch (Exception e) {
+		    // ignore
+		}
+		
+		return stream;
 	}
 
 	/**

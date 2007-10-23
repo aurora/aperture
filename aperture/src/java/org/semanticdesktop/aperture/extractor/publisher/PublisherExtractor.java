@@ -33,7 +33,7 @@ public class PublisherExtractor implements Extractor {
 			throws ExtractorException {
 		// perform metadata extraction
 		try {
-			PoiUtil.extractMetadata(stream, true, result);
+			stream = PoiUtil.extractMetadata(stream, true, result);
 		}
 		catch (IOException e) {
 			throw new ExtractorException(e);

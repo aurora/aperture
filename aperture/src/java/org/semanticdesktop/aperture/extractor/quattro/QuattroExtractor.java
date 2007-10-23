@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.extractor.quattro;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -45,6 +46,11 @@ public class QuattroExtractor implements Extractor {
 		// sense. We double-check the outcome of the MimeTypeIdentifier as the quattro MIME type is also used
 		// for older, incompatible formats.
 		try {
+		    
+		    if (!stream.markSupported()) {
+		        stream = new BufferedInputStream(stream,MAGIC_BYTES.length);
+		    }
+		    
 			if (hasMSOfficeMagicNumber(stream)) {
 				PoiUtil.extractAll(stream, null, result, logger);
 			}

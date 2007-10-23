@@ -26,7 +26,7 @@ public class ExtractorTestBase extends ApertureTestBase {
         URI id = URIImpl.createURIWithoutChecking(uriString);
 
         // create a stream that provides access to the test document
-        InputStream stream = ResourceUtil.getInputStream(resourceName, ExtractorTestBase.class);
+        InputStream stream = ResourceUtil.getInputStream(resourceName, this.getClass());
         assertNotNull(stream);
 
         // create a container in which the extraction results can be stored
