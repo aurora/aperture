@@ -37,7 +37,7 @@ import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTest
 import org.semanticdesktop.nepomuk.nrl.validator.testers.NRLClosedWorldModelTester;
 
 /**
- * An an extension of the SimpleCrawlerHandler that validates each DataObject
+ * An an extension of the SimpleCrawlerHandler that validates the data after the crawl
  */
 public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
 
@@ -67,40 +67,6 @@ public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
     }
 
     /**
-     * This method gets called when the crawler has encountered a new DataObject
-     * 
-     * @param dataCrawler the crawler
-     * @param object the DataObject
-     */
-    public void objectNew(Crawler dataCrawler, DataObject object) {
-        super.objectNew(dataCrawler, object);
-        try {
-            Model model = object.getMetadata().getModel();
-            boolean wasOpen = model.isOpen();
-
-            if (!wasOpen) {
-                model.open();
-            }
-
-            validator.setModelTesters(new NRLClosedWorldModelTester());
-            ValidationReport report = validator.validate(object.getMetadata().getModel());
-            if (report.getMessages().size() > 0) {
-                System.out.println("Validation report for: " + object.getID());
-                printValidationReport(report);
-            }
-
-            if (!wasOpen) {
-                model.close();
-            }
-        }
-        catch (StandaloneValidatorException e) {
-            System.err.println("validation failed uri: " + object.getID());
-            e.printStackTrace();
-        }
-    }
-    
-
-    /**
      * @see SimpleCrawlerHandler#crawlStopped(Crawler, ExitCode)
      */
     @Override
@@ -120,7 +86,7 @@ public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
         try {
             ValidationReport report = validator.validate(overallModel);
             if (report.getMessages().size() > 0) {
-                System.out.println("Tree structure validation report:");
+                System.out.println("Tree validation report:");
                 printValidationReport(report);
             }
         }
