@@ -348,21 +348,21 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
         // skip if there is a problem
         if (folder == null) {
-            logger.info("passed null folder, ignoring");
+            logger.debug("passed null folder, ignoring");
             return;
         }
         else if (!folder.exists()) {
-            logger.info("folder does not exist: \"" + folder.getFullName() + "\"");
+            logger.debug("folder does not exist: \"" + folder.getFullName() + "\"");
             return;
         }
 
         // crawl the folder and its messages, if any
-        logger.info("crawling folder \"" + folder.getFullName() + "\"");
+        logger.debug("crawling folder \"" + folder.getFullName() + "\"");
         crawlSingleFolder(folder);
 
         // crawl its subfolders, if any and when allowed
         if (holdsFolders(folder)) {
-            logger.info("crawling subfolders in folder \"" + folder.getFullName() + "\"");
+            logger.debug("crawling subfolders in folder \"" + folder.getFullName() + "\"");
             crawlSubFolders(folder, depth);
         }
 
@@ -452,19 +452,19 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
     private void crawlSubFolders(Folder folder, int depth) {
         if (depth + 1 > maxDepth && maxDepth >= 0) {
-            logger.info("Reached crawling depth limit (" + maxDepth + ") - stopping.");
+            logger.debug("Reached crawling depth limit (" + maxDepth + ") - stopping.");
             return;
         }
 
         try {
             Folder[] subFolders = folder.list();
-            logger.info("Crawling " + subFolders.length + " sub-folders.");
+            logger.debug("Crawling " + subFolders.length + " sub-folders.");
             for (int i = 0; !isStopRequested() && i < subFolders.length; i++) {
                 try {
                     crawlFolder(subFolders[i], depth + 1);
                 }
                 catch (MessagingException e) {
-                    logger.info("Error crawling subfolder \"" + subFolders[i].getFullName() + "\"");
+                    logger.debug("Error crawling subfolder \"" + subFolders[i].getFullName() + "\"");
                     // but continue..
                 }
             }
@@ -496,6 +496,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         buffer.append(encodeFolderName(folder.getFullName()));
 
         return buffer.toString();
+    }
+    
+    private String getMessageUri(String messagePrefix, long messageId) {
+        return messagePrefix + ";UID=" + messageId;
     }
 
     /**
@@ -575,7 +579,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             return;
         }
 
-        logger.info("Crawling messages in folder " + folder.getFullName());
+        logger.debug("Crawling messages in folder " + folder.getFullName());
 
         // determine the set of messages we haven't seen yet, to prevent prefetching the content info for old
         // messages: especially handy when only a few mails were added to a large folder.
@@ -602,7 +606,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 long messageID = folder.getUID(message);
 
                 // determine the uri
-                String uri = messagePrefix + messageID;
+                String uri = getMessageUri(messagePrefix, messageID);
 
                 // remove this URI from the set of deprecated children
                 deprecatedChildren.remove(uri);
@@ -622,7 +626,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                         accessData.removeReferredID(folderUriString, uri);
                     }
                     else {
-                        reportNotModified(messagePrefix + messageID);
+                        reportNotModified(getMessageUri(messagePrefix, messageID));
                     }
                 }
             }
@@ -652,7 +656,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         for (int i = 0; i < messages.length && !isStopRequested(); i++) {
             MimeMessage message = (MimeMessage) messages[i];
             long messageID = folder.getUID(message);
-            String uri = messagePrefix + messageID;
+            String uri = getMessageUri(messagePrefix, messageID);
 
             try {
                 if (inDomain(uri)) {
@@ -1061,11 +1065,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
             if (!messagesChanged && !foldersChanged) {
                 // the folder contents have not changed, we can return immediately
-                logger.info("Folder \"" + folder.getFullName() + "\" has not changed.");
+                logger.debug("Folder \"" + folder.getFullName() + "\" has not changed.");
                 return null;
             }
 
-            logger.info("Folder \"" + folder.getFullName() + "\" is new or has changes.");
+            logger.debug("Folder \"" + folder.getFullName() + "\" is new or has changes.");
         }
 
         // register the folder's name
