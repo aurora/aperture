@@ -12,7 +12,6 @@ import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.examples.handler.PerformanceMeasuringCrawlerHandler;
 import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.examples.handler.ValidatingCrawlerHandler;
@@ -29,17 +28,17 @@ public abstract class AbstractExampleCrawler {
     
     private boolean extractingContents;
     
-    private static final String OUTPUT_FILE_OPTION = "-o";
+    public static final String OUTPUT_FILE_OPTION = "-o";
     
-    private static final String VALIDATE_OPTION = "--validate";
+    public static final String VALIDATE_OPTION = "--validate";
     
-    private static final String PERFORMANCE_OPTION = "--performance";
+    public static final String PERFORMANCE_OPTION = "--performance";
     
-    private static final String VERBOSE_OPTION = "-v";
+    public static final String VERBOSE_OPTION = "-v";
     
-    private static final String IDENTIFY_MIME_OPTION = "-i";
+    public static final String IDENTIFY_MIME_OPTION = "-i";
     
-    private static final String EXTRACT_CONTENTS_OPTION = "-x";
+    public static final String EXTRACT_CONTENTS_OPTION = "-x";
     
     protected abstract String getSpecificSyntaxPart();
     
