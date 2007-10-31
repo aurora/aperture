@@ -85,10 +85,13 @@ public class FileAccessor implements DataAccessor {
 		// determine what kind of File it is
 		boolean isFile = file.isFile();
 		boolean isFolder = file.isDirectory();
-		boolean addParent = 
-		    params == null || 
-		    params.get("addParent") == null || 
-		    params.get("addParent").equals(Boolean.TRUE);
+		
+		// Removed this functionality after Christiaan Fluit complained about it
+		// TODO Return here after resolving the addParent issue
+		//boolean addParent = 
+		//    params == null || 
+		//    params.get("addParent") == null || 
+		//    params.get("addParent").equals(Boolean.TRUE);
 		if (!isFile && !isFolder) {
 			// we can still handle this by using a plain DataObjectBase but log it anyway
 			logger.warn("not a file nor a folder: " + file);
@@ -124,8 +127,11 @@ public class FileAccessor implements DataAccessor {
 
 		// create the metadata
 		URI id = toURI(file);
-		RDFContainer metadata = createMetadata(file, id, isFile, isFolder, addParent, containerFactory);
-
+		
+		// TODO Return here after resolving the addParent issue
+		//RDFContainer metadata = createMetadata(file, id, isFile, isFolder, addParent, containerFactory);
+		RDFContainer metadata = createMetadata(file, id, isFile, isFolder, containerFactory);
+		
 		// create the DataObject
 		DataObject result = null;
 
@@ -174,7 +180,7 @@ public class FileAccessor implements DataAccessor {
 		}
 	}
 
-	private RDFContainer createMetadata(File file, URI id, boolean isFile, boolean isFolder, boolean addParent,
+	private RDFContainer createMetadata(File file, URI id, boolean isFile, boolean isFolder, 
 			RDFContainerFactory containerFactory) {
 		// get the RDFContainer instance
 		RDFContainer metadata = containerFactory.getRDFContainer(id);
@@ -191,7 +197,9 @@ public class FileAccessor implements DataAccessor {
 		}
 
 		File parent = file.getParentFile();
-		if (parent != null && addParent) {
+		// TODO Return here after resolving the addParent issue
+		//if (parent != null && addParent) {
+		if (parent != null) {
 			metadata.add(NFO.belongsToContainer, toURI(parent));
             metadata.add(metadata.getModel().createStatement(toURI(parent), RDF.type, NFO.Folder));
 		}
