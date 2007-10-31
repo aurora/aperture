@@ -107,7 +107,7 @@ public abstract class AbstractExampleCrawler {
     public static String getCommonExplanationPart() {
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
-        writer.println(getAlignedOption("--validate") + "turns on validation, every DataObject is validated");
+        writer.println(getAlignedOption("--validate") + "turns on validation, the data is validated after the crawl");
         writer.println(getAlignedOption(null) + "(conflicts with --performance)");
         writer.println(getAlignedOption("--performance") + "turns on performance measuring");
         writer.println(getAlignedOption("-i") + "turns on MIME type identification");
