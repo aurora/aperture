@@ -21,6 +21,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+import javax.swing.JCheckBox;
 
 public class FileSelectorPanel extends JPanel {
 
@@ -38,6 +39,8 @@ public class FileSelectorPanel extends JPanel {
 
     private JFileChooser fileChooser;
 
+	private JCheckBox inferenceCheck = null;
+
     /**
      * This is the default constructor
      */
@@ -54,6 +57,11 @@ public class FileSelectorPanel extends JPanel {
      * @return void
      */
     private void initialize() {
+        GridBagConstraints gridBagConstraints12 = new GridBagConstraints();
+        gridBagConstraints12.gridx = 0;
+        gridBagConstraints12.gridwidth = 2;
+        gridBagConstraints12.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints12.gridy = 1;
         GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
         gridBagConstraints11.gridx = 2;
         gridBagConstraints11.insets = new java.awt.Insets(0, 10, 0, 0);
@@ -75,6 +83,7 @@ public class FileSelectorPanel extends JPanel {
         this.add(fileLabel, gridBagConstraints);
         this.add(getFileField(), gridBagConstraints1);
         this.add(getBrowseButton(), gridBagConstraints11);
+        this.add(getInferenceCheck(), gridBagConstraints12);
     }
     
     /**
@@ -160,6 +169,33 @@ public class FileSelectorPanel extends JPanel {
         this.file = file;
         fileField.setText(file.getPath());
         fireStateChanged();
+    }
+
+	/**
+	 * This method initializes inferenceCheck	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */
+	private JCheckBox getInferenceCheck() {
+	    if (inferenceCheck == null) {
+	        inferenceCheck = new JCheckBox();
+	        inferenceCheck.setText("inference?");
+	        inferenceCheck.setToolTipText("check to add inferred facts based on subproperties/subclasses. For example, nie:subject is added when a nmo:messageSubject is present.");
+	        inferenceCheck.setSelected(true);
+	        inferenceCheck.addActionListener(new java.awt.event.ActionListener() {
+	            public void actionPerformed(java.awt.event.ActionEvent e) {
+	                
+	            }
+	        });
+	    }
+	    return inferenceCheck;
+	}
+
+    /**
+     * @return return whether inference is true or not
+     */
+    public boolean getInferenceChecked() {
+        return getInferenceCheck().isSelected();
     }
 
 } // @jve:decl-index=0:visual-constraint="10,10"

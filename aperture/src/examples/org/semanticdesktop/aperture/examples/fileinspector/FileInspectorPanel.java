@@ -39,6 +39,7 @@ import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifie
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
 import org.semanticdesktop.aperture.util.IOUtil;
+import org.semanticdesktop.aperture.util.InferenceUtil;
 
 public class FileInspectorPanel extends JPanel {
 
@@ -55,6 +56,11 @@ public class FileInspectorPanel extends JPanel {
     private JLabel statusBar = null;
 
     private RDFContainer lastContainer;
+
+    /**
+     * initialized inference utilities
+     */
+    private InferenceUtil inferenceUtil;
 
     /**
      * This is the default constructor
@@ -108,6 +114,9 @@ public class FileInspectorPanel extends JPanel {
 
         // initialize the extractor registry
         extractorRegistry = new DefaultExtractorRegistry();
+        
+        // intialize Inference Util
+        inferenceUtil = InferenceUtil.createForCoreOntologies();
     };
 
     public void setFile(File file) {
@@ -119,7 +128,7 @@ public class FileInspectorPanel extends JPanel {
         return controlPanel.getFile();
     }
 
-    private void inspect(final File file) {
+    private void inspect(final File file, final boolean inference) {
         // some checks on whether we can process this file
         if (!file.exists()) {
             JOptionPane.showMessageDialog(this, "File does not exist: " + file.getPath(),
@@ -137,7 +146,7 @@ public class FileInspectorPanel extends JPanel {
             Thread thread = new Thread() {
 
                 public void run() {
-                    process(file);
+                    process(file, inference);
                 }
             };
             thread.setPriority(Thread.MIN_PRIORITY);
@@ -145,7 +154,7 @@ public class FileInspectorPanel extends JPanel {
         }
     }
 
-    private void process(final File file) {
+    private void process(final File file, final boolean inference) {
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
@@ -185,6 +194,10 @@ public class FileInspectorPanel extends JPanel {
                 currentExtractor.extract(container.getDescribedUri(), buffer, null, mimeType, container);
                 stream.close();
             }
+            
+            // do inference
+            if (inference)
+                inferenceUtil.extendContent(container);
 
             // update the UI
             final RDFContainer finalContainer = container;
@@ -250,7 +263,7 @@ public class FileInspectorPanel extends JPanel {
             controlPanel.addChangeListener(new ChangeListener() {
 
                 public void stateChanged(ChangeEvent e) {
-                    inspect(controlPanel.getFile());
+                    inspect(controlPanel.getFile(), controlPanel.getInferenceChecked());
                 }
             });
         }
