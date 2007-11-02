@@ -16,6 +16,7 @@ import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.ModelSet;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
@@ -28,6 +29,7 @@ import org.semanticdesktop.aperture.vocabulary.NID3;
 import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.semanticdesktop.aperture.vocabulary.NMO;
 import org.semanticdesktop.aperture.vocabulary.TAGGING;
+import org.semanticdesktop.nepomuk.nrl.validator.ModelTester;
 import org.semanticdesktop.nepomuk.nrl.validator.StandaloneValidator;
 import org.semanticdesktop.nepomuk.nrl.validator.ValidationMessage;
 import org.semanticdesktop.nepomuk.nrl.validator.ValidationReport;
@@ -42,6 +44,7 @@ import org.semanticdesktop.nepomuk.nrl.validator.testers.NRLClosedWorldModelTest
 public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
 
     private StandaloneValidator validator;
+    private ModelTester[] additionalModelTesters;
 
     /**
      * Constructor.
@@ -56,10 +59,12 @@ public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
      *            useful for performance measurements.
      * @throws ModelException
      */
-    public ValidatingCrawlerHandler(boolean identifyingMimeType, boolean extractingContents, boolean verbose, File outputFile) {
+    public ValidatingCrawlerHandler(boolean identifyingMimeType, boolean extractingContents, boolean verbose, 
+            File outputFile, ModelTester [] additionalModelTesters) {
         super(identifyingMimeType, extractingContents, verbose, outputFile);
         try {
             initializeValidator();
+            this.additionalModelTesters = additionalModelTesters;
         }
         catch (StandaloneValidatorException sve) {
             throw new RuntimeException(sve);
@@ -82,12 +87,42 @@ public class ValidatingCrawlerHandler extends SimpleCrawlerHandler {
             Statement statement = iterator.next();
             overallModel.addStatement(statement);
         }
-        validator.setModelTesters(new NRLClosedWorldModelTester(), new DataObjectTreeModelTester());
+        
+        /*
+         * Add the datasource rdf:type nie:DataSource triple, otherwise the validator
+         * will complain. The same trick is used in the tests.
+         */
+        
+        overallModel.addStatement(
+            crawler.getDataSource().getID(),
+            RDF.type,
+            NIE.DataSource);
+        
+        if (additionalModelTesters != null && additionalModelTesters.length > 0) {
+            /*
+             * If there are any additional model testers, please include them
+             */
+            ModelTester testers [] = new ModelTester[additionalModelTesters.length + 1];
+            testers[0] = new NRLClosedWorldModelTester();
+            for (int i = 0; i < additionalModelTesters.length; i++) {
+                testers[i+1] = additionalModelTesters[i];
+            }
+            validator.setModelTesters(testers);
+        } else {
+            /*
+             * If there are no additional model testers, fall back to the default one.
+             */
+            validator.setModelTesters(new NRLClosedWorldModelTester());
+        }
+        
         try {
+            System.out.println("Performing validation");
             ValidationReport report = validator.validate(overallModel);
             if (report.getMessages().size() > 0) {
-                System.out.println("Tree validation report:");
+                System.out.println("Validation report:");
                 printValidationReport(report);
+            } else {
+                System.out.println("No problems detected");
             }
         }
         catch (StandaloneValidatorException e) {
