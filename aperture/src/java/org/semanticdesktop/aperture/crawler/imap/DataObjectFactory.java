@@ -128,6 +128,8 @@ public class DataObjectFactory {
         // The first object is the Message itself, add RDF type to it
         RDFContainer msgObject = ((DataObject) result.get(0)).getMetadata();
         msgObject.add(RDF.type, NMO.Email);
+        // Apart from being a message, it is also a MailboxDataObject
+        msgObject.add(RDF.type, NMO.MailboxDataObject);
 
         String messageID = message.getMessageID();
         if (messageID != null) {
@@ -611,56 +613,59 @@ public class DataObjectFactory {
 
     /* ------- Methods for transforming a HashMap to a list of DataObjects ------- */
 
-    private void createDataObjects(HashMap map, URI parentUri, ArrayList result) {
+    private void createDataObjects(HashMap dataObjectHashMap, URI parentUri, ArrayList resultDataObjectList) {
         // fetch the minimal set of properties needed to create a DataObject
-        URI id = (URI) map.get(ID_KEY);
-        InputStream content = (InputStream) map.get(CONTENTS_KEY);
-        RDFContainer metadata = containerFactory.getRDFContainer(id);
+        URI dataObjectId = (URI) dataObjectHashMap.get(ID_KEY);
+        InputStream content = (InputStream) dataObjectHashMap.get(CONTENTS_KEY);
+        RDFContainer metadata = containerFactory.getRDFContainer(dataObjectId);
 
         if (!content.markSupported()) {
             content = new BufferedInputStream(content, 16384);
         }
 
         // create the DataObject
-        DataObject object = content == null ? new DataObjectBase(id, source, metadata)
-                : new FileDataObjectBase(id, source, metadata, content);
-        result.add(object);
+        DataObject dataObject = 
+            (content == null) ? 
+             new DataObjectBase(dataObjectId, source, metadata) : 
+             new FileDataObjectBase(dataObjectId, source, metadata, content);
+             
+        resultDataObjectList.add(dataObject);
 
         // extend metadata with additional properties
         if (parentUri != null) {
             metadata.add(NIE.isPartOf, parentUri);
         }
 
-        copyString(NIE.characterSet, map, metadata);
-        copyString(NIE.mimeType, map, metadata);
-        copyString(NMO.contentMimeType, map, metadata);
-        copyString(NMO.messageSubject, map, metadata);
-        copyString(NFO.fileName, map, metadata);
+        copyString(NIE.characterSet, dataObjectHashMap, metadata);
+        copyString(NIE.mimeType, dataObjectHashMap, metadata);
+        copyString(NMO.contentMimeType, dataObjectHashMap, metadata);
+        copyString(NMO.messageSubject, dataObjectHashMap, metadata);
+        copyString(NFO.fileName, dataObjectHashMap, metadata);
 
-        copyInt(NIE.byteSize, map, metadata);
+        copyInt(NIE.byteSize, dataObjectHashMap, metadata);
 
-        copyDate(NIE.contentCreated, map, metadata);
+        copyDate(NIE.contentCreated, dataObjectHashMap, metadata);
 
-        copyAddresses(NMO.from, map, metadata);
-        copyAddresses(NMO.sender, map, metadata);
-        copyAddresses(NMO.to, map, metadata);
-        copyAddresses(NMO.cc, map, metadata);
-        copyAddresses(NMO.bcc, map, metadata);
+        copyAddresses(NMO.from, dataObjectHashMap, metadata);
+        copyAddresses(NMO.sender, dataObjectHashMap, metadata);
+        copyAddresses(NMO.to, dataObjectHashMap, metadata);
+        copyAddresses(NMO.cc, dataObjectHashMap, metadata);
+        copyAddresses(NMO.bcc, dataObjectHashMap, metadata);
         
-        copyUri(RDF.type, map, metadata);
+        copyUri(RDF.type, dataObjectHashMap, metadata);
 
         // repeat recursively on children
-        ArrayList children = (ArrayList) map.get(CHILDREN_KEY);
+        ArrayList children = (ArrayList) dataObjectHashMap.get(CHILDREN_KEY);
         if (children != null) {
             int nrChildren = children.size();
             for (int i = 0; i < nrChildren; i++) {
-                HashMap child = (HashMap) children.get(i);
+                HashMap childHashMap = (HashMap) children.get(i);
 
                 // also register the child in the parent's metadata
-                URI childID = (URI) child.get(ID_KEY);
-                metadata.add(metadata.getValueFactory().createStatement(childID, NIE.isPartOf, id));
+                URI childID = (URI) childHashMap.get(ID_KEY);
+                metadata.getModel().addStatement(childID, NIE.isPartOf, dataObjectId);
 
-                createDataObjects(child, id, result);
+                createDataObjects(childHashMap, dataObjectId, resultDataObjectList);
             }
         }
     }
