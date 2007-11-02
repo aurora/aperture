@@ -44,7 +44,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
@@ -53,6 +52,7 @@ import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -70,6 +70,7 @@ import org.semanticdesktop.aperture.security.trustmanager.standard.StandardTrust
 import org.semanticdesktop.aperture.util.HttpClientUtil;
 import org.semanticdesktop.aperture.vocabulary.NFO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
+import org.semanticdesktop.aperture.vocabulary.NMO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -704,6 +705,9 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                     // register parent child relationship (necessary in order to be able to report
                     // unmodified or deleted attachments)
                     registerParent(object);
+                    
+                    // attach the message to the parent folder
+                    object.getMetadata().add(NIE.isPartOf,folderUri);
 
                     // Report this object as a new object (assumption: objects are always new, never
                     // changed, since mails are immutable).
@@ -1075,12 +1079,15 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         // register the folder's name
         URI folderURI = new URIImpl(url);
         RDFContainer metadata = containerFactory.getRDFContainer(folderURI);
-        metadata.add(NFO.fileName, folder.getName());
+        metadata.add(NIE.title, folder.getName());
 
         // register the folder's parent
         Folder parent = folder.getParent();
         if (parent != null) {
             metadata.add(NIE.isPartOf, getURI(parent));
+            // this is needed to satiate the validator, otherwise errors about missing type
+            // occur for the rootFolder begin a part of some non-crawled folder
+            metadata.getModel().addStatement(getURI(parent),RDF.type,NFO.Folder);
         }
 
         // add message URIs as children
@@ -1104,11 +1111,13 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 if (isAcceptable(message)) {
                     long messageID = imapFolder.getUID(message);
                     try {
-                        URI messageURI = metadata.getValueFactory().createURI(uriPrefix + messageID);
-                        metadata.add(metadata.getValueFactory().createStatement(messageURI, NIE.isPartOf,
-                            folderURI));
+                        URI messageURI = metadata.getModel().createURI(getMessageUri(uriPrefix,messageID));
+                        metadata.getModel().addStatement(messageURI, NIE.isPartOf, folderURI);
+                        // This is needed to satiate the validator, otherwise if an email falls beyond
+                        // the domain boundaries, the validator will complain about the missing type triple
+                        metadata.getModel().addStatement(messageURI, RDF.type, NMO.MailboxDataObject);
                     }
-                    catch (ModelException e) {
+                    catch (ModelRuntimeException e) {
                         logger.error("ModelException while creating URI", e);
                     }
                 }
