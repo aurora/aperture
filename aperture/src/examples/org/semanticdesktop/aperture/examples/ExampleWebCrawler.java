@@ -27,6 +27,7 @@ import org.semanticdesktop.aperture.hypertext.linkextractor.impl.DefaultLinkExtr
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
+import org.semanticdesktop.nepomuk.nrl.validator.ModelTester;
 
 /**
  * Example class that crawls a web site or locally stored hypertext graph and dumps all extracted information
@@ -127,6 +128,16 @@ public class ExampleWebCrawler extends AbstractExampleCrawler {
 
         // start crawling
         crawler.crawl();
+    }
+    
+    /**
+     * The web resources are inherently a graph, it makes no sense to try to force them
+     * into any tree, so it makes no sense to check if the extracted data does form a 
+     * tree. Therefore we override this method and return null, so that the DataObject
+     * tree is not checked.
+     */
+    public ModelTester [] getAdditionalModelTesters() {
+        return null;
     }
 
     public static void main(String[] args) throws Exception {

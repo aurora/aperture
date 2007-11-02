@@ -15,6 +15,8 @@ import java.util.List;
 import org.semanticdesktop.aperture.examples.handler.PerformanceMeasuringCrawlerHandler;
 import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.examples.handler.ValidatingCrawlerHandler;
+import org.semanticdesktop.nepomuk.nrl.validator.ModelTester;
+import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTester;
 
 public abstract class AbstractExampleCrawler {
 
@@ -91,7 +93,7 @@ public abstract class AbstractExampleCrawler {
             exitWithUsageMessage();
         }
         if (validate) {
-            handler = new ValidatingCrawlerHandler(identifyingMimeType,extractingContents,verbose,outputFile);
+            handler = new ValidatingCrawlerHandler(identifyingMimeType,extractingContents,verbose,outputFile, getAdditionalModelTesters());
         } else if (performance) {
             handler = new PerformanceMeasuringCrawlerHandler(identifyingMimeType,extractingContents,verbose,outputFile);
         } else {
@@ -136,6 +138,10 @@ public abstract class AbstractExampleCrawler {
         }
         
         return builder.toString();
+    }
+    
+    public ModelTester [] getAdditionalModelTesters() {
+        return new ModelTester [] { new DataObjectTreeModelTester() };
     }
     
     public File getOutputFile() {
