@@ -23,7 +23,6 @@ public class FolderDataObjectBase extends DataObjectBase implements FolderDataOb
     public FolderDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata) {
         super(id, dataSource, metadata);
         // Add RDF type info
-        metadata.add(RDF.type, NFO.FileDataObject);
         metadata.add(RDF.type, NFO.Folder);
     }
 }
