@@ -34,6 +34,6 @@
 	<classpathentry kind="lib" path="lib/activation-1.0.2-upd2.jar"/>
 	<classpathentry kind="lib" path="lib/htmlparser-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/metadata-extractor-2.4.0-beta-1.jar"/>
-	<classpathentry kind="lib" path="lib/nrlvalidator.jar"/>
+	<classpathentry kind="lib" path="lib/nrlvalidator-0.1.snapshot.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>
