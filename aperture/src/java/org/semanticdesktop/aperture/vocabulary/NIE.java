@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Oct 15 17:27:31 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Nov 02 12:57:21 CET 2007
  * input file: D:\workspace\aperture/doc/ontology/nie.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#
  */
@@ -165,11 +165,19 @@ public class NIE {
     /**
      * Type: Property <br/>
      * Label: hasPart  <br/>
-     * Comment: Generic property used to express containment relationships between DataObjects. NIE extensions are encouraged to provide more specific subproperties of this one. It is advisable for actual instances of DataObjects to use those specific subproperties. Note to the developers: Please be aware of the distinction between containment relation and provenance. A Contact (a DataObject) may be said to be a part of a ContactGroup (another DataObject),but not a part of an Addressbook. Addressbook should be modelled as a subclass of a DataSource and the link between a contact and an addressbook should be expressed with datasource property.  <br/>
+     * Comment: Generic property used to express 'physical' containment relationships between DataObjects. NIE extensions are encouraged to provide more specific subproperties of this one. It is advisable for actual instances of DataObjects to use those specific subproperties. Note to the developers: Please be aware of the distinction between containment relation and provenance. A Contact (a DataObject) may be said to be a part of a ContactGroup (another DataObject),but not a part of an Addressbook. Addressbook should be modelled as a subclass of a DataSource and the link between a contact and an addressbook should be expressed with datasource property. Also, please note the difference between physical containment (hasPart) and logical containment (hasLogicalPart) the former has more strict meaning and doesn't always imply the latter.  <br/>
      * Domain: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#InformationElement  <br/>
      * Range: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataObject  <br/>
      */
     public static final URI hasPart = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/01/19/nie#hasPart");
+    /**
+     * Type: Property <br/>
+     * Label: hasLogicalPart  <br/>
+     * Comment: Generic property used to express 'logical' containment relationships between DataObjects. NIE extensions are encouraged to provide more specific subproperties of this one. It is advisable for actual instances of InformationElement to use those specific subproperties. Note the difference between 'physical' containment (hasPart) and logical containment (hasLogicalPart)  <br/>
+     * Domain: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#InformationElement  <br/>
+     * Range: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#InformationElement  <br/>
+     */
+    public static final URI hasLogicalPart = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/01/19/nie#hasLogicalPart");
     /**
      * Type: Property <br/>
      * Label: identifier  <br/>
@@ -188,6 +196,22 @@ public class NIE {
     public static final URI informationElementDate = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/01/19/nie#informationElementDate");
     /**
      * Type: Property <br/>
+     * Label: interpretedAs  <br/>
+     * Comment: Links the DataObject with the InformationElement it is interpreted as.  <br/>
+     * Domain: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataObject  <br/>
+     * Range: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#InformationElement  <br/>
+     */
+    public static final URI interpretedAs = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/01/19/nie#interpretedAs");
+    /**
+     * Type: Property <br/>
+     * Label: isLogicalPartOf  <br/>
+     * Comment: Generic property used to express 'logical' containment relationships between DataObjects. NIE extensions are encouraged to provide more specific subproperties of this one. It is advisable for actual instances of InformationElement to use those specific subproperties. Note the difference between 'physical' containment (isPartOf) and logical containment (isLogicalPartOf)  <br/>
+     * Domain: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#InformationElement  <br/>
+     * Range: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#InformationElement  <br/>
+     */
+    public static final URI isLogicalPartOf = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/01/19/nie#isLogicalPartOf");
+    /**
+     * Type: Property <br/>
      * Label: isPartOf  <br/>
      * Comment: Generic property used to express containment relationships between DataObjects. NIE extensions are encouraged to provide more specific subproperties of this one. It is advisable for actual instances of DataObjects to use those specific subproperties. Note to the developers: Please be aware of the distinction between containment relation and provenance. A Contact (a DataObject) may be said to be a part of a ContactGroup (another DataObject),but not a part of an Addressbook. Addressbook should be modelled as a subclass of a DataSource and the link between a contact and an addressbook should be expressed with datasource property.  <br/>
      * Domain: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataObject  <br/>
@@ -196,12 +220,12 @@ public class NIE {
     public static final URI isPartOf = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/01/19/nie#isPartOf");
     /**
      * Type: Property <br/>
-     * Label: isStoredIn  <br/>
+     * Label: isStoredAs  <br/>
      * Comment: Links the information element with the DataObject it is stored in.  <br/>
      * Domain: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#InformationElement  <br/>
      * Range: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataObject  <br/>
      */
-    public static final URI isStoredIn = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/01/19/nie#isStoredIn");
+    public static final URI isStoredAs = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/01/19/nie#isStoredAs");
     /**
      * Type: Property <br/>
      * Label: keyword  <br/>
@@ -252,6 +276,7 @@ public class NIE {
      * Type: Property <br/>
      * Label: links  <br/>
      * Comment: A linking relation. A piece of content links/mentions a piece of data  <br/>
+     * Domain: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#InformationElement  <br/>
      * Range: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataObject  <br/>
      */
     public static final URI links = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/01/19/nie#links");

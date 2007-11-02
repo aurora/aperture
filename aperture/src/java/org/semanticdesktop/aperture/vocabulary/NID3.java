@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Oct 15 17:27:37 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Nov 02 12:57:25 CET 2007
  * input file: D:\workspace\aperture/doc/ontology/nid3.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/05/10/nid3#
  */
@@ -85,7 +85,8 @@ The 'Album/Movie/Show title' frame is intended for the title of the recording(/s
     /**
      * Type: Property <br/>
      * Label: attachedPicture  <br/>
-     * Comment: A picture attached to an audio file. Inspired by the attached picture tag defined in http://www.id3.org/id3v2.3.0 sec. 4.15)  <br/>
+     * Comment: A picture attached to an audio file. The DataObject refered to by this property is usually interpreted as an nfo:Image Inspired by the attached picture tag defined in http://www.id3.org/id3v2.3.0 sec. 4.15)  <br/>
+     * Domain: http://www.semanticdesktop.org/ontologies/2007/05/10/nid3#ID3Audio  <br/>
      * Range: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataObject  <br/>
      */
     public static final URI attachedPicture = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/05/10/nid3#attachedPicture");
@@ -251,6 +252,7 @@ PCM Pulse Code Modulated audio;  <br/>
      * Label: generalEncapsulatedObject  <br/>
      * Comment: An arbitrary file embedded in an audio file. Inspired by http://www.id3.org/id3v2.3.0 sec. 
 4.16)  <br/>
+     * Domain: http://www.semanticdesktop.org/ontologies/2007/05/10/nid3#ID3Audio  <br/>
      * Range: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataObject  <br/>
      */
     public static final URI generalEncapsulatedObject = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/05/10/nid3#generalEncapsulatedObject");

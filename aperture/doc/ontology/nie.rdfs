@@ -127,12 +127,20 @@
 </rdf:Property>
 <rdf:Property rdf:about="&nie;hasPart"
 	 rdfs:label="hasPart">
-	<rdfs:comment>Generic property used to express containment relationships between DataObjects. NIE extensions are encouraged to provide more specific subproperties of this one. It is advisable for actual instances of DataObjects to use those specific subproperties. Note to the developers: Please be aware of the distinction between containment relation and provenance. A Contact (a DataObject) may be said to be a part of a ContactGroup (another DataObject),but not a part of an Addressbook. Addressbook should be modelled as a subclass of a DataSource and the link between a contact and an addressbook should be expressed with datasource property.</rdfs:comment>
+	<rdfs:comment>Generic property used to express 'physical' containment relationships between DataObjects. NIE extensions are encouraged to provide more specific subproperties of this one. It is advisable for actual instances of DataObjects to use those specific subproperties. Note to the developers: Please be aware of the distinction between containment relation and provenance. A Contact (a DataObject) may be said to be a part of a ContactGroup (another DataObject),but not a part of an Addressbook. Addressbook should be modelled as a subclass of a DataSource and the link between a contact and an addressbook should be expressed with datasource property. Also, please note the difference between physical containment (hasPart) and logical containment (hasLogicalPart) the former has more strict meaning and doesn't always imply the latter.</rdfs:comment>
 	<rdfs:subPropertyOf rdf:resource="&terms;hasPart"/>
 	<rdfs:range rdf:resource="&nie;DataObject"/>
 	<rdfs:domain rdf:resource="&nie;InformationElement"/>
 	<nrl:inverseProperty rdf:resource="&nie;isPartOf"/>
 	<rdfs:subPropertyOf rdf:resource="&nie;relatedTo"/>
+</rdf:Property>
+<rdf:Property rdf:about="&nie;hasLogicalPart"
+	 rdfs:label="hasLogicalPart">
+	<rdfs:comment>Generic property used to express 'logical' containment relationships between DataObjects. NIE extensions are encouraged to provide more specific subproperties of this one. It is advisable for actual instances of InformationElement to use those specific subproperties. Note the difference between 'physical' containment (hasPart) and logical containment (hasLogicalPart)</rdfs:comment>
+	<rdfs:subPropertyOf rdf:resource="&terms;hasPart"/>
+	<rdfs:range rdf:resource="&nie;InformationElement"/>
+	<rdfs:domain rdf:resource="&nie;InformationElement"/>
+	<nrl:inverseProperty rdf:resource="&nie;isLogicalPartOf"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nie;identifier"
 	 rdfs:label="identifier">
@@ -150,6 +158,21 @@
 	<rdfs:domain rdf:resource="&nie;InformationElement"/>
 	<rdfs:range rdf:resource="&xsd;dateTime"/>
 </rdf:Property>
+<rdf:Property rdf:about="&nie;interpretedAs"
+	 rdfs:label="interpretedAs">
+	<rdfs:comment>Links the DataObject with the InformationElement it is interpreted as.</rdfs:comment>
+	<rdfs:domain rdf:resource="&nie;DataObject"/>
+	<rdfs:range rdf:resource="&nie;InformationElement"/>
+	<nrl:inverseProperty rdf:resource="&nie;isStoredAs"/>
+</rdf:Property>
+<rdf:Property rdf:about="&nie;isLogicalPartOf"
+	 rdfs:label="isLogicalPartOf">
+	<rdfs:comment>Generic property used to express 'logical' containment relationships between DataObjects. NIE extensions are encouraged to provide more specific subproperties of this one. It is advisable for actual instances of InformationElement to use those specific subproperties. Note the difference between 'physical' containment (isPartOf) and logical containment (isLogicalPartOf)</rdfs:comment>
+	<rdfs:subPropertyOf rdf:resource="&terms;isPartOf"/>
+	<rdfs:range rdf:resource="&nie;InformationElement"/>
+	<rdfs:domain rdf:resource="&nie;InformationElement"/>
+	<nrl:inverseProperty rdf:resource="&nie;hasLogicalPart"/>
+</rdf:Property>
 <rdf:Property rdf:about="&nie;isPartOf"
 	 rdfs:label="isPartOf">
 	<rdfs:comment>Generic property used to express containment relationships between DataObjects. NIE extensions are encouraged to provide more specific subproperties of this one. It is advisable for actual instances of DataObjects to use those specific subproperties. Note to the developers: Please be aware of the distinction between containment relation and provenance. A Contact (a DataObject) may be said to be a part of a ContactGroup (another DataObject),but not a part of an Addressbook. Addressbook should be modelled as a subclass of a DataSource and the link between a contact and an addressbook should be expressed with datasource property.</rdfs:comment>
@@ -158,11 +181,12 @@
 	<rdfs:range rdf:resource="&nie;InformationElement"/>
 	<nrl:inverseProperty rdf:resource="&nie;hasPart"/>
 </rdf:Property>
-<rdf:Property rdf:about="&nie;isStoredIn"
-	 rdfs:label="isStoredIn">
+<rdf:Property rdf:about="&nie;isStoredAs"
+	 rdfs:label="isStoredAs">
 	<rdfs:comment>Links the information element with the DataObject it is stored in.</rdfs:comment>
 	<rdfs:range rdf:resource="&nie;DataObject"/>
 	<rdfs:domain rdf:resource="&nie;InformationElement"/>
+	<nrl:inverseProperty rdf:resource="&nie;interpretedAs"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nie;keyword"
 	 rdfs:label="keyword">
@@ -209,6 +233,7 @@
 	 rdfs:label="links">
 	<rdfs:comment>A linking relation. A piece of content links/mentions a piece of data</rdfs:comment>
 	<rdfs:range rdf:resource="&nie;DataObject"/>
+	<rdfs:domain rdf:resource="&nie;InformationElement"/>
 	<rdfs:subPropertyOf rdf:resource="&nie;relatedTo"/>
 </rdf:Property>
 <rdf:Property rdf:about="&nie;mimeType"

@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Oct 19 00:12:40 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri Nov 02 12:57:22 CET 2007
  * input file: D:\workspace\aperture/doc/ontology/nco.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/03/22/nco#
  */
@@ -291,7 +291,7 @@ public class NCO {
      * Label: containsContact  <br/>
      * Comment: A property used to group contacts into contact groups. This 
     property was NOT defined in the VCARD standard. See documentation for the 
-    'ContactGroup' class for details  <br/>
+    'ContactList' class for details  <br/>
      * Domain: http://www.semanticdesktop.org/ontologies/2007/03/22/nco#ContactList  <br/>
      * Range: http://www.semanticdesktop.org/ontologies/2007/03/22/nco#ContactListDataObject  <br/>
      */
@@ -569,7 +569,7 @@ public class NCO {
     /**
      * Type: Property <br/>
      * Label: photo  <br/>
-     * Comment: Photograph attached to a Contact. Inspired by the PHOTO property defined in RFC 2426 sec. 3.1.4  <br/>
+     * Comment: Photograph attached to a Contact. The DataObject refered to by this property is usually interpreted as an nfo:Image. Inspired by the PHOTO property defined in RFC 2426 sec. 3.1.4  <br/>
      * Domain: http://www.semanticdesktop.org/ontologies/2007/03/22/nco#Contact  <br/>
      * Range: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataObject  <br/>
      */
@@ -625,7 +625,7 @@ public class NCO {
     /**
      * Type: Property <br/>
      * Label: sound  <br/>
-     * Comment: Sound clip attached to a Contact. Inspired by the SOUND property defined in RFC 2425 sec. 3.6.6.  <br/>
+     * Comment: Sound clip attached to a Contact. The DataObject refered to by this property is usually interpreted as an nfo:Audio. Inspired by the SOUND property defined in RFC 2425 sec. 3.6.6.  <br/>
      * Domain: http://www.semanticdesktop.org/ontologies/2007/03/22/nco#Contact  <br/>
      * Range: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#DataObject  <br/>
      */
