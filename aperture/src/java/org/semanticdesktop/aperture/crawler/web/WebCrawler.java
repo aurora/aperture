@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
@@ -539,7 +541,13 @@ public class WebCrawler extends CrawlerBase {
                 if (!url.equals(link) && !scheduledLinks.contains(link)) {
                     if (depth >= 0) {
                         schedule(link, depth, true);
-                        object.getMetadata().add(NIE.links,object.getMetadata().getModel().createURI(link));
+                        URI linkedResourceUri = object.getMetadata().getModel().createURI(link);
+                        object.getMetadata().add(NIE.links,linkedResourceUri);
+                        
+                        // The following triple needs to be added to satiate the validator complaining
+                        // about links to resources that are outside the crawling domain and don't have
+                        // their types set properly
+                        object.getMetadata().getModel().addStatement(linkedResourceUri,RDF.type,NIE.DataObject);
                         scheduledLinks.add(link);
                     }
 
