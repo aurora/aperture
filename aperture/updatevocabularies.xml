@@ -183,6 +183,12 @@ your copy of ANT at http://ant.apache.org/
                    value="http://www.w3.org/2003/01/geo/wgs84_pos#" />
             <param name="vocabulary.classname" value="GEO" />
         </antcall>
+    	<antcall target="createvocabulary">
+            <param name="vocabulary.input.file" value="nao.rdfs" />
+            <param name="vocabulary.namespace"
+                   value="http://www.semanticdesktop.org/ontologies/2007/08/15/nao#" />
+            <param name="vocabulary.classname" value="NAO" />
+        </antcall>
     </target>
 
 </project>
