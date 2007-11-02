@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.crawler.web;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,14 +30,12 @@ import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.accessor.base.FilterAccessData;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;
 import org.semanticdesktop.aperture.datasource.web.WebDataSource;
 import org.semanticdesktop.aperture.hypertext.linkextractor.LinkExtractor;
 import org.semanticdesktop.aperture.hypertext.linkextractor.LinkExtractorFactory;
 import org.semanticdesktop.aperture.hypertext.linkextractor.LinkExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
-import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.UrlUtil;
 import org.semanticdesktop.aperture.vocabulary.NIE;
@@ -426,6 +425,9 @@ public class WebCrawler extends CrawlerBase {
         try {
             int bufferSize = mimeTypeIdentifier.getMinArrayLength();
             content = object.getContent();
+            if (!content.markSupported()) {
+                content = new BufferedInputStream(content);
+            }
             content.mark(bufferSize);
 
             try {
@@ -537,6 +539,7 @@ public class WebCrawler extends CrawlerBase {
                 if (!url.equals(link) && !scheduledLinks.contains(link)) {
                     if (depth >= 0) {
                         schedule(link, depth, true);
+                        object.getMetadata().add(NIE.links,object.getMetadata().getModel().createURI(link));
                         scheduledLinks.add(link);
                     }
 
