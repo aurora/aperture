@@ -130,16 +130,6 @@ public class ExampleWebCrawler extends AbstractExampleCrawler {
         crawler.crawl();
     }
     
-    /**
-     * The web resources are inherently a graph, it makes no sense to try to force them
-     * into any tree, so it makes no sense to check if the extracted data does form a 
-     * tree. Therefore we override this method and return null, so that the DataObject
-     * tree is not checked.
-     */
-    public ModelTester [] getAdditionalModelTesters() {
-        return null;
-    }
-
     public static void main(String[] args) throws Exception {
         // create a new ExampleWebCrawler instance
         ExampleWebCrawler crawler = new ExampleWebCrawler();
