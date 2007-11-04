@@ -8,13 +8,10 @@ package org.semanticdesktop.aperture.addressbook.thunderbird;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 
-import org.omg.CosNaming.NamingContextOperations;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
@@ -26,11 +23,9 @@ import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
-import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
+import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTester;
 
 
 public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerHandler, RDFContainerFactory {
@@ -89,7 +84,11 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
 		StringWriter xml=new StringWriter();
 		model.writeTo(xml,Syntax.RdfXml);
 
-        validate(model,true, model.createURI(URN_TEST_THUNDER_BIRD_DATA_SOURCE),true);
+        validate(
+            model,
+            true, 
+            model.createURI(URN_TEST_THUNDER_BIRD_DATA_SOURCE),
+            new DataObjectTreeModelTester());
 		model.close();
 	}
 

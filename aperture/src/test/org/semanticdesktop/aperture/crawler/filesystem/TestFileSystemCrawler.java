@@ -37,6 +37,7 @@ import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.ModelUtil;
 import org.semanticdesktop.aperture.vocabulary.NFO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
+import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTester;
 
 public class TestFileSystemCrawler extends ApertureTestBase {
 
@@ -139,7 +140,7 @@ public class TestFileSystemCrawler extends ApertureTestBase {
         // This should no be found as it is excluded by the domain boundaries
         assertFalse(ModelUtil.hasStatement(model, toURI(tmpFile4), NFO.fileName, null));
         
-        validate(model,true,configuration.getDescribedUri(),true);
+        validate(model,true,configuration.getDescribedUri(),new DataObjectTreeModelTester());
         model.close();
         configuration.getModel().close();
     }
@@ -194,7 +195,7 @@ public class TestFileSystemCrawler extends ApertureTestBase {
         // containing Folder.
         assertFalse(ModelUtil.hasStatement(model, toURI(tmpFile3), NFO.fileName, null));
         assertFalse(ModelUtil.hasStatement(model, toURI(subDir), NFO.fileName, null));
-        validate(model,true,configuration.getDescribedUri(),true);
+        validate(model,true,configuration.getDescribedUri(),new DataObjectTreeModelTester());
         model.close();
         configuration.getModel().close();
     }

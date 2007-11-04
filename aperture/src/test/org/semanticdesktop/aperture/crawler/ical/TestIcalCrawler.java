@@ -34,6 +34,7 @@ import org.semanticdesktop.aperture.vocabulary.GEO;
 import org.semanticdesktop.aperture.vocabulary.NCAL;
 import org.semanticdesktop.aperture.vocabulary.NCO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
+import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTester;
 
 public class TestIcalCrawler extends ApertureTestBase {
     
@@ -50,7 +51,7 @@ public class TestIcalCrawler extends ApertureTestBase {
 	
 	public void tearDown() {
 		if (model != null) {
-		    validate(model,true, SOURCE_TESTSOURCE,true);
+		    validate(model,true, SOURCE_TESTSOURCE,new DataObjectTreeModelTester());
 		    
 			model.close();
 		}

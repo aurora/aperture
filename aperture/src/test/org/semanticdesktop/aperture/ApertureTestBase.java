@@ -43,7 +43,6 @@ import org.semanticdesktop.nepomuk.nrl.validator.ValidationMessage;
 import org.semanticdesktop.nepomuk.nrl.validator.ValidationReport;
 import org.semanticdesktop.nepomuk.nrl.validator.exception.StandaloneValidatorException;
 import org.semanticdesktop.nepomuk.nrl.validator.impl.StandaloneValidatorImpl;
-import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTester;
 import org.semanticdesktop.nepomuk.nrl.validator.testers.NRLClosedWorldModelTester;
 
 public class ApertureTestBase extends TestCase {
@@ -62,8 +61,8 @@ public class ApertureTestBase extends TestCase {
 			return null;
 		}
 	}
-    
-    protected RDFContainer createRDFContainer(String uri) {
+	
+	protected RDFContainer createRDFContainer(String uri) {
         return createRDFContainer(new URIImpl(uri,false));
     }
     
@@ -182,18 +181,18 @@ public class ApertureTestBase extends TestCase {
     }
     
     public void validate(RDFContainer container, boolean print) {
-        validate(container.getModel(), print, null, false);
+        validate(container.getModel(), print, null, (ModelTester[])null);
     }
 
     public void validate(Model model) {
-        validate(model,true, null,false);
+        validate(model,true, null,(ModelTester[])null);
     }
     
     public void validate(Model model, boolean print) {
-        validate(model,print,null,false);
+        validate(model,print,null,(ModelTester[])null);
     }
     
-    public void validate(Model model, boolean print, URI dataSourceUri, boolean treeTest) {
+    public void validate(Model model, boolean print, URI dataSourceUri, ModelTester ... additionalTesters) {
         boolean removeFlag = false;
         Statement statement = null;
         if (dataSourceUri != null) {
@@ -206,9 +205,13 @@ public class ApertureTestBase extends TestCase {
             }            
         }
         
-        if (treeTest) {
-            validateWithTesters(model,print,new NRLClosedWorldModelTester(), 
-                new DataObjectTreeModelTester());
+        if (additionalTesters != null && additionalTesters.length > 0 && additionalTesters[0] != null) {
+            ModelTester [] testers = new ModelTester[additionalTesters.length + 1];
+            testers[0] = new NRLClosedWorldModelTester();
+            for (int i = 0; i < additionalTesters.length; i++) {
+                testers[i+1] = additionalTesters[i];
+            }
+            validateWithTesters(model,print,testers);
         } else {
             validateWithTesters(model,print,new NRLClosedWorldModelTester());
         }
