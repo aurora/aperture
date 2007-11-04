@@ -17,6 +17,8 @@ import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
+import org.semanticdesktop.nepomuk.nrl.validator.ModelTester;
+import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTester;
 
 /**
  * Example class that crawls a file system and stores all extracted metadata in a RDF file.
@@ -59,6 +61,15 @@ public class ExampleFileCrawler extends AbstractExampleCrawler {
         return rootFile;
     }
     
+    
+    /**
+     * The FileSystem crawler satisfies a more strict constraint
+     */
+    @Override
+    public ModelTester[] getAdditionalModelTesters() {
+        return new ModelTester[] { new DataObjectTreeModelTester() };
+    }
+
     /**
      * The main method
      * @param args command line arguments

@@ -17,6 +17,7 @@ import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.examples.handler.ValidatingCrawlerHandler;
 import org.semanticdesktop.nepomuk.nrl.validator.ModelTester;
 import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTester;
+import org.semanticdesktop.nepomuk.nrl.validator.testers.RootElementModelTester;
 
 public abstract class AbstractExampleCrawler {
 
@@ -141,7 +142,7 @@ public abstract class AbstractExampleCrawler {
     }
     
     public ModelTester [] getAdditionalModelTesters() {
-        return new ModelTester [] { new DataObjectTreeModelTester() };
+        return new ModelTester [] { new RootElementModelTester() };
     }
     
     public File getOutputFile() {

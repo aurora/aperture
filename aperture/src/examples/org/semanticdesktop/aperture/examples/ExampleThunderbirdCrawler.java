@@ -19,6 +19,8 @@ import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
 import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
+import org.semanticdesktop.nepomuk.nrl.validator.ModelTester;
+import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTester;
 
 /**
  * DON'T USE it's a copy-paste, doesn't work yet
@@ -41,6 +43,15 @@ public class ExampleThunderbirdCrawler extends AbstractExampleCrawler {
      */
     public void setThunderbirdAddressbookPath(String thunderbirdAddressbookPath) {
         this.thunderbirdAddressbookPath = thunderbirdAddressbookPath;
+    }
+    
+    /**
+     * The thunderbird crawler satisfies a more strict constraint. It produces a valid
+     * DataObject tree.
+     */
+    @Override
+    public ModelTester[] getAdditionalModelTesters() {
+        return new ModelTester [] {new DataObjectTreeModelTester() };
     }
 
     public static void main(String[] args) throws Exception {

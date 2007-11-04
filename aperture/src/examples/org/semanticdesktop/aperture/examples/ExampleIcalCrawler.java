@@ -16,6 +16,8 @@ import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
 import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
+import org.semanticdesktop.nepomuk.nrl.validator.ModelTester;
+import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTester;
 
 /**
  * Example class demonstrating the usage of an IcalCrawler.
@@ -30,6 +32,16 @@ public class ExampleIcalCrawler extends AbstractExampleCrawler {
 
     public void setIcalFile(File icalFile) {
         this.icalFile = icalFile;
+    }
+    
+    
+    /**
+     * The ical crawler satisfies a more strict constraint. It produces a valid
+     * DataObject tree.
+     */
+    @Override
+    public ModelTester[] getAdditionalModelTesters() {
+        return new ModelTester [] {new DataObjectTreeModelTester() };
     }
 
     public static void main(String[] args) throws Exception {
