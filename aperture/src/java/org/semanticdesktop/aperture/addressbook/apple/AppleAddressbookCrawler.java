@@ -30,6 +30,7 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.FileUtil;
 import org.semanticdesktop.aperture.util.ModelUtil;
 import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,6 +106,7 @@ public class AppleAddressbookCrawler extends AddressbookCrawler {
                 // pretty
                 List<Statement> statementList = ModelUtil.getCBD(s.getSubject(), model, true);
                 dorep.getModel().addAll(statementList.iterator());
+                dorep.add(NIE.rootElementOf,getDataSource().getID());
                 res.add(new DataObjectBase(uri, source, dorep));
             }
         }
