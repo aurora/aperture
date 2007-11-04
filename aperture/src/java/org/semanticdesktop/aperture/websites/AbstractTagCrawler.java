@@ -26,6 +26,7 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.UpdateException;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.semanticdesktop.aperture.vocabulary.TAGGING;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +71,9 @@ public abstract class AbstractTagCrawler extends CrawlerBase {
 					RDFContainer rdf=handler.getRDFContainerFactory(this,t).getRDFContainer(turi);
 					DataObject o=new DataObjectBase(turi,localSource,rdf);
 					rdf.add(RDF.type,TAGGING.Tag);
+					
+					// every tag is a root element
+					rdf.add(NIE.rootElementOf,getDataSource().getID());
 					//rdf.add(RDFS.LABEL,turi.getLocalName());
 					rdf.add(RDFS.label,URLDecoder.decode(getShortName(turi.toString()),"utf-8"));
 					handler.objectNew(this,o);
