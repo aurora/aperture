@@ -117,7 +117,14 @@ public class DataObjectFactory {
         this.source = dataSource;
         this.containerFactory = factory;
 
-        // create a HashMap representation of this message and all its nested parts
+        /*
+         * create a HashMap representation of this message and all its nested parts
+         * The hashmap representation of a message contains a set of name-value pairs for
+         * each metadata property of a message and a special pair named with the CHILDREN_KEY, whose
+         * value is an ArrayList of further HashMaps for the children. This makes the
+         * HashMap representation equivalent to the tree-like structure of the MimeMessage.
+         * (Which is non-obvious at the first glance - Antoni 06.11.2007)
+         */ 
         HashMap map = handleMailPart(message, new URIImpl(messageUri), MailUtil
                 .getDate(message));
 
