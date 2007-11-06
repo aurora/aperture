@@ -6,6 +6,12 @@
  */
 package org.semanticdesktop.aperture.crawler.imap;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.Date;
 
 import javax.mail.Message;
@@ -25,6 +31,51 @@ import org.semanticdesktop.aperture.vocabulary.NCO;
  */
 public class MailUtil {
 
+    
+    private static final Charset utf7 = Charset.forName("X-MODIFIED-UTF-7");
+    private static final Charset normal = Charset.forName("ISO-8859-1");
+    
+    /**
+     * Converts a string (possibly containing non-ascii characters) to it's representation in the
+     * UTF7-IMAP encoding. E.g for 'Böser' 'B&APY-ser' is returned.
+     * @param input the input string
+     * @return a representation of the input string with all non-ascii characters
+     *   converted to their UTF7 escape sequences
+     */
+    public static String utf7Encode(String input) {
+        return performConversion(input, utf7, normal);
+    }
+
+    /**
+     * Converts in the UTF7 encoding to it's "normal" UTF16 representation.
+     * @param input the input string in UTF7
+     * @return a 'normal' representation of the input string with UTF7 escape sequences
+     *     converted to single UTF16 characters
+     */
+    public static String utf7Decode(String input) {
+        return performConversion(input, normal, utf7);
+    }
+    
+    private static String performConversion(String input, Charset inputCharset, Charset outputCharset) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(input.length() * 3);
+            OutputStreamWriter osw = new OutputStreamWriter(baos,inputCharset);
+            osw.write(input);
+            osw.flush();
+            byte [] array = baos.toByteArray();
+            StringBuilder builder = new StringBuilder(input.length() * 3);
+            InputStreamReader reader = new InputStreamReader(new ByteArrayInputStream(array),outputCharset);
+            int charRead = 0;
+            while ((charRead = reader.read()) != -1) {
+                builder.append((char)charRead);
+            }
+            return builder.toString();
+        } catch (IOException ioe) {
+            // this will not happen
+        }
+        return null;
+    }
+    
     /**
      * Returns the stereotypical date of a Message. This is equal to the sent date or, if not available, the
      * received date or, if not available, the retrieval date (i.e., "new Date()").
