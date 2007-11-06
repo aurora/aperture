@@ -44,6 +44,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.ontoware.aifbcommons.collection.ClosableIterator;
+import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
@@ -132,22 +133,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
     private int maxDepth;
 
     private boolean includeInbox;
-
-    /**
-     * Sets the session properties
-     * @param sessionProperties the new session properties
-     */
-    public void setSessionProperties(Properties sessionProperties) {
-        this.sessionProperties = sessionProperties;
-    }
-
-    /**
-     * Returns the session properties
-     * @return the session properties
-     */
-    public Properties getSessionProperties() {
-        return sessionProperties;
-    }
 
     /* ----------------------------- Crawler implementation ----------------------------- */
 
@@ -400,7 +385,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
 
         // report the folder's metadata
-        String folderUrl = getURIPrefix(folder) + ";TYPE=LIST";
+        String folderUrl = getFolderURIPrefix(folder) + ";TYPE=LIST";
 
         if (!inDomain(folderUrl)) {
             // This gives us different semantics to domainboundaries than the filecrawler,
@@ -475,106 +460,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
     }
 
-    private String getURIPrefix(Folder folder) throws MessagingException {
-        StringBuilder buffer = new StringBuilder(100);
-        URLName url = store.getURLName();
-
-        // start with protocol
-        // don't use url.getProtocol or your urls may start with "imaps://"
-        buffer.append("imap://");
-
-        // append host and username
-        String username = url.getUsername();
-        if (username != null && !username.equals("")) {
-            username = HttpClientUtil.formUrlEncode(username);
-            buffer.append(username);
-            buffer.append('@');
-        }
-        buffer.append(url.getHost());
-
-        // append path
-        buffer.append('/');
-        buffer.append(encodeFolderName(folder.getFullName()));
-
-        return buffer.toString();
-    }
-    
-    private String getMessageUri(String messagePrefix, long messageId) {
-        return messagePrefix + ";UID=" + messageId;
-    }
-
-    /**
-     * Returns the name of the folder with the given URL
-     * @param url the url of the folder
-     * @return the name of the folder with the given URL
-     */
-    public static String getFolderName(String url) {
-        if (!url.startsWith("imap://")) {
-            return null;
-        }
-
-        int firstIndex = url.indexOf('/', 7);
-        int lastIndex = url.endsWith(";TYPE=LIST") ? url.lastIndexOf(';') : url.lastIndexOf('/');
-
-        if (firstIndex >= 0 && lastIndex > firstIndex) {
-            String substring = url.substring(firstIndex + 1, lastIndex);
-            try {
-                return URLDecoder.decode(substring, "UTF-8");
-            }
-            catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        else {
-            return null;
-        }
-    }
-
-    /** 
-     * Does the same as HttpClientUtil.formUrlEncode (i.e. RFC 1738) except for encoding the slash,
-     * which should not be encoded according to RFC 2192.
-     * @param string the string to be encoded
-     * @return the encoded folder name
-     */
-    public static String encodeFolderName(String string) {
-        int length = string.length();
-        StringBuilder buffer = new StringBuilder(length + 10);
-
-        for (int i = 0; i < length; i++) {
-            char c = string.charAt(i);
-
-            // Only characters in the range 48 - 57 (numbers), 65 - 90 (upper case letters), 97 - 122
-            // (lower case letters) can be left unencoded. The rest needs to be escaped.
-
-            if (c == ' ') {
-                // replace all spaces with a '+'
-                buffer.append('+');
-            }
-            else {
-                int cInt = c;
-                if (cInt >= 48 && cInt <= 57 || cInt >= 65 && cInt <= 90 || cInt >= 97 && cInt <= 122
-                        || cInt == 46) {
-                    // alphanumeric character or slash
-                    buffer.append(c);
-                }
-                else {
-                    // escape all non-alphanumerics
-                    buffer.append('%');
-                    String hexVal = Integer.toHexString(c);
-
-                    // ensure use of two characters
-                    if (hexVal.length() == 1) {
-                        buffer.append('0');
-                    }
-
-                    buffer.append(hexVal);
-                }
-            }
-        }
-
-        return buffer.toString();
-    }
-
     private void crawlMessages(IMAPFolder folder, URI folderUri) throws MessagingException {
         if (isStopRequested()) {
             return;
@@ -585,7 +470,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         // determine the set of messages we haven't seen yet, to prevent prefetching the content info for old
         // messages: especially handy when only a few mails were added to a large folder.
         Message[] messages = folder.getMessages();
-        String messagePrefix = getURIPrefix(folder) + "/";
+        String messagePrefix = getFolderURIPrefix(folder) + "/";
 
         if (accessData != null) {
             ArrayList filteredMessages = new ArrayList(messages.length);
@@ -680,6 +565,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
         // build a queue of urls to access
         LinkedList queue = new LinkedList();
+        // first add the uri of the actual message, so that the message itself is
+        // processed first
         queue.add(uri);
 
         // process the entire queue
@@ -950,6 +837,22 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
     }
 
+    /**
+     * Returns a DataObject representing a single message. This data object contains a flattened version
+     * of the (arbitrary complex) tree-like MIME structure of the message. This method is called repeatedly
+     * for a single MimeMessage. At the first call it creates a cachedDataObjectsMap of all dataObjects that
+     * are to be returned from this message. On all subsequent calls DataObjects from this map are returned.
+     * 
+     * @param message
+     * @param url
+     * @param folderUri
+     * @param dataSource
+     * @param newAccessData
+     * @param containerFactory
+     * @return
+     * @throws MessagingException
+     * @throws IOException
+     */
     private DataObject getObject(MimeMessage message, String url, URI folderUri, DataSource dataSource,
             AccessData newAccessData, RDFContainerFactory containerFactory) throws MessagingException,
             IOException {
@@ -1008,6 +911,16 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         return result;
     }
 
+    /**
+     * Returns a DataObject for an IMAP folder.
+     * @param folder
+     * @param url
+     * @param dataSource
+     * @param newAccessData
+     * @param containerFactory
+     * @return
+     * @throws MessagingException
+     */
     private FolderDataObject getObject(Folder folder, String url, DataSource dataSource, AccessData newAccessData,
             RDFContainerFactory containerFactory) throws MessagingException {
         // See if this url has been accessed before and hasn't changed in the mean time.
@@ -1091,7 +1004,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
 
         // add message URIs as children
-        String uriPrefix = getURIPrefix(folder) + "/";
+        String uriPrefix = getFolderURIPrefix(folder) + "/";
 
         if (holdsMessages(folder)) {
             if (messages == null) {
@@ -1160,8 +1073,110 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         return new FolderDataObjectBase(folderURI, dataSource, metadata);
     }
 
+    /* -------------------- Methods related to URI generation (RFC 2192) -------------------- */
+    
+    private String getFolderURIPrefix(Folder folder) throws MessagingException {
+        StringBuilder buffer = new StringBuilder(100);
+        URLName url = store.getURLName();
+
+        // start with protocol
+        // don't use url.getProtocol or your urls may start with "imaps://"
+        buffer.append("imap://");
+
+        // append host and username
+        String username = url.getUsername();
+        if (username != null && !username.equals("")) {
+            username = HttpClientUtil.formUrlEncode(username);
+            buffer.append(username);
+            buffer.append('@');
+        }
+        buffer.append(url.getHost());
+
+        // append path
+        buffer.append('/');
+        buffer.append(encodeFolderName(folder.getFullName()));
+
+        return buffer.toString();
+    }
+
+    /**
+     * Returns the name of the folder with the given URL
+     * @param url the url of the folder
+     * @return the name of the folder with the given URL
+     */
+    public static String getFolderName(String url) {
+        if (!url.startsWith("imap://")) {
+            return null;
+        }
+
+        int firstIndex = url.indexOf('/', 7);
+        int lastIndex = url.endsWith(";TYPE=LIST") ? url.lastIndexOf(';') : url.lastIndexOf('/');
+
+        if (firstIndex >= 0 && lastIndex > firstIndex) {
+            String substring = url.substring(firstIndex + 1, lastIndex);
+            try {
+                return URLDecoder.decode(substring, "UTF-8");
+            }
+            catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            return null;
+        }
+    }
+
+    /** 
+     * Does the same as HttpClientUtil.formUrlEncode (i.e. RFC 1738) except for encoding the slash,
+     * which should not be encoded according to RFC 2192.
+     * @param string the string to be encoded
+     * @return the encoded folder name
+     */
+    public static String encodeFolderName(String string) {
+        int length = string.length();
+        StringBuilder buffer = new StringBuilder(length + 10);
+
+        for (int i = 0; i < length; i++) {
+            char c = string.charAt(i);
+
+            // Only characters in the range 48 - 57 (numbers), 65 - 90 (upper case letters), 97 - 122
+            // (lower case letters) can be left unencoded. The rest needs to be escaped.
+
+            if (c == ' ') {
+                // replace all spaces with a '+'
+                buffer.append('+');
+            }
+            else {
+                int cInt = c;
+                if (cInt >= 48 && cInt <= 57 || cInt >= 65 && cInt <= 90 || cInt >= 97 && cInt <= 122
+                        || cInt == 46) {
+                    // alphanumeric character or slash
+                    buffer.append(c);
+                }
+                else {
+                    // escape all non-alphanumerics
+                    buffer.append('%');
+                    String hexVal = Integer.toHexString(c);
+
+                    // ensure use of two characters
+                    if (hexVal.length() == 1) {
+                        buffer.append('0');
+                    }
+
+                    buffer.append(hexVal);
+                }
+            }
+        }
+
+        return buffer.toString();
+    }
+    
     private URI getURI(Folder folder) throws MessagingException {
-        return new URIImpl(getURIPrefix(folder) + ";TYPE=LIST");
+        return new URIImpl(getFolderURIPrefix(folder) + ";TYPE=LIST");
+    }
+    
+    private String getMessageUri(String messagePrefix, long messageId) {
+        return messagePrefix + ";UID=" + messageId;
     }
 
     private String getSubFoldersString(Folder folder) throws MessagingException {
@@ -1181,6 +1196,8 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
         return buffer.toString();
     }
+    
+    /* ---------------------------- Socket Factory implementation -------------------------- */
 
     /**
      * This is a socket factory that ignores ssl certificates.
@@ -1356,6 +1373,23 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             }
 
         }
+    }
 
+    /* ------------------------------------ Other Methods ---------------------------------- */
+    
+    /**
+     * Sets the session properties
+     * @param sessionProperties the new session properties
+     */
+    public void setSessionProperties(Properties sessionProperties) {
+        this.sessionProperties = sessionProperties;
+    }
+
+    /**
+     * Returns the session properties
+     * @return the session properties
+     */
+    public Properties getSessionProperties() {
+        return sessionProperties;
     }
 }
