@@ -82,6 +82,8 @@ import com.sun.mail.imap.IMAPFolder;
 @SuppressWarnings("unchecked")
 public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
+    private static final String IMAP_URL_SCHEME = "imap://";
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final String ACCESSED_KEY = "accessed";
@@ -384,7 +386,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
 
         // report the folder's metadata
-        String folderUrl = getFolderURIPrefix(folder) + ";TYPE=LIST";
+        String folderUrl = getFolderURIPrefix(folder).toString();
 
         if (!inDomain(folderUrl)) {
             // This gives us different semantics to domainboundaries than the filecrawler,
@@ -1076,7 +1078,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
 
         // start with protocol
         // don't use url.getProtocol or your urls may start with "imaps://"
-        buffer.append("imap://");
+        buffer.append(IMAP_URL_SCHEME);
 
         // append host and username
         String username = url.getUsername();
@@ -1100,7 +1102,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
      * @return the name of the folder with the given URL
      */
     public static String getFolderName(String url) {
-        if (!url.startsWith("imap://")) {
+        if (!url.startsWith(IMAP_URL_SCHEME)) {
             return null;
         }
 
