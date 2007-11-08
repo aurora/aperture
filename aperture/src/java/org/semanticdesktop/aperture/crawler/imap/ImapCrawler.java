@@ -44,7 +44,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
@@ -470,7 +469,6 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         // determine the set of messages we haven't seen yet, to prevent prefetching the content info for old
         // messages: especially handy when only a few mails were added to a large folder.
         Message[] messages = folder.getMessages();
-        String messagePrefix = getFolderURIPrefix(folder) + "/";
 
         if (accessData != null) {
             ArrayList filteredMessages = new ArrayList(messages.length);
@@ -492,7 +490,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 long messageID = folder.getUID(message);
 
                 // determine the uri
-                String uri = getMessageUri(messagePrefix, messageID);
+                String uri = getMessageUri(folder, messageID);
 
                 // remove this URI from the set of deprecated children
                 deprecatedChildren.remove(uri);
@@ -512,7 +510,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                         accessData.removeReferredID(folderUriString, uri);
                     }
                     else {
-                        reportNotModified(getMessageUri(messagePrefix, messageID));
+                        reportNotModified(getMessageUri(folder, messageID));
                     }
                 }
             }
@@ -542,7 +540,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         for (int i = 0; i < messages.length && !isStopRequested(); i++) {
             MimeMessage message = (MimeMessage) messages[i];
             long messageID = folder.getUID(message);
-            String uri = getMessageUri(messagePrefix, messageID);
+            String uri = getMessageUri(folder, messageID);
 
             try {
                 if (inDomain(uri)) {
@@ -823,7 +821,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 MimeMessage message = (MimeMessage) ((UIDFolder) folder).getMessageByUID(messageUID);
 
                 // create a DataObject for the requested message or message part
-                return getObject(message, url, getURI(folder), dataSource, newAccessData, containerFactory);
+                return getObject(message, url, getFolderURI(folder), dataSource, newAccessData, containerFactory);
             }
             else {
                 // create a DataObject for this Folder
@@ -997,14 +995,11 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         // register the folder's parent
         Folder parent = folder.getParent();
         if (parent != null) {
-            metadata.add(NIE.isPartOf, getURI(parent));
+            metadata.add(NIE.isPartOf, getFolderURI(parent));
             // this is needed to satiate the validator, otherwise errors about missing type
             // occur for the rootFolder begin a part of some non-crawled folder
-            metadata.getModel().addStatement(getURI(parent),RDF.type,NFO.Folder);
+            metadata.getModel().addStatement(getFolderURI(parent),RDF.type,NFO.Folder);
         }
-
-        // add message URIs as children
-        String uriPrefix = getFolderURIPrefix(folder) + "/";
 
         if (holdsMessages(folder)) {
             if (messages == null) {
@@ -1024,7 +1019,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 if (isAcceptable(message)) {
                     long messageID = imapFolder.getUID(message);
                     try {
-                        URI messageURI = metadata.getModel().createURI(getMessageUri(uriPrefix,messageID));
+                        URI messageURI = metadata.getModel().createURI(getMessageUri(folder,messageID));
                         metadata.getModel().addStatement(messageURI, NIE.isPartOf, folderURI);
                         // This is needed to satiate the validator, otherwise if an email falls beyond
                         // the domain boundaries, the validator will complain about the missing type triple
@@ -1042,7 +1037,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         for (int i = 0; i < subFolders.length; i++) {
             Folder subFolder = subFolders[i];
             if (subFolder.exists()) {
-                metadata.add(metadata.getValueFactory().createStatement(getURI(subFolder), NIE.isPartOf,
+                metadata.add(metadata.getValueFactory().createStatement(getFolderURI(subFolder), NIE.isPartOf,
                     folderURI));
             }
         }
@@ -1171,12 +1166,12 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         return buffer.toString();
     }
     
-    private URI getURI(Folder folder) throws MessagingException {
+    private URI getFolderURI(Folder folder) throws MessagingException {
         return new URIImpl(getFolderURIPrefix(folder) + ";TYPE=LIST");
     }
     
-    private String getMessageUri(String messagePrefix, long messageId) {
-        return messagePrefix + ";UID=" + messageId;
+    private String getMessageUri(Folder folder, long messageId) throws MessagingException{
+        return getFolderURIPrefix(folder) + "/;UID=" + messageId;
     }
 
     private String getSubFoldersString(Folder folder) throws MessagingException {
