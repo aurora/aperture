@@ -128,7 +128,43 @@ Updated dependencies
 - org.apache.httpclient_3.0.0.rc2.jar  
 
 ----------------------------------
-version 2006.1-alpha-5 (to be announced)
+version 2006.1-beta-1 
 ----------------------------------
 
-* added SynchronizedAccessData class
+This release bears the mark of the Nepomuk Social Semantic Desktop - a major
+research initative where research institutes and commercial companies
+from around Europe. Aperture is used as one of the pillars of a next-generation 
+platform that will revolutionize the way people organize and use
+the data stored on their computers. The input from the Nepomuk Community drove
+us to implement a host of new features that make Aperture more useful, more 
+flexible and more powerful.
+
+New Features
+ 
+- Aperture has been migrated to use the newly developed Nepomuk
+  Information Element Ontology framework. This added a new level of precision
+  and expressiveness for the output of Aperture components. All components have 
+  benefitted from this change.  The ontology itself 
+  is endorsed by the Nepomuk Consortium, well documented and maintained.
+- The output is now thoroughly tested with an  extensible rdf validator for 
+  compliance with the ontology. This allowed us to fix a number of bugs that
+  made certain properties appear in places they didn't belong
+- the data source configuration API has been overhauled and is now much more 
+  easy to use, no more ConfigurationUtil
+- A new facility that allows clients to implement dynamic GUIs for data source
+  configuration. You don't have to implement a separate panel for each data source
+  type you need to support. 
+- New JpgExtractor that extracts EXIF annotations from JPG files
+- host of small improvements and bug fixes
+- four new tagcrawlers
+
+Updated dependencies
+- Sesame 2.0 beta-6 (was beta-4)
+- RDF2Go 4.4.6
+- RDF2Go driver for sesame
+- A metadata-extractor-2.4.0-beta-1 library used by the  JPGExtractor
+- POI has been update to 3.0-FINAL
+- flickrapi-1.0b4 used by the FlickrCrawler
+- DFKIUtils 2.0 some XML-related utilities are used by the website crawlers
+- nrlvalidator-0.1 the validator used by the unit tests
+- infsail-0.1 and unionsail-0.1 dependencies of the validator
