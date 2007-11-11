@@ -32,7 +32,7 @@
 /**
  * 
  */
-package org.semanticdesktop.aperture.tagcrawlers.iphoto;
+package org.semanticdesktop.aperture.websites.iphoto;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -42,8 +42,8 @@ import java.util.List;
 import java.util.Vector;
 
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.tagcrawlers.AbstractTagCrawler;
 import org.semanticdesktop.aperture.util.FileUtil;
+import org.semanticdesktop.aperture.websites.AbstractTagCrawler;
 
 /**
  * 

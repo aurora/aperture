@@ -1,4 +1,4 @@
-package org.semanticdesktop.aperture.tagcrawlers.delicious;
+package org.semanticdesktop.aperture.websites.delicious;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
 import org.ontoware.rdf2go.model.Model;

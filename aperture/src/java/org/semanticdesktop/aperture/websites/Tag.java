@@ -1,4 +1,4 @@
-package org.semanticdesktop.aperture.tagcrawlers;
+package org.semanticdesktop.aperture.websites;
 
 import java.util.AbstractMap;
 import java.util.Map;

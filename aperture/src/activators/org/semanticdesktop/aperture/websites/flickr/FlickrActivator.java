@@ -4,26 +4,24 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.tagcrawlers.bibsonomy;
+package org.semanticdesktop.aperture.websites.flickr;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
-import org.semanticdesktop.aperture.tagcrawlers.bibsonomy.BibsonomyCrawlerFactory;
-import org.semanticdesktop.aperture.tagcrawlers.bibsonomy.BibsonomyDataSourceFactory;
 
 /**
  * Bibsonomy activator
  */
-public class BibsonomyActivator implements BundleActivator {
+public class FlickrActivator implements BundleActivator {
 
 	private static BundleContext bc;
 
-	private BibsonomyCrawlerFactory crawlerFactory;
+	private FlickrCrawlerFactory crawlerFactory;
 
-	private BibsonomyDataSourceFactory dataSourceFactory;
+	private FlickrDataSourceFactory dataSourceFactory;
 
 	private ServiceRegistration crawlerServiceRegistration;
 	private ServiceRegistration dataSourceServiceRegistration;
@@ -34,13 +32,13 @@ public class BibsonomyActivator implements BundleActivator {
 	 * @throws Exception if something goes wrong
 	 */
     public void start(BundleContext context) throws Exception {
-		BibsonomyActivator.bc = context;
+		FlickrActivator.bc = context;
 
-		crawlerFactory = new BibsonomyCrawlerFactory();
+		crawlerFactory = new FlickrCrawlerFactory();
 		crawlerServiceRegistration = bc.registerService(CrawlerFactory.class.getName(), crawlerFactory,
 			null);
 		
-		dataSourceFactory = new BibsonomyDataSourceFactory();
+		dataSourceFactory = new FlickrDataSourceFactory();
 		dataSourceServiceRegistration = bc.registerService(DataSourceFactory.class.getName(), dataSourceFactory,
 			null);
 	}

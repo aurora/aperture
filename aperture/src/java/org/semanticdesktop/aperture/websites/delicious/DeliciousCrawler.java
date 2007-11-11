@@ -1,4 +1,4 @@
-package org.semanticdesktop.aperture.tagcrawlers.delicious;
+package org.semanticdesktop.aperture.websites.delicious;
 
 import java.net.HttpURLConnection;
 import java.util.List;
@@ -11,7 +11,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.tagcrawlers.AbstractTagCrawler;
+import org.semanticdesktop.aperture.websites.AbstractTagCrawler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

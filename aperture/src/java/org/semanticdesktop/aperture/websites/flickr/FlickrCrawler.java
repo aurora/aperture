@@ -1,4 +1,4 @@
-package org.semanticdesktop.aperture.tagcrawlers.flickr;
+package org.semanticdesktop.aperture.websites.flickr;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -16,9 +16,9 @@ import org.ontoware.rdf2go.vocabulary.RDFS;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.tagcrawlers.AbstractTagCrawler;
-import org.semanticdesktop.aperture.tagcrawlers.bibsonomy.BibsonomyDataSource;
 import org.semanticdesktop.aperture.vocabulary.NIE;
+import org.semanticdesktop.aperture.websites.AbstractTagCrawler;
+import org.semanticdesktop.aperture.websites.bibsonomy.BibsonomyDataSource;
 import org.xml.sax.SAXException;
 
 import com.aetrion.flickr.Flickr;

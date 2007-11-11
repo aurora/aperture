@@ -201,10 +201,10 @@
         </and>
     </selector>
     
-    <selector id="bundle.tagcrawlers.selector">
+    <selector id="bundle.websites.selector">
         <and>
             <or>
-                <filename name="org/semanticdesktop/aperture/tagcrawlers/**" />
+                <filename name="org/semanticdesktop/aperture/websites/**" />
                 <filename name="lib/flickrapi-1.0b4.jar" />
                 <filename name="lib/DFKIUtils2.jar" />
                 <filename name="lib/org.apache.commons.httpclient_3.0.0.rc2.jar" />
@@ -485,7 +485,7 @@
             <selector refid="bundle.crawler.filesystem.selector" />
             <selector refid="bundle.crawler.web.selector" />
             <selector refid="bundle.crawler.web.selector" />
-            <selector refid="bundle.tagcrawlers.selector" />
+            <selector refid="bundle.websites.selector" />
             <selector refid="bundle.extractor.excel.selector" />
             <selector refid="bundle.extractor.html.selector" />
             <selector refid="bundle.extractor.jpg.selector" />

@@ -128,32 +128,7 @@ Updated dependencies
 - org.apache.httpclient_3.0.0.rc2.jar  
 
 ----------------------------------
-version 2006.1-beta-1 
+version 2006.1-alpha-5 (to be announced)
 ----------------------------------
 
-This release bears the mark of the Nepomuk Social Semantic Desktop - a major
-research initative where research institutes and commercial companies
-from around Europe. Aperture is used as one of the pillars of a next-generation 
-platform that will revolutionize the way people organize and use
-the data stored on their computers. The input from the Nepomuk Community drove
-us to implement a host of new features that make Aperture more useful, more 
-flexible and more powerful.
-
-New Features
- 
-- Aperture has been migrated to use the newly developed Nepomuk
-  Information Element Ontology framework. This added a new level of precision
-  and expressiveness for the output of Aperture components. All components have 
-  benefitted from this change. The output is now thoroughly tested with an 
-  extensible rdf validator for compliance with the ontology. The ontology itself 
-  is endorsed by the Nepomuk Consortium, well documented and maintained.
-
-Additional improvements
-- the data source configuration API has been overhauled and is now much more 
-intuitive.
-- New JpgExtractor
-
-Updated dependencies
-- Sesame 2.0 beta-6 (was beta-4)
-- RDF2Go 4.4.6
-- Sesame 
+* added SynchronizedAccessData class

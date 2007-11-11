@@ -1,4 +1,4 @@
-package org.semanticdesktop.aperture.tagcrawlers.delicious;
+package org.semanticdesktop.aperture.websites.delicious;
 
 import java.util.Collections;
 import java.util.Set;

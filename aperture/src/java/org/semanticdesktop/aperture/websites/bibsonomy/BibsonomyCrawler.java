@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.semanticdesktop.aperture.tagcrawlers.bibsonomy;
+package org.semanticdesktop.aperture.websites.bibsonomy;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -20,9 +20,9 @@ import org.ontoware.rdf2go.model.QueryRow;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.tagcrawlers.AbstractTagCrawler;
-import org.semanticdesktop.aperture.tagcrawlers.Tag;
 import org.semanticdesktop.aperture.vocabulary.TAGGING;
+import org.semanticdesktop.aperture.websites.AbstractTagCrawler;
+import org.semanticdesktop.aperture.websites.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ public class BibsonomyCrawler extends AbstractTagCrawler {
     }
 
     /**
-     * @see org.semanticdesktop.aperture.tagcrawlers.AbstractTagCrawler#crawlTags(java.lang.String)
+     * @see org.semanticdesktop.aperture.websites.AbstractTagCrawler#crawlTags(java.lang.String)
      */
     @Override
     protected List<String> crawlTags(String username, String password) throws Exception {

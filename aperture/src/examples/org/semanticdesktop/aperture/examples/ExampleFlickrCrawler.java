@@ -11,6 +11,8 @@ import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.semanticdesktop.aperture.websites.flickr.FlickrCrawler;
+import org.semanticdesktop.aperture.websites.flickr.FlickrDataSource;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -24,8 +26,6 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
-import org.semanticdesktop.aperture.tagcrawlers.flickr.FlickrCrawler;
-import org.semanticdesktop.aperture.tagcrawlers.flickr.FlickrDataSource;
 import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class ExampleFlickrCrawler extends AbstractExampleCrawler {
