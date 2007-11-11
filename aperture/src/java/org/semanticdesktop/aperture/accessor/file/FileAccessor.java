@@ -184,7 +184,9 @@ public class FileAccessor implements DataAccessor {
 			RDFContainerFactory containerFactory) {
 		// get the RDFContainer instance
 		RDFContainer metadata = containerFactory.getRDFContainer(id);
-
+		
+		metadata.add(RDF.type,NFO.FileDataObject);
+		
 		// create regular File metadata first
 		long lastModified = file.lastModified();
 		if (lastModified != 0l) {
