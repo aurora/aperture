@@ -38,10 +38,10 @@ import org.semanticdesktop.aperture.extractor.xml.XmlExtractorActivator;
 import org.semanticdesktop.aperture.opener.file.FileOpenerActivator;
 import org.semanticdesktop.aperture.opener.http.HttpOpenerActivator;
 import org.semanticdesktop.aperture.outlook.OutlookActivator;
-import org.semanticdesktop.aperture.websites.bibsonomy.BibsonomyActivator;
-import org.semanticdesktop.aperture.websites.delicious.DeliciousActivator;
-import org.semanticdesktop.aperture.websites.flickr.FlickrActivator;
-import org.semanticdesktop.aperture.websites.iphoto.IPhotoActivator;
+import org.semanticdesktop.aperture.tagcrawlers.bibsonomy.BibsonomyActivator;
+import org.semanticdesktop.aperture.tagcrawlers.delicious.DeliciousActivator;
+import org.semanticdesktop.aperture.tagcrawlers.flickr.FlickrActivator;
+import org.semanticdesktop.aperture.tagcrawlers.iphoto.IPhotoActivator;
 
 public class CoreImplementationsActivator implements BundleActivator {
 

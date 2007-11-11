@@ -24,11 +24,11 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
+import org.semanticdesktop.aperture.tagcrawlers.AbstractTagCrawler;
+import org.semanticdesktop.aperture.tagcrawlers.bibsonomy.BibsonomyCrawler;
+import org.semanticdesktop.aperture.tagcrawlers.bibsonomy.BibsonomyDataSource;
 import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.semanticdesktop.aperture.vocabulary.TAGGING;
-import org.semanticdesktop.aperture.websites.AbstractTagCrawler;
-import org.semanticdesktop.aperture.websites.bibsonomy.BibsonomyCrawler;
-import org.semanticdesktop.aperture.websites.bibsonomy.BibsonomyDataSource;
 
 public class ExampleBibsonomyCrawler extends AbstractExampleCrawler {
 	

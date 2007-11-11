@@ -17,8 +17,8 @@ import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
 import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
-import org.semanticdesktop.aperture.websites.iphoto.IPhotoKeywordCrawler;
-import org.semanticdesktop.aperture.websites.iphoto.IPhotoKeywordDataSource;
+import org.semanticdesktop.aperture.tagcrawlers.iphoto.IPhotoKeywordCrawler;
+import org.semanticdesktop.aperture.tagcrawlers.iphoto.IPhotoKeywordDataSource;
 
 public class ExampleIPhotoCrawler extends AbstractExampleCrawler {
 

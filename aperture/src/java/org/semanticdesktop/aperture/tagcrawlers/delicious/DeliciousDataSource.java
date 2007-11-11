@@ -1,4 +1,4 @@
-package org.semanticdesktop.aperture.websites.delicious;
+package org.semanticdesktop.aperture.tagcrawlers.delicious;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Node;
 import org.semanticdesktop.aperture.util.ModelUtil;

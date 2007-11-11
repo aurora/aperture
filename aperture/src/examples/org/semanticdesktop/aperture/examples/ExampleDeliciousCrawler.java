@@ -22,9 +22,9 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
+import org.semanticdesktop.aperture.tagcrawlers.delicious.DeliciousCrawler;
+import org.semanticdesktop.aperture.tagcrawlers.delicious.DeliciousDataSource;
 import org.semanticdesktop.aperture.vocabulary.NIE;
-import org.semanticdesktop.aperture.websites.delicious.DeliciousCrawler;
-import org.semanticdesktop.aperture.websites.delicious.DeliciousDataSource;
 
 
 public class ExampleDeliciousCrawler extends AbstractExampleCrawler {

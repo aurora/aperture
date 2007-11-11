@@ -4,24 +4,26 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.websites.iphoto;
+package org.semanticdesktop.aperture.tagcrawlers.delicious;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
+import org.semanticdesktop.aperture.tagcrawlers.delicious.DeliciousCrawlerFactory;
+import org.semanticdesktop.aperture.tagcrawlers.delicious.DeliciousDataSourceFactory;
 
 /**
  * Bibsonomy activator
  */
-public class IPhotoActivator implements BundleActivator {
+public class DeliciousActivator implements BundleActivator {
 
 	private static BundleContext bc;
 
-	private IPhotoKeywordCrawlerFactory crawlerFactory;
+	private DeliciousCrawlerFactory crawlerFactory;
 
-	private IPhotoKeywordDataSourceFactory dataSourceFactory;
+	private DeliciousDataSourceFactory dataSourceFactory;
 
 	private ServiceRegistration crawlerServiceRegistration;
 	private ServiceRegistration dataSourceServiceRegistration;
@@ -32,13 +34,13 @@ public class IPhotoActivator implements BundleActivator {
 	 * @throws Exception if something goes wrong
 	 */
     public void start(BundleContext context) throws Exception {
-		IPhotoActivator.bc = context;
+		DeliciousActivator.bc = context;
 
-		crawlerFactory = new IPhotoKeywordCrawlerFactory();
+		crawlerFactory = new DeliciousCrawlerFactory();
 		crawlerServiceRegistration = bc.registerService(CrawlerFactory.class.getName(), crawlerFactory,
 			null);
 		
-		dataSourceFactory = new IPhotoKeywordDataSourceFactory();
+		dataSourceFactory = new DeliciousDataSourceFactory();
 		dataSourceServiceRegistration = bc.registerService(DataSourceFactory.class.getName(), dataSourceFactory,
 			null);
 	}

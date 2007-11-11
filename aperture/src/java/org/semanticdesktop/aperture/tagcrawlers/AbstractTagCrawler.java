@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.semanticdesktop.aperture.websites;
+package org.semanticdesktop.aperture.tagcrawlers;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
