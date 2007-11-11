@@ -27,7 +27,7 @@ your copy of ANT at http://ant.apache.org/
         <!-- versions -->
         <property name="project.version.major" value="2007" />
         <property name="project.version.minor" value="1" />
-        <property name="version-status" value="beta-1-snapshot" />
+        <property name="version-status" value="beta-1" />
         <property name="project.version.full"
                   value="${project.version.major}.${project.version.minor}-${version-status}" />
 
@@ -421,6 +421,7 @@ your copy of ANT at http://ant.apache.org/
         	<fileset dir="${dist.plainjars.dir}">
         	    <include name="${project.jar}"/>
         	    <include name="${project-examples.jar}"/>
+        	    <include name="${project-test.jar}" />
     	    </fileset>
         </copy>
     </target>
@@ -526,15 +527,18 @@ your copy of ANT at http://ant.apache.org/
         </copy>
 
         <!-- copy documentation files -->
-        <mkdir dir="${release.doc.dir}" />
+        <!-- The documentation is out of date, since all relevant information
+             has been moved to the wiki and is maintained there -->
+        <!-- <mkdir dir="${release.doc.dir}" />
         <copy todir="${release.doc.dir}">
             <fileset dir="${doc.dir}">
                 <include name="**" />
                 <exclude name="aperture_overview.ppt" />
-                <!-- file is not uptodate yet -->
+                
             </fileset>
         </copy>
-
+		-->
+        
         <mkdir dir="${release.doc.api.dir}" />
         <copy todir="${release.doc.api.dir}">
             <fileset dir="${javadoc.dir}" />
@@ -597,14 +601,16 @@ your copy of ANT at http://ant.apache.org/
         </copy>
 
         <!-- copy documentation files -->
-        <mkdir dir="${osgirelease.doc.dir}" />
+        <!-- the documentation is being maintained on the wiki now and therefore has been
+             excluded from the release .jar -->
+        <!-- <mkdir dir="${osgirelease.doc.dir}" />
         <copy todir="${osgirelease.doc.dir}">
             <fileset dir="${doc.dir}">
                 <include name="**" />
                 <exclude name="aperture_overview.ppt" />
-                <!-- file is not uptodate yet -->
+                
             </fileset>
-        </copy>
+        </copy> -->
 
         <mkdir dir="${osgirelease.doc.api.dir}" />
         <copy todir="${osgirelease.doc.api.dir}">
