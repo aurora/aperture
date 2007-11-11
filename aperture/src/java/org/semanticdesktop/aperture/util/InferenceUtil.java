@@ -6,7 +6,6 @@
  */
 package org.semanticdesktop.aperture.util;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -15,7 +14,6 @@ import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.impl.StatementImpl;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.vocabulary.RDF;
@@ -24,7 +22,6 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 import org.semanticdesktop.aperture.vocabulary.FRESNEL;
 import org.semanticdesktop.aperture.vocabulary.GEO;
-import org.semanticdesktop.aperture.vocabulary.MAD;
 import org.semanticdesktop.aperture.vocabulary.NAO;
 import org.semanticdesktop.aperture.vocabulary.NCAL;
 import org.semanticdesktop.aperture.vocabulary.NCO;
