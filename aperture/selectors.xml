@@ -274,7 +274,7 @@
         <and>
         	<or>
             	<filename name="org/semanticdesktop/aperture/extractor/jpg/*" />
-            	<filename name="lib/metadata-extractor-2.3.1.jar" />
+            	<filename name="lib/metadata-extractor-2.4.0-beta-1.jar" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>      
