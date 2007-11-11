@@ -7,8 +7,8 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Oct 24 22:58:36 CEST 2007
- * input file: src/java/org/semanticdesktop/aperture/vocabulary/nao.rdfs
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Nov 11 01:11:43 CET 2007
+ * input file: D:\workspace\aperture/doc/ontology/nao.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/08/15/nao#
  */
 public class NAO {
