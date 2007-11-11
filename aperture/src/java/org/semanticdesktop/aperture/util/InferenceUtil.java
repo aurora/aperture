@@ -110,16 +110,40 @@ public class InferenceUtil {
             List<URI> sprops = superProperties.get(p);
             if (sprops != null)
             {
-                for (URI sprop : sprops)
-                    toadd.add(new StatementImpl(s.getContext(), s.getSubject(), sprop, s.getObject()));
+                for (URI sprop : sprops) {
+                    // This line has been commented out by Antoni Mylka
+                    // the statement impl class introduces a dependency between
+                    // aperture core bundle and rdf2go model.impl.base bundle
+                    // this is to be avoided
+                    //toadd.add(new StatementImpl(s.getContext(), s.getSubject(), sprop, s.getObject()));
+                    // the line below is equivalent to the line above because
+                    // model.iterator() used implicitly in the foreach loop
+                    // returns only statements from the context of that model
+                    // whereas the model.createStatement automatically adds the
+                    // appropriate context, so the context is preserved even though
+                    // it doesn't appear here
+                    toadd.add(model.createStatement(s.getSubject(), sprop, s.getObject()));
+                }   
             }
             // type inference
             if ((RDF.type.equals(s.getPredicate()))&&(s.getObject() instanceof URI)) {
                 List<URI> sclasses = superClasses.get((URI)s.getObject());
                 if (sclasses != null)
                 {
-                    for (URI sclass : sclasses)
-                        toadd.add(new StatementImpl(s.getContext(), s.getSubject(), RDF.type, sclass));
+                    for (URI sclass : sclasses) {
+                        // This line has been commented out by Antoni Mylka
+                        // the statement impl class introduces a dependency between
+                        // aperture core bundle and rdf2go model.impl.base bundle
+                        // this is to be avoided
+                        // toadd.add(new StatementImpl(s.getContext(), s.getSubject(), RDF.type, sclass));
+                        // the line below is equivalent to the line above because
+                        // model.iterator() used implicitly in the foreach loop
+                        // returns only statements from the context of that model
+                        // whereas the model.createStatement automatically adds the
+                        // appropriate context, so the context is preserved even though
+                        // it doesn't appear here
+                        toadd.add(model.createStatement(s.getSubject(), RDF.type, sclass));
+                    }   
                 }
             }
         }
