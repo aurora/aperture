@@ -95,7 +95,7 @@ bug fixes:
 - made sure ThreadedExtractorWrapper redirects all Exceptions of the wrapped Extractor
 
 ----------------------------------
-version 2006.1-alpha-4
+version 2006.1-alpha-4 31.05.2007
 ----------------------------------
 
 The entire Aperture Framework has been rewritten to utilize the RDF2Go framework.
@@ -128,7 +128,7 @@ Updated dependencies
 - org.apache.httpclient_3.0.0.rc2.jar  
 
 ----------------------------------
-version 2006.1-beta-1 
+version 1.0.1-beta   12.11.2007
 ----------------------------------
 
 This release bears the mark of the Nepomuk Social Semantic Desktop - a major
