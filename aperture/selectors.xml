@@ -14,9 +14,7 @@
     
     <selector id="jars.poi.selector">
         <or>
-            <filename name="lib/poi-3.0-alpha2-20060616.jar" />
-            <filename name="lib/poi-contrib-3.0-alpha2-20060616.jar" />
-            <filename name="lib/poi-scratchpad-3.0-alpha2-20060616.jar" />
+            <filename name="lib/poi-3.0-FINAL.jar" />
         </or>
     </selector>
     
@@ -51,9 +49,6 @@
                 <filename name="org/semanticdesktop/aperture/accessor/base/*" />
                 <filename name="org/semanticdesktop/aperture/accessor/impl/*" />
             </or>
-            <not>
-                <filename name="org/semanticdesktop/aperture/accessor/base/RepositoryAccessData.*" />
-            </not>
             <selector refid="bundle.basic.selector" />
         </and>
     </selector>
