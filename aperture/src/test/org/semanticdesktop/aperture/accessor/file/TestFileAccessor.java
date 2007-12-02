@@ -69,6 +69,8 @@ public class TestFileAccessor extends ApertureTestBase {
         URI parentURI = dataObject.getMetadata().getValueFactory().createURI(tmpDir.toURI().toString());
         checkStatement(NFO.belongsToContainer, parentURI, dataObject.getMetadata());
         
+        assertTrue(((FileDataObject)dataObject).getFile().equals(tmpFile));
+        
         // we don't need to dispose the DataSource because we passed null as the value of DataSource to the
         // extract method
         validate(dataObject.getMetadata());
@@ -81,7 +83,7 @@ public class TestFileAccessor extends ApertureTestBase {
         DataObject dataObject = fileAccessor.getDataObject(tmpDir.toURI().toString(), null, null, factory);
         assertNotNull(dataObject);
         assertTrue(dataObject instanceof FolderDataObject);
-
+        
         // check its metadata
         checkStatement(NFO.fileName, "TestFileAccessor", dataObject.getMetadata());
         

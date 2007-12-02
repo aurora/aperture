@@ -136,12 +136,13 @@ public class FileAccessor implements DataAccessor {
 		DataObject result = null;
 
 		if (isFile) {
-			InputStream contentStream = null;
+			//InputStream contentStream = null;
 			if (file.canRead()) {
-				contentStream = new BufferedInputStream(new FileInputStream(file));
+			    // 2.12.2007 - commented this line out, so that the file accessor returns
+			    // FileDataObjects backed by real files
+				//contentStream = new BufferedInputStream(new FileInputStream(file));
+			    result = new FileDataObjectBase(id, source, metadata, file);
 			}
-
-			result = new FileDataObjectBase(id, source, metadata, contentStream);
 			// Add type info. (type, File) cannot be added in the FileDataObject class itself because it is
 			// also used for things like email Messages with content, that are strictly speaking not files.
 			result.getMetadata().add(RDF.type, NFO.FileDataObject);
