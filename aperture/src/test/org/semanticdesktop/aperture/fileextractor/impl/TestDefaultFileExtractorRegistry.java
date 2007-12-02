@@ -12,6 +12,7 @@ public class TestDefaultFileExtractorRegistry extends ApertureTestBase {
 
     public void testRegistry() {
         DefaultFileExtractorRegistry registry = new DefaultFileExtractorRegistry();
-        assertEquals(registry.getAll().size(),0);
+        assertEquals(registry.get("audio/mpeg").size(),1);
+        assertEquals(registry.getAll().size(),1);
     }
 }
