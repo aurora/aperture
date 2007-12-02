@@ -36,7 +36,7 @@ import org.xml.sax.SAXException;
  */
 public class DefaultFileExtractorRegistry extends FileExtractorRegistryImpl {
 
-    private static final String DEFAULT_FILE = "org/semanticdesktop/aperture/extractor/impl/defaults.xml";
+    private static final String DEFAULT_FILE = "org/semanticdesktop/aperture/fileextractor/impl/defaults.xml";
 
     private static final String FILE_EXTRACTOR_FACTORY_TAG = "fileExtractorFactory";
 
