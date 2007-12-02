@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<fileExtractorFactories>
+	<!--  <fileExtractorFactory>
+		<name>org.semanticdesktop.aperture.fileextractor.mp3.MP3FileExtractorFactory</name>
+	</fileExtractorFactory> -->
+</fileExtractorFactories>

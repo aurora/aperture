@@ -13,6 +13,7 @@ import org.semanticdesktop.aperture.accessor.TestAccessors;
 import org.semanticdesktop.aperture.crawler.TestCrawlers;
 import org.semanticdesktop.aperture.datasource.TestDataSources;
 import org.semanticdesktop.aperture.extractor.TestExtractors;
+import org.semanticdesktop.aperture.fileextractor.TestFileExtractors;
 import org.semanticdesktop.aperture.hypertext.linkextractor.TestLinkExtractors;
 import org.semanticdesktop.aperture.mime.TestMimeStuff;
 import org.semanticdesktop.aperture.rdf.TestRDFContainers;
@@ -32,6 +33,7 @@ public class TestAll extends TestSuite {
         addTest(TestDataSources.suite());
         addTest(TestCrawlers.suite());
         addTest(TestExtractors.suite());
+        addTest(TestFileExtractors.suite());
         addTest(TestLinkExtractors.suite());
         addTest(TestMimeStuff.suite());
         addTest(TestSecurityStuff.suite());
