@@ -6,6 +6,10 @@
  */
 package org.semanticdesktop.aperture.accessor.base;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -13,6 +17,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.util.IOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +28,8 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
 
     private InputStream content;
     
+    private File file;
+    
     public FileDataObjectBase() { }
     
     public FileDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata, InputStream content) {
@@ -30,41 +37,75 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
         setContent(content);
     }
     
+    public FileDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata, File file) {
+        super(id, dataSource, metadata);
+        setFile(file);
+    }
+    
     public void finalize() throws Throwable {
         try {
             // Just try to close the InputStream once more: can remedy nasty programming errors.
             // Not documented in the Javadoc as programmers shouldn't rely on this.
-            if (content != null) {
-                content.close();
-            }
+            closeContent();
         }
         finally {
             super.finalize();
         }
     }
     
+
     public void setContent(InputStream content) {
         if (content != null && !content.markSupported()) {
             throw new IllegalArgumentException("content should support mark and reset");
         }
+        closeContent();
         this.content = content;
+        this.file = null;
     }
     
     public InputStream getContent() {
         return content;
     }
     
-    public void dispose() {
+    public void setFile(File file) {
+        if (file == null) {
+            throw new NullPointerException("the file passed to a FileDataObject base cannot be null");
+        } else if ( !file.exists()) {
+            throw new IllegalArgumentException("File not found: " + file);
+        } else if ( !file.isFile()) {
+            throw new IllegalArgumentException("Not a normal file: " + file);
+        } else if ( !file.canRead()) {
+            throw new IllegalArgumentException("File not readable: " + file);
+        }
+        closeContent();
         try {
-        	if (content != null) {
-        		content.close();
-        	}
+            this.file = file;
+            this.content = new BufferedInputStream(new FileInputStream(file));
+        }
+        catch (FileNotFoundException e) {
+            // this can't happen because we check for this case
+        }
+    }
+    
+    public File getFile() {
+        return file;
+    }
+    
+    public void dispose() {
+        closeContent();
+        super.dispose();
+    }
+    
+    private void closeContent() {
+        try {
+            if (content != null) {
+                content.close();
+                content = null;
+            }
         }
         catch (IOException e) {
             Logger logger = LoggerFactory.getLogger(getClass());
             logger.error("IOException while closing stream", e);
         }
-        
-        super.dispose();
     }
 }
