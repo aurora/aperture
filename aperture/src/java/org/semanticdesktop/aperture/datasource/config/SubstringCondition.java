@@ -98,4 +98,22 @@ public abstract class SubstringCondition {
             return DATASOURCE.DOES_NOT_CONTAIN;
         }
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        boolean result = this == obj;
+        
+        if(!result && obj instanceof SubstringCondition) {
+            SubstringCondition other = (SubstringCondition)obj;
+            result = toString().equals(other.toString());
+        }
+        
+        return result;
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+    
 }

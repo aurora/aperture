@@ -71,4 +71,21 @@ public class RegExpPattern extends UrlPattern {
 		return result;
 	}
 
+    @Override
+    public boolean equals(Object obj) {
+        boolean result = this == obj;
+        
+        if(!result && obj instanceof RegExpPattern) {
+            RegExpPattern other = (RegExpPattern)obj;
+            result = getPatternString().equals(other.getPatternString());
+        }
+        
+        return result;
+    }
+
+    @Override
+    public int hashCode() {
+        return getPatternString().hashCode();
+    }
+
 }

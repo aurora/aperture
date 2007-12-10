@@ -1,21 +1,15 @@
 package org.semanticdesktop.aperture.datasource.filesystem;
 import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.Node;
-import org.semanticdesktop.aperture.util.ModelUtil;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
-import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
-import java.util.Collection;
-import java.util.List;
-import java.util.LinkedList;
+import org.semanticdesktop.aperture.datasource.config.DomainBoundableDataSource;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
 
 /**
  * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Wed Aug 22 12:40:01 CEST 2007
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/filesystem/filesystemDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/12/filesystemds#FileSystemDataSource
  */
-public class FileSystemDataSource extends DataSourceBase {
+public class FileSystemDataSource extends DomainBoundableDataSource {
 
     /**
      * @see DataSource#getType()
@@ -152,32 +146,5 @@ public class FileSystemDataSource extends DataSourceBase {
          } else {
              getConfiguration().put(FILESYSTEMDS.followSymbolicLinks,followSymbolicLinks);
          }
-     }
-
-    /**
-     * Returns the domain boundaries for this data source
-     * 
-     * @return the domain boundaries for this data source
-     * @throws NullPointerException if no configuration has been set, use
-     *             {@link #setConfiguration(RDFContainer)} before calling this method
-     */
-     public DomainBoundaries getDomainBoundaries() {
-          return ConfigurationUtil.getDomainBoundaries(getConfiguration());
-     }
-
-    /**
-     * Sets the domain boundaries for this data source
-     * 
-     * @param domainBoundaries the domain boundaries, can be null in which case any previous setting will be removed
-     * @throws NullPointerException if no configuration has been set, use
-     *             {@link #setConfiguration(RDFContainer)} before calling this method
-     */
-     public void setDomainBoundaries(DomainBoundaries domainBoundaries) {
-          if (domainBoundaries == null) {
-              DomainBoundaries emptyBoundaries = new DomainBoundaries();
-              ConfigurationUtil.setDomainBoundaries(emptyBoundaries,getConfiguration());
-          } else {
-              ConfigurationUtil.setDomainBoundaries(domainBoundaries,getConfiguration());
-          }
      }
 }

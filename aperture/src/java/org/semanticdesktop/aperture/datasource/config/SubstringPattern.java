@@ -71,4 +71,22 @@ public class SubstringPattern extends UrlPattern {
 
 		return result;
 	}
+	
+    @Override
+    public boolean equals(Object obj) {
+        boolean result = this == obj;
+
+        if (!result && obj instanceof SubstringPattern) {
+            SubstringPattern other = (SubstringPattern) obj;
+            result = getSubstring().equals(other.getSubstring())
+                    && getCondition().equals(other.getCondition());
+        }
+
+        return result;
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
 }
