@@ -32,9 +32,9 @@
 	<classpathentry kind="lib" path="lib/metadata-extractor-2.4.0-beta-1.jar"/>
 	<classpathentry kind="lib" path="lib/openrdf-sesame-2.0-beta6-onejar.jar"/>
 	<classpathentry kind="lib" path="lib/openrdf-rdf2go-2.0.0-beta6.jar"/>
-	<classpathentry kind="lib" path="lib/jid3lib-0.5.4.jar"/>
 	<classpathentry kind="lib" path="lib/infsail-0.1.jar"/>
 	<classpathentry kind="lib" path="lib/nrlvalidator-0.1.jar"/>
 	<classpathentry kind="lib" path="lib/unionsail-0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jaudiotagger.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>

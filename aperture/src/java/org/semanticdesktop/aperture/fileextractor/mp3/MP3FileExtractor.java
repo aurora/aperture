@@ -7,16 +7,21 @@
 package org.semanticdesktop.aperture.fileextractor.mp3;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.farng.mp3.MP3File;
-import org.farng.mp3.TagException;
-import org.farng.mp3.id3.AbstractID3v2;
-import org.farng.mp3.id3.ID3v1;
-import org.farng.mp3.id3.ID3v1_1;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.audio.mp3.MP3File;
+import org.jaudiotagger.tag.TagException;
+import org.jaudiotagger.tag.id3.AbstractID3v2Frame;
+import org.jaudiotagger.tag.id3.AbstractID3v2Tag;
+import org.jaudiotagger.tag.id3.AbstractTagFrameBody;
+import org.jaudiotagger.tag.id3.ID3v11Tag;
+import org.jaudiotagger.tag.id3.ID3v1Tag;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
@@ -48,7 +53,10 @@ public class MP3FileExtractor extends AbstractFileExtractor {
         MP3File mp3File = null;
         try {
             // we want to open the file in write mode
-            mp3File = new MP3File(file, false);
+            mp3File = new MP3File(file);
+        }
+        catch (FileNotFoundException e) {
+            throw new FileExtractorException(e);
         }
         catch (IOException e) {
             throw new FileExtractorException(e);
@@ -56,6 +64,12 @@ public class MP3FileExtractor extends AbstractFileExtractor {
         catch (TagException e) {
             throw new FileExtractorException("File format not supported by the MP3Exctractor: "
                     + file.getParent(), e);
+        }
+        catch (ReadOnlyFileException e) {
+            throw new FileExtractorException(e);
+        }
+        catch (InvalidAudioFrameException e) {
+            throw new FileExtractorException(e);
         }
 
         HashMap<URI, String> id3v1hashMap = new HashMap<URI, String>();
@@ -74,7 +88,7 @@ public class MP3FileExtractor extends AbstractFileExtractor {
          * better because the extractor doesn't need to delete anything from the rdfcontainer
          */
         addId3V1Fields(id3v1hashMap, result);
-
+        /*
         if (mp3File.hasFilenameTag()) {
             processFilenameTag(id, mp3File, charset, mimeType, result);
         }
@@ -82,7 +96,7 @@ public class MP3FileExtractor extends AbstractFileExtractor {
         if (mp3File.hasLyrics3Tag()) {
             processLyrics3Tag(id, mp3File, charset, mimeType, result);
         }
-
+        */
         result.add(RDF.type, NID3.ID3Audio);
 
     }
@@ -90,52 +104,49 @@ public class MP3FileExtractor extends AbstractFileExtractor {
     private void processID3V1Tags(URI id, MP3File mp3File, Charset charset, String mimeType,
             HashMap<URI, String> resultHashMap) {
 
-        /*
-         * The crappy thing about this class is that it contains getters for fields that are not present in
-         * the ID3v1 specification. These getters throw an UnsupportedOperationException. Why did they end up
-         * there in the first place - only the author knows. The id3v1 spec contained exactly SIX fields. And
-         * only those six can actually be extracted from this object. Why does it have 17 getters for fields
-         * if six of them throw UnsupportedOperationException, five other getters only do a trim() and only
-         * those six actually return the internal fields. This deserves a honorable mention at thedailywtf.com
-         */
-        ID3v1 id3v1 = mp3File.getID3v1Tag();
+        ID3v1Tag id3v1 = mp3File.getID3v1Tag();
 
         // note that getSongTitle is the same as getTitle().trim() - viva la open source
-        addStringProperty(NID3.title, id3v1.getSongTitle(), resultHashMap);
+        addStringProperty(NID3.title, id3v1.getFirstTitle(), resultHashMap);
 
         // note that getLeadArtist is the same as getArtist().trim()
-        addStringProperty(NID3.leadArtist, id3v1.getLeadArtist(), resultHashMap);
+        addStringProperty(NID3.leadArtist, id3v1.getFirstArtist(), resultHashMap);
 
         // note that getAlbumTitle is the same as getAlbum().trim()
-        addStringProperty(NID3.albumTitle, id3v1.getAlbumTitle(), resultHashMap);
+        addStringProperty(NID3.albumTitle, id3v1.getFirstAlbum(), resultHashMap);
 
         // note that getYearReleased is the same as getYear().trim()
-        addStringProperty(NID3.recordingYear, id3v1.getYearReleased(), resultHashMap);
+        addStringProperty(NID3.recordingYear, id3v1.getFirstYear(), resultHashMap);
 
         // note that getSongComment is the same as getComment().trim()
-        addStringProperty(NID3.comments, id3v1.getSongComment(), resultHashMap);        
-        
-        byte genre = id3v1.getGenre();
-        if (genre != -1) {
-            addStringProperty(NID3.contentType, Genre.getGenreById(id3v1.getGenre()).getName(), resultHashMap);
-        }
-    
-        if (id3v1 instanceof ID3v1_1) {
-            ID3v1_1 id3v1_1 = (ID3v1_1) id3v1;
-            byte trackNumber = id3v1_1.getTrack();
-            // this is crappy, it is impossible to tell if 0 is the actual track number
-            // or if it's an indication that no track number has been set
-            if (trackNumber > 0) {
-                addStringProperty(NID3.trackNumber, id3v1_1.getTrackNumberOnAlbum(), resultHashMap);
-            }
+        addStringProperty(NID3.comments, id3v1.getFirstComment(), resultHashMap);
+
+        addStringProperty(NID3.contentType, id3v1.getFirstGenre(), resultHashMap);
+
+        if (id3v1 instanceof ID3v11Tag) {
+            ID3v11Tag id3v1_1 = (ID3v11Tag) id3v1;
+            addStringProperty(NID3.trackNumber, id3v1_1.getFirstTrack(), resultHashMap);
         }
     }
 
     private void processID3V2Tags(URI id, MP3File mp3File, Charset charset, String mimeType,
             HashMap<URI, String> id3v1FieldHashMap, RDFContainer result) {
+        AbstractID3v2Tag id3v2 = mp3File.getID3v2Tag();
+        
+        Iterator iterator = id3v2.getFields();
+        while (iterator.hasNext()) {
+            AbstractID3v2Frame frame = (AbstractID3v2Frame)iterator.next();
+            String identifier = frame.getIdentifier();
+            FrameIdentifier frameIdentifier = FrameIdentifier.valueOf(identifier.trim());
+            AbstractTagFrameBody body = frame.getBody();
+            frameIdentifier.process(body, id3v2, id3v1FieldHashMap, result);
+        }
+    }
 
-        AbstractID3v2 id3v2 = mp3File.getID3v2Tag();
-
+    private void addStringProperty(URI property, String string, HashMap<URI, String> resultHashMap) {
+        if (string != null && string.length() > 0) {
+            resultHashMap.put(property, string);
+        }
     }
 
     private void addId3V1Fields(HashMap<URI, String> id3v1hashMap, RDFContainer result) {
@@ -162,22 +173,6 @@ public class MP3FileExtractor extends AbstractFileExtractor {
             else {
                 result.add(uri, value);
             }
-        }
-    }
-
-    private void processFilenameTag(URI id, MP3File mp3File, Charset charset, String mimeType,
-            RDFContainer result) {
-    // TODO add support for the filename tag
-    }
-
-    private void processLyrics3Tag(URI id, MP3File mp3File, Charset charset, String mimeType,
-            RDFContainer result) {
-    // TODO add support for the lyrics3 tags
-    }
-
-    private void addStringProperty(URI property, String string, HashMap<URI, String> resultHashMap) {
-        if (string != null && string.length() > 0) {
-            resultHashMap.put(property, string);
         }
     }
 }

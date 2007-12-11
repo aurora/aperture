@@ -63,5 +63,4 @@ public class MP3FileExtractorTest extends FileExtractorTestBase {
         assertTrue(metadata.getAll(NID3.trackNumber).size() == 0);
         validate(metadata);
     }
-
 }
