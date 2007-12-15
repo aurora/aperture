@@ -283,6 +283,15 @@
             <selector refid="bundle.basic.selector" />
         </and>      
     </selector>
+    <selector id="bundle.extractor.mp3.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/extractor/mp3/*" />
+                <filename name="lib/jaudiotagger.jar" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
     <selector id="bundle.extractor.office.selector">
         <and>
             <filename name="org/semanticdesktop/aperture/extractor/office/*" />
@@ -485,6 +494,7 @@
             <selector refid="bundle.extractor.html.selector" />
             <selector refid="bundle.extractor.jpg.selector" />
             <selector refid="bundle.extractor.mime.selector" />
+            <selector refid="bundle.extractor.mp3.selector" />
             <selector refid="bundle.extractor.office.selector" />
             <selector refid="bundle.extractor.opendocument.selector" />
             <selector refid="bundle.extractor.openxml.selector" />
