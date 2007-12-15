@@ -11,6 +11,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.AccessData;
@@ -540,15 +542,55 @@ public class WebCrawler extends CrawlerBase {
 
                 if (!url.equals(link) && !scheduledLinks.contains(link)) {
                     if (depth >= 0) {
-                        schedule(link, depth, true);
-                        URI linkedResourceUri = object.getMetadata().getModel().createURI(link);
-                        object.getMetadata().add(NIE.links,linkedResourceUri);
+                        URI linkedResourceUri = null;
                         
-                        // The following triple needs to be added to satiate the validator complaining
-                        // about links to resources that are outside the crawling domain and don't have
-                        // their types set properly
-                        object.getMetadata().getModel().addStatement(linkedResourceUri,RDF.type,NIE.DataObject);
-                        scheduledLinks.add(link);
+                        // if the link isn't properly encoded, createURI will fail and so will accessing it
+                        try {    
+                            linkedResourceUri = object.getMetadata().getModel().createURI(link);
+                        }
+                        catch(IllegalArgumentException iae) {
+                            // try again after encoding the link
+                            try {
+                                if (link.startsWith("file:") || link.startsWith("http:") || link.startsWith("https:")) {
+                                    try {
+                                        URL parsedLink = new URL(link);
+                                        java.net.URI parsedUri = new java.net.URI(parsedLink.getProtocol(), parsedLink.getAuthority(), parsedLink.getPath(), parsedLink.getQuery(), parsedLink.getRef());
+                                        link = parsedUri.toString();
+                                        linkedResourceUri = object.getMetadata().getModel().createURI(link);
+                                    }
+                                    catch(MalformedURLException mfe) {
+                                        link = null;
+                                        linkedResourceUri = null;
+                                    }
+                                    catch (URISyntaxException e) {
+                                        link = null;
+                                        linkedResourceUri = null;
+                                   }
+                                }
+                            }
+                            catch (ModelRuntimeException e) {
+                                logger.debug("Unable to create URI for link {}", link);
+                            }
+                        }
+
+                        // if creating the link failed, don't crash out with an exception, just skip it
+                        if(link != null) {
+                            // now we can schedule the link (which might have been encoded)
+                            schedule(link, depth, true);
+                            
+                            if(linkedResourceUri != null) {
+                                object.getMetadata().add(NIE.links,linkedResourceUri);
+                                
+                                // The following triple needs to be added to satiate the validator complaining
+                                // about links to resources that are outside the crawling domain and don't have
+                                // their types set properly
+                                object.getMetadata().getModel().addStatement(linkedResourceUri,RDF.type,NIE.DataObject);
+                                scheduledLinks.add(link);
+                            }
+                        }
+                        else {
+                            logger.warn("WebCrawler is skipping link {}", link);
+                        }
                     }
 
                     if (accessData != null) {
