@@ -12,11 +12,12 @@ public class TestDefaultExtractorRegistry extends ApertureTestBase {
 
     public void testRegistry() {
         DefaultExtractorRegistry registry = new DefaultExtractorRegistry();
-        assertEquals(1, registry.get("text/plain").size());
-        assertEquals(1, registry.get("text/html").size());
-        assertEquals(1, registry.get("application/pdf").size());
-        assertEquals(1, registry.get("application/vnd.oasis.opendocument.text").size());
-        assertEquals(1, registry.get("application/vnd.sun.xml.writer").size());
-        assertEquals(1, registry.get("image/jpg").size());
+        assertEquals(1, registry.getExtractorFactories("text/plain").size());
+        assertEquals(1, registry.getExtractorFactories("text/html").size());
+        assertEquals(1, registry.getExtractorFactories("application/pdf").size());
+        assertEquals(1, registry.getExtractorFactories("application/vnd.oasis.opendocument.text").size());
+        assertEquals(1, registry.getExtractorFactories("application/vnd.sun.xml.writer").size());
+        assertEquals(1, registry.getExtractorFactories("image/jpg").size());
+        assertEquals(1, registry.getFileExtractorFactories("audio/mpeg").size());
     }
 }

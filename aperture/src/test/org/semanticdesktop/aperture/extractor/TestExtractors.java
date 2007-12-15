@@ -14,6 +14,7 @@ import org.semanticdesktop.aperture.extractor.html.HtmlExtractorTest;
 import org.semanticdesktop.aperture.extractor.impl.TestDefaultExtractorRegistry;
 import org.semanticdesktop.aperture.extractor.impl.TestExtractorRegistryImpl;
 import org.semanticdesktop.aperture.extractor.mime.MimeExtractorTest;
+import org.semanticdesktop.aperture.extractor.mp3.MP3FileExtractorTest;
 import org.semanticdesktop.aperture.extractor.office.OfficeExtractorTest;
 import org.semanticdesktop.aperture.extractor.opendocument.OpenDocumentExtractorTest;
 import org.semanticdesktop.aperture.extractor.openxml.OpenXmlExtractorTest;
@@ -62,6 +63,10 @@ public class TestExtractors extends TestSuite {
         addTest(new TestSuite(WordPerfectExtractorTest.class));
         addTest(new TestSuite(WorksExtractorTest.class));
         addTest(new TestSuite(XmlExtractorTest.class));
+        
+        
+        // test the file extractors
+        addTest(new TestSuite(MP3FileExtractorTest.class));
         
         // test the registries holding the ExtractorFactories
         addTest(new TestSuite(TestExtractorRegistryImpl.class));
