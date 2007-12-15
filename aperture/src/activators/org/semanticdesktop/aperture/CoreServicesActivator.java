@@ -12,7 +12,6 @@ import org.semanticdesktop.aperture.accessor.AccessorServiceActivator;
 import org.semanticdesktop.aperture.crawler.CrawlerServiceActivator;
 import org.semanticdesktop.aperture.datasource.DataSourceServiceActivator;
 import org.semanticdesktop.aperture.extractor.ExtractorServiceActivator;
-import org.semanticdesktop.aperture.fileextractor.FileExtractorServiceActivator;
 import org.semanticdesktop.aperture.opener.DataOpenerServiceActivator;
 import org.semanticdesktop.aperture.rdf.RDFBundleActivator;
 
@@ -30,8 +29,6 @@ public class CoreServicesActivator implements BundleActivator {
 	private DataSourceServiceActivator dataSourceServiceActivator;
 
 	private ExtractorServiceActivator extractorServiceActivator;
-	
-	private FileExtractorServiceActivator fileExtractorServiceActivator;
 
 	private DataOpenerServiceActivator dataOpenerServiceActivator;
 
@@ -49,9 +46,6 @@ public class CoreServicesActivator implements BundleActivator {
 		
 		extractorServiceActivator = new ExtractorServiceActivator();
 		extractorServiceActivator.start(context);
-		
-		fileExtractorServiceActivator = new FileExtractorServiceActivator();
-		fileExtractorServiceActivator.start(context);
 		
 		dataOpenerServiceActivator = new DataOpenerServiceActivator();
 		dataOpenerServiceActivator.start(context);
@@ -74,9 +68,6 @@ public class CoreServicesActivator implements BundleActivator {
 		
 		extractorServiceActivator.stop(context);
 		extractorServiceActivator = null;
-		
-		fileExtractorServiceActivator.stop(context);
-		fileExtractorServiceActivator = null;
 		
 		dataOpenerServiceActivator.stop(context);
 		dataOpenerServiceActivator = null;
