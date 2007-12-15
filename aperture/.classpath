@@ -36,5 +36,6 @@
 	<classpathentry kind="lib" path="lib/nrlvalidator-0.1.jar"/>
 	<classpathentry kind="lib" path="lib/unionsail-0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jaudiotagger.jar"/>
+	<classpathentry kind="lib" path="lib/jutf7-0.9.0.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>
