@@ -40,6 +40,15 @@ public class ExtractorServiceActivator implements BundleActivator, ServiceListen
 		for (int i = 0; references != null && i < references.length; i++) {
 			this.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, references[i]));
 		}
+		
+		filter = "(objectclass=" + FileExtractorFactory.class.getName() + ")";
+        bc.addServiceListener(this, filter);
+
+        references = bc.getServiceReferences(null, filter);
+
+        for (int i = 0; references != null && i < references.length; i++) {
+            this.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, references[i]));
+        }
 
 		
 	}
@@ -50,26 +59,34 @@ public class ExtractorServiceActivator implements BundleActivator, ServiceListen
     }
 
 	public void serviceChanged(ServiceEvent event) {
-		ExtractorFactory factory;
+	    Object instance = null;
 		switch (event.getType()) {
 		case ServiceEvent.REGISTERED:
-			factory = (ExtractorFactory) ExtractorServiceActivator.bc.getService(event
-					.getServiceReference());
-			registry.add(factory);
+			instance = ExtractorServiceActivator.bc.getService(event.getServiceReference());
+			if (instance instanceof ExtractorFactory) {
+			    registry.add((ExtractorFactory)instance);
+			} else if (instance instanceof FileExtractorFactory) {
+			    registry.add((FileExtractorFactory)instance);
+			}
 			break;
 		case ServiceEvent.MODIFIED:
-			factory = (ExtractorFactory) ExtractorServiceActivator.bc.getService(event
-					.getServiceReference());
-			registry.remove(factory);
-			registry.add(factory);
+		    instance = ExtractorServiceActivator.bc.getService(event.getServiceReference());
+            if (instance instanceof ExtractorFactory) {
+                registry.remove((ExtractorFactory)instance);
+                registry.add((ExtractorFactory)instance);
+            } else if (instance instanceof FileExtractorFactory) {
+                registry.remove((FileExtractorFactory)instance);
+                registry.add((FileExtractorFactory)instance);
+            }
 			break;
 		case ServiceEvent.UNREGISTERING:
-			factory = (ExtractorFactory) ExtractorServiceActivator.bc.getService(event
-					.getServiceReference());
-			registry.remove(factory);
+		    instance = ExtractorServiceActivator.bc.getService(event.getServiceReference());
+            if (instance instanceof ExtractorFactory) {
+                registry.remove((ExtractorFactory)instance);
+            } else if (instance instanceof FileExtractorFactory) {
+                registry.remove((FileExtractorFactory)instance);
+            }
 			break;
 		}
 	}
-
-
 }
