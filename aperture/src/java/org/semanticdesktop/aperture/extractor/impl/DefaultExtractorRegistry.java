@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
+import org.semanticdesktop.aperture.extractor.FileExtractorFactory;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.util.SimpleSAXAdapter;
 import org.semanticdesktop.aperture.util.SimpleSAXParser;
@@ -103,8 +104,13 @@ public class DefaultExtractorRegistry extends ExtractorRegistryImpl {
                 try {
                     Class clazz = Class.forName(className);
                     Object instance = clazz.newInstance();
-                    ExtractorFactory factory = (ExtractorFactory) instance;
-                    add(factory);
+                    if (instance instanceof ExtractorFactory) {
+                        ExtractorFactory factory = (ExtractorFactory) instance;
+                        add(factory);
+                    } else if (instance instanceof FileExtractorFactory) {
+                        FileExtractorFactory factory = (FileExtractorFactory) instance;
+                        add(factory);
+                    }
                 }
                 catch (ClassNotFoundException e) {
                     logger.warn("unable to find class " + className + ", ignoring", e);

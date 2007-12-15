@@ -58,4 +58,7 @@
 	<extractorFactory>
 		<name>org.semanticdesktop.aperture.extractor.xml.XmlExtractorFactory</name>
 	</extractorFactory>
+	<extractorFactory>
+		<name>org.semanticdesktop.aperture.extractor.mp3.MP3FileExtractorFactory</name>
+	</extractorFactory>
 </extractorFactories>
