@@ -798,14 +798,16 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
             int typeIndex = url.indexOf(";TYPE=");
             if (typeIndex < 0) {
                 // determine the message UID: cutoff the ID part
-                int separatorIndex = url.lastIndexOf('/');
-                if (separatorIndex < 0 || separatorIndex >= url.length() - 1) {
+                int separatorIndex = url.lastIndexOf("/;UID=");
+                separatorIndex = Math.max(separatorIndex, url.lastIndexOf("/;uid="));
+                if (separatorIndex < 0 || separatorIndex >= url.length() - 6) {
                     throw new IllegalArgumentException("unable to get message UID from " + url);
                 }
-                String messageNumberString = url.substring(separatorIndex + 1);
+                String messageNumberString = url.substring(separatorIndex + 6);
 
                 // remove the fragment identifier
-                separatorIndex = messageNumberString.indexOf('#');
+                separatorIndex = messageNumberString.indexOf('#'); // fragment identifier that we use
+                separatorIndex = Math.max(separatorIndex, messageNumberString.indexOf('/')); // RFC 2192
                 if (separatorIndex > 0 && separatorIndex < messageNumberString.length() - 1) {
                     messageNumberString = messageNumberString.substring(0, separatorIndex);
                 }
