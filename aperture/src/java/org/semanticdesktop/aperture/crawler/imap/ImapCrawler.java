@@ -824,6 +824,10 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
                 // retrieve the message with this UID
                 MimeMessage message = (MimeMessage) ((UIDFolder) folder).getMessageByUID(messageUID);
 
+                if (message == null) {
+                    throw new UrlNotFoundException("unknown UID: " + messageUID);
+                }
+                
                 // create a DataObject for the requested message or message part
                 return getObject(message, url, getFolderURI(folder), dataSource, newAccessData, containerFactory);
             }
