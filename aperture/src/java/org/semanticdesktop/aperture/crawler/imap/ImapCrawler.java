@@ -386,7 +386,7 @@ public class ImapCrawler extends CrawlerBase implements DataAccessor {
         }
 
         // report the folder's metadata
-        String folderUrl = getFolderURIPrefix(folder).toString();
+        String folderUrl = getFolderURI(folder).toString();
 
         if (!inDomain(folderUrl)) {
             // This gives us different semantics to domainboundaries than the filecrawler,
