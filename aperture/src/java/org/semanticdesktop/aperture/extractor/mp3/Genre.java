@@ -174,14 +174,20 @@ public enum Genre {
         return namesToNumbersMap.get(name);
     }
     
-    public static Genre getGenreById(byte id) {
-        System.out.println("id: " + id);
+    public static Genre getGenreByByteId(byte id) {
         int convertedByte = (id >= 0 ? id : (int)id + 256);
-        System.out.println("converted: " + convertedByte);
         if (convertedByte < 0 || convertedByte >= values().length) {
             return null;
         } else {
             return values()[convertedByte];
+        }
+    }
+    
+    public static Genre getGenreByIntId(int id) {
+        if (id < 0 || id >= values().length) {
+            return null;
+        } else {
+            return values()[id];
         }
     }
 }
