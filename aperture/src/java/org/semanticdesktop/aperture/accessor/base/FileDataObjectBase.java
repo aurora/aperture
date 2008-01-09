@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FileDataObjectBase extends DataObjectBase implements FileDataObject {
 
-    private InputStream content;
+    private CountingInputStream content;
     
     private File file;
     
@@ -59,7 +59,7 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
             throw new IllegalArgumentException("content should support mark and reset");
         }
         closeContent();
-        this.content = content;
+        this.content = new CountingInputStream(content);
         this.file = null;
     }
     
@@ -80,7 +80,7 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
         closeContent();
         try {
             this.file = file;
-            this.content = new BufferedInputStream(new FileInputStream(file));
+            this.content = new CountingInputStream(new BufferedInputStream(new FileInputStream(file)));
         }
         catch (FileNotFoundException e) {
             // this can't happen because we check for this case
@@ -89,6 +89,17 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
     
     public File getFile() {
         return file;
+    }
+    
+    public File downloadContent() throws IOException {
+        if (content.getCurrentByte() != 0) {
+            throw new IOException("The content stream hasn't been reset before calling getFile(), " +
+            		"can't create a temporary file");
+        } else {
+            File file = File.createTempFile("aperture","tmp");
+            IOUtil.writeStream(content, file);
+            return file;
+        }
     }
     
     public void dispose() {
@@ -107,5 +118,5 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
             Logger logger = LoggerFactory.getLogger(getClass());
             logger.error("IOException while closing stream", e);
         }
-    }
+    }   
 }

@@ -9,8 +9,11 @@ package org.semanticdesktop.aperture.accessor;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.semanticdesktop.aperture.accessor.base.CountingInputStreamTest;
 import org.semanticdesktop.aperture.accessor.base.TestFileAccessData;
+import org.semanticdesktop.aperture.accessor.base.TestFileDataObject;
 import org.semanticdesktop.aperture.accessor.base.TestModelAccessData;
+import org.semanticdesktop.aperture.accessor.base.TestSynchronizedAccessData;
 import org.semanticdesktop.aperture.accessor.file.TestFileAccessor;
 import org.semanticdesktop.aperture.accessor.impl.TestDefaultDataAccessorRegistry;
 
@@ -25,7 +28,10 @@ public class TestAccessors extends TestSuite {
         
         addTest(new TestSuite(TestFileAccessor.class));
         addTest(new TestSuite(TestDefaultDataAccessorRegistry.class));
+        addTest(new TestSuite(CountingInputStreamTest.class));
         addTest(new TestSuite(TestFileAccessData.class));
+        addTest(new TestSuite(TestFileDataObject.class));
         addTest(new TestSuite(TestModelAccessData.class));
+        addTest(new TestSuite(TestSynchronizedAccessData.class));
     }
 }
