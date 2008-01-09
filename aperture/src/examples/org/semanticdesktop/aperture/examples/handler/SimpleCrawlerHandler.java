@@ -34,6 +34,8 @@ import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
+import org.semanticdesktop.aperture.extractor.FileExtractor;
+import org.semanticdesktop.aperture.extractor.FileExtractorFactory;
 import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
@@ -207,15 +209,31 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
             RDFContainer metadata = object.getMetadata();
             metadata.add(NIE.mimeType, mimeType);
 
-            // apply an Extractor if available
+            
             if (extractingContents) {
                 buffer.reset();
-
+                
+                // apply an Extractor if available
                 Set extractors = extractorRegistry.get(mimeType);
                 if (!extractors.isEmpty()) {
                     ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
                     Extractor extractor = factory.get();
                     extractor.extract(id, buffer, null, mimeType, metadata);
+                }
+                
+                // else try to apply a FileExtractor
+                Set fileextractors = extractorRegistry.getFileExtractorFactories(mimeType);
+                if (!fileextractors.isEmpty()) {
+                    FileExtractorFactory factory = (FileExtractorFactory) fileextractors.iterator().next();
+                    FileExtractor extractor = factory.get();
+                    File originalFile = object.getFile();
+                    if (originalFile != null) {
+                        extractor.extract(id, originalFile, null, mimeType, metadata);
+                    } else {
+                        File tempFile = object.downloadContent();
+                        extractor.extract(id, tempFile, null, mimeType, metadata);
+                        tempFile.delete();
+                    }
                 }
             }
         }

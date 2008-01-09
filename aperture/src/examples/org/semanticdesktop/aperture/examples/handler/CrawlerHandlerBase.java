@@ -7,6 +7,7 @@
 package org.semanticdesktop.aperture.examples.handler;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
@@ -21,6 +22,8 @@ import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
+import org.semanticdesktop.aperture.extractor.FileExtractor;
+import org.semanticdesktop.aperture.extractor.FileExtractorFactory;
 import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
@@ -97,11 +100,11 @@ public abstract class CrawlerHandlerBase implements CrawlerHandler, RDFContainer
                 // length required by the MimeTypeIdentifier for safety.
                 int minimumArrayLength = mimeTypeIdentifier.getMinArrayLength();
                 int bufferSize = Math.max(minimumArrayLength, 8192);
-                BufferedInputStream buffer = new BufferedInputStream(object.getContent(), bufferSize);
-                buffer.mark(minimumArrayLength + 10); // add some for safety
+                BufferedInputStream bufferedStream = new BufferedInputStream(object.getContent(), bufferSize);
+                bufferedStream.mark(minimumArrayLength + 10); // add some for safety
 
                 // apply the MimeTypeIdentifier
-                byte[] bytes = IOUtil.readBytes(buffer, minimumArrayLength);
+                byte[] bytes = IOUtil.readBytes(bufferedStream, minimumArrayLength);
                 String mimeType = mimeTypeIdentifier.identify(bytes, null, id);
 
                 if (mimeType != null) {
@@ -109,15 +112,30 @@ public abstract class CrawlerHandlerBase implements CrawlerHandler, RDFContainer
                     RDFContainer metadata = object.getMetadata();
                     metadata.add(NIE.mimeType, mimeType);
 
+                    bufferedStream.reset();
+                    
                     // apply an Extractor if available
-
-                    buffer.reset();
-
-                    Set extractors = extractorRegistry.get(mimeType);
+                    Set extractors = extractorRegistry.getExtractorFactories(mimeType);
                     if (!extractors.isEmpty()) {
                         ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
                         Extractor extractor = factory.get();
-                        extractor.extract(id, buffer, null, mimeType, metadata);
+                        extractor.extract(id, bufferedStream, null, mimeType, metadata);
+                        return;
+                    }
+                    
+                    // else try to apply a FileExtractor
+                    Set fileextractors = extractorRegistry.getFileExtractorFactories(mimeType);
+                    if (!fileextractors.isEmpty()) {
+                        FileExtractorFactory factory = (FileExtractorFactory) fileextractors.iterator().next();
+                        FileExtractor extractor = factory.get();
+                        File originalFile = object.getFile();
+                        if (originalFile != null) {
+                            extractor.extract(id, originalFile, null, mimeType, metadata);
+                        } else {
+                            File tempFile = object.downloadContent();
+                            extractor.extract(id, tempFile, null, mimeType, metadata);
+                            tempFile.delete();
+                        }
                     }
                 }
             }
