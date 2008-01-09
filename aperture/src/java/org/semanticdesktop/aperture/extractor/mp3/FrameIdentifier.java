@@ -6,7 +6,11 @@
  */
 package org.semanticdesktop.aperture.extractor.mp3;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.TimeZone;
 
 import org.jaudiotagger.tag.id3.AbstractID3v2Tag;
 import org.jaudiotagger.tag.id3.AbstractTagFrameBody;
@@ -18,6 +22,8 @@ import org.jaudiotagger.tag.id3.framebody.FrameBodyTBPM;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTCOM;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTCON;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTCOP;
+import org.jaudiotagger.tag.id3.framebody.FrameBodyTDAT;
+import org.jaudiotagger.tag.id3.framebody.FrameBodyTDRC;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTENC;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTEXT;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTFLT;
@@ -41,10 +47,12 @@ import org.jaudiotagger.tag.id3.framebody.FrameBodyTPE4;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTPOS;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTPUB;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTRCK;
+import org.jaudiotagger.tag.id3.framebody.FrameBodyTRDA;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTRSN;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTRSO;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTSRC;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTSSE;
+import org.jaudiotagger.tag.id3.framebody.FrameBodyTXXX;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyTYER;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyUFID;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyUSLT;
@@ -56,6 +64,7 @@ import org.jaudiotagger.tag.id3.framebody.FrameBodyWOAS;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyWORS;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyWPAY;
 import org.jaudiotagger.tag.id3.framebody.FrameBodyWPUB;
+import org.jaudiotagger.tag.id3.framebody.FrameBodyWXXX;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
@@ -80,7 +89,7 @@ public enum FrameIdentifier {
     // they are common to both versions of the standard
     // http://www.id3.org/id3v2.4.0-frames
     
-    AENC("Audio encryption",false), // not supported by NID3
+    AENC("Audio encryption",false),                     // not supported by NID3
     APIC("Attached picture",true) {
         public void process(AbstractTagFrameBody body, AbstractID3v2Tag id3v2, HashMap<URI, String> id3v1props, RDFContainer result) {
             FrameBodyAPIC apic = (FrameBodyAPIC)body;
@@ -104,9 +113,9 @@ public enum FrameIdentifier {
             result.add(NID3.comments,resultString);
             id3v1props.remove(NID3.comments);
         }},
-    COMR("Commercial frame",false), // not supported by NID3
-    ENCR("Encryption method registration",false), // not supported by NID3
-    ETCO("Event timing codes",false), // not supported by NID3
+    COMR("Commercial frame",false),                     // not supported by NID3
+    ENCR("Encryption method registration",false),       // not supported by NID3
+    ETCO("Event timing codes",false),                   // not supported by NID3
     GEOB("General encapsulated object",true) {
         public void process(AbstractTagFrameBody body, AbstractID3v2Tag id3v2, HashMap<URI, String> id3v1props, RDFContainer result) {
             FrameBodyGEOB apic = (FrameBodyGEOB)body;
@@ -118,23 +127,23 @@ public enum FrameIdentifier {
             // TODO, the FrameBodyGEOB class doesn't support mime types even thought the specs indicate it should, this might change
             // in future versions of jaudiotagger and deserves to be investigated
         }},
-    GRID("Group identification registration",false), // not supported by NID3
-    LINK("Linked information",false), // not supported by NID3
+    GRID("Group identification registration",false),    // not supported by NID3
+    LINK("Linked information",false),                   // not supported by NID3
     MCDI("Music CD identifier",false) {
         public void process(AbstractTagFrameBody body, AbstractID3v2Tag id3v2, HashMap<URI, String> id3v1props, RDFContainer result) {
             // the jaudiotagger sucks, the FrameBodyMCDI doesn't have any methods that would allow us to put anything interesting
             // with the NID3.musicCDIdentifier wtriple
         }}, 
-    MLLT("MPEG location lookup table",false), // not supported by NID3
-    OWNE("Ownership frame",false), // not supported by NID3
-    PRIV("Private frame",false), // not supported by NID3
-    PCNT("Play counter",false), // not supported by NID3
-    POPM("Popularimeter",false), // not supported by NID3
-    POSS("Position synchronisation frame",false), // not supported by NID3
-    RBUF("Recommended buffer size",false), // not supported by NID3
-    RVRB("Reverb",false), // not supported by NID3
-    SYLT("Synchronised lyric/text",false),
-    SYTC("Synchronised tempo codes",false),
+    MLLT("MPEG location lookup table",false),           // not supported by NID3
+    OWNE("Ownership frame",false),                      // not supported by NID3
+    PRIV("Private frame",false),                        // not supported by NID3
+    PCNT("Play counter",false),                         // not supported by NID3
+    POPM("Popularimeter",false),                        // not supported by NID3
+    POSS("Position synchronisation frame",false),       // not supported by NID3
+    RBUF("Recommended buffer size",false),              // not supported by NID3
+    RVRB("Reverb",false),                               // not supported by NID3
+    SYLT("Synchronised lyric/text",false),              // TODO implement this frame
+    SYTC("Synchronised tempo codes",false),             // not supported by NID3
     TALB("Album/Movie/Show title", true) {
         public void process(AbstractTagFrameBody body, AbstractID3v2Tag id3v2, HashMap<URI, String> id3v1props, RDFContainer result) {
             result.add(NID3.albumTitle,((FrameBodyTALB)body).getFirstTextValue());
@@ -182,7 +191,10 @@ public enum FrameIdentifier {
         public void process(AbstractTagFrameBody body, AbstractID3v2Tag id3v2, HashMap<URI, String> id3v1props, RDFContainer result) {
             result.add(NID3.copyrightMessage,((FrameBodyTCOP)body).getFirstTextValue());
         }},
-    TDLY("Playlist delay",true), // not supported by NID3
+    TDLY("Playlist delay",true) {
+        public void process(AbstractTagFrameBody body, AbstractID3v2Tag id3v2, HashMap<URI, String> id3v1props, RDFContainer result) {
+            result.add(NID3.playlistDelay,result.getModel().createDatatypeLiteral(((FrameBodyTBPM)body).getFirstTextValue(),XSD._integer));
+        }},
     TENC("Encoded by",true) {
         public void process(AbstractTagFrameBody body, AbstractID3v2Tag id3v2, HashMap<URI, String> id3v1props, RDFContainer result) {
             addSimpleContact(NID3.encodedBy,((FrameBodyTENC)body).getFirstTextValue(),result);
@@ -290,7 +302,18 @@ public enum FrameIdentifier {
         public void process(AbstractTagFrameBody body, AbstractID3v2Tag id3v2, HashMap<URI, String> id3v1props, RDFContainer result) {
             result.add(NID3.encodingSettings,((FrameBodyTSSE)body).getFirstTextValue());
         }},
-    TXXX("User defined text information frame",false),
+    TXXX("User defined text information frame",false) {
+        public void process(AbstractTagFrameBody body, AbstractID3v2Tag id3v2, HashMap<URI, String> id3v1props, RDFContainer result) {
+            FrameBodyTXXX txxx = (FrameBodyTXXX)body;
+            String description = txxx.getDescription();
+            String text = txxx.getText();
+            Model model = result.getModel();
+            Resource resource = UriUtil.generateRandomResource(model);
+            model.addStatement(resource, RDF.type, NID3.UserDefinedFrame);
+            model.addStatement(resource, NID3.userDefinedFrameDescription, description);
+            model.addStatement(resource, NID3.userDefinedFrameValue, text);
+            model.addStatement(result.getDescribedUri(), NID3.userDefinedFrame, resource);
+        }},
     UFID("Unique file identifier",true) {
         public void process(AbstractTagFrameBody body, AbstractID3v2Tag id3v2, HashMap<URI, String> id3v1props, RDFContainer result) {
             result.add(NID3.uniqueFileIdentifier,((FrameBodyUFID)body).getOwner() + "/" + ((FrameBodyUFID)body).getIdentifier());
@@ -348,54 +371,106 @@ public enum FrameIdentifier {
             result.add(NID3.publishersWebpage,resource);
             result.getModel().addStatement(resource,RDF.type, RDFS.Resource);
         }},
-    WXXX("User defined URL link frame",false),
+    WXXX("User defined URL link frame",false) {
+        public void process(AbstractTagFrameBody body, AbstractID3v2Tag id3v2, HashMap<URI, String> id3v1props, RDFContainer result) {
+            FrameBodyWXXX txxx = (FrameBodyWXXX)body;
+            String description = txxx.getDescription();
+            String text = txxx.getUrlLink();
+            Model model = result.getModel();
+            Resource resource = UriUtil.generateRandomResource(model);
+            model.addStatement(resource, RDF.type, NID3.UserDefinedURLFrame);
+            model.addStatement(resource, NID3.userDefinedFrameDescription, description);
+            model.addStatement(resource, NID3.userDefinedFrameValue, text);
+            model.addStatement(result.getDescribedUri(), NID3.userDefinedFrame, resource);
+        }},
     
     // these frames are new, they appeared in the 2.4.0 version of the standard
     // http://www.id3.org/id3v2.4.0-changes
-    ASPI("Audio seek point index",false),
-    EQU2("Equalisation (2)",false),
-    RVA2("Relative volume adjustment (2)",false),
-    SEEK("Seek frame",false),
-    SIGN("Signature frame",false),
-    TDEN("Encoding time",false),
-    TDOR("Original release time",false),
-    TDRC("Recording time",false),
-    TDRL("Release time",false),
-    TDTG("Tagging time",false),
-    TIPL("Involved people list",false),
-    TMCL("Musician credits list",false),
-    TMOO("Mood",false),
-    TPRO("Produced notice",false),
-    TSOA("Album sort order",false),
-    TSOP("Performer sort order",false),
-    TSOT("Title sort order",false),
-    TSST("Set subtitle",false),
+    ASPI("Audio seek point index",false),               // not supported by NID3
+    EQU2("Equalisation (2)",false),                     // not supported by NID3
+    RVA2("Relative volume adjustment (2)",false),       // not supported by NID3
+    SEEK("Seek frame",false),                           // not supported by NID3
+    SIGN("Signature frame",false),                      // not supported by NID3
+    TDEN("Encoding time",false),                        // not supported by NID3
+    TDOR("Original release time",false),                // not supported by NID3
+    TDRC("Recording time",false) {
+        public void process(AbstractTagFrameBody body, AbstractID3v2Tag id3v2,HashMap<URI, String> id3v1props, RDFContainer result) {
+            FrameBodyTDRC tdrc = (FrameBodyTDRC)body;
+            Date date = id3v24timestampToDate(tdrc.getFirstTextValue());
+            result.add(NID3.date, date);
+        }},
+    TDRL("Release time",false),                         // not supported by NID3
+    TDTG("Tagging time",false),                         // not supported by NID3
+    TIPL("Involved people list",false),                 // not supported by NID3
+    TMCL("Musician credits list",false),                // not supported by NID3
+    TMOO("Mood",false),                                 // not supported by NID3
+    TPRO("Produced notice",false),                      // not supported by NID3
+    TSOA("Album sort order",false),                     // not supported by NID3
+    TSOP("Performer sort order",false),                 // not supported by NID3
+    TSOT("Title sort order",false),                     // not supported by NID3
+    TSST("Set subtitle",false),                         // not supported by NID3
     
     // these frames were present in ID3 v 2.3.0, but have been deprecated in
     // 2.4.0 see: http://www.id3.org/id3v2.4.0-changes
     
     /** This frame is replaced by the EQU2 frame, 'Equalisation (2)' [F:4.12]. */
-    EQUA("Equalization",false),
+    EQUA("Equalization",false),                         // not supported by NID3
     /** This frame is replaced by the two frames TMCL, 'Musician credits list' [F:4.2.2], and TIPL, 'Involved
      * people list' [F:4.2.2]. */
-    IPLS("Involved people list",false),
+    IPLS("Involved people list",false),                 // not supported by NID3
     /** This frame is replaced by the RVA2 frame, 'Relative volume adjustment (2)' [F:4.11]. */
-    RVAD("Relative volume adjustment",false),
+    RVAD("Relative volume adjustment",false),           // not supported by NID3
     /** This frame is replaced by the TDRC frame, 'Recording time' [F:4.2.5]. */
-    TDAT("Date",false),
+    TDAT("Date",false) {
+        public void process(AbstractTagFrameBody body, AbstractID3v2Tag id3v2,HashMap<URI, String> id3v1props, RDFContainer result) {
+            FrameBodyTDAT tdat = (FrameBodyTDAT)body;
+            String text = tdat.getFirstTextValue();
+            // we only support well-formed dates
+            if (text.length() == 4) {
+                try {
+                    int day = Integer.parseInt(text.substring(0,2));
+                    // months in a gregorian calendar a 0-based (0 is january)
+                    int month = Integer.parseInt(text.substring(2, 4)) - 1;
+                    // we must add the year to make the date complete
+                    String yearString = id3v2.getFirst(TYER.toString());
+                    if (yearString.length() > 0) {
+                        int year = Integer.parseInt(yearString);
+                        String time = id3v2.getFirst(TIME.toString());
+                        if (time.length() > 0) {
+                            int hour = Integer.parseInt(text.substring(0,2));
+                            int minute = Integer.parseInt(text.substring(2,4));
+                            Calendar calendar = new GregorianCalendar(year,month,day,hour,minute);
+                            result.add(NID3.date, calendar.getTime());
+                        } else {
+                            Calendar calendar = new GregorianCalendar(year,month,day);
+                            result.add(NID3.date, calendar.getTime());
+                        }
+                    }
+                } catch (Exception e) {
+                    // a pity, something went wrong, we discard these cases
+                    // most probably these are NumberFormatExceptions which 
+                    // in turn indicate a corrupted MP3 file
+                }
+            }
+        }},
     /** This frame is replaced by the TDRC frame, 'Recording time' [F:4.2.5]. */
-    TIME("Time",false),
+    TIME("Time",false), // this is covered by the TDAT frame, NID3 doesn't have
+                        // any properties that would allow for simple xsd:time
+                        // values to be stored
     /** This frame is replaced by the TDOR frame, 'Original release time' [F:4.2.5]. */
     TORY("Original release year",true) {
         public void process(AbstractTagFrameBody body, AbstractID3v2Tag id3v2,HashMap<URI, String> id3v1props, RDFContainer result) {
             result.add(NID3.originalReleaseYear,result.getModel().createDatatypeLiteral(((FrameBodyTORY)body).getFirstTextValue(), XSD._integer));
         }},
     /** This frame is replaced by the TDRC frame, 'Recording time' [F:4.2.5]. */
-    TRDA("Recording dates",false),
+    TRDA("Recording dates",false) {
+        public void process(AbstractTagFrameBody body, AbstractID3v2Tag id3v2,HashMap<URI, String> id3v1props, RDFContainer result) {
+            result.add(NID3.recordingDate,((FrameBodyTRDA)body).getFirstTextValue());
+        }},    
     /** The information contained in this frame is in the general case either trivial to calculate for the
      * player or impossible for the tagger to calculate. There is however no good use for such information.
      * The frame is therefore completely deprecated. */
-    TSIZ("Size",false),
+    TSIZ("Size",false),                                 // not supported by NID3
     /** This frame is replaced by the TDRC frame, 'Recording time' [F:4.2.5]. */
     TYER("Year",true) {
         public void process(AbstractTagFrameBody body, AbstractID3v2Tag id3v2,HashMap<URI, String> id3v1props, RDFContainer result) {
@@ -497,6 +572,57 @@ public enum FrameIdentifier {
         model.addStatement(resource, RDF.type, NCO.Contact);
         model.addStatement(resource, NCO.fullname, fullname);
         model.addStatement(container.getDescribedUri(), property, resource);
+    }
+    
+    /**
+     * As taken from the timestamp definition published at <br/><br/>
+     * http://www.id3.org/id3v2.4.0-structure
+     * <br/> <br/>
+     * 
+     * <pre>
+     * The timestamp fields are based on a subset of ISO 8601. When being as
+   precise as possible the format of a time string is
+   yyyy-MM-ddTHH:mm:ss (year, "-", month, "-", day, "T", hour (out of
+   24), ":", minutes, ":", seconds), but the precision may be reduced by
+   removing as many time indicators as wanted. Hence valid timestamps
+   are
+   yyyy, yyyy-MM, yyyy-MM-dd, yyyy-MM-ddTHH, yyyy-MM-ddTHH:mm and
+   yyyy-MM-ddTHH:mm:ss. All time stamps are UTC. For durations, use
+   the slash character as described in 8601, and for multiple non-
+   contiguous dates, use multiple strings, if allowed by the frame
+   definition.
+     * </pre>
+     * @param timestamp
+     * @return
+     */
+    protected Date id3v24timestampToDate(String timestamp) {
+        // the Javadocs state that if the ID is not recognized, GMT is returned, we need GMT
+        GregorianCalendar result = new GregorianCalendar(TimeZone.getTimeZone("asdfasdfasd"));
+        result.set(0, 0, 1, 0, 0, 0);
+        // let's start by trying to set the year, without any further ado
+        result.set(Calendar.YEAR, Integer.parseInt(timestamp.substring(0,4)));
+        if (timestamp.length() == 4) {
+            return result.getTime();
+        }
+        // months in a GregorianCalendar are 0-based, that's why we subtract 1
+        result.set(Calendar.MONTH, Integer.parseInt(timestamp.substring(5,2)) - 1);
+        if (timestamp.length() == 7) {
+            return result.getTime();
+        }
+        result.set(Calendar.DAY_OF_MONTH, Integer.parseInt(timestamp.substring(8,2)));
+        if (timestamp.length() == 10) {
+            return result.getTime();
+        }
+        result.set(Calendar.HOUR, Integer.parseInt(timestamp.substring(11,2)));
+        if (timestamp.length() == 13) {
+            return result.getTime();
+        }
+        result.set(Calendar.MINUTE, Integer.parseInt(timestamp.substring(14,2)));
+        if (timestamp.length() == 16) {
+            return result.getTime();
+        }
+        result.set(Calendar.SECOND, Integer.parseInt(timestamp.substring(17,2)));
+        return result.getTime();
     }
 }
 

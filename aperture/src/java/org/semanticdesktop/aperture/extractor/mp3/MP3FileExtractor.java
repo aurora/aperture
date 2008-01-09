@@ -32,12 +32,16 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.UriUtil;
 import org.semanticdesktop.aperture.vocabulary.NCO;
 import org.semanticdesktop.aperture.vocabulary.NID3;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A file extractor implementation for MP3 files.
  */
 public class MP3FileExtractor extends AbstractFileExtractor {
 
+    private Logger logger = LoggerFactory.getLogger(MP3FileExtractor.class);
+    
     /**
      * Extracts ID3 metadata from an MP3 file
      * 
@@ -137,9 +141,13 @@ public class MP3FileExtractor extends AbstractFileExtractor {
         while (iterator.hasNext()) {
             AbstractID3v2Frame frame = (AbstractID3v2Frame)iterator.next();
             String identifier = frame.getIdentifier();
-            FrameIdentifier frameIdentifier = FrameIdentifier.valueOf(identifier.trim());
-            AbstractTagFrameBody body = frame.getBody();
-            frameIdentifier.process(body, id3v2, id3v1FieldHashMap, result);
+            try {
+                FrameIdentifier frameIdentifier = FrameIdentifier.valueOf(identifier.trim());
+                AbstractTagFrameBody body = frame.getBody();
+                frameIdentifier.process(body, id3v2, id3v1FieldHashMap, result);
+            } catch (Exception e) {
+                logger.warn("Problem while getting the frame '" + identifier + "' from file " + id,e);
+            }
         }
     }
 
