@@ -9,6 +9,8 @@ package org.semanticdesktop.aperture.crawler.ical;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelException;
@@ -709,7 +711,7 @@ public class TestIcalCrawler extends ApertureTestBase {
 		assertSingleValueProperty(model, requestStatus, NCAL.returnStatus, "2.0");
 		assertSingleValueProperty(model, requestStatus, NCAL.statusDescription, "Success");
 	}
-
+    
 	public void testResourcesProperty() throws Exception {
 	    model = readIcalFile("php-flp.ics");
 		Resource veventNode = findComponentByUid(model, "TPACTIDSTREAMTASKID");
@@ -830,6 +832,43 @@ public class TestIcalCrawler extends ApertureTestBase {
 		Resource calendarNode = findMainCalendarNode(model);
 		assertSingleValueProperty(model, calendarNode, NCAL.version, "2.0");
 	}
+    
+    public void testMutlipleEntriesMultipleOneCalendarsCombined() throws Exception {
+        HashSet<Resource> onecal = new HashSet<Resource>(100);
+        {
+            model = readIcalFile("combined_onevcalendar.ics");
+            Resource calendarNode = findMainCalendarNode(model);
+            for (ClosableIterator<? extends Statement> i = model.findStatements(calendarNode, NCAL.component, Variable.ANY);
+            i.hasNext();)
+                onecal.add(i.next().getObject().asResource());            
+        }
+        assertEquals("size of combined's events", 8, onecal.size());
+    }
+    
+    public void testMutlipleEntriesMultipleCalendarsCombined() throws Exception {
+        HashSet<Resource> multiplecal = new HashSet<Resource>(100);
+        {
+            model = readIcalFile("combined_multiplevcalendar.ics");
+            Resource calendarNode = findMainCalendarNode(model);
+            for (ClosableIterator<? extends Statement> i = model.findStatements(calendarNode, NCAL.component, Variable.ANY);
+            i.hasNext();)
+                multiplecal.add(i.next().getObject().asResource());            
+        }
+        assertEquals("size of combined_multiplevcalendar's events", 1, multiplecal.size());
+    }
+
+    
+    public void testMutlipleEntriesMultipleCalendarsSunbird() throws Exception {
+        model = readIcalFile("sunbird_sample.ics");
+        Resource calendarNode = findMainCalendarNode(model);
+        ArrayList<Resource> multiple = new ArrayList<Resource>(20);
+        for (ClosableIterator<? extends Statement> i = model.findStatements(calendarNode, NCAL.component, Variable.ANY);
+        i.hasNext();)
+        {
+            multiple.add(i.next().getObject().asResource());            
+        }
+        assertEquals(186, multiple.size());
+    }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////// PARAMETER TESTS ////////////////////////////////////////////
