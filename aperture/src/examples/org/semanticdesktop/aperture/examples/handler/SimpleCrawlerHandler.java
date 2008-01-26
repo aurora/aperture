@@ -365,7 +365,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         }
     }
     
-    protected ModelSet getModelSet() {
+    public ModelSet getModelSet() {
         return modelSet;
     }
 

@@ -794,20 +794,26 @@ public abstract class OutlookResource {
 	
 	protected void addEmailAddressIfNotNull(Model model, Resource parentNode, Dispatch resource, String dispName) {
 	    String addressString = getLiteralOf(resource, dispName);
-	    Resource emailAddressNode = UriUtil.generateRandomResource(model);
-	    model.addStatement(parentNode,NCO.hasEmailAddress,emailAddressNode);
-	    model.addStatement(emailAddressNode, RDF.type, NCO.EmailAddress);
-	    model.addStatement(emailAddressNode, NCO.emailAddress, addressString);
+        if (addressString != null)
+        {
+    	    Resource emailAddressNode = UriUtil.generateRandomResource(model);
+    	    model.addStatement(parentNode,NCO.hasEmailAddress,emailAddressNode);
+    	    model.addStatement(emailAddressNode, RDF.type, NCO.EmailAddress);
+    	    model.addStatement(emailAddressNode, NCO.emailAddress, addressString);
+        }
 	}
 	
 	protected void addTelephoneNumberIfNotNull(Model model, Resource parentNode, Dispatch resource, String dispName, String comment, URI type) {
         String telephoneString = getLiteralOf(resource, dispName);
-        Resource telephoneNumberNode = UriUtil.generateRandomResource(model);
-        model.addStatement(parentNode,NCO.hasPhoneNumber,telephoneNumberNode);
-        model.addStatement(telephoneNumberNode, RDF.type, type);
-        model.addStatement(telephoneNumberNode, NCO.phoneNumber, telephoneString);
-        if (comment != null) {
-            model.addStatement(telephoneNumberNode, NCO.contactMediumComment, comment);
+        if (telephoneString != null)
+        {
+            Resource telephoneNumberNode = UriUtil.generateRandomResource(model);
+            model.addStatement(parentNode,NCO.hasPhoneNumber,telephoneNumberNode);
+            model.addStatement(telephoneNumberNode, RDF.type, type);
+            model.addStatement(telephoneNumberNode, NCO.phoneNumber, telephoneString);
+            if (comment != null) {
+                model.addStatement(telephoneNumberNode, NCO.contactMediumComment, comment);
+            }
         }
     }
 

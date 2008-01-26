@@ -30,6 +30,8 @@ your copy of ANT at http://ant.apache.org/
         <property name="version-status" value="beta" />
         <property name="project.version.full"
                   value="${project.version.major}.${project.version.minor}-${version-status}" />
+        <property name="project.version.osgi"
+                  value="${project.version.major}.${project.version.minor}.${version-status}" />
 
         <!-- input dirs -->
         <property name="src.dir" value="${basedir}/src" />
@@ -336,7 +338,10 @@ your copy of ANT at http://ant.apache.org/
         <mkdir dir="${dist.bundle.dir}" />
         <jar destfile="${dist.bundle.dir}/${bundle.core.jar}"
              compress="no"
-             manifest="${core.manifest.mf}">
+        	manifest="${core.manifest.mf}">
+        	<manifest>
+        		<attribute name="Bundle-Version" value="${project.version.osgi}"/>
+        	</manifest>
             <fileset dir="${classes.java.dir}">
                 <selector refid="bundle.core.coarsegrained.selector" />
             </fileset>
@@ -368,6 +373,9 @@ your copy of ANT at http://ant.apache.org/
         <jar destfile="${dist.bundle.dir}/${bundle.impl.jar}"
              compress="no"
              manifest="${impl.manifest.mf}">
+        	<manifest>
+        		<attribute name="Bundle-Version" value="${project.version.osgi}"/>
+        	</manifest>
             <fileset dir="${classes.java.dir}">
                 <selector refid="bundle.impl.coarsegrained.selector" />
             </fileset>
@@ -400,6 +408,9 @@ your copy of ANT at http://ant.apache.org/
         <jar destfile="${dist.bundle.dir}/${bundle.example.jar}"
              compress="no"
              manifest="${example.manifest.mf}">
+			<manifest>
+				<attribute name="Bundle-Version" value="${project.version.osgi}"/>
+			</manifest>
             <fileset dir="${classes.examples.dir}">
                 <filename name="org/semanticdesktop/aperture/examples/osgi/*" />
             </fileset>

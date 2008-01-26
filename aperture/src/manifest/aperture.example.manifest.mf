@@ -1,7 +1,6 @@
 Manifest-Version: 1.0
 Bundle-Name: Aperture Crawling Example
 Bundle-SymbolicName: org.semanticdesktop.aperture.example
-Bundle-Version: 2006.1.alpha-4
 Bundle-Description: Aperture file crawling example
 Bundle-Activator: org.semanticdesktop.aperture.examples.osgi.ExampleFileCrawlerActivator
 Require-Bundle: org.semanticdesktop.aperture,
