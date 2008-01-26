@@ -177,3 +177,10 @@ Updated dependencies
 - nrlvalidator-0.1 the validator used by the unit tests
 - infsail-0.1 and unionsail-0.1 dependencies of the 
   validator
+  
+----------------------------------
+version 1.0.2    (snapshot, unreleased)
+----------------------------------
+
+- OSGi bundles now also use aperture version numbers
+- fixed Outlook nullpointerexceptions introduced in last release
