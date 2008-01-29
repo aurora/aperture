@@ -29,6 +29,18 @@ public class DateUtil {
     public static String dateTime2String(Date date) {
         return getISO8601DateFormat().format(date);
     }
+    
+    /**
+     * Format the given date in a good date format: ISO-8601, using the - seperators accordingly. Example:
+     * 2003-01-22
+     * 
+     * @param date A date instance.
+     * @return A String containing the date in ISO-8601 format.
+     * @see #string2Date(String)
+     */
+    public static String date2String(Date date) {
+        return getPlainDateFormat().format(date);
+    }
 
     /**
      * Parses the given string as a Date using the same date format as dateTime2String.
@@ -41,14 +53,39 @@ public class DateUtil {
     public static Date string2DateTime(String string) throws ParseException {
         return getISO8601DateFormat().parse(string);
     }
+    
+    /**
+     * Parses the given string as a Date using the same date format as date2String.
+     * 
+     * @param string A String in ISO-8601 date format.
+     * @return A Date instance with the date obtained from the specified String.
+     * @throws ParseException when the specified string did not conform to the ISO-8601 standard.
+     * @see #date2String(Date)
+     */
+    public static Date string2Date(String string) throws ParseException {
+        return getPlainDateFormat().parse(string);
+    }
 
     /**
      * Returns a statically shared DateFormat that uses the ISO-8601 format, which is used by
      * XSD-DATETIME.
+     * @return the DateFormat
      */
     public static DateFormat getISO8601DateFormat() {
         if (dateFormat == null) {
             dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        }
+        return dateFormat;
+    }
+    
+    /**
+     * Returns a statically shared DateFormat that uses the ISO-8601 format, which is used by
+     * XSD-DATE
+     * @return the DateFormat
+     */
+    public static DateFormat getPlainDateFormat() {
+        if (dateFormat == null) {
+            dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         }
         return dateFormat;
     }
