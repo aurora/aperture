@@ -61,4 +61,7 @@
 	<extractorFactory>
 		<name>org.semanticdesktop.aperture.extractor.mp3.MP3FileExtractorFactory</name>
 	</extractorFactory>
+	<extractorFactory>
+		<name>org.semanticdesktop.aperture.extractor.vcard.VcardExtractorFactory</name>
+	</extractorFactory>
 </extractorFactories>

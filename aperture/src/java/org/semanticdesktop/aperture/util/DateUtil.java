@@ -16,7 +16,8 @@ import java.util.Date;
  */
 public class DateUtil {
 
-    private static DateFormat dateFormat = null;
+    private static DateFormat fullDateFormat = null;
+    private static DateFormat plainDateFormat = null;
 
     /**
      * Format the given date in a good dateTime format: ISO-8601, using the T separator and the - and :
@@ -72,10 +73,10 @@ public class DateUtil {
      * @return the DateFormat
      */
     public static DateFormat getISO8601DateFormat() {
-        if (dateFormat == null) {
-            dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        if (fullDateFormat == null) {
+            fullDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         }
-        return dateFormat;
+        return fullDateFormat;
     }
     
     /**
@@ -84,9 +85,9 @@ public class DateUtil {
      * @return the DateFormat
      */
     public static DateFormat getPlainDateFormat() {
-        if (dateFormat == null) {
-            dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        if (plainDateFormat == null) {
+            plainDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         }
-        return dateFormat;
+        return plainDateFormat;
     }
 }
