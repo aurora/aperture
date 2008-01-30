@@ -359,9 +359,16 @@
             <selector refid="bundle.basic.selector" />
         </and>      
     </selector>
-    <selector id="bundle.extractor.visio.selector">
+    <selector id="bundle.extractor.vcard.selector">
         <and>
             <filename name="org/semanticdesktop/aperture/extractor/visio/*" />
+            <selector refid="bundle.basic.selector" />
+            <filename name="lib/jpim-0.1-patched-by-antoni.jar" />
+        </and>      
+    </selector>
+    <selector id="bundle.extractor.visio.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/extractor/vcard/*" />
             <selector refid="bundle.basic.selector" />
         </and>      
     </selector>
@@ -506,6 +513,7 @@
             <selector refid="bundle.extractor.publisher.selector" />
             <selector refid="bundle.extractor.quattro.selector" />
             <selector refid="bundle.extractor.rtf.selector" />
+            <selector refid="bundle.extractor.vcard.selector" />
             <selector refid="bundle.extractor.visio.selector" />
             <selector refid="bundle.extractor.word.selector" />
             <selector refid="bundle.extractor.wordperfect.selector" />

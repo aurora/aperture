@@ -30,6 +30,8 @@ import org.semanticdesktop.aperture.extractor.publisher.PublisherExtractorActiva
 import org.semanticdesktop.aperture.extractor.quattro.QuattroExtractorActivator;
 import org.semanticdesktop.aperture.extractor.rtf.RtfExtractorActivator;
 import org.semanticdesktop.aperture.extractor.util.ExtractorUtilActivator;
+import org.semanticdesktop.aperture.extractor.vcard.VcardExtractorActivator;
+import org.semanticdesktop.aperture.extractor.vcard.VcardExtractorTest;
 import org.semanticdesktop.aperture.extractor.visio.VisioExtractorActivator;
 import org.semanticdesktop.aperture.extractor.word.WordExtractorActivator;
 import org.semanticdesktop.aperture.extractor.wordperfect.WordPerfectExtractorActivator;
@@ -75,6 +77,7 @@ public class CoreImplementationsActivator implements BundleActivator {
 	private PublisherExtractorActivator publisherExtractorActivator;
 	private QuattroExtractorActivator quattroExtractorActivator;
 	private RtfExtractorActivator rtfExtractorActivator;
+	private VcardExtractorActivator vcardExtractorActivator;
 	private VisioExtractorActivator visioExtractorActivator;
 	private WordExtractorActivator wordExtractorActivator;
 	private WordPerfectExtractorActivator wordPerfectExtractorActivator;
@@ -143,6 +146,8 @@ public class CoreImplementationsActivator implements BundleActivator {
 		quattroExtractorActivator.start(context);
 		rtfExtractorActivator = new RtfExtractorActivator();
 		rtfExtractorActivator.start(context);
+		vcardExtractorActivator = new VcardExtractorActivator();
+        vcardExtractorActivator.start(context);
 		visioExtractorActivator = new VisioExtractorActivator();
 		visioExtractorActivator.start(context);
 		wordExtractorActivator = new WordExtractorActivator();
@@ -222,6 +227,8 @@ public class CoreImplementationsActivator implements BundleActivator {
 		rtfExtractorActivator = null;
 		visioExtractorActivator.stop(context);
 		visioExtractorActivator = null;
+		vcardExtractorActivator.stop(context);
+		vcardExtractorActivator = null;
 		wordExtractorActivator.stop(context);
 		wordExtractorActivator = null;
 		wordPerfectExtractorActivator.stop(context);
