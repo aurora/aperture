@@ -591,7 +591,7 @@ public abstract class OutlookResource {
 	 * creates an according OutlookResource subclass
      * @return the wrapper or null, if the resource cannot be wrapped.
 	 */
-	public static OutlookResource createWrapperFor(OutlookCrawler crawler, Dispatch resource, Logger logger) {
+	public static OutlookResource createWrapperFor(OutlookCrawler crawler, Dispatch resource, Logger logger)  {
 		try {
 			// Item is the desired Item, do something about it
 			int classID = Dispatch.get(resource, "Class").toInt();
@@ -624,11 +624,15 @@ public abstract class OutlookResource {
 			case 0:
 				return null;
 			default:
-				throw new UrlNotFoundException("Outlook: unknown Outlook.classID '"
-						+ Integer.toString(classID) + "'");
+				throw new UrlNotFoundException("no RDF mapping defined for Outlook.classID '"
+						+ Integer.toString(classID) + "'. Item Ignored.");
 			}
 
 		}
+        catch (UrlNotFoundException ex ) {
+            logger.info("Outlook Cannot wrap resource: " + ex);
+            return null;
+        }
 		catch (Exception ex) {
 			logger.warn("Error creating Resourcewrapper: " + ex);
 			return null;

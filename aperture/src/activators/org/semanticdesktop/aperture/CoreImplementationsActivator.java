@@ -31,7 +31,6 @@ import org.semanticdesktop.aperture.extractor.quattro.QuattroExtractorActivator;
 import org.semanticdesktop.aperture.extractor.rtf.RtfExtractorActivator;
 import org.semanticdesktop.aperture.extractor.util.ExtractorUtilActivator;
 import org.semanticdesktop.aperture.extractor.vcard.VcardExtractorActivator;
-import org.semanticdesktop.aperture.extractor.vcard.VcardExtractorTest;
 import org.semanticdesktop.aperture.extractor.visio.VisioExtractorActivator;
 import org.semanticdesktop.aperture.extractor.word.WordExtractorActivator;
 import org.semanticdesktop.aperture.extractor.wordperfect.WordPerfectExtractorActivator;
