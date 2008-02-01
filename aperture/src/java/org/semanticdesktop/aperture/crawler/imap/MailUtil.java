@@ -32,7 +32,22 @@ import org.semanticdesktop.aperture.vocabulary.NCO;
 public class MailUtil {
 
     
-    private static final Charset utf7 = Charset.forName("X-MODIFIED-UTF-7");
+    private static Charset utf7;
+    static {
+        try {
+            utf7 = Charset.forName("X-MODIFIED-UTF-7");
+        } catch (Exception x) {
+            // backup, use the charset directly. This is needed for OSGi compliance, where classloaders
+            // don't get it right with META-INF/services registration of services.
+            try {
+                utf7 = new com.beetstra.jutf7.CharsetProvider().charsetForName("X-MODIFIED-UTF-7");
+            } catch (Exception y)
+            {
+                System.err.println("Cannot load X-MODIFIED-UTF-7, com.beetstra.jutf7.CharsetProvider problem: "+y);
+                y.printStackTrace();
+            }
+        }
+    }
     private static final Charset normal = Charset.forName("ISO-8859-1");
     
     /**
