@@ -7,7 +7,9 @@
 package org.semanticdesktop.aperture.outlook;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -34,6 +36,18 @@ import com.jacob.com.Variant;
  * Crawler that wraps Microsoft Outlook. It is not very exhaustive and can not read all variables out of an
  * outlook system.
  * </p>
+ * <h2>Order of crawling</h2>
+ * <p>There have been requests to crawl e-mail after everything else, because e-mail takes very
+ * long. 
+ * To distinguish the e-mail folders to be crawled, we had to find a way to identify them.
+ * DefaultItemType of e-mail folders is <code>0</code>, DefaultMessageClass is 
+ * <code>"IPM.Note"</code>. This is insofar a problem, as also contacts and deleted items
+ * folders have these properties. Hence we sort folders with DefaultItemType 0 later,
+ * but not if their name contains "*ontacts" or "Kontakte" (which is a hack).
+ * </p>
+ * 
+ * 
+ * 
  * <h1>Outlook crashes</h1>
  * 
  * Endless history of outlook adapter crashes:
@@ -348,35 +362,86 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 			return true;
 
 		Dispatch folders = v.toDispatch();
+        // crawl these folders after all others, they are e-mail folders
+        // this was requested by some users who needed to crawl appointments/contacts faster
+        // Identifying e-mail folders to be crawled later:
+        // see above in javadoc
+        ArrayList<OutlookResource.Folder> crawlLater = new ArrayList<OutlookResource.Folder>();
 		try {
 			int count = Dispatch.get(folders, "Count").toInt();
 			if (count == 0)
 				return true;
 
+            // crawl subfolders, remember things to crawl later
 			int i = 1;
 			for (; !stopRequested && i <= count; i++) {
 				try {
 					Dispatch dFolder = Dispatch.invoke(folders, "Item", Dispatch.Get,
 						new Object[] { new Integer(i) }, new int[1]).toDispatch();
 					OutlookResource.Folder subfolder = OutlookResource.createWrapperForFolder(this, dFolder);
-					try {
-						crawlContainer(subfolder, folder);
-					}
-					finally {
-						subfolder.release();
-					}
+                    
+                    // determine if this is an email folder
+                    int dtype = subfolder.getDefaultItemType();
+                    boolean isEmail = false;
+                    if (dtype == 0)
+                    {
+                        isEmail = true;
+                        String name = subfolder.getName();
+                        if (name != null) {
+                            name = name.toLowerCase();
+                            if ((name.contains("kontakte")||(name.contains("Contacts"))))
+                                isEmail = false;
+                        }
+                    }
+                    if (isEmail)
+                        // remember mail-folders for later
+                        crawlLater.add(subfolder);
+                    else
+                    {
+    					try {
+    						crawlContainer(subfolder, folder);
+    					}
+    					finally {
+    						subfolder.release();
+    					}
+                    }
 				}
 				catch (Exception ex) {
 					logger.info("Error while adding subfolders of " + folder.getUri(), ex);
 				}
 			}
+            
+            // now crawl the emails
+            for (Iterator<OutlookResource.Folder> folderI = crawlLater.iterator(); 
+                !stopRequested && folderI.hasNext(); )
+            {
+                OutlookResource.Folder f = folderI.next();
+                folderI.remove();
+                try {
+                    crawlContainer(f, folder);
+                } catch (Exception ex) {
+                    logger.info("Error while adding subfolders of " + folder.getUri(), ex);
+                }
+                finally {
+                    f.release();
+                }
+            }
 
 			// scan has been completed when i has reached the end of the array successfully
-			if (i <= count)
+			if (crawlLater.isEmpty() && (i <= count))
 				return false;
 
 		}
 		finally {
+            // superflous items
+            if (!crawlLater.isEmpty())
+                for (OutlookResource.Folder f : crawlLater) {
+                    try {
+                        f.release();
+                    } catch (Exception x) {
+                        logger.info("Error releasing " + f, x);
+                    }
+                }
 			folders.safeRelease();
 		}
 

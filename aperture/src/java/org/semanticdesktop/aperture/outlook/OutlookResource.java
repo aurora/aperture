@@ -314,7 +314,6 @@ public abstract class OutlookResource {
 
 		protected void addData(RDFContainer rdf) throws IOException {
 			addPropertyIfNotNull(rdf, NIE.title, getResource(), "Name");
-
 		}
 
 		public long getLastModified() {
@@ -324,6 +323,37 @@ public abstract class OutlookResource {
 		public URI getType() {
 			return NFO.Folder;
 		}
+        
+        /**
+         * The oItemType constant identifying the standard type of element stored in this
+         * folder. Examples are {@link OlObjectClass#olAppointment} or
+         * {@link OlObjectClass#olMail}.
+         * @return
+         */
+        public int getDefaultItemType() {
+            int result = Dispatch.get(getResource(), "DefaultItemType").toInt();
+            return result;
+        }
+        
+        /**
+         * The oItemType constant identifying the standard type of element stored in this
+         * folder. Examples are {@link OlObjectClass#olAppointment} or
+         * {@link OlObjectClass#olMail}.
+         * @return
+         */
+        public String getDefaultMessageClass() {
+            Variant v = Dispatch.get(getResource(), "DefaultMessageClass");
+            return v.toString();
+        }
+        
+        /**
+         * the name of the folder
+         * @return the name or null
+         */
+        public String getName() {
+            String s = getLiteralOf(getResource(), "Name");
+            return s;
+        }
 
 		public boolean isFolder() {
 			return true;
