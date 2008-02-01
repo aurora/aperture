@@ -361,9 +361,11 @@
     </selector>
     <selector id="bundle.extractor.vcard.selector">
         <and>
-            <filename name="org/semanticdesktop/aperture/extractor/vcard/*" />
+        	<or>
+            	<filename name="org/semanticdesktop/aperture/extractor/vcard/*" />
+            	<filename name="lib/jpim-0.1-patched-by-antoni.jar" />
+            </or>
             <selector refid="bundle.basic.selector" />
-            <filename name="lib/jpim-0.1-patched-by-antoni.jar" />
         </and>      
     </selector>
     <selector id="bundle.extractor.visio.selector">
