@@ -43,8 +43,7 @@ public class MailUtil {
                 utf7 = new com.beetstra.jutf7.CharsetProvider().charsetForName("X-MODIFIED-UTF-7");
             } catch (Exception y)
             {
-                System.err.println("Cannot load X-MODIFIED-UTF-7, com.beetstra.jutf7.CharsetProvider problem: "+y);
-                y.printStackTrace();
+                throw new RuntimeException("Cannot load X-MODIFIED-UTF-7, com.beetstra.jutf7.CharsetProvider problem: "+y, y);
             }
         }
     }
