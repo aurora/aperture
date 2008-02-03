@@ -11,7 +11,7 @@ import java.io.File;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.crawler.Crawler;
-import org.semanticdesktop.aperture.crawler.imap.MailUtil;
+import org.semanticdesktop.aperture.crawler.mail.MailUtil;
 
 /**
  * An an extension of the SimpleCrawlerHandler that validates IMAP uris. It is used

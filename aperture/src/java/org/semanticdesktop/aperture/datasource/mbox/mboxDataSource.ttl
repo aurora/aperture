@@ -1,0 +1,58 @@
+@prefix fresnel:  <http://www.w3.org/2004/09/fresnel#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix sourceformat: <http://aperture.semanticdesktop.org/ontology/sourceformat#> .
+@prefix source: <http://aperture.semanticdesktop.org/ontology/2007/08/12/source#> .
+@prefix nie:     <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#> .
+@prefix : <http://aperture.semanticdesktop.org/ontology/2008/02/03/mboxds#> .
+
+:MboxDataSource a rdfs:Class ;
+	rdfs:subClassOf nie:DataSource ;
+	rdfs:label "MBOX File Data Source" ;
+	rdfs:comment "Describes a mailbox stored in an mbox-format file" .
+
+:MboxDataSourceLens rdf:type fresnel:Lens ;
+                    fresnel:purpose fresnel:defaultLens ;
+                    fresnel:classLensDomain :MboxDataSource ;
+                    fresnel:showProperties ( :mboxPath 
+                    					     :maximumSize
+                                             :maximumDepth
+                                             source:includePattern
+                                             source:excludePattern ) .
+                                             
+:mboxPath a rdf:Property ; 
+    rdfs:label "MBOX Path" ;
+    rdfs:comment "The path to the mbox file" ;
+    rdfs:domain :MboxDataSource ;
+    rdfs:range xsd:string .
+    
+:mboxPathFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+        a sourceformat:TextFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :mboxPath .                                             
+
+:maximumDepth a rdf:Property ;
+    rdfs:label "Maximum Depth" ;
+    rdfs:comment "Maximum depth of the crawl" ;
+    rdfs:domain :MboxDataSource ;
+    rdfs:range xsd:integer .
+    
+:maximumDepthFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+        a sourceformat:IntegerFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :maximumDepth .
+    
+:maximumSize a rdf:Property ;
+    rdfs:label "Maximum Size" ;
+    rdfs:comment "Maximum size (in bytes) of the attachments that are to be reported by the crawler" ;
+    rdfs:domain :MboxDataSource ;
+    rdfs:range xsd:long .
+    
+:maximumSizeFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+        a sourceformat:IntegerFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :maximumSize .

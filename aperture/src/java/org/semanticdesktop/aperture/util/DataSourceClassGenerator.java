@@ -76,17 +76,17 @@ public class DataSourceClassGenerator {
     PrintStream outputStream;
 
     // transform variables
-    File inputRdfFile;
+    private File inputRdfFile;
 
-    File outputDirFile;
+    private File outputDirFile;
 
-    File outputFile;
+    private File outputFile;
 
-    Boolean namespacestrict = false;
+    private Boolean namespacestrict = false;
 
-    Syntax inputFileSyntax;
+    private Syntax inputFileSyntax;
 
-    boolean domainBoundariesGenerated = false;
+    private boolean domainBoundableDataSource = false;
 
     // avoid duplicates
     HashMap<String, String> uriToLocalName = new HashMap<String, String>();
@@ -179,6 +179,11 @@ public class DataSourceClassGenerator {
         // prepare output
         outputStream = new PrintStream(outputFile);
         try {
+            
+            // first prepare the options list
+            URI fresnelLensURI = getFresnelLensURI(myModel, classUri);
+            List<URI> optionsList = getConfigurationOptionsList(fresnelLensURI);
+            
             // preamble
             outputStream.println("package " + packageName + ";");
             outputStream.println("import " + URI.class.getName() + ";");
@@ -186,25 +191,26 @@ public class DataSourceClassGenerator {
             outputStream.println("import " + ModelUtil.class.getName() + ";");
             outputStream.println("import org.semanticdesktop.aperture.datasource.DataSource;");
             outputStream.println("import org.semanticdesktop.aperture.datasource.base.DataSourceBase;");
-            outputStream.println("import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;");
+            //outputStream.println("import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;");
             outputStream.println("import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;");
+            if (domainBoundableDataSource) {
+                outputStream.println("import org.semanticdesktop.aperture.datasource.config.DomainBoundableDataSource;");
+            }
             outputStream.println("import org.semanticdesktop.aperture.util.ModelUtil;");
             outputStream.println("import java.util.Collection;");
             outputStream.println("import java.util.List;");
             outputStream.println("import java.util.LinkedList;");
             outputStream.println();
             outputStream.println("/**");
-            outputStream.println(" * Data source class file. Created by "
-                    + DataSourceClassGenerator.class.getName() + " on " + new Date());
+            outputStream.println(" * Data source class file. Created by " + DataSourceClassGenerator.class.getName() + " on " + new Date());
             outputStream.println(" * input file: " + inputRdfFilePath);
             outputStream.println(" * class uri: " + classUri);
             outputStream.println(" */");
-            outputStream.println("public class " + outputFileName + " extends DataSourceBase {");
+            outputStream.println("public class " + outputFileName + " extends " + 
+                ((domainBoundableDataSource) ? "DomainBoundableDataSource" : "DataSourceBase") + 
+                " {");
             outputStream.println();
             generateGetTypeMethod();
-
-            URI fresnelLensURI = getFresnelLensURI(myModel, classUri);
-            List<URI> optionsList = getConfigurationOptionsList(fresnelLensURI);
 
             for (URI uri : optionsList) {
                 generateElement(uri);
@@ -241,8 +247,12 @@ public class DataSourceClassGenerator {
 
         URI widgetType = getWidgetType(uri);
 
+        
         if (javaRangeType.equals("DomainBoundaries")) {
-            addDomainBoundaries();
+            // we may remove this, because of the common abstract class DomainBoundableDataSource
+            // introduced by Herko ter Horst on 10.12.2007
+            // we cover this case by changing the name of the superclass
+            //addDomainBoundaries();
             return;
         }
 
@@ -270,32 +280,25 @@ public class DataSourceClassGenerator {
         outputStream.println("     * ");
         outputStream.println("     * @return the " + comment + " or null if no value has been set");
         outputStream.println("     * @throws NullPointerException if no configuration has been set, use");
-        outputStream
-                .println("     *             {@link #setConfiguration(RDFContainer)} before calling this method");
+        outputStream.println("     *             {@link #setConfiguration(RDFContainer)} before calling this method");
         outputStream.println("     */");
         outputStream.println("     public " + javaRangeType + " get" + capitalizedLocalName + "() {");
-        outputStream.println("          return getConfiguration().get" + javaRangeType + "("
-                + currentVocabularyClassName + "." + localName + ");");
+        outputStream.println("          return getConfiguration().get" + javaRangeType + "(" + currentVocabularyClassName + "." + localName + ");");
         outputStream.println("     }");
 
         outputStream.println();
         outputStream.println("    /**");
         outputStream.println("     * Sets the " + comment);
         outputStream.println("     * ");
-        outputStream.println("     * @param " + localName + " " + comment
-                + ", can be null in which case any previous setting will be removed");
+        outputStream.println("     * @param " + localName + " " + comment + ", can be null in which case any previous setting will be removed");
         outputStream.println("     * @throws NullPointerException if no configuration has been set, use");
-        outputStream
-                .println("     *             {@link #setConfiguration(RDFContainer)} before calling this method");
+        outputStream.println("     *             {@link #setConfiguration(RDFContainer)} before calling this method");
         outputStream.println("     */");
-        outputStream.println("     public void set" + capitalizedLocalName + "(" + javaRangeType + " "
-                + localName + ") {");
+        outputStream.println("     public void set" + capitalizedLocalName + "(" + javaRangeType + " " + localName + ") {");
         outputStream.println("         if ( " + localName + " == null) {");
-        outputStream.println("             getConfiguration().remove(" + currentVocabularyClassName + "."
-                + localName + ");");
+        outputStream.println("             getConfiguration().remove(" + currentVocabularyClassName + "." + localName + ");");
         outputStream.println("         } else {");
-        outputStream.println("             getConfiguration().put(" + currentVocabularyClassName + "."
-                + localName + "," + localName + ");");
+        outputStream.println("             getConfiguration().put(" + currentVocabularyClassName + "." + localName + "," + localName + ");");
         outputStream.println("         }");
         outputStream.println("     }");
 
@@ -385,7 +388,6 @@ public class DataSourceClassGenerator {
             outputStream.println("         " + uriLocalName + ((iterator.hasNext()) ? "," : ";"));
         }
         outputStream.println();
-
         outputStream.println("         public static " + rangeLocalName + " fromUri(URI uri) {");
 
         iterator = entrySet.iterator();
@@ -397,15 +399,13 @@ public class DataSourceClassGenerator {
             outputStream.println("             if (uri == null) {");
             outputStream.println("                 return null;");
             outputStream.println("             }");
-            outputStream.println("             else if (uri.equals(" + currentVocabularyClassName + "."
-                    + comboBoxEntryLocalName + ")) {");
+            outputStream.println("             else if (uri.equals(" + currentVocabularyClassName + "." + comboBoxEntryLocalName + ")) {");
             outputStream.println("                 return " + comboBoxEntryLocalName + ";");
             outputStream.println("             }");
             while (iterator.hasNext()) {
                 entry = iterator.next();
                 comboBoxEntryLocalName = getLocalName(entry.getKey());
-                outputStream.println("             else if (uri.equals(" + currentVocabularyClassName + "."
-                        + comboBoxEntryLocalName + ")) {");
+                outputStream.println("             else if (uri.equals(" + currentVocabularyClassName + "." + comboBoxEntryLocalName + ")) {");
                 outputStream.println("                 return " + comboBoxEntryLocalName + ";");
                 outputStream.println("             }");
             }
@@ -448,8 +448,7 @@ public class DataSourceClassGenerator {
         outputStream.println("     * ");
         outputStream.println("     * @return the " + comment + " or null if no value has been set");
         outputStream.println("     * @throws NullPointerException if no configuration has been set, use");
-        outputStream
-                .println("     *             {@link #setConfiguration(RDFContainer)} before calling this method");
+        outputStream.println("     *             {@link #setConfiguration(RDFContainer)} before calling this method");
         outputStream.println("     */");
         outputStream.println("     public " + rangeLocalName + " get" + capitalizedLocalName + "() {");
         outputStream.println("          return " + rangeLocalName + ".fromUri(getConfiguration().getURI(" + currentVocabularyClassName + "." + propertyLocalName + "));");
@@ -515,46 +514,49 @@ public class DataSourceClassGenerator {
             return vocabularyClassName;
         }
     }
-
-    private void addDomainBoundaries() {
-        if (!domainBoundariesGenerated) {
-            outputStream.println();
-            outputStream.println("    /**");
-            outputStream.println("     * Returns the domain boundaries for this data source");
-            outputStream.println("     * ");
-            outputStream.println("     * @return the domain boundaries for this data source");
-            outputStream.println("     * @throws NullPointerException if no configuration has been set, use");
-            outputStream
-                    .println("     *             {@link #setConfiguration(RDFContainer)} before calling this method");
-            outputStream.println("     */");
-            outputStream.println("     public DomainBoundaries getDomainBoundaries() {");
-            outputStream
-                    .println("          return ConfigurationUtil.getDomainBoundaries(getConfiguration());");
-            outputStream.println("     }");
-
-            outputStream.println();
-            outputStream.println("    /**");
-            outputStream.println("     * Sets the domain boundaries for this data source");
-            outputStream.println("     * ");
-            outputStream
-                    .println("     * @param domainBoundaries the domain boundaries, can be null in which case any previous setting will be removed");
-            outputStream.println("     * @throws NullPointerException if no configuration has been set, use");
-            outputStream
-                    .println("     *             {@link #setConfiguration(RDFContainer)} before calling this method");
-            outputStream.println("     */");
-            outputStream.println("     public void setDomainBoundaries(DomainBoundaries domainBoundaries) {");
-            outputStream.println("          if (domainBoundaries == null) {");
-            outputStream.println("              DomainBoundaries emptyBoundaries = new DomainBoundaries();");
-            outputStream
-                    .println("              ConfigurationUtil.setDomainBoundaries(emptyBoundaries,getConfiguration());");
-            outputStream.println("          } else {");
-            outputStream
-                    .println("              ConfigurationUtil.setDomainBoundaries(domainBoundaries,getConfiguration());");
-            outputStream.println("          }");
-            outputStream.println("     }");
-            domainBoundariesGenerated = true;
-        }
-    }
+/*
+    This method has been rendered obsolete after the introduction of hte
+    DomainBoundableDataSource class
+*/
+//    private void addDomainBoundaries() {
+//        if (!domainBoundariesGenerated) {
+//            outputStream.println();
+//            outputStream.println("    /**");
+//            outputStream.println("     * Returns the domain boundaries for this data source");
+//            outputStream.println("     * ");
+//            outputStream.println("     * @return the domain boundaries for this data source");
+//            outputStream.println("     * @throws NullPointerException if no configuration has been set, use");
+//            outputStream
+//                    .println("     *             {@link #setConfiguration(RDFContainer)} before calling this method");
+//            outputStream.println("     */");
+//            outputStream.println("     public DomainBoundaries getDomainBoundaries() {");
+//            outputStream
+//                    .println("          return ConfigurationUtil.getDomainBoundaries(getConfiguration());");
+//            outputStream.println("     }");
+//
+//            outputStream.println();
+//            outputStream.println("    /**");
+//            outputStream.println("     * Sets the domain boundaries for this data source");
+//            outputStream.println("     * ");
+//            outputStream
+//                    .println("     * @param domainBoundaries the domain boundaries, can be null in which case any previous setting will be removed");
+//            outputStream.println("     * @throws NullPointerException if no configuration has been set, use");
+//            outputStream
+//                    .println("     *             {@link #setConfiguration(RDFContainer)} before calling this method");
+//            outputStream.println("     */");
+//            outputStream.println("     public void setDomainBoundaries(DomainBoundaries domainBoundaries) {");
+//            outputStream.println("          if (domainBoundaries == null) {");
+//            outputStream.println("              DomainBoundaries emptyBoundaries = new DomainBoundaries();");
+//            outputStream
+//                    .println("              ConfigurationUtil.setDomainBoundaries(emptyBoundaries,getConfiguration());");
+//            outputStream.println("          } else {");
+//            outputStream
+//                    .println("              ConfigurationUtil.setDomainBoundaries(domainBoundaries,getConfiguration());");
+//            outputStream.println("          }");
+//            outputStream.println("     }");
+//            domainBoundariesGenerated = true;
+//        }
+//    }
 
     private String getJavaRangeType(URI range) {
         if (range == null || range.equals(RDFS.Literal) || range.equals(XSD._string)) {
@@ -756,6 +758,9 @@ public class DataSourceClassGenerator {
                 }
                 URI firstUri = ModelUtil.getPropertyValue(myModel, listNode, RDF.first).asURI();
                 resultList.add(firstUri);
+                if (firstUri.equals(DATASOURCE.includePattern) || firstUri.equals(DATASOURCE.excludePattern)) {
+                    domainBoundableDataSource = true;
+                }
                 listNode = ModelUtil.getPropertyValue(myModel, listNode, RDF.rest).asResource();
             }
             return resultList;

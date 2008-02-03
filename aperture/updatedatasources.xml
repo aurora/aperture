@@ -21,10 +21,8 @@ your copy of ANT at http://ant.apache.org/
         <!-- input dirs -->
         <property name="src.dir" value="${basedir}/src" />
         <property name="src.java.dir" value="${src.dir}/java" />
-        <property name="src.java.mainpackage.dir"
-                  value="${src.java.dir}/org/semanticdesktop/aperture" />
-        <property name="src.java.mainpackage"
-                  value="org.semanticdesktop.aperture" />
+        <property name="src.java.mainpackage.dir" value="${src.java.dir}/org/semanticdesktop/aperture" />
+        <property name="src.java.mainpackage" value="org.semanticdesktop.aperture" />
 
         <property name="bin.dir" value="${basedir}/bin" />
         <property name="lib.dir" value="${basedir}/lib" />
@@ -73,7 +71,7 @@ your copy of ANT at http://ant.apache.org/
                target="${java.target.version}"
                srcdir="${src.dir}"
                includes="**/util/*.java,**/vocabulary/*.java"
-               excludes="**/extractor/**"
+               excludes="**/extractor/**,**/InferenceUtil*"
                destdir="${classes.java.dir}"
                classpathref="classpath"
                debug="${compile.debug}"
@@ -256,6 +254,20 @@ your copy of ANT at http://ant.apache.org/
                    value="ThunderbirdAddressbookDataSource" />
             <param name="vocabulary.classname"
                    value="THUNDERBIRDADDRESSBOOKDS" />
+        </antcall>
+        <antcall target="createdatasourcevocabulary">
+            <param name="vocabulary.input.file"
+                   value="MboxDataSource.ttl" />
+            <param name="vocabulary.package.dir"
+                   value="${src.java.mainpackage.dir}/datasource/mbox" />
+            <param name="vocabulary.package"
+                   value="${src.java.mainpackage}.datasource.mbox" />
+            <param name="vocabulary.namespace"
+                   value="http://aperture.semanticdesktop.org/ontology/2008/02/03/mboxds#" />
+            <param name="vocabulary.ont.class"
+                   value="MboxDataSource" />
+            <param name="vocabulary.classname"
+                   value="MBOXDS" />
         </antcall>
     </target>
 </project>

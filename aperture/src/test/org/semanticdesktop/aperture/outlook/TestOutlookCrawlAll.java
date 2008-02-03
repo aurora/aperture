@@ -8,25 +8,13 @@ package org.semanticdesktop.aperture.outlook;
 
 import java.io.IOException;
 
-import org.ontoware.rdf2go.ModelFactory;
-import org.ontoware.rdf2go.RDF2Go;
-import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
-import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.ModelSet;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.ApertureTestBase;
-import org.semanticdesktop.aperture.accessor.DataObject;
-import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
-import org.semanticdesktop.aperture.crawler.Crawler;
-import org.semanticdesktop.aperture.crawler.CrawlerHandler;
-import org.semanticdesktop.aperture.crawler.ExitCode;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
-import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 
 /**
  * crawl through the locally installed outlook.

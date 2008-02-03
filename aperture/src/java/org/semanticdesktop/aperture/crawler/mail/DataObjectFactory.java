@@ -4,7 +4,7 @@
  * 
  * Licensed under the Open Software License version 3.0.
  */
-package org.semanticdesktop.aperture.crawler.imap;
+package org.semanticdesktop.aperture.crawler.mail;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
