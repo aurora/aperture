@@ -1,7 +1,7 @@
-#Tue Feb 13 10:45:52 CET 2007
+#Fri Nov 02 13:45:29 CET 2007
 eclipse.preferences.version=1
 formatter_profile=_Aperture Code Style
-formatter_settings_version=11
+formatter_settings_version=10
 internal.default.compliance=default
 org.eclipse.jdt.ui.exception.name=e
 org.eclipse.jdt.ui.gettersetter.use.is=true
