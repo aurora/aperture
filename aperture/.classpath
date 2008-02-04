@@ -36,8 +36,6 @@
 	<classpathentry path="lib/jaudiotagger.jar" kind="lib"/>
 	<classpathentry path="lib/jutf7-0.9.0.jar" kind="lib"/>
 	<classpathentry path="lib/jpim-0.1-patched-by-antoni.jar" kind="lib"/>
-	<classpathentry path="lib/PDFBox-0.7.4-dev-20071030.jar" kind="lib"/>
-	<classpathentry path="lib/FontBox-0.2.0-dev.jar" kind="lib"/>
 	<classpathentry path="lib/fontbox-0.2.0-dev.jar" kind="lib"/>
 	<classpathentry path="lib/pdfbox-0.7.4-dev-20071030.jar" kind="lib"/>
 	<classpathentry kind="lib" path="lib/mstor-0.9.10.jar"/>
