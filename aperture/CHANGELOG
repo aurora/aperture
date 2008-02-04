@@ -183,4 +183,7 @@ version 1.0.2    (snapshot, unreleased)
 ----------------------------------
 
 - OSGi bundles now also use aperture version numbers
+- added workaround to load UTF-7 charset when in OSGi in MailUtil
 - fixed Outlook nullpointerexceptions introduced in last release
+- updated pdfbox to unreleased 0.4 version fixing parsing errors,
+  includes update for fontbox

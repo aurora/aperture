@@ -1,34 +1,33 @@
 A brief explanation of the jars in this directory: 
+
 -----------------------------------
 activation-1.0.2-upd2.jar
 -----------------------------------
 applewrapper-0.1.jar
-
 Utility classes for using the MacOSX specific java system classes
 -----------------------------------
 demork-2.0.jar
-
 A utility for parsing the Mork file format, used by the thunderbird addressbook and Mozilla browser history files. 
+-----------------------------------
+fontbox-0.2.0-dev.jar
+used by pdfbox to parse fonts
 -----------------------------------
 htmlparser-1.5.jar
 -----------------------------------
 jacob-1.10-pre4.jar
-
 This is for crawling of MS Outlook, it goes with jacob.dll in the project root.
 -----------------------------------
 junit-3.8.1.jar
-
 Junit
 -----------------------------------
 mail-1.4.jar
-
 Sun's Java Mail API. For crawling IMAP servers
 -----------------------------------
 openrdf-model-2.0-alpha-3.jar
 openrdf-util-2.0-alpha-3.jar
 rio-2.0-alpha-3.jar
+-----------------------------------
 sesame-2.0-alpha-3.jar
-
 Sesame 2 
 -----------------------------------
 openrdf-util-crazy-debug.jar
@@ -38,14 +37,13 @@ Two alternative sesame2 utility classes:
   aquire more, even if another thread is waiting to write.
 - crazy debug adds an internal variable to the MultiReadSingleWriteLockManager which keeps track of 
   all created locks and a stack-trace from when they were created. This can be used to debug deadlocks.
-
 -----------------------------------
 pdfbox-0.7.2.jar
+PDFBox.
+-----------------------------------
 poi-contrib-rev-378471.jar
 poi-rev-378471.jar
 poi-scratchpad-rev-378471.jar
-
-PDFBox.
 -----------------------------------
 winlaf-0.5.1.jar  
 Windows look and feel components, only used in the examples.
