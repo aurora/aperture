@@ -16,6 +16,10 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.semanticdesktop.aperture.extractor.impl.ExtractorRegistryImpl;
 
+/**
+ * Listens for changes in registered ExtractorFactories and FileExtractorFactories.
+ * Needs two listeners for this (listeners are replaced)
+ */
 public class ExtractorServiceActivator implements BundleActivator, ServiceListener {
 
 	public static BundleContext bc = null;
@@ -23,7 +27,7 @@ public class ExtractorServiceActivator implements BundleActivator, ServiceListen
     private ServiceRegistration registration;
 
 	private ExtractorRegistry registry;
-
+    
 	public void start(BundleContext context) throws Exception {
 		
 		bc = context;
@@ -33,6 +37,7 @@ public class ExtractorServiceActivator implements BundleActivator, ServiceListen
 		
 
 		String filter = "(objectclass=" + ExtractorFactory.class.getName() + ")";
+        // ATTENTION: here we register THIS
 		bc.addServiceListener(this, filter);
 
 		ServiceReference references[] = bc.getServiceReferences(null, filter);
@@ -42,7 +47,12 @@ public class ExtractorServiceActivator implements BundleActivator, ServiceListen
 		}
 		
 		filter = "(objectclass=" + FileExtractorFactory.class.getName() + ")";
-        bc.addServiceListener(this, filter);
+        // ATTENTION: here we register another object, otherwise this overrides above listener
+        bc.addServiceListener(new ServiceListener() {
+            public void serviceChanged(ServiceEvent event) {
+                ExtractorServiceActivator.this.serviceChanged(event);                
+            }
+        }, filter);
 
         references = bc.getServiceReferences(null, filter);
 
