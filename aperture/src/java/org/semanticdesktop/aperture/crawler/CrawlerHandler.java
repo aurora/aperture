@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.crawler;
 
+import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 
@@ -93,26 +94,31 @@ public interface CrawlerHandler {
     public void objectRemoved(Crawler crawler, String url);
 
     /**
-     * Notification that the specified Crawler has started clearing its results. This is followed by a
-     * clearingObject invocation on every known url.
+     * Notification that the specified Crawler has started clearing the information it had about the state of
+     * the datasource. This is followed by a {@link #clearingObject(Crawler, String)} on every known url.
      * 
      * @param crawler The reporting Crawler.
+     * @see {@link Crawler#clear()}
      */
     public void clearStarted(Crawler crawler);
 
     /**
-     * Notification that the Crawler is removing all information it knows about the specified url.
+     * Notification that the Crawler is removing all information it knows about the specified url. Note that
+     * this means information stored by the crawler (usually in an {@link AccessData} instance), not the
+     * information in the data source itself.
      * 
      * @param crawler The reporting Crawler.
      * @param url The url of the resource whose crawl results are being cleared.
+     * @see {@link Crawler#clear()}
      */
     public void clearingObject(Crawler crawler, String url);
 
     /**
-     * Notification that the Crawler has finished clearing its results.
+     * Notification that the Crawler has finished clearing the information about the state of the datasource.
      * 
      * @param crawler The concerning Crawler.
      * @param exitCode The status with which the clearing stopped.
+     * @see {@link Crawler#clear()}
      */
     public void clearFinished(Crawler crawler, ExitCode exitCode);
 }
