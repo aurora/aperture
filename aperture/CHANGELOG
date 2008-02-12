@@ -187,3 +187,4 @@ version 1.0.2    (snapshot, unreleased)
 - fixed Outlook nullpointerexceptions introduced in last release
 - updated pdfbox to unreleased 0.4 version fixing parsing errors,
   includes update for fontbox
+- added a new dependency on the Java Imaging API - required by the new PDFBox
