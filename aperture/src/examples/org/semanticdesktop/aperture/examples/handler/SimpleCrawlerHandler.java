@@ -54,7 +54,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
 
     
     ////////////////// OBSERVABLE PROPERTIES ///////////////////// 
-    private int nrObjects;
+    protected int nrObjects;
 
     private long startTime = 0L;
 

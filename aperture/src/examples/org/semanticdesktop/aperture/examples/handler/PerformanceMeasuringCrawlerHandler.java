@@ -6,50 +6,20 @@
  */
 package org.semanticdesktop.aperture.examples.handler;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.text.DecimalFormat;
-import java.util.Set;
 
-import org.ontoware.rdf2go.ModelFactory;
-import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.ModelSet;
-import org.ontoware.rdf2go.model.Syntax;
-import org.ontoware.rdf2go.model.node.URI;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryException;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
-import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.crawler.Crawler;
-import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
-import org.semanticdesktop.aperture.extractor.Extractor;
-import org.semanticdesktop.aperture.extractor.ExtractorException;
-import org.semanticdesktop.aperture.extractor.ExtractorFactory;
-import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
-import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
-import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
-import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
-import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
-import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.NIE;
-import org.semanticdesktop.nepomuk.nrl.validator.StandaloneValidator;
 
 /**
  * An example of a simple crawler handler.
  */
 public class PerformanceMeasuringCrawlerHandler extends SimpleCrawlerHandler {
-
-    // number of objects which were crawled
-    private int nrObjects;
 
     // the time which is needed for crawling the all files
     // uses the java System.nanoTime(), because we have only interest
