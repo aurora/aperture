@@ -19,7 +19,7 @@ public interface SubCrawlerFactory {
      * 
      * @return A Set of mime type strings
      */
-    public Set getSupportedTypes();
+    public Set getSupportedMimeTypes();
 
     /**
      * Return a SubCrawler instance.
