@@ -30,19 +30,22 @@ public interface SubCrawler {
      * 
      * @param id the URI identifying the object (e.g. a file or web page) from which the stream was obtained.
      *            This URI is treated as the URI of the parent object, all objects encountered in the stream
-     *            are considered to be contained within the parent object.
-     * @param stream the stream to be crawled.
+     *            are considered to be contained within the parent object. (optional, if null then the
+     *            {@link RDFContainer#getDescribedUri()} method of the parentMetadata will be used)
+     * @param stream the stream to be crawled. (obligatory)
      * @param accessData the AccessData used to determine if the encountered objects are to be returned as
      *            new, modified, unmodified or deleted. Information about new or modified objects is stored
      *            within for use in future crawls. This parameter may be null if this functionality is not
-     *            desired, in which case all DataObjects will be reported as new.
+     *            desired, in which case all DataObjects will be reported as new. (optional)
      * @param handler The crawler handler that is to receive the notifications from the SubCrawler
+     *            (obligatory)
      * @param charset the charset in which the inputstream is encoded (optional).
      * @param mimeType the MIME type of the passed stream (optional).
      * @param parentMetadata The 'parent' RDFContainer, that will contain the metadata about the top-level
      *            entity in the stream. A SubCrawler may (in some cases) limit itself to augmenting the
-     *            metadata in this RDFContainer without delivering any additional DataObjects.
-     * @throws SubCrawlerException in case of any error during the crawling process
+     *            metadata in this RDFContainer without delivering any additional DataObjects. (obligatory)
+     * @throws SubCrawlerException if any of the obligatory parameters is null or if any error during the 
+     *            crawling process occured
      */
     public void subCrawl(URI id, InputStream stream, AccessData accessData, SubCrawlerHandler handler,
             Charset charset, String mimeType, RDFContainer parentMetadata) throws SubCrawlerException;
