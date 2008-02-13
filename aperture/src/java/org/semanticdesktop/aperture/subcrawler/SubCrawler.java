@@ -30,8 +30,9 @@ public interface SubCrawler {
      * 
      * @param id the URI identifying the object (e.g. a file or web page) from which the stream was obtained.
      *            This URI is treated as the URI of the parent object, all objects encountered in the stream
-     *            are considered to be contained within the parent object. (optional, if null then the
-     *            {@link RDFContainer#getDescribedUri()} method of the parentMetadata will be used)
+     *            are considered to be contained within the parent object. (optional, the implementation may
+     *            use this uri or the one returned from the {@link RDFContainer#getDescribedUri()} method of 
+     *            the parentMetadata)
      * @param stream the stream to be crawled. (obligatory)
      * @param accessData the AccessData used to determine if the encountered objects are to be returned as
      *            new, modified, unmodified or deleted. Information about new or modified objects is stored
