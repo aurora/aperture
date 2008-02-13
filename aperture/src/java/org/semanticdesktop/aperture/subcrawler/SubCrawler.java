@@ -7,7 +7,9 @@
 package org.semanticdesktop.aperture.subcrawler;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
+import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 
@@ -26,18 +28,24 @@ public interface SubCrawler {
      * SubCrawlerHandler. If an AccessData instance is passed, it is used to check if the data objects are to
      * be reported as new, modified, or unmodified. Note that the SubCrawler will not report deleted objects.
      * 
+     * @param id the URI identifying the object (e.g. a file or web page) from which the stream was obtained.
+     *            This URI is treated as the URI of the parent object, all objects encountered in the stream
+     *            are considered to be contained within the parent object.
      * @param stream the stream to be crawled.
      * @param accessData the AccessData used to determine if the encountered objects are to be returned as
      *            new, modified, unmodified or deleted. Information about new or modified objects is stored
      *            within for use in future crawls. This parameter may be null if this functionality is not
      *            desired, in which case all DataObjects will be reported as new.
      * @param handler The crawler handler that is to receive the notifications from the SubCrawler
+     * @param charset the charset in which the inputstream is encoded (optional).
+     * @param mimeType the MIME type of the passed stream (optional).
      * @param parentMetadata The 'parent' RDFContainer, that will contain the metadata about the top-level
      *            entity in the stream. A SubCrawler may (in some cases) limit itself to augmenting the
      *            metadata in this RDFContainer without delivering any additional DataObjects.
+     * @throws SubCrawlerException in case of any error during the crawling process
      */
-    public void subCrawl(InputStream stream, AccessData accessData, SubCrawlerHandler handler,
-            RDFContainer parentMetadata) throws SubCrawlerException;
+    public void subCrawl(URI id, InputStream stream, AccessData accessData, SubCrawlerHandler handler,
+            Charset charset, String mimeType, RDFContainer parentMetadata) throws SubCrawlerException;
 
     /**
      * Stops a running crawl as fast as possible. This method may return before the crawling has actually
