@@ -4,11 +4,11 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.crawler;
+package org.semanticdesktop.aperture.subcrawler;
 
 /**
- * Thrown to indicate that an error occurred while extracting information from an InputStream by an
- * Extractor. A typical use case of this exception is for reporting parse errors.
+ * Thrown to indicate that an error occurred while extracting information from an InputStream by a
+ * SubCrawler. A typical use case of this exception is for reporting parse errors.
  */
 public class SubCrawlerException extends Exception {
 
@@ -16,7 +16,7 @@ public class SubCrawlerException extends Exception {
     private static final long serialVersionUID = 5850947385737157681L;
 
     /**
-     * Constructs an ExtractorException with no detail message.
+     * Constructs an SubCrawlerException with no detail message.
      */
     public SubCrawlerException() {
         super();

@@ -4,7 +4,7 @@
  * 
  * Licensed under the Academic Free License version 3.0.
  */
-package org.semanticdesktop.aperture.crawler;
+package org.semanticdesktop.aperture.subcrawler;
 
 import java.util.Set;
 
