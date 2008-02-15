@@ -26,12 +26,12 @@ import org.semanticdesktop.aperture.extractor.publisher.PublisherExtractorTest;
 import org.semanticdesktop.aperture.extractor.quattro.QuattroExtractorTest;
 import org.semanticdesktop.aperture.extractor.rtf.RtfExtractorTest;
 import org.semanticdesktop.aperture.extractor.util.ThreadedExtractorWrapperTest;
-import org.semanticdesktop.aperture.extractor.vcard.VcardExtractorTest;
 import org.semanticdesktop.aperture.extractor.visio.VisioExtractorTest;
 import org.semanticdesktop.aperture.extractor.word.WordExtractorTest;
 import org.semanticdesktop.aperture.extractor.wordperfect.WordPerfectExtractorTest;
 import org.semanticdesktop.aperture.extractor.works.WorksExtractorTest;
 import org.semanticdesktop.aperture.extractor.xml.XmlExtractorTest;
+import org.semanticdesktop.aperture.subcrawler.vcard.VcardSubCrawlerTest;
 
 /**
  * Tests all Extractor implementations and related classes.
@@ -59,7 +59,7 @@ public class TestExtractors extends TestSuite {
         addTest(new TestSuite(PublisherExtractorTest.class));
         addTest(new TestSuite(QuattroExtractorTest.class));
         addTest(new TestSuite(RtfExtractorTest.class));
-        addTest(new TestSuite(VcardExtractorTest.class));
+        addTest(new TestSuite(VcardSubCrawlerTest.class));
         addTest(new TestSuite(VisioExtractorTest.class));
         addTest(new TestSuite(WordExtractorTest.class));
         addTest(new TestSuite(WordPerfectExtractorTest.class));

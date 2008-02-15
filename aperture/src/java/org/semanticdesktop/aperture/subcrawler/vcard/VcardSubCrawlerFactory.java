@@ -4,16 +4,16 @@
  * 
  * Licensed under the Open Software License version 3.0.
  */
-package org.semanticdesktop.aperture.extractor.vcard;
+package org.semanticdesktop.aperture.subcrawler.vcard;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.semanticdesktop.aperture.extractor.Extractor;
-import org.semanticdesktop.aperture.extractor.ExtractorFactory;
+import org.semanticdesktop.aperture.subcrawler.SubCrawler;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerFactory;
 
-public class VcardExtractorFactory implements ExtractorFactory {
+public class VcardSubCrawlerFactory implements SubCrawlerFactory {
 
 	private static final Set MIME_TYPES;
 
@@ -24,8 +24,8 @@ public class VcardExtractorFactory implements ExtractorFactory {
 		MIME_TYPES = Collections.unmodifiableSet(set);
 	}
 
-	public Extractor get() {
-		return new VcardExtractor();
+	public SubCrawler get() {
+		return new VcardSubCrawler();
 	}
 
 	public Set getSupportedMimeTypes() {

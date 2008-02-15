@@ -13,6 +13,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
+import org.semanticdesktop.aperture.subcrawler.vcard.VcardSubCrawlerFactory;
 
 public class VcardExtractorActivator implements BundleActivator {
 
@@ -24,16 +25,16 @@ public class VcardExtractorActivator implements BundleActivator {
 
 	public void start(BundleContext context) throws Exception {
 		
-
-		VcardExtractorActivator.bc = context;
-
-		factory = new VcardExtractorFactory();
-		registration = bc.registerService(ExtractorFactory.class.getName(), factory,
-			new Hashtable());
+	    throw new Exception("Create a VcardSubCrawlerActivator you lazy ass");
+//		VcardExtractorActivator.bc = context;
+//
+//		factory = new VcardSubCrawlerFactory();
+//		registration = bc.registerService(ExtractorFactory.class.getName(), factory,
+//			new Hashtable());
 	}
 
     public void stop(BundleContext context) throws Exception {
-        registration.unregister();
+//        registration.unregister();
     }
 
 }
