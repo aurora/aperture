@@ -76,7 +76,7 @@ public class VcardSubCrawlerTest extends ApertureTestBase {
         InputStream stream = org.semanticdesktop.aperture.util.ResourceUtil.getInputStream(string, this.getClass());
         handler = new VcardTestIncrementalSubCrawlerHandler();
         RDFContainer parentMetadata = new RDFContainerImpl(handler.getModel(),new URIImpl("uri:dummyuri"));
-        subCrawler.subCrawl(stream, handler, parentMetadata, null, null, null, null, null);
+        subCrawler.subCrawl(null, stream, handler, null, null, null, null, parentMetadata);
         return parentMetadata;
     }
     
