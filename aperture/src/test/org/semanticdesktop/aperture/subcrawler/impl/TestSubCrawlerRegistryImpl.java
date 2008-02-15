@@ -14,7 +14,7 @@ import junit.framework.TestCase;
 import org.semanticdesktop.aperture.subcrawler.SubCrawler;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerFactory;
 
-public class TestExtractorRegistryImpl extends TestCase {
+public class TestSubCrawlerRegistryImpl extends TestCase {
 
     public void testBasics() {
         SubCrawlerRegistryImpl registry = new SubCrawlerRegistryImpl();

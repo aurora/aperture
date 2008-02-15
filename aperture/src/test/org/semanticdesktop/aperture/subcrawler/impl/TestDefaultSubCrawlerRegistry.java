@@ -8,7 +8,7 @@ package org.semanticdesktop.aperture.subcrawler.impl;
 
 import org.semanticdesktop.aperture.ApertureTestBase;
 
-public class TestDefaultExtractorRegistry extends ApertureTestBase {
+public class TestDefaultSubCrawlerRegistry extends ApertureTestBase {
 
     public void testRegistry() {
         DefaultSubCrawlerRegistry registry = new DefaultSubCrawlerRegistry();
