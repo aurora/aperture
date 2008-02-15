@@ -9,6 +9,7 @@ package org.semanticdesktop.aperture.crawler;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 import org.semanticdesktop.aperture.datasource.DataSource;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler;
 
 /**
  * A Crawler accesses the physical source represented by a DataSource and delivers a stream of DataObjects
@@ -18,7 +19,7 @@ import org.semanticdesktop.aperture.datasource.DataSource;
  * An AccessData instance can optionally be specified to a Crawler, allowing it to perform incremental
  * crawling, i.e. to scan and report the differences in the data source since the last crawl.
  */
-public interface Crawler {
+public interface Crawler extends SubCrawlerHandler {
 
     /**
      * Returns the DataSource crawled by this Crawler.

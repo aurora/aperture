@@ -21,6 +21,8 @@ import java.util.Set;
 
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
+import org.semanticdesktop.aperture.accessor.DataObject;
+import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.crawler.CrawlReport;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
@@ -364,4 +366,34 @@ public abstract class CrawlerBase implements Crawler {
 	protected boolean inDomain(String uri) {
 		return domain.inDomain(uri);
 	}
+
+    /** 
+     * @see org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler#getRDFContainerFactory(java.lang.String)
+     */
+    public RDFContainerFactory getRDFContainerFactory(String url) {
+        return handler.getRDFContainerFactory(this, url);
+    }
+
+    /**
+     * @see org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler#objectChanged(org.semanticdesktop.aperture.accessor.DataObject)
+     */
+    public void objectChanged(DataObject object) {
+        deprecatedUrls.remove(object.getID().toString());
+        handler.objectChanged(this, object);
+    }
+
+    /**
+     * @see org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler#objectNew(org.semanticdesktop.aperture.accessor.DataObject)
+     */
+    public void objectNew(DataObject object) {
+        handler.objectNew(this, object);
+    }
+
+    /** 
+     * @see org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler#objectNotModified(java.lang.String)
+     */
+    public void objectNotModified(String url) {
+        deprecatedUrls.remove(url);
+        handler.objectNotModified(this, url);
+    }
 }

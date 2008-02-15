@@ -8,7 +8,6 @@ package org.semanticdesktop.aperture.subcrawler;
 
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
-import org.semanticdesktop.aperture.crawler.ExitCode;
 
 /**
  * SubCrawlerHandlers are notified by a SubCrawler about additions and modifications of resources in an
