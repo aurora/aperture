@@ -76,6 +76,7 @@ import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.util.StringUtil;
 import org.semanticdesktop.aperture.util.UriUtil;
 import org.semanticdesktop.aperture.vocabulary.GEO;
 import org.semanticdesktop.aperture.vocabulary.NCAL;
@@ -3391,7 +3392,7 @@ public class IcalCrawler extends CrawlerBase {
     }
     
     private void passAttachmentToHandler(RDFContainer metadata, byte[] bytes) {
-        String sha1Hash = sha1Hash(bytes);
+        String sha1Hash = StringUtil.sha1Hash(bytes);
         InputStream stream = new ByteArrayInputStream(bytes);
         FileDataObject dataObject = new FileDataObjectBase(metadata.getDescribedUri(), source, metadata,
                 stream);
@@ -3420,7 +3421,7 @@ public class IcalCrawler extends CrawlerBase {
      * @param metadata The RDFContainer with metadata about the object to be updated.
      */
     private void updateAccessData(RDFContainer metadata, Component component) {
-        updateAccessData(metadata, sha1Hash(component.toString()));
+        updateAccessData(metadata, StringUtil.sha1Hash(component.toString()));
     }
     
     private void updateAccessData(RDFContainer metadata, String hash) {
@@ -3435,7 +3436,7 @@ public class IcalCrawler extends CrawlerBase {
         appendPropertyValue(buffer, metadata, NCAL.prodid);
         appendPropertyValue(buffer, metadata, NCAL.version);
         appendPropertyValue(buffer, metadata, NCAL.calscale);
-        return sha1Hash(buffer.toString());
+        return StringUtil.sha1Hash(buffer.toString());
     }
     
     @SuppressWarnings("unchecked")
@@ -3485,7 +3486,7 @@ public class IcalCrawler extends CrawlerBase {
      */
     private boolean isChanged(RDFContainer metadata, Component component) {
         String id = metadata.getDescribedUri().toString();
-        String newHash = ((component == null) ? hashOfProperties(metadata) : sha1Hash(component.toString()));
+        String newHash = ((component == null) ? hashOfProperties(metadata) : StringUtil.sha1Hash(component.toString()));
         String oldHash = accessData.get(id, "hash");
         if (oldHash == null) {
             return true;
@@ -3573,7 +3574,7 @@ public class IcalCrawler extends CrawlerBase {
             Property property = (Property) it.next();
             sumOfAllProperties.append(property.getValue());
         }
-        String result = baseuri + sha1Hash(sumOfAllProperties.toString());
+        String result = baseuri + StringUtil.sha1Hash(sumOfAllProperties.toString());
         return new URIImpl(result);
     }
 
@@ -3931,34 +3932,5 @@ public class IcalCrawler extends CrawlerBase {
         return datatypeURI;
     }
     
-    /**
-     * Computes the SHA1 hash for the given string.
-     * <p>
-     * The code has been 'borrowed' from the mimedir-parser available from
-     * http://ilrt.org/discovery/2003/02/cal/mimedir-parser/
-     * 
-     * @param string The string for which we'd like to get the SHA1 hash.
-     * @return The generated SHA1 hash
-     */
-    private String sha1Hash(String string) {
-        try {
-            return sha1Hash(string.getBytes());
-        }
-        catch (Exception e) {
-            return null;
-        }
-    }
-    
-    private String sha1Hash(byte [] bytes) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA");
-            md.update(bytes);
-            byte[] digest = md.digest();
-            BigInteger integer = new BigInteger(1, digest);
-            return integer.toString(16);
-        }
-        catch (Exception e) {
-            return null;
-        }
-    }
+
 }

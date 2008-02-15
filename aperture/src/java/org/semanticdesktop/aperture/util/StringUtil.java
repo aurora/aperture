@@ -6,6 +6,9 @@
  */
 package org.semanticdesktop.aperture.util;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+
 /**
  * Provides utility methods for String handling.
  */
@@ -58,5 +61,36 @@ public class StringUtil {
         buffer.append(text.substring(prevIndex));
 
         return buffer.toString();
+    }
+    
+    /**
+     * Computes the SHA1 hash for the given string.
+     * <p>
+     * The code has been 'borrowed' from the mimedir-parser available from
+     * http://ilrt.org/discovery/2003/02/cal/mimedir-parser/
+     * 
+     * @param string The string for which we'd like to get the SHA1 hash.
+     * @return The generated SHA1 hash
+     */
+    public static String sha1Hash(String string) {
+        try {
+            return sha1Hash(string.getBytes());
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+    
+    public static String sha1Hash(byte [] bytes) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA");
+            md.update(bytes);
+            byte[] digest = md.digest();
+            BigInteger integer = new BigInteger(1, digest);
+            return integer.toString(16);
+        }
+        catch (Exception e) {
+            return null;
+        }
     }
 }
