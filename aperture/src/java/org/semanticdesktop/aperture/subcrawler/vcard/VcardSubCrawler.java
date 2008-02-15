@@ -80,8 +80,8 @@ public class VcardSubCrawler implements SubCrawler {
     /**
      * @see SubCrawler#subCrawl(URI, InputStream, AccessData, SubCrawlerHandler, Charset, String, RDFContainer)
      */
-    public void subCrawl(InputStream stream, SubCrawlerHandler handler, RDFContainer parentMetadata, URI id,
-            AccessData accessData, Charset charset, String mimeType, DataSource dataSource) throws SubCrawlerException {
+    public void subCrawl(URI id, InputStream stream, SubCrawlerHandler handler, DataSource dataSource,
+            AccessData accessData, Charset charset, String mimeType, RDFContainer parentMetadata) throws SubCrawlerException {
 
         if (handler == null) {
             throw new SubCrawlerException("The SubCrawlerHandler cannot be null");
