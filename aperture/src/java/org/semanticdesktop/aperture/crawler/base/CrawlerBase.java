@@ -14,10 +14,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import javax.activation.MimeType;
 
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
@@ -30,6 +33,9 @@ import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;
+import org.semanticdesktop.aperture.subcrawler.SubCrawler;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerException;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,6 +92,16 @@ public abstract class CrawlerBase implements Crawler {
 
 	private DomainBoundaries domain;
 
+	/**
+	 * Used to synchronize the access to the subCrawler field.
+	 */
+	private Object subCrawlerMonitor = new Object();
+	
+	/**
+	 * The SubCrawler that is currently running.
+	 */
+	private SubCrawler subCrawler;
+	
 	/**
 	 * The default constructor
 	 */
@@ -241,7 +257,12 @@ public abstract class CrawlerBase implements Crawler {
 	 * @see Crawler#stop()
 	 */
 	public void stop() {
-		stopRequested = true;
+		synchronized (subCrawlerMonitor) {
+		    stopRequested = true;
+            if (subCrawler != null) {
+                subCrawler.stopSubCrawler();
+            }
+        }
 	}
 
 	/**
@@ -368,32 +389,85 @@ public abstract class CrawlerBase implements Crawler {
 	}
 
     /** 
-     * @see org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler#getRDFContainerFactory(java.lang.String)
+     * @see org.semanticdesktop.aperture.crawler.Crawler#runSubCrawler(org.semanticdesktop.aperture.subcrawler.SubCrawler, org.semanticdesktop.aperture.accessor.DataObject, java.io.InputStream, java.nio.charset.Charset, javax.activation.MimeType)
      */
-    public RDFContainerFactory getRDFContainerFactory(String url) {
-        return handler.getRDFContainerFactory(this, url);
+    public void runSubCrawler(SubCrawler localSubCrawler, DataObject object, InputStream stream,
+            Charset charset, String mimeType) throws SubCrawlerException {
+        try {
+            synchronized (subCrawlerMonitor) {
+                if (this.subCrawler != null) {
+                    throw new SubCrawlerException("Only one SubCrawler can run at a time");
+                }
+                else if (stopRequested) {
+                    logger.debug("Not starting the subCrawler, the crawler has been requested to stop");
+                    return;
+                }
+                else {
+                    this.subCrawler = localSubCrawler;
+                }
+            }
+            subCrawler.subCrawl(object.getID(), stream, new DefaultSubCrawlerHandler(handler, this),
+                this.source, this.accessData, charset, mimeType, object.getMetadata());
+        }
+        finally {
+            synchronized (subCrawlerMonitor) {
+                this.subCrawler = null;
+            }
+        }
     }
-
+	
     /**
-     * @see org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler#objectChanged(org.semanticdesktop.aperture.accessor.DataObject)
+     * A default simple implementation of the SubCrawlerHandler interface. It delegates all callbacks to the
+     * CrawlerHandler. This class is static to prevent it from accessing the private fields of CrawlerBase
+     * directly, just that we retain control over who calls what.
      */
-    public void objectChanged(DataObject object) {
-        deprecatedUrls.remove(object.getID().toString());
-        handler.objectChanged(this, object);
-    }
+    private static class DefaultSubCrawlerHandler implements SubCrawlerHandler {
 
-    /**
-     * @see org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler#objectNew(org.semanticdesktop.aperture.accessor.DataObject)
-     */
-    public void objectNew(DataObject object) {
-        handler.objectNew(this, object);
-    }
-
-    /** 
-     * @see org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler#objectNotModified(java.lang.String)
-     */
-    public void objectNotModified(String url) {
-        deprecatedUrls.remove(url);
-        handler.objectNotModified(this, url);
+        private CrawlerHandler innerHandler;
+        private CrawlerBase localCrawler;
+        
+        /**
+         * A default constructor.
+         * 
+         * @param innerHandler the crawler handler that is to receive notifications
+         * @param innerCrawler the crawler that will be used as the source of events passed to the crawler handler
+         * @throws NullPointerException if the handler is null
+         */
+        public DefaultSubCrawlerHandler(CrawlerHandler innerHandler, CrawlerBase innerCrawler) {
+            this.innerHandler = innerHandler;
+            this.localCrawler = innerCrawler;
+        }
+        
+        /**
+         * @see SubCrawlerHandler#getRDFContainerFactory(String)
+         */
+        public RDFContainerFactory getRDFContainerFactory(String url) {
+            return innerHandler.getRDFContainerFactory(localCrawler, url);
+        }
+        
+        /**
+         * @see SubCrawlerHandler#objectChanged(DataObject)
+         */
+        public void objectChanged(DataObject object) {
+            localCrawler.deprecatedUrls.remove(object.getID().toString());
+            innerHandler.objectChanged(localCrawler, object);
+        }
+        
+        /**
+         * @see SubCrawlerHandler#objectNew(DataObject)
+         */
+        public void objectNew(DataObject object) {
+            localCrawler.deprecatedUrls.remove(object.getID().toString());
+            innerHandler.objectNew(localCrawler, object);
+            
+        }
+        
+        /**
+         * @see SubCrawlerHandler#objectNotModified(String)
+         */
+        public void objectNotModified(String url) {
+            localCrawler.deprecatedUrls.remove(url);
+            innerHandler.objectNotModified(localCrawler, url);
+        }
     }
 }

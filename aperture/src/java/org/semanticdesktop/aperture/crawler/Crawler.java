@@ -6,10 +6,17 @@
  */
 package org.semanticdesktop.aperture.crawler;
 
+import java.io.InputStream;
+import java.nio.charset.Charset;
+
+import javax.activation.MimeType;
+
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
+import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler;
+import org.semanticdesktop.aperture.subcrawler.SubCrawler;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerException;
 
 /**
  * A Crawler accesses the physical source represented by a DataSource and delivers a stream of DataObjects
@@ -19,7 +26,7 @@ import org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler;
  * An AccessData instance can optionally be specified to a Crawler, allowing it to perform incremental
  * crawling, i.e. to scan and report the differences in the data source since the last crawl.
  */
-public interface Crawler extends SubCrawlerHandler {
+public interface Crawler {
 
     /**
      * Returns the DataSource crawled by this Crawler.
@@ -112,4 +119,42 @@ public interface Crawler extends SubCrawlerHandler {
      * @return The current CrawlerHandler.
      */
     public CrawlerHandler getCrawlerHandler();
+    
+    /**
+     * Runs the given SubCrawler on the given stream.<br/><br/>
+     * 
+     * This method uses the information stored within the crawler to provide appropriate arguments to the
+     * {@link SubCrawler}.subCrawl(...) method. DataObjects found by the SubCrawler will be reported to the
+     * {@link CrawlerHandler} registered with this crawler with the {@link #setCrawlerHandler(CrawlerHandler)}
+     * method. The {@link AccessData} and the internal data structures of this crawler will be updated
+     * correctly. The SubCrawler will be stopped if the {@link #stop()} method is invoked on this crawler.<br/><br/>
+     * 
+     * In most cases, when subcrawling data objects found by a Crawler using this method is strongly
+     * recommended, instead of invoking {@link SubCrawler}.subCrawl(...) directly, otherwise the Crawler may
+     * behave unpredictably.<br/><br/>
+     * 
+     * <b>IMPORTANT</b><br/><br/>
+     * 
+     * There are two important issues to take care about when calling this method.<br/><br/>
+     * 
+     * Firstly. If this method is called from a CrawlerHandler method (e.g.
+     * {@link CrawlerHandler#objectNew(Crawler, DataObject)} or
+     * {@link CrawlerHandler#objectChanged(Crawler, DataObject)}) that has been invoked by a running crawler,
+     * it SHOULD be run on the same thread that called the CrawlerHandler method (i.e. the crawling thread).
+     * Trying to run this method in a new thread may result in unpredictable behavior of the Crawler.<br/><br/>
+     * 
+     * The second issue is that after this method is called, the crawler will report new or modified objects
+     * before this method returns, so the implementations of {@link CrawlerHandler} methods must be reentrant.
+     * {@link http://en.wikipedia.org/wiki/Reentrant}.
+     * 
+     * @param subCrawler the subcrawler to be used
+     * @param object the parent data object, its metadata may be augmented by the SubCrawler
+     * @param stream the InputStream for the SubCrawler to work on. Note that even though there may be
+     *            additional resources stored in the DataObject itself (like an InputStream or a File) they
+     *            are not used.
+     * @param charset the charset in which the input stream is encoded (optional)
+     * @param mimeType the mime type of the input stream (optional)
+     * @throws SubCrawlerException if some error during the SubCrawling occurs.
+     */
+    public void runSubCrawler(SubCrawler subCrawler, DataObject object, InputStream stream, Charset charset, String mimeType) throws SubCrawlerException;
 }
