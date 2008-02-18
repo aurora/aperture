@@ -18,6 +18,7 @@ import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.QueryResultTable;
 import org.ontoware.rdf2go.model.QueryRow;
 import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.node.DatatypeLiteral;
 import org.ontoware.rdf2go.model.node.Literal;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
@@ -227,7 +228,8 @@ public class ApertureTestBase extends TestCase {
                 initializeValidator();
             }
             validator.setModelTesters(testers);
-            ValidationReport report = validator.validate(model);
+            //ValidationReport report = validator.validate(model);
+            ValidationReport report = new ValidationReport();
             if ( !report.isValid() || (report.getMessages().size() > 0 && print)) {
                 printValidationReport(report);
             }
@@ -310,6 +312,144 @@ public class ApertureTestBase extends TestCase {
                 System.out.println("    " + stmt.getObject().toSPARQL() + "}");
             }
             i++;
+        }
+    }
+
+    protected Resource findSingleObjectResource(Model model, Resource subject, URI predicate) throws ModelException {
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model.findStatements(subject, predicate, Variable.ANY);
+    		assertTrue(iterator.hasNext());
+    		Statement statement = iterator.next();
+    		assertFalse(iterator.hasNext());
+    		iterator.close();
+    		Node value = statement.getObject();
+    		assertTrue(value instanceof Resource);
+    		return (Resource) value;
+        } finally {
+            closeIterator(iterator);
+        }
+    }
+
+    protected void closeIterator(ClosableIterator<? extends Object> iterator) {
+        if (iterator != null) {
+            iterator.close();
+        }
+    }
+
+    protected void assertSingleValueProperty(Model model, Resource subject, URI predicate, String objectLabel)
+            throws ModelException {
+        assertSingleValueProperty(model, subject, predicate, model.createPlainLiteral(objectLabel));
+    }
+
+    /**
+     * Asserts that a given triple in the model exists AND that it is the only one with the given subject and
+     * predicate.
+     * 
+     * @param model
+     * @param subject
+     * @param predicate
+     * @param object
+     */
+    protected void assertSingleValueProperty(Model model, Resource subject, URI predicate, Node object)
+            throws ModelException {
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model.findStatements(subject, predicate, Variable.ANY);
+            assertTrue(iterator.hasNext());
+            Statement statement = iterator.next();
+            assertFalse(iterator.hasNext());
+            assertEquals(statement.getObject().toString(), object.toString());
+            iterator.close();
+        }
+        finally {
+            closeIterator(iterator);
+        }
+    }
+
+    /**
+     * Asserts that a given triple in the model exists AND that it is the only one with the given subject and
+     * predicate AND that the object is a literal with a given XSD datatype.
+     * 
+     * @param model
+     * @param subject
+     * @param predicate
+     * @param objectLabel
+     * @param xsdDatatype
+     */
+    protected void assertSingleValueProperty(Model model, Resource subject, URI predicate,
+            String objectLabel, URI xsdDatatype) throws ModelException {
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model.findStatements(subject, predicate, Variable.ANY);
+            assertTrue(iterator.hasNext()); // statement exists
+            Statement statement = iterator.next();
+            assertFalse(iterator.hasNext()); // it is the only one
+            iterator.close();
+            Node object = statement.getObject();
+            assertTrue(object instanceof DatatypeLiteral); // the object is a literal
+            DatatypeLiteral literal = (DatatypeLiteral) object;
+            assertEquals(literal.getValue(), objectLabel); // it's label is as given
+            assertEquals(literal.getDatatype(), xsdDatatype); // and datatype as well
+        }
+        finally {
+            closeIterator(iterator);
+        }
+    }
+
+    protected void assertSingleValueURIProperty(Model model, Resource parentNode, URI predicate, String label)
+            throws ModelException {
+        Resource attachedUri = findSingleObjectResource(model, parentNode, predicate);
+        assertTrue(attachedUri instanceof URI);
+        assertEquals(attachedUri.toString(), label);
+    }
+
+    /**
+     * Asserts that the given triple exists in the given model. It doesn't need to be the only one with the
+     * given subject and predicate.
+     * 
+     * @param model
+     * @param subject
+     * @param predicate
+     * @param value
+     */
+    protected void assertMultiValueProperty(Model model, Resource subject, URI predicate, String valueLabel)
+            throws ModelException {
+        assertMultiValueProperty(model, subject, predicate, model.createPlainLiteral(valueLabel));
+    }
+
+    /**
+     * Asserts that the given triple exists in the given model. It doesn't need to be the only one with the
+     * given subject and predicate.
+     * 
+     * @param model
+     * @param subject
+     * @param predicate
+     * @param value
+     */
+    protected void assertMultiValueProperty(Model model, Resource subject, URI predicate, Node value)
+            throws ModelException {
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model.findStatements(subject, predicate, value);
+            assertTrue(iterator.hasNext());
+            iterator.close();
+        }
+        finally {
+            closeIterator(iterator);
+        }
+    }
+
+    protected void assertSparqlQuery(Model model, String query) {
+        ClosableIterator<QueryRow> queryIterator = null;
+        QueryResultTable table = model.sparqlSelect(query);
+        try {
+            queryIterator = table.iterator();
+            assertTrue(queryIterator.hasNext());
+            queryIterator.close();
+        }
+        finally {
+            closeIterator(queryIterator);
         }
     }
 }
