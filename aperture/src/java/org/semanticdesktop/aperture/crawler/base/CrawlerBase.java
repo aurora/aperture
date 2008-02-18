@@ -19,8 +19,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
-import javax.activation.MimeType;
+import java.util.Stack;
 
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
@@ -98,15 +97,16 @@ public abstract class CrawlerBase implements Crawler {
 	private Object subCrawlerMonitor = new Object();
 	
 	/**
-	 * The SubCrawler that is currently running.
+	 * The SubCrawler stack that is currently running.
 	 */
-	private SubCrawler subCrawler;
+	private Stack<SubCrawler> subCrawlerStack;
 	
 	/**
 	 * The default constructor
 	 */
 	public CrawlerBase() {
 		this.stopRequested = false;
+		this.subCrawlerStack = new Stack<SubCrawler>();
 	}
 
 	/**
@@ -259,8 +259,10 @@ public abstract class CrawlerBase implements Crawler {
 	public void stop() {
 		synchronized (subCrawlerMonitor) {
 		    stopRequested = true;
-            if (subCrawler != null) {
-                subCrawler.stopSubCrawler();
+            if (!subCrawlerStack.empty()) {
+                for (SubCrawler subCrawler : subCrawlerStack) {
+                    subCrawler.stopSubCrawler();
+                }
             }
         }
 	}
@@ -395,23 +397,27 @@ public abstract class CrawlerBase implements Crawler {
             Charset charset, String mimeType) throws SubCrawlerException {
         try {
             synchronized (subCrawlerMonitor) {
-                if (this.subCrawler != null) {
-                    throw new SubCrawlerException("Only one SubCrawler can run at a time");
-                }
-                else if (stopRequested) {
+                if (stopRequested) {
                     logger.debug("Not starting the subCrawler, the crawler has been requested to stop");
                     return;
                 }
                 else {
-                    this.subCrawler = localSubCrawler;
+                    this.subCrawlerStack.push(localSubCrawler);
                 }
             }
-            subCrawler.subCrawl(object.getID(), stream, new DefaultSubCrawlerHandler(handler, this),
+            localSubCrawler.subCrawl(object.getID(), stream, new DefaultSubCrawlerHandler(handler, this),
                 this.source, this.accessData, charset, mimeType, object.getMetadata());
         }
         finally {
             synchronized (subCrawlerMonitor) {
-                this.subCrawler = null;
+                SubCrawler stackSubCrawler = subCrawlerStack.pop();
+                if (stackSubCrawler != localSubCrawler) {
+                    // this is a very weird error
+                    logger.error("SubCrawler stack error");
+                    throw new SubCrawlerException("SubCrawlerStack error push/pop got desynchronized");
+                }
+                stackSubCrawler = null;
+                localSubCrawler = null;
             }
         }
     }
