@@ -12,6 +12,7 @@ public class TestDefaultSubCrawlerRegistry extends ApertureTestBase {
 
     public void testRegistry() {
         DefaultSubCrawlerRegistry registry = new DefaultSubCrawlerRegistry();
-        assertEquals(0, registry.getAll().size());
+        assertEquals(1, registry.getAll().size());
+        assertEquals(1, registry.get("text/x-vcard").size());
     }
 }
