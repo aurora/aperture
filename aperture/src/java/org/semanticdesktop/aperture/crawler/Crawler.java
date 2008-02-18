@@ -129,9 +129,9 @@ public interface Crawler {
      * method. The {@link AccessData} and the internal data structures of this crawler will be updated
      * correctly. The SubCrawler will be stopped if the {@link #stop()} method is invoked on this crawler.<br/><br/>
      * 
-     * In most cases, when subcrawling data objects found by a Crawler using this method is strongly
-     * recommended, instead of invoking {@link SubCrawler}.subCrawl(...) directly, otherwise the Crawler may
-     * behave unpredictably.<br/><br/>
+     * In most cases, the SubCrawler is used to extract additional information from the DataObject found by a
+     * normal Crawler. In such cases using this method is strongly recommended instead of invoking
+     * {@link SubCrawler}.subCrawl(...) directly. The Crawler may behave unpredictably.<br/><br/>
      * 
      * <b>IMPORTANT</b><br/><br/>
      * 
@@ -145,7 +145,8 @@ public interface Crawler {
      * 
      * The second issue is that after this method is called, the crawler will report new or modified objects
      * before this method returns, so the implementations of {@link CrawlerHandler} methods must be reentrant.
-     * {@link http://en.wikipedia.org/wiki/Reentrant}.
+     * See {@link http://en.wikipedia.org/wiki/Reentrant}. It is recommended that processing any metadata in 
+     * a DataObject takes place before the invocation of a SubCrawler.
      * 
      * @param subCrawler the subcrawler to be used
      * @param object the parent data object, its metadata may be augmented by the SubCrawler
@@ -154,7 +155,7 @@ public interface Crawler {
      *            are not used.
      * @param charset the charset in which the input stream is encoded (optional)
      * @param mimeType the mime type of the input stream (optional)
-     * @throws SubCrawlerException if some error during the SubCrawling occurs.
+     * @throws SubCrawlerException if some error during SubCrawling occurs.
      */
     public void runSubCrawler(SubCrawler subCrawler, DataObject object, InputStream stream, Charset charset, String mimeType) throws SubCrawlerException;
 }
