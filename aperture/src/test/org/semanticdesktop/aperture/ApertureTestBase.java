@@ -27,7 +27,6 @@ import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.ValueFactory;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.vocabulary.GEO;
 import org.semanticdesktop.aperture.vocabulary.NCAL;
@@ -46,13 +45,24 @@ import org.semanticdesktop.nepomuk.nrl.validator.exception.StandaloneValidatorEx
 import org.semanticdesktop.nepomuk.nrl.validator.impl.StandaloneValidatorImpl;
 import org.semanticdesktop.nepomuk.nrl.validator.testers.NRLClosedWorldModelTester;
 
+/**
+ * A common superclass for all unit tests of aperture.
+ */
 public class ApertureTestBase extends TestCase {
 
-	public static final String DOCS_PATH = "org/semanticdesktop/aperture/docs/";
+	protected static final String DOCS_PATH = "org/semanticdesktop/aperture/docs/";
     
-    public static StandaloneValidator validator;
+    private static StandaloneValidator validator;
 
-	public Model createModel() {
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////// CREATING MODELS AND RDFCONTAINERS ////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    /**
+     * Creates an in-memory model
+     * @return an in-memory model
+     */
+	protected Model createModel() {
 		try {
             Model model = RDF2Go.getModelFactory().createModel(); 
             model.open();
@@ -63,136 +73,79 @@ public class ApertureTestBase extends TestCase {
 		}
 	}
 	
+	/**
+	 * Creates an RDFContainer describing the given URI
+	 * @param uri
+	 * @return
+	 */
 	protected RDFContainer createRDFContainer(String uri) {
         return createRDFContainer(new URIImpl(uri,false));
     }
     
+	/**
+	 * Creates an RDFContainer describing the given URI
+	 * @param uri
+	 * @return
+	 */
     protected RDFContainer createRDFContainer(URI uri) {
         Model newModel = createModel();
         return new RDFContainerImpl(newModel,uri);
     }
-
-	public void checkStatement(URI property, String substring, RDFContainer container) 
-			throws ModelException {
-		// setup some info
-		String uriString = container.getDescribedUri().toString();
-		Model model = container.getModel();
-		ValueFactory valueFactory = container.getValueFactory();
-		boolean encounteredSubstring = false;
-
-		// loop over all statements that have the specified property uri as predicate
-        ClosableIterator<? extends Statement> statements = model.findStatements(valueFactory
-                .createURI(uriString), property, Variable.ANY);
-        try {
-			while (statements.hasNext()) {
-				// check the property type
-				Statement statement = (Statement) statements.next();
-				assertTrue(statement.getPredicate().equals(property));
-
-				// see if it has a Literal containing the specified substring
-				Node object = statement.getObject();
-				if (object instanceof Literal) {
-					String value = ((Literal) object).getValue();
-					if (value.indexOf(substring) >= 0) {
-						encounteredSubstring = true;
-						break;
-					}
-				}
-			}
-		}
-		finally {
-			statements.close();
-		}
-
-		// see if any of the found properties contains the specified substring
-        if (!encounteredSubstring)
-            fail("Expected substring '"+substring+
-                "' in property "+property+" not found");
-		assertTrue(encounteredSubstring);
-	}
     
-    public void checkSimpleContact(URI property, String fullname, RDFContainer container) {
-        Node node = container.getNode(property);
-        assertTrue(node instanceof Resource);
-        Resource resource = (Resource)node;
-        Model model = container.getModel();
-        assertTrue(model.contains(resource, RDF.type, NCO.Contact));
-        assertTrue(model.contains(resource, NCO.fullname, fullname));
-    }
-    
-    public void checkMultipleSimpleContacts(URI property, String fullname, RDFContainer container) {
-        Model model = container.getModel();
-        QueryResultTable table = model.sparqlSelect(
-                "PREFIX nco: <" + NCO.NS_NCO + "> " +
-                "SELECT ?contact " +
-                "WHERE" +
-                "  {" + container.getDescribedUri().toSPARQL() + " " + property.toSPARQL() + " ?contact ." +
-                "    ?contact nco:fullname ?name . " +
-                "    FILTER (regex(?name,\"" + fullname + "\"))" +
-                "  }");
-        ClosableIterator<QueryRow> iterator = null;
-        try {
-            iterator = table.iterator();
-            assertTrue(iterator.hasNext());;
-        } finally {
+    protected void closeIterator(ClosableIterator<? extends Object> iterator) {
+        if (iterator != null) {
             iterator.close();
         }
     }
-
-    public void checkStatement(URI property, URI value, RDFContainer container) 
-			throws ModelException {
-		URI subject = container.getDescribedUri(); 
-		checkStatement(subject, property, value, container);
-	}
-
-	public void checkStatement(URI subject, URI property, Node value, RDFContainer container) 
-			throws ModelException {
-		checkStatement(subject, property, value, container.getModel());
-	}
-
-	public void checkStatement(URI subject, URI property, Node value, Model model) throws ModelException {
-		boolean encounteredValue = false;
-
-		// loop over all statements that have the specified property uri as predicate
-        ClosableIterator<? extends Statement> statements = model.findStatements(subject,property,Variable.ANY);
-		try {
-			while (statements.hasNext()) {
-				// check the property type
-				Statement statement = (Statement) statements.next();
-				assertTrue(statement.getPredicate().equals(property));
-
-				// see if it has a Literal containing the specified substring
-				Node object = statement.getObject();
-				if (object.equals(value)) {
-					encounteredValue = true;
-					break;
-				}
-			}
-		}
-		finally {
-			statements.close();
-		}
-
-		// see if any of the found properties contains the specified substring
-		assertTrue(encounteredValue);
-	}
     
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////// VALIDATION //////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+	/**
+	 * Validates the content of the given container and prints the report to the standard output.
+	 * @param container
+	 */
     public void validate(RDFContainer container) {
         validate(container,true);
     }
     
+    /**
+     * Validates the content and lets the user decide whether to print the report to the standard output.
+     * @param container the container
+     * @param print true if the report is to be printed, false otherwise
+     */
     public void validate(RDFContainer container, boolean print) {
         validate(container.getModel(), print, null, (ModelTester[])null);
     }
 
+    /**
+     * Validates the given model and prints the report to the standard output.
+     * @param model
+     */
     public void validate(Model model) {
         validate(model,true, null,(ModelTester[])null);
     }
     
+    /**
+     * Validates the given model and lets the use decide whether to print the report to the standard output.
+     * @param model
+     * @param print
+     */
     public void validate(Model model, boolean print) {
         validate(model,print,null,(ModelTester[])null);
     }
     
+    /**
+     * Validates the given model and performs additional test with the given additional model testers.
+     * 
+     * @param model the model to validate
+     * @param print true if the report is to be printed on the standard output, false otherwise
+     * @param dataSourceUri the uri of the datasource, the validator will temporarily insert an dataSourceUri
+     *            rdf:type nie:DataSource triple to satiate the validator. This case is quite common and we
+     *            would not like it to be treated as an error.
+     * @param additionalTesters testers that will be used in addition to the default NRLClosedWorldModelTester
+     */
     public void validate(Model model, boolean print, URI dataSourceUri, ModelTester ... additionalTesters) {
         boolean removeFlag = false;
         Statement statement = null;
@@ -315,6 +268,10 @@ public class ApertureTestBase extends TestCase {
         }
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////// ASSERTIONS ////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     protected Resource findSingleObjectResource(Model model, Resource subject, URI predicate) throws ModelException {
         ClosableIterator<? extends Statement> iterator = null;
         try {
@@ -331,12 +288,163 @@ public class ApertureTestBase extends TestCase {
         }
     }
 
-    protected void closeIterator(ClosableIterator<? extends Object> iterator) {
-        if (iterator != null) {
+    
+
+    /**
+     * Asserts that the given container contains the given property, and that one of the values of that
+     * property is a literal, whose label contains the given substring.
+     * 
+     * @param property the property to look for
+     * @param substring the substring to look for
+     * @param container the container to look in
+     * @throws ModelException if something goes wrong
+     */
+    public void checkStatement(URI property, String substring, RDFContainer container) 
+            throws ModelException {
+        // setup some info
+        Model model = container.getModel();
+        boolean encounteredSubstring = false;
+
+        // loop over all statements that have the specified property uri as predicate
+        ClosableIterator<? extends Statement> statements = model.findStatements(
+            container.getDescribedUri(), property, Variable.ANY);
+        try {
+            while (statements.hasNext()) {
+                // check the property type
+                Statement statement = statements.next();
+                assertTrue(statement.getPredicate().equals(property));
+
+                // see if it has a Literal containing the specified substring
+                Node object = statement.getObject();
+                if (object instanceof Literal) {
+                    String value = ((Literal) object).getValue();
+                    if (value.indexOf(substring) >= 0) {
+                        encounteredSubstring = true;
+                        break;
+                    }
+                }
+            }
+        }
+        finally {
+            statements.close();
+        }
+
+        // see if any of the found properties contains the specified substring
+        if (!encounteredSubstring)
+            fail("Expected substring '"+substring+
+                "' in property "+property+" not found");
+        assertTrue(encounteredSubstring);
+    }
+
+    /**
+     * Asserts that the given container contains the given property AND that there is exactly
+     * one value for this property AND that the value of this property is a Resource with an
+     * rdf:type of nco:Contact, which has a nco:fullname property whose value is equal to the
+     * given string.
+     * @param property
+     * @param fullname
+     * @param container
+     */
+    public void checkSimpleContact(URI property, String fullname, RDFContainer container) {
+        Node node = container.getNode(property);
+        assertTrue(node instanceof Resource);
+        Resource resource = (Resource)node;
+        Model model = container.getModel();
+        assertTrue(model.contains(resource, RDF.type, NCO.Contact));
+        assertTrue(model.contains(resource, NCO.fullname, fullname));
+    }
+    
+    /**
+     * Asserts that the given container contains the given property AND that one of the values of this
+     * property is a Resource with an rdf:type of nco:Contact, which has a nco:fullname property whose value
+     * is equal to the given string. There may be more values of the given property in this container.
+     * 
+     * @param property
+     * @param fullname
+     * @param container
+     */
+    public void checkMultipleSimpleContacts(URI property, String fullname, RDFContainer container) {
+        Model model = container.getModel();
+        QueryResultTable table = model.sparqlSelect(
+                "PREFIX nco: <" + NCO.NS_NCO + "> " +
+                "SELECT ?contact " +
+                "WHERE" +
+                "  {" + container.getDescribedUri().toSPARQL() + " " + property.toSPARQL() + " ?contact ." +
+                "    ?contact nco:fullname ?name . " +
+                "    FILTER (regex(?name,\"" + fullname + "\"))" +
+                "  }");
+        ClosableIterator<QueryRow> iterator = null;
+        try {
+            iterator = table.iterator();
+            assertTrue(iterator.hasNext());;
+        } finally {
             iterator.close();
         }
     }
 
+    /**
+     * Asserts that the given container contains the given property, and that one of the values
+     * of that property (there may be more) is an URI equal to the given value.
+     * @param property
+     * @param value
+     * @param container
+     * @throws ModelException
+     */
+    public void checkStatement(URI property, URI value, RDFContainer container) 
+            throws ModelException {
+        URI subject = container.getDescribedUri(); 
+        checkStatement(subject, property, value, container);
+    }
+
+    /**
+     * Asserts that the given container contains the given property, and that one of the values
+     * of that property (there may be more) is a Node equal to the given node.
+     * @param subject
+     * @param property
+     * @param value
+     * @param container
+     * @throws ModelException
+     */
+    public void checkStatement(URI subject, URI property, Node value, RDFContainer container) 
+            throws ModelException {
+        checkStatement(subject, property, value, container.getModel());
+    }
+
+    /**
+     * Asserts that the given model contains a statement with the given subject, property and value.
+     * @param subject
+     * @param property
+     * @param value
+     * @param model
+     * @throws ModelException
+     */
+    public void checkStatement(URI subject, URI property, Node value, Model model) throws ModelException {
+        boolean encounteredValue = false;
+
+        // loop over all statements that have the specified property uri as predicate
+        ClosableIterator<? extends Statement> statements = model.findStatements(subject,property,Variable.ANY);
+        try {
+            while (statements.hasNext()) {
+                // check the property type
+                Statement statement = (Statement) statements.next();
+                assertTrue(statement.getPredicate().equals(property));
+
+                // see if it has a Literal containing the specified substring
+                Node object = statement.getObject();
+                if (object.equals(value)) {
+                    encounteredValue = true;
+                    break;
+                }
+            }
+        }
+        finally {
+            statements.close();
+        }
+
+        // see if any of the found properties contains the specified substring
+        assertTrue(encounteredValue);
+    }
+    
     protected void assertSingleValueProperty(Model model, Resource subject, URI predicate, String objectLabel)
             throws ModelException {
         assertSingleValueProperty(model, subject, predicate, model.createPlainLiteral(objectLabel));
