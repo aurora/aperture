@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -273,22 +274,27 @@ public class ApertureTestBase extends TestCase {
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
     protected Resource findSingleObjectResource(Model model, Resource subject, URI predicate) throws ModelException {
+        List<Resource> list = findObjectResourceList(model, subject, predicate);
+        assertEquals(1,list.size());
+        return list.get(0);
+    }
+
+    protected List<Resource> findObjectResourceList(Model model, Resource subject, URI predicate) throws ModelException {
+        LinkedList<Resource> result = new LinkedList<Resource>();
         ClosableIterator<? extends Statement> iterator = null;
         try {
             iterator = model.findStatements(subject, predicate, Variable.ANY);
-    		assertTrue(iterator.hasNext());
-    		Statement statement = iterator.next();
-    		assertFalse(iterator.hasNext());
-    		iterator.close();
-    		Node value = statement.getObject();
-    		assertTrue(value instanceof Resource);
-    		return (Resource) value;
+            while (iterator.hasNext()) {
+                Statement statement = iterator.next();
+                Node value = statement.getObject();
+                assertTrue(value instanceof Resource);
+                result.add(value.asResource());
+            }
+            return result;
         } finally {
             closeIterator(iterator);
         }
     }
-
-    
 
     /**
      * Asserts that the given container contains the given property, and that one of the values of that
