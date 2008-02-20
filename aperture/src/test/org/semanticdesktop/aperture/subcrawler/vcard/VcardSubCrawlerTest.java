@@ -101,6 +101,18 @@ public class VcardSubCrawlerTest extends ApertureTestBase {
         assertSingleValueProperty(model, frankDawsonContact, NCO.nameGiven, "Frank");
     }
     
+    public void testAntoniNames() throws Exception {
+        VcardSubCrawler subCrawler = new VcardSubCrawler();
+        metadata = subCrawl(DOCS_PATH + "vcard-antoni-outlook2003.vcf", subCrawler);
+        Model model = metadata.getModel();
+        Resource antoniContact = findContact(model, "Antoni Jozef Mylka jun.");
+        assertSingleValueProperty(model, antoniContact, NCO.nameFamily, "Mylka");
+        assertSingleValueProperty(model, antoniContact, NCO.nameGiven, "Antoni");
+        assertSingleValueProperty(model, antoniContact, NCO.nameAdditional, "Jozef");
+        assertSingleValueProperty(model, antoniContact, NCO.nameHonorificPrefix, "Herr");
+        assertSingleValueProperty(model, antoniContact, NCO.nameHonorificSuffix, "jun.");
+    }
+    
     public void testUrl() throws Exception {
         VcardSubCrawler subCrawler = new VcardSubCrawler();
         metadata = subCrawl(DOCS_PATH + "vcard-rfc2426.vcf", subCrawler);
@@ -175,7 +187,6 @@ public class VcardSubCrawlerTest extends ApertureTestBase {
         Resource frankDawsonContact = findContact(model, "Frank Dawson");
         Resource affiliation = findSingleObjectResource(model, frankDawsonContact, NCO.hasAffiliation);
         assertSingleValueProperty(model, affiliation, RDF.type, NCO.Affiliation);
-        model.writeTo(System.out);
         Resource address = findSingleObjectResource(model, affiliation, NCO.hasPostalAddress);
         assertMultiValueProperty(model, address, RDF.type, NCO.PostalAddress);
         assertMultiValueProperty(model, address, RDF.type, NCO.ParcelDeliveryAddress);
@@ -184,16 +195,66 @@ public class VcardSubCrawlerTest extends ApertureTestBase {
         assertSingleValueProperty(model, address, NCO.region, "NC");
     }
     
+    public void testHomePostalAddress() throws Exception {
+        VcardSubCrawler subCrawler = new VcardSubCrawler();
+        metadata = subCrawl(DOCS_PATH + "vcard-antoni-outlook2003.vcf", subCrawler);
+        Model model = metadata.getModel();
+        Resource antoniContact = findContact(model, "Antoni Jozef Mylka jun.");
+        Resource address = findSingleObjectResource(model, antoniContact, NCO.hasPostalAddress);
+        assertMultiValueProperty(model, address, RDF.type, NCO.PostalAddress);
+        
+        assertSingleValueProperty(model, address, NCO.streetAddress, "Budryka 2/1110");
+        assertSingleValueProperty(model, address, NCO.locality, "Krakow");
+        assertSingleValueProperty(model, address, NCO.region, "malopolskie");
+        assertSingleValueProperty(model, address, NCO.postalcode, "30-072");
+        assertSingleValueProperty(model, address, NCO.country, "Polen");
+    }
+    
+    public void testRole() throws Exception {
+        VcardSubCrawler subCrawler = new VcardSubCrawler();
+        metadata = subCrawl(DOCS_PATH + "vcard-antoni-outlook2003.vcf", subCrawler);
+        Model model = metadata.getModel();
+        Resource antoniContact = findContact(model, "Antoni Jozef Mylka jun.");
+        Resource affiliation = findSingleObjectResource(model, antoniContact, NCO.hasAffiliation);
+        assertSingleValueProperty(model, affiliation, NCO.role, "Software-Developer");
+    }
+    
+    public void testTitle() throws Exception {
+        VcardSubCrawler subCrawler = new VcardSubCrawler();
+        metadata = subCrawl(DOCS_PATH + "vcard-antoni-outlook2003.vcf", subCrawler);
+        Model model = metadata.getModel();
+        Resource antoniContact = findContact(model, "Antoni Jozef Mylka jun.");
+        Resource affiliation = findSingleObjectResource(model, antoniContact, NCO.hasAffiliation);
+        assertSingleValueProperty(model, affiliation, NCO.title, "Intern");
+    }
+    
+    public void testNickname() throws Exception {
+        VcardSubCrawler subCrawler = new VcardSubCrawler();
+        metadata = subCrawl(DOCS_PATH + "vcard-antoni-outlook2003.vcf", subCrawler);
+        Model model = metadata.getModel();
+        Resource antoniContact = findContact(model, "Antoni Jozef Mylka jun.");
+        assertSingleValueProperty(model, antoniContact, NCO.nickname, "Ant");
+    }
+    
+    public void testBday() throws Exception {
+        VcardSubCrawler subCrawler = new VcardSubCrawler();
+        metadata = subCrawl(DOCS_PATH + "vcard-antoni-outlook2003.vcf", subCrawler);
+        Model model = metadata.getModel();
+        Resource antoniContact = findContact(model, "Antoni Jozef Mylka jun.");
+        assertSingleValueProperty(model, antoniContact, NCO.birthDate, "1980-01-18", XSD._date);
+    }
+    
     public void testOrganization() throws Exception {
         VcardSubCrawler subCrawler = new VcardSubCrawler();
-        metadata = subCrawl(DOCS_PATH + "vcard-rfc2426.vcf", subCrawler);
+        metadata = subCrawl(DOCS_PATH + "vcard-antoni-outlook2003.vcf", subCrawler);
         Model model = metadata.getModel();
-        Resource frankDawsonContact = findContact(model, "Frank Dawson");
-        Resource affiliation = findSingleObjectResource(model, frankDawsonContact, NCO.hasAffiliation);
+        Resource antoniContact = findContact(model, "Antoni Jozef Mylka jun.");
+        Resource affiliation = findSingleObjectResource(model, antoniContact, NCO.hasAffiliation);
         assertSingleValueProperty(model, affiliation, RDF.type, NCO.Affiliation);
+        assertSingleValueProperty(model, affiliation, NCO.department, "Knowledge-Management");
         Resource organization = findSingleObjectResource(model, affiliation, NCO.org);
         assertSingleValueProperty(model, organization, RDF.type, NCO.OrganizationContact);
-        assertSingleValueProperty(model, organization, NCO.fullname, "Lotus Development Corporation");
+        assertSingleValueProperty(model, organization, NCO.fullname, "DFKI");
     }
     
     public void testNote() throws Exception {
@@ -214,11 +275,31 @@ public class VcardSubCrawlerTest extends ApertureTestBase {
         Model model = metadata.getModel();
         Resource dirkContact = findContact(model, "Dirk");
         assertSingleValueProperty(model, dirkContact, NIE.contentLastModified, "2007-11-09T10:46:02Z", XSD._dateTime);
-        model.writeTo(System.out);
-        validate(metadata);
         metadata.dispose();
         metadata = null;
     }
+    
+    public void testRev2() throws Exception {
+        VcardSubCrawler subCrawler = new VcardSubCrawler();
+        metadata = subCrawl(DOCS_PATH + "vcard-antoni-kontact.vcf", subCrawler);
+        Model model = metadata.getModel();
+        Resource dirkContact = findContact(model, "Antoni Mylka");
+        assertSingleValueProperty(model, dirkContact, NIE.contentLastModified, "2008-01-28T15:50:16Z", XSD._dateTime);
+        metadata.dispose();
+        metadata = null;
+    }
+    
+    // this test failes because of a very controversial feature in jpim
+    // TODO finish this after the uid issue is resolved
+//    public void testUid() throws Exception {
+//        VcardSubCrawler subCrawler = new VcardSubCrawler();
+//        metadata = subCrawl(DOCS_PATH + "vcard-antoni-kontact.vcf", subCrawler);
+//        Model model = metadata.getModel();
+//        Resource dirkContact = findContact(model, "Antoni Mylka");
+//        assertSingleValueProperty(model, dirkContact, NCO.contactUID, "BHTRsCvcmd");
+//        metadata.dispose();
+//        metadata = null;
+//    }
 
     private RDFContainer subCrawl(String string, VcardSubCrawler subCrawler) throws Exception {
         InputStream stream = org.semanticdesktop.aperture.util.ResourceUtil.getInputStream(string, this.getClass());
