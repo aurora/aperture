@@ -182,8 +182,7 @@ public class ApertureTestBase extends TestCase {
                 initializeValidator();
             }
             validator.setModelTesters(testers);
-            //ValidationReport report = validator.validate(model);
-            ValidationReport report = new ValidationReport();
+            ValidationReport report = validator.validate(model);
             if ( !report.isValid() || (report.getMessages().size() > 0 && print)) {
                 printValidationReport(report);
             }
