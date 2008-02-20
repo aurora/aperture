@@ -58,9 +58,32 @@ import org.semanticdesktop.aperture.vocabulary.NIE;
  * Known issues:
  * <ul>
  * <li>The preferred contact media aren't marked as such in the output, because the NCO doesn't cover this
- * <li>Theoretically the email addresses can have the TYPE=x400, this is not supported
+ * <li>Theoretically the email addresses can have the TYPE=x400, this is not supported, all email addresses
+ * are treated as internet addresses.
  * <li>The VCARD specification doesn't distinguish between private and business email addresses, so this
  * extractor doesn't do it either.
+ * <li>The REV property defined in RFC 2426 sec. 3.6.4 doesn't have any direct equivalent in NCO, therefore
+ * nie:contentLastModified is used.</li>
+ * <li>NCO doesn't allow to preserve the order of the additional names, so this crawler discards that order.
+ * Every additional name receives a separate nco:nameAdditional triple and the triples themselves are
+ * unordered by definition.</li>
+ * <li>The above consideration also applies to nicknames. Nicknames can be ordered in the vcard but they are
+ * left unordered in the rdf data extracted from it.</li>
+ * <li>The ORG type in the vcard can specify an entity within an organization at an arbitrary level of nesting.
+ * E.g a team within a project, within a department, within a division, within a company within a corporation.
+ * NCO only allows for a single nco:department property of the affiliation, therefore supporting only a single
+ * level of nesting. If more than one organizational unit is specified in the ORG element, the information about
+ * which unit is nested within which is lost, all units are recorded in the rdf at the same level with separate
+ * nco:department triples attached to the affiliation resource.
+ * </li>
+ * <li>Other elements of the vcard specification that aren't supported by NCO: (they are supported by JPIM)
+ * <ul>
+ * <li>ACCESS</li>
+ * <li>CATEGORY</li>
+ * <li>LABEL</li>
+ * <li>extended elements</li>
+ * </ul>
+ * </li>
  * </ul>
  * <p>
  * <b>URIs for VCARDS</b><br/><br/> This crawler uses following conventions to generate URIS:
@@ -111,6 +134,9 @@ public class VcardSubCrawler implements SubCrawler {
         }
     }
 
+    /**
+     * @see SubCrawler#stopSubCrawler()
+     */
     public void stopSubCrawler() {
     // hehe, not supported (yet)
     }
@@ -183,6 +209,9 @@ public class VcardSubCrawler implements SubCrawler {
         }
         addDateProperty(model, contactResource, NCO.birthDate, personalIdentity.getBirthDate());
         addStringProperty(model, contactResource, NCO.nameGiven, personalIdentity.getFirstname());
+        for (int i = 0; i < personalIdentity.getAdditionalNameCount(); i++) {
+            model.addStatement(contactResource, NCO.nameAdditional, personalIdentity.getAdditionalName(i));
+        }
         addStringProperty(model, contactResource, NCO.nameFamily, personalIdentity.getLastname());
         for (int i = 0; i < personalIdentity.getNicknameCount(); i++) {
             model.addStatement(contactResource, NCO.nickname, personalIdentity.getNickname(i));
@@ -271,7 +300,6 @@ public class VcardSubCrawler implements SubCrawler {
         addStringProperty(model, contactResource, NCO.contactUID, contact.getUID());
         addUriProperty(model, contactResource, NCO.url, contact.getURL());
         addStringProperty(model, contactResource, NCO.note, contact.getNote());
-        
         addDateTimeProperty(model, contactResource, NIE.contentLastModified, contact.getCurrentRevisionDate());
 
         // and a list of the getters of Contact that are not supported by NCO
