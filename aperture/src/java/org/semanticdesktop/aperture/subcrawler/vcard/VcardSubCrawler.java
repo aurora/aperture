@@ -271,6 +271,7 @@ public class VcardSubCrawler implements SubCrawler {
         addStringProperty(model, contactResource, NCO.contactUID, contact.getUID());
         addUriProperty(model, contactResource, NCO.url, contact.getURL());
         addStringProperty(model, contactResource, NCO.note, contact.getNote());
+        
         addDateTimeProperty(model, contactResource, NIE.contentLastModified, contact.getCurrentRevisionDate());
 
         // and a list of the getters of Contact that are not supported by NCO
@@ -531,7 +532,9 @@ public class VcardSubCrawler implements SubCrawler {
     private void addDateTimeProperty(Model model, Resource resource, URI property, Date date) {
         if (date != null) {
             String dateString = DateUtil.dateTime2String(date);
-            model.addStatement(resource, property, model.createDatatypeLiteral(dateString, XSD._dateTime));
+            // note the + "Z" part, there are no timezones in VCARD and all timestamps are
+            // in UTC
+            model.addStatement(resource, property, model.createDatatypeLiteral(dateString + "Z", XSD._dateTime));
         }
     }
 
