@@ -7,10 +7,12 @@
 package org.semanticdesktop.aperture.crawler.mbox;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.Enumeration;
 import java.util.Properties;
 
 import javax.mail.Folder;
+import javax.mail.Header;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -26,14 +28,12 @@ import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.mail.AbstractJavaMailCrawler;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.mbox.MboxDataSource;
-import org.semanticdesktop.aperture.util.HttpClientUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-
 /**
- * A Combined Crawler and DataAccessor implementation for IMAP.
+ * A crawler implementation for mbox files.
  */
 @SuppressWarnings("unchecked")
 public class MboxCrawler extends AbstractJavaMailCrawler {
@@ -41,8 +41,6 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
     private static final String MBOX_URL_SCHEME = "mbox:";
     
     private static final String MSTOR_PROVIDER_PATH_PREFX = "mstor:";
-    
-    private static final String NEXT_UID_KEY = "nextuid";
 
     private static final String SIZE_KEY = "size";
 
@@ -173,7 +171,7 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
         if (store == null) {
             Properties properties = new Properties();
             properties.put(CapabilityHints.KEY_METADATA, CapabilityHints.VALUE_METADATA_DISABLED);
-            Session session = Session.getDefaultInstance(new Properties());
+            Session session = Session.getDefaultInstance(properties);
             store = session.getStore(new URLName(mboxStoreUri));
         }
 
@@ -188,7 +186,7 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
      * returned FileDataObjects may no longer be accessible. Invoking this method when no connections are open
      * has no effect.
      */
-    public void closeConnection() {
+    private void closeConnection() {
         if (store != null && store.isConnected()) {
             try {
                 store.close();
@@ -294,62 +292,19 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
     
     private String getFolderURIPrefix(Folder folder) throws MessagingException {
         StringBuilder buffer = new StringBuilder(100);
-        URLName url = store.getURLName();
 
-        // start with protocol
-        // don't use url.getProtocol or your urls may start with "imaps://"
+        // start with 'scheme'
         buffer.append(MBOX_URL_SCHEME);
-
-        // append host and username
-        String username = url.getUsername();
-        if (username != null && !username.equals("")) {
-            username = HttpClientUtil.formUrlEncode(username);
-            buffer.append(username);
-            buffer.append('@');
-        }
-        buffer.append(url.getHost());
 
         // append path
         buffer.append('/');
-        buffer.append(encodeFolderName(folder.getFullName()));
+        buffer.append(encodeFolderPath(folder.getFullName()));
 
         return buffer.toString();
     }
 
-    /**
-     * Returns the name of the folder with the given URL
-     * @param url the url of the folder
-     * @return the name of the folder with the given URL
-     */
-    public static String getFolderName(String url) {
-        if (!url.startsWith(MBOX_URL_SCHEME)) {
-            return null;
-        }
-
-        int firstIndex = url.indexOf('/', 7);
-        int lastIndex = url.endsWith(";TYPE=LIST") ? url.lastIndexOf(';') : url.lastIndexOf('/');
-
-        if (firstIndex >= 0 && lastIndex > firstIndex) {
-            String substring = url.substring(firstIndex + 1, lastIndex);
-            try {
-                return URLDecoder.decode(substring, "UTF-8");
-            }
-            catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        else {
-            return null;
-        }
-    }
-
-    /** 
-     * Does the same as HttpClientUtil.formUrlEncode (i.e. RFC 1738) except for encoding the slash,
-     * which should not be encoded according to RFC 2192.
-     * @param string the string to be encoded
-     * @return the encoded folder name
-     */
-    public static String encodeFolderName(String string) {
+    
+    private String encodeFolderPath(String string) {
         int length = string.length();
         StringBuilder buffer = new StringBuilder(length + 10);
 
@@ -366,9 +321,12 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
             else {
                 int cInt = c;
                 if (cInt >= 48 && cInt <= 57 || cInt >= 65 && cInt <= 90 || cInt >= 97 && cInt <= 122
-                        || cInt == 46) {
-                    // alphanumeric character or slash
+                        || cInt == '/' || cInt == ':' || cInt == '.') {
+                    // alphanumeric character or slash or colon or dot
                     buffer.append(c);
+                } else if (cInt == '\\'){
+                    // convert backslashes to slashes
+                    buffer.append('/');
                 }
                 else {
                     // escape all non-alphanumerics
@@ -390,11 +348,45 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
     
     @Override
     protected URI getFolderURI(Folder folder) throws MessagingException {
-        return new URIImpl(getFolderURIPrefix(folder) + ";TYPE=LIST");
+        return new URIImpl(getFolderURIPrefix(folder));
     }
     
     @Override
-    protected String getMessageUri(Folder folder, long messageId) throws MessagingException{
-        return getFolderURIPrefix(folder) + "/;UID=" + messageId;
+    protected String getMessageUri(Folder folder, Message message) throws MessagingException{
+        String [] messageIds = message.getHeader("Message-ID");
+        String id = null;
+        if (messageIds != null && messageIds.length > 0) {
+            id = messageIds[0];
+            if (id.startsWith("<")) {
+                id = id.substring(1);
+            }
+            if (id.endsWith(">")) {
+                id = id.substring(0,id.length() - 1);
+            }
+            try {
+                id = URLEncoder.encode(id, "UTF-8");
+            }
+            catch (UnsupportedEncodingException e) {
+                // this obviously won't happen
+            }
+        } else {
+            /*
+             * This is insane, but you never know...
+             */
+            StringBuilder builder = new StringBuilder();
+            Enumeration enumeration = message.getAllHeaders();
+            /*
+             * This obviously depends on the headers being returned in the same
+             * order every time the message is read. Let's hope this is actually
+             * the case, didn't actually test it.
+             */
+            while (enumeration.hasMoreElements()) {
+                Header header = (Header)enumeration.nextElement();
+                builder.append(header.getName());
+                builder.append(header.getValue());
+            }
+            id = String.valueOf(builder.toString().hashCode());
+        }
+        return getFolderURIPrefix(folder) + "/" + id;
     }
 }
