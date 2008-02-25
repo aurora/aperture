@@ -576,8 +576,8 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
     }
     
     @Override
-    protected String getMessageUri(Folder folder, long messageId) throws MessagingException{
-        return getFolderURIPrefix(folder) + "/;UID=" + messageId;
+    protected String getMessageUri(Folder folder, Message message) throws MessagingException{
+        return getFolderURIPrefix(folder) + "/;UID=" + ((UIDFolder)folder).getUID(message);
     }
 
    

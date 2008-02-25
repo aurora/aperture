@@ -86,7 +86,7 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
     
     protected abstract URI getFolderURI(Folder folder) throws MessagingException;
 
-    protected abstract String getMessageUri(Folder folder, long messageId) throws MessagingException;
+    protected abstract String getMessageUri(Folder folder, Message message) throws MessagingException;
 
     protected abstract void recordFolderInAccessData(Folder folder, String url, AccessData newAccessData,
             Message[] messages) throws MessagingException;
@@ -246,7 +246,7 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
                 long messageID = getMessageUid(folder, message);
 
                 // determine the uri
-                String uri = getMessageUri(folder, messageID);
+                String uri = getMessageUri(folder, message);
 
                 // remove this URI from the set of deprecated children
                 deprecatedChildren.remove(uri);
@@ -266,7 +266,7 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
                         accessData.removeReferredID(folderUriString, uri);
                     }
                     else {
-                        reportNotModified(getMessageUri(folder, messageID));
+                        reportNotModified(getMessageUri(folder, message));
                     }
                 }
             }
@@ -296,7 +296,7 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
         for (int i = 0; i < messages.length && !isStopRequested(); i++) {
             MimeMessage message = (MimeMessage) messages[i];
             long messageID = getMessageUid(folder, message);
-            String uri = getMessageUri(folder, messageID);
+            String uri = getMessageUri(folder, message);
 
             try {
                 if (inDomain(uri)) {
@@ -593,7 +593,7 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
                 if (isAcceptable(message)) {
                     long messageID = getMessageUid(imapFolder, message); 
                     try {
-                        URI messageURI = metadata.getModel().createURI(getMessageUri(folder,messageID));
+                        URI messageURI = metadata.getModel().createURI(getMessageUri(folder,message));
                         metadata.getModel().addStatement(messageURI, NIE.isPartOf, folderURI);
                         // This is needed to satiate the validator, otherwise if an email falls beyond
                         // the domain boundaries, the validator will complain about the missing type triple
