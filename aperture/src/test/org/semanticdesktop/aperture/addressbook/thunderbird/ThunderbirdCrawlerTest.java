@@ -82,7 +82,7 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
 		
 		// test serialisation and parsing
 		StringWriter xml=new StringWriter();
-		model.writeTo(xml,Syntax.RdfXml);
+		//model.writeTo(xml,Syntax.RdfXml);
 
         validate(
             model,

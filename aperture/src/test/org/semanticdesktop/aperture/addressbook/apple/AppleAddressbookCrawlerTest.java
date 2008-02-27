@@ -57,7 +57,7 @@ public class AppleAddressbookCrawlerTest extends ApertureTestBase implements Cra
         assertEquals("Crawling must have succeeded.", code, ExitCode.COMPLETED);
 
         System.err.println("Objects crawler: " + objects);
-        model.writeTo(new PrintWriter(System.out), Syntax.RdfXml);
+        //model.writeTo(new PrintWriter(System.out), Syntax.RdfXml);
 
         model.close();
     }

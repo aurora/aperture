@@ -263,7 +263,7 @@ public class VcardSubCrawlerTest extends ApertureTestBase {
         Model model = metadata.getModel();
         Resource dirkContact = findContact(model, "Dirk");
         assertSingleValueProperty(model, dirkContact, NCO.note, "The canonical Dirk\r\n");
-        model.writeTo(System.out);
+        //model.writeTo(System.out);
         validate(metadata);
         metadata.dispose();
         metadata = null;

@@ -85,7 +85,6 @@ public class TestMboxCrawler extends ApertureTestBase {
         crawler.crawl();
 
         Model model = crawlerHandler.getModel();
-        model.writeTo(System.out);
         validate(model,true,configuration.getDescribedUri(),(ModelTester)null);
         model.close();
         configuration.getModel().close();
