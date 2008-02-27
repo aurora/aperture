@@ -241,6 +241,8 @@ public class DataObjectFactory {
                     // happens on unencoded file names! so just ignore it and leave the file name as it is
                 }
                 result.put(NFO.fileName, fileName);
+                // everything that has a file name is an attachment
+                result.put(RDF.type, NFO.Attachment);
             }
         }
 
@@ -267,6 +269,7 @@ public class DataObjectFactory {
             addContactArrayIfNotNull(NMO.to, message.getRecipients(RecipientType.TO), result);
             addContactArrayIfNotNull(NMO.cc, message.getRecipients(RecipientType.CC), result);
             addContactArrayIfNotNull(NMO.bcc, message.getRecipients(RecipientType.BCC), result);
+            result.put(RDF.type, NMO.Email);
 
             if (message instanceof MimeMessage) {
                 MimeMessage mimeMessage = (MimeMessage) message;
@@ -277,7 +280,18 @@ public class DataObjectFactory {
             // this is most likely an attachment: set the InputStream's mime type as the data object's
             // primary MIME type
             result.put(NIE.mimeType, mimeType);
-            result.put(RDF.type, NFO.Attachment);
+            // originally this line treated all parts of a multipart message as attachments, this is wrong
+            // that's why i (Antoni Mylka) commented this line out on 27.02.2008, giving attachments an
+            // rdf:type of nmo:MimeEntity is clearly correct for message maprts and for attachments,
+            // the entire idea of creating a hashmap from a message part is insufficient in this respect
+            // this issue will need to be resolved when this class is rewritten to allow for a mail part
+            // to have multiple types
+            //result.put(RDF.type, NFO.Attachment);
+            if (result.get(RDF.type) == null) {
+                // the part may already have a type, e.g. the attachments are marked as attachments
+                // if the part has a fileName, see above
+                result.put(RDF.type, NMO.MimeEntity);
+            }
         }
 
         // done!
@@ -660,6 +674,11 @@ public class DataObjectFactory {
         copyAddresses(NMO.bcc, dataObjectHashMap, metadata);
         
         copyUri(RDF.type, dataObjectHashMap, metadata);
+        
+        // a really crappy workaround, the hashmap allows the mail types to have only one type
+        // this means, that attachments can be marked as attachments, but thay can't be marked
+        // as MimeEntities, therefore we always add the RDF.type NMO.MimeEntity at this point
+        metadata.add(RDF.type, NMO.MimeEntity);
 
         // repeat recursively on children
         ArrayList children = (ArrayList) dataObjectHashMap.get(CHILDREN_KEY);
