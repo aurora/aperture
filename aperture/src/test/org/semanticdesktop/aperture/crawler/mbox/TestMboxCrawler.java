@@ -20,10 +20,12 @@ import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.ApertureTestBase;
+import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.FolderDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
+import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
 import org.semanticdesktop.aperture.accessor.file.FileAccessorFactory;
 import org.semanticdesktop.aperture.accessor.impl.DataAccessorRegistryImpl;
 import org.semanticdesktop.aperture.crawler.Crawler;
@@ -48,48 +50,112 @@ import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTest
 
 public class TestMboxCrawler extends ApertureTestBase {
 
+    private RDFContainer configuration = null;
+    
+    public void setUp() {
+        configuration = createRDFContainer("urn:dummy:source");
+    }
+    
+    public void tearDown() {
+        configuration.getModel().close();
+        configuration = null;
+    }
     /**
      * This tests if a crawler crawls a file and what messages have been extracted from it.
      * @throws ModelException
      */
     public void testCrawler() throws Exception {
-        // create a DataSource
-        RDFContainer configuration = createRDFContainer("urn:test:dummySource");
+        MboxTestIncrementalCrawlerHandler crawlerHandler = crawl("mbox-aperture-dev",null, null);
+        Model model = crawlerHandler.getModel();
+        assertNewModUnmodDel(crawlerHandler, 139, 0, 0, 0);
+        validate(model);
+        model.close();
+    }
+    
+    public void testAddedMail() throws Exception {
+        AccessData accessData = new AccessDataImpl();
+        MboxTestIncrementalCrawlerHandler handler1 = crawl("mbox-aperture-inc1",accessData, null);
+        // four mails and the mailbox, everything is new
+        assertNewModUnmodDel(handler1, 5, 0, 0, 0);
+        MboxTestIncrementalCrawlerHandler handler2 = crawl("mbox-aperture-inc2",accessData, handler1.getFile());
+        // one new mail, the mail folder has been changed, while all other four mails are unchanged 
+        assertNewModUnmodDel(handler2, 1, 1, 4, 0);
+    }
+    
+    public void testDeletedMail() throws Exception {
+        AccessData accessData = new AccessDataImpl();
+        MboxTestIncrementalCrawlerHandler handler1 = crawl("mbox-aperture-inc1",accessData, null);
+        // four mails and the mailbox, everything is new
+        assertNewModUnmodDel(handler1, 5, 0, 0, 0);
+        MboxTestIncrementalCrawlerHandler handler2 = crawl("mbox-aperture-inc3",accessData, handler1.getFile());
+        // no new mails, the mail folder has been changed, three unchanged emails and one deleted email 
+        assertNewModUnmodDel(handler2, 0, 1, 3, 1);
+    }
+    
+    public void testModifiedMail() throws Exception {
+        AccessData accessData = new AccessDataImpl();
+        MboxTestIncrementalCrawlerHandler handler1 = crawl("mbox-aperture-inc1",accessData, null);
+        // four mails and the mailbox, everything is new
+        assertNewModUnmodDel(handler1, 5, 0, 0, 0);
+        MboxTestIncrementalCrawlerHandler handler2 = crawl("mbox-aperture-inc4",accessData, handler1.getFile());
+        // the crawler doesn't detect changes in emails, the email that has been changed is reported
+        // as a new one, while the old one has been deleted
+        // one new, the mailbox has been modified, 3 unchanged and 1 deleted
+        assertNewModUnmodDel(handler2, 1, 1, 3, 1);
+    }
+    
+    public void testMaximumSize() throws Exception {
+        MboxTestIncrementalCrawlerHandler handler1 = crawl("mbox-testfolder",null, null);
+        // no size restriction, it should find the mailbox, two emails and two attachments
+        assertNewModUnmodDel(handler1, 5, 0, 0, 0);
+        MboxTestIncrementalCrawlerHandler handler2 = crawl("mbox-testfolder",null, null, 25000);
+        // this size restriction should cut out the bigger attachment, together with the email but not the smaller one
+        // this behavior is due to the fact that part.getSize() in javamail returns the size of the
+        // entire part, together with the content, that's the way it is...
+        assertNewModUnmodDel(handler2, 3, 0, 0, 0);
+        MboxTestIncrementalCrawlerHandler handler3 = crawl("mbox-testfolder",null, null, 20);
+        // only the mailbox is returned, all other four dataobjects should be filtered out
+        assertNewModUnmodDel(handler3, 1, 0, 0, 0);
+    }
+  
+    private void assertNewModUnmodDel(MboxTestIncrementalCrawlerHandler handler, int newObjects,
+            int changedObjects, int unchangedObjects, int deletedObjects) {
+        assertEquals(handler.getNewObjects().size(), newObjects);
+        assertEquals(handler.getChangedObjects().size(), changedObjects);
+        assertEquals(handler.getUnchangedObjects().size(), unchangedObjects);
+        assertEquals(handler.getDeletedObjects().size(), deletedObjects);
+    }
+    
+    private MboxTestIncrementalCrawlerHandler crawl(String fileName, AccessData data, File oldTempFile) throws Exception {
+        return crawl(fileName, data, oldTempFile, -1);
+    }
+    
+    private MboxTestIncrementalCrawlerHandler crawl(String fileName, AccessData data, File oldTempFile, int maxSize) throws Exception {
         MboxDataSource dataSource = new MboxDataSource();
         dataSource.setConfiguration(configuration);
         
-        InputStream stream = ResourceUtil.getInputStream(DOCS_PATH + 
-            "mbox-aperture-dev", this.getClass());
+        InputStream stream = ResourceUtil.getInputStream(DOCS_PATH + fileName, this.getClass());
         
-        File file = createTempFile(stream, null);
+        File newTempFile = createTempFile(stream, oldTempFile);
         
-        
-        dataSource.setMboxPath(file.getAbsolutePath());
-
-        // configuration.getModel().writeTo(new PrintWriter(System.out),Syntax.Trix);
+        dataSource.setMboxPath(newTempFile.getAbsolutePath());
+        if (maxSize > 0) {
+            dataSource.setMaximumSize((long)maxSize);
+        }
 
         // create a Crawler for this DataSource
         MboxCrawler crawler = new MboxCrawler();
         crawler.setDataSource(dataSource);
-
-        // setup a DataAccessorRegistry
-        // DataAccessorRegistryImpl registry = new DataAccessorRegistryImpl();
-        // registry.add(new FileAccessorFactory());
-        // crawler.setDataAccessorRegistry(registry);
-
+        crawler.setAccessData(data);
         // setup a CrawlerHandler
-        SimpleCrawlerHandler crawlerHandler = new SimpleCrawlerHandler();
+        MboxTestIncrementalCrawlerHandler crawlerHandler = new MboxTestIncrementalCrawlerHandler(newTempFile);
         crawler.setCrawlerHandler(crawlerHandler);
 
         // start Crawling
         crawler.crawl();
-
-        Model model = crawlerHandler.getModel();
-        validate(model,true,configuration.getDescribedUri(),(ModelTester)null);
-        model.close();
-        configuration.getModel().close();
+        return crawlerHandler;
     }
-  
+    
     /**
      * This tests if the folder exclusion (domain boundaries) works.
      */
@@ -171,84 +237,5 @@ public class TestMboxCrawler extends ApertureTestBase {
 
     private URI toURI(File file) {
         return URIImpl.createURIWithoutChecking(file.toURI().toString());
-    }
-
-    private class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
-
-        private Model model;
-
-        private int objectCount;
-
-        private RDFContainer lastContainer;
-
-        public SimpleCrawlerHandler() throws ModelException {
-            model = createModel();
-            objectCount = 0;
-        }
-
-        public Model getModel() {
-            return model;
-        }
-
-        public int getObjectCount() {
-            return objectCount;
-        }
-
-        public void crawlStarted(Crawler crawler) {
-        // no-op
-        }
-
-        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-            assertEquals(ExitCode.COMPLETED, exitCode);
-            // note: Model closed externally, not here
-        }
-
-        public void accessingObject(Crawler crawler, String url) {
-        // no-op
-        }
-
-        public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
-            return this;
-        }
-
-        public RDFContainer getRDFContainer(URI uri) {
-            RDFContainer container = new RDFContainerImpl(model, uri, true);
-            lastContainer = container;
-            return container;
-        }
-
-        public void objectNew(Crawler dataCrawler, DataObject object) {
-            objectCount++;
-
-            assertNotNull(object);
-            //assertSame(lastContainer, object.getMetadata());
-
-            object.dispose();
-        }
-
-        public void objectChanged(Crawler dataCrawler, DataObject object) {
-            object.dispose();
-            fail();
-        }
-
-        public void objectNotModified(Crawler crawler, String url) {
-            fail();
-        }
-
-        public void objectRemoved(Crawler dataCrawler, String url) {
-            fail();
-        }
-
-        public void clearStarted(Crawler crawler) {
-            fail();
-        }
-
-        public void clearingObject(Crawler crawler, String url) {
-            fail();
-        }
-
-        public void clearFinished(Crawler crawler, ExitCode exitCode) {
-            fail();
-        }
     }
 }

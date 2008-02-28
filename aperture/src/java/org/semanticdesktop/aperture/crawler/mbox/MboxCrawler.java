@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.crawler.mbox;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Enumeration;
@@ -28,6 +29,8 @@ import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.mail.AbstractJavaMailCrawler;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.mbox.MboxDataSource;
+import org.semanticdesktop.aperture.util.IOUtil;
+import org.semanticdesktop.aperture.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -198,18 +201,9 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
     }
         
     @Override
-    protected void recordFolderInAccessData(Folder folder, String url, AccessData newAccessData, Message[] messages) throws MessagingException {
-        // register the access data of this url
-        // MStorFolder mstorFolder = (MStorFolder)folder;
-        
+    protected void recordFolderInAccessData(Folder folder, String url, AccessData newAccessData, Message[] messages) throws MessagingException {        
         if (newAccessData != null) {
             if (holdsMessages(folder)) {
-                // getUIDNext may return -1 (unknown), be careful not to store that
-//                long uidNext = imapFolder.getUIDNext();
-//                if (uidNext != -1L) {
-//                    newAccessData.put(url, NEXT_UID_KEY, String.valueOf(imapFolder.getUIDNext()));
-//                }
-
                 int messageCount = getMessageCount(messages);
                 newAccessData.put(url, SIZE_KEY, String.valueOf(messageCount));
             }
@@ -355,6 +349,14 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
     protected String getMessageUri(Folder folder, Message message) throws MessagingException{
         String [] messageIds = message.getHeader("Message-ID");
         String id = null;
+        String hash = null;
+        try {
+            hash = StringUtil.sha1Hash(IOUtil.readBytes(message.getInputStream()));
+        }
+        catch (IOException e1) {
+            throw new MessagingException("Couldn't obtain a hash of the message");
+        }
+        
         if (messageIds != null && messageIds.length > 0) {
             id = messageIds[0];
             if (id.startsWith("<")) {
@@ -387,6 +389,6 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
             }
             id = String.valueOf(builder.toString().hashCode());
         }
-        return getFolderURIPrefix(folder) + "/" + id;
+        return getFolderURIPrefix(folder) + "/" + id + "-" + hash;
     }
 }
