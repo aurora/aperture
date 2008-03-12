@@ -11,6 +11,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Date;
 
@@ -21,9 +23,9 @@ import javax.mail.internet.InternetAddress;
 import org.ontoware.rdf2go.model.node.Literal;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.util.UriUtil;
 import org.semanticdesktop.aperture.vocabulary.NCO;
 
 /**
@@ -149,7 +151,7 @@ public class MailUtil {
 
             if (hasRealValue(emailAddress)) {
                 Literal literal = metadata.getModel().createPlainLiteral(emailAddress);
-                Resource emailResource = UriUtil.generateRandomResource(metadata.getModel());
+                Resource emailResource = metadata.getModel().createURI(getEmailURI("mailto:", emailAddress));
                 metadata.getModel().addStatement(person, NCO.hasEmailAddress, emailResource);
                 metadata.getModel().addStatement(emailResource, RDF.type, NCO.EmailAddress);
                 metadata.getModel().addStatement(emailResource, NCO.emailAddress, literal);
@@ -168,15 +170,69 @@ public class MailUtil {
      *             values.
      */
     public static String getPersonURI(String email, String name) throws IllegalArgumentException {
-        if (hasRealValue(email)) {
-            return "email:" + email;
-        }
-        else if (hasRealValue(name)) {
-            return "emailperson:" + name;
+        if (hasRealValue(name)) {
+            return "emailperson:" + urlifyString(name);
+        } else if (hasRealValue(email)) {
+            return getEmailURI("emailperson:", email);
         }
         else {
             throw new IllegalArgumentException("no valid email or name, email = " + email + ", name = "
                     + name);
+        }
+    }    
+    
+    private static String getEmailURI(String prefix, String email) throws IllegalArgumentException{
+        if (hasRealValue(email)) {
+         // there are rare cases when the email addresses are completely broken, I (Antoni Mylka)
+            // had a problem with crawling mbox folders with emails sent from an e-learning portal
+            // of my school, the To: header contained addresses like:
+            // "AGH-EAIiE-KI-SR06L": ;
+            // note the quotation marks, the colon, the space and the semicolon, it's crappy and
+            // certainly is not a "realValue" for an email address, that's why I introduced this
+            // check
+            if (!isValidEmailAddress(email)) {
+                // i'd rather preserve it, it still does contain some information
+                return prefix + urlifyString(email);
+            } else {
+                return prefix + email;
+            }
+        } else {
+            throw new IllegalArgumentException("Email invalid");
+        }
+        
+    }
+    
+    /**
+     * Applies a crappy heuristic that tries to tell if the email looks like an email
+     * address or not. It has been copy-pasted from:<br/>
+     * http://forum.java.sun.com/thread.jspa?threadID=530845&start=0&tstart=0<br/>
+     * 
+     * 
+     * @param email
+     * @return
+     */
+    private static boolean isValidEmailAddress(String email) {
+         // address should must have a length of minimal 3 examp: a@b
+         if (email.length()<3) return false;
+         if (email.indexOf("@") ==-1) return false;
+         if (email.indexOf(" ") != -1) return false;
+
+         try {
+             new URIImpl("mailto:" + email, true);
+             return true;
+         } catch (Exception e) {
+             return false;
+         }
+    }
+
+    private static String urlifyString(String input) {
+        try {
+            return URLEncoder.encode(input, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e) {
+            // this won't happen because UTF-8 is a valid string, woe be to those poor souls
+            // who change this....
+            throw new RuntimeException("Really weird....",e);
         }
     }
 
