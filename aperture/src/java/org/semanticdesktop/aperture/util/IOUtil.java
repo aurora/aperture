@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.zip.Adler32;
 
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
@@ -159,6 +160,17 @@ public class IOUtil {
         }
 
         return result;
+    }
+    
+    public static String rollingHash(InputStream stream) throws IOException {
+        Adler32 adler = new Adler32();
+        adler.reset();
+        byte [] buffer = new byte[4096];
+        int bytesRead;
+        while ((bytesRead = stream.read(buffer)) != -1) {
+            adler.update(buffer, 0, bytesRead);
+        }
+        return String.valueOf(adler.getValue());
     }
 
     /**
