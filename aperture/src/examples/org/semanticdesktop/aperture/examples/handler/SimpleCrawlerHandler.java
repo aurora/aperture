@@ -6,13 +6,12 @@
  */
 package org.semanticdesktop.aperture.examples.handler;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Writer;
 import java.util.Set;
 
 import org.ontoware.rdf2go.ModelFactory;
@@ -196,12 +195,13 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         // after MIME type identification has taken place. Add some extra to the minimum array
         // length required by the MimeTypeIdentifier for safety.
         int minimumArrayLength = mimeTypeIdentifier.getMinArrayLength();
-        int bufferSize = Math.max(minimumArrayLength, 8192);
-        BufferedInputStream buffer = new BufferedInputStream(object.getContent(), bufferSize);
-        buffer.mark(minimumArrayLength + 10); // add some for safety
+        // we don't specify our own buffer size anymore, I commented this out (Antoni Mylka)
+        //int bufferSize = Math.max(minimumArrayLength, 8192);
+        InputStream contentStream = object.getContent();
+        contentStream.mark(minimumArrayLength + 10); // add some for safety
 
         // apply the MimeTypeIdentifier
-        byte[] bytes = IOUtil.readBytes(buffer, minimumArrayLength);
+        byte[] bytes = IOUtil.readBytes(contentStream, minimumArrayLength);
         String mimeType = mimeTypeIdentifier.identify(bytes, null, id);
 
         if (mimeType != null) {
@@ -211,14 +211,14 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
 
             
             if (extractingContents) {
-                buffer.reset();
+                contentStream.reset();
                 
                 // apply an Extractor if available
                 Set extractors = extractorRegistry.get(mimeType);
                 if (!extractors.isEmpty()) {
                     ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
                     Extractor extractor = factory.get();
-                    extractor.extract(id, buffer, null, mimeType, metadata);
+                    extractor.extract(id, contentStream, null, mimeType, metadata);
                 }
                 
                 // else try to apply a FileExtractor
