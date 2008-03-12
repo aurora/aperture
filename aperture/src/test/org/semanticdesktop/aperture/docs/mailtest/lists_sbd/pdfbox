@@ -1,0 +1,1739 @@
+From - Tue Feb 12 23:35:13 2008
+X-Account-Key: account2
+X-UIDL: GmailId1180f3ef1cc81a28
+X-Mozilla-Status: 0001
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Received: by 10.78.167.3 with HTTP; Tue, 12 Feb 2008 12:03:46 -0800 (PST)
+Message-ID: <97d19f3c0802121203m245fdeefhdb61619241d6441f@mail.gmail.com>
+Date: Tue, 12 Feb 2008 21:03:46 +0100
+From: "Antoni Mylka" <antoni.mylka@gmail.com>
+To: pdfbox-dev-subscribe@incubator.apache.org
+Subject: subscribe
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+Delivered-To: antoni.mylka@gmail.com
+
+c3Vic2NyaWJlIG1lCi0tIApBbnRvbmkgTXmza2EKYW50b25pLm15bGthQGdtYWlsLmNvbQo=
+
+From - Tue Feb 12 23:35:14 2008
+X-Account-Key: account2
+X-UIDL: GmailId1180f3f6de57ef4f
+X-Mozilla-Status: 0001
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Delivered-To: antoni.mylka@gmail.com
+Received: by 10.78.167.3 with SMTP id p3cs593660hue;
+        Tue, 12 Feb 2008 12:04:19 -0800 (PST)
+Received: by 10.140.126.14 with SMTP id y14mr1253609rvc.59.1202846657934;
+        Tue, 12 Feb 2008 12:04:17 -0800 (PST)
+Return-Path: <pdfbox-dev-return-@incubator.apache.org>
+Received: from mail.apache.org (hermes.apache.org [140.211.11.2])
+        by mx.google.com with SMTP id k14si1489022rvb.6.2008.02.12.12.04.17;
+        Tue, 12 Feb 2008 12:04:17 -0800 (PST)
+Received-SPF: pass (google.com: domain of pdfbox-dev-return-@incubator.apache.org designates 140.211.11.2 as permitted sender) client-ip=140.211.11.2;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of pdfbox-dev-return-@incubator.apache.org designates 140.211.11.2 as permitted sender) smtp.mail=pdfbox-dev-return-@incubator.apache.org
+Received: (qmail 58696 invoked by uid 500); 12 Feb 2008 20:04:11 -0000
+Mailing-List: contact pdfbox-dev-help@incubator.apache.org; run by ezmlm
+List-Help: <mailto:pdfbox-dev-help@incubator.apache.org>
+List-Post: <mailto:pdfbox-dev@incubator.apache.org>
+List-Subscribe: <mailto:pdfbox-dev-subscribe@incubator.apache.org>
+Date: 12 Feb 2008 20:04:11 -0000
+Message-ID: <1202846651.58695.ezmlm@incubator.apache.org>
+From: pdfbox-dev-help@incubator.apache.org
+To: antoni.mylka@gmail.com
+Delivered-To: responder for pdfbox-dev@incubator.apache.org
+Received: (qmail 58684 invoked by uid 99); 12 Feb 2008 20:04:11 -0000
+Received: from athena.apache.org (HELO athena.apache.org) (140.211.11.136)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Tue, 12 Feb 2008 12:04:11 -0800
+Received: from [64.233.182.186] (HELO nf-out-0910.google.com) (64.233.182.186)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Tue, 12 Feb 2008 20:03:40 +0000
+Received: by nf-out-0910.google.com with SMTP id k4so1460494nfd.40
+        for <pdfbox-dev-subscribe@incubator.apache.org>; Tue, 12 Feb 2008 12:03:46 -0800 (PST)
+Received: by 10.78.107.8 with SMTP id f8mr3275076huc.40.1202846626232;
+        Tue, 12 Feb 2008 12:03:46 -0800 (PST)
+Received: by 10.78.167.3 with HTTP; Tue, 12 Feb 2008 12:03:46 -0800 (PST)
+MIME-Version: 1.0
+Content-type: text/plain; charset=us-ascii
+Reply-To: pdfbox-dev-sc.1202846651.hkgimjpfchplggjcdbcp-antoni.mylka=gmail.com@incubator.apache.org
+Subject: confirm subscribe to pdfbox-dev@incubator.apache.org
+
+Hi! This is the ezmlm program. I'm managing the
+pdfbox-dev@incubator.apache.org mailing list.
+
+I'm working for my owner, who can be reached
+at pdfbox-dev-owner@incubator.apache.org.
+
+To confirm that you would like
+
+   antoni.mylka@gmail.com
+
+added to the pdfbox-dev mailing list, please send
+a short reply to this address:
+
+   pdfbox-dev-sc.1202846651.hkgimjpfchplggjcdbcp-antoni.mylka=gmail.com@incubator.apache.org
+
+Usually, this happens when you just hit the "reply" button.
+If this does not work, simply copy the address and paste it into
+the "To:" field of a new message.
+
+or click here:
+	mailto:pdfbox-dev-sc.1202846651.hkgimjpfchplggjcdbcp-antoni.mylka=gmail.com@incubator.apache.org
+
+This confirmation serves two purposes. First, it verifies that I am able
+to get mail through to you. Second, it protects you in case someone
+forges a subscription request in your name.
+
+Some mail programs are broken and cannot handle long addresses. If you
+cannot reply to this request, instead send a message to
+<pdfbox-dev-request@incubator.apache.org> and put the
+entire address listed above into the "Subject:" line.
+
+
+--- Administrative commands for the pdfbox-dev list ---
+
+I can handle administrative requests automatically. Please
+do not send them to the list address! Instead, send
+your message to the correct command address:
+
+To subscribe to the list, send a message to:
+   <pdfbox-dev-subscribe@incubator.apache.org>
+
+To remove your address from the list, send a message to:
+   <pdfbox-dev-unsubscribe@incubator.apache.org>
+
+Send mail to the following for info and FAQ for this list:
+   <pdfbox-dev-info@incubator.apache.org>
+   <pdfbox-dev-faq@incubator.apache.org>
+
+Similar addresses exist for the digest list:
+   <pdfbox-dev-digest-subscribe@incubator.apache.org>
+   <pdfbox-dev-digest-unsubscribe@incubator.apache.org>
+
+To get messages 123 through 145 (a maximum of 100 per request), mail:
+   <pdfbox-dev-get.123_145@incubator.apache.org>
+
+To get an index with subject and author for messages 123-456 , mail:
+   <pdfbox-dev-index.123_456@incubator.apache.org>
+
+They are always returned as sets of 100, max 2000 per request,
+so you'll actually get 100-499.
+
+To receive all messages with the same subject as message 12345,
+send a short message to:
+   <pdfbox-dev-thread.12345@incubator.apache.org>
+
+The messages should contain one line or word of text to avoid being
+treated as sp@m, but I will ignore their content.
+Only the ADDRESS you send to is important.
+
+You can start a subscription for an alternate address,
+for example "john@host.domain", just add a hyphen and your
+address (with '=' instead of '@') after the command word:
+<pdfbox-dev-subscribe-john=host.domain@incubator.apache.org>
+
+To stop subscription for this address, mail:
+<pdfbox-dev-unsubscribe-john=host.domain@incubator.apache.org>
+
+In both cases, I'll send a confirmation message to that address. When
+you receive it, simply reply to it to complete your subscription.
+
+If despite following these instructions, you do not get the
+desired results, please contact my owner at
+pdfbox-dev-owner@incubator.apache.org. Please be patient, my owner is a
+lot slower than I am ;-)
+
+--- Enclosed is a copy of the request I received.
+
+Return-Path: <antoni.mylka@gmail.com>
+Received: (qmail 58684 invoked by uid 99); 12 Feb 2008 20:04:11 -0000
+Received: from athena.apache.org (HELO athena.apache.org) (140.211.11.136)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Tue, 12 Feb 2008 12:04:11 -0800
+X-ASF-Spam-Status: No, hits=-1.0 required=10.0
+	tests=ASF_LIST_OPS,SPF_PASS
+X-Spam-Check-By: apache.org
+Received-SPF: pass (athena.apache.org: domain of antoni.mylka@gmail.com designates 64.233.182.186 as permitted sender)
+Received: from [64.233.182.186] (HELO nf-out-0910.google.com) (64.233.182.186)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Tue, 12 Feb 2008 20:03:40 +0000
+Received: by nf-out-0910.google.com with SMTP id k4so1460494nfd.40
+        for <pdfbox-dev-subscribe@incubator.apache.org>; Tue, 12 Feb 2008 12:03:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:message-id:date:from:to:subject:mime-version:content-type:content-transfer-encoding:content-disposition;
+        bh=sqeI3Cxk6ssVokuC/1AVayTBE/HYCmxkPJAzExxUuXA=;
+        b=sdpfaR5gB5etnA3Js/f3ydNh+MLJlJMysMMiHrlU8/lM2LKpLrr+6THAv5SGnTcD64nvSkw42OYv0n8LmEpll4p3mNbMhRS53TET40oSdhi2ad7KO20xn1NelX+UvWWM6BZCqbdR3VgjSFhtZ9J+iXHHz8qf+CIbShuacde+Ezw=
+DomainKey-Signature: a=rsa-sha1; c=nofws;
+        d=gmail.com; s=gamma;
+        h=message-id:date:from:to:subject:mime-version:content-type:content-transfer-encoding:content-disposition;
+        b=GgogbONObF9y2N1E+PATmpPDKAiO6g4OCTjZYWJtvxm850tIa8+2f0WCb7UBZnjhOC6v0pOJHXU81rPWhLfbUVC3yzjVz9d7t+j7IQ+RwLgxH5NCFvTs6cYI8yRfdkTC40sg9852EiPkHW7UszLk0cJWD4m9Hb26LIbfwAM5IPI=
+Received: by 10.78.107.8 with SMTP id f8mr3275076huc.40.1202846626232;
+        Tue, 12 Feb 2008 12:03:46 -0800 (PST)
+Received: by 10.78.167.3 with HTTP; Tue, 12 Feb 2008 12:03:46 -0800 (PST)
+Message-ID: <97d19f3c0802121203m245fdeefhdb61619241d6441f@mail.gmail.com>
+Date: Tue, 12 Feb 2008 21:03:46 +0100
+From: "Antoni Mylka" <antoni.mylka@gmail.com>
+To: pdfbox-dev-subscribe@incubator.apache.org
+Subject: subscribe
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+X-Virus-Checked: Checked by ClamAV on apache.org
+
+c3Vic2NyaWJlIG1lCi0tIApBbnRvbmkgTXmza2EKYW50b25pLm15bGthQGdtYWlsLmNvbQo=
+
+From - Tue Feb 12 23:35:14 2008
+X-Account-Key: account2
+X-UIDL: GmailId1180f3ffc06d8c54
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Received: by 10.78.167.3 with HTTP; Tue, 12 Feb 2008 12:04:54 -0800 (PST)
+Message-ID: <97d19f3c0802121204r627d42bm33f117a6ca5a7d96@mail.gmail.com>
+Date: Tue, 12 Feb 2008 21:04:54 +0100
+From: "Antoni Mylka" <antoni.mylka@gmail.com>
+To: pdfbox-dev-sc.1202846651.hkgimjpfchplggjcdbcp-antoni.mylka=gmail.com@incubator.apache.org
+Subject: Re: confirm subscribe to pdfbox-dev@incubator.apache.org
+In-Reply-To: <1202846651.58695.ezmlm@incubator.apache.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+References: <1202846651.58695.ezmlm@incubator.apache.org>
+Delivered-To: antoni.mylka@gmail.com
+
+b2sKCjEyIEZlYiAyMDA4IDIwOjA0OjExIC0wMDAwLCBwZGZib3gtZGV2LWhlbHBAaW5jdWJhdG9y
+LmFwYWNoZS5vcmcKPHBkZmJveC1kZXYtaGVscEBpbmN1YmF0b3IuYXBhY2hlLm9yZz46Cj4gSGkh
+IFRoaXMgaXMgdGhlIGV6bWxtIHByb2dyYW0uIEknbSBtYW5hZ2luZyB0aGUKPiBwZGZib3gtZGV2
+QGluY3ViYXRvci5hcGFjaGUub3JnIG1haWxpbmcgbGlzdC4KPgo+IEknbSB3b3JraW5nIGZvciBt
+eSBvd25lciwgd2hvIGNhbiBiZSByZWFjaGVkCj4gYXQgcGRmYm94LWRldi1vd25lckBpbmN1YmF0
+b3IuYXBhY2hlLm9yZy4KPgo+IFRvIGNvbmZpcm0gdGhhdCB5b3Ugd291bGQgbGlrZQo+Cj4gICAg
+YW50b25pLm15bGthQGdtYWlsLmNvbQo+Cj4gYWRkZWQgdG8gdGhlIHBkZmJveC1kZXYgbWFpbGlu
+ZyBsaXN0LCBwbGVhc2Ugc2VuZAo+IGEgc2hvcnQgcmVwbHkgdG8gdGhpcyBhZGRyZXNzOgo+Cj4g
+ICAgcGRmYm94LWRldi1zYy4xMjAyODQ2NjUxLmhrZ2ltanBmY2hwbGdnamNkYmNwLWFudG9uaS5t
+eWxrYT1nbWFpbC5jb21AaW5jdWJhdG9yLmFwYWNoZS5vcmcKPgo+IFVzdWFsbHksIHRoaXMgaGFw
+cGVucyB3aGVuIHlvdSBqdXN0IGhpdCB0aGUgInJlcGx5IiBidXR0b24uCj4gSWYgdGhpcyBkb2Vz
+IG5vdCB3b3JrLCBzaW1wbHkgY29weSB0aGUgYWRkcmVzcyBhbmQgcGFzdGUgaXQgaW50bwo+IHRo
+ZSAiVG86IiBmaWVsZCBvZiBhIG5ldyBtZXNzYWdlLgo+Cj4gb3IgY2xpY2sgaGVyZToKPiAgICAg
+ICAgIG1haWx0bzpwZGZib3gtZGV2LXNjLjEyMDI4NDY2NTEuaGtnaW1qcGZjaHBsZ2dqY2RiY3At
+YW50b25pLm15bGthPWdtYWlsLmNvbUBpbmN1YmF0b3IuYXBhY2hlLm9yZwo+Cj4gVGhpcyBjb25m
+aXJtYXRpb24gc2VydmVzIHR3byBwdXJwb3Nlcy4gRmlyc3QsIGl0IHZlcmlmaWVzIHRoYXQgSSBh
+bSBhYmxlCj4gdG8gZ2V0IG1haWwgdGhyb3VnaCB0byB5b3UuIFNlY29uZCwgaXQgcHJvdGVjdHMg
+eW91IGluIGNhc2Ugc29tZW9uZQo+IGZvcmdlcyBhIHN1YnNjcmlwdGlvbiByZXF1ZXN0IGluIHlv
+dXIgbmFtZS4KPgo+IFNvbWUgbWFpbCBwcm9ncmFtcyBhcmUgYnJva2VuIGFuZCBjYW5ub3QgaGFu
+ZGxlIGxvbmcgYWRkcmVzc2VzLiBJZiB5b3UKPiBjYW5ub3QgcmVwbHkgdG8gdGhpcyByZXF1ZXN0
+LCBpbnN0ZWFkIHNlbmQgYSBtZXNzYWdlIHRvCj4gPHBkZmJveC1kZXYtcmVxdWVzdEBpbmN1YmF0
+b3IuYXBhY2hlLm9yZz4gYW5kIHB1dCB0aGUKPiBlbnRpcmUgYWRkcmVzcyBsaXN0ZWQgYWJvdmUg
+aW50byB0aGUgIlN1YmplY3Q6IiBsaW5lLgo+Cj4KPiAtLS0gQWRtaW5pc3RyYXRpdmUgY29tbWFu
+ZHMgZm9yIHRoZSBwZGZib3gtZGV2IGxpc3QgLS0tCj4KPiBJIGNhbiBoYW5kbGUgYWRtaW5pc3Ry
+YXRpdmUgcmVxdWVzdHMgYXV0b21hdGljYWxseS4gUGxlYXNlCj4gZG8gbm90IHNlbmQgdGhlbSB0
+byB0aGUgbGlzdCBhZGRyZXNzISBJbnN0ZWFkLCBzZW5kCj4geW91ciBtZXNzYWdlIHRvIHRoZSBj
+b3JyZWN0IGNvbW1hbmQgYWRkcmVzczoKPgo+IFRvIHN1YnNjcmliZSB0byB0aGUgbGlzdCwgc2Vu
+ZCBhIG1lc3NhZ2UgdG86Cj4gICAgPHBkZmJveC1kZXYtc3Vic2NyaWJlQGluY3ViYXRvci5hcGFj
+aGUub3JnPgo+Cj4gVG8gcmVtb3ZlIHlvdXIgYWRkcmVzcyBmcm9tIHRoZSBsaXN0LCBzZW5kIGEg
+bWVzc2FnZSB0bzoKPiAgICA8cGRmYm94LWRldi11bnN1YnNjcmliZUBpbmN1YmF0b3IuYXBhY2hl
+Lm9yZz4KPgo+IFNlbmQgbWFpbCB0byB0aGUgZm9sbG93aW5nIGZvciBpbmZvIGFuZCBGQVEgZm9y
+IHRoaXMgbGlzdDoKPiAgICA8cGRmYm94LWRldi1pbmZvQGluY3ViYXRvci5hcGFjaGUub3JnPgo+
+ICAgIDxwZGZib3gtZGV2LWZhcUBpbmN1YmF0b3IuYXBhY2hlLm9yZz4KPgo+IFNpbWlsYXIgYWRk
+cmVzc2VzIGV4aXN0IGZvciB0aGUgZGlnZXN0IGxpc3Q6Cj4gICAgPHBkZmJveC1kZXYtZGlnZXN0
+LXN1YnNjcmliZUBpbmN1YmF0b3IuYXBhY2hlLm9yZz4KPiAgICA8cGRmYm94LWRldi1kaWdlc3Qt
+dW5zdWJzY3JpYmVAaW5jdWJhdG9yLmFwYWNoZS5vcmc+Cj4KPiBUbyBnZXQgbWVzc2FnZXMgMTIz
+IHRocm91Z2ggMTQ1IChhIG1heGltdW0gb2YgMTAwIHBlciByZXF1ZXN0KSwgbWFpbDoKPiAgICA8
+cGRmYm94LWRldi1nZXQuMTIzXzE0NUBpbmN1YmF0b3IuYXBhY2hlLm9yZz4KPgo+IFRvIGdldCBh
+biBpbmRleCB3aXRoIHN1YmplY3QgYW5kIGF1dGhvciBmb3IgbWVzc2FnZXMgMTIzLTQ1NiAsIG1h
+aWw6Cj4gICAgPHBkZmJveC1kZXYtaW5kZXguMTIzXzQ1NkBpbmN1YmF0b3IuYXBhY2hlLm9yZz4K
+Pgo+IFRoZXkgYXJlIGFsd2F5cyByZXR1cm5lZCBhcyBzZXRzIG9mIDEwMCwgbWF4IDIwMDAgcGVy
+IHJlcXVlc3QsCj4gc28geW91J2xsIGFjdHVhbGx5IGdldCAxMDAtNDk5Lgo+Cj4gVG8gcmVjZWl2
+ZSBhbGwgbWVzc2FnZXMgd2l0aCB0aGUgc2FtZSBzdWJqZWN0IGFzIG1lc3NhZ2UgMTIzNDUsCj4g
+c2VuZCBhIHNob3J0IG1lc3NhZ2UgdG86Cj4gICAgPHBkZmJveC1kZXYtdGhyZWFkLjEyMzQ1QGlu
+Y3ViYXRvci5hcGFjaGUub3JnPgo+Cj4gVGhlIG1lc3NhZ2VzIHNob3VsZCBjb250YWluIG9uZSBs
+aW5lIG9yIHdvcmQgb2YgdGV4dCB0byBhdm9pZCBiZWluZwo+IHRyZWF0ZWQgYXMgc3BAbSwgYnV0
+IEkgd2lsbCBpZ25vcmUgdGhlaXIgY29udGVudC4KPiBPbmx5IHRoZSBBRERSRVNTIHlvdSBzZW5k
+IHRvIGlzIGltcG9ydGFudC4KPgo+IFlvdSBjYW4gc3RhcnQgYSBzdWJzY3JpcHRpb24gZm9yIGFu
+IGFsdGVybmF0ZSBhZGRyZXNzLAo+IGZvciBleGFtcGxlICJqb2huQGhvc3QuZG9tYWluIiwganVz
+dCBhZGQgYSBoeXBoZW4gYW5kIHlvdXIKPiBhZGRyZXNzICh3aXRoICc9JyBpbnN0ZWFkIG9mICdA
+JykgYWZ0ZXIgdGhlIGNvbW1hbmQgd29yZDoKPiA8cGRmYm94LWRldi1zdWJzY3JpYmUtam9obj1o
+b3N0LmRvbWFpbkBpbmN1YmF0b3IuYXBhY2hlLm9yZz4KPgo+IFRvIHN0b3Agc3Vic2NyaXB0aW9u
+IGZvciB0aGlzIGFkZHJlc3MsIG1haWw6Cj4gPHBkZmJveC1kZXYtdW5zdWJzY3JpYmUtam9obj1o
+b3N0LmRvbWFpbkBpbmN1YmF0b3IuYXBhY2hlLm9yZz4KPgo+IEluIGJvdGggY2FzZXMsIEknbGwg
+c2VuZCBhIGNvbmZpcm1hdGlvbiBtZXNzYWdlIHRvIHRoYXQgYWRkcmVzcy4gV2hlbgo+IHlvdSBy
+ZWNlaXZlIGl0LCBzaW1wbHkgcmVwbHkgdG8gaXQgdG8gY29tcGxldGUgeW91ciBzdWJzY3JpcHRp
+b24uCj4KPiBJZiBkZXNwaXRlIGZvbGxvd2luZyB0aGVzZSBpbnN0cnVjdGlvbnMsIHlvdSBkbyBu
+b3QgZ2V0IHRoZQo+IGRlc2lyZWQgcmVzdWx0cywgcGxlYXNlIGNvbnRhY3QgbXkgb3duZXIgYXQK
+PiBwZGZib3gtZGV2LW93bmVyQGluY3ViYXRvci5hcGFjaGUub3JnLiBQbGVhc2UgYmUgcGF0aWVu
+dCwgbXkgb3duZXIgaXMgYQo+IGxvdCBzbG93ZXIgdGhhbiBJIGFtIDstKQo+Cj4gLS0tIEVuY2xv
+c2VkIGlzIGEgY29weSBvZiB0aGUgcmVxdWVzdCBJIHJlY2VpdmVkLgo+Cj4gUmV0dXJuLVBhdGg6
+IDxhbnRvbmkubXlsa2FAZ21haWwuY29tPgo+IFJlY2VpdmVkOiAocW1haWwgNTg2ODQgaW52b2tl
+ZCBieSB1aWQgOTkpOyAxMiBGZWIgMjAwOCAyMDowNDoxMSAtMDAwMAo+IFJlY2VpdmVkOiBmcm9t
+IGF0aGVuYS5hcGFjaGUub3JnIChIRUxPIGF0aGVuYS5hcGFjaGUub3JnKSAoMTQwLjIxMS4xMS4x
+MzYpCj4gICAgIGJ5IGFwYWNoZS5vcmcgKHFwc210cGQvMC4yOSkgd2l0aCBFU01UUDsgVHVlLCAx
+MiBGZWIgMjAwOCAxMjowNDoxMSAtMDgwMAo+IFgtQVNGLVNwYW0tU3RhdHVzOiBObywgaGl0cz0t
+MS4wIHJlcXVpcmVkPTEwLjAKPiAgICAgICAgIHRlc3RzPUFTRl9MSVNUX09QUyxTUEZfUEFTUwo+
+IFgtU3BhbS1DaGVjay1CeTogYXBhY2hlLm9yZwo+IFJlY2VpdmVkLVNQRjogcGFzcyAoYXRoZW5h
+LmFwYWNoZS5vcmc6IGRvbWFpbiBvZiBhbnRvbmkubXlsa2FAZ21haWwuY29tIGRlc2lnbmF0ZXMg
+NjQuMjMzLjE4Mi4xODYgYXMgcGVybWl0dGVkIHNlbmRlcikKPiBSZWNlaXZlZDogZnJvbSBbNjQu
+MjMzLjE4Mi4xODZdIChIRUxPIG5mLW91dC0wOTEwLmdvb2dsZS5jb20pICg2NC4yMzMuMTgyLjE4
+NikKPiAgICAgYnkgYXBhY2hlLm9yZyAocXBzbXRwZC8wLjI5KSB3aXRoIEVTTVRQOyBUdWUsIDEy
+IEZlYiAyMDA4IDIwOjAzOjQwICswMDAwCj4gUmVjZWl2ZWQ6IGJ5IG5mLW91dC0wOTEwLmdvb2ds
+ZS5jb20gd2l0aCBTTVRQIGlkIGs0c28xNDYwNDk0bmZkLjQwCj4gICAgICAgICBmb3IgPHBkZmJv
+eC1kZXYtc3Vic2NyaWJlQGluY3ViYXRvci5hcGFjaGUub3JnPjsgVHVlLCAxMiBGZWIgMjAwOCAx
+MjowMzo0NiAtMDgwMCAoUFNUKQo+IERLSU0tU2lnbmF0dXJlOiB2PTE7IGE9cnNhLXNoYTI1Njsg
+Yz1yZWxheGVkL3JlbGF4ZWQ7Cj4gICAgICAgICBkPWdtYWlsLmNvbTsgcz1nYW1tYTsKPiAgICAg
+ICAgIGg9ZG9tYWlua2V5LXNpZ25hdHVyZTpyZWNlaXZlZDpyZWNlaXZlZDptZXNzYWdlLWlkOmRh
+dGU6ZnJvbTp0bzpzdWJqZWN0Om1pbWUtdmVyc2lvbjpjb250ZW50LXR5cGU6Y29udGVudC10cmFu
+c2Zlci1lbmNvZGluZzpjb250ZW50LWRpc3Bvc2l0aW9uOwo+ICAgICAgICAgYmg9c3FlSTNDeGs2
+c3NWb2t1Qy8xQVZheVRCRS9IWUNteGtQSkF6RXh4VXVYQT07Cj4gICAgICAgICBiPXNkcGZhUjVn
+QjVldG5BM0pzL2YzeWROaCtNTEpsSk15c01NaUhybFU4L2xNMkxLcExycis2VEhBdjVTR25UY0Q2
+NG52U2t3NDJPWXYwbjhMbUVwbGw0cDNtTmJNaFJTNTNURVQ0MG9TZGhpMmFkN0tPMjB4bjFOZWxY
+K1V2V1dNNkJaQ3FiZFIzVmdqU0ZodFo5SitpWEhIejhxZitDSWJTaHVhY2RlK0V6dz0KPiBEb21h
+aW5LZXktU2lnbmF0dXJlOiBhPXJzYS1zaGExOyBjPW5vZndzOwo+ICAgICAgICAgZD1nbWFpbC5j
+b207IHM9Z2FtbWE7Cj4gICAgICAgICBoPW1lc3NhZ2UtaWQ6ZGF0ZTpmcm9tOnRvOnN1YmplY3Q6
+bWltZS12ZXJzaW9uOmNvbnRlbnQtdHlwZTpjb250ZW50LXRyYW5zZmVyLWVuY29kaW5nOmNvbnRl
+bnQtZGlzcG9zaXRpb247Cj4gICAgICAgICBiPUdnb2diT05PYkY5eTJOMUUrUEFUbXBQREtBaU82
+ZzRPQ1RqWllXSnR2eG04NTB0SWE4KzJmMFdDYjdVQlpuamhPQzZ2MHBPSkhYVTgxclBXaExmYlVW
+QzN5empWejlkN3QrajdJUStSd0xneEg1TkNGdlRzNmNZSTh5UmZka1RDNDBzZzk4NTJFaVBrSFc3
+VXN6TGswY0pXRDRtOUhiMjZMSWJmd0FNNUlQST0KPiBSZWNlaXZlZDogYnkgMTAuNzguMTA3Ljgg
+d2l0aCBTTVRQIGlkIGY4bXIzMjc1MDc2aHVjLjQwLjEyMDI4NDY2MjYyMzI7Cj4gICAgICAgICBU
+dWUsIDEyIEZlYiAyMDA4IDEyOjAzOjQ2IC0wODAwIChQU1QpCj4gUmVjZWl2ZWQ6IGJ5IDEwLjc4
+LjE2Ny4zIHdpdGggSFRUUDsgVHVlLCAxMiBGZWIgMjAwOCAxMjowMzo0NiAtMDgwMCAoUFNUKQo+
+IE1lc3NhZ2UtSUQ6IDw5N2QxOWYzYzA4MDIxMjEyMDNtMjQ1ZmRlZWZoZGI2MTYxOTI0MWQ2NDQx
+ZkBtYWlsLmdtYWlsLmNvbT4KPiBEYXRlOiBUdWUsIDEyIEZlYiAyMDA4IDIxOjAzOjQ2ICswMTAw
+Cj4gRnJvbTogIkFudG9uaSBNeWxrYSIgPGFudG9uaS5teWxrYUBnbWFpbC5jb20+Cj4gVG86IHBk
+ZmJveC1kZXYtc3Vic2NyaWJlQGluY3ViYXRvci5hcGFjaGUub3JnCj4gU3ViamVjdDogc3Vic2Ny
+aWJlCj4gTUlNRS1WZXJzaW9uOiAxLjAKPiBDb250ZW50LVR5cGU6IHRleHQvcGxhaW47IGNoYXJz
+ZXQ9SVNPLTg4NTktMgo+IENvbnRlbnQtVHJhbnNmZXItRW5jb2Rpbmc6IGJhc2U2NAo+IENvbnRl
+bnQtRGlzcG9zaXRpb246IGlubGluZQo+IFgtVmlydXMtQ2hlY2tlZDogQ2hlY2tlZCBieSBDbGFt
+QVYgb24gYXBhY2hlLm9yZwo+Cj4gYzNWaWMyTnlhV0psSUcxbENpMHRJQXBCYm5SdmJta2dUWG16
+YTJFS1lXNTBiMjVwTG0xNWJHdGhRR2R0WVdsc0xtTnZiUW89Cj4KCgotLSAKQW50b25pIE15s2th
+CmFudG9uaS5teWxrYUBnbWFpbC5jb20K
+
+From - Tue Feb 12 23:35:14 2008
+X-Account-Key: account2
+X-UIDL: GmailId1180f407928beb8e
+X-Mozilla-Status: 0001
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Delivered-To: antoni.mylka@gmail.com
+Received: by 10.78.167.3 with SMTP id p3cs593716hue;
+        Tue, 12 Feb 2008 12:05:27 -0800 (PST)
+Received: by 10.141.167.5 with SMTP id u5mr1225030rvo.279.1202846726189;
+        Tue, 12 Feb 2008 12:05:26 -0800 (PST)
+Return-Path: <pdfbox-dev-return-@incubator.apache.org>
+Received: from mail.apache.org (hermes.apache.org [140.211.11.2])
+        by mx.google.com with SMTP id l21si1474597rvb.26.2008.02.12.12.05.25;
+        Tue, 12 Feb 2008 12:05:26 -0800 (PST)
+Received-SPF: pass (google.com: domain of pdfbox-dev-return-@incubator.apache.org designates 140.211.11.2 as permitted sender) client-ip=140.211.11.2;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of pdfbox-dev-return-@incubator.apache.org designates 140.211.11.2 as permitted sender) smtp.mail=pdfbox-dev-return-@incubator.apache.org
+Received: (qmail 63423 invoked by uid 500); 12 Feb 2008 20:05:19 -0000
+Mailing-List: contact pdfbox-dev-help@incubator.apache.org; run by ezmlm
+List-Help: <mailto:pdfbox-dev-help@incubator.apache.org>
+List-Post: <mailto:pdfbox-dev@incubator.apache.org>
+List-Subscribe: <mailto:pdfbox-dev-subscribe@incubator.apache.org>
+Date: 12 Feb 2008 20:05:19 -0000
+Message-ID: <1202846719.63422.ezmlm@incubator.apache.org>
+From: pdfbox-dev-help@incubator.apache.org
+To: antoni.mylka@gmail.com
+Delivered-To: responder for pdfbox-dev@incubator.apache.org
+Received: (qmail 63414 invoked by uid 99); 12 Feb 2008 20:05:19 -0000
+Received: from athena.apache.org (HELO athena.apache.org) (140.211.11.136)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Tue, 12 Feb 2008 12:05:19 -0800
+Received: from [66.249.82.239] (HELO wx-out-0506.google.com) (66.249.82.239)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Tue, 12 Feb 2008 20:04:48 +0000
+Received: by wx-out-0506.google.com with SMTP id h30so5089049wxd.21
+        for <pdfbox-dev-sc.1202846651.hkgimjpfchplggjcdbcp-antoni.mylka=gmail.com@incubator.apache.org>; Tue, 12 Feb 2008 12:04:56 -0800 (PST)
+Received: by 10.78.176.20 with SMTP id y20mr3292576hue.36.1202846694596;
+        Tue, 12 Feb 2008 12:04:54 -0800 (PST)
+Received: by 10.78.167.3 with HTTP; Tue, 12 Feb 2008 12:04:54 -0800 (PST)
+MIME-Version: 1.0
+Content-type: text/plain; charset=us-ascii
+List-Unsubscribe: <mailto:pdfbox-dev-unsubscribe-antoni.mylka=gmail.com@incubator.apache.org>
+Subject: WELCOME to pdfbox-dev@incubator.apache.org
+
+Hi! This is the ezmlm program. I'm managing the
+pdfbox-dev@incubator.apache.org mailing list.
+
+I'm working for my owner, who can be reached
+at pdfbox-dev-owner@incubator.apache.org.
+
+Acknowledgment: I have added the address
+
+   antoni.mylka@gmail.com
+
+to the pdfbox-dev mailing list.
+
+Welcome to pdfbox-dev@incubator.apache.org!
+
+Please save this message so that you know the address you are
+subscribed under, in case you later want to unsubscribe or change your
+subscription address.
+
+
+--- Administrative commands for the pdfbox-dev list ---
+
+I can handle administrative requests automatically. Please
+do not send them to the list address! Instead, send
+your message to the correct command address:
+
+To subscribe to the list, send a message to:
+   <pdfbox-dev-subscribe@incubator.apache.org>
+
+To remove your address from the list, send a message to:
+   <pdfbox-dev-unsubscribe@incubator.apache.org>
+
+Send mail to the following for info and FAQ for this list:
+   <pdfbox-dev-info@incubator.apache.org>
+   <pdfbox-dev-faq@incubator.apache.org>
+
+Similar addresses exist for the digest list:
+   <pdfbox-dev-digest-subscribe@incubator.apache.org>
+   <pdfbox-dev-digest-unsubscribe@incubator.apache.org>
+
+To get messages 123 through 145 (a maximum of 100 per request), mail:
+   <pdfbox-dev-get.123_145@incubator.apache.org>
+
+To get an index with subject and author for messages 123-456 , mail:
+   <pdfbox-dev-index.123_456@incubator.apache.org>
+
+They are always returned as sets of 100, max 2000 per request,
+so you'll actually get 100-499.
+
+To receive all messages with the same subject as message 12345,
+send a short message to:
+   <pdfbox-dev-thread.12345@incubator.apache.org>
+
+The messages should contain one line or word of text to avoid being
+treated as sp@m, but I will ignore their content.
+Only the ADDRESS you send to is important.
+
+You can start a subscription for an alternate address,
+for example "john@host.domain", just add a hyphen and your
+address (with '=' instead of '@') after the command word:
+<pdfbox-dev-subscribe-john=host.domain@incubator.apache.org>
+
+To stop subscription for this address, mail:
+<pdfbox-dev-unsubscribe-john=host.domain@incubator.apache.org>
+
+In both cases, I'll send a confirmation message to that address. When
+you receive it, simply reply to it to complete your subscription.
+
+If despite following these instructions, you do not get the
+desired results, please contact my owner at
+pdfbox-dev-owner@incubator.apache.org. Please be patient, my owner is a
+lot slower than I am ;-)
+
+--- Enclosed is a copy of the request I received.
+
+Return-Path: <antoni.mylka@gmail.com>
+Received: (qmail 63414 invoked by uid 99); 12 Feb 2008 20:05:19 -0000
+Received: from athena.apache.org (HELO athena.apache.org) (140.211.11.136)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Tue, 12 Feb 2008 12:05:19 -0800
+X-ASF-Spam-Status: No, hits=-0.0 required=10.0
+	tests=SPF_PASS
+X-Spam-Check-By: apache.org
+Received-SPF: pass (athena.apache.org: domain of antoni.mylka@gmail.com designates 66.249.82.239 as permitted sender)
+Received: from [66.249.82.239] (HELO wx-out-0506.google.com) (66.249.82.239)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Tue, 12 Feb 2008 20:04:48 +0000
+Received: by wx-out-0506.google.com with SMTP id h30so5089049wxd.21
+        for <pdfbox-dev-sc.1202846651.hkgimjpfchplggjcdbcp-antoni.mylka=gmail.com@incubator.apache.org>; Tue, 12 Feb 2008 12:04:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:message-id:date:from:to:subject:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        bh=OcSf/P7c0/8vxcqJn2fIRNo+WH5LirBzVAydGRydWbo=;
+        b=Pkvi7lInIN9ZojNJ5yWdznvJ1UGOIj6Ko3Ta16xytFqhLsUN+5LR0RnY5mgEgEwU9xSGb3EoA66n5OpYKkxbjTIt4AP6VJgVW8Eszvjeqbw2xFFGNbE/j6qUZ409O3bmtv3Q0tiKWTt104/v1up5W1xR1cMNU62PhTspF+jzrFY=
+DomainKey-Signature: a=rsa-sha1; c=nofws;
+        d=gmail.com; s=gamma;
+        h=message-id:date:from:to:subject:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        b=NQD60ehAencenUEqVo1ImmFKpP+KivnARHug4tqs4O58LiKZ7odSNA35v1AQIzkLXZMnH4p1IKJ6ZerSnaFtYfNEtiuRbs9x7QKKxSnWWUX8JQR7w5rp2c3HxA+3RO37qMAk/nN8L8puPlAWBkUvkVuyqJPVJo7usgfGIlafC+s=
+Received: by 10.78.176.20 with SMTP id y20mr3292576hue.36.1202846694596;
+        Tue, 12 Feb 2008 12:04:54 -0800 (PST)
+Received: by 10.78.167.3 with HTTP; Tue, 12 Feb 2008 12:04:54 -0800 (PST)
+Message-ID: <97d19f3c0802121204r627d42bm33f117a6ca5a7d96@mail.gmail.com>
+Date: Tue, 12 Feb 2008 21:04:54 +0100
+From: "Antoni Mylka" <antoni.mylka@gmail.com>
+To: pdfbox-dev-sc.1202846651.hkgimjpfchplggjcdbcp-antoni.mylka=gmail.com@incubator.apache.org
+Subject: Re: confirm subscribe to pdfbox-dev@incubator.apache.org
+In-Reply-To: <1202846651.58695.ezmlm@incubator.apache.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+References: <1202846651.58695.ezmlm@incubator.apache.org>
+X-Virus-Checked: Checked by ClamAV on apache.org
+
+b2sKCjEyIEZlYiAyMDA4IDIwOjA0OjExIC0wMDAwLCBwZGZib3gtZGV2LWhlbHBAaW5jdWJhdG9y
+LmFwYWNoZS5vcmcKPHBkZmJveC1kZXYtaGVscEBpbmN1YmF0b3IuYXBhY2hlLm9yZz46Cj4gSGkh
+IFRoaXMgaXMgdGhlIGV6bWxtIHByb2dyYW0uIEknbSBtYW5hZ2luZyB0aGUKPiBwZGZib3gtZGV2
+QGluY3ViYXRvci5hcGFjaGUub3JnIG1haWxpbmcgbGlzdC4KPgo+IEknbSB3b3JraW5nIGZvciBt
+eSBvd25lciwgd2hvIGNhbiBiZSByZWFjaGVkCj4gYXQgcGRmYm94LWRldi1vd25lckBpbmN1YmF0
+b3IuYXBhY2hlLm9yZy4KPgo+IFRvIGNvbmZpcm0gdGhhdCB5b3Ugd291bGQgbGlrZQo+Cj4gICAg
+YW50b25pLm15bGthQGdtYWlsLmNvbQo+Cj4gYWRkZWQgdG8gdGhlIHBkZmJveC1kZXYgbWFpbGlu
+ZyBsaXN0LCBwbGVhc2Ugc2VuZAo+IGEgc2hvcnQgcmVwbHkgdG8gdGhpcyBhZGRyZXNzOgo+Cj4g
+ICAgcGRmYm94LWRldi1zYy4xMjAyODQ2NjUxLmhrZ2ltanBmY2hwbGdnamNkYmNwLWFudG9uaS5t
+eWxrYT1nbWFpbC5jb21AaW5jdWJhdG9yLmFwYWNoZS5vcmcKPgo+IFVzdWFsbHksIHRoaXMgaGFw
+cGVucyB3aGVuIHlvdSBqdXN0IGhpdCB0aGUgInJlcGx5IiBidXR0b24uCj4gSWYgdGhpcyBkb2Vz
+IG5vdCB3b3JrLCBzaW1wbHkgY29weSB0aGUgYWRkcmVzcyBhbmQgcGFzdGUgaXQgaW50bwo+IHRo
+ZSAiVG86IiBmaWVsZCBvZiBhIG5ldyBtZXNzYWdlLgo+Cj4gb3IgY2xpY2sgaGVyZToKPiAgICAg
+ICAgIG1haWx0bzpwZGZib3gtZGV2LXNjLjEyMDI4NDY2NTEuaGtnaW1qcGZjaHBsZ2dqY2RiY3At
+YW50b25pLm15bGthPWdtYWlsLmNvbUBpbmN1YmF0b3IuYXBhY2hlLm9yZwo+Cj4gVGhpcyBjb25m
+aXJtYXRpb24gc2VydmVzIHR3byBwdXJwb3Nlcy4gRmlyc3QsIGl0IHZlcmlmaWVzIHRoYXQgSSBh
+bSBhYmxlCj4gdG8gZ2V0IG1haWwgdGhyb3VnaCB0byB5b3UuIFNlY29uZCwgaXQgcHJvdGVjdHMg
+eW91IGluIGNhc2Ugc29tZW9uZQo+IGZvcmdlcyBhIHN1YnNjcmlwdGlvbiByZXF1ZXN0IGluIHlv
+dXIgbmFtZS4KPgo+IFNvbWUgbWFpbCBwcm9ncmFtcyBhcmUgYnJva2VuIGFuZCBjYW5ub3QgaGFu
+ZGxlIGxvbmcgYWRkcmVzc2VzLiBJZiB5b3UKPiBjYW5ub3QgcmVwbHkgdG8gdGhpcyByZXF1ZXN0
+LCBpbnN0ZWFkIHNlbmQgYSBtZXNzYWdlIHRvCj4gPHBkZmJveC1kZXYtcmVxdWVzdEBpbmN1YmF0
+b3IuYXBhY2hlLm9yZz4gYW5kIHB1dCB0aGUKPiBlbnRpcmUgYWRkcmVzcyBsaXN0ZWQgYWJvdmUg
+aW50byB0aGUgIlN1YmplY3Q6IiBsaW5lLgo+Cj4KPiAtLS0gQWRtaW5pc3RyYXRpdmUgY29tbWFu
+ZHMgZm9yIHRoZSBwZGZib3gtZGV2IGxpc3QgLS0tCj4KPiBJIGNhbiBoYW5kbGUgYWRtaW5pc3Ry
+YXRpdmUgcmVxdWVzdHMgYXV0b21hdGljYWxseS4gUGxlYXNlCj4gZG8gbm90IHNlbmQgdGhlbSB0
+byB0aGUgbGlzdCBhZGRyZXNzISBJbnN0ZWFkLCBzZW5kCj4geW91ciBtZXNzYWdlIHRvIHRoZSBj
+b3JyZWN0IGNvbW1hbmQgYWRkcmVzczoKPgo+IFRvIHN1YnNjcmliZSB0byB0aGUgbGlzdCwgc2Vu
+ZCBhIG1lc3NhZ2UgdG86Cj4gICAgPHBkZmJveC1kZXYtc3Vic2NyaWJlQGluY3ViYXRvci5hcGFj
+aGUub3JnPgo+Cj4gVG8gcmVtb3ZlIHlvdXIgYWRkcmVzcyBmcm9tIHRoZSBsaXN0LCBzZW5kIGEg
+bWVzc2FnZSB0bzoKPiAgICA8cGRmYm94LWRldi11bnN1YnNjcmliZUBpbmN1YmF0b3IuYXBhY2hl
+Lm9yZz4KPgo+IFNlbmQgbWFpbCB0byB0aGUgZm9sbG93aW5nIGZvciBpbmZvIGFuZCBGQVEgZm9y
+IHRoaXMgbGlzdDoKPiAgICA8cGRmYm94LWRldi1pbmZvQGluY3ViYXRvci5hcGFjaGUub3JnPgo+
+ICAgIDxwZGZib3gtZGV2LWZhcUBpbmN1YmF0b3IuYXBhY2hlLm9yZz4KPgo+IFNpbWlsYXIgYWRk
+cmVzc2VzIGV4aXN0IGZvciB0aGUgZGlnZXN0IGxpc3Q6Cj4gICAgPHBkZmJveC1kZXYtZGlnZXN0
+LXN1YnNjcmliZUBpbmN1YmF0b3IuYXBhY2hlLm9yZz4KPiAgICA8cGRmYm94LWRldi1kaWdlc3Qt
+dW5zdWJzY3JpYmVAaW5jdWJhdG9yLmFwYWNoZS5vcmc+Cj4KPiBUbyBnZXQgbWVzc2FnZXMgMTIz
+IHRocm91Z2ggMTQ1IChhIG1heGltdW0gb2YgMTAwIHBlciByZXF1ZXN0KSwgbWFpbDoKPiAgICA8
+cGRmYm94LWRldi1nZXQuMTIzXzE0NUBpbmN1YmF0b3IuYXBhY2hlLm9yZz4KPgo+IFRvIGdldCBh
+biBpbmRleCB3aXRoIHN1YmplY3QgYW5kIGF1dGhvciBmb3IgbWVzc2FnZXMgMTIzLTQ1NiAsIG1h
+aWw6Cj4gICAgPHBkZmJveC1kZXYtaW5kZXguMTIzXzQ1NkBpbmN1YmF0b3IuYXBhY2hlLm9yZz4K
+Pgo+IFRoZXkgYXJlIGFsd2F5cyByZXR1cm5lZCBhcyBzZXRzIG9mIDEwMCwgbWF4IDIwMDAgcGVy
+IHJlcXVlc3QsCj4gc28geW91J2xsIGFjdHVhbGx5IGdldCAxMDAtNDk5Lgo+Cj4gVG8gcmVjZWl2
+ZSBhbGwgbWVzc2FnZXMgd2l0aCB0aGUgc2FtZSBzdWJqZWN0IGFzIG1lc3NhZ2UgMTIzNDUsCj4g
+c2VuZCBhIHNob3J0IG1lc3NhZ2UgdG86Cj4gICAgPHBkZmJveC1kZXYtdGhyZWFkLjEyMzQ1QGlu
+Y3ViYXRvci5hcGFjaGUub3JnPgo+Cj4gVGhlIG1lc3NhZ2VzIHNob3VsZCBjb250YWluIG9uZSBs
+aW5lIG9yIHdvcmQgb2YgdGV4dCB0byBhdm9pZCBiZWluZwo+IHRyZWF0ZWQgYXMgc3BAbSwgYnV0
+IEkgd2lsbCBpZ25vcmUgdGhlaXIgY29udGVudC4KPiBPbmx5IHRoZSBBRERSRVNTIHlvdSBzZW5k
+IHRvIGlzIGltcG9ydGFudC4KPgo+IFlvdSBjYW4gc3RhcnQgYSBzdWJzY3JpcHRpb24gZm9yIGFu
+IGFsdGVybmF0ZSBhZGRyZXNzLAo+IGZvciBleGFtcGxlICJqb2huQGhvc3QuZG9tYWluIiwganVz
+dCBhZGQgYSBoeXBoZW4gYW5kIHlvdXIKPiBhZGRyZXNzICh3aXRoICc9JyBpbnN0ZWFkIG9mICdA
+JykgYWZ0ZXIgdGhlIGNvbW1hbmQgd29yZDoKPiA8cGRmYm94LWRldi1zdWJzY3JpYmUtam9obj1o
+b3N0LmRvbWFpbkBpbmN1YmF0b3IuYXBhY2hlLm9yZz4KPgo+IFRvIHN0b3Agc3Vic2NyaXB0aW9u
+IGZvciB0aGlzIGFkZHJlc3MsIG1haWw6Cj4gPHBkZmJveC1kZXYtdW5zdWJzY3JpYmUtam9obj1o
+b3N0LmRvbWFpbkBpbmN1YmF0b3IuYXBhY2hlLm9yZz4KPgo+IEluIGJvdGggY2FzZXMsIEknbGwg
+c2VuZCBhIGNvbmZpcm1hdGlvbiBtZXNzYWdlIHRvIHRoYXQgYWRkcmVzcy4gV2hlbgo+IHlvdSBy
+ZWNlaXZlIGl0LCBzaW1wbHkgcmVwbHkgdG8gaXQgdG8gY29tcGxldGUgeW91ciBzdWJzY3JpcHRp
+b24uCj4KPiBJZiBkZXNwaXRlIGZvbGxvd2luZyB0aGVzZSBpbnN0cnVjdGlvbnMsIHlvdSBkbyBu
+b3QgZ2V0IHRoZQo+IGRlc2lyZWQgcmVzdWx0cywgcGxlYXNlIGNvbnRhY3QgbXkgb3duZXIgYXQK
+PiBwZGZib3gtZGV2LW93bmVyQGluY3ViYXRvci5hcGFjaGUub3JnLiBQbGVhc2UgYmUgcGF0aWVu
+dCwgbXkgb3duZXIgaXMgYQo+IGxvdCBzbG93ZXIgdGhhbiBJIGFtIDstKQo+Cj4gLS0tIEVuY2xv
+c2VkIGlzIGEgY29weSBvZiB0aGUgcmVxdWVzdCBJIHJlY2VpdmVkLgo+Cj4gUmV0dXJuLVBhdGg6
+IDxhbnRvbmkubXlsa2FAZ21haWwuY29tPgo+IFJlY2VpdmVkOiAocW1haWwgNTg2ODQgaW52b2tl
+ZCBieSB1aWQgOTkpOyAxMiBGZWIgMjAwOCAyMDowNDoxMSAtMDAwMAo+IFJlY2VpdmVkOiBmcm9t
+IGF0aGVuYS5hcGFjaGUub3JnIChIRUxPIGF0aGVuYS5hcGFjaGUub3JnKSAoMTQwLjIxMS4xMS4x
+MzYpCj4gICAgIGJ5IGFwYWNoZS5vcmcgKHFwc210cGQvMC4yOSkgd2l0aCBFU01UUDsgVHVlLCAx
+MiBGZWIgMjAwOCAxMjowNDoxMSAtMDgwMAo+IFgtQVNGLVNwYW0tU3RhdHVzOiBObywgaGl0cz0t
+MS4wIHJlcXVpcmVkPTEwLjAKPiAgICAgICAgIHRlc3RzPUFTRl9MSVNUX09QUyxTUEZfUEFTUwo+
+IFgtU3BhbS1DaGVjay1CeTogYXBhY2hlLm9yZwo+IFJlY2VpdmVkLVNQRjogcGFzcyAoYXRoZW5h
+LmFwYWNoZS5vcmc6IGRvbWFpbiBvZiBhbnRvbmkubXlsa2FAZ21haWwuY29tIGRlc2lnbmF0ZXMg
+NjQuMjMzLjE4Mi4xODYgYXMgcGVybWl0dGVkIHNlbmRlcikKPiBSZWNlaXZlZDogZnJvbSBbNjQu
+MjMzLjE4Mi4xODZdIChIRUxPIG5mLW91dC0wOTEwLmdvb2dsZS5jb20pICg2NC4yMzMuMTgyLjE4
+NikKPiAgICAgYnkgYXBhY2hlLm9yZyAocXBzbXRwZC8wLjI5KSB3aXRoIEVTTVRQOyBUdWUsIDEy
+IEZlYiAyMDA4IDIwOjAzOjQwICswMDAwCj4gUmVjZWl2ZWQ6IGJ5IG5mLW91dC0wOTEwLmdvb2ds
+ZS5jb20gd2l0aCBTTVRQIGlkIGs0c28xNDYwNDk0bmZkLjQwCj4gICAgICAgICBmb3IgPHBkZmJv
+eC1kZXYtc3Vic2NyaWJlQGluY3ViYXRvci5hcGFjaGUub3JnPjsgVHVlLCAxMiBGZWIgMjAwOCAx
+MjowMzo0NiAtMDgwMCAoUFNUKQo+IERLSU0tU2lnbmF0dXJlOiB2PTE7IGE9cnNhLXNoYTI1Njsg
+Yz1yZWxheGVkL3JlbGF4ZWQ7Cj4gICAgICAgICBkPWdtYWlsLmNvbTsgcz1nYW1tYTsKPiAgICAg
+ICAgIGg9ZG9tYWlua2V5LXNpZ25hdHVyZTpyZWNlaXZlZDpyZWNlaXZlZDptZXNzYWdlLWlkOmRh
+dGU6ZnJvbTp0bzpzdWJqZWN0Om1pbWUtdmVyc2lvbjpjb250ZW50LXR5cGU6Y29udGVudC10cmFu
+c2Zlci1lbmNvZGluZzpjb250ZW50LWRpc3Bvc2l0aW9uOwo+ICAgICAgICAgYmg9c3FlSTNDeGs2
+c3NWb2t1Qy8xQVZheVRCRS9IWUNteGtQSkF6RXh4VXVYQT07Cj4gICAgICAgICBiPXNkcGZhUjVn
+QjVldG5BM0pzL2YzeWROaCtNTEpsSk15c01NaUhybFU4L2xNMkxLcExycis2VEhBdjVTR25UY0Q2
+NG52U2t3NDJPWXYwbjhMbUVwbGw0cDNtTmJNaFJTNTNURVQ0MG9TZGhpMmFkN0tPMjB4bjFOZWxY
+K1V2V1dNNkJaQ3FiZFIzVmdqU0ZodFo5SitpWEhIejhxZitDSWJTaHVhY2RlK0V6dz0KPiBEb21h
+aW5LZXktU2lnbmF0dXJlOiBhPXJzYS1zaGExOyBjPW5vZndzOwo+ICAgICAgICAgZD1nbWFpbC5j
+b207IHM9Z2FtbWE7Cj4gICAgICAgICBoPW1lc3NhZ2UtaWQ6ZGF0ZTpmcm9tOnRvOnN1YmplY3Q6
+bWltZS12ZXJzaW9uOmNvbnRlbnQtdHlwZTpjb250ZW50LXRyYW5zZmVyLWVuY29kaW5nOmNvbnRl
+bnQtZGlzcG9zaXRpb247Cj4gICAgICAgICBiPUdnb2diT05PYkY5eTJOMUUrUEFUbXBQREtBaU82
+ZzRPQ1RqWllXSnR2eG04NTB0SWE4KzJmMFdDYjdVQlpuamhPQzZ2MHBPSkhYVTgxclBXaExmYlVW
+QzN5empWejlkN3QrajdJUStSd0xneEg1TkNGdlRzNmNZSTh5UmZka1RDNDBzZzk4NTJFaVBrSFc3
+VXN6TGswY0pXRDRtOUhiMjZMSWJmd0FNNUlQST0KPiBSZWNlaXZlZDogYnkgMTAuNzguMTA3Ljgg
+d2l0aCBTTVRQIGlkIGY4bXIzMjc1MDc2aHVjLjQwLjEyMDI4NDY2MjYyMzI7Cj4gICAgICAgICBU
+dWUsIDEyIEZlYiAyMDA4IDEyOjAzOjQ2IC0wODAwIChQU1QpCj4gUmVjZWl2ZWQ6IGJ5IDEwLjc4
+LjE2Ny4zIHdpdGggSFRUUDsgVHVlLCAxMiBGZWIgMjAwOCAxMjowMzo0NiAtMDgwMCAoUFNUKQo+
+IE1lc3NhZ2UtSUQ6IDw5N2QxOWYzYzA4MDIxMjEyMDNtMjQ1ZmRlZWZoZGI2MTYxOTI0MWQ2NDQx
+ZkBtYWlsLmdtYWlsLmNvbT4KPiBEYXRlOiBUdWUsIDEyIEZlYiAyMDA4IDIxOjAzOjQ2ICswMTAw
+Cj4gRnJvbTogIkFudG9uaSBNeWxrYSIgPGFudG9uaS5teWxrYUBnbWFpbC5jb20+Cj4gVG86IHBk
+ZmJveC1kZXYtc3Vic2NyaWJlQGluY3ViYXRvci5hcGFjaGUub3JnCj4gU3ViamVjdDogc3Vic2Ny
+aWJlCj4gTUlNRS1WZXJzaW9uOiAxLjAKPiBDb250ZW50LVR5cGU6IHRleHQvcGxhaW47IGNoYXJz
+ZXQ9SVNPLTg4NTktMgo+IENvbnRlbnQtVHJhbnNmZXItRW5jb2Rpbmc6IGJhc2U2NAo+IENvbnRl
+bnQtRGlzcG9zaXRpb246IGlubGluZQo+IFgtVmlydXMtQ2hlY2tlZDogQ2hlY2tlZCBieSBDbGFt
+QVYgb24gYXBhY2hlLm9yZwo+Cj4gYzNWaWMyTnlhV0psSUcxbENpMHRJQXBCYm5SdmJta2dUWG16
+YTJFS1lXNTBiMjVwTG0xNWJHdGhRR2R0WVdsc0xtTnZiUW89Cj4KCgotLSAKQW50b25pIE15s2th
+CmFudG9uaS5teWxrYUBnbWFpbC5jb20K
+
+From - Wed Feb 13 12:07:09 2008
+X-Account-Key: account2
+X-UIDL: GmailId118125dddf7d72fa
+X-Mozilla-Status: 0001
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Delivered-To: antoni.mylka@gmail.com
+Received: by 10.78.167.3 with SMTP id p3cs623213hue;
+        Wed, 13 Feb 2008 02:36:25 -0800 (PST)
+Received: by 10.140.126.14 with SMTP id y14mr1727191rvc.59.1202898984623;
+        Wed, 13 Feb 2008 02:36:24 -0800 (PST)
+Return-Path: <pdfbox-dev-return-6-antoni.mylka=gmail.com@incubator.apache.org>
+Received: from mail.apache.org (hermes.apache.org [140.211.11.2])
+        by mx.google.com with SMTP id g6si3500915rvb.25.2008.02.13.02.36.23;
+        Wed, 13 Feb 2008 02:36:24 -0800 (PST)
+Received-SPF: pass (google.com: domain of pdfbox-dev-return-6-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) client-ip=140.211.11.2;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of pdfbox-dev-return-6-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) smtp.mail=pdfbox-dev-return-6-antoni.mylka=gmail.com@incubator.apache.org; dkim=pass (test mode) header.i=@gmail.com
+Received: (qmail 91071 invoked by uid 500); 13 Feb 2008 10:36:17 -0000
+Mailing-List: contact pdfbox-dev-help@incubator.apache.org; run by ezmlm
+Precedence: bulk
+List-Help: <mailto:pdfbox-dev-help@incubator.apache.org>
+List-Unsubscribe: <mailto:pdfbox-dev-unsubscribe@incubator.apache.org>
+List-Post: <mailto:pdfbox-dev@incubator.apache.org>
+List-Id: <pdfbox-dev.incubator.apache.org>
+Reply-To: pdfbox-dev@incubator.apache.org
+Delivered-To: mailing list pdfbox-dev@incubator.apache.org
+Received: (qmail 91062 invoked by uid 99); 13 Feb 2008 10:36:17 -0000
+Received: from athena.apache.org (HELO athena.apache.org) (140.211.11.136)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Wed, 13 Feb 2008 02:36:17 -0800
+X-ASF-Spam-Status: No, hits=-0.0 required=10.0
+	tests=SPF_PASS
+X-Spam-Check-By: apache.org
+Received-SPF: pass (athena.apache.org: domain of jukka.zitting@gmail.com designates 209.85.162.181 as permitted sender)
+Received: from [209.85.162.181] (HELO el-out-1112.google.com) (209.85.162.181)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Wed, 13 Feb 2008 10:35:46 +0000
+Received: by el-out-1112.google.com with SMTP id j27so5903476elf.6
+        for <pdfbox-dev@incubator.apache.org>; Wed, 13 Feb 2008 02:35:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:message-id:date:from:to:subject:mime-version:content-type:content-transfer-encoding:content-disposition;
+        bh=dv7Hl/hy80tiTjWUKq6HjMnJiQOaDcTP8wPkjHLKRGk=;
+        b=sYqvOMh3zox/7XPeLviduPc4Mh0O1edy6XJvUKJpoCZZ0qV33S3VvC8BHl6Sc3RA5gFMOnhjuIPEyvNuebfRu7TlDzolEyrMckGX1+NPeiOaAykFtaTBC8jYBhwmRAefnmsgT6pyHpYIXZNT5mi5Rl8ldwpRpNI3Yrk3xbJqDEQ=
+DomainKey-Signature: a=rsa-sha1; c=nofws;
+        d=gmail.com; s=gamma;
+        h=message-id:date:from:to:subject:mime-version:content-type:content-transfer-encoding:content-disposition;
+        b=CnYJrxuS5W26ekT93NqJJuwC4XUD2WFRTd6lbgKm42ftZ+skhJ8gZc/r4Ye+WN860WJYRvFDuJOC2VyXsCJ6fSmQfNO3VFhsRGGo1eygm5SzpsfnEmoeh3ICXioPwbQ2uvC8Tf/zqG+6X4pgxuxsL6c6ejxyovmNe6f54rV6Wh8=
+Received: by 10.142.177.7 with SMTP id z7mr1960496wfe.47.1202898952333;
+        Wed, 13 Feb 2008 02:35:52 -0800 (PST)
+Received: by 10.142.223.8 with HTTP; Wed, 13 Feb 2008 02:35:52 -0800 (PST)
+Message-ID: <510143ac0802130235m7b02d132uc930c9106bc652aa@mail.gmail.com>
+Date: Wed, 13 Feb 2008 12:35:52 +0200
+From: "Jukka Zitting" <jukka.zitting@gmail.com>
+To: pdfbox-dev@incubator.apache.org
+Subject: PDFBox report
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+X-Virus-Checked: Checked by ClamAV on apache.org
+
+Hi,
+
+I submitted the following as the February report for PDFBox. The
+Incubator expects us to report our progress monthly for the first
+three months, and then quarterly until graduation.
+
+----
+PDFBox is an open source Java PDF library for working with PDF
+documents. PDFBox entered incubation on February 7th, 2008.
+
+The PDFBox project has just entered incubation, and we're currently
+setting up the project infrastructure. A question about the licensing
+of the JAI dependency was already voiced on the mailing list.
+----
+
+Feel free to comment and/or modify the report.
+
+BR,
+
+Jukka Zitting
+
+From - Wed Feb 13 12:07:10 2008
+X-Account-Key: account2
+X-UIDL: GmailId118126583ad4ea91
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Delivered-To: antoni.mylka@gmail.com
+Received: by 10.78.167.3 with SMTP id p3cs623521hue;
+        Wed, 13 Feb 2008 02:44:46 -0800 (PST)
+Received: by 10.140.180.11 with SMTP id c11mr1722578rvf.137.1202899485324;
+        Wed, 13 Feb 2008 02:44:45 -0800 (PST)
+Return-Path: <pdfbox-dev-return-7-antoni.mylka=gmail.com@incubator.apache.org>
+Received: from mail.apache.org (hermes.apache.org [140.211.11.2])
+        by mx.google.com with SMTP id b8si3516757rvf.31.2008.02.13.02.44.44;
+        Wed, 13 Feb 2008 02:44:45 -0800 (PST)
+Received-SPF: pass (google.com: domain of pdfbox-dev-return-7-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) client-ip=140.211.11.2;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of pdfbox-dev-return-7-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) smtp.mail=pdfbox-dev-return-7-antoni.mylka=gmail.com@incubator.apache.org
+Received: (qmail 98443 invoked by uid 500); 13 Feb 2008 10:44:38 -0000
+Mailing-List: contact pdfbox-dev-help@incubator.apache.org; run by ezmlm
+Precedence: bulk
+List-Help: <mailto:pdfbox-dev-help@incubator.apache.org>
+List-Unsubscribe: <mailto:pdfbox-dev-unsubscribe@incubator.apache.org>
+List-Post: <mailto:pdfbox-dev@incubator.apache.org>
+List-Id: <pdfbox-dev.incubator.apache.org>
+Reply-To: pdfbox-dev@incubator.apache.org
+Delivered-To: mailing list pdfbox-dev@incubator.apache.org
+Received: (qmail 98434 invoked by uid 99); 13 Feb 2008 10:44:38 -0000
+Received: from athena.apache.org (HELO athena.apache.org) (140.211.11.136)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Wed, 13 Feb 2008 02:44:38 -0800
+X-ASF-Spam-Status: No, hits=-0.0 required=10.0
+	tests=SPF_PASS
+X-Spam-Check-By: apache.org
+Received-SPF: pass (athena.apache.org: local policy)
+Received: from [213.239.215.103] (HELO tux17.hoststar.ch) (213.239.215.103)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Wed, 13 Feb 2008 10:44:06 +0000
+Received: from [127.0.0.1] (adsl-84-227-140-240.adslplus.ch [84.227.140.240])
+	(authenticated bits=0)
+	by tux17.hoststar.ch (8.13.6/8.12.11) with ESMTP id m1DAiE0k026690
+	for <pdfbox-dev@incubator.apache.org>; Wed, 13 Feb 2008 11:44:15 +0100
+Date: Wed, 13 Feb 2008 11:44:47 +0100
+From: Jeremias Maerki <dev@jeremias-maerki.ch>
+To: pdfbox-dev@incubator.apache.org
+Subject: Re: PDFBox report
+In-Reply-To: <510143ac0802130235m7b02d132uc930c9106bc652aa@mail.gmail.com>
+References: <510143ac0802130235m7b02d132uc930c9106bc652aa@mail.gmail.com>
+Message-Id: <20080213114430.D316.DEV@jeremias-maerki.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Becky! ver. 2.28.01 [en]
+X-Antivirus: avast! (VPS 080213-0, 13.02.2008), Outbound message
+X-Antivirus-Status: Clean
+X-Virus-Checked: Checked by ClamAV on apache.org
+
+There's not really more to say, I guess.
+
+On 13.02.2008 11:35:52 Jukka Zitting wrote:
+> Hi,
+>=20
+> I submitted the following as the February report for PDFBox. The
+> Incubator expects us to report our progress monthly for the first
+> three months, and then quarterly until graduation.
+>=20
+> ----
+> PDFBox is an open source Java PDF library for working with PDF
+> documents. PDFBox entered incubation on February 7th, 2008.
+>=20
+> The PDFBox project has just entered incubation, and we're currently
+> setting up the project infrastructure. A question about the licensing
+> of the JAI dependency was already voiced on the mailing list.
+> ----
+>=20
+> Feel free to comment and/or modify the report.
+>=20
+> BR,
+>=20
+> Jukka Zitting
+
+
+
+
+Jeremias Maerki
+
+
+From - Sun Feb 17 16:51:39 2008
+X-Account-Key: account2
+X-UIDL: GmailId1182302f246484a6
+X-Mozilla-Status: 0001
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Delivered-To: antoni.mylka@gmail.com
+Received: by 10.78.167.3 with SMTP id p3cs21931hue;
+        Sat, 16 Feb 2008 08:10:40 -0800 (PST)
+Received: by 10.141.2.19 with SMTP id e19mr2674471rvi.221.1203178238711;
+        Sat, 16 Feb 2008 08:10:38 -0800 (PST)
+Return-Path: <pdfbox-dev-return-8-antoni.mylka=gmail.com@incubator.apache.org>
+Received: from mail.apache.org (hermes.apache.org [140.211.11.2])
+        by mx.google.com with SMTP id 3si4416054rvi.14.2008.02.16.08.10.37;
+        Sat, 16 Feb 2008 08:10:38 -0800 (PST)
+Received-SPF: pass (google.com: domain of pdfbox-dev-return-8-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) client-ip=140.211.11.2;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of pdfbox-dev-return-8-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) smtp.mail=pdfbox-dev-return-8-antoni.mylka=gmail.com@incubator.apache.org
+Received: (qmail 82622 invoked by uid 500); 16 Feb 2008 16:10:32 -0000
+Mailing-List: contact pdfbox-dev-help@incubator.apache.org; run by ezmlm
+Precedence: bulk
+List-Help: <mailto:pdfbox-dev-help@incubator.apache.org>
+List-Unsubscribe: <mailto:pdfbox-dev-unsubscribe@incubator.apache.org>
+List-Post: <mailto:pdfbox-dev@incubator.apache.org>
+List-Id: <pdfbox-dev.incubator.apache.org>
+Reply-To: pdfbox-dev@incubator.apache.org
+Delivered-To: mailing list pdfbox-dev@incubator.apache.org
+Received: (qmail 82613 invoked by uid 99); 16 Feb 2008 16:10:32 -0000
+Received: from nike.apache.org (HELO nike.apache.org) (192.87.106.230)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Sat, 16 Feb 2008 08:10:32 -0800
+X-ASF-Spam-Status: No, hits=-0.0 required=10.0
+	tests=SPF_PASS
+X-Spam-Check-By: apache.org
+Received-SPF: pass (nike.apache.org: local policy)
+Received: from [213.239.215.103] (HELO tux17.hoststar.ch) (213.239.215.103)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Sat, 16 Feb 2008 16:09:46 +0000
+Received: from [127.0.0.1] (adsl-89-217-144-250.adslplus.ch [89.217.144.250])
+	(authenticated bits=0)
+	by tux17.hoststar.ch (8.13.6/8.12.11) with ESMTP id m1GGAAX9003676
+	for <pdfbox-dev@incubator.apache.org>; Sat, 16 Feb 2008 17:10:11 +0100
+Date: Sat, 16 Feb 2008 17:10:50 +0100
+From: Jeremias Maerki <dev@jeremias-maerki.ch>
+To: pdfbox-dev@incubator.apache.org
+Subject: Status file created
+Message-Id: <20080216170644.8ADC.DEV@jeremias-maerki.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Becky! ver. 2.28.01 [en]
+X-Antivirus: avast! (VPS 080215-0, 15.02.2008), Outbound message
+X-Antivirus-Status: Clean
+X-Virus-Checked: Checked by ClamAV on apache.org
+
+I've just created the status file for PDFBox. This can be found at:
+https://svn.apache.org/repos/asf/incubator/public/trunk/site-author/project=
+s/pdfbox.xml
+
+It is used to track the most important items for the project while it
+goes through incubation. More info here:
+http://incubator.apache.org/guides/mentor.html#Initialize+Podling+Status+Pa=
+ge
+
+Jeremias Maerki
+
+
+From - Mon Feb 18 15:20:58 2008
+X-Account-Key: account2
+X-UIDL: GmailId1182ce862ade4b14
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Delivered-To: antoni.mylka@gmail.com
+Received: by 10.78.167.3 with SMTP id p3cs111101hue;
+        Mon, 18 Feb 2008 06:17:52 -0800 (PST)
+Received: by 10.141.171.6 with SMTP id y6mr3859602rvo.85.1203344271307;
+        Mon, 18 Feb 2008 06:17:51 -0800 (PST)
+Return-Path: <pdfbox-dev-return-9-antoni.mylka=gmail.com@incubator.apache.org>
+Received: from mail.apache.org (hermes.apache.org [140.211.11.2])
+        by mx.google.com with SMTP id b24si1551828rvf.1.2008.02.18.06.17.49;
+        Mon, 18 Feb 2008 06:17:51 -0800 (PST)
+Received-SPF: pass (google.com: domain of pdfbox-dev-return-9-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) client-ip=140.211.11.2;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of pdfbox-dev-return-9-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) smtp.mail=pdfbox-dev-return-9-antoni.mylka=gmail.com@incubator.apache.org; dkim=pass (test mode) header.i=@gmail.com
+Received: (qmail 38355 invoked by uid 500); 18 Feb 2008 14:17:43 -0000
+Mailing-List: contact pdfbox-dev-help@incubator.apache.org; run by ezmlm
+Precedence: bulk
+List-Help: <mailto:pdfbox-dev-help@incubator.apache.org>
+List-Unsubscribe: <mailto:pdfbox-dev-unsubscribe@incubator.apache.org>
+List-Post: <mailto:pdfbox-dev@incubator.apache.org>
+List-Id: <pdfbox-dev.incubator.apache.org>
+Reply-To: pdfbox-dev@incubator.apache.org
+Delivered-To: mailing list pdfbox-dev@incubator.apache.org
+Received: (qmail 38346 invoked by uid 99); 18 Feb 2008 14:17:43 -0000
+Received: from athena.apache.org (HELO athena.apache.org) (140.211.11.136)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Mon, 18 Feb 2008 06:17:43 -0800
+X-ASF-Spam-Status: No, hits=-0.0 required=10.0
+	tests=SPF_PASS
+X-Spam-Check-By: apache.org
+Received-SPF: pass (athena.apache.org: domain of jukka.zitting@gmail.com designates 209.85.200.174 as permitted sender)
+Received: from [209.85.200.174] (HELO wf-out-1314.google.com) (209.85.200.174)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Mon, 18 Feb 2008 14:17:11 +0000
+Received: by wf-out-1314.google.com with SMTP id 23so495579wfg.21
+        for <pdfbox-dev@incubator.apache.org>; Mon, 18 Feb 2008 06:17:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:message-id:date:from:to:subject:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        bh=pQ4b1BxNpOvWeekUef3lUa05Vkbxh7ACOavz1RuISYA=;
+        b=x/UzleCDgc3kiDnvFWtckfIDd1cm92KWZROp82ueGyGmUuvJ9/heHSRTYIGE9peKGpiMS7oli1htGf+IAS2qaDwyihnysL+Ug8i35glGip72+u/VnuR0kimVldo9iWsP2EbOma88xK1VksFiwcMGbFvfzIKzs9r2tAju6QQdXdw=
+DomainKey-Signature: a=rsa-sha1; c=nofws;
+        d=gmail.com; s=gamma;
+        h=message-id:date:from:to:subject:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        b=qtUijwxRNIALS1SkoGpzgZr2YuNPQvUsc+Kw2G/7oO6po2ADB40XIz5KkzEDwLcJhwzKbnkQSOX8Bc39bhwWoUQPiuwfbUNbeXGMjIXwsJpaZAitUTe17aCB28aCiU0BHhtHAIZqUVwi3qkOFYeedp7FHKjO/i3koNKXreH2Yb8=
+Received: by 10.142.81.6 with SMTP id e6mr2335255wfb.205.1203344240186;
+        Mon, 18 Feb 2008 06:17:20 -0800 (PST)
+Received: by 10.142.223.8 with HTTP; Mon, 18 Feb 2008 06:17:20 -0800 (PST)
+Message-ID: <510143ac0802180617g2d89ccdk5356cfd58bbf5d5e@mail.gmail.com>
+Date: Mon, 18 Feb 2008 16:17:20 +0200
+From: "Jukka Zitting" <jukka.zitting@gmail.com>
+To: pdfbox-dev@incubator.apache.org
+Subject: Re: Welcome to Apache PDFBox!
+In-Reply-To: <a372432a0802110559s42bab223n9068597c70031087@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <510143ac0802101053p4cd93c3au634e0850332fca47@mail.gmail.com>
+	 <a372432a0802110559s42bab223n9068597c70031087@mail.gmail.com>
+X-Virus-Checked: Checked by ClamAV on apache.org
+
+Hi,
+
+On Feb 11, 2008 3:59 PM, Daniel Wilson <williamstonconsulting@gmail.com> wrote:
+> My CLA is also in the mail.
+
+I haven't yet seen the CLAs recorded, but the last update is from Feb
+10th before you sent the CLAs so I'll wait a few more days for the
+next update before bugging people about this.
+
+BR,
+
+Jukka Zitting
+
+From - Tue Feb 19 23:30:41 2008
+X-Account-Key: account2
+X-UIDL: GmailId11833cec49b22476
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Delivered-To: antoni.mylka@gmail.com
+Received: by 10.78.167.3 with SMTP id p3cs199833hue;
+        Tue, 19 Feb 2008 14:27:13 -0800 (PST)
+Received: by 10.140.125.21 with SMTP id x21mr5091159rvc.234.1203460032037;
+        Tue, 19 Feb 2008 14:27:12 -0800 (PST)
+Return-Path: <pdfbox-dev-return-10-antoni.mylka=gmail.com@incubator.apache.org>
+Received: from mail.apache.org (hermes.apache.org [140.211.11.2])
+        by mx.google.com with SMTP id b34si2454118rvf.22.2008.02.19.14.27.11;
+        Tue, 19 Feb 2008 14:27:12 -0800 (PST)
+Received-SPF: pass (google.com: domain of pdfbox-dev-return-10-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) client-ip=140.211.11.2;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of pdfbox-dev-return-10-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) smtp.mail=pdfbox-dev-return-10-antoni.mylka=gmail.com@incubator.apache.org; dkim=pass (test mode) header.i=@gmail.com
+Received: (qmail 85632 invoked by uid 500); 19 Feb 2008 22:27:05 -0000
+Mailing-List: contact pdfbox-dev-help@incubator.apache.org; run by ezmlm
+Precedence: bulk
+List-Help: <mailto:pdfbox-dev-help@incubator.apache.org>
+List-Unsubscribe: <mailto:pdfbox-dev-unsubscribe@incubator.apache.org>
+List-Post: <mailto:pdfbox-dev@incubator.apache.org>
+List-Id: <pdfbox-dev.incubator.apache.org>
+Reply-To: pdfbox-dev@incubator.apache.org
+Delivered-To: mailing list pdfbox-dev@incubator.apache.org
+Received: (qmail 85623 invoked by uid 99); 19 Feb 2008 22:27:05 -0000
+Received: from athena.apache.org (HELO athena.apache.org) (140.211.11.136)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Tue, 19 Feb 2008 14:27:05 -0800
+X-ASF-Spam-Status: No, hits=-0.0 required=10.0
+	tests=SPF_PASS
+X-Spam-Check-By: apache.org
+Received-SPF: pass (athena.apache.org: domain of jukka.zitting@gmail.com designates 64.233.184.236 as permitted sender)
+Received: from [64.233.184.236] (HELO wr-out-0506.google.com) (64.233.184.236)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Tue, 19 Feb 2008 22:26:33 +0000
+Received: by wr-out-0506.google.com with SMTP id 67so7331337wri.6
+        for <pdfbox-dev@incubator.apache.org>; Tue, 19 Feb 2008 14:26:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:message-id:date:from:to:subject:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        bh=Dn9LkVFteIW8lhMAuz69PKOhzk+sRHxKB1E2XTYK4XA=;
+        b=w9eSTi25ZPUKtY3HQNBCdhbkQIGzsvfiCpiWsw+DCmdU4+lx4cagNXX/UWHXBe2NixIkbb4ptJReRLSC/lAt2GkZ4dI778GkHHn3eP/RL0IoWVS80L6KATdzCeNABEf/+ehqAPrp1CQ9zZdhHowN1vcAbZo5H0XLzMr3aFAAj68=
+DomainKey-Signature: a=rsa-sha1; c=nofws;
+        d=gmail.com; s=gamma;
+        h=message-id:date:from:to:subject:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        b=K53ZmS8C4lrzvS5Yahinq7l/6OTLiLo1Q7sBbOkiT7uRWDk62IqMeVuNILkYxpn6Gka0HYcupsg735BTzQZLWj3qOoFd8HQF3TwEaR1Y9fAsAarM65h8XXEapZK5iCossKukswn3Zel9kOWtIaK9qMxUYvyz0t06/AP59QKY4Ic=
+Received: by 10.142.187.2 with SMTP id k2mr3201375wff.119.1203459999389;
+        Tue, 19 Feb 2008 14:26:39 -0800 (PST)
+Received: by 10.142.223.8 with HTTP; Tue, 19 Feb 2008 14:26:39 -0800 (PST)
+Message-ID: <510143ac0802191426j22c33ec7ted483d0f16250f76@mail.gmail.com>
+Date: Wed, 20 Feb 2008 00:26:39 +0200
+From: "Jukka Zitting" <jukka.zitting@gmail.com>
+To: pdfbox-dev@incubator.apache.org
+Subject: Re: Status file created
+In-Reply-To: <20080216170644.8ADC.DEV@jeremias-maerki.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <20080216170644.8ADC.DEV@jeremias-maerki.ch>
+X-Virus-Checked: Checked by ClamAV on apache.org
+
+Hi,
+
+On Feb 16, 2008 6:10 PM, Jeremias Maerki <dev@jeremias-maerki.ch> wrote:
+> I've just created the status file for PDFBox. This can be found at:
+> https://svn.apache.org/repos/asf/incubator/public/trunk/site-author/projects/pdfbox.xml
+
+Cool, thanks! I pushed it to the Incubator web site, see
+http://incubator.apache.org/projects/pdfbox.html.
+
+Still no update on the CLAs, I'll keep you posted...
+
+BR,
+
+Jukka Zitting
+
+From - Wed Feb 20 10:51:51 2008
+X-Account-Key: account2
+X-UIDL: GmailId11836404872458eb
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Delivered-To: antoni.mylka@gmail.com
+Received: by 10.78.167.3 with SMTP id p3cs220629hue;
+        Wed, 20 Feb 2008 01:50:28 -0800 (PST)
+Received: by 10.140.193.16 with SMTP id q16mr5546963rvf.109.1203501026623;
+        Wed, 20 Feb 2008 01:50:26 -0800 (PST)
+Return-Path: <pdfbox-dev-return-11-antoni.mylka=gmail.com@incubator.apache.org>
+Received: from mail.apache.org (hermes.apache.org [140.211.11.2])
+        by mx.google.com with SMTP id b39si3480300rvf.8.2008.02.20.01.50.24;
+        Wed, 20 Feb 2008 01:50:26 -0800 (PST)
+Received-SPF: pass (google.com: domain of pdfbox-dev-return-11-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) client-ip=140.211.11.2;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of pdfbox-dev-return-11-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) smtp.mail=pdfbox-dev-return-11-antoni.mylka=gmail.com@incubator.apache.org; dkim=pass (test mode) header.i=@gmail.com
+Received: (qmail 89537 invoked by uid 500); 20 Feb 2008 09:50:19 -0000
+Mailing-List: contact pdfbox-dev-help@incubator.apache.org; run by ezmlm
+Precedence: bulk
+List-Help: <mailto:pdfbox-dev-help@incubator.apache.org>
+List-Unsubscribe: <mailto:pdfbox-dev-unsubscribe@incubator.apache.org>
+List-Post: <mailto:pdfbox-dev@incubator.apache.org>
+List-Id: <pdfbox-dev.incubator.apache.org>
+Reply-To: pdfbox-dev@incubator.apache.org
+Delivered-To: mailing list pdfbox-dev@incubator.apache.org
+Received: (qmail 89523 invoked by uid 99); 20 Feb 2008 09:50:19 -0000
+Received: from athena.apache.org (HELO athena.apache.org) (140.211.11.136)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Wed, 20 Feb 2008 01:50:19 -0800
+X-ASF-Spam-Status: No, hits=-0.0 required=10.0
+	tests=SPF_PASS
+X-Spam-Check-By: apache.org
+Received-SPF: pass (athena.apache.org: domain of jukka.zitting@gmail.com designates 209.85.200.172 as permitted sender)
+Received: from [209.85.200.172] (HELO wf-out-1314.google.com) (209.85.200.172)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Wed, 20 Feb 2008 09:49:47 +0000
+Received: by wf-out-1314.google.com with SMTP id 23so785643wfg.21
+        for <pdfbox-dev@incubator.apache.org>; Wed, 20 Feb 2008 01:49:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:message-id:date:from:to:subject:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        bh=uzWVz257ccT8l+IHEgXYMzKFVIAsa9kRr31TQIZIseI=;
+        b=AVCUBZ6yFP8SJTAiuXpbFSII7kJlbo/CLj7lKEWSZJgDGGJZfejDsLKt8OaO1JsjM+a53xEKnPwuxkOH6guEZierB8ZzSvZrjmLld2V9l7aDU+4d+4Y54kE1dO9xuruD8tnAYoMpIFIKKS/IKaJA2Php7bVepL9meKEUPEJBkKQ=
+DomainKey-Signature: a=rsa-sha1; c=nofws;
+        d=gmail.com; s=gamma;
+        h=message-id:date:from:to:subject:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        b=k/NLsufwu46oisFGAT4liDgqZ0qBnLXosgTOLDkpIhhC7hmGrpdWLKT/1L5PogpYvlxOgcwc7dZjFYa8Mbeo/4P+QOEWdIt8370RtibeMs+WMo33IxPhIeuWQeVxWUaDHf9zGj8GRdO6OFSHdJ+MesdWrC9/BosBLwtGmUpOix0=
+Received: by 10.142.245.10 with SMTP id s10mr3300134wfh.16.1203500996549;
+        Wed, 20 Feb 2008 01:49:56 -0800 (PST)
+Received: by 10.142.223.8 with HTTP; Wed, 20 Feb 2008 01:49:56 -0800 (PST)
+Message-ID: <510143ac0802200149l55584274sdcfad2d4b1de789c@mail.gmail.com>
+Date: Wed, 20 Feb 2008 11:49:56 +0200
+From: "Jukka Zitting" <jukka.zitting@gmail.com>
+To: pdfbox-dev@incubator.apache.org
+Subject: Re: Welcome to Apache PDFBox!
+In-Reply-To: <510143ac0802180617g2d89ccdk5356cfd58bbf5d5e@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <510143ac0802101053p4cd93c3au634e0850332fca47@mail.gmail.com>
+	 <a372432a0802110559s42bab223n9068597c70031087@mail.gmail.com>
+	 <510143ac0802180617g2d89ccdk5356cfd58bbf5d5e@mail.gmail.com>
+X-Virus-Checked: Checked by ClamAV on apache.org
+
+Hi,
+
+On Feb 18, 2008 4:17 PM, Jukka Zitting <jukka.zitting@gmail.com> wrote:
+> I haven't yet seen the CLAs recorded, but the last update is from Feb
+> 10th before you sent the CLAs so I'll wait a few more days for the
+> next update before bugging people about this.
+
+They're now recorded, so I've requested the committer accounts for Ben
+and Daniel.
+
+BR,
+
+Jukka Zitting
+
+From - Fri Feb 29 16:39:57 2008
+X-Account-Key: account2
+X-UIDL: GmailId11863cc9b08b870a
+X-Mozilla-Status: 0001
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Delivered-To: antoni.mylka@gmail.com
+Received: by 10.78.167.3 with SMTP id p3cs20320hue;
+        Thu, 28 Feb 2008 22:06:37 -0800 (PST)
+Received: by 10.140.203.9 with SMTP id a9mr6126750rvg.288.1204265196846;
+        Thu, 28 Feb 2008 22:06:36 -0800 (PST)
+Return-Path: <pdfbox-dev-return-12-antoni.mylka=gmail.com@incubator.apache.org>
+Received: from mail.apache.org (hermes.apache.org [140.211.11.2])
+        by mx.google.com with SMTP id b5si17801191rva.20.2008.02.28.22.06.35;
+        Thu, 28 Feb 2008 22:06:36 -0800 (PST)
+Received-SPF: pass (google.com: domain of pdfbox-dev-return-12-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) client-ip=140.211.11.2;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of pdfbox-dev-return-12-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) smtp.mail=pdfbox-dev-return-12-antoni.mylka=gmail.com@incubator.apache.org; dkim=pass (test mode) header.i=@gmail.com
+Received: (qmail 18574 invoked by uid 500); 29 Feb 2008 06:06:31 -0000
+Mailing-List: contact pdfbox-dev-help@incubator.apache.org; run by ezmlm
+Precedence: bulk
+List-Help: <mailto:pdfbox-dev-help@incubator.apache.org>
+List-Unsubscribe: <mailto:pdfbox-dev-unsubscribe@incubator.apache.org>
+List-Post: <mailto:pdfbox-dev@incubator.apache.org>
+List-Id: <pdfbox-dev.incubator.apache.org>
+Reply-To: pdfbox-dev@incubator.apache.org
+Delivered-To: mailing list pdfbox-dev@incubator.apache.org
+Received: (qmail 18561 invoked by uid 99); 29 Feb 2008 06:06:31 -0000
+Received: from athena.apache.org (HELO athena.apache.org) (140.211.11.136)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Thu, 28 Feb 2008 22:06:31 -0800
+X-ASF-Spam-Status: No, hits=-0.0 required=10.0
+	tests=SPF_PASS
+X-Spam-Check-By: apache.org
+Received-SPF: pass (athena.apache.org: domain of jukka.zitting@gmail.com designates 216.239.58.185 as permitted sender)
+Received: from [216.239.58.185] (HELO gv-out-0910.google.com) (216.239.58.185)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Fri, 29 Feb 2008 06:05:57 +0000
+Received: by gv-out-0910.google.com with SMTP id y18so1932278gvf.17
+        for <pdfbox-dev@incubator.apache.org>; Thu, 28 Feb 2008 22:06:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:message-id:date:from:to:subject:mime-version:content-type:content-transfer-encoding:content-disposition;
+        bh=yCeR5mNIvTKfZlAxuVBHbekJUTOyU+wzc6f4MuxmKW0=;
+        b=kMQlJrE28YSEkETApIfwbmXrhYLwMszbsCkzhv1Sz4kGgnMQZSSkYkJqCvUhTqlmCNEMhHbEQd86pyPQcf+kvoNUi+3N7hni+t+VQMGWlO2BM8Zfkrixhiw1lgMF6zkB1FzNTaxZ9nKklIAKFGtGimdR8RnbhZzm6ralDsQm5sg=
+DomainKey-Signature: a=rsa-sha1; c=nofws;
+        d=gmail.com; s=gamma;
+        h=message-id:date:from:to:subject:mime-version:content-type:content-transfer-encoding:content-disposition;
+        b=WJQH3b855MTXY8yLwfdtIiD7JQFwr74z1NxKHF+42RT52TlM8/1QrbJ1OHrJlVIeDnP/hO49o5+CpMmBFIS5XD6pQMyR04UPqRRHXFodnagsY6DW3a4kt+nq5rTnmo6UL5OLs6limxcLaBg56O2IXiEdH0naXvlPjCFhiDInxSo=
+Received: by 10.142.211.10 with SMTP id j10mr6854699wfg.202.1204265163976;
+        Thu, 28 Feb 2008 22:06:03 -0800 (PST)
+Received: by 10.142.213.16 with HTTP; Thu, 28 Feb 2008 22:06:03 -0800 (PST)
+Message-ID: <510143ac0802282206g4ab9237aod676942675c81d98@mail.gmail.com>
+Date: Fri, 29 Feb 2008 08:06:03 +0200
+From: "Jukka Zitting" <jukka.zitting@gmail.com>
+To: pdfbox-dev@incubator.apache.org
+Subject: Moving PDFBox bits over to Apache
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+X-Virus-Checked: Checked by ClamAV on apache.org
+
+Hi,
+
+Let's get started with moving the various parts of PDFBox (and FontBox
+and JempBox) here.
+
+We need:
+
+    1) The source code
+    2) The web site and documentation
+    3) Open issues in the issue tracker
+    4) Pointer in the SF forums for people to come here
+
+For 1 and 2 we need software grants (I believe Ben has all the
+required rights, but I'll check with Apache's legal-discuss mailing
+list).
+
+For 3 I guess manual copying is easiest, but there are 300+ open
+issues in PDFBox. Can we get some sort of an export from SourceForge?
+
+For 4, should we open also a pdfbox-users mailing list here or is
+pdfbox-dev enough for now?
+
+BR,
+
+Jukka Zitting
+
+From - Fri Feb 29 16:39:57 2008
+X-Account-Key: account2
+X-UIDL: GmailId118640687856d028
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Delivered-To: antoni.mylka@gmail.com
+Received: by 10.78.167.3 with SMTP id p3cs23142hue;
+        Thu, 28 Feb 2008 23:09:53 -0800 (PST)
+Received: by 10.141.37.8 with SMTP id p8mr6156121rvj.178.1204268992425;
+        Thu, 28 Feb 2008 23:09:52 -0800 (PST)
+Return-Path: <pdfbox-dev-return-13-antoni.mylka=gmail.com@incubator.apache.org>
+Received: from mail.apache.org (hermes.apache.org [140.211.11.2])
+        by mx.google.com with SMTP id l21si22266809rvb.26.2008.02.28.23.09.51;
+        Thu, 28 Feb 2008 23:09:52 -0800 (PST)
+Received-SPF: pass (google.com: domain of pdfbox-dev-return-13-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) client-ip=140.211.11.2;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of pdfbox-dev-return-13-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) smtp.mail=pdfbox-dev-return-13-antoni.mylka=gmail.com@incubator.apache.org
+Received: (qmail 11423 invoked by uid 500); 29 Feb 2008 07:09:47 -0000
+Mailing-List: contact pdfbox-dev-help@incubator.apache.org; run by ezmlm
+Precedence: bulk
+List-Help: <mailto:pdfbox-dev-help@incubator.apache.org>
+List-Unsubscribe: <mailto:pdfbox-dev-unsubscribe@incubator.apache.org>
+List-Post: <mailto:pdfbox-dev@incubator.apache.org>
+List-Id: <pdfbox-dev.incubator.apache.org>
+Reply-To: pdfbox-dev@incubator.apache.org
+Delivered-To: mailing list pdfbox-dev@incubator.apache.org
+Received: (qmail 11414 invoked by uid 99); 29 Feb 2008 07:09:46 -0000
+Received: from nike.apache.org (HELO nike.apache.org) (192.87.106.230)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Thu, 28 Feb 2008 23:09:46 -0800
+X-ASF-Spam-Status: No, hits=-0.0 required=10.0
+	tests=SPF_PASS
+X-Spam-Check-By: apache.org
+Received-SPF: pass (nike.apache.org: local policy)
+Received: from [213.239.215.103] (HELO tux17.hoststar.ch) (213.239.215.103)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Fri, 29 Feb 2008 07:09:00 +0000
+Received: from [127.0.0.1] (adsl-84-227-17-123.adslplus.ch [84.227.17.123])
+	(authenticated bits=0)
+	by tux17.hoststar.ch (8.13.6/8.12.11) with ESMTP id m1T79LjP010328
+	for <pdfbox-dev@incubator.apache.org>; Fri, 29 Feb 2008 08:09:22 +0100
+Date: Fri, 29 Feb 2008 08:09:38 +0100
+From: Jeremias Maerki <dev@jeremias-maerki.ch>
+To: pdfbox-dev@incubator.apache.org
+Subject: Re: Moving PDFBox bits over to Apache
+In-Reply-To: <510143ac0802282206g4ab9237aod676942675c81d98@mail.gmail.com>
+References: <510143ac0802282206g4ab9237aod676942675c81d98@mail.gmail.com>
+Message-Id: <20080229075831.7F0B.DEV@jeremias-maerki.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Becky! ver. 2.28.01 [en]
+X-Antivirus: avast! (VPS 080228-0, 28.02.2008), Outbound message
+X-Antivirus-Status: Clean
+X-Virus-Checked: Checked by ClamAV on apache.org
+
+On 29.02.2008 07:06:03 Jukka Zitting wrote:
+> Hi,
+>=20
+> Let's get started with moving the various parts of PDFBox (and FontBox
+> and JempBox) here.
+>=20
+> We need:
+>=20
+>     1) The source code
+>     2) The web site and documentation
+>     3) Open issues in the issue tracker
+>     4) Pointer in the SF forums for people to come here
+>=20
+> For 1 and 2 we need software grants (I believe Ben has all the
+> required rights, but I'll check with Apache's legal-discuss mailing
+> list).
+
+I guess it depends whether Ben has always requested license grants or
+CLAs for larger contributions to PDFBox, if there were any.
+
+http://incubator.apache.org/guides/mentor.html#poding-ip-clearance
+
+=46rom what I've heard in the past, it could mean tracking down every
+person who contributed a non-trivial bit to PDFBox and requesting a
+license grant. Or am I wrong?
+
+> For 3 I guess manual copying is easiest, but there are 300+ open
+> issues in PDFBox. Can we get some sort of an export from SourceForge?
+>=20
+> For 4, should we open also a pdfbox-users mailing list here or is
+> pdfbox-dev enough for now?
+
+I think we can start with only this mailing list and then split if we
+see that a separate list is necessary.
+
+> BR,
+>=20
+> Jukka Zitting
+
+
+
+
+Jeremias Maerki
+
+
+From - Fri Feb 29 16:39:57 2008
+X-Account-Key: account2
+X-UIDL: GmailId1186411b5d73e6fd
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Delivered-To: antoni.mylka@gmail.com
+Received: by 10.78.167.3 with SMTP id p3cs23808hue;
+        Thu, 28 Feb 2008 23:22:07 -0800 (PST)
+Received: by 10.141.79.12 with SMTP id g12mr6173502rvl.182.1204269725580;
+        Thu, 28 Feb 2008 23:22:05 -0800 (PST)
+Return-Path: <pdfbox-dev-return-14-antoni.mylka=gmail.com@incubator.apache.org>
+Received: from mail.apache.org (hermes.apache.org [140.211.11.2])
+        by mx.google.com with SMTP id b5si17936000rva.20.2008.02.28.23.22.03;
+        Thu, 28 Feb 2008 23:22:05 -0800 (PST)
+Received-SPF: pass (google.com: domain of pdfbox-dev-return-14-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) client-ip=140.211.11.2;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of pdfbox-dev-return-14-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) smtp.mail=pdfbox-dev-return-14-antoni.mylka=gmail.com@incubator.apache.org; dkim=pass (test mode) header.i=@gmail.com
+Received: (qmail 27718 invoked by uid 500); 29 Feb 2008 07:21:58 -0000
+Mailing-List: contact pdfbox-dev-help@incubator.apache.org; run by ezmlm
+Precedence: bulk
+List-Help: <mailto:pdfbox-dev-help@incubator.apache.org>
+List-Unsubscribe: <mailto:pdfbox-dev-unsubscribe@incubator.apache.org>
+List-Post: <mailto:pdfbox-dev@incubator.apache.org>
+List-Id: <pdfbox-dev.incubator.apache.org>
+Reply-To: pdfbox-dev@incubator.apache.org
+Delivered-To: mailing list pdfbox-dev@incubator.apache.org
+Received: (qmail 27709 invoked by uid 99); 29 Feb 2008 07:21:58 -0000
+Received: from athena.apache.org (HELO athena.apache.org) (140.211.11.136)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Thu, 28 Feb 2008 23:21:58 -0800
+X-ASF-Spam-Status: No, hits=-0.0 required=10.0
+	tests=SPF_PASS
+X-Spam-Check-By: apache.org
+Received-SPF: pass (athena.apache.org: domain of jukka.zitting@gmail.com designates 216.239.58.191 as permitted sender)
+Received: from [216.239.58.191] (HELO gv-out-0910.google.com) (216.239.58.191)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Fri, 29 Feb 2008 07:21:25 +0000
+Received: by gv-out-0910.google.com with SMTP id y18so1954372gvf.17
+        for <pdfbox-dev@incubator.apache.org>; Thu, 28 Feb 2008 23:21:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:message-id:date:from:to:subject:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        bh=sDifEXWRrtuC3rNC6/CZrewm26wYfEmf9So2KSTmoeA=;
+        b=PcICtO6St4N31mySPfagvguZJpHi0Ah5Ium0FqVH9+0xGdokyZWhiuUteKC1CR96kSHD9Gguw+7IsBpYKwp6HWL3v6knIhxWuBggppv0etbmqmb3KoulZVwXSYtkhWnGim6HEgXS1+LJY95VsqJu5hhm3Xm7S5/kb7t6gLNTuP0=
+DomainKey-Signature: a=rsa-sha1; c=nofws;
+        d=gmail.com; s=gamma;
+        h=message-id:date:from:to:subject:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        b=Wrz/NvEchcCFO4wlWvS+2ChLl18E9X/9ReIqaEpDqYmwVmjVLMsjKX2bzFJqMdVBmnsgVBu0pL09Dd7Qm4wGQ2qMWuNDjcn3//r4eBfKxhzfdbBKmr0snZEhdkcRtjsQXNmLMM+v144DM2RYCNSdwStlzyr/SH2YVQW2UsJ19RA=
+Received: by 10.142.156.2 with SMTP id d2mr6892020wfe.219.1204269693090;
+        Thu, 28 Feb 2008 23:21:33 -0800 (PST)
+Received: by 10.142.213.16 with HTTP; Thu, 28 Feb 2008 23:21:33 -0800 (PST)
+Message-ID: <510143ac0802282321w18fcd35ela61957ac20ba9359@mail.gmail.com>
+Date: Fri, 29 Feb 2008 09:21:33 +0200
+From: "Jukka Zitting" <jukka.zitting@gmail.com>
+To: pdfbox-dev@incubator.apache.org
+Subject: Re: Moving PDFBox bits over to Apache
+In-Reply-To: <20080229075831.7F0B.DEV@jeremias-maerki.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <510143ac0802282206g4ab9237aod676942675c81d98@mail.gmail.com>
+	 <20080229075831.7F0B.DEV@jeremias-maerki.ch>
+X-Virus-Checked: Checked by ClamAV on apache.org
+
+Hi,
+
+On Fri, Feb 29, 2008 at 9:09 AM, Jeremias Maerki <dev@jeremias-maerki.ch> wrote:
+> On 29.02.2008 07:06:03 Jukka Zitting wrote:
+>  > For 1 and 2 we need software grants (I believe Ben has all the
+>  > required rights, but I'll check with Apache's legal-discuss mailing
+>  > list).
+>
+>  I guess it depends whether Ben has always requested license grants or
+>  CLAs for larger contributions to PDFBox, if there were any.
+>
+>  http://incubator.apache.org/guides/mentor.html#poding-ip-clearance
+>
+>  From what I've heard in the past, it could mean tracking down every
+>  person who contributed a non-trivial bit to PDFBox and requesting a
+>  license grant. Or am I wrong?
+
+AFAIK Ben already went through that exercise earlier using email, and
+I wanted to confirm with legal-discuss that this satisfies the "has
+sufficient rights to contribute" requirement of the software grant.
+
+>  > For 4, should we open also a pdfbox-users mailing list here or is
+>  > pdfbox-dev enough for now?
+>
+>  I think we can start with only this mailing list and then split if we
+>  see that a separate list is necessary.
+
+Sounds good.
+
+BR,
+
+Jukka Zitting
+
+From - Fri Feb 29 16:39:59 2008
+X-Account-Key: account2
+X-UIDL: GmailId1186545d858f3901
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Delivered-To: antoni.mylka@gmail.com
+Received: by 10.78.167.3 with SMTP id p3cs39138hue;
+        Fri, 29 Feb 2008 04:58:40 -0800 (PST)
+Received: by 10.141.87.13 with SMTP id p13mr6318101rvl.163.1204289919243;
+        Fri, 29 Feb 2008 04:58:39 -0800 (PST)
+Return-Path: <pdfbox-dev-return-15-antoni.mylka=gmail.com@incubator.apache.org>
+Received: from mail.apache.org (hermes.apache.org [140.211.11.2])
+        by mx.google.com with SMTP id g22si22913341rvb.5.2008.02.29.04.58.38;
+        Fri, 29 Feb 2008 04:58:39 -0800 (PST)
+Received-SPF: pass (google.com: domain of pdfbox-dev-return-15-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) client-ip=140.211.11.2;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of pdfbox-dev-return-15-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) smtp.mail=pdfbox-dev-return-15-antoni.mylka=gmail.com@incubator.apache.org; dkim=neutral (body hash did not verify) header.i=@gmail.com
+Received: (qmail 61988 invoked by uid 500); 29 Feb 2008 12:58:33 -0000
+Mailing-List: contact pdfbox-dev-help@incubator.apache.org; run by ezmlm
+Precedence: bulk
+List-Help: <mailto:pdfbox-dev-help@incubator.apache.org>
+List-Unsubscribe: <mailto:pdfbox-dev-unsubscribe@incubator.apache.org>
+List-Post: <mailto:pdfbox-dev@incubator.apache.org>
+List-Id: <pdfbox-dev.incubator.apache.org>
+Reply-To: pdfbox-dev@incubator.apache.org
+Delivered-To: mailing list pdfbox-dev@incubator.apache.org
+Received: (qmail 61979 invoked by uid 99); 29 Feb 2008 12:58:33 -0000
+Received: from athena.apache.org (HELO athena.apache.org) (140.211.11.136)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Fri, 29 Feb 2008 04:58:33 -0800
+X-ASF-Spam-Status: No, hits=2.0 required=10.0
+	tests=HTML_MESSAGE,SPF_PASS
+X-Spam-Check-By: apache.org
+Received-SPF: pass (athena.apache.org: domain of williamstonconsulting@gmail.com designates 209.85.128.188 as permitted sender)
+Received: from [209.85.128.188] (HELO fk-out-0910.google.com) (209.85.128.188)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Fri, 29 Feb 2008 12:57:59 +0000
+Received: by fk-out-0910.google.com with SMTP id 18so8720867fks.12
+        for <pdfbox-dev@incubator.apache.org>; Fri, 29 Feb 2008 04:58:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:message-id:date:from:to:subject:in-reply-to:mime-version:content-type:references;
+        bh=A7msG1eKMZvFCghm2ejuwzoooy0MVSx1uqr2qoDNsrw=;
+        b=VLvs3F6R8C9JrKrOmD0STKKxiXpkJ+NfPhzHU8s/NvkteIQ94fO+qoNvcItFRPn3UbU/P14aD02nhZXV5NTVT9L+dydlqpRInqNx7llBBqvg7avAF94XoXt9b6mI/TyVjfNc0mE+Pe3/2SE0+6IUOOXt+4ceoqVKuQWnpLuOOLk=
+DomainKey-Signature: a=rsa-sha1; c=nofws;
+        d=gmail.com; s=gamma;
+        h=message-id:date:from:to:subject:in-reply-to:mime-version:content-type:references;
+        b=QcEoDU1SXbe3Be1NSUd2gLEodv1+9ItirWf69FkBsYwRgz3K3m6fzjZzvCghJc81R24aeEfUXU6RsZjCuEt0Fj6rgk7gR1bqEKm8fKJLVTDycgtr7P0j0xqymWs2erjIKAX4+HBmeBkN7meCbMMmwFlFFE015A/ycEtP0Kz7m7s=
+Received: by 10.82.184.2 with SMTP id h2mr8332573buf.1.1204289887542;
+        Fri, 29 Feb 2008 04:58:07 -0800 (PST)
+Received: by 10.82.166.14 with HTTP; Fri, 29 Feb 2008 04:58:07 -0800 (PST)
+Message-ID: <a372432a0802290458m64d483dcpa2e006bda73bd585@mail.gmail.com>
+Date: Fri, 29 Feb 2008 07:58:07 -0500
+From: "Daniel Wilson" <williamstonconsulting@gmail.com>
+To: pdfbox-dev@incubator.apache.org
+Subject: Re: Moving PDFBox bits over to Apache
+In-Reply-To: <510143ac0802282321w18fcd35ela61957ac20ba9359@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_23830_12972408.1204289887539"
+References: <510143ac0802282206g4ab9237aod676942675c81d98@mail.gmail.com>
+	 <20080229075831.7F0B.DEV@jeremias-maerki.ch>
+	 <510143ac0802282321w18fcd35ela61957ac20ba9359@mail.gmail.com>
+X-Virus-Checked: Checked by ClamAV on apache.org
+
+------=_Part_23830_12972408.1204289887539
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+>
+>
+> >>  > For 4, should we open also a pdfbox-users mailing list here or is
+> >>  > pdfbox-dev enough for now?
+> >>
+> >>  I think we can start with only this mailing list and then split if we
+> >>  see that a separate list is necessary.
+> >
+> >Sounds good.
+> >
+> >BR,
+>
+>
+> On the Help and Open Discussion fora we get daily posts about "How do
+I...?" or "What's wrong with ...?".  If those would be going into a mailing
+list, I suspect we would quickly find that we want those on a separate list
+from the inter-developer discussion.
+
+My $.02.
+
+DanielWilson
+
+------=_Part_23830_12972408.1204289887539--
+
+From - Sun Mar 09 20:48:22 2008
+X-Account-Key: account2
+X-UIDL: GmailId1188eb1efe4513db
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Delivered-To: antoni.mylka@gmail.com
+Received: by 10.78.164.18 with SMTP id m18cs521201hue;
+        Sat, 8 Mar 2008 06:01:10 -0800 (PST)
+Received: by 10.114.113.1 with SMTP id l1mr450582wac.142.1204984869228;
+        Sat, 08 Mar 2008 06:01:09 -0800 (PST)
+Return-Path: <pdfbox-dev-return-16-antoni.mylka=gmail.com@incubator.apache.org>
+Received: from mail.apache.org (hermes.apache.org [140.211.11.2])
+        by mx.google.com with SMTP id k26si3454548waf.8.2008.03.08.06.01.07;
+        Sat, 08 Mar 2008 06:01:09 -0800 (PST)
+Received-SPF: pass (google.com: domain of pdfbox-dev-return-16-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) client-ip=140.211.11.2;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of pdfbox-dev-return-16-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) smtp.mail=pdfbox-dev-return-16-antoni.mylka=gmail.com@incubator.apache.org; dkim=pass (test mode) header.i=@gmail.com
+Received: (qmail 99496 invoked by uid 500); 8 Mar 2008 14:01:03 -0000
+Mailing-List: contact pdfbox-dev-help@incubator.apache.org; run by ezmlm
+Precedence: bulk
+List-Help: <mailto:pdfbox-dev-help@incubator.apache.org>
+List-Unsubscribe: <mailto:pdfbox-dev-unsubscribe@incubator.apache.org>
+List-Post: <mailto:pdfbox-dev@incubator.apache.org>
+List-Id: <pdfbox-dev.incubator.apache.org>
+Reply-To: pdfbox-dev@incubator.apache.org
+Delivered-To: mailing list pdfbox-dev@incubator.apache.org
+Received: (qmail 99487 invoked by uid 99); 8 Mar 2008 14:01:03 -0000
+Received: from athena.apache.org (HELO athena.apache.org) (140.211.11.136)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Sat, 08 Mar 2008 06:01:03 -0800
+X-ASF-Spam-Status: No, hits=-0.0 required=10.0
+	tests=SPF_PASS
+X-Spam-Check-By: apache.org
+Received-SPF: pass (athena.apache.org: domain of jukka.zitting@gmail.com designates 209.85.200.168 as permitted sender)
+Received: from [209.85.200.168] (HELO wf-out-1314.google.com) (209.85.200.168)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Sat, 08 Mar 2008 14:00:27 +0000
+Received: by wf-out-1314.google.com with SMTP id 23so1326982wfg.21
+        for <pdfbox-dev@incubator.apache.org>; Sat, 08 Mar 2008 06:00:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:message-id:date:from:to:subject:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        bh=5bWAML37J3VMwXrdF88X6S1LsWQtZZ5dMsT9kzk3v+I=;
+        b=r61q9i9MR4J2BRLIGU8RQrnXYG6/CqcgEWV0D8XtoQarosgqW1/gdwRDJSibULW3U9/9HPf6ODqpthu3Ccyn5FFodhhLqG/mNwGfynp2gGvTvNKheqEXsa16M1KMuL4oMfLyrZh1XRavrytjqptjnTpl6Mcp83LFhUhjeTSYomo=
+DomainKey-Signature: a=rsa-sha1; c=nofws;
+        d=gmail.com; s=gamma;
+        h=message-id:date:from:to:subject:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        b=MxCTu80LTwBE98I8hhiSB7mshMdxPKUow3RsEvemaTsL8h1A2sSTYKenmXhRhrNi693DK7jNCMbDHQJPnHVqt+7ACpP89GqAZimDbkL8zg+p7XTc+Z9MZ7Vamb81++mhOqPC9m7C/lsy56cPBmqd0GWSlsBp/n/ePsv16Aadf50=
+Received: by 10.142.44.11 with SMTP id r11mr1263576wfr.22.1204984838017;
+        Sat, 08 Mar 2008 06:00:38 -0800 (PST)
+Received: by 10.142.127.19 with HTTP; Sat, 8 Mar 2008 06:00:37 -0800 (PST)
+Message-ID: <510143ac0803080600t36069997k60a7d7b20ae29f60@mail.gmail.com>
+Date: Sat, 8 Mar 2008 16:00:37 +0200
+From: "Jukka Zitting" <jukka.zitting@gmail.com>
+To: pdfbox-dev@incubator.apache.org
+Subject: Re: Moving PDFBox bits over to Apache
+In-Reply-To: <a372432a0802290458m64d483dcpa2e006bda73bd585@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <510143ac0802282206g4ab9237aod676942675c81d98@mail.gmail.com>
+	 <20080229075831.7F0B.DEV@jeremias-maerki.ch>
+	 <510143ac0802282321w18fcd35ela61957ac20ba9359@mail.gmail.com>
+	 <a372432a0802290458m64d483dcpa2e006bda73bd585@mail.gmail.com>
+X-Virus-Checked: Checked by ClamAV on apache.org
+
+Hi,
+
+On Fri, Feb 29, 2008 at 2:58 PM, Daniel Wilson
+<williamstonconsulting@gmail.com> wrote:
+>  On the Help and Open Discussion fora we get daily posts about "How do
+>  I...?" or "What's wrong with ...?".  If those would be going into a mailing
+>  list, I suspect we would quickly find that we want those on a separate list
+>  from the inter-developer discussion.
+
+Good point. Unless anyone thinks otherwise I'll request a pdfbox-users
+mailing list in a few days.
+
+BR,
+
+Jukka Zitting
+
+From - Sun Mar 09 20:48:22 2008
+X-Account-Key: account2
+X-UIDL: GmailId1188ec72e17e1a46
+X-Mozilla-Status: 0001
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Delivered-To: antoni.mylka@gmail.com
+Received: by 10.78.164.18 with SMTP id m18cs522486hue;
+        Sat, 8 Mar 2008 06:24:22 -0800 (PST)
+Received: by 10.141.15.19 with SMTP id s19mr1787820rvi.205.1204986261070;
+        Sat, 08 Mar 2008 06:24:21 -0800 (PST)
+Return-Path: <pdfbox-dev-return-17-antoni.mylka=gmail.com@incubator.apache.org>
+Received: from mail.apache.org (hermes.apache.org [140.211.11.2])
+        by mx.google.com with SMTP id m10si200481waf.58.2008.03.08.06.24.19;
+        Sat, 08 Mar 2008 06:24:21 -0800 (PST)
+Received-SPF: pass (google.com: domain of pdfbox-dev-return-17-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) client-ip=140.211.11.2;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of pdfbox-dev-return-17-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) smtp.mail=pdfbox-dev-return-17-antoni.mylka=gmail.com@incubator.apache.org
+Received: (qmail 9288 invoked by uid 500); 8 Mar 2008 14:24:15 -0000
+Mailing-List: contact pdfbox-dev-help@incubator.apache.org; run by ezmlm
+Precedence: bulk
+List-Help: <mailto:pdfbox-dev-help@incubator.apache.org>
+List-Unsubscribe: <mailto:pdfbox-dev-unsubscribe@incubator.apache.org>
+List-Post: <mailto:pdfbox-dev@incubator.apache.org>
+List-Id: <pdfbox-dev.incubator.apache.org>
+Reply-To: pdfbox-dev@incubator.apache.org
+Delivered-To: mailing list pdfbox-dev@incubator.apache.org
+Delivered-To: moderator for pdfbox-dev@incubator.apache.org
+Received: (qmail 6470 invoked by uid 99); 8 Mar 2008 14:19:02 -0000
+X-ASF-Spam-Status: No, hits=-2000.0 required=10.0
+	tests=ALL_TRUSTED
+X-Spam-Check-By: apache.org
+Message-ID: <968576143.1204985866297.JavaMail.jira@brutus>
+Date: Sat, 8 Mar 2008 06:17:46 -0800 (PST)
+From: "Jukka Zitting (JIRA)" <jira@apache.org>
+To: pdfbox-dev@incubator.apache.org
+Subject: [jira] Created: (PDFBOX-1) Migrate issues from the SourceForge
+ issue tracker
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Virus-Checked: Checked by ClamAV on apache.org
+
+Migrate issues from the SourceForge issue tracker
+-------------------------------------------------
+
+                 Key: PDFBOX-1
+                 URL: https://issues.apache.org/jira/browse/PDFBOX-1
+             Project: PDFBox
+          Issue Type: Task
+            Reporter: Jukka Zitting
+
+
+We should migrate existing issues from the PDFBox, FontBox, and JempBox issue trackers to here.
+
+-- 
+This message is automatically generated by JIRA.
+-
+You can reply to this email to add a comment to the issue online.
+
+
+From - Sun Mar 09 20:48:23 2008
+X-Account-Key: account2
+X-UIDL: GmailId1188ecae4dda09cb
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Delivered-To: antoni.mylka@gmail.com
+Received: by 10.78.164.18 with SMTP id m18cs522698hue;
+        Sat, 8 Mar 2008 06:28:26 -0800 (PST)
+Received: by 10.114.190.6 with SMTP id n6mr2816510waf.51.1204986504917;
+        Sat, 08 Mar 2008 06:28:24 -0800 (PST)
+Return-Path: <pdfbox-dev-return-18-antoni.mylka=gmail.com@incubator.apache.org>
+Received: from mail.apache.org (hermes.apache.org [140.211.11.2])
+        by mx.google.com with SMTP id n37si3411252wag.24.2008.03.08.06.28.23;
+        Sat, 08 Mar 2008 06:28:24 -0800 (PST)
+Received-SPF: pass (google.com: domain of pdfbox-dev-return-18-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) client-ip=140.211.11.2;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of pdfbox-dev-return-18-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) smtp.mail=pdfbox-dev-return-18-antoni.mylka=gmail.com@incubator.apache.org; dkim=pass (test mode) header.i=@gmail.com
+Received: (qmail 11812 invoked by uid 500); 8 Mar 2008 14:28:19 -0000
+Mailing-List: contact pdfbox-dev-help@incubator.apache.org; run by ezmlm
+Precedence: bulk
+List-Help: <mailto:pdfbox-dev-help@incubator.apache.org>
+List-Unsubscribe: <mailto:pdfbox-dev-unsubscribe@incubator.apache.org>
+List-Post: <mailto:pdfbox-dev@incubator.apache.org>
+List-Id: <pdfbox-dev.incubator.apache.org>
+Reply-To: pdfbox-dev@incubator.apache.org
+Delivered-To: mailing list pdfbox-dev@incubator.apache.org
+Received: (qmail 11803 invoked by uid 99); 8 Mar 2008 14:28:19 -0000
+Received: from nike.apache.org (HELO nike.apache.org) (192.87.106.230)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Sat, 08 Mar 2008 06:28:19 -0800
+X-ASF-Spam-Status: No, hits=-0.0 required=10.0
+	tests=SPF_PASS
+X-Spam-Check-By: apache.org
+Received-SPF: pass (nike.apache.org: domain of jukka.zitting@gmail.com designates 209.85.200.173 as permitted sender)
+Received: from [209.85.200.173] (HELO wf-out-1314.google.com) (209.85.200.173)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Sat, 08 Mar 2008 14:27:33 +0000
+Received: by wf-out-1314.google.com with SMTP id 23so1339504wfg.21
+        for <pdfbox-dev@incubator.apache.org>; Sat, 08 Mar 2008 06:27:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:message-id:date:from:to:subject:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        bh=RKroetfhE/hcElARcrS8FYDspQDxwsVs2vKrAxOqoLs=;
+        b=hnehZLW7v5t0QQmOEwAKj9PGCKZm2TqG+bdFKQ7nNdvrQj0gxMDem7/nTaUUndDsOI4/DJsvdmipx6egTYkX5FVCv1no9zQtKMMR4ILFjbFlBHp9nXS61ZVHR0i/puFM6llfm6YJwZWvtcwo+RoiuWOuE3zSOpvgmgFvUMPWBMs=
+DomainKey-Signature: a=rsa-sha1; c=nofws;
+        d=gmail.com; s=gamma;
+        h=message-id:date:from:to:subject:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        b=s6/NR+oFFl1oVzYhDx4kEoIVSnA39acwlj6z+ocv3aACQcGasQHmVeQkpuyz9epGb143auZ7jzEBqBPzFPOUI/dPEgviXHv11ECNcm+LU6CtTA8S4QXcAtDEDaYh3VV/fM0zLsch24vIq3D71D8q4RMrDwWSlEHo/hCEl0P8HbQ=
+Received: by 10.142.13.13 with SMTP id 13mr1235173wfm.211.1204986473204;
+        Sat, 08 Mar 2008 06:27:53 -0800 (PST)
+Received: by 10.142.127.19 with HTTP; Sat, 8 Mar 2008 06:27:53 -0800 (PST)
+Message-ID: <510143ac0803080627s7126b01an424f65c125852462@mail.gmail.com>
+Date: Sat, 8 Mar 2008 16:27:53 +0200
+From: "Jukka Zitting" <jukka.zitting@gmail.com>
+To: pdfbox-dev@incubator.apache.org
+Subject: Re: Moving PDFBox bits over to Apache
+In-Reply-To: <510143ac0802282206g4ab9237aod676942675c81d98@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <510143ac0802282206g4ab9237aod676942675c81d98@mail.gmail.com>
+X-Virus-Checked: Checked by ClamAV on apache.org
+
+Hi,
+
+On Fri, Feb 29, 2008 at 8:06 AM, Jukka Zitting <jukka.zitting@gmail.com> wrote:
+>  For 3 I guess manual copying is easiest, but there are 300+ open
+>  issues in PDFBox. Can we get some sort of an export from SourceForge?
+
+I found an export feature in SourceForge and exported all PDFBox,
+FontBox, and JempBox issues (both open and closed) to
+http://svn.apache.org/repos/asf/incubator/pdfbox/trunk/migration/.
+
+The data probably needs some massaging before it can be imported to Jira.
+
+I also set up separate pdfbox, fontbox, and jempbox components for the
+PDFBOX project in Jira.
+
+BR,
+
+Jukka Zitting
+
+From - Sun Mar 09 20:48:24 2008
+X-Account-Key: account2
+X-UIDL: GmailId11892e315ba374f4
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Delivered-To: antoni.mylka@gmail.com
+Received: by 10.78.164.18 with SMTP id m18cs569101hue;
+        Sun, 9 Mar 2008 01:33:20 -0800 (PST)
+Received: by 10.114.197.1 with SMTP id u1mr1649173waf.61.1205055198809;
+        Sun, 09 Mar 2008 01:33:18 -0800 (PST)
+Return-Path: <pdfbox-dev-return-19-antoni.mylka=gmail.com@incubator.apache.org>
+Received: from mail.apache.org (hermes.apache.org [140.211.11.2])
+        by mx.google.com with SMTP id g25si14355177wag.37.2008.03.09.01.33.17;
+        Sun, 09 Mar 2008 01:33:18 -0800 (PST)
+Received-SPF: pass (google.com: domain of pdfbox-dev-return-19-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) client-ip=140.211.11.2;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of pdfbox-dev-return-19-antoni.mylka=gmail.com@incubator.apache.org designates 140.211.11.2 as permitted sender) smtp.mail=pdfbox-dev-return-19-antoni.mylka=gmail.com@incubator.apache.org; dkim=pass (test mode) header.i=@gmail.com
+Received: (qmail 46896 invoked by uid 500); 9 Mar 2008 09:33:14 -0000
+Mailing-List: contact pdfbox-dev-help@incubator.apache.org; run by ezmlm
+Precedence: bulk
+List-Help: <mailto:pdfbox-dev-help@incubator.apache.org>
+List-Unsubscribe: <mailto:pdfbox-dev-unsubscribe@incubator.apache.org>
+List-Post: <mailto:pdfbox-dev@incubator.apache.org>
+List-Id: <pdfbox-dev.incubator.apache.org>
+Reply-To: pdfbox-dev@incubator.apache.org
+Delivered-To: mailing list pdfbox-dev@incubator.apache.org
+Received: (qmail 46886 invoked by uid 99); 9 Mar 2008 09:33:14 -0000
+Received: from athena.apache.org (HELO athena.apache.org) (140.211.11.136)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Sun, 09 Mar 2008 01:33:14 -0800
+X-ASF-Spam-Status: No, hits=-0.0 required=10.0
+	tests=SPF_PASS
+X-Spam-Check-By: apache.org
+Received-SPF: pass (athena.apache.org: domain of jukka.zitting@gmail.com designates 209.85.200.174 as permitted sender)
+Received: from [209.85.200.174] (HELO wf-out-1314.google.com) (209.85.200.174)
+    by apache.org (qpsmtpd/0.29) with ESMTP; Sun, 09 Mar 2008 09:32:38 +0000
+Received: by wf-out-1314.google.com with SMTP id 23so1821406wfg.21
+        for <pdfbox-dev@incubator.apache.org>; Sun, 09 Mar 2008 01:32:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:message-id:date:from:to:subject:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        bh=jrVfzltNIqf/RYA2YDYiVAlaUzi7a/yk8QEER3Z32sk=;
+        b=h382I48BVLLa0PZESU93ilSAhG2hi19GaQxxPz1P3IX4VJs5XkeZ4TBkbnY+ra7664hD2KqEwoJEkqs3wDexOUy0oQo8Gu4Oqj3GQ0wLcXjYqHUkIGTGKweRhSBYs+dEPvv9MKjg1g9rg/h53B8whOxMUP1V+uJs6bTcA1xz/GI=
+DomainKey-Signature: a=rsa-sha1; c=nofws;
+        d=gmail.com; s=gamma;
+        h=message-id:date:from:to:subject:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        b=TxGcxq9hjGViju/fDtveNywigG3koi9oYFVLy0gGTbjJMj1+1xd1yjzVCbz/uAQ3Sqt6ve09+inp9A1YOWckD1l5qxa/lySApPlQkFjk8nwMA1Abg4yur7KXdGeUfJ6ZxDKwR0Hbv74aJLuDWbzYOFgcS5YVg4cjaPo5G9bxYV8=
+Received: by 10.143.16.9 with SMTP id t9mr1357519wfi.164.1205055168838;
+        Sun, 09 Mar 2008 01:32:48 -0800 (PST)
+Received: by 10.142.127.19 with HTTP; Sun, 9 Mar 2008 01:32:48 -0800 (PST)
+Message-ID: <510143ac0803090132h37031f2byc3211443e6df7260@mail.gmail.com>
+Date: Sun, 9 Mar 2008 11:32:48 +0200
+From: "Jukka Zitting" <jukka.zitting@gmail.com>
+To: pdfbox-dev@incubator.apache.org
+Subject: Re: Moving PDFBox bits over to Apache
+In-Reply-To: <510143ac0803080627s7126b01an424f65c125852462@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <510143ac0802282206g4ab9237aod676942675c81d98@mail.gmail.com>
+	 <510143ac0803080627s7126b01an424f65c125852462@mail.gmail.com>
+X-Virus-Checked: Checked by ClamAV on apache.org
+
+Hi,
+
+On Sat, Mar 8, 2008 at 4:27 PM, Jukka Zitting <jukka.zitting@gmail.com> wrote:
+>  On Fri, Feb 29, 2008 at 8:06 AM, Jukka Zitting <jukka.zitting@gmail.com> wrote:
+>  >  For 3 I guess manual copying is easiest, but there are 300+ open
+>  >  issues in PDFBox. Can we get some sort of an export from SourceForge?
+>
+>  I found an export feature in SourceForge and exported all PDFBox,
+>  FontBox, and JempBox issues (both open and closed) to
+>  http://svn.apache.org/repos/asf/incubator/pdfbox/trunk/migration/.
+>
+>  The data probably needs some massaging before it can be imported to Jira.
+
+I cleaned all control characters from the exports and wrote an XSL
+transformation (sf2asf.xslt) for turning the exported issues to
+something that can be imported to Jira.
+
+See the resulting CSV file at
+http://people.apache.org/~jukka/pdfbox.csv. I generated the CSV file
+with "for f in */*.xml; do java -jar xalan.jar -in $f -xsl
+sf2asf.xslt; done" and added the column headers manually.
+
+The generated CSV import only contains the open issues in SourceForge.
+It maps the submission date, issue type, component, and summary
+metadata reasonably well, and tries to put all other relevant
+information to the description field with links to the original
+SourceForge issue.
+
+Any comments or wishes about the import? Unless anyone objects, I plan
+to move forward with the import early next week.
+
+>  I also set up separate pdfbox, fontbox, and jempbox components for the
+>  PDFBOX project in Jira.
+
+I further updated the list of components based on the SourceForge
+settings. We now have:
+
+    FontBox
+    JempBox
+    Lucene
+    Parsing
+    PDFReader
+    PDModel
+    PDModel.AcroForm
+    Text extraction
+    Utilities
+    Writing
+
+BR,
+
+Jukka Zitting
+
