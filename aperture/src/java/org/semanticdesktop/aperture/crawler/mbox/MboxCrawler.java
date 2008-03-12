@@ -48,6 +48,8 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
     private static final String SIZE_KEY = "size";
 
     private static final String SUBFOLDERS_KEY = "subfolders";
+    
+    private static final String FOLDER_LAST_MODIFIED = "folderLastModified";
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -216,6 +218,15 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
     @Override
     protected Message[] checkIfAFolderHasBeenChanged(Folder folder, String url, AccessData newAccessData) throws MessagingException{
         Message[] messages = null;
+        if (!folder.isOpen()) {
+            // this is a crappy hack to solve the problems with the root folder of a multi-folder thunderbird
+            // mailbox being a special case
+            // it is a javax.mail.Folder, but it doesn't contain messages and therefore is not open by the
+            // abstract javamail crawler by default
+            // this depends on the equally crappy hack that makes the crawler crawl into folders that have
+            // been reported as changed
+            return null;
+        }
         messages = folder.getMessages();
         
 //        IMAPFolder imapFolder = (IMAPFolder)folder;
@@ -315,8 +326,8 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
             else {
                 int cInt = c;
                 if (cInt >= 48 && cInt <= 57 || cInt >= 65 && cInt <= 90 || cInt >= 97 && cInt <= 122
-                        || cInt == '/' || cInt == ':' || cInt == '.') {
-                    // alphanumeric character or slash or colon or dot
+                        || cInt == '/' || cInt == ':' || cInt == '.' || cInt == '-') {
+                    // alphanumeric character or slash or colon or dot or hyphen
                     buffer.append(c);
                 } else if (cInt == '\\'){
                     // convert backslashes to slashes
@@ -351,7 +362,7 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
         String id = null;
         String hash = null;
         try {
-            hash = StringUtil.sha1Hash(IOUtil.readBytes(message.getInputStream()));
+            hash = IOUtil.rollingHash(message.getInputStream());
         }
         catch (IOException e1) {
             throw new MessagingException("Couldn't obtain a hash of the message");
