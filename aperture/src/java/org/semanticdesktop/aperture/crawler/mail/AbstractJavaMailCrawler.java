@@ -56,6 +56,7 @@ import org.slf4j.LoggerFactory;
  * Mail API. The details about the connections, authentication and security are the responsibility of the
  * concrete subclasses.
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractJavaMailCrawler extends CrawlerBase {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -243,7 +244,8 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
             // loop over all messages
             for (int i = 0; i < messages.length && !isStopRequested(); i++) {
                 MimeMessage message = (MimeMessage) messages[i];
-                long messageID = getMessageUid(folder, message);
+                // this variable was never read, I (Antoni Mylka) commented it out
+                //long messageID = getMessageUid(folder, message);
 
                 // determine the uri
                 String uri = getMessageUri(folder, message);
@@ -295,7 +297,8 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
         // crawl every selected message
         for (int i = 0; i < messages.length && !isStopRequested(); i++) {
             MimeMessage message = (MimeMessage) messages[i];
-            long messageID = getMessageUid(folder, message);
+            //this variable was never read, I (Antoni Mylka) commented it out
+            //long messageID = getMessageUid(folder, message);
             String uri = getMessageUri(folder, message);
 
             try {
@@ -350,6 +353,8 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
                     // attach the message to the parent folder
                     object.getMetadata().add(NIE.isPartOf,folderUri);
 
+                    // TODO this assumption holds for IMAP, but doesn't hold for mbox, nor any other
+                    // file-based mailboxes out there, this should be reworked
                     // Report this object as a new object (assumption: objects are always new, never
                     // changed, since mails are immutable).
                     // This MUST happen last because the CrawlerHandler will probably dispose of it.
@@ -371,6 +376,14 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
                 logger.warn("IOException while processing " + queuedUri, e);
             }
         }
+        
+        // these lines have been added to make sure that the rare case when two copies of the same message
+        // are placed directly after each-other in the same mbox file is treated correctly
+        // (meaning - two messages are crawled, but both yield identical sets of triples), the same URI and
+        // the same content. Obviously this corrupts the new object count but anyone having a better idea
+        // is welcome to share it with the developers of Aperture
+        cachedDataObjectsMap.clear();
+        cachedMessageUrl = null;
     }
     
     /**
@@ -536,7 +549,7 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
     }
     
     /**
-     * Returns a DataObject for an IMAP folder.
+     * Returns a DataObject for an JavaMail folder.
      * @param folder
      * @param url
      * @param dataSource
@@ -591,7 +604,8 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
                 MimeMessage message = (MimeMessage) messages[i];
 
                 if (isAcceptable(message)) {
-                    long messageID = getMessageUid(imapFolder, message); 
+                    //this variable wasn't used, I commented it out (Antoni Mylka)
+                    //long messageID = getMessageUid(imapFolder, message); 
                     try {
                         URI messageURI = metadata.getModel().createURI(getMessageUri(folder,message));
                         metadata.getModel().addStatement(messageURI, NIE.isPartOf, folderURI);
