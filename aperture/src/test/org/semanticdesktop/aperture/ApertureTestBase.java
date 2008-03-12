@@ -565,4 +565,17 @@ public class ApertureTestBase extends TestCase {
             closeIterator(queryIterator);
         }
     }
+    
+    protected void assertNoResultSparqlQuery(Model model, String query) {
+        ClosableIterator<QueryRow> queryIterator = null;
+        QueryResultTable table = model.sparqlSelect(query);
+        try {
+            queryIterator = table.iterator();
+            assertFalse(queryIterator.hasNext());
+            queryIterator.close();
+        }
+        finally {
+            closeIterator(queryIterator);
+        }
+    }
 }
