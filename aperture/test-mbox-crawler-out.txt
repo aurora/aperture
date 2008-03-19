@@ -1,9 +1,0 @@
-47 [main] INFO org.ontoware.rdf2go.RDF2Go - Using ModelFactory 'class org.openrdf.rdf2go.RepositoryModelFactory' which was loaded via org.ontoware.rdf2go.impl.StaticBinding.
-1688 [main] INFO org.openrdf.rio.RDFParserRegistry - Registered service class org.openrdf.rio.rdfxml.RDFXMLParserFactory
-1688 [main] INFO org.openrdf.rio.RDFParserRegistry - Registered service class org.openrdf.rio.turtle.TurtleParserFactory
-1688 [main] INFO org.openrdf.rio.RDFParserRegistry - Registered service class org.openrdf.rio.trig.TriGParserFactory
-1688 [main] INFO org.openrdf.rio.RDFParserRegistry - Registered service class org.openrdf.rio.ntriples.NTriplesParserFactory
-1688 [main] INFO org.openrdf.rio.RDFParserRegistry - Registered service class org.openrdf.rio.n3.N3ParserFactory
-1688 [main] INFO org.openrdf.rio.RDFParserRegistry - Registered service class org.openrdf.rio.trix.TriXParserFactory
-20063 [main] INFO org.openrdf.query.parser.QueryParserRegistry - Registered service class org.openrdf.query.parser.serql.SeRQLParserFactory
-20063 [main] INFO org.openrdf.query.parser.QueryParserRegistry - Registered service class org.openrdf.query.parser.sparql.SPARQLParserFactory
