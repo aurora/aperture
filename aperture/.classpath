@@ -40,6 +40,6 @@
 	<classpathentry kind="lib" path="lib/pdfbox-0.7.4-dev-20071030.jar"/>
 	<classpathentry kind="lib" path="lib/jai_codec.jar"/>
 	<classpathentry kind="lib" path="lib/jai_core.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/mstor-0.9.11"/>
+	<classpathentry kind="lib" path="lib/mstor-0.9.11-hacked.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>
