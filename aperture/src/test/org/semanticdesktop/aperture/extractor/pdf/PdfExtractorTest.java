@@ -113,7 +113,7 @@ public class PdfExtractorTest extends ExtractorTestBase {
         checkStatement(NIE.generator, "PScript5.dll Version 5.2.2", container);
         checkStatement(NIE.generator, "Acrobat Distiller 6.0 (Windows)", container);
         //checkStatement(DATA.date, "2006-02-18T20:44:22", container);
-        checkStatement(NIE.contentCreated, "2006-02-18T20:44:22", container);
+        checkStatement(NIE.contentCreated, "2006-02-18T12:44:22", container);
         checkStatement(NFO.pageCount, "6", container);
         // note that the apostrophe in people's is NOT a normal apostrophy
         // it's some kind of a weird unicode character that caused problems
