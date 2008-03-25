@@ -19,7 +19,10 @@ public class CountingInputStreamTest extends ApertureTestBase {
 
     public void setUp() {
         InputStream testStream = ResourceUtil.getInputStream(DOCS_PATH
-                + "/counting-input-stream-test-file.dat", this.getClass());
+                + "counting-input-stream-test-file.dat", this.getClass());
+        // This check is necessary, we need a stream that supports mark and tests have shown
+        // that various classloaders return different stream implementations, some of them
+        // support mark() some don't
         if (testStream.markSupported()) {
             stream = new CountingInputStream(testStream);
         } else {
