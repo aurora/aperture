@@ -30,7 +30,6 @@ import org.semanticdesktop.aperture.extractor.publisher.PublisherExtractorActiva
 import org.semanticdesktop.aperture.extractor.quattro.QuattroExtractorActivator;
 import org.semanticdesktop.aperture.extractor.rtf.RtfExtractorActivator;
 import org.semanticdesktop.aperture.extractor.util.ExtractorUtilActivator;
-import org.semanticdesktop.aperture.extractor.vcard.VcardExtractorActivator;
 import org.semanticdesktop.aperture.extractor.visio.VisioExtractorActivator;
 import org.semanticdesktop.aperture.extractor.word.WordExtractorActivator;
 import org.semanticdesktop.aperture.extractor.wordperfect.WordPerfectExtractorActivator;
@@ -39,6 +38,7 @@ import org.semanticdesktop.aperture.extractor.xml.XmlExtractorActivator;
 import org.semanticdesktop.aperture.opener.file.FileOpenerActivator;
 import org.semanticdesktop.aperture.opener.http.HttpOpenerActivator;
 import org.semanticdesktop.aperture.outlook.OutlookActivator;
+import org.semanticdesktop.aperture.subcrawler.vcard.VcardSubCrawlerActivator;
 import org.semanticdesktop.aperture.websites.bibsonomy.BibsonomyActivator;
 import org.semanticdesktop.aperture.websites.delicious.DeliciousActivator;
 import org.semanticdesktop.aperture.websites.flickr.FlickrActivator;
@@ -67,6 +67,8 @@ public class CoreImplementationsActivator implements BundleActivator {
 	private FlickrActivator flickrActivator;
 	private IPhotoActivator iphotoActivator;
     
+	private VcardSubCrawlerActivator vcardSubCrawlerActivator;
+	
 	private ExcelExtractorActivator excelExtractorActivator;
 	private HtmlExtractorActivator htmlExtractorActivator;
 	private MimeExtractorActivator mimeExtractorActivator;
@@ -80,7 +82,6 @@ public class CoreImplementationsActivator implements BundleActivator {
 	private PublisherExtractorActivator publisherExtractorActivator;
 	private QuattroExtractorActivator quattroExtractorActivator;
 	private RtfExtractorActivator rtfExtractorActivator;
-	private VcardExtractorActivator vcardExtractorActivator;
 	private VisioExtractorActivator visioExtractorActivator;
 	private WordExtractorActivator wordExtractorActivator;
 	private WordPerfectExtractorActivator wordPerfectExtractorActivator;
@@ -149,11 +150,11 @@ public class CoreImplementationsActivator implements BundleActivator {
 		quattroExtractorActivator.start(context);
 		rtfExtractorActivator = new RtfExtractorActivator();
 		rtfExtractorActivator.start(context);
-		vcardExtractorActivator = new VcardExtractorActivator();
+		vcardSubCrawlerActivator = new VcardSubCrawlerActivator();
 		try {
-		    vcardExtractorActivator.start(context);
+		    vcardSubCrawlerActivator.start(context);
 		} catch (Exception x) {
-		    logger.error("Error starting "+vcardExtractorActivator.getClass().getName()+": "+x, x);
+		    logger.error("Error starting "+vcardSubCrawlerActivator.getClass().getName()+": "+x, x);
 		}
 		visioExtractorActivator = new VisioExtractorActivator();
 		visioExtractorActivator.start(context);
@@ -234,8 +235,8 @@ public class CoreImplementationsActivator implements BundleActivator {
 		rtfExtractorActivator = null;
 		visioExtractorActivator.stop(context);
 		visioExtractorActivator = null;
-		vcardExtractorActivator.stop(context);
-		vcardExtractorActivator = null;
+		vcardSubCrawlerActivator.stop(context);
+		vcardSubCrawlerActivator = null;
 		wordExtractorActivator.stop(context);
 		wordExtractorActivator = null;
 		wordPerfectExtractorActivator.stop(context);
