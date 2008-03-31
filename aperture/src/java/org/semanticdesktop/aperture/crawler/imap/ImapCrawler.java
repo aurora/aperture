@@ -14,9 +14,14 @@ import java.net.Socket;
 import java.net.URLDecoder;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.mail.FetchProfile;
 import javax.mail.Folder;
@@ -55,7 +60,9 @@ import com.sun.mail.imap.IMAPFolder;
 
 
 /**
- * A Combined Crawler and DataAccessor implementation for IMAP.
+ * A Combined Crawler and DataAccessor implementation for IMAP. Note that the same instance of
+ * ImapCrawler cannot be used as a crawler and as a DataAccessor at the same time. Please use
+ * separate instances, or use the appropriate factory, which will enforce this for you.
  */
 @SuppressWarnings("unchecked")
 public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor {
@@ -100,6 +107,11 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
     private boolean includeInbox;
 
     private Store store;
+    
+    /* ----------------- Fields managed by the setCurrentFolder method ----------------- */
+    
+    private Message [] currentMessages;
+    private int preparedActiveMessageCount;
 
     /* ----------------------------- Crawler implementation ----------------------------- */
 
@@ -335,7 +347,11 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
             if (!folder.isOpen() && holdsMessages(folder)) {
                 folder.open(Folder.READ_ONLY);
             }
-
+            
+            // note that we use this.setCurrentFolder() because we don't need prefetching
+            // in this particular case, super.setSetCurrentFolder() suffices
+            super.setCurrentFolder(folder);
+            
             // see if we need to process a folder or a message
             int typeIndex = url.indexOf(";TYPE=");
             if (typeIndex < 0) {
@@ -375,7 +391,7 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
             }
             else {
                 // create a DataObject for this Folder
-                return getObject(folder, url, dataSource, newAccessData, containerFactory);
+                return getCurrentFolderObject(dataSource, newAccessData, containerFactory);
             }
         }
         catch (MessagingException e) {
@@ -386,43 +402,150 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
     }
     
     @Override
-    protected void recordFolderInAccessData(Folder folder, String url, AccessData newAccessData, Message[] messages) throws MessagingException {
+    protected void setCurrentFolder(Folder folder) throws MessagingException {
+        super.setCurrentFolder(folder);
+        this.currentMessages = folder.getMessages();
+        
+        // for faster access, prefetch all message UIDs and flags
+        FetchProfile profile = new FetchProfile();
+        profile.add(UIDFolder.FetchProfileItem.UID); // needed for message.getUID
+        profile.add(FetchProfile.Item.FLAGS); // needed for isAcceptable (DELETED)
+        profile.add(FetchProfile.Item.ENVELOPE); // needed for isAcceptable (size check)
+        folder.fetch(currentMessages, profile);
+        
+        prefetchContentInfoOfNewAndChangedMessages();
+    }
+    
+    @Override
+    protected int getCurrentFolderMessageCount() throws MessagingException {
+        return currentMessages.length;
+    }
+
+    @Override
+    protected Message getMessageFromCurrentFolder(int index) throws MessagingException {
+        // the given index is one-based, conformant to the javamail convention
+        return currentMessages[index-1];
+    }
+
+    /*
+     * Narrows down the messages[] array to those messages that are new or changed and prefetches their
+     * content info. Messages detected as unmodified are reported as unmodified (the reportNotModified
+     * method from the parent class is called).
+     */
+    private void prefetchContentInfoOfNewAndChangedMessages() throws MessagingException {
+        // determine the set of messages we haven't seen yet, to prevent prefetching the content info for old
+        // messages: especially handy when only a few mails were added to a large folder.
+
+        if (accessData != null) {
+            //ArrayList filteredMessages = new ArrayList(messages.length);
+            int messageCount = getCurrentFolderMessageCount();
+            ArrayList filteredMessages = new ArrayList(messageCount);
+
+            // when messages disappear from the array, we must make sure they are removed from the list of
+            // child IDs of the folder
+            String folderUriString = currentFolderURI.toString();
+            Set deprecatedChildren = accessData.getReferredIDs(folderUriString);
+            if (deprecatedChildren == null) {
+                deprecatedChildren = Collections.EMPTY_SET;
+            }
+            else {
+                deprecatedChildren = new HashSet(deprecatedChildren);
+            }
+
+            // loop over all messages
+            //for (int i = 0; i < messages.length && !isStopRequested(); i++) {
+            for (int i = 1; i <= messageCount && !isStopRequested(); i++) {
+                MimeMessage message = (MimeMessage) getMessageFromCurrentFolder(i);
+                
+                // determine the uri
+                String uri = getMessageUri(currentFolder, message);
+
+                // remove this URI from the set of deprecated children
+                deprecatedChildren.remove(uri);
+
+                // see if we've seen this message before
+                if (accessData.get(uri, ACCESSED_KEY) == null) {
+                    // we haven't: register it for processing if it's not deleted/marked for deletion, etc.
+                    if (isAcceptable(message)) {
+                        filteredMessages.add(message);
+                    }
+                }
+                else {
+                    // we've seen this before: if it's not a removed message, it must be an unmodified message
+                    if (isRemoved(message)) {
+                        // this message models a deleted or expunged mail: make sure it does no longer appear
+                        // as a child data object of the folder
+                        accessData.removeReferredID(folderUriString, uri);
+                    }
+                    else {
+                        reportNotModified(getMessageUri(currentFolder, message));
+                    }
+                }
+            }
+
+            // create the subset of messages that we will process
+            currentMessages = (Message[]) filteredMessages.toArray(new Message[filteredMessages.size()]);
+
+            // remove all child IDs that we did not encounter in the above loop
+            Iterator iterator = deprecatedChildren.iterator();
+            while (iterator.hasNext()) {
+                String childUri = (String) iterator.next();
+                accessData.removeReferredID(folderUriString, childUri);
+            }
+        }
+
+        if (isStopRequested()) {
+            return;
+        }
+
+        // pre-fetch content info for the selected messages (assumption: all other info has already been
+        // pre-fetched when determining the folder's metadata, no need to prefetch it again)
+        FetchProfile profile = new FetchProfile();
+        profile.add(FetchProfile.Item.CONTENT_INFO);
+        currentFolder.fetch(currentMessages, profile);
+        
+    }
+
+    @Override
+    protected void recordCurrentFolderInAccessData(AccessData newAccessData) throws MessagingException {
         // register the access data of this url
-        IMAPFolder imapFolder = (IMAPFolder)folder;
+        IMAPFolder imapFolder = (IMAPFolder)currentFolder;
+        String currentUriString = currentFolderURI.toString();
         if (newAccessData != null) {
-            if (holdsMessages(folder)) {
+            if (holdsMessages(currentFolder)) {
                 // getUIDNext may return -1 (unknown), be careful not to store that
                 long uidNext = imapFolder.getUIDNext();
                 if (uidNext != -1L) {
-                    newAccessData.put(url, NEXT_UID_KEY, String.valueOf(imapFolder.getUIDNext()));
+                    newAccessData.put(currentUriString, NEXT_UID_KEY, String.valueOf(imapFolder.getUIDNext()));
                 }
 
-                int messageCount = getMessageCount(messages);
-                newAccessData.put(url, SIZE_KEY, String.valueOf(messageCount));
+                int messageCount = getMessageCount(currentMessages);
+                newAccessData.put(currentUriString, SIZE_KEY, String.valueOf(messageCount));
             }
-            if (holdsFolders(folder)) {
-                newAccessData.put(url, SUBFOLDERS_KEY, getSubFoldersString(folder));
+            if (holdsFolders(currentFolder)) {
+                newAccessData.put(currentUriString, SUBFOLDERS_KEY, getSubFoldersString(currentFolder));
             }
         }
     }
     
     @Override
-    protected Message[] checkIfAFolderHasBeenChanged(Folder folder, String url, AccessData newAccessData) throws MessagingException{
-        Message[] messages = null;
-        IMAPFolder imapFolder = (IMAPFolder)folder;
+    protected boolean checkIfCurrentFolderHasBeenChanged(AccessData newAccessData) throws MessagingException{
+        //Message[] messages = null;
+        //IMAPFolder imapFolder = (IMAPFolder)folder;
+        String currentUriString = currentFolderURI.toString();
         if (newAccessData != null) {
             // the results default to 'true'; unless we can find complete evidence that the folder has not
             // changed, we will always access the folder
             boolean messagesChanged = true;
             boolean foldersChanged = true;
 
-            if (holdsMessages(folder)) {
-                String nextUIDString = newAccessData.get(url, NEXT_UID_KEY);
-                String sizeString = newAccessData.get(url, SIZE_KEY);
+            if (holdsMessages(currentFolder)) {
+                String nextUIDString = newAccessData.get(currentUriString, NEXT_UID_KEY);
+                String sizeString = newAccessData.get(currentUriString, SIZE_KEY);
 
                 // note: this is -1 for servers that don't support retrieval of a next UID, meaning that the
                 // folder will always be reported as changed when it should have been unmodified
-                long nextUID = imapFolder.getUIDNext();
+                long nextUID = ((IMAPFolder)currentFolder).getUIDNext();
 
                 if (nextUIDString != null && sizeString != null && nextUID != -1L) {
                     try {
@@ -431,11 +554,11 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
                         long previousSize = Integer.parseInt(sizeString);
 
                         // determine the new folder size, excluding all deleted/deletion-marked messages
-                        messages = folder.getMessages();
-                        FetchProfile profile = new FetchProfile();
-                        profile.add(FetchProfile.Item.FLAGS); // needed for DELETED flag
-                        folder.fetch(messages, profile);
-                        int messageCount = getMessageCount(messages);
+                        //messages = folder.getMessages();
+                        //FetchProfile profile = new FetchProfile();
+                        //profile.add(FetchProfile.Item.FLAGS); // needed for DELETED flag
+                        //folder.fetch(messages, profile);
+                        int messageCount = getMessageCount(currentMessages);
 
                         // compare the folder status with what we've stored in the AccessData
                         if (previousNextUID == nextUID && previousSize == messageCount) {
@@ -448,11 +571,11 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
                 }
             }
 
-            if (holdsFolders(folder)) {
-                String registeredSubFolders = newAccessData.get(url, SUBFOLDERS_KEY);
+            if (holdsFolders(currentFolder)) {
+                String registeredSubFolders = newAccessData.get(currentUriString, SUBFOLDERS_KEY);
 
                 if (registeredSubFolders != null) {
-                    String subfolders = getSubFoldersString(folder);
+                    String subfolders = getSubFoldersString(currentFolder);
                     if (registeredSubFolders.equals(subfolders)) {
                         foldersChanged = false;
                     }
@@ -461,13 +584,13 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
 
             if (!messagesChanged && !foldersChanged) {
                 // the folder contents have not changed, we can return immediately
-                logger.debug("Folder \"" + folder.getFullName() + "\" has not changed.");
-                return null;
+                logger.debug("Folder \"" + currentFolder.getFullName() + "\" has not changed.");
+                return false;
             }
 
-            logger.debug("Folder \"" + folder.getFullName() + "\" is new or has changes.");
+            logger.debug("Folder \"" + currentFolder.getFullName() + "\" is new or has changes.");
         }
-        return messages;
+        return true;
     }
 
 

@@ -9,7 +9,6 @@ package org.semanticdesktop.aperture.crawler.mail;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.mail.FetchProfile;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -34,7 +32,6 @@ import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -53,8 +50,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * An abstract crawler implementation that works with an email store implementation hidden behind the Java
- * Mail API. The details about the connections, authentication and security are the responsibility of the
- * concrete subclasses.
+ * Mail API. <br/><br/>
+ * 
+ * The details about the connection management, authentication and security are the responsibility of the
+ * concrete subclasses. 
  */
 @SuppressWarnings("unchecked")
 public abstract class AbstractJavaMailCrawler extends CrawlerBase {
@@ -62,44 +61,128 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////// COMMON CONFIGURATION FIELDS //////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // these fields appear in the configuration of all mailbox-related data sources 
     
+    /** Maximum depth below the base folders the crawler will crawl */
     protected int maxDepth;
     
+    /** Maximum size of the message accepted by the crawler, bigger messages will be ignored */
     protected long maximumByteSize;
     
+    /** List of base folders - roots of the crawling */
     protected ArrayList baseFolders = new ArrayList();
     
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////// OTHER FIELDS /////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
+    /** The logger */
     private Logger logger = LoggerFactory.getLogger(getClass());
-    
-    protected static final String ACCESSED_KEY = "accessed";
     
     private String cachedMessageUrl;
 
     private Map cachedDataObjectsMap = new HashMap();
+    
+    protected static final String ACCESSED_KEY = "accessed";
+    
+    /** 
+     * The folder currently crawled by the crawler. 
+     * @see #setCurrentFolder(Folder) 
+     */
+    protected Folder currentFolder;
+    
+    /**
+     * The URI of the current folder. It is set by the {@link #setCurrentFolder(Folder)} using the
+     * {@link #getFolderURI(Folder)} implementation.
+     * @see #setCurrentFolder(Folder) 
+     */
+    protected URI currentFolderURI;
  
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////// ABSTRACT METHODS ///////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    protected abstract URI getFolderURI(Folder folder) throws MessagingException;
+    /**
+     * Returns the URI of the folder, using the URI scheme appropriate for the current crawler.
+     * @param folder the Folder whose URI we'd like to obtain.
+     * @return the uri of the folder
+     * @throws MessagingException
+     */
+    protected abstract URI getFolderURI(Folder folder) 
+            throws MessagingException;
 
-    protected abstract String getMessageUri(Folder folder, Message message) throws MessagingException;
+    /**
+     * Returns the URI of the message, using the URI scheme appropriate for the current crawler.
+     * @param folder the folder where the message resides
+     * @param message the message itself
+     * @return the uri of the message
+     * @throws MessagingException
+     */
+    protected abstract String getMessageUri(Folder folder, Message message) 
+            throws MessagingException;
+    
+    /**
+     * Applies source-specific methods to determine if the current folder has been changed since it has last
+     * been crawled.
+     * 
+     * @param newAccessData the AccessData instance that is to be consulted
+     * @return false if the information stored in the accessData instance indictates that the folder hasn't
+     *         been changed, false otherwise
+     * @throws MessagingException
+     */
+    protected abstract boolean checkIfCurrentFolderHasBeenChanged(AccessData newAccessData)
+            throws MessagingException;
 
-    protected abstract void recordFolderInAccessData(Folder folder, String url, AccessData newAccessData,
-            Message[] messages) throws MessagingException;
-
-    protected abstract Message[] checkIfAFolderHasBeenChanged(Folder folder, String url,
-            AccessData newAccessData) throws MessagingException;
+    /**
+     * Records source-specific information about the current folder that will enable the crawler to detect if
+     * the crawler has been changed on a future crawl.
+     * 
+     * @param newAccessData the access data where the information should be stored
+     * @throws MessagingException
+     */
+    protected abstract void recordCurrentFolderInAccessData(AccessData newAccessData)
+            throws MessagingException;
+    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////// PROTECTED METHODS - OPEN FOR OPTIMIZATIONS //////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    /**
+     * Sets the current folder. Implementations are free to perform any optimizations at this point (like
+     * prefetching). This method is called AFTER the folder is opened ({@link Folder#open(int)}) but 
+     * before any messages are actually crawled.
+     */
+    protected void setCurrentFolder(Folder folder)  
+        throws MessagingException {
+        this.currentFolder = folder;
+        this.currentFolderURI = getFolderURI(folder);
+    }
+    
+    /**
+     * Returns the message from the current folder available at the given index. Note that the exact 
+     * semantics of the index may be overridden by the subclasses of this class, but it will always
+     * follow the javamail convention that folder indexes are one-based
+     * @param index
+     * @return
+     * @throws MessagingException
+     */
+    protected Message getMessageFromCurrentFolder(int index) throws MessagingException {
+        return currentFolder.getMessage(index);
+    }
+    
+    protected int getCurrentFolderMessageCount() throws MessagingException {
+        return currentFolder.getMessageCount();
+    }
     
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////// CRAWLING LOGIC ////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    protected void crawlFolder(Folder folder, int depth) throws MessagingException {
+    /** 
+     * Crawls a subfolder tree starting at the given folder up until the given depth. This method is to 
+     * be called by the subclasses after setting up all connection parameters,
+     */
+    protected final void crawlFolder(Folder folder, int depth) throws MessagingException {
         if (isStopRequested()) {
             return;
         }
@@ -130,14 +213,12 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
         }
     }
     
-    
-    
     private void crawlSingleFolder(Folder folder) throws MessagingException {
         // open the folder in read-only mode
         if (holdsMessages(folder) && !folder.isOpen()) {
             folder.open(Folder.READ_ONLY);
         }
-
+        
         // report the folder's metadata
         String folderUrl = getFolderURI(folder).toString();
 
@@ -148,6 +229,9 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
             return;
         }
 
+        // set the current folder
+        setCurrentFolder(folder);
+
         handler.accessingObject(this, folderUrl);
 
         // see if this object has been encountered before (we must do this before applying the accessor!)
@@ -157,7 +241,7 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
         RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, folderUrl);
 
         try {
-            FolderDataObject folderObject = getObject(folder, folderUrl, source, accessData, containerFactory);
+            FolderDataObject folderObject = getCurrentFolderObject(source, accessData, containerFactory);
 
             if (isStopRequested()) {
                 return;
@@ -189,8 +273,6 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
             logger.warn("Exception while crawling folder " + folderUrl, e);
         }
     }
-    
-
 
     private void crawlSubFolders(Folder folder, int depth) {
         if (depth + 1 > maxDepth && maxDepth >= 0) {
@@ -223,80 +305,10 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
 
         logger.debug("Crawling messages in folder " + folder.getFullName());
 
-        // determine the set of messages we haven't seen yet, to prevent prefetching the content info for old
-        // messages: especially handy when only a few mails were added to a large folder.
-        Message[] messages = folder.getMessages();
-
-        if (accessData != null) {
-            ArrayList filteredMessages = new ArrayList(messages.length);
-
-            // when messages disappear from the array, we must make sure they are removed from the list of
-            // child IDs of the folder
-            String folderUriString = folderUri.toString();
-            Set deprecatedChildren = accessData.getReferredIDs(folderUriString);
-            if (deprecatedChildren == null) {
-                deprecatedChildren = Collections.EMPTY_SET;
-            }
-            else {
-                deprecatedChildren = new HashSet(deprecatedChildren);
-            }
-
-            // loop over all messages
-            for (int i = 0; i < messages.length && !isStopRequested(); i++) {
-                MimeMessage message = (MimeMessage) messages[i];
-                // this variable was never read, I (Antoni Mylka) commented it out
-                //long messageID = getMessageUid(folder, message);
-
-                // determine the uri
-                String uri = getMessageUri(folder, message);
-
-                // remove this URI from the set of deprecated children
-                deprecatedChildren.remove(uri);
-
-                // see if we've seen this message before
-                if (accessData.get(uri, ACCESSED_KEY) == null) {
-                    // we haven't: register it for processing if it's not deleted/marked for deletion, etc.
-                    if (isAcceptable(message)) {
-                        filteredMessages.add(message);
-                    }
-                }
-                else {
-                    // we've seen this before: if it's not a removed message, it must be an unmodified message
-                    if (isRemoved(message)) {
-                        // this message models a deleted or expunged mail: make sure it does no longer appear
-                        // as a child data object of the folder
-                        accessData.removeReferredID(folderUriString, uri);
-                    }
-                    else {
-                        reportNotModified(getMessageUri(folder, message));
-                    }
-                }
-            }
-
-            // create the subset of messages that we will process
-            messages = (Message[]) filteredMessages.toArray(new Message[filteredMessages.size()]);
-
-            // remove all child IDs that we did not encounter in the above loop
-            Iterator iterator = deprecatedChildren.iterator();
-            while (iterator.hasNext()) {
-                String childUri = (String) iterator.next();
-                accessData.removeReferredID(folderUriString, childUri);
-            }
-        }
-
-        if (isStopRequested()) {
-            return;
-        }
-
-        // pre-fetch content info for the selected messages (assumption: all other info has already been
-        // pre-fetched when determining the folder's metadata, no need to prefetch it again)
-        FetchProfile profile = new FetchProfile();
-        profile.add(FetchProfile.Item.CONTENT_INFO);
-        folder.fetch(messages, profile);
-
         // crawl every selected message
-        for (int i = 0; i < messages.length && !isStopRequested(); i++) {
-            MimeMessage message = (MimeMessage) messages[i];
+        int messageCount = getCurrentFolderMessageCount();
+        for (int i = 1; i <= messageCount && !isStopRequested(); i++) {
+            MimeMessage message = (MimeMessage) getMessageFromCurrentFolder(i);
             //this variable was never read, I (Antoni Mylka) commented it out
             //long messageID = getMessageUid(folder, message);
             String uri = getMessageUri(folder, message);
@@ -319,7 +331,7 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
         if (!isAcceptable(message)) {
             return;
         }
-
+        
         // build a queue of urls to access
         LinkedList queue = new LinkedList();
         // first add the uri of the actual message, so that the message itself is
@@ -558,29 +570,28 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
      * @return
      * @throws MessagingException
      */
-    protected FolderDataObject getObject(Folder folder, String url, DataSource dataSource, AccessData newAccessData,
+    protected FolderDataObject getCurrentFolderObject(DataSource dataSource, AccessData newAccessData,
             RDFContainerFactory containerFactory) throws MessagingException {
         // See if this url has been accessed before and hasn't changed in the mean time.
         // A check for the next UID guarantees that no mails have been added (see RFC 3501).
         // If this is still the same, a check on the number of messages guarantees that no mails have
         // been removed either. Finally, we check that it has the same set of subfolders
-        Folder imapFolder = folder;
-        Message[] messages = null;
+        //Folder imapFolder = folder;
+        //Message[] messagesInFolder = null;
 
         // check if the folder has changed
-        messages = checkIfAFolderHasBeenChanged(imapFolder, url, newAccessData);
-        if (messages == null && newAccessData != null) {
+        boolean folderChanged = checkIfCurrentFolderHasBeenChanged(newAccessData);
+        if (!folderChanged && newAccessData != null) {
             // this means that this folder has not been changed and null can be returned
             return null;
         }
         
         // register the folder's name
-        URI folderURI = new URIImpl(url);
-        RDFContainer metadata = containerFactory.getRDFContainer(folderURI);
-        metadata.add(NIE.title, folder.getName());
+        RDFContainer metadata = containerFactory.getRDFContainer(currentFolderURI);
+        metadata.add(NIE.title, currentFolder.getName());
 
         // register the folder's parent
-        Folder parent = folder.getParent();
+        Folder parent = currentFolder.getParent();
         if (parent != null) {
             metadata.add(NIE.isPartOf, getFolderURI(parent));
             // this is needed to satiate the validator, otherwise errors about missing type
@@ -588,27 +599,21 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
             metadata.getModel().addStatement(getFolderURI(parent),RDF.type,NFO.Folder);
         }
 
-        if (holdsMessages(folder)) {
-            if (messages == null) {
-                messages = folder.getMessages();
-            }
+        if (holdsMessages(currentFolder)) {
+            //if (messages == null) {
+            //    messages = folder.getMessages();
+            //}
 
-            // for faster access, prefetch all message UIDs and flags
-            FetchProfile profile = new FetchProfile();
-            profile.add(UIDFolder.FetchProfileItem.UID); // needed for message.getUID
-            profile.add(FetchProfile.Item.FLAGS); // needed for isAcceptable (DELETED)
-            profile.add(FetchProfile.Item.ENVELOPE); // needed for isAcceptable (size check)
-            folder.fetch(messages, profile);
-
-            for (int i = 0; i < messages.length; i++) {
-                MimeMessage message = (MimeMessage) messages[i];
-
+            int messageCount = getCurrentFolderMessageCount();
+            for (int i = 1; i <= messageCount; i++) {
+                MimeMessage message = (MimeMessage) getMessageFromCurrentFolder(i);
+                //System.out.println(currentFolder.getName() + ":" + i + ":" + message.getSubject());
                 if (isAcceptable(message)) {
                     //this variable wasn't used, I commented it out (Antoni Mylka)
                     //long messageID = getMessageUid(imapFolder, message); 
                     try {
-                        URI messageURI = metadata.getModel().createURI(getMessageUri(folder,message));
-                        metadata.getModel().addStatement(messageURI, NIE.isPartOf, folderURI);
+                        URI messageURI = metadata.getModel().createURI(getMessageUri(currentFolder,message));
+                        metadata.getModel().addStatement(messageURI, NIE.isPartOf, currentFolderURI);
                         // This is needed to satiate the validator, otherwise if an email falls beyond
                         // the domain boundaries, the validator will complain about the missing type triple
                         metadata.getModel().addStatement(messageURI, RDF.type, NMO.MailboxDataObject);
@@ -621,24 +626,24 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
         }
 
         // add subfolder URIs
-        Folder[] subFolders = folder.list();
+        Folder[] subFolders = currentFolder.list();
         for (int i = 0; i < subFolders.length; i++) {
             Folder subFolder = subFolders[i];
             if (subFolder.exists()) {
                 metadata.add(metadata.getValueFactory().createStatement(getFolderURI(subFolder), NIE.isPartOf,
-                    folderURI));
+                    currentFolderURI));
             }
         }
 
-        recordFolderInAccessData(folder, url, newAccessData, messages);
+        recordCurrentFolderInAccessData(newAccessData);
 
         // if this is a base folder then add some metadata
-        if (baseFolders.contains(folder.getFullName())) {
+        if (baseFolders.contains(currentFolder.getFullName())) {
             metadata.add(NIE.rootElementOf, dataSource.getID());
         }
 
         // create the resulting FolderDataObject instance
-        return new FolderDataObjectBase(folderURI, dataSource, metadata);
+        return new FolderDataObjectBase(currentFolderURI, dataSource, metadata);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -684,7 +689,7 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
         return buffer.toString();
     }
     
-    private void reportNotModified(String uri) {
+    protected void reportNotModified(String uri) {
         // report this object as unmodified
         crawlReport.increaseUnchangedCount();
         handler.objectNotModified(this, uri);
@@ -705,15 +710,15 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
         }
     }
 
-    private boolean isRemoved(Message message) throws MessagingException {
+    protected boolean isRemoved(Message message) throws MessagingException {
         return message.isExpunged() || message.isSet(Flags.Flag.DELETED);
     }
 
-    private boolean isTooLarge(Message message) throws MessagingException {
+    protected boolean isTooLarge(Message message) throws MessagingException {
         return message.getSize() > maximumByteSize;
     }
 
-    private boolean isAcceptable(Message message) throws MessagingException {
+    protected boolean isAcceptable(Message message) throws MessagingException {
         return !(isRemoved(message) || isTooLarge(message));
     }
 

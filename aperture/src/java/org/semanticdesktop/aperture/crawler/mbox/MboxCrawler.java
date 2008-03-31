@@ -30,7 +30,6 @@ import org.semanticdesktop.aperture.crawler.mail.AbstractJavaMailCrawler;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.mbox.MboxDataSource;
 import org.semanticdesktop.aperture.util.IOUtil;
-import org.semanticdesktop.aperture.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +48,7 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
 
     private static final String SUBFOLDERS_KEY = "subfolders";
     
-    private static final String FOLDER_LAST_MODIFIED = "folderLastModified";
+    //private static final String FOLDER_LAST_MODIFIED = "folderLastModified";
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -174,9 +173,11 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
     private void ensureConnectedStore() throws MessagingException {
         // if there is no store yet, create one now
         if (store == null) {
-            Properties properties = new Properties();
-            properties.put(CapabilityHints.KEY_METADATA, CapabilityHints.VALUE_METADATA_DISABLED);
-            Session session = Session.getDefaultInstance(properties);
+            CapabilityHints.setHint(CapabilityHints.KEY_METADATA, CapabilityHints.VALUE_METADATA_DISABLED);            
+            CapabilityHints.setHint(CapabilityHints.KEY_MBOX_CACHE_BUFFERS, CapabilityHints.VALUE_MBOX_CACHE_BUFFERS_DISABLED);
+            CapabilityHints.setHint(CapabilityHints.KEY_MBOX_BUFFER_STRATEGY, CapabilityHints.VALUE_MBOX_BUFFER_STRATEGY_DEFAULT);
+            System.setProperty("mstor.cache.maxentries", "1");
+            Session session = Session.getDefaultInstance(new Properties());
             store = session.getStore(new URLName(mboxStoreUri));
         }
 
@@ -203,31 +204,31 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
     }
         
     @Override
-    protected void recordFolderInAccessData(Folder folder, String url, AccessData newAccessData, Message[] messages) throws MessagingException {        
+    protected void recordCurrentFolderInAccessData(AccessData newAccessData) throws MessagingException {        
         if (newAccessData != null) {
-            if (holdsMessages(folder)) {
-                int messageCount = getMessageCount(messages);
-                newAccessData.put(url, SIZE_KEY, String.valueOf(messageCount));
+            if (holdsMessages(currentFolder)) {
+                int messageCount = currentFolder.getMessageCount() - currentFolder.getDeletedMessageCount();
+                newAccessData.put(currentFolderURI.toString(), SIZE_KEY, String.valueOf(messageCount));
             }
-            if (holdsFolders(folder)) {
-                newAccessData.put(url, SUBFOLDERS_KEY, getSubFoldersString(folder));
+            if (holdsFolders(currentFolder)) {
+                newAccessData.put(currentFolderURI.toString(), SUBFOLDERS_KEY, getSubFoldersString(currentFolder));
             }
         }
     }
     
     @Override
-    protected Message[] checkIfAFolderHasBeenChanged(Folder folder, String url, AccessData newAccessData) throws MessagingException{
-        Message[] messages = null;
-        if (!folder.isOpen()) {
+    protected boolean checkIfCurrentFolderHasBeenChanged(AccessData newAccessData) throws MessagingException{
+        //Message[] messages = null;
+        if (!currentFolder.isOpen()) {
             // this is a crappy hack to solve the problems with the root folder of a multi-folder thunderbird
             // mailbox being a special case
             // it is a javax.mail.Folder, but it doesn't contain messages and therefore is not open by the
             // abstract javamail crawler by default
             // this depends on the equally crappy hack that makes the crawler crawl into folders that have
             // been reported as changed
-            return null;
+            return false;
         }
-        messages = folder.getMessages();
+        //messages = folder.getMessages();
         
 //        IMAPFolder imapFolder = (IMAPFolder)folder;
 //        
@@ -288,7 +289,7 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
 //
 //            logger.debug("Folder \"" + folder.getFullName() + "\" is new or has changes.");
 //        }
-        return messages;
+        return true;
     }
 
 
