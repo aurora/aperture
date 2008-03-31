@@ -34,7 +34,17 @@ public interface OlObjectClass
      */
   public static final int olCC = 2;
   public static final int olTo = 1;  
-  public static final int olBCC= 3; 
+  public static final int olBCC= 3;
+  /**
+   * OlMeetingRecipientType
+   * recipient type - appointment
+   */
+  public static final int olOptional = 2;
+  public static final int olOrganizer = 0;
+  public static final int olRequired = 1;
+  public static final int olResource = 3;
+
+  // the rest
   public static final int olApplication = 0;
   public static final int olNamespace = 1;
   public static final int olFolder = 2;

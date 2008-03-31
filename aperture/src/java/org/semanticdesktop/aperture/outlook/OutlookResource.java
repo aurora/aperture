@@ -15,7 +15,9 @@ import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
+import org.ontoware.rdf2go.vocabulary.RDFS;
 import org.ontoware.rdf2go.vocabulary.XSD;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -106,6 +108,22 @@ public abstract class OutlookResource {
 			addNcalDateTimeIfNotNull(rdf, NCAL.dtend, resource, "End");
 			// location
 			addPropertyIfNotNull(rdf, NCAL.location, resource, "Location");
+            
+            // organizer and attendees
+            String organizer = getLiteralOf(resource, "Organizer");
+            if (organizer != null)
+            {
+                URI organizerUri = rdf.getModel().createURI(
+                    rdf.getDescribedUri()+"-organizer");
+                rdf.add(NCAL.organizer, organizerUri);
+                rdf.getModel().addStatement(organizerUri, RDF.type, NCAL.Organizer);
+                rdf.getModel().addStatement(organizerUri, NCO.fullname, organizer);
+            }
+            
+            String optionalAttendees = getLiteralOf(resource, "OptionalAttendees");
+            logger.debug("optional: "+optionalAttendees);
+            // using the save-resource here, this may break! then use getResource() instead..
+            addRecipientsIfNotNull(rdf, getResource(), "Recipients", this);
 		}
 
 		public URI getType() {
@@ -402,48 +420,7 @@ public abstract class OutlookResource {
 
 			// FIXME: Redemption seems to have a bug, so i use getResource() here.
 			// if recipients would be retrieved from saveMailItem, its Items method is broken
-			Variant recipients = Dispatch.get(getResource(), "Recipients");
-			if (recipients != null) {
-				Dispatch recipientsD = recipients.toDispatch();
-				int count = Dispatch.get(recipientsD, "Count").toInt();
-				logger.info("adding e-mail, found recipients: "+count);
-				
-				// int dispId = Dispatch.getIDOfName(folders, "Item");
-				for (int i = 1; i <= count; i++) {
-					try {
-						Dispatch recipient = Dispatch.invoke(recipientsD, "Item", Dispatch.Get,
-							new Object[] { new Integer(i) }, new int[1]).toDispatch();
-						String type = getLiteralOf(recipient, "Type");
-						name = getLiteralOf(recipient, "Name");
-						mailbox = getLiteralOf(recipient, "Address");
-						if (!(name == null && mailbox == null)) {
-							URI rec = vf.createURI(getUri() + "_recipient" + i);
-							rdf.add(vf.createStatement(rec, RDF.type, NCO.Contact));
-							if (name != null)
-								rdf.add(vf.createStatement(rec, NCO.fullname, vf.createLiteral(name)));
-							if (mailbox != null) {
-							    Resource emailAddressResource = UriUtil.generateRandomResource(rdf.getModel());
-							    addStatement(rdf, rec, NCO.hasEmailAddress, emailAddressResource);
-							    addStatement(rdf, emailAddressResource, RDF.type, NCO.EmailAddress);
-							    addStatement(rdf, emailAddressResource, NCO.emailAddress, vf.createLiteral(mailbox));
-							}
-
-							if (type.equals(Integer.toString(OlObjectClass.olTo))) {
-								rdf.add(NMO.to, rec);
-							}
-							else if (type.equals(Integer.toString(OlObjectClass.olCC))) {
-								rdf.add(NMO.cc, rec);
-							}
-							else if (type.equals(Integer.toString(OlObjectClass.olBCC))) {
-								rdf.add(NMO.bcc, rec);
-							}
-						}
-					}
-					catch (Exception ex) {
-						ex.printStackTrace();
-					}
-				}
-			}
+            addRecipientsIfNotNull(rdf, getResource(), "Recipients", this);
 		}
 
 		public URI getType() {
@@ -586,7 +563,10 @@ public abstract class OutlookResource {
 	}
 
 
-	/**
+	
+
+
+    /**
 	 * Factory method to create Wrappers. this looks at the passed Dispatch and sees what type it is and
 	 * creates an according OutlookResource subclass
      * @return the wrapper or null, if the resource cannot be wrapped.
@@ -871,6 +851,112 @@ public abstract class OutlookResource {
 	
     protected void addStatement(RDFContainer rdf, Resource subject, URI predicate, Node object) {
         rdf.getModel().addStatement(subject, predicate, object);
+    }
+    
+    /**
+     * Add the recipients of an e-mail or an appointment
+     * @param rdf the parent rdf container. Properties will be added linked to this URI
+     * @param parentNode the parent node to add to 
+     * @param resource
+     * @param dispName
+     */
+    protected void addRecipientsIfNotNull(RDFContainer rdf, Dispatch resource, String dispName,
+            OutlookResource parentResource) {
+        if (parentResource == null)
+            throw new NullPointerException("Error: parentResource=null");
+        Variant recipients = Dispatch.get(resource, dispName);
+        ValueFactory vf = rdf.getValueFactory();
+        if (recipients != null) {
+            Dispatch recipientsD = recipients.toDispatch();
+            int count = Dispatch.get(recipientsD, "Count").toInt();
+            logger.info("adding e-mail, found recipients: "+count);
+            
+            // int dispId = Dispatch.getIDOfName(folders, "Item");
+            for (int i = 1; i <= count; i++) {
+                try {
+                    Dispatch recipient = Dispatch.invoke(recipientsD, "Item", Dispatch.Get,
+                        new Object[] { new Integer(i) }, new int[1]).toDispatch();
+                    String type = getLiteralOf(recipient, "Type");
+                    String name = getLiteralOf(recipient, "Name");
+                    String mailbox = getLiteralOf(recipient, "Address");
+                    if (!(name == null && mailbox == null)) {
+                        URI rec = vf.createURI(getUri() + "_recipient" + i);
+                        rdf.add(vf.createStatement(rec, RDF.type, NCO.Contact));
+                        if (name != null)
+                            rdf.add(vf.createStatement(rec, NCO.fullname, vf.createLiteral(name)));
+                        if (mailbox != null) {
+                            Resource emailAddressResource = UriUtil.generateRandomResource(rdf.getModel());
+                            addStatement(rdf, rec, NCO.hasEmailAddress, emailAddressResource);
+                            addStatement(rdf, emailAddressResource, RDF.type, NCO.EmailAddress);
+                            addStatement(rdf, emailAddressResource, NCO.emailAddress, vf.createLiteral(mailbox));
+                        }
+
+                        // mail
+                        if (parentResource instanceof OutlookResource.Mail)
+                        {
+                            if (type.equals(Integer.toString(OlObjectClass.olTo))) {
+                                rdf.add(NMO.to, rec);
+                            }
+                            else if (type.equals(Integer.toString(OlObjectClass.olCC))) {
+                                rdf.add(NMO.cc, rec);
+                            }
+                            else if (type.equals(Integer.toString(OlObjectClass.olBCC))) {
+                                rdf.add(NMO.bcc, rec);
+                            } 
+                            else 
+                            {
+                                logger.warn("cannot connect mail recipient type '"+type+"', using NMO.to instead");
+                                rdf.add(NMO.to, rec);
+                            }
+                        } else if (parentResource instanceof OutlookResource.Appointment)
+                        // appointment
+                        {
+                            // roles: ncal:chairRole, ncal:nonParticipantRole, ncal:optParticipantRole, ncal:reqParticipantRole
+                            if (type.equals(Integer.toString(OlObjectClass.olOptional))) {
+                                rdf.add(NCAL.attendee, rec);
+                                rdf.add(vf.createStatement(rec, RDF.type, NCAL.Attendee));
+                                rdf.add(vf.createStatement(rec, NCAL.role, NCAL.optParticipantRole));
+                            }
+                            else if (type.equals(Integer.toString(OlObjectClass.olOrganizer))) {
+                                rdf.add(NCAL.attendee, rec);
+                                rdf.add(NCAL.organizer, rec);
+                                rdf.add(vf.createStatement(rec, RDF.type, NCAL.Attendee));
+                                rdf.add(vf.createStatement(rec, RDF.type, NCAL.Organizer));
+                                rdf.add(vf.createStatement(rec, NCAL.role, NCAL.chairRole));
+                            }
+                            else if (type.equals(Integer.toString(OlObjectClass.olRequired))) {
+                                rdf.add(NCAL.attendee, rec);
+                                rdf.add(vf.createStatement(rec, RDF.type, NCAL.Attendee));
+                                rdf.add(vf.createStatement(rec, NCAL.role, NCAL.reqParticipantRole));
+                            }
+                            else if (type.equals(Integer.toString(OlObjectClass.olResource))) {
+                                rdf.add(NCAL.attendee, rec);
+                                rdf.add(vf.createStatement(rec, RDF.type, NCAL.Attendee));
+                                rdf.add(vf.createStatement(rec, RDFS.comment, vf.createLiteral("resource")));
+                            }
+                            else 
+                            {
+                                logger.warn("cannot connect Appointment recipient type '"+type+"', using NCAL.attendee instead");
+                                rdf.add(NCAL.attendee, rec);
+                                rdf.add(vf.createStatement(rec, RDF.type, NCAL.Attendee));
+                            }
+                        } else 
+                        {
+                            logger.warn("cannot add recipients for type '"+parentResource.getClass()+
+                                "': I only understand OutlookResource.Appointment or OutlookResource.Mail. " +
+                                "Using connection NIE:hasLogicalPart to connect "+rdf.getDescribedUri()+" to "+rec);
+                            rdf.add(NIE.hasLogicalPart, rec);
+                            
+                        }
+                            
+                    }
+                }
+                catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+
     }
 
 	/**
