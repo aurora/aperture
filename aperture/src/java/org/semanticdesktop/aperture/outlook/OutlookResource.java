@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
@@ -180,6 +181,10 @@ public abstract class OutlookResource {
 			addTelephoneNumberIfNotNull(model, uri, resource, "BusinessTelephoneNumber", "work", NCO.PhoneNumber);
 			addTelephoneNumberIfNotNull(model, uri, resource, "HomeTelephoneNumber", "home", NCO.PhoneNumber);
 			addTelephoneNumberIfNotNull(model, uri, resource, "MobileTelephoneNumber", "cell", NCO.CellPhoneNumber);
+			
+
+
+			        
 
 			// Address(es)
 			// Business Address
@@ -191,16 +196,31 @@ public abstract class OutlookResource {
 			// Other
 			readAddress(resource, "OtherAddress", rdf, "other");
 			
-			// organization
-			String org = getLiteralOf(resource, "Companies");
-			if (org != null) {
-			    Resource affiliationResource = UriUtil.generateRandomResource(model);
-			    addStatement(rdf, uri, NCO.hasAffiliation, affiliationResource);
-			    addStatement(rdf, affiliationResource, RDF.type, NCO.Affiliation);
-			    Resource organizationContactResource = UriUtil.generateRandomResource(model);
-			    addStatement(rdf, affiliationResource, NCO.org, organizationContactResource);
-			    addStatement(rdf, organizationContactResource, RDF.type, NCO.OrganizationContact);
-			    addStatement(rdf, organizationContactResource, NCO.fullname, org);
+			// Affiliation and Organization
+			String companies = getLiteralOf(resource, "Companies");
+	        String companyName = getLiteralOf(resource, "CompanyName");
+	        String jobTitle = getLiteralOf(resource, "JobTitle");
+			if ((companyName != null)||(jobTitle != null)||(companies != null)) {
+			    try {
+                    URI affiliationResource = rdf.getValueFactory().createURI(getUri() + "_" + "Affiliation");
+                    addStatement(rdf, uri, NCO.hasAffiliation, affiliationResource);
+                    addStatement(rdf, affiliationResource, RDF.type, NCO.Affiliation);
+                    if (jobTitle != null)
+                        addStatement(rdf, affiliationResource, NCO.title, jobTitle);
+                    if ((companyName != null)||(companies != null))
+                    {
+                        Resource organizationContactResource = rdf.getValueFactory().createURI(getUri() + "_" + "Organization");
+                        addStatement(rdf, affiliationResource, NCO.org, organizationContactResource);
+                        addStatement(rdf, organizationContactResource, RDF.type, NCO.OrganizationContact);
+                        if (companies != null)
+                            addStatement(rdf, organizationContactResource, NCO.fullname, companies);
+                        if (companyName != null)
+                            addStatement(rdf, organizationContactResource, NCO.fullname, companyName);
+                    }
+                }
+                catch (ModelException e) {
+                   throw new ModelRuntimeException(e);
+                }
 			}
 		}
 
