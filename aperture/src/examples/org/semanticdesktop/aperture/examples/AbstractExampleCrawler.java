@@ -12,6 +12,11 @@ import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.ontoware.rdf2go.model.ModelSet;
+import org.openrdf.rdf2go.RepositoryModelSet;
+import org.openrdf.repository.Repository;
+import org.openrdf.repository.sail.SailRepository;
+import org.openrdf.sail.nativerdf.NativeStore;
 import org.semanticdesktop.aperture.examples.handler.PerformanceMeasuringCrawlerHandler;
 import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.examples.handler.ValidatingCrawlerHandler;
@@ -43,6 +48,8 @@ public abstract class AbstractExampleCrawler {
     
     public static final String EXTRACT_CONTENTS_OPTION = "-x";
     
+    public static final String NATIVE_STORE_OPTION = "--native";
+    
     protected abstract String getSpecificSyntaxPart();
     
     protected abstract String getSpecificExplanationPart();
@@ -59,6 +66,7 @@ public abstract class AbstractExampleCrawler {
     protected List<String> processCommonOptions(String [] args) throws Exception {
         boolean validate = false;
         boolean performance = false;
+        File nativeStoreFolder = null;
         List<String> remainingOptions = new LinkedList<String>();
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
@@ -70,6 +78,21 @@ public abstract class AbstractExampleCrawler {
                 }
                 outputFile = new File(nextArg);
                 i++;
+            }else if (arg.equals(NATIVE_STORE_OPTION)) {
+                    if (nextArg == null) {
+                        System.err.println("missing value for option " + NATIVE_STORE_OPTION);
+                        exitWithUsageMessage();
+                    }
+                    nativeStoreFolder = new File(nextArg);
+                    if (!nativeStoreFolder.exists() && !nativeStoreFolder.mkdir()) {
+                        System.err.println("Couldn't create the native store folder");
+                    }
+                    else if (!nativeStoreFolder.isDirectory() || 
+                        !nativeStoreFolder.canRead() || 
+                        !nativeStoreFolder.canWrite()) {
+                        System.err.println(nativeStoreFolder.getAbsolutePath() + " exists and is not a read/write enabled folder");
+                    }
+                    i++;
             } else if (arg.equals(VALIDATE_OPTION)) {
                 validate = true;
             } else if (arg.equals(PERFORMANCE_OPTION)) {
@@ -89,8 +112,8 @@ public abstract class AbstractExampleCrawler {
             System.err.println("Cannot specify both validating and performance measuring at the same time");
             exitWithUsageMessage();
         }
-        if (!performance && (outputFile == null)) {
-            System.err.println("When not measuring performance, the output file needs to be specified");
+        if (!performance && (outputFile == null) && (nativeStoreFolder == null)) {
+            System.err.println("When not measuring performance, the output file or the native store folder need to be specified");
             exitWithUsageMessage();
         }
         if (validate) {
@@ -100,11 +123,18 @@ public abstract class AbstractExampleCrawler {
         } else {
             handler = new SimpleCrawlerHandler(identifyingMimeType,extractingContents,verbose,outputFile);
         }
+        if (nativeStoreFolder != null) {
+            Repository repo = new SailRepository(new NativeStore(nativeStoreFolder));
+            repo.initialize();
+            ModelSet set = new RepositoryModelSet(repo);
+            set.open();
+            handler.setModelSet(set);
+        }
         return remainingOptions;
     }
     
     public static String getCommonSyntaxPart() {
-        return "[--validate] [--performance] [-i] [-x] [-v] -o <output-file-path>";
+        return "[--validate] [--performance] [--native <native-store-path>] [-i] [-x] [-v] -o <output-file-path>";
     }
     
     public static String getCommonExplanationPart() {
@@ -113,6 +143,7 @@ public abstract class AbstractExampleCrawler {
         writer.println(getAlignedOption("--validate") + "turns on validation, the data is validated after the crawl");
         writer.println(getAlignedOption(null) + "(conflicts with --performance)");
         writer.println(getAlignedOption("--performance") + "turns on performance measuring");
+        writer.println(getAlignedOption("--native") + "stores the data in the native store");
         writer.println(getAlignedOption("-i") + "turns on MIME type identification");
         writer.println(getAlignedOption("-x") + "if specified - the program will try to extract the content of");
         writer.println(getAlignedOption("-v") + "verbose output");

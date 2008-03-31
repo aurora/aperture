@@ -63,7 +63,6 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
 
     private ExitCode exitCode;
     
-
     // the mime type identifier
     private MimeTypeIdentifier mimeTypeIdentifier;
 
@@ -72,13 +71,29 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     private boolean identifyingMimeType;
 
     private boolean extractingContents;
-
-    private boolean noOutput;
     
     private boolean verbose;
     
     private File outputFile;
 
+    /**
+     * Constructor. It will store the data in the model set returned by RDF2Go.getModelFactory().createModelSet()
+     * 
+     * @param identifyingMimeType 'true' if the crawler is to use a MIME type identifier on each
+     *            FileDataObject it gets, 'false' if not
+     * @param extractingContents 'true' if the crawler is to use an extractor on each DataObject it gets
+     *            'false' if not
+     * @param verbose 'true' if the crawler is to print verbose messages on what it is doing, false otherwise
+     * @param outputFile the file where the extracted RDF metadata is to be stored. This argument can also be
+     *            set to 'null', in which case the RDF metadata will not be stored in a file. This setting is
+     *            useful for performance measurements.
+     * @param modelSet the model set used to store the data
+     * @throws ModelException
+     */
+    public SimpleCrawlerHandler(boolean identifyingMimeType, boolean extractingContents, boolean verbose, File outputFile) {
+        construct(identifyingMimeType, extractingContents, verbose, outputFile, null);
+    }
+    
     /**
      * Constructor.
      * 
@@ -90,33 +105,56 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
      * @param outputFile the file where the extracted RDF metadata is to be stored. This argument can also be
      *            set to 'null', in which case the RDF metadata will not be stored in a file. This setting is
      *            useful for performance measurements.
+     * @param modelSet the model set used to store the data
      * @throws ModelException
      */
-    public SimpleCrawlerHandler(boolean identifyingMimeType, boolean extractingContents, boolean verbose, File outputFile) {
-        // create a ModelSet that will hold the RDF Models of all crawled files and folders
-        ModelFactory factory = RDF2Go.getModelFactory();
-        modelSet = factory.createModelSet();
-        modelSet.open();
-
-        // create some identification and extraction components
+    public SimpleCrawlerHandler(boolean identifyingMimeType, boolean extractingContents, boolean verbose, File outputFile, ModelSet newModelSet) {
+        construct(identifyingMimeType, extractingContents, verbose, outputFile, newModelSet);
+    }
+    
+    /**
+     * Initializes the fields, called by constructors
+     * @param identifyingMimeType
+     * @param extractingContents
+     * @param verbose
+     * @param outputFile
+     * @param newModelSet
+     */
+    private void construct(boolean identifyingMimeType, boolean extractingContents, boolean verbose, File outputFile, ModelSet newModelSet) {        
+        if (newModelSet == null && outputFile == null) {
+            // this may happen when measuring performance
+            this.modelSet = null;
+            this.outputFile = null;
+        } else if (newModelSet == null && outputFile != null) {
+            // a common case, we simply want to dump the output to a file
+            ModelFactory factory = RDF2Go.getModelFactory();
+            this.modelSet = factory.createModelSet();
+            this.modelSet.open();
+            this.outputFile = outputFile;
+        } else if (newModelSet != null && outputFile == null){
+            // this may happen, e.g. if we want to add data to an existing store
+            this.modelSet = newModelSet;
+            this.outputFile = null;
+        }
+        else if (newModelSet != null && outputFile != null) {
+            // this means that we want to add data to an existing store, and get a serialization of the whole
+            // store at the end of the crawl
+            this.modelSet = newModelSet;
+            this.outputFile = outputFile;
+        }
+        
+        // set some flags
         this.identifyingMimeType = identifyingMimeType;
+        this.extractingContents = extractingContents;
+        this.verbose = verbose;
+        
+        // create some identification and extraction components
         if (identifyingMimeType) {
             mimeTypeIdentifier = new MagicMimeTypeIdentifier();
         }
-        this.extractingContents = extractingContents;
         if (extractingContents) {
             extractorRegistry = new DefaultExtractorRegistry();
         }
-
-        if (outputFile == null) {
-            this.outputFile = null;
-            this.noOutput = true;
-        }
-        else {
-            this.outputFile = outputFile;
-            this.noOutput = false;
-        }
-        this.verbose = verbose;
     }
 
     /**
@@ -170,16 +208,17 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     }
     
     protected void disposeDataObject(DataObject object) {
-        // really dispose the RDFContainer when noOutput
         object.dispose();
-        if (noOutput) {
-            try {
-                ((Repository) object.getMetadata().getModel().getUnderlyingModelImplementation()).shutDown();
-            }
-            catch (RepositoryException e) {
-                e.printStackTrace();
-            }
-        }
+        // really dispose the RDFContainer when noOutput
+        // what is it for?
+//        if (modelSet == null) {
+//            try {
+//                ((Repository) object.getMetadata().getModel().getUnderlyingModelImplementation()).shutDown();
+//            }
+//            catch (RepositoryException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     @SuppressWarnings("unchecked")
@@ -327,7 +366,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
 
         // when running performance tests, we dump the dataobjects,
         // otherwise we channel the triples into the modelSet
-        Model model = (noOutput) ? RDF2Go.getModelFactory().createModel() : modelSet.getModel(uri);
+        Model model = (modelSet == null) ? RDF2Go.getModelFactory().createModel() : modelSet.getModel(uri);
         model.open();
         return new RDFContainerImpl(model, uri);
     }
@@ -350,7 +389,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     
     protected void printAndCloseModelSet() {
         try {
-            if (!noOutput) {
+            if (outputFile != null) {
                 OutputStream stream = new BufferedOutputStream(new FileOutputStream(outputFile));
                 modelSet.writeTo(stream, Syntax.RdfXml);
                 stream.close();
@@ -358,7 +397,9 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
             } else {
                 System.out.println("Output discarded");
             }
-            modelSet.close();
+            if (modelSet != null) {
+                modelSet.close();
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -367,6 +408,10 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     
     public ModelSet getModelSet() {
         return modelSet;
+    }
+    
+    public void setModelSet(ModelSet modelSet) {
+        this.modelSet = modelSet;
     }
 
     
