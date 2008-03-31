@@ -43,8 +43,12 @@ import org.semanticdesktop.aperture.websites.bibsonomy.BibsonomyActivator;
 import org.semanticdesktop.aperture.websites.delicious.DeliciousActivator;
 import org.semanticdesktop.aperture.websites.flickr.FlickrActivator;
 import org.semanticdesktop.aperture.websites.iphoto.IPhotoActivator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CoreImplementationsActivator implements BundleActivator {
+    
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
 	public static BundleContext bc;
 	
@@ -146,7 +150,11 @@ public class CoreImplementationsActivator implements BundleActivator {
 		rtfExtractorActivator = new RtfExtractorActivator();
 		rtfExtractorActivator.start(context);
 		vcardExtractorActivator = new VcardExtractorActivator();
-        vcardExtractorActivator.start(context);
+		try {
+		    vcardExtractorActivator.start(context);
+		} catch (Exception x) {
+		    logger.error("Error starting "+vcardExtractorActivator.getClass().getName()+": "+x, x);
+		}
 		visioExtractorActivator = new VisioExtractorActivator();
 		visioExtractorActivator.start(context);
 		wordExtractorActivator = new WordExtractorActivator();

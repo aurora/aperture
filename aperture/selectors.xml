@@ -65,6 +65,16 @@
         </and>
     </selector>
     
+    <selector id="bundle.subcrawler.service.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/subcrawler/*" />
+                <filename name="org/semanticdesktop/aperture/subcrawler/impl/*" />             
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
     <selector id="bundle.datasource.service.selector">
         <and>
             <or>
@@ -471,6 +481,7 @@
         <or>
             <selector refid="bundle.accessor.service.selector" />
             <selector refid="bundle.crawler.service.selector" />
+            <selector refid="bundle.subcrawler.service.selector" />
             <selector refid="bundle.datasource.service.selector" />
             <selector refid="bundle.extractor.service.selector" />
             <selector refid="bundle.opener.service.selector" />
