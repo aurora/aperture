@@ -188,9 +188,7 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
     }
 
     /**
-     * Closes any connections this ImapCrawler may have to an IMAP server. Afterwards, the InputStream of any
-     * returned FileDataObjects may no longer be accessible. Invoking this method when no connections are open
-     * has no effect.
+     * Closes the store()
      */
     private void closeConnection() {
         if (store != null && store.isConnected()) {
