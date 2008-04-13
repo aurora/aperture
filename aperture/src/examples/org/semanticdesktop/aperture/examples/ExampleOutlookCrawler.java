@@ -69,7 +69,8 @@ public class ExampleOutlookCrawler extends AbstractExampleCrawler {
         crawler.setDataSource(source);
         crawler.setDataAccessorRegistry(new DefaultDataAccessorRegistry());
         crawler.setCrawlerHandler(getHandler());
-
+        crawler.setAccessData(getAccessData());
+        
         // start crawling
         crawler.crawl();
     }

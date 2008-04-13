@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.ontoware.rdf2go.model.ModelSet;
+import org.openrdf.model.URI;
 import org.openrdf.rdf2go.RepositoryModelSet;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.sail.SailRepository;
@@ -20,6 +21,7 @@ import org.openrdf.sail.nativerdf.NativeStore;
 import org.semanticdesktop.aperture.examples.handler.PerformanceMeasuringCrawlerHandler;
 import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.examples.handler.ValidatingCrawlerHandler;
+import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.nepomuk.nrl.validator.ModelTester;
 import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTester;
 import org.semanticdesktop.nepomuk.nrl.validator.testers.RootElementModelTester;
@@ -36,6 +38,8 @@ public abstract class AbstractExampleCrawler {
     
     private boolean extractingContents;
     
+    private AccessData accessData;
+    
     public static final String OUTPUT_FILE_OPTION = "-o";
     
     public static final String VALIDATE_OPTION = "--validate";
@@ -49,6 +53,8 @@ public abstract class AbstractExampleCrawler {
     public static final String EXTRACT_CONTENTS_OPTION = "-x";
     
     public static final String NATIVE_STORE_OPTION = "--native";
+    
+    public static final String ACCESS_DATA_STORE_OPTION = "--accessDataStore";
     
     protected abstract String getSpecificSyntaxPart();
     
@@ -67,6 +73,8 @@ public abstract class AbstractExampleCrawler {
         boolean validate = false;
         boolean performance = false;
         File nativeStoreFolder = null;
+        File accessDataFolder = null;
+        URI accessDataContext = null;
         List<String> remainingOptions = new LinkedList<String>();
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
@@ -78,33 +86,56 @@ public abstract class AbstractExampleCrawler {
                 }
                 outputFile = new File(nextArg);
                 i++;
-            }else if (arg.equals(NATIVE_STORE_OPTION)) {
-                    if (nextArg == null) {
-                        System.err.println("missing value for option " + NATIVE_STORE_OPTION);
-                        exitWithUsageMessage();
-                    }
-                    nativeStoreFolder = new File(nextArg);
-                    if (!nativeStoreFolder.exists() && !nativeStoreFolder.mkdir()) {
-                        System.err.println("Couldn't create the native store folder");
-                    }
-                    else if (!nativeStoreFolder.isDirectory() || 
-                        !nativeStoreFolder.canRead() || 
-                        !nativeStoreFolder.canWrite()) {
-                        System.err.println(nativeStoreFolder.getAbsolutePath() + " exists and is not a read/write enabled folder");
-                    }
-                    i++;
-            } else if (arg.equals(VALIDATE_OPTION)) {
+            }
+            else if (arg.equals(NATIVE_STORE_OPTION)) {
+                if (nextArg == null) {
+                    System.err.println("missing value for option " + NATIVE_STORE_OPTION);
+                    exitWithUsageMessage();
+                }
+                nativeStoreFolder = new File(nextArg);
+                if (!nativeStoreFolder.exists() && !nativeStoreFolder.mkdir()) {
+                    System.err.println("Couldn't create the native store folder");
+                }
+                else if (!nativeStoreFolder.isDirectory() || !nativeStoreFolder.canRead()
+                        || !nativeStoreFolder.canWrite()) {
+                    System.err.println(nativeStoreFolder.getAbsolutePath()
+                            + " exists and is not a read/write enabled folder");
+                }
+                i++;
+            }
+            else if (arg.equals(ACCESS_DATA_STORE_OPTION)) {
+                if (nextArg == null) {
+                    System.err.println("missing value for option " + ACCESS_DATA_STORE_OPTION);
+                    exitWithUsageMessage();
+                }
+                accessDataFolder = new File(nextArg);
+                if (!accessDataFolder.exists() && !accessDataFolder.mkdir()) {
+                    System.err.println("Couldn't create the native store folder for the access data");
+                }
+                else if (!accessDataFolder.isDirectory() || !accessDataFolder.canRead()
+                        || !accessDataFolder.canWrite()) {
+                    System.err.println(accessDataFolder.getAbsolutePath()
+                            + " exists and is not a read/write enabled folder (access data)");
+                }
+                i++;
+            }
+            else if (arg.equals(VALIDATE_OPTION)) {
                 validate = true;
-            } else if (arg.equals(PERFORMANCE_OPTION)) {
+            }
+            else if (arg.equals(PERFORMANCE_OPTION)) {
                 performance = true;
-            } else if (arg.equals(VERBOSE_OPTION)) {
+            }
+            else if (arg.equals(VERBOSE_OPTION)) {
                 verbose = true;
-            } else if (arg.equals(IDENTIFY_MIME_OPTION)) {
+            }
+            else if (arg.equals(IDENTIFY_MIME_OPTION)) {
                 identifyingMimeType = true;
-            } else if (arg.equals(EXTRACT_CONTENTS_OPTION)) {
+            }
+            else if (arg.equals(EXTRACT_CONTENTS_OPTION)) {
                 identifyingMimeType = true;
                 extractingContents = true;
-            } else {
+            }
+            else {
                 remainingOptions.add(arg);
             }
         }
@@ -130,11 +161,16 @@ public abstract class AbstractExampleCrawler {
             set.open();
             handler.setModelSet(set);
         }
+        if (accessDataFolder != null) {
+            Repository repo = new SailRepository(new NativeStore(accessDataFolder));
+            repo.initialize();
+            this.accessData = new RepositoryAccessData(repo,accessDataContext);
+        }
         return remainingOptions;
     }
     
     public static String getCommonSyntaxPart() {
-        return "[--validate] [--performance] [--native <native-store-path>] [-i] [-x] [-v] -o <output-file-path>";
+        return "[--validate] [--performance] [--native <native-store-path>] [--accessDataStore <native-store-path>][-i] [-x] [-v] -o <output-file-path>";
     }
     
     public static String getCommonExplanationPart() {
@@ -144,6 +180,7 @@ public abstract class AbstractExampleCrawler {
         writer.println(getAlignedOption(null) + "(conflicts with --performance)");
         writer.println(getAlignedOption("--performance") + "turns on performance measuring");
         writer.println(getAlignedOption("--native") + "stores the data in the native store");
+        writer.println(getAlignedOption("--accessDataStore") + "stores the incremental crawling info");
         writer.println(getAlignedOption("-i") + "turns on MIME type identification");
         writer.println(getAlignedOption("-x") + "if specified - the program will try to extract the content of");
         writer.println(getAlignedOption("-v") + "verbose output");
@@ -153,6 +190,9 @@ public abstract class AbstractExampleCrawler {
     }
     
     protected static String getAlignedOption(String option) {
+        if (option == null || option.length()==0) {
+            return "                   ";
+        }
         StringBuilder builder = new StringBuilder(30);
         int startPoint = 0;
         if (option != null) {
@@ -246,6 +286,14 @@ public abstract class AbstractExampleCrawler {
      */
     public void setExtractingContents(boolean extractingContents) {
         this.extractingContents = extractingContents;
+    }
+
+    
+    /**
+     * @return Returns the accessData.
+     */
+    public AccessData getAccessData() {
+        return accessData;
     }
     
 }

@@ -85,7 +85,8 @@ public class ExampleFlickrCrawler extends AbstractExampleCrawler {
         crawler.setDataAccessorRegistry(new DefaultDataAccessorRegistry());
         crawler.setAccessData(new AccessDataImpl());
         crawler.setCrawlerHandler(getHandler());
-
+        crawler.setAccessData(getAccessData());
+        
         // start crawling
         crawler.crawl();		
 	}

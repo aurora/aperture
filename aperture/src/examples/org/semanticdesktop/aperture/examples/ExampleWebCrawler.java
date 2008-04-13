@@ -125,7 +125,8 @@ public class ExampleWebCrawler extends AbstractExampleCrawler {
         crawler.setMimeTypeIdentifier(new MagicMimeTypeIdentifier());
         crawler.setLinkExtractorRegistry(new DefaultLinkExtractorRegistry());
         crawler.setCrawlerHandler(getHandler());
-
+        crawler.setAccessData(getAccessData());
+        
         // start crawling
         crawler.crawl();
     }
