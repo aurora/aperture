@@ -59,6 +59,20 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("unchecked")
 public class DataObjectFactory {
 
+    /** Obtains InputStreams from {@link Part} instances. */
+    public static interface PartStreamFactory {
+        /**
+         * Returns an input stream with the part content. It's conceptually a wrapper around the 
+         * {@link Part#getInputStream()} method, designed to allow for customization of the returned
+         * input stream.
+         * @param part
+         * @return an InputStream with the content of the part
+         * @throws MessagingException
+         * @throws IOException
+         */
+        public InputStream getPartStream(Part part) throws MessagingException, IOException;
+    }
+    
     // TODO: we could use the URL format specified in RFC 2192 to construct a proper IMAP4 URL.
     // Right now we use something home-grown for representing attachments rather than isections.
     // To investigate: does JavaMail provide us with enough information for constructing proper
@@ -90,6 +104,11 @@ public class DataObjectFactory {
      * The RDFContainerFactory delivering the RDFContainer to be used in the DataObjects.
      */
     private RDFContainerFactory containerFactory;
+    
+    /**
+     * The PartStreamFactory used to obtain inputStreams.
+     */
+    private PartStreamFactory streamFactory;
 
     /**
      * Returns a list of DataObjects that have been created based on the contents of the specified
@@ -106,16 +125,18 @@ public class DataObjectFactory {
      * @param dataSource The DataSource that the DataObjects will return as source.
      * @param factory An RDFContainerFactory that can deliver RDFContainer to be used in the returned
      *            DataObjects.
+     * @param lStreamFactory will be used to obtain InputStreams from messages
      * @return A List of DataObjects derived from the specified MimeMessage. The order of the DataObjects
      *         reflects the order of the message parts they represent.
      * @throws MessagingException Thrown when accessing the mail contents.
      * @throws IOException Thrown when accessing the mail contents.
      */
     public List createDataObjects(MimeMessage message, String messageUri, URI folderUri, DataSource dataSource,
-            RDFContainerFactory factory) throws MessagingException, IOException {
+            RDFContainerFactory factory, PartStreamFactory lStreamFactory) throws MessagingException, IOException {
         // initialize variables
         this.source = dataSource;
         this.containerFactory = factory;
+        this.streamFactory = lStreamFactory;
 
         /*
          * create a HashMap representation of this message and all its nested parts
@@ -226,7 +247,7 @@ public class DataObjectFactory {
             // create a data object embedding the data stream of the mail part
             result = new HashMap();
             result.put(ID_KEY, uri);
-            result.put(CONTENTS_KEY, mailPart.getInputStream());
+            result.put(CONTENTS_KEY, streamFactory.getPartStream(mailPart));
 
             if (charsetStr != null) {
                 result.put(NIE.characterSet, charsetStr);
@@ -640,7 +661,7 @@ public class DataObjectFactory {
         InputStream content = (InputStream) dataObjectHashMap.get(CONTENTS_KEY);
         RDFContainer metadata = containerFactory.getRDFContainer(dataObjectId);
 
-        if (!content.markSupported()) {
+        if (content != null && !content.markSupported()) {
             content = new BufferedInputStream(content, 16384);
         }
 

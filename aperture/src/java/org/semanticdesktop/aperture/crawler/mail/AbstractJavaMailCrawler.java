@@ -7,6 +7,7 @@
 package org.semanticdesktop.aperture.crawler.mail;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Part;
 import javax.mail.UIDFolder;
 import javax.mail.internet.MimeMessage;
 
@@ -40,6 +42,7 @@ import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
+import org.semanticdesktop.aperture.crawler.mail.DataObjectFactory.PartStreamFactory;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.NFO;
@@ -56,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * concrete subclasses. 
  */
 @SuppressWarnings("unchecked")
-public abstract class AbstractJavaMailCrawler extends CrawlerBase {
+public abstract class AbstractJavaMailCrawler extends CrawlerBase implements DataObjectFactory.PartStreamFactory {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////// COMMON CONFIGURATION FIELDS //////////////////////////////////////
@@ -174,10 +177,17 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
         return currentFolder.getMessageCount();
     }
     
+    /**
+     * @see {@link PartStreamFactory#getPartStream(Part)}
+     */
+    public InputStream getPartStream(Part part) throws MessagingException, IOException {
+        return part.getInputStream();
+    }
+    
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////// CRAWLING LOGIC ////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     /** 
      * Crawls a subfolder tree starting at the given folder up until the given depth. This method is to 
      * be called by the subclasses after setting up all connection parameters,
@@ -445,7 +455,7 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase {
             // create DataObjects for the mail and its attachments
             DataObjectFactory factory = new DataObjectFactory();
             List objects = factory
-                    .createDataObjects(message, messageUrl, folderUri, dataSource, containerFactory);
+                    .createDataObjects(message, messageUrl, folderUri, dataSource, containerFactory,this);
 
             // register the created DataObjects in the cache map
             Iterator iterator = objects.iterator();

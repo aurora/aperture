@@ -8,6 +8,7 @@ package org.semanticdesktop.aperture.crawler.imap;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -24,14 +25,17 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.mail.FetchProfile;
+import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.UIDFolder;
 import javax.mail.URLName;
 import javax.mail.internet.MimeMessage;
+import javax.mail.search.FlagTerm;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -52,12 +56,11 @@ import org.semanticdesktop.aperture.datasource.imap.ImapDataSource;
 import org.semanticdesktop.aperture.datasource.imap.ImapDataSource.ConnectionSecurity;
 import org.semanticdesktop.aperture.security.trustmanager.standard.StandardTrustManager;
 import org.semanticdesktop.aperture.util.HttpClientUtil;
+import org.semanticdesktop.aperture.util.UtfUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sun.mail.imap.IMAPFolder;
-
-
 
 /**
  * A Combined Crawler and DataAccessor implementation for IMAP. Note that the same instance of
@@ -74,11 +77,18 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
     private static final String SIZE_KEY = "size";
 
     private static final String SUBFOLDERS_KEY = "subfolders";
+    
+    private static final String UID_VALIDITY = "uidValidity";
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     // The source whose properties we're currently using. A separate DataSource is necessary as the
     // DataAccessor implementation may be passed a different DataSource.
+    // this is the data source instance that served as the basis for setting the values of all
+    // other configuration fields, when this class is used as a Crawler, this is equal (==) to
+    // the source obtained by getDataSource(), when this class is used as an accessor, this
+    // is equal to the last data source instance passed to the getDataObject(ifModified) methods
+    // the source obtained by getDataSource() is never used directly in this class
     private ImapDataSource configuredDataSource;
 
     // A Property instance holding *extra* properties to use when a Session is initiated.
@@ -107,11 +117,13 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
     private boolean includeInbox;
 
     private Store store;
+    private ImapStreamPool streamPool;
     
     /* ----------------- Fields managed by the setCurrentFolder method ----------------- */
     
     private Message [] currentMessages;
-    private int preparedActiveMessageCount;
+    /** Flag set by the {@link #setCurrentFolder(Folder)} method if the current folder has been changed */
+    private boolean currentFolderChanged;
 
     /* ----------------------------- Crawler implementation ----------------------------- */
 
@@ -288,21 +300,15 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
         if (!store.isConnected()) {
             store.connect(hostName, port, userName, password);
         }
+        this.streamPool = new ImapStreamPool(store);
     }
 
     /**
-     * Closes any connections this ImapCrawler may have to an IMAP server. Afterwards, the InputStream of any
-     * returned FileDataObjects may no longer be accessible. Invoking this method when no connections are open
-     * has no effect.
+     * Requests the streamPool to close the connection to the store.
      */
     public void closeConnection() {
-        if (store != null && store.isConnected()) {
-            try {
-                store.close();
-            }
-            catch (MessagingException e) {
-                logger.warn("Unable to close connection", e);
-            }
+        if (streamPool != null) {
+            streamPool.requestClose();
         }
     }
     
@@ -322,12 +328,14 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
      */
     public DataObject getDataObjectIfModified(String url, DataSource dataSource, AccessData newAccessData,
             Map params, RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException {
-        // reconfigure for the specified DataSource if necessary
-        retrieveConfigurationData(dataSource);
+        
+        // reconfigure the crawler for the specified DataSource if necessary
+        
+        retrieveConfigurationData(dataSource); // Rem: this method modifies fields
 
         try {
             // make sure we have a connection to the mail store
-            ensureConnectedStore();
+            ensureConnectedStore(); // Rem: this method modifies fields
 
             // retrieve the specified folder
             String folderName = getFolderName(url);
@@ -398,24 +406,131 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
             IOException ioe = new IOException();
             ioe.initCause(e);
             throw ioe;
+        } finally {
+            // at the very end, we may request the store to be closed
+            closeConnection();
         }
     }
     
+    /**
+     * This method implements the incremental crawling strategy described by Chris Fluit in the
+     * sourceforge issue 1531657.<br/><br/>
+     * 
+     * See <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=1531657&group_id=150969&atid=779500">
+     * http://sourceforge.net/tracker/index.php?func=detail&aid=1531657&group_id=150969&atid=779500</a>
+     * 
+     */
     @Override
     protected void setCurrentFolder(Folder folder) throws MessagingException {
         super.setCurrentFolder(folder);
-        this.currentMessages = folder.getMessages();
         
-        // for faster access, prefetch all message UIDs and flags
+        if (logger.isDebugEnabled()) { logger.debug("Prefetching started: " + currentFolderURI); }
+        
+        /*
+         * Retrieve all non-deleted messages using Folder.search(new FlagTerm(Flags.Flag.DELETED, false)).
+         * This is preferable over checking the deleted flag of each mail individually as prefetching these
+         * flags takes considerable time and using a search lets the *server* execute this selection. Folder
+         * itself uses a naive, client-side approach but that it overridden by a server-based approach in
+         * IMAPFolder.
+         */
+        this.currentMessages = folder.search(new FlagTerm(new Flags(Flags.Flag.DELETED),false));
+
+        if (logger.isDebugEnabled()) { logger.debug("Folder has " + this.currentMessages.length + " non-deleted msgs"); }
+        
+        /* Determine the subset of non-expunged messages (no need to prefetch anything). */
+        this.currentMessages = getNonExpungedMessages(currentMessages);
+        if (logger.isDebugEnabled()) { logger.debug("Folder contains " + this.currentMessages.length + " non-expunged msgs"); }
+        
+        
+        if (logger.isDebugEnabled()) { logger.debug("Prefetching uids"); }
+        /* Pre-fetch message UIDs for this set. */
         FetchProfile profile = new FetchProfile();
         profile.add(UIDFolder.FetchProfileItem.UID); // needed for message.getUID
         profile.add(FetchProfile.Item.FLAGS); // needed for isAcceptable (DELETED)
         profile.add(FetchProfile.Item.ENVELOPE); // needed for isAcceptable (size check)
         folder.fetch(currentMessages, profile);
+        if (logger.isDebugEnabled()) { logger.debug("Prefetching uids completed"); }
         
-        prefetchContentInfoOfNewAndChangedMessages();
+        /*
+         * When the UIDValidity of the folder has changed or was not registered (= initial crawl), we need
+         * to crawl all messages, else we try to incrementally crawl it:
+         */
+        // assume that the folder is unchanged unless proven otherwise
+        boolean folderContentChanged = false;
+        // we'll need the message count
+        int messageCount = getCurrentFolderMessageCount();
+        // .. to initialize this array (it's a hack, see the end of this method for an explanation)
+        ArrayList<String> unmodifiedMessages = new ArrayList(messageCount); 
+        // this is important, if this is false, we need to recrawl everything regardless of the AccessData
+        boolean uidValidity = checkCurrentFolderUIDValidity(accessData);
+        if (logger.isDebugEnabled()) { logger.debug("UID validity " + uidValidity); }
+        
+        // a string for convenience
+        String folderUriString = currentFolderURI.toString();
+        if (accessData != null && uidValidity) {
+            // this means that we can consult the access data the uids are valid
+            if (logger.isDebugEnabled()) { logger.debug("Narrowing the current messages array"); }
+            folderContentChanged = narrowCurrentMessagesArray(accessData,unmodifiedMessages, folderUriString);
+            if (logger.isDebugEnabled()) { logger.debug("Narrowing completed, " + currentMessages.length + " msgs left, folderChanged: " + folderContentChanged); }
+        } else if (!uidValidity) {
+            // this means that we need to remove all info from the AccessData and recrawl everything
+            if (logger.isDebugEnabled()) { logger.debug("Removing folder info from access data"); }
+            folderContentChanged = removeFolderInfoFromAccessData(folderUriString);
+        } else {
+            // this means that the accessdata is null we must assume that the folder has been changed
+            if (logger.isDebugEnabled()) { logger.debug("No access data detected"); }
+            folderContentChanged = true;
+        }
+        // stop if requested
+        if (isStopRequested()) {
+            return;
+        }
+        
+        // not only the messages must not be changed, the subfolders too must be the same
+        if (folderContentChanged) {
+            currentFolderChanged = true;
+        } else {
+            currentFolderChanged = checkSubfoldersChanged();
+        }
+        
+        if (logger.isDebugEnabled()) { logger.debug("Finally, after checking subfolders, folderChanged: " + currentFolderChanged); }
+       
+        if (currentFolderChanged) {
+            /*
+             * Only now do we really know if the content info of the messages needs to be prefetched or not.
+             * pre-fetch content info for the selected messages (assumption: all other info has already been
+             * pre-fetched when determining the folder's metadata, no need to prefetch it again)
+             */
+            if (logger.isDebugEnabled()) { logger.debug("Prefetching content info of " + currentMessages.length + " msgs"); }
+            profile = new FetchProfile();
+            profile.add(FetchProfile.Item.CONTENT_INFO);
+            currentFolder.fetch(currentMessages, profile);
+            if (logger.isDebugEnabled()) { logger.debug("Prefetching content info completed"); }
+            
+            /*
+             * we report the unmodified messages here, only if the folder HAS been changed, otherwise the
+             * AbstractJavaMailCrawler will invoke the reportNotModified method on the folder which will
+             * report all children of the folder as unmodified. This behavior is preferred in most cases,
+             * since it's often possible to determine if a folder has been changed without actually iterating
+             * over all the messages. That's why this hack isn't that bad.
+             */
+            if (logger.isDebugEnabled()) { logger.debug("Reporting " + unmodifiedMessages.size() + " unmodified msgs"); }
+            for (String url : unmodifiedMessages) {
+                reportNotModified(url);
+            }
+        }
     }
     
+    private Message[] getNonExpungedMessages(Message[] messages) {
+        ArrayList<Message> arrayList = new ArrayList<Message>();
+        for (Message message : messages) {
+            if (!message.isExpunged()) {
+                arrayList.add(message);
+            }
+        }
+        return arrayList.toArray(new Message[arrayList.size()]);
+    }
+
     @Override
     protected int getCurrentFolderMessageCount() throws MessagingException {
         return currentMessages.length;
@@ -426,84 +541,186 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
         // the given index is one-based, conformant to the javamail convention
         return currentMessages[index-1];
     }
-
-    /*
-     * Narrows down the messages[] array to those messages that are new or changed and prefetches their
-     * content info. Messages detected as unmodified are reported as unmodified (the reportNotModified
-     * method from the parent class is called).
+    
+    /** 
+     * @see org.semanticdesktop.aperture.crawler.mail.AbstractJavaMailCrawler#getPartStream(javax.mail.Part)
      */
-    private void prefetchContentInfoOfNewAndChangedMessages() throws MessagingException {
-        // determine the set of messages we haven't seen yet, to prevent prefetching the content info for old
-        // messages: especially handy when only a few mails were added to a large folder.
+    @Override
+    public InputStream getPartStream(Part part) throws MessagingException, IOException{
+        return streamPool.getStreamForAMessage(part);
+    }
 
-        if (accessData != null) {
-            //ArrayList filteredMessages = new ArrayList(messages.length);
-            int messageCount = getCurrentFolderMessageCount();
-            ArrayList filteredMessages = new ArrayList(messageCount);
+    /**
+     * This method narrows down the currentMessages array so that it contains only those messages that
+     * have been added or changed. It also reports unmodified messages. The deleted messages are NOT
+     * reported here, they are handled by the CrawlerBase. It also determines if the current folder
+     * has been changed at all. If it hasn't the AbstractJavaMailCrawler will not crawl it.
+     * 
+     * @param newAccessData
+     * @param messageCount
+     * @param unmodifiedMessages
+     * @param folderUriString
+     * @return
+     * @throws MessagingException
+     */
+    private boolean narrowCurrentMessagesArray(AccessData newAccessData,
+            ArrayList<String> unmodifiedMessages, String folderUriString) throws MessagingException {
+        boolean folderChanged = false;
+        int messageCount = getCurrentFolderMessageCount();
+        /*
+         * - See if the set of retrieved message UIDs is equal to the set of stored message UIDs (can be
+         * done by calculating message URIs and looking them up in AccessData). Also see if the set of
+         * subfolders is the same.
+         */
+        // this will store all messages that are potentially interesting, and should be crawled 
+        ArrayList filteredMessages = new ArrayList(messageCount);
 
-            // when messages disappear from the array, we must make sure they are removed from the list of
-            // child IDs of the folder
-            String folderUriString = currentFolderURI.toString();
-            Set deprecatedChildren = accessData.getReferredIDs(folderUriString);
-            if (deprecatedChildren == null) {
-                deprecatedChildren = Collections.EMPTY_SET;
+        // we use this set to check it against the current set of messages in the folder
+        Set deprecatedChildren = newAccessData.getReferredIDs(folderUriString);
+        if (deprecatedChildren == null) {
+            deprecatedChildren = Collections.EMPTY_SET;
+        }
+        else {
+            // we create a a copy of the set, to protect the original one
+            deprecatedChildren = new HashSet(deprecatedChildren);
+        }
+
+        // loop over all the current messages
+        for (int i = 1; i <= messageCount && !isStopRequested(); i++) {
+            MimeMessage message = (MimeMessage) getMessageFromCurrentFolder(i);
+            
+            // determine the uri
+            String uri = getMessageUri(currentFolder, message);
+            
+            // remove this uri from the deprecatedChildren set 
+            if (deprecatedChildren.contains(uri)) {
+                deprecatedChildren.remove(uri);
+            } else {
+                // if it wasn't there, it means that the entire folder has been changed
+                folderChanged = true;
+            }
+            
+            // see if we've seen this message before
+            if (newAccessData.get(uri, ACCESSED_KEY) == null) {
+                // we haven't: register it for processing if it's not deleted/marked for deletion, etc.
+                if (isAcceptable(message)) {
+                    filteredMessages.add(message);
+                    // this also means that the folder has been changes
+                    folderChanged = true;
+                }
             }
             else {
-                deprecatedChildren = new HashSet(deprecatedChildren);
-            }
-
-            // loop over all messages
-            //for (int i = 0; i < messages.length && !isStopRequested(); i++) {
-            for (int i = 1; i <= messageCount && !isStopRequested(); i++) {
-                MimeMessage message = (MimeMessage) getMessageFromCurrentFolder(i);
-                
-                // determine the uri
-                String uri = getMessageUri(currentFolder, message);
-
-                // remove this URI from the set of deprecated children
-                deprecatedChildren.remove(uri);
-
-                // see if we've seen this message before
-                if (accessData.get(uri, ACCESSED_KEY) == null) {
-                    // we haven't: register it for processing if it's not deleted/marked for deletion, etc.
-                    if (isAcceptable(message)) {
-                        filteredMessages.add(message);
-                    }
+                // we've seen this before: if it's not a removed message, it must be an unmodified message
+                if (isRemoved(message)) {
+                    // this message models a deleted or expunged mail: make sure it does no longer appear
+                    // as a child data object of the folder
+                    newAccessData.removeReferredID(folderUriString, uri);
+                    folderChanged = true;
                 }
                 else {
-                    // we've seen this before: if it's not a removed message, it must be an unmodified message
-                    if (isRemoved(message)) {
-                        // this message models a deleted or expunged mail: make sure it does no longer appear
-                        // as a child data object of the folder
-                        accessData.removeReferredID(folderUriString, uri);
-                    }
-                    else {
-                        reportNotModified(getMessageUri(currentFolder, message));
-                    }
+                    // this is an unmodified message, note that we don't add it to the filteredMessages list
+                    unmodifiedMessages.add(getMessageUri(currentFolder,message));
                 }
             }
+        }
 
-            // create the subset of messages that we will process
-            currentMessages = (Message[]) filteredMessages.toArray(new Message[filteredMessages.size()]);
+        // create the subset of messages that we will process
+        currentMessages = (Message[]) filteredMessages.toArray(new Message[filteredMessages.size()]);
 
-            // remove all child IDs that we did not encounter in the above loop
-            Iterator iterator = deprecatedChildren.iterator();
-            while (iterator.hasNext()) {
-                String childUri = (String) iterator.next();
-                accessData.removeReferredID(folderUriString, childUri);
+        /*
+         * remove all child IDs that we did not encounter in the above loop note that we do NOT report
+         * deleted messages to the crawler handler here (even though) we could, the removed messages are
+         * reported by the CrawlerBase, we don't want to interfere with this here
+         */
+        Iterator iterator = deprecatedChildren.iterator();
+        while (iterator.hasNext()) {
+            String childUri = (String) iterator.next();
+            newAccessData.removeReferredID(folderUriString, childUri);
+            // if a message has been deleted from the folder, this means that the folder content
+            // has been changed
+            folderChanged = true;
+        }
+        return folderChanged;
+    }
+    
+    /**
+     * Checks if the list of subfolders of the current folder has been changed in comparison with the
+     * list stored in the accessData instance.
+     * @return true if the subfolder list has been changed, false otherwise
+     * @throws MessagingException
+     */
+    private boolean checkSubfoldersChanged() throws MessagingException {
+        // we still must check the sub-folders
+        boolean subFoldersChanged = true;
+        if (accessData != null && holdsFolders(currentFolder)) {
+            String registeredSubFolders = accessData.get(currentFolderURI.toString(), SUBFOLDERS_KEY);
+
+            if (registeredSubFolders != null) {
+                String subfolders = getSubFoldersString(currentFolder);
+                if (registeredSubFolders.equals(subfolders)) {
+                    subFoldersChanged = false;
+                }
             }
         }
-
-        if (isStopRequested()) {
-            return;
+        return subFoldersChanged;
+    }
+    
+    /**
+     * Removes all information about the folder and all messages it contains from the accessData.
+     * This method is called when the UID Validity of the folder changes, and can no longer be
+     * guaranteed.
+     * 
+     * @param folderUriString
+     * @return
+     */
+    private boolean removeFolderInfoFromAccessData(String folderUriString) {
+        boolean folderContentChanged;
+        // this means that the uid validity is expired, we may remove everything we know from the 
+        // access data since we will have to crawl everything once more and report all messages
+        // as deleted - to be on the safe side
+        Set deprecatedChildren = accessData.getReferredIDs(folderUriString);
+        if (deprecatedChildren == null) {
+            deprecatedChildren = Collections.EMPTY_SET;
         }
+        else {
+            // we create a a copy of the set, to protect the original one
+            deprecatedChildren = new HashSet(deprecatedChildren);
+        }
+        for (Object uri : deprecatedChildren) {
+            accessData.remove(uri.toString());
+        }
+        accessData.remove(folderUriString);
+        folderContentChanged = true;
+        return folderContentChanged;
+    }
 
-        // pre-fetch content info for the selected messages (assumption: all other info has already been
-        // pre-fetched when determining the folder's metadata, no need to prefetch it again)
-        FetchProfile profile = new FetchProfile();
-        profile.add(FetchProfile.Item.CONTENT_INFO);
-        currentFolder.fetch(currentMessages, profile);
-        
+    /**
+     * Checks the uid validity of the current folder against the value stored in the access data.
+     * It is a very fundamental question. If this method returns false, all messages in the current
+     * folder have to be crawled, and previous information about this folder has to be considered
+     * out-of-date and needs to be deleted.<br/><br/>
+     * 
+     * THIS METHOD IS UNTESTED, THE AUTHOR WAS UNABLE TO SET UP AN ENVIRONMENT WHERE THE UID VALIDITY
+     * OF AN IMAP SERVER COULD BE CHANGED AT WILL.
+     * 
+     * @param newAccessData
+     * @return
+     * @throws MessagingException
+     */
+    private boolean checkCurrentFolderUIDValidity(AccessData newAccessData) throws MessagingException {
+        String uidValidity = newAccessData.get(currentFolderURI.toString(), UID_VALIDITY);
+        if (uidValidity == null) {
+            return false;
+        }
+        long oldValidity = 0;
+        try {
+            oldValidity = Long.parseLong(uidValidity);
+        } catch (NumberFormatException nfe) {
+            // this case is unlikely, but better safe than sorry
+            return false;
+        }
+        long newValidity = ((UIDFolder)currentFolder).getUIDValidity();
+        return oldValidity == newValidity;
     }
 
     @Override
@@ -512,85 +729,16 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
         IMAPFolder imapFolder = (IMAPFolder)currentFolder;
         String currentUriString = currentFolderURI.toString();
         if (newAccessData != null) {
-            if (holdsMessages(currentFolder)) {
-                // getUIDNext may return -1 (unknown), be careful not to store that
-                long uidNext = imapFolder.getUIDNext();
-                if (uidNext != -1L) {
-                    newAccessData.put(currentUriString, NEXT_UID_KEY, String.valueOf(imapFolder.getUIDNext()));
-                }
-
-                int messageCount = getMessageCount(currentMessages);
-                newAccessData.put(currentUriString, SIZE_KEY, String.valueOf(messageCount));
-            }
+            newAccessData.put(currentUriString, UID_VALIDITY, String.valueOf(imapFolder.getUIDValidity()));
             if (holdsFolders(currentFolder)) {
                 newAccessData.put(currentUriString, SUBFOLDERS_KEY, getSubFoldersString(currentFolder));
-            }
+            }            
         }
     }
     
     @Override
     protected boolean checkIfCurrentFolderHasBeenChanged(AccessData newAccessData) throws MessagingException{
-        //Message[] messages = null;
-        //IMAPFolder imapFolder = (IMAPFolder)folder;
-        String currentUriString = currentFolderURI.toString();
-        if (newAccessData != null) {
-            // the results default to 'true'; unless we can find complete evidence that the folder has not
-            // changed, we will always access the folder
-            boolean messagesChanged = true;
-            boolean foldersChanged = true;
-
-            if (holdsMessages(currentFolder)) {
-                String nextUIDString = newAccessData.get(currentUriString, NEXT_UID_KEY);
-                String sizeString = newAccessData.get(currentUriString, SIZE_KEY);
-
-                // note: this is -1 for servers that don't support retrieval of a next UID, meaning that the
-                // folder will always be reported as changed when it should have been unmodified
-                long nextUID = ((IMAPFolder)currentFolder).getUIDNext();
-
-                if (nextUIDString != null && sizeString != null && nextUID != -1L) {
-                    try {
-                        // parse stored information
-                        long previousNextUID = Long.parseLong(nextUIDString);
-                        long previousSize = Integer.parseInt(sizeString);
-
-                        // determine the new folder size, excluding all deleted/deletion-marked messages
-                        //messages = folder.getMessages();
-                        //FetchProfile profile = new FetchProfile();
-                        //profile.add(FetchProfile.Item.FLAGS); // needed for DELETED flag
-                        //folder.fetch(messages, profile);
-                        int messageCount = getMessageCount(currentMessages);
-
-                        // compare the folder status with what we've stored in the AccessData
-                        if (previousNextUID == nextUID && previousSize == messageCount) {
-                            messagesChanged = false;
-                        }
-                    }
-                    catch (NumberFormatException e) {
-                        logger.error("exception while parsing access data, ingoring access data", e);
-                    }
-                }
-            }
-
-            if (holdsFolders(currentFolder)) {
-                String registeredSubFolders = newAccessData.get(currentUriString, SUBFOLDERS_KEY);
-
-                if (registeredSubFolders != null) {
-                    String subfolders = getSubFoldersString(currentFolder);
-                    if (registeredSubFolders.equals(subfolders)) {
-                        foldersChanged = false;
-                    }
-                }
-            }
-
-            if (!messagesChanged && !foldersChanged) {
-                // the folder contents have not changed, we can return immediately
-                logger.debug("Folder \"" + currentFolder.getFullName() + "\" has not changed.");
-                return false;
-            }
-
-            logger.debug("Folder \"" + currentFolder.getFullName() + "\" is new or has changes.");
-        }
-        return true;
+        return currentFolderChanged;
     }
 
 
@@ -899,4 +1047,95 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
     public Properties getSessionProperties() {
         return sessionProperties;
     }
+    
+    // cementery of the code, might come in handy 
+    
+//    @Override
+//    protected boolean checkIfCurrentFolderHasBeenChanged(AccessData newAccessData) throws MessagingException{
+//        //Message[] messages = null;
+//        //IMAPFolder imapFolder = (IMAPFolder)folder;
+//        String currentUriString = currentFolderURI.toString();
+//        if (newAccessData != null) {
+//            // the results default to 'true'; unless we can find complete evidence that the folder has not
+//            // changed, we will always access the folder
+//            boolean messagesChanged = true;
+//            boolean foldersChanged = true;
+//
+//            if (holdsMessages(currentFolder)) {
+//                String nextUIDString = newAccessData.get(currentUriString, NEXT_UID_KEY);
+//                String sizeString = newAccessData.get(currentUriString, SIZE_KEY);
+//
+//                // note: this is -1 for servers that don't support retrieval of a next UID, meaning that the
+//                // folder will always be reported as changed when it should have been unmodified
+//                long nextUID = ((IMAPFolder)currentFolder).getUIDNext();
+//
+//                if (nextUIDString != null && sizeString != null && nextUID != -1L) {
+//                    try {
+//                        // parse stored information
+//                        long previousNextUID = Long.parseLong(nextUIDString);
+//                        long previousSize = Integer.parseInt(sizeString);
+//
+//                        // determine the new folder size, excluding all deleted/deletion-marked messages
+//                        //messages = folder.getMessages();
+//                        //FetchProfile profile = new FetchProfile();
+//                        //profile.add(FetchProfile.Item.FLAGS); // needed for DELETED flag
+//                        //folder.fetch(messages, profile);
+//                        int messageCount = getMessageCount(currentMessages);
+//
+//                        // compare the folder status with what we've stored in the AccessData
+//                        if (previousNextUID == nextUID && previousSize == messageCount) {
+//                            messagesChanged = false;
+//                        }
+//                    }
+//                    catch (NumberFormatException e) {
+//                        logger.error("exception while parsing access data, ingoring access data", e);
+//                    }
+//                }
+//            }
+//
+//            if (holdsFolders(currentFolder)) {
+//                String registeredSubFolders = newAccessData.get(currentUriString, SUBFOLDERS_KEY);
+//
+//                if (registeredSubFolders != null) {
+//                    String subfolders = getSubFoldersString(currentFolder);
+//                    if (registeredSubFolders.equals(subfolders)) {
+//                        foldersChanged = false;
+//                    }
+//                }
+//            }
+//
+//            if (!messagesChanged && !foldersChanged) {
+//                // the folder contents have not changed, we can return immediately
+//                logger.debug("Folder \"" + currentFolder.getFullName() + "\" has not changed.");
+//                return false;
+//            }
+//
+//            logger.debug("Folder \"" + currentFolder.getFullName() + "\" is new or has changes.");
+//        }
+//        return true;
+//    }
+
+    
+//    @Override
+//    protected void recordCurrentFolderInAccessData(AccessData newAccessData) throws MessagingException {
+//        // register the access data of this url
+//        IMAPFolder imapFolder = (IMAPFolder)currentFolder;
+//        String currentUriString = currentFolderURI.toString();
+//        if (newAccessData != null) {
+//            if (holdsMessages(currentFolder)) {
+//                // getUIDNext may return -1 (unknown), be careful not to store that
+//                long uidNext = imapFolder.getUIDNext();
+//                if (uidNext != -1L) {
+//                    newAccessData.put(currentUriString, NEXT_UID_KEY, String.valueOf(imapFolder.getUIDNext()));
+//                }
+//
+//                int messageCount = getMessageCount(currentMessages);
+//                newAccessData.put(currentUriString, SIZE_KEY, String.valueOf(messageCount));
+//            }
+//            if (holdsFolders(currentFolder)) {
+//                newAccessData.put(currentUriString, SUBFOLDERS_KEY, getSubFoldersString(currentFolder));
+//            }            
+//        }
+//    }
+    
 }
