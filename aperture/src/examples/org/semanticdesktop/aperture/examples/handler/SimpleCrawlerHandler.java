@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.Set;
 
 import org.ontoware.rdf2go.ModelFactory;
@@ -26,6 +27,7 @@ import org.openrdf.repository.RepositoryException;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
+import org.semanticdesktop.aperture.crawler.CrawlReport;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
@@ -175,9 +177,6 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
      */
     public void accessingObject(Crawler crawler, String url) {
         this.currentURL = url;
-        if (verbose) {
-            System.out.println("Processing file " + nrObjects + ": " + url + "...");
-        }
     }
 
     /**
@@ -189,6 +188,9 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     public void objectNew(Crawler dataCrawler, DataObject object) {
         nrObjects++;
         this.currentURL = object.getID().toString();
+        if (verbose) {
+            System.out.println("N," + System.currentTimeMillis() + "," + currentURL);
+        }
         if (nrObjects % 300 == 0)
             // call garbage collector from time to time
             System.gc();
@@ -288,7 +290,10 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         // as we do not use incremental crawling, this should not happen
         object.dispose();
         this.currentURL = object.getID().toString();
-        printUnexpectedEventWarning("changed");
+        if (verbose) {
+            System.out.println("C," + System.currentTimeMillis() + "," + currentURL);
+        }
+        //printUnexpectedEventWarning("changed");
     }
 
     /**
@@ -300,7 +305,11 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     public void objectNotModified(Crawler crawler, String url) {
         // as we do not use incremental crawling, this should not happen
         this.currentURL = url;
-        printUnexpectedEventWarning("unmodified");
+        if (verbose) {
+            System.out.println("U," + System.currentTimeMillis() + "," + currentURL);
+        }
+        
+        //printUnexpectedEventWarning("unmodified");
     }
 
     /**
@@ -312,8 +321,11 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
      */
     public void objectRemoved(Crawler dataCrawler, String url) {
         // as we do not use incremental crawling, this should not happen
-        printUnexpectedEventWarning("removed");
+        //printUnexpectedEventWarning("removed");
         this.currentURL = url;
+        if (verbose) {
+            System.out.println("D," + System.currentTimeMillis() + "," + currentURL);
+        }
     }
 
     /**
@@ -383,10 +395,23 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
      */
     public void crawlStopped(Crawler crawler, ExitCode code) {
         printAndCloseModelSet();
+        printCrawlReport(crawler.getCrawlReport());
         this.finishTime = System.currentTimeMillis();
         this.exitCode = code;
     }
     
+    private void printCrawlReport(CrawlReport crawlReport) {
+        System.out.println("Crawl report");
+        System.out.println("Crawl started: " + new java.util.Date(crawlReport.getCrawlStarted()));
+        System.out.println("Crawl stopped: " + new Date(crawlReport.getCrawlStopped()));
+        System.out.println("Crawl time: " + (crawlReport.getCrawlStopped() - crawlReport.getCrawlStarted()) + "ms");
+        System.out.println("Exit code: " + crawlReport.getExitCode());
+        System.out.println("New objects: " + crawlReport.getNewCount());
+        System.out.println("Modified objects: " + crawlReport.getChangedCount());
+        System.out.println("Unmodified objects: " + crawlReport.getUnchangedCount());
+        System.out.println("Deleted objects: " + crawlReport.getRemovedCount());
+    }
+
     protected void printAndCloseModelSet() {
         try {
             if (outputFile != null) {
