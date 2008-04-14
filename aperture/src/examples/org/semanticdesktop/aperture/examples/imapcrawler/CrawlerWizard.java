@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import org.ontoware.rdf2go.exception.ModelException;
+import org.semanticdesktop.aperture.datasource.imap.ImapDataSource.ConnectionSecurity;
 import org.semanticdesktop.aperture.examples.ExampleImapCrawler;
 import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 
@@ -370,7 +371,7 @@ public class CrawlerWizard extends JPanel {
         crawler.setServerName(server);
         crawler.setUsername(username);
         crawler.setPassword(password);
-        crawler.setSecureConnection(sslSelected);
+        crawler.setConnectionSecurity( sslSelected ? ConnectionSecurity.SSL : ConnectionSecurity.PLAIN);
         crawler.setFolder(folder);
         crawler.setOutputFile(outputFile);
         crawler.setIdentifyingMimeType(identifyMimeType);

@@ -17,6 +17,7 @@ import org.semanticdesktop.aperture.crawler.imap.ImapCrawler;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.imap.IMAPDS;
 import org.semanticdesktop.aperture.datasource.imap.ImapDataSource;
+import org.semanticdesktop.aperture.datasource.imap.ImapDataSource.ConnectionSecurity;
 import org.semanticdesktop.aperture.examples.handler.IMAPUrisValidatingCrawlerHandler;
 import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -43,10 +44,14 @@ public class ExampleImapCrawler extends AbstractExampleCrawler {
     private static final String FOLDER_OPTION = "--folder";
     
     private static final String SSL_OPTION = "--ssl";
+
+    private static final String SSL_NOCERT_OPTION = "--sslnocert";
     
     private static final String PORT_OPTION = "--port";
     
     private static final String TEST_URIS_OPTION = "--testuris";
+
+    private static final String BASEPATH_OPTION = "--basepath";
 
     // /////////////// Settable properties /////////////////
 
@@ -61,9 +66,12 @@ public class ExampleImapCrawler extends AbstractExampleCrawler {
     private String folder;
     
     private boolean testingUris;
+    
+    private String basepath;
 
     /**
-     * Flag that indicates whether a secure connection should be used.
+     * Flag that indicates whether a secure connection should be used,
+     * and if yes, if it should be certificates or not.
      * 
      * <p>
      * Note that this setting is not settable on the command-line. Correct handling of a secure connection
@@ -75,7 +83,7 @@ public class ExampleImapCrawler extends AbstractExampleCrawler {
      * The GUI-based crawler makes use of this property and also ensures that all other requirements for
      * secure operation are fulfilled.
      */
-    private boolean secureConnection = false;
+    private ConnectionSecurity connectionSecurity = ConnectionSecurity.PLAIN;
 
     private ImapCrawler crawler;
 
@@ -91,12 +99,12 @@ public class ExampleImapCrawler extends AbstractExampleCrawler {
         return password;
     }
 
-    public boolean hasSecureConnection() {
-        return secureConnection;
-    }
-
     public String getUsername() {
         return username;
+    }
+    
+    public ConnectionSecurity getConnectionSecurity() {
+        return connectionSecurity;
     }
 
     public String getCurrentURL() {
@@ -134,9 +142,9 @@ public class ExampleImapCrawler extends AbstractExampleCrawler {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    public void setSecureConnection(boolean secureConnection) {
-        this.secureConnection = secureConnection;
+    
+    public void setConnectionSecurity(ConnectionSecurity connectionSecurity) {
+        this.connectionSecurity = connectionSecurity;
     }
 
     public void setUsername(String username) {
@@ -176,10 +184,12 @@ public class ExampleImapCrawler extends AbstractExampleCrawler {
         if (password != null) {
             dataSource.setPassword(password);
         }
+        
+        if (basepath != null)
+            dataSource.setBasepath(basepath);
 
-        if (secureConnection) {
-            dataSource.setConnectionSecurity(ImapDataSource.ConnectionSecurity.SSL);
-        }
+        dataSource.setConnectionSecurity(getConnectionSecurity());
+        
         
         // set up an IMAP crawler
         crawler = new ImapCrawler();
@@ -222,8 +232,11 @@ public class ExampleImapCrawler extends AbstractExampleCrawler {
                         crawler.isVerbose(),
                         crawler.getOutputFile()));
                 continue;
+            } else if (SSL_NOCERT_OPTION.equals(option)) {
+                crawler.setConnectionSecurity(ConnectionSecurity.SSL_NO_CERT);
+                continue;
             } else if (SSL_OPTION.equals(option)) {
-                crawler.setSecureConnection(true);
+                crawler.setConnectionSecurity(ConnectionSecurity.SSL);
                 continue;
             }
             
@@ -249,13 +262,22 @@ public class ExampleImapCrawler extends AbstractExampleCrawler {
             else if (PASSWORD_OPTION.equals(option)) {
                 crawler.setPassword(value);
             }
+            else if (BASEPATH_OPTION.equals(option)) {
+                crawler.setBasepath(value);
+            }
             else if (FOLDER_OPTION.equals(option)) {
                 crawler.setFolder(value);
-            }
+            } else
+                throw new Exception("Unknown option: "+option);
         }
 
         // check whether the crawler has enough information
-        if (crawler.getServerName() == null || crawler.getFolder() == null) {
+        if (crawler.getServerName() == null) {
+            System.err.println("server name missing");
+            crawler.exitWithUsageMessage();
+        }
+        if (crawler.getFolder() == null) {
+            System.err.println("folder missing");
             crawler.exitWithUsageMessage();
         }
 
@@ -270,8 +292,10 @@ public class ExampleImapCrawler extends AbstractExampleCrawler {
         builder.append(getAlignedOption(USERNAME_OPTION) + "the username\n");
         builder.append(getAlignedOption(PORT_OPTION) + "the port\n");
         builder.append(getAlignedOption(SSL_OPTION) + "if this option is present SSL will be used\n");
+        builder.append(getAlignedOption(SSL_NOCERT_OPTION) + "if this option is present SSL will be used, but certificates will not be checked\n");
         builder.append(getAlignedOption(PASSWORD_OPTION) + "the password\n");
         builder.append(getAlignedOption(FOLDER_OPTION) + "the folder on the server where the crawling should start\n");
+        builder.append(getAlignedOption(BASEPATH_OPTION) + "path of the base folder on the server, needed on some servers\n");
         builder.append(getAlignedOption(TEST_URIS_OPTION) + "check if the uris generated by the crawler are compliant " +
         		       "with RFC 2192\n" +
                        getAlignedOption("") + "this setting overrides " + AbstractExampleCrawler.VALIDATE_OPTION + " and " + 
@@ -306,5 +330,15 @@ public class ExampleImapCrawler extends AbstractExampleCrawler {
         if (optional) {
             builder.append(']');
         }
+    }
+
+    
+    public String getBasepath() {
+        return basepath;
+    }
+
+    
+    public void setBasepath(String basepath) {
+        this.basepath = basepath;
     }
 }
