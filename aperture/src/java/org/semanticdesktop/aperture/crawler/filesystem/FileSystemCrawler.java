@@ -7,6 +7,7 @@
 package org.semanticdesktop.aperture.crawler.filesystem;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
@@ -195,31 +196,8 @@ public class FileSystemCrawler extends CrawlerBase {
 
             // report nested Files (if the folder itself is in the domain)
             if (depth > 0 && inDomain(file.toURI().toString())) {
-                File[] nestedFiles = file.listFiles();
-
-                if (nestedFiles == null) {
-                    // This happens on certain "special" directories, although the
-                    // API documentation doesn't mention it, see java bug #4803836.
-                    return true;
-                }
-
-                int i = 0;
-                for (; !stopRequested && i < nestedFiles.length; i++) {
-                    File nestedFile = nestedFiles[i];
-
-                    if (ignoreHiddenFiles && nestedFile.isHidden()) {
-                        continue;
-                    }
-
-                    boolean scanCompleted = crawlFileTree(nestedFile, depth - 1);
-
-                    if (!scanCompleted) {
-                        return false;
-                    }
-                }
-
-                // scan has been completed when i has reached the end of the array successfully
-                return i == nestedFiles.length;
+                //return iterateOverFolderContent(file, depth);
+                return filterThroughFolderContent(file, depth);
             }
             else {
                 return true;
@@ -229,6 +207,40 @@ public class FileSystemCrawler extends CrawlerBase {
             // Unknown path type (is this possible?) or depth < 0
             return true;
         }
+    }
+    
+    private boolean filterThroughFolderContent(File file, int depth) {
+        CrawlerFileFilter filter = new CrawlerFileFilter(depth);
+        file.listFiles(filter);
+        return filter.getResult();
+    }
+
+    private boolean iterateOverFolderContent(File file, int depth) {
+        File[] nestedFiles = file.listFiles();
+
+        if (nestedFiles == null) {
+            // This happens on certain "special" directories, although the
+            // API documentation doesn't mention it, see java bug #4803836.
+            return true;
+        }
+
+        int i = 0;
+        for (; !stopRequested && i < nestedFiles.length; i++) {
+            File nestedFile = nestedFiles[i];
+
+            if (ignoreHiddenFiles && nestedFile.isHidden()) {
+                continue;
+            }
+
+            boolean scanCompleted = crawlFileTree(nestedFile, depth - 1);
+
+            if (!scanCompleted) {
+                return false;
+            }
+        }
+
+        // scan has been completed when i has reached the end of the array successfully
+        return i == nestedFiles.length;
     }
 
     /**
@@ -289,6 +301,44 @@ public class FileSystemCrawler extends CrawlerBase {
         }
         catch (IOException e) {
             logger.warn("I/O error while processing " + url, e);
+        }
+    }
+    
+private class CrawlerFileFilter implements FileFilter {
+        
+        private int depth;
+        private boolean result;
+        
+        public CrawlerFileFilter(int depth) {
+            this.depth = depth;
+            this.result = true;
+        }
+        
+        public boolean accept(File nestedFile) {
+            // there is no way to stop the listFiles method in the middle, so if a stop is
+            // requested so bail out as soon as possible
+            // also if the subtree starting at the given file has not been completed,
+            // we pass that knowledge upwards without crawling anything else
+            if (stopRequested || !result) {
+                result = false; // this means that we have not crawled the nestedFile
+                // which implies that the entire subtree has NOT been completed
+                return false; // note that this false does NOT mean the same as the result=false;
+            }
+            
+            if (ignoreHiddenFiles && nestedFile.isHidden()) {
+                // this means that we should not crawl the nestedFile, but the entire subtree
+                // may still be considered completed, so we do not modify the result
+                return false; 
+            }
+
+            result = crawlFileTree(nestedFile, depth - 1);
+            
+            // return false for everything, we're done
+            return false;
+        }
+        
+        public boolean getResult() {
+            return result;
         }
     }
 }
