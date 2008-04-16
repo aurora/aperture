@@ -424,6 +424,16 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
     protected void setCurrentFolder(Folder folder) throws MessagingException {
         super.setCurrentFolder(folder);
         
+        if (!holdsMessages(folder)) {
+            // this means that this folder doesn't hold messages, and it is NOT open
+            currentFolderChanged = checkSubfoldersChanged();
+            // checking subfolders is safe because the javadocs
+            // http://java.sun.com/products/javamail/javadocs/javax/mail/Folder.html#list()
+            // say "This method can be invoked on a closed Folder."
+            this.currentMessages = null; // just in case
+            return; // bail out now, no prefetching is needed in this case
+        }
+        
         if (logger.isDebugEnabled()) { logger.debug("Prefetching started: " + currentFolderURI); }
         
         /*
@@ -462,7 +472,7 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
         // .. to initialize this array (it's a hack, see the end of this method for an explanation)
         ArrayList<String> unmodifiedMessages = new ArrayList(messageCount); 
         // this is important, if this is false, we need to recrawl everything regardless of the AccessData
-        boolean uidValidity = checkCurrentFolderUIDValidity(accessData);
+        boolean uidValidity = ((accessData != null) ? checkCurrentFolderUIDValidity(accessData) : false);
         if (logger.isDebugEnabled()) { logger.debug("UID validity " + uidValidity); }
         
         // a string for convenience
@@ -472,7 +482,7 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
             if (logger.isDebugEnabled()) { logger.debug("Narrowing the current messages array"); }
             folderContentChanged = narrowCurrentMessagesArray(accessData,unmodifiedMessages, folderUriString);
             if (logger.isDebugEnabled()) { logger.debug("Narrowing completed, " + currentMessages.length + " msgs left, folderChanged: " + folderContentChanged); }
-        } else if (!uidValidity) {
+        } else if (accessData != null && !uidValidity) {
             // this means that we need to remove all info from the AccessData and recrawl everything
             if (logger.isDebugEnabled()) { logger.debug("Removing folder info from access data"); }
             folderContentChanged = removeFolderInfoFromAccessData(folderUriString);
@@ -674,6 +684,10 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
      * @return
      */
     private boolean removeFolderInfoFromAccessData(String folderUriString) {
+        if (accessData == null) {
+            return false;
+        }
+        
         boolean folderContentChanged;
         // this means that the uid validity is expired, we may remove everything we know from the 
         // access data since we will have to crawl everything once more and report all messages
@@ -708,6 +722,9 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
      * @throws MessagingException
      */
     private boolean checkCurrentFolderUIDValidity(AccessData newAccessData) throws MessagingException {
+        if (newAccessData == null) {
+            return false;
+        }
         String uidValidity = newAccessData.get(currentFolderURI.toString(), UID_VALIDITY);
         if (uidValidity == null) {
             return false;
