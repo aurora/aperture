@@ -8,6 +8,7 @@ package org.semanticdesktop.aperture.accessor.file;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -220,17 +221,28 @@ public class FileAccessor implements DataAccessor {
 
 		// add folder-specific metadata
 		else if (isFolder) {
+		    
+		    final RDFContainer finalMetadata = metadata;
+		    file.listFiles(new FileFilter() {
+                public boolean accept(File child) {
+                    if (child != null) {
+                        finalMetadata.add(NIE.hasPart, toURI(child));
+                        finalMetadata.add(finalMetadata.getModel().createStatement(toURI(child), RDF.type, NFO.FileDataObject));
+                    }
+                    return false;
+                }});
+		    
 			// note: this array is null for certain types of directories, see Java bug #4803836
-			File[] children = file.listFiles();
-			if (children != null) {
-				for (int i = 0; i < children.length; i++) {
-					File child = children[i];
-					if (child != null) {
-                        metadata.add(NIE.hasPart, toURI(child));
-                        metadata.add(metadata.getModel().createStatement(toURI(child), RDF.type, NFO.FileDataObject));
-					}
-				}
-			}
+			//File[] children = file.listFiles();
+			//if (children != null) {
+			//	for (int i = 0; i < children.length; i++) {
+			//		File child = children[i];
+			//		if (child != null) {
+            //           metadata.add(NIE.hasPart, toURI(child));
+            //            metadata.add(metadata.getModel().createStatement(toURI(child), RDF.type, NFO.FileDataObject));
+			//		}
+			//	}
+			//}
 		}
 
 		return metadata;
