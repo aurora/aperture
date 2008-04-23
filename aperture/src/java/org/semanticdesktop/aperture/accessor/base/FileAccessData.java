@@ -66,6 +66,7 @@ public class FileAccessData extends AccessDataImpl {
      * @param dataFile The data file to be used by this FileAccessData.
      */
     public FileAccessData(File dataFile) {
+        super();
         this.dataFile = dataFile;
     }
 

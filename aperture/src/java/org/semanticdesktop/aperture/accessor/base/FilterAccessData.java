@@ -7,6 +7,7 @@
 package org.semanticdesktop.aperture.accessor.base;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.semanticdesktop.aperture.accessor.AccessData;
@@ -84,4 +85,64 @@ public abstract class FilterAccessData implements AccessData {
 	public void store() throws IOException {
 		accessData.store();
 	}
+
+    /**
+     * @param id
+     * @return
+     * @see org.semanticdesktop.aperture.accessor.AccessData#getAggregatedIDs(java.lang.String)
+     */
+    public Set getAggregatedIDs(String id) {
+        return accessData.getAggregatedIDs(id);
+    }
+
+    /**
+     * @param id
+     * @return
+     * @see org.semanticdesktop.aperture.accessor.AccessData#getAggregatedIDsClosure(java.lang.String)
+     */
+    public Iterator getAggregatedIDsClosure(String id) {
+        return accessData.getAggregatedIDsClosure(id);
+    }
+
+    /**
+     * @return
+     * @see org.semanticdesktop.aperture.accessor.AccessData#getUntouchedIDsIterator()
+     */
+    public Iterator getUntouchedIDsIterator() {
+        return accessData.getUntouchedIDsIterator();
+    }
+
+    /**
+     * @param id
+     * @param aggregatedID
+     * @see org.semanticdesktop.aperture.accessor.AccessData#putAggregatedID(java.lang.String, java.lang.String)
+     */
+    public void putAggregatedID(String id, String aggregatedID) {
+        accessData.putAggregatedID(id, aggregatedID);
+    }
+
+    /**
+     * @param id
+     * @param aggregatedID
+     * @see org.semanticdesktop.aperture.accessor.AccessData#removeAggregatedID(java.lang.String, java.lang.String)
+     */
+    public void removeAggregatedID(String id, String aggregatedID) {
+        accessData.removeAggregatedID(id, aggregatedID);
+    }
+
+    /**
+     * 
+     * @see org.semanticdesktop.aperture.accessor.AccessData#removeUntouchedIDs()
+     */
+    public void removeUntouchedIDs() {
+        accessData.removeUntouchedIDs();
+    }
+
+    /**
+     * @param id
+     * @see org.semanticdesktop.aperture.accessor.AccessData#touchRecursively(java.lang.String)
+     */
+    public void touchRecursively(String id) {
+        accessData.touchRecursively(id);
+    }
 }

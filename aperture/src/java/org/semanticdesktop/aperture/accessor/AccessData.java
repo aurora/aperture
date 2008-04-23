@@ -7,6 +7,7 @@
 package org.semanticdesktop.aperture.accessor;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -87,7 +88,7 @@ public interface AccessData {
 	public void put(String id, String key, String value);
 
 	/**
-	 * Stores a reference relation between two resources, modeling e.d. a parent-child relationship or a link.
+	 * Stores a reference relation between two resources, modeling e.g. a link.
 	 * 
 	 * @param id The referring resource's ID.
 	 * @param referredID The referred resource's ID.
@@ -134,9 +135,71 @@ public interface AccessData {
 	public void removeReferredIDs(String id);
 	
 	/**
-	 * Removes all information about the resource with the specified ID.
+	 * Removes all information about the resource with the specified ID. <br/><br/>
+	 * 
+	 * Specifically:
+	 * <ul>
+	 * <li>Remove all keys and values pertaining to that ID</li>
+	 * <li>Remove all links between this id and all id's it refers to and is referred by</li>
+	 * <li>Remove the aggregation link "upwards" to the parent id</li>
+	 * <li>Remove recursively all aggregated id's</li>
+	 * </ul>
 	 * 
 	 * @param id A resource ID.
 	 */
 	public void remove(String id);
+	
+	/**
+     * Puts a link between the given id and the aggregated ID. The aggregated ID will appear in the
+     * aggregation closure and will be touched by the {@link #touchRecursively(String)} method. Note that
+     * the aggregation graph must not contain cycles.
+     * 
+     * @param id
+     * @param aggregatedID
+     */
+	public void putAggregatedID(String id, String aggregatedID);
+	
+	/**
+     * Removes the link between the given id and the aggregated ID. After a call to this method, the
+     * aggregated ID will not appear in the aggregation closure and will not be touched by the
+     * {@link #touchRecursively(String)} method.
+     * 
+     * @param id
+     * @param aggregatedID
+     */
+	public void removeAggregatedID(String id, String aggregatedID);
+	
+	/**
+	 * Returns a set of id's that are aggregated immediately below the given one.
+	 * @param id
+	 * @return a set of id's that are aggregated immediately below the given one.
+	 */
+	public Set getAggregatedIDs(String id);
+	
+	/**
+	 * Returns an iterator over all ids aggregated within the given one, both directly and indirectly.
+	 * The iterator will traverse the entire aggregation subtree beginning with the given id. This
+	 * iterator does not touch the ids.
+	 * @param id the id whose aggregation subtree is to be traversed
+	 * @return an iterator over the aggregation subtree
+	 */
+	public Iterator getAggregatedIDsClosure(String id);
+	
+	/**
+	 * Recursively touches all ids within the aggregation subtree beginning with the given id
+	 * @param id
+	 */
+	public void touchRecursively(String id);
+	
+	/**
+	 * Returns an iterator over all ID's in this access data instance that have not been touched
+	 * since the last call to {@link #initialize()}
+	 * @return an iterator over all untouched IDs
+	 */
+	public Iterator getUntouchedIDsIterator();
+	
+	/**
+	 * Removes recursively all untouched IDS
+	 */
+	public void removeUntouchedIDs();
 }
