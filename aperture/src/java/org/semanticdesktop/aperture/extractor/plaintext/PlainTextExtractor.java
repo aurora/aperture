@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2007 Aduna.
+ * Copyright (c) 2005 - 2008 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PushbackInputStream;
+import java.io.PushbackReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
@@ -28,13 +29,15 @@ import org.slf4j.LoggerFactory;
 
 public class PlainTextExtractor implements Extractor {
 
-	// Every developer should read Joel Spolsky's "The Absolute Minimum Every Software Developer Absolutely,
-	// Positively Must Know About Unicode and Character Sets (No Excuses!)"
-	// See: http://www.joelonsoftware.com/articles/Unicode.html
+    private static final int STRING_TEST_LENGTH = 256;
+    
+    // Every developer should read Joel Spolsky's "The Absolute Minimum Every Software Developer Absolutely,
+    // Positively Must Know About Unicode and Character Sets (No Excuses!)"
+    // See: http://www.joelonsoftware.com/articles/Unicode.html
 
-	private Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
-	public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
+    public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
 			throws ExtractorException {
 		try {
 			// Try to see whether the stream starts with a UTF Byte Order Mark. If a BOM is found, it is
@@ -64,11 +67,14 @@ public class PlainTextExtractor implements Extractor {
 			}
 
 			// create a Reader that will convert the bytes to characters
-			Reader reader = charset == null ? new InputStreamReader(pbStream) : new InputStreamReader(
+			Reader convertingReader = charset == null ? new InputStreamReader(pbStream) : new InputStreamReader(
 					pbStream, charset);
 
-			// verify that the first 256 characters really are text characters
-			String firstChars = IOUtil.readString(reader, 256);
+			// wrap it in a PushbackReader
+			PushbackReader reader = new PushbackReader(convertingReader, STRING_TEST_LENGTH);
+			
+            // verify that the first 256 characters really are text characters
+			String firstChars = IOUtil.readString(reader, STRING_TEST_LENGTH);
 
 			int nrChars = firstChars.length();
 			for (int i = 0; i < nrChars; i++) {
@@ -81,11 +87,12 @@ public class PlainTextExtractor implements Extractor {
 			}
 
 			// everything is ok, read the full document
-			String remainingChars = IOUtil.readString(reader);
+			reader.unread(firstChars.toCharArray());
+			String text = IOUtil.readString(reader);
 
-			if (firstChars.length() > 0 || remainingChars.length() > 0) {
+			if (text.length() > 0) {
                 result.add(RDF.type,NFO.PlainTextDocument);
-				result.add(NIE.plainTextContent, firstChars + remainingChars);
+				result.add(NIE.plainTextContent, text);
 			}
 		}
 		catch (IOException e) {
