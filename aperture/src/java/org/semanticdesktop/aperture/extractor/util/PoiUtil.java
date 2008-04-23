@@ -40,6 +40,9 @@ import org.slf4j.Logger;
 public class PoiUtil {
 
 	private static final String BUFFER_SIZE_PROPERTY = "aperture.poiUtil.bufferSize";
+	
+	// 4 MB should be enough for everybody
+	private static final int DEFAULT_BUFFER_SIZE = 4*1024*1024;
 
 	/**
 	 * Returns the SummaryInformation holding the document metadata from a POIFSFileSystem. Any POI-related or
@@ -247,7 +250,7 @@ public class PoiUtil {
 	 *         set or has an illegal value.
 	 */
 	private static int getBufferSize() {
-		int result = 4 * 1024 * 1024;
+		int result = DEFAULT_BUFFER_SIZE;
 
 		// see if the system property is set
 		String property = System.getProperty(BUFFER_SIZE_PROPERTY);
