@@ -7,6 +7,7 @@
 package org.semanticdesktop.aperture.accessor.base;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.semanticdesktop.aperture.accessor.AccessData;
@@ -123,6 +124,39 @@ public class SynchronizedAccessData implements AccessData {
      */
     public synchronized void store() throws IOException {
         accessData.store();
+    }
+
+    public synchronized Set getAggregatedIDs(String id) {
+        return accessData.getAggregatedIDs(id);
+    }
+
+    public synchronized Iterator getAggregatedIDsClosure(String id) {
+        return accessData.getAggregatedIDsClosure(id);
+    }
+
+    public synchronized Iterator getUntouchedIDsIterator() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public synchronized void putAggregatedID(String id, String aggregatedID) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public synchronized void removeAggregatedID(String id, String aggregatedID) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public synchronized void removeUntouchedIDs() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public synchronized void touchRecursively(String id) {
+        // TODO Auto-generated method stub
+        
     }
 
 }
