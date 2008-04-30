@@ -260,9 +260,14 @@ public class ApertureTestBase extends TestCase {
             System.out.println("   " + msg.getMessageTitle() + " ");
             System.out.println("   " + msg.getMessage() + " ");
             for (Statement stmt : msg.getStatements()) {
-                System.out.println("   {" + stmt.getSubject().toSPARQL() + ",");
-                System.out.println("    " + stmt.getPredicate().toSPARQL() + ",");
-                System.out.println("    " + stmt.getObject().toSPARQL() + "}");
+                try {
+                    System.out.println("   {" + stmt.getSubject().toSPARQL() + ",");
+                    System.out.println("    " + stmt.getPredicate().toSPARQL() + ",");
+                    System.out.println("    " + stmt.getObject().toSPARQL() + "}");
+                } catch (Exception x) {
+                    // YES, blank nodes do not support toSparql...
+                    System.out.println("   {" + stmt + "}");
+                }
             }
             i++;
         }
