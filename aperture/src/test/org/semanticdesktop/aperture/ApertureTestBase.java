@@ -53,7 +53,7 @@ public class ApertureTestBase extends TestCase {
 
 	protected static final String DOCS_PATH = "org/semanticdesktop/aperture/docs/";
     
-    private static StandaloneValidator validator;
+    protected static StandaloneValidator validator;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////// CREATING MODELS AND RDFCONTAINERS ////////////////////////////////////
@@ -202,7 +202,7 @@ public class ApertureTestBase extends TestCase {
         }
     }
     
-    private void initializeValidator() throws Exception {
+    protected void initializeValidator() throws Exception {
         validator = new StandaloneValidatorImpl();        
         Model tempModel  = RDF2Go.getModelFactory().createModel();
         tempModel.open();
