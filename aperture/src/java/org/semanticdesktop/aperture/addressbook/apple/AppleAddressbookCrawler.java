@@ -101,8 +101,9 @@ public class AppleAddressbookCrawler extends AddressbookCrawler {
                 URI uri = new URIImpl(s.getSubject().toString(),false);
 
                 // get relevant triples
-                RDFContainer dorep = handler.getRDFContainerFactory(this, uri.toString())
-                        .getRDFContainer(uri);
+                //RDFContainer dorep = handler.getRDFContainerFactory(this, uri.toString())
+                //        .getRDFContainer(uri);
+                RDFContainer dorep = getRDFContainerFactory(uri.toString()).getRDFContainer(uri);
                 // pretty
                 List<Statement> statementList = ModelUtil.getCBD(s.getSubject(), model, true);
                 dorep.getModel().addAll(statementList.iterator());

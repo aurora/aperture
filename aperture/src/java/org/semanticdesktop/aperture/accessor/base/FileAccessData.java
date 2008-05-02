@@ -40,6 +40,8 @@ public class FileAccessData extends AccessDataImpl {
 
     public static final String REFERRED_ID_TAG = "referredID";
     
+    public static final String AGGREGATED_ID_TAG = "aggregatedID";
+    
     private Logger log = LoggerFactory.getLogger(FileAccessData.class);
 
     private int autoSaveCounter;
@@ -157,6 +159,7 @@ public class FileAccessData extends AccessDataImpl {
     public void initialize() throws IOException {
         idMap = null;
         referredIDMap = null;
+        aggregatedIDMap = null;
         super.initialize();
         if (dataFile != null && dataFile.exists()) {
             FileInputStream fileStream = new FileInputStream(dataFile);
@@ -259,6 +262,15 @@ public class FileAccessData extends AccessDataImpl {
                 xmlWriter.textElement(REFERRED_ID_TAG, referredID);
             }
         }
+        
+        Set aggregatedIDs = getAggregatedIDs(id);
+        if (aggregatedIDs != null) {
+            Iterator ids = aggregatedIDs.iterator();
+            while (ids.hasNext()) {
+                String aggregatedID = (String) ids.next();
+                xmlWriter.textElement(AGGREGATED_ID_TAG, aggregatedID);
+            }
+        }
     }
 
     private class AccessDataParser extends SimpleSAXAdapter {
@@ -290,14 +302,30 @@ public class FileAccessData extends AccessDataImpl {
                 String referredID = text;
 
                 if (referredID != null && dataObjectId != null) {
-                    HashSet referredIDs = (HashSet) referredIDMap.get(dataObjectId);
+                    putReferredID(dataObjectId, referredID);
+//                    HashSet referredIDs = (HashSet) referredIDMap.get(dataObjectId);
+//
+//                    if (referredIDs == null) {
+//                        referredIDs = new HashSet();
+//                        referredIDMap.put(dataObjectId, referredIDs);
+//                    }
+//
+//                    referredIDs.add(referredID);
+                }
+            } else if (tagName.equals(AGGREGATED_ID_TAG)) {
+                String aggregatedID = text;
 
-                    if (referredIDs == null) {
-                        referredIDs = new HashSet();
-                        referredIDMap.put(dataObjectId, referredIDs);
-                    }
-
-                    referredIDs.add(referredID);
+                if (aggregatedID != null && dataObjectId != null) {
+                    putAggregatedID(dataObjectId, aggregatedID);
+                    
+//                    Set aggregatedIDs = (Set) aggregatedIDMap.get(dataObjectId);
+//
+//                    if (aggregatedIDs == null) {
+//                        aggregatedIDs = new HashSet();
+//                        aggregatedIDMap.put(dataObjectId, aggregatedIDs);
+//                    }
+//
+//                    aggregatedIDs.add(aggregatedID);
                 }
             }
             else if (dataObjectId != null) {

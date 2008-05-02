@@ -14,26 +14,9 @@ import junit.framework.TestCase;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.util.FileUtil;
 
-public class TestAccessDataImpl extends TestCase {
+public class TestAccessDataImpl extends AccessDataTest {
 
-
-    public void testInputOutput() throws IOException {
-    	AccessData accessData = new AccessDataImpl();
-    	AccessDataTest.test(accessData);
-    }
-    
-    public void testTouchedUntouched() throws IOException {
-        AccessData accessData = new AccessDataImpl();
-        AccessDataTest.testTouchedAndUntouched(accessData);
-    }
-    
-    public void testTouchRecursively() throws IOException {
-        AccessData accessData = new AccessDataImpl();
-        AccessDataTest.testTouchRecursively(accessData);
-    }
-    
-    public void testGetAggregatedIDsClosure() throws IOException {
-        AccessData accessData = new AccessDataImpl();
-        AccessDataTest.testGetAggregationClosure(accessData);
+    public void setUp() throws IOException {
+        super.setUp(new AccessDataImpl());
     }
 }

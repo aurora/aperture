@@ -61,8 +61,8 @@ public abstract class AddressbookCrawler extends CrawlerBase {
             List people = crawlAddressbook();
             URI contactListUri = getContactListUri();
             
-            Set before = accessData.getStoredIDs();
-            Set current = new HashSet();
+            //Set before = accessData.getStoredIDs();
+            //Set current = new HashSet();
             
             if (!accessData.isKnownId(contactListUri.toString())) {
                 reportContactListDataObject(contactListUri);
@@ -71,27 +71,28 @@ public abstract class AddressbookCrawler extends CrawlerBase {
             for (Iterator it = people.iterator(); it.hasNext();) {
                 DataObject o = (DataObject) it.next();
                 String sum = computeChecksum(o);
-
                 if (accessData.isKnownId(o.getID().toString())) {
                     if (accessData.get(o.getID().toString(), ADDRESSBOOK_CHECKSUM_KEY).equals(sum)) {
-                        handler.objectNotModified(this, o.getID().toString());
+                        //handler.objectNotModified(this, o.getID().toString());
+                        reportUnmodifiedDataObject(o.getID().toString());
                     }
                     else {
-                        handler.objectChanged(this, o);
+                        //handler.objectChanged(this, o);
+                        reportModifiedDataObject(o);
                     }
                 }
                 else {
                     accessData.put(o.getID().toString(), ADDRESSBOOK_CHECKSUM_KEY, sum);
-                    handler.objectNew(this, o);
+                    //handler.objectNew(this, o);
+                    reportNewDataObject(o);
                 }
-                current.add(o);
             }
 
             // Blah - crawl objects, friends etc.
 
             // report deleted tags
-            before.removeAll(current);
-            deprecatedUrls.addAll(before);
+            //before.removeAll(current);
+            //deprecatedUrls.addAll(before);
 
             crawlCompleted = true;
         }
@@ -105,12 +106,14 @@ public abstract class AddressbookCrawler extends CrawlerBase {
     }
 
     private void reportContactListDataObject(URI contactListUri) {
-        RDFContainerFactory rdff = handler.getRDFContainerFactory(this, contactListUri.toString());
+        //RDFContainerFactory rdff = handler.getRDFContainerFactory(this, contactListUri.toString());
+        RDFContainerFactory rdff = getRDFContainerFactory(contactListUri.toString());
         RDFContainer rdf = rdff.getRDFContainer(contactListUri);
         rdf.add(RDF.type,NCO.ContactList);
         rdf.add(NIE.rootElementOf,getDataSource().getID());
         DataObjectBase object = new DataObjectBase(contactListUri, source, rdf);
-        handler.objectNew(this, object);
+        //handler.objectNew(this, object);
+        reportNewDataObject(object);
     }
 
     /**

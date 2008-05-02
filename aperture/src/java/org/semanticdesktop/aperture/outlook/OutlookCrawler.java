@@ -315,32 +315,37 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 		logger.info("crawling resource "+uri);
 		
 		//		 register that we're processing this file
-		handler.accessingObject(this, uri);
-		deprecatedUrls.remove(uri);
+		//handler.accessingObject(this, uri);
+		reportAccessingObject(uri);
+		//deprecatedUrls.remove(uri);
 		
 		// see if this object has been encountered before (we must do this before applying the accessor!)
 		boolean knownObject = accessData == null ? false : accessData.isKnownId(uri);
 		
 		//		 fetch a RDFContainer from the handler (note: is done for every
-		RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, uri);
+		//RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, uri);
+		RDFContainerFactory containerFactory = getRDFContainerFactory(uri);
 		try {
 			DataObject dataObject = getAccessor().getDataObjectIfModifiedOutlook(
 				uri, source, accessData, params, containerFactory, resource, parent);
 			
 			if (dataObject == null) {
 				// the object was not modified
-				handler.objectNotModified(this, uri);
-				crawlReport.increaseUnchangedCount();
+				//handler.objectNotModified(this, uri);
+				//crawlReport.increaseUnchangedCount();
+			    reportUnmodifiedDataObject(uri);
 			}
 			else {
 				// we scanned a new or changed object
 				if (knownObject) {
-					handler.objectChanged(this, dataObject);
-					crawlReport.increaseChangedCount();
+					//handler.objectChanged(this, dataObject);
+					//crawlReport.increaseChangedCount();
+				    reportModifiedDataObject(dataObject);
 				}
 				else {
-					handler.objectNew(this, dataObject);
-					crawlReport.increaseNewCount();
+					//handler.objectNew(this, dataObject);
+					//crawlReport.increaseNewCount();
+				    reportNewDataObject(dataObject);
 				}
 			}
 		}

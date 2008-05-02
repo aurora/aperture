@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.semanticdesktop.aperture.accessor.AccessData;
 
 /**
@@ -100,7 +101,7 @@ public abstract class FilterAccessData implements AccessData {
      * @return
      * @see org.semanticdesktop.aperture.accessor.AccessData#getAggregatedIDsClosure(java.lang.String)
      */
-    public Iterator getAggregatedIDsClosure(String id) {
+    public ClosableIterator getAggregatedIDsClosure(String id) {
         return accessData.getAggregatedIDsClosure(id);
     }
 
@@ -108,7 +109,7 @@ public abstract class FilterAccessData implements AccessData {
      * @return
      * @see org.semanticdesktop.aperture.accessor.AccessData#getUntouchedIDsIterator()
      */
-    public Iterator getUntouchedIDsIterator() {
+    public ClosableIterator getUntouchedIDsIterator() {
         return accessData.getUntouchedIDsIterator();
     }
 
@@ -144,5 +145,22 @@ public abstract class FilterAccessData implements AccessData {
      */
     public void touchRecursively(String id) {
         accessData.touchRecursively(id);
+    }
+
+    /**
+     * @param id
+     * @return
+     * @see org.semanticdesktop.aperture.accessor.AccessData#isTouched(java.lang.String)
+     */
+    public boolean isTouched(String id) {
+        return accessData.isTouched(id);
+    }
+
+    /**
+     * @param id
+     * @see org.semanticdesktop.aperture.accessor.AccessData#touch(java.lang.String)
+     */
+    public void touch(String id) {
+        accessData.touch(id);
     }
 }

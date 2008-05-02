@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.semanticdesktop.aperture.accessor.AccessData;
 
 /**
@@ -126,37 +127,52 @@ public class SynchronizedAccessData implements AccessData {
         accessData.store();
     }
 
+    /**
+     * @see AccessData#getAggregatedIDs(String)
+     */
     public synchronized Set getAggregatedIDs(String id) {
         return accessData.getAggregatedIDs(id);
     }
 
-    public synchronized Iterator getAggregatedIDsClosure(String id) {
+    public synchronized ClosableIterator getAggregatedIDsClosure(String id) {
         return accessData.getAggregatedIDsClosure(id);
     }
 
-    public synchronized Iterator getUntouchedIDsIterator() {
-        // TODO Auto-generated method stub
-        return null;
+    public synchronized ClosableIterator getUntouchedIDsIterator() {
+        return accessData.getUntouchedIDsIterator();
     }
 
     public synchronized void putAggregatedID(String id, String aggregatedID) {
-        // TODO Auto-generated method stub
-        
+        accessData.putAggregatedID(id, aggregatedID);
     }
 
     public synchronized void removeAggregatedID(String id, String aggregatedID) {
-        // TODO Auto-generated method stub
-        
+        accessData.removeAggregatedID(id, aggregatedID);
     }
 
     public synchronized void removeUntouchedIDs() {
-        // TODO Auto-generated method stub
-        
+        accessData.removeUntouchedIDs();
     }
 
     public synchronized void touchRecursively(String id) {
-        // TODO Auto-generated method stub
-        
+        accessData.touchRecursively(id);
+    }
+
+    /**
+     * @param id
+     * @return
+     * @see org.semanticdesktop.aperture.accessor.AccessData#isTouched(java.lang.String)
+     */
+    public synchronized boolean isTouched(String id) {
+        return accessData.isTouched(id);
+    }
+
+    /**
+     * @param id
+     * @see org.semanticdesktop.aperture.accessor.AccessData#touch(java.lang.String)
+     */
+    public synchronized void touch(String id) {
+        accessData.touch(id);
     }
 
 }

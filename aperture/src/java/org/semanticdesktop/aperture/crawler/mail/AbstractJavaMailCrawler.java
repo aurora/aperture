@@ -242,13 +242,15 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
         // set the current folder
         setCurrentFolder(folder);
 
-        handler.accessingObject(this, folderUrl);
+        //handler.accessingObject(this, folderUrl);
+        reportAccessingObject(folderUrl);
 
         // see if this object has been encountered before (we must do this before applying the accessor!)
         boolean knownObject = accessData == null ? false : accessData.isKnownId(folderUrl);
-        deprecatedUrls.remove(folderUrl);
+        //deprecatedUrls.remove(folderUrl);
 
-        RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, folderUrl);
+        //RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, folderUrl);
+        RDFContainerFactory containerFactory = getRDFContainerFactory(folderUrl);
 
         try {
             FolderDataObject folderObject = getCurrentFolderObject(source, accessData, containerFactory);
@@ -264,12 +266,14 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
             else {
                 // report this new or changed folder
                 if (knownObject) {
-                    handler.objectChanged(this, folderObject);
-                    crawlReport.increaseChangedCount();
+                    //handler.objectChanged(this, folderObject);
+                    //crawlReport.increaseChangedCount();
+                    reportModifiedDataObject(folderObject);
                 }
                 else {
-                    handler.objectNew(this, folderObject);
-                    crawlReport.increaseNewCount();
+                    //handler.objectNew(this, folderObject);
+                    //crawlReport.increaseNewCount();
+                    reportNewDataObject(folderObject);
                 }
 
                 // (re-)crawl its messages
@@ -352,10 +356,12 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
         while (!queue.isEmpty()) {
             // fetch the first element in the queue
             String queuedUri = (String) queue.removeFirst();
-            handler.accessingObject(this, queuedUri);
+            //handler.accessingObject(this, queuedUri);
+            reportAccessingObject(queuedUri);
 
             // get this DataObject
-            RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, queuedUri);
+            //RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, queuedUri);
+            RDFContainerFactory containerFactory = getRDFContainerFactory(queuedUri);
             try {
                 DataObject object = getObject(message, queuedUri, folderUri, source, accessData,
                     containerFactory);
@@ -380,8 +386,9 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
                     // Report this object as a new object (assumption: objects are always new, never
                     // changed, since mails are immutable).
                     // This MUST happen last because the CrawlerHandler will probably dispose of it.
-                    crawlReport.increaseNewCount();
-                    handler.objectNew(this, object);
+                    //crawlReport.increaseNewCount();
+                    //handler.objectNew(this, object);
+                    reportNewDataObject(object);
                 }
             }
             catch (MessagingException e) {
@@ -701,9 +708,10 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
     
     protected void reportNotModified(String uri) {
         // report this object as unmodified
-        crawlReport.increaseUnchangedCount();
-        handler.objectNotModified(this, uri);
-        deprecatedUrls.remove(uri);
+        //crawlReport.increaseUnchangedCount();
+        //handler.objectNotModified(this, uri);
+        //deprecatedUrls.remove(uri);
+        reportUnmodifiedDataObject(uri);
 
         // repeat recursively on all registered children
         if (accessData == null) {

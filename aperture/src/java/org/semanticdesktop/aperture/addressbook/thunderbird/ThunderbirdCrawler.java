@@ -158,7 +158,8 @@ public class ThunderbirdCrawler extends AddressbookCrawler {
         String uris = createURI(row.id);
         URI uri = URIImpl.createURIWithoutChecking(uris);
 
-        RDFContainerFactory rdff = handler.getRDFContainerFactory(null, uris);
+        //RDFContainerFactory rdff = handler.getRDFContainerFactory(null, uris);
+        RDFContainerFactory rdff = getRDFContainerFactory(uris);
         RDFContainer rdf = rdff.getRDFContainer(uri);
         Model model = rdf.getModel();
         

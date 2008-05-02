@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.ontoware.aifbcommons.collection.ClosableIterator;
+
 /**
  * An AccessData instance stores information about accessed resources such as last modification dates,
  * locations, etc. This primarily facilitates incremental crawling of DataSources.
@@ -140,10 +142,13 @@ public interface AccessData {
 	 * Specifically:
 	 * <ul>
 	 * <li>Remove all keys and values pertaining to that ID</li>
-	 * <li>Remove all links between this id and all id's it refers to and is referred by</li>
+	 * <li>Remove all links between this id and all id's it refers to</li>
 	 * <li>Remove the aggregation link "upwards" to the parent id</li>
 	 * <li>Remove recursively all aggregated id's</li>
 	 * </ul>
+	 * Note that this method does NOT remove ids this id is referred BY. I.e. it does remove 
+	 * "outgoing" referredID links but it does NOT remove "incomming" referred ID's. To be on
+	 * the safe side - the crawler should take care about this by itself.
 	 * 
 	 * @param id A resource ID.
 	 */
@@ -151,18 +156,22 @@ public interface AccessData {
 	
 	/**
      * Puts a link between the given id and the aggregated ID. The aggregated ID will appear in the
-     * aggregation closure and will be touched by the {@link #touchRecursively(String)} method. Note that
-     * the aggregation graph must not contain cycles.
+     * aggregation closure (returned by {@link #getAggregatedIDsClosure(String)}), will be touched by the
+     * {@link #touchRecursively(String)} method, it will be removed if the id is removed (@link
+     * {@link #remove(String)}). Note that the aggregation graph must not contain cycles, each id can have at
+     * most one parent, the implementations are expected to enforce this. If the aggregatedID had a parent
+     * before, the previous link will be removed.
      * 
-     * @param id
-     * @param aggregatedID
+     * @param id the parent id
+     * @param aggregatedID the aggregated id
      */
-	public void putAggregatedID(String id, String aggregatedID);
+    public void putAggregatedID(String id, String aggregatedID);
 	
 	/**
      * Removes the link between the given id and the aggregated ID. After a call to this method, the
-     * aggregated ID will not appear in the aggregation closure and will not be touched by the
-     * {@link #touchRecursively(String)} method.
+     * aggregated ID will not appear in the aggregation closure ({@link #getAggregatedIDsClosure(String)} and
+     * will not be touched by the {@link #touchRecursively(String)} method. A call to remove the id will not
+     * remove the aggregated id.
      * 
      * @param id
      * @param aggregatedID
@@ -178,12 +187,26 @@ public interface AccessData {
 	
 	/**
 	 * Returns an iterator over all ids aggregated within the given one, both directly and indirectly.
-	 * The iterator will traverse the entire aggregation subtree beginning with the given id. This
-	 * iterator does not touch the ids.
+	 * The iterator will traverse the entire aggregation subtree beginning with the given id. 
 	 * @param id the id whose aggregation subtree is to be traversed
 	 * @return an iterator over the aggregation subtree
 	 */
-	public Iterator getAggregatedIDsClosure(String id);
+	public ClosableIterator getAggregatedIDsClosure(String id);
+	
+	/**
+	 * Touches an id. This id will not appear on the list returned by {@link #getUntouchedIDsIterator()} and
+	 * will not be removed by {@link #removeUntouchedIDs()}
+	 * @param id
+	 */
+	public void touch(String id);
+	
+	/**
+	 * Returns true if this id has been touched since the last call to {@link #initialize()}, false
+	 * otherwise.
+	 * @param id the id to check
+	 * @return true if the id has been touched, false if not
+	 */
+	public boolean isTouched(String id);
 	
 	/**
 	 * Recursively touches all ids within the aggregation subtree beginning with the given id
@@ -196,10 +219,10 @@ public interface AccessData {
 	 * since the last call to {@link #initialize()}
 	 * @return an iterator over all untouched IDs
 	 */
-	public Iterator getUntouchedIDsIterator();
+	public ClosableIterator getUntouchedIDsIterator();
 	
 	/**
-	 * Removes recursively all untouched IDS
+	 * Removes all untouched IDS
 	 */
 	public void removeUntouchedIDs();
 }

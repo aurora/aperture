@@ -204,7 +204,8 @@ public class FlickrCrawler extends AbstractTagCrawler {
         //if (alreadyinAccessData)
         //    return;
         
-        RDFContainer cont =  handler.getRDFContainerFactory(this, photo.getUrl()).getRDFContainer(uri);
+        //RDFContainer cont =  handler.getRDFContainerFactory(this, photo.getUrl()).getRDFContainer(uri);
+        RDFContainer cont =  getRDFContainerFactory(photo.getUrl()).getRDFContainer(uri);
         cont.add(RDF.type, new URIImpl(PHOTONS+"Photo"));
         String title = photo.getTitle();
         if (title != null)
@@ -227,7 +228,8 @@ public class FlickrCrawler extends AbstractTagCrawler {
         
         
         DataObjectBase d = new DataObjectBase(uri, source, cont);
-        handler.objectNew(this, d);        
+        //handler.objectNew(this, d);
+        reportNewDataObject(d);
     }
 
 

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -28,6 +29,12 @@ import org.semanticdesktop.aperture.vocabulary.MAD;
 import org.semanticdesktop.aperture.vocabulary.NIE;
 
 /**
+ * <h1>DOESN'T WORK, DON'T USE!!!!</h1>
+ * 
+ * <H2>THIS CLASS HAS NOT BEEN ADAPTED TO CHANGES IN THE ACCESSDATA INTERFACE AND DOES NOT WORK. IT CONTAINS
+ * ONLY EMPTY METHOD STUBS TO MAKE IT COMPILE. USE ModelAccessData INSTEAD, IT PROVIDES THE SAME FUNCTIONALITY,
+ * JUST WRAP YOUR REPOSITORY IN A MODEL</H2>
+ * 
  * RepositoryAccessData provides an AccessData implementation storing its information to and retrieving it
  * from a Repository.
  * 
@@ -39,6 +46,7 @@ import org.semanticdesktop.aperture.vocabulary.NIE;
  * The AccessData.DATE_KEY, AccessData.BYTE_SITE_KEY and AccessData.REDIRECTS_TO_KEY keys are mapped to
  * Aperture DATA predicates. In that case the value must be a long encoded as a String or, in the last case, a
  * URL encoded as a String.
+ * @deprecated DOESN'T WORK, DON'T USE, USE ModelAccessData instead!!!
  */
 public class RepositoryAccessData implements AccessData {
 
@@ -322,5 +330,50 @@ public class RepositoryAccessData implements AccessData {
         catch (RepositoryException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Set getAggregatedIDs(String id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public ClosableIterator getAggregatedIDsClosure(String id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public ClosableIterator getUntouchedIDsIterator() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void putAggregatedID(String id, String aggregatedID) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void removeAggregatedID(String id, String aggregatedID) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void removeUntouchedIDs() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void touchRecursively(String id) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public boolean isTouched(String id) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public void touch(String id) {
+        // TODO Auto-generated method stub
+        
     }
 }

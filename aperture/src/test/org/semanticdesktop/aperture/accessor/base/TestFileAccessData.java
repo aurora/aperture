@@ -13,8 +13,9 @@ import junit.framework.TestCase;
 
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.util.FileUtil;
+import org.semanticdesktop.aperture.util.IOUtil;
 
-public class TestFileAccessData extends TestCase {
+public class TestFileAccessData extends AccessDataTest {
 
 	private static final String TMP_SUBDIR = "TestFileAccessor.tmpDir";
 
@@ -29,30 +30,50 @@ public class TestFileAccessData extends TestCase {
 		tmpDir.mkdir();
 		accessDataFile = File.createTempFile("file-", ".txt", tmpDir);
 		accessDataFile.delete();
+		super.setUp(new FileAccessData(accessDataFile));
 	}
 	
     public void tearDown() {
         // delete the temporary folder
         FileUtil.deltree(tmpDir);
     }
-
-    public void testInputOutput() throws IOException {
-    	FileAccessData accessData = new FileAccessData(null);
-    	AccessDataTest.test(accessData);
-    }
     
 	public void testFillStoreAndLoad() throws IOException {
-		// new object
-		FileAccessData accessData = new FileAccessData(accessDataFile);
-		accessData.initialize();
-		accessData.put("urn:test", AccessData.DATE_KEY, "12");
-		accessData.store();
+		accessDataToTest.put("urn:test", AccessData.DATE_KEY, "12");
+		accessDataToTest.putReferredID(id1, id3);
+		accessDataToTest.putReferredID(id3, id2);
+		accessDataToTest.store();
 
 		// load
-		accessData = new FileAccessData(accessDataFile);
+		AccessData accessData = new FileAccessData(accessDataFile);
 		accessData.initialize();
-		String value = accessData.get("urn:test", AccessData.DATE_KEY);
-		assertEquals("12", value);
+		
+		// check if the aggregated id's have been stored and read correctly
+		
+		// originally there were 5 id's, the sixth one is urn:test
+		assertEquals(6, accessDataToTest.getSize());
+        assertEquals(3, accessDataToTest.getAggregatedIDs(folderid1).size());
+        assertEquals(1, accessDataToTest.getAggregatedIDs(folderid2).size());
+        assertEquals(id3, (String)accessDataToTest.getAggregatedIDs(folderid2).iterator().next());
+        assertEquals(0, accessDataToTest.getAggregatedIDs(id1).size());
+        assertEquals(0, accessDataToTest.getAggregatedIDs(id2).size());
+        assertEquals(0, accessDataToTest.getAggregatedIDs(id3).size());
+		
+        // check tif the value is correct
+		assertEquals("12",accessData.get("urn:test", AccessData.DATE_KEY));
+		assertEquals(value1,accessData.get(id1, key1));
+		assertEquals(value2,accessData.get(id1, key2));
+		assertEquals(value3,accessData.get(id2, key1));
+		
+		assertEquals(1, accessData.getReferredIDs(id1).size());
+		assertEquals(id3, accessData.getReferredIDs(id1).iterator().next().toString());
+		
+		assertEquals(1, accessData.getReferredIDs(id3).size());
+		assertEquals(id2, accessData.getReferredIDs(id3).iterator().next().toString());
+
+		
+		
+		
 	}
 	
 	public void testAutoSaveFeature() throws Exception {

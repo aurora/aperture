@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.util.ArrayMap;
 
@@ -127,10 +128,9 @@ public class AccessDataImpl implements AccessData {
 	 * @see AccessData#put(String, String, String)
 	 */
 	public void put(String id, String key, String value) {
-		// assumption: lots of objects with relative few things to store: use an ArrayMap
-		ArrayMap infoMap = createInfoMap(id);
-		infoMap.put(key, value);
-		infoMap.put(TIMESTAMP_KEY, crawlIdentifier);
+	    // assumption: lots of objects with relative few things to store: use an ArrayMap
+        ArrayMap infoMap = createInfoMap(id);
+        infoMap.put(key, value);
 	}
 
 	/**
@@ -156,7 +156,6 @@ public class AccessDataImpl implements AccessData {
 			return null;
 		}
 		else {
-		    infoMap.put(TIMESTAMP_KEY, crawlIdentifier);
 			return (String) infoMap.get(key);
 		}
 	}
@@ -266,9 +265,8 @@ public class AccessDataImpl implements AccessData {
         aggregatedIDMap.remove(aggregatedID);
     }
 
-    private class UntouchedIterator implements Iterator {
-
-        private boolean hasNext = true;
+    private class UntouchedIterator implements ClosableIterator {
+        
         private Iterator wrappedIterator;
         private Object nextValue;
         
@@ -292,6 +290,10 @@ public class AccessDataImpl implements AccessData {
             throw new UnsupportedOperationException();
         }        
         
+        public void close() {
+            // don't do anything
+        }
+        
         private void getNextUntouched() {
             if (nextValue == null) {
                 while (wrappedIterator.hasNext()) {
@@ -305,7 +307,7 @@ public class AccessDataImpl implements AccessData {
         }
     }
     
-    public Iterator getUntouchedIDsIterator() {
+    public ClosableIterator getUntouchedIDsIterator() {
         return new UntouchedIterator(idMap.keySet().iterator());
     }
     
@@ -324,16 +326,22 @@ public class AccessDataImpl implements AccessData {
     }
 
     public void touchRecursively(String id) {
-        Map infoMap = idMap.get(id);
-        infoMap.put(TIMESTAMP_KEY, crawlIdentifier);
-        infoMap = null;
+        touch(id);
         AggregationNode node = aggregatedIDMap.get(id);
-        for (String child : node.children) {
-            touchRecursively(child);
+        if (node != null) {
+            for (String child : node.children) {
+                touchRecursively(child);
+            }
         }
     }
     
-    private class AggregatedClosureIterator implements Iterator {
+    public void touch(String id) {
+        Map infoMap = createInfoMap(id);
+        infoMap.put(TIMESTAMP_KEY, crawlIdentifier);
+        infoMap = null;
+    }
+        
+    private class AggregatedClosureIterator implements ClosableIterator {
 
         private List<Iterator<String>> iteratorStack;
         private String nextValue;
@@ -372,9 +380,13 @@ public class AccessDataImpl implements AccessData {
         public void remove() {
             throw new UnsupportedOperationException();
         }
+
+        public void close() {
+            // don't do anything
+        }
     }
     
-    public Iterator getAggregatedIDsClosure(String id) {
+    public ClosableIterator getAggregatedIDsClosure(String id) {
         return new AggregatedClosureIterator(id);
     }
     
@@ -383,7 +395,7 @@ public class AccessDataImpl implements AccessData {
      * @param id
      * @return
      */
-    boolean isTouched(String id) {
+    public boolean isTouched(String id) {
         ArrayMap infoMap = (ArrayMap) idMap.get(id);
         if (infoMap != null && 
             infoMap.get(TIMESTAMP_KEY) != null && 

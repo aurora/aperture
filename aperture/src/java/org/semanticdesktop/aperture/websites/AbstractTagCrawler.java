@@ -42,7 +42,7 @@ import com.aetrion.flickr.FlickrException;
 public abstract class AbstractTagCrawler extends CrawlerBase {
     
 	Logger log=LoggerFactory.getLogger(AbstractTagCrawler.class);
-	Set<String> current;
+	//Set<String> current;
 	/** 
 	 * @see org.semanticdesktop.aperture.crawler.base.CrawlerBase#crawlObjects()
 	@Override
@@ -58,17 +58,19 @@ public abstract class AbstractTagCrawler extends CrawlerBase {
 		
 			List<String> tags = crawlTags(username,password);
 			
-			Set<String> before=accessData.getStoredIDs();
-			log.debug("Tags known before crawling:"+before);
-			current=new HashSet<String>();
+			//Set<String> before=accessData.getStoredIDs();
+			//log.debug("Tags known before crawling:"+before);
+			//current=new HashSet<String>();
 			for (String t: tags) {
 				URI turi=new URIImpl(t);
 				//TODO: Can tags ever be changed, f.x. if new photos/bookmarks/whatever are added?
 				if (accessData.isKnownId(t)) { 
-					handler.objectNotModified(this,t);
+				    reportUnmodifiedDataObject(t);
+					//handler.objectNotModified(this,t);
 				} else {
 					accessData.put(t,AccessData.DATE_KEY,Long.toString(new Date().getTime()));
-					RDFContainer rdf=handler.getRDFContainerFactory(this,t).getRDFContainer(turi);
+					//RDFContainer rdf=handler.getRDFContainerFactory(this,t).getRDFContainer(turi);
+					RDFContainer rdf=getRDFContainerFactory(t).getRDFContainer(turi);
 					DataObject o=new DataObjectBase(turi,localSource,rdf);
 					rdf.add(RDF.type,TAGGING.Tag);
 					
@@ -76,18 +78,19 @@ public abstract class AbstractTagCrawler extends CrawlerBase {
 					rdf.add(NIE.rootElementOf,getDataSource().getID());
 					//rdf.add(RDFS.LABEL,turi.getLocalName());
 					rdf.add(RDFS.label,URLDecoder.decode(getShortName(turi.toString()),"utf-8"));
-					handler.objectNew(this,o);
+					//handler.objectNew(this,o);
+					reportNewDataObject(o);
 				}
-				current.add(t);
+				//current.add(t);
 			}			
 			
 			crawlTheRest(username,password);
 			
-			log.debug("Tags found this time: "+current);
+			//log.debug("Tags found this time: "+current);
 			//report deleted tags
-			before.removeAll(current);
-			log.debug("Tags removed: "+before);
-			deprecatedUrls.removeAll(current);
+			//before.removeAll(current);
+			//log.debug("Tags removed: "+before);
+			//deprecatedUrls.removeAll(current);
 
 		} catch (Exception e) {
 			log.info("Could not crawl tag-datasource.",e);
@@ -121,20 +124,23 @@ public abstract class AbstractTagCrawler extends CrawlerBase {
 	 */
 	protected void reportItem(Tag item, List<String> tags) throws UpdateException, UnsupportedEncodingException {
 	    String uriString = item.getUri();
-		current.add(uriString);
-		if (accessData.isKnownId(uriString)) { 
-			handler.objectNotModified(this,uriString);
+		//current.add(uriString);
+		if (accessData.isKnownId(uriString)) {
+			///handler.objectNotModified(this,uriString);
+		    reportUnmodifiedDataObject(uriString);
 		} else {
 			accessData.put(uriString,AccessData.DATE_KEY,Long.toString(new Date().getTime()));
 			URIImpl turi = new URIImpl(uriString);
-			RDFContainer rdf=handler.getRDFContainerFactory(this,uriString).getRDFContainer(turi);
+			//RDFContainer rdf=handler.getRDFContainerFactory(this,uriString).getRDFContainer(turi);
+			RDFContainer rdf= getRDFContainerFactory(uriString).getRDFContainer(turi);
 			DataObject o=new DataObjectBase(turi,source,rdf);
 			rdf.add(RDF.type,TAGGING.Tag);
 			//rdf.add(RDFS.LABEL,item.getName());
 			rdf.add(RDFS.label,URLDecoder.decode(item.getName(),"utf-8"));
 			for (String tag: tags)
 				rdf.add(TAGGING.hasTag,new URIImpl(tag));
-			handler.objectNew(this,o);
+			//handler.objectNew(this,o);
+			reportNewDataObject(o);
 		}
 	}
 	

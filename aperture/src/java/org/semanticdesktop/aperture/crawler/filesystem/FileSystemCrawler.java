@@ -251,15 +251,17 @@ public class FileSystemCrawler extends CrawlerBase {
         String url = file.toURI().toString();
 
         // register that we're processing this file
-        handler.accessingObject(this, url);
-        deprecatedUrls.remove(url);
-
+        //handler.accessingObject(this, url);
+        //deprecatedUrls.remove(url);
+        reportAccessingObject(url);
+        
         // see if this object has been encountered before (we must do this before applying the accessor!)
         boolean knownObject = accessData == null ? false : accessData.isKnownId(url);
 
         // fetch a RDFContainer from the handler (note: is done for every
-        RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, url);
-
+        //RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, url);
+        RDFContainerFactory containerFactory = getRDFContainerFactory(url);
+        
         // fetch the DataObject
         DataAccessor accessor = accessorFactory.get();
         params.put("file", file);
@@ -275,8 +277,9 @@ public class FileSystemCrawler extends CrawlerBase {
 
             if (dataObject == null) {
                 // the object was not modified
-                handler.objectNotModified(this, url);
-                crawlReport.increaseUnchangedCount();
+                //handler.objectNotModified(this, url);
+                //crawlReport.increaseUnchangedCount();
+                reportUnmodifiedDataObject(url);
             }
             else {
 
@@ -287,12 +290,14 @@ public class FileSystemCrawler extends CrawlerBase {
 
                 // we scanned a new or changed object
                 if (knownObject) {
-                    handler.objectChanged(this, dataObject);
-                    crawlReport.increaseChangedCount();
+                    //handler.objectChanged(this, dataObject);
+                    //crawlReport.increaseChangedCount();
+                    reportModifiedDataObject(dataObject);
                 }
                 else {
-                    handler.objectNew(this, dataObject);
-                    crawlReport.increaseNewCount();
+                    //handler.objectNew(this, dataObject);
+                    //crawlReport.increaseNewCount();
+                    reportNewDataObject(dataObject);
                 }
             }
         }

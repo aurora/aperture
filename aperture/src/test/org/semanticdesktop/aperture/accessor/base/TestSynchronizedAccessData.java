@@ -14,7 +14,7 @@ import junit.framework.TestCase;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.util.FileUtil;
 
-public class TestSynchronizedAccessData extends TestCase {
+public class TestSynchronizedAccessData extends AccessDataTest {
 
 	private static final String TMP_SUBDIR = "TestFileAccessor.tmpDir";
 
@@ -29,17 +29,12 @@ public class TestSynchronizedAccessData extends TestCase {
 		tmpDir.mkdir();
 		accessDataFile = File.createTempFile("file-", ".txt", tmpDir);
 		accessDataFile.delete();
+		super.setUp(new FileAccessData(accessDataFile));
 	}
 	
     public void tearDown() {
         // delete the temporary folder
         FileUtil.deltree(tmpDir);
-    }
-
-    public void testInputOutput() throws IOException {
-    	FileAccessData accessData = new FileAccessData(null);
-        SynchronizedAccessData synchronizedAccessData = new SynchronizedAccessData(accessData);
-    	AccessDataTest.test(synchronizedAccessData);
     }
     
 	public void testFillStoreAndLoad() throws IOException {

@@ -110,11 +110,18 @@ public class WebCrawler extends CrawlerBase {
     private HashMap<String, CrawlJob> jobsMap;
 
     /**
-     * The set of URLs that have been crawled so far during this scan.
+     * The set of URLs that have been crawled so far during this scan. This set is used
+     * only if there is no access data for this crawler.
      */
     private HashSet<String> crawledUrls;
 
     private int initialDepth;
+
+    private WebAccessData wad;
+
+    public WebCrawler() {
+        wad = null;
+    }
 
     public void setMimeTypeIdentifier(MimeTypeIdentifier mimeTypeIdentifier) {
         this.mimeTypeIdentifier = mimeTypeIdentifier;
@@ -150,11 +157,15 @@ public class WebCrawler extends CrawlerBase {
         if (linkExtractorRegistry == null) {
             throw new IllegalArgumentException("LinkExtractorRegistry missing");
         }
-
+        
         // initialize variables
         jobsQueue = new LinkedList<CrawlJob>();
         jobsMap = new HashMap<String, CrawlJob>(1024);
-        crawledUrls = new HashSet<String>(1024);
+        if (accessData == null) {
+            crawledUrls = new HashSet<String>(1024);
+        } else {
+            wad = new WebAccessData(accessData);
+        }
 
         // fetch crawl instructions from the RDF configuration model
         WebDataSource source = (WebDataSource)getDataSource();
@@ -186,7 +197,7 @@ public class WebCrawler extends CrawlerBase {
         }
 
         // skip when it has been crawled already
-        if (crawledUrls.contains(url)) {
+        if (isCrawled(url)) {
             return;
         }
 
@@ -236,6 +247,22 @@ public class WebCrawler extends CrawlerBase {
         iterator.add(job);
     }
 
+    private boolean isCrawled(String url) {
+        if (wad != null) {
+            return wad.isTouched(url);
+        } else {
+            return crawledUrls.contains(url);
+        }
+    }
+    
+    private void addCrawled(String url) {
+        if (wad != null) {
+            wad.touch(url);
+        } else {
+            crawledUrls.add(url);
+        }
+    }
+
     private void processQueue() {
         // loop over all queued jobs
         loop: while (!jobsQueue.isEmpty() && !isStopRequested()) {
@@ -245,10 +272,12 @@ public class WebCrawler extends CrawlerBase {
             int depth = job.getDepth();
 
             // notify that we're processing this URL
-            handler.accessingObject(this, url);
+            //handler.accessingObject(this, url);
+            reportAccessingObject(url);
 
             // adjust some registries
-            crawledUrls.add(url);
+            addCrawled(url);
+            //crawledUrls.add(url);
             jobsMap.remove(url);
 
             // see if we've ever accessed this url before
@@ -260,23 +289,21 @@ public class WebCrawler extends CrawlerBase {
                 try {
                     // Fetch the data object. Wrap the AccessData in a WebAccessData to get notified when a
                     // URL redirects to another URL.
-                    RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, url);
-                    WebAccessData wad = null;
-                    if (accessData != null) {
-                        wad = new WebAccessData(accessData);
-                    }
+                    //RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, url);
+                    RDFContainerFactory containerFactory = getRDFContainerFactory(url);
 
                     DataObject dataObject = accessor.getDataObjectIfModified(url, source, wad, null,
                         containerFactory);
 
                     // register that this data object has successfully been processed
-                    deprecatedUrls.remove(url);
+                    //deprecatedUrls.remove(url);
 
                     // check if the object is unmodified
                     if (dataObject == null) {
                         // report the object as unmodified
-                        handler.objectNotModified(this, url);
-                        crawlReport.increaseUnchangedCount();
+                        //handler.objectNotModified(this, url);
+                        //crawlReport.increaseUnchangedCount();
+                        reportUnmodifiedDataObject(url);
 
                         // schedule all its links, which we have stored in a previous crawl
                         if (depth > 0) {
@@ -294,7 +321,7 @@ public class WebCrawler extends CrawlerBase {
                         // different. Make sure this URL is never scheduled or reported during this crawl.
                         String finalUrl = dataObject.getID().toString();
                         if (!finalUrl.equals(url)) {
-                            deprecatedUrls.remove(finalUrl);
+                            //deprecatedUrls.remove(finalUrl);
 
                             CrawlJob redundantJob = jobsMap.remove(finalUrl);
                             if (redundantJob != null) {
@@ -304,12 +331,12 @@ public class WebCrawler extends CrawlerBase {
                             // If this is the case, the resulting DataObject may have been reported already.
                             // In that case the DataObject should be ignored, rather than reporting it
                             // multiple times.
-                            if (crawledUrls.contains(finalUrl)) {
+                            if (isCrawled(finalUrl)) {
                                 dataObject.dispose();
                                 continue loop;
                             }
                             else {
-                                crawledUrls.add(finalUrl);
+                                addCrawled(finalUrl);
                             }
                         }
 
@@ -324,12 +351,14 @@ public class WebCrawler extends CrawlerBase {
 
                             // report the object
                             if (knownUrl) {
-                                handler.objectChanged(this, dataObject);
-                                crawlReport.increaseChangedCount();
+                                //handler.objectChanged(this, dataObject);
+                                //crawlReport.increaseChangedCount();
+                                reportModifiedDataObject(dataObject);
                             }
                             else {
-                                handler.objectNew(this, dataObject);
-                                crawlReport.increaseNewCount();
+                                //handler.objectNew(this, dataObject);
+                                //crawlReport.increaseNewCount();
+                                reportNewDataObject(dataObject);
                             }
                         }
                         else {
@@ -364,14 +393,15 @@ public class WebCrawler extends CrawlerBase {
         // if we've accessed this object in the past, we should re-add it to deprecatedIDs, so that it will be
         // reported as removed
         if (knownUrl) {
-            deprecatedUrls.add(url);
+            //deprecatedUrls.add(url);
+            reportDeletedDataObject(url);
         }
 
         // furthermore we should not list this object as accessed any longer; when it can be accessed normally
         // in the next crawl, it should be reported as a new object
-        if (accessData != null) {
-            accessData.remove(url);
-        }
+        //if (accessData != null) {
+        //    accessData.remove(url);
+        //}
     }
 
     private DataAccessor getDataAccessor(String url) {
@@ -623,14 +653,32 @@ public class WebCrawler extends CrawlerBase {
         // but that themselves are never used as links. This may for example happen due to session IDs in the
         // URLs. These URLs should not be removed from the access data and not be reported as removed.
         if (accessData != null) {
-            Iterator<String> iterator = deprecatedUrls.iterator();
-            while (iterator.hasNext()) {
-                String url = iterator.next();
+            
+            // this implementation may be inefficient in some cases, we can't touch the id's while we're
+            // iterating over the untouched id's iterator
+            
+            Set<String> deprecatedRedirections = new HashSet<String>();
+            Iterator iter = accessData.getUntouchedIDsIterator();
+            while (iter.hasNext()) {
+                String url = iter.next().toString();
                 if (accessData.get(url, AccessData.REDIRECTS_TO_KEY) != null) {
-                    accessData.remove(url, AccessData.REDIRECTS_TO_KEY);
-                    iterator.remove();
+                    deprecatedRedirections.add(url);
                 }
             }
+            for (String dep : deprecatedRedirections) {
+                accessData.touch(dep);
+                accessData.remove(dep, AccessData.REDIRECTS_TO_KEY);
+            }
+            
+            // the previous implementation that worked with the deprecatedUrls set
+            //Iterator<String> iterator = deprecatedUrls.iterator();
+            //while (iterator.hasNext()) {
+            //    String url = iterator.next();
+            //    if (accessData.get(url, AccessData.REDIRECTS_TO_KEY) != null) {
+            //        accessData.remove(url, AccessData.REDIRECTS_TO_KEY);
+            //        iterator.remove();
+            //    }
+            //}
         }
     }
 
@@ -655,8 +703,9 @@ public class WebCrawler extends CrawlerBase {
             if (REDIRECTS_TO_KEY.equals(key)) {
                 // do this with the id rather than the value: processingQueue depends on this in order to be
                 // able to do a crawledUrls.contains on the last URL in the redirection chain
-                crawledUrls.add(id);
-                deprecatedUrls.remove(id);
+                //crawledUrls.add(id); // this is obviously not needed, if we use AccessData, then crawledUrls is null
+                //deprecatedUrls.remove(id);
+                touch(id);
 
                 CrawlJob job = jobsMap.remove(id);
                 if (job != null) {

@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Stack;
 
+import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -70,13 +71,13 @@ public abstract class CrawlerBase implements Crawler {
 	 * sometimes lazily created by the getLastCrawlReport method when trying to retrieve the last report of a
 	 * previous session.
 	 */
-	protected CrawlReportBase crawlReport;
+	private CrawlReportBase crawlReport;
 
 	/**
 	 * The CrawlerHandler that gets notified about crawling progress and that delivers RDFContainers on
 	 * demand.
 	 */
-	protected CrawlerHandler handler;
+	private CrawlerHandler handler;
 
 	/**
 	 * Flag indicating that this Crawler should stop scanning or clearing as soon as possible.
@@ -87,7 +88,7 @@ public abstract class CrawlerBase implements Crawler {
 	 * A set that is used to temporary record all urls that do no longer point to existing resources, so that
 	 * we can report them as removed.
 	 */
-	protected Set<String> deprecatedUrls;
+	//protected Set<String> deprecatedUrls;
 
 	private DomainBoundaries domain;
 
@@ -201,14 +202,14 @@ public abstract class CrawlerBase implements Crawler {
 
 		try {
 			// read the access data from the previous crawl
-			deprecatedUrls = Collections.emptySet();
+			//deprecatedUrls = Collections.emptySet();
 
 			if (accessData != null) {
 				accessData.initialize();
 
 				// this set will at the end of the crawl prodecure hold the urls of resources found in a
 				// previous crawl that can no longer be found
-				deprecatedUrls = new HashSet<String>(accessData.getStoredIDs());
+				//deprecatedUrls = new HashSet<String>(accessData.getStoredIDs());
 			}
 
 			// start crawling
@@ -216,13 +217,14 @@ public abstract class CrawlerBase implements Crawler {
 
 			// only when the scan was completed succesfully will we report removed resources,
 			// else we might indirectly destroy information that may still be up-to-date
-			if (exitCode.equals(ExitCode.COMPLETED)) {
-				crawlReport.setRemovedCount(deprecatedUrls.size());
-				reportRemoved(deprecatedUrls);
+			if (exitCode.equals(ExitCode.COMPLETED) && accessData != null) {
+				//crawlReport.setRemovedCount(deprecatedUrls.size());
+				//reportRemoved(deprecatedUrls);
+			    reportUntouched();
 			}
 
 			// this set *can* be very large, get rid of it ASAP
-			deprecatedUrls = null;
+			//deprecatedUrls = null;
 
 			// store the access data
 			if (accessData != null) {
@@ -356,14 +358,59 @@ public abstract class CrawlerBase implements Crawler {
 
 		return crawlReport;
 	}
+	
+	protected void reportAccessingObject(String url) {
+	    handler.accessingObject(this, url);
+	}
+	
+	protected void reportNewDataObject(DataObject object) {
+	    touchObject(object.getID().toString());
+	    crawlReport.increaseNewCount();
+	    handler.objectNew(this, object);
+	}
+	
+	private void touchObject(String string) {
+        if (accessData != null) {
+            accessData.touch(string);
+        }
+    }
 
-	protected void reportRemoved(Set<String> ids) {
-		for (String url : ids) {
-			if (accessData != null) {
-				accessData.remove(url);
-			}
-			handler.objectRemoved(this, url);
-		}
+    protected void reportModifiedDataObject(DataObject object) {
+        touchObject(object.getID().toString());
+	    crawlReport.increaseChangedCount();
+	    handler.objectChanged(this, object);
+	    
+	}
+	
+	protected void reportUnmodifiedDataObject(String url) {
+	    accessData.touchRecursively(url);
+	    ClosableIterator iter = accessData.getAggregatedIDsClosure(url);
+	    while (iter.hasNext()) {
+	        crawlReport.increaseUnchangedCount();
+	        handler.objectNotModified(this, iter.next().toString());
+	    }
+	}
+	
+	protected void reportDeletedDataObject(String url) {
+	    ClosableIterator iter = accessData.getAggregatedIDsClosure(url);
+	    while (iter.hasNext()) {
+	        handler.objectRemoved(this, url);
+	        crawlReport.increaseRemovedCount();
+	    }
+	    accessData.remove(url);
+	}
+
+	protected void reportUntouched() {
+	    ClosableIterator iter = accessData.getUntouchedIDsIterator();
+	    while (iter.hasNext()) {
+	        handler.objectRemoved(this, iter.next().toString());
+	        crawlReport.increaseRemovedCount();
+	    }
+		accessData.removeUntouchedIDs();
+	}
+	
+	protected RDFContainerFactory getRDFContainerFactory(String url) {
+	    return handler.getRDFContainerFactory(this, url);
 	}
 
 	/**
@@ -405,7 +452,7 @@ public abstract class CrawlerBase implements Crawler {
                     this.subCrawlerStack.push(localSubCrawler);
                 }
             }
-            localSubCrawler.subCrawl(object.getID(), stream, new DefaultSubCrawlerHandler(handler, this),
+            localSubCrawler.subCrawl(object.getID(), stream, new DefaultSubCrawlerHandler(this),
                 this.source, this.accessData, charset, mimeType, object.getMetadata());
         }
         finally {
@@ -429,8 +476,7 @@ public abstract class CrawlerBase implements Crawler {
      */
     private static class DefaultSubCrawlerHandler implements SubCrawlerHandler {
 
-        private CrawlerHandler innerHandler;
-        private CrawlerBase localCrawler;
+        private CrawlerBase crawlerBase;
         
         /**
          * A default constructor.
@@ -439,41 +485,43 @@ public abstract class CrawlerBase implements Crawler {
          * @param innerCrawler the crawler that will be used as the source of events passed to the crawler handler
          * @throws NullPointerException if the handler is null
          */
-        public DefaultSubCrawlerHandler(CrawlerHandler innerHandler, CrawlerBase innerCrawler) {
-            this.innerHandler = innerHandler;
-            this.localCrawler = innerCrawler;
+        public DefaultSubCrawlerHandler(CrawlerBase innerCrawler) {
+            this.crawlerBase = innerCrawler;
         }
         
         /**
          * @see SubCrawlerHandler#getRDFContainerFactory(String)
          */
         public RDFContainerFactory getRDFContainerFactory(String url) {
-            return innerHandler.getRDFContainerFactory(localCrawler, url);
+            return crawlerBase.handler.getRDFContainerFactory(crawlerBase, url);
         }
         
         /**
          * @see SubCrawlerHandler#objectChanged(DataObject)
          */
         public void objectChanged(DataObject object) {
-            localCrawler.deprecatedUrls.remove(object.getID().toString());
-            innerHandler.objectChanged(localCrawler, object);
+            //crawlerBase.deprecatedUrls.remove(object.getID().toString());
+            crawlerBase.reportModifiedDataObject(object);
+            //innerHandler.objectChanged(localCrawler, object);
         }
         
         /**
          * @see SubCrawlerHandler#objectNew(DataObject)
          */
         public void objectNew(DataObject object) {
-            localCrawler.deprecatedUrls.remove(object.getID().toString());
-            innerHandler.objectNew(localCrawler, object);
-            
+            //crawlerBase.deprecatedUrls.remove(object.getID().toString());
+            crawlerBase.reportNewDataObject(object);
+            //innerHandler.objectNew(localCrawler, object);
         }
         
         /**
          * @see SubCrawlerHandler#objectNotModified(String)
          */
         public void objectNotModified(String url) {
-            localCrawler.deprecatedUrls.remove(url);
-            innerHandler.objectNotModified(localCrawler, url);
+            //crawlerBase.deprecatedUrls.remove(url);
+            crawlerBase.reportUnmodifiedDataObject(url);
+            //localCrawler.accessData.touchRecursively(url);
+            //innerHandler.objectNotModified(localCrawler, url);
         }
     }
 }

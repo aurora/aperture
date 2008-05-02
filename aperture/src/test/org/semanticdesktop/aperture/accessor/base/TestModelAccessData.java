@@ -12,23 +12,19 @@ import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.semanticdesktop.aperture.ApertureTestBase;
 
-public class TestModelAccessData extends ApertureTestBase {
+public class TestModelAccessData extends AccessDataTest {
 
 	private Model model;
 	
 	private ModelAccessData accessData;
 	
-	public void setUp() throws ModelException {
+	public void setUp() throws ModelException, IOException {
         model = createModel();
-		accessData = new ModelAccessData(model);
+		super.setUp(new ModelAccessData(model));
 	}
 	
 	public void tearDown() {
 		model.close();
 		model = null;
-	}
-	
-	public void testAccessData() throws IOException {
-		AccessDataTest.test(accessData);
 	}
 }

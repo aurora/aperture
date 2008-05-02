@@ -3251,10 +3251,12 @@ public class IcalCrawler extends CrawlerBase {
      */
     private RDFContainer prepareDataObjectRDFContainer(URI uri) {
         // register that we're processing this calendar component
-        handler.accessingObject(this, uri.toString());
+        //handler.accessingObject(this, uri.toString());
+        reportAccessingObject(uri.toString());
         // remove it from the deprecated URI's list, so it won't be reported as removed after crawling
-        deprecatedUrls.remove(uri.toString());
-        RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, uri.toString());
+        //deprecatedUrls.remove(uri.toString());
+        //RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, uri.toString());
+        RDFContainerFactory containerFactory = getRDFContainerFactory(uri.toString());
         RDFContainer rdfContainer = containerFactory.getRDFContainer(uri);
         rdfContainer.add(RDF.type,NCAL.CalendarDataObject);
         return rdfContainer;
@@ -3365,7 +3367,8 @@ public class IcalCrawler extends CrawlerBase {
         DataObject dataObject = new DataObjectBase(metadata.getDescribedUri(), getDataSource(), metadata);
         String id = metadata.getDescribedUri().toString();
         if (accessData == null) {
-            handler.objectNew(this, dataObject);
+            //handler.objectNew(this, dataObject);
+            reportNewDataObject(dataObject);
         }
         else if (!accessData.isKnownId(id)) {
             if (component == null) {
@@ -3374,7 +3377,8 @@ public class IcalCrawler extends CrawlerBase {
             } else {
                 updateAccessData(metadata, component);
             }
-            handler.objectNew(this, dataObject);
+            //handler.objectNew(this, dataObject);
+            reportNewDataObject(dataObject);
         }
         else if (isChanged(metadata, component)) {
             if (component == null) {
@@ -3383,10 +3387,12 @@ public class IcalCrawler extends CrawlerBase {
             } else {
                 updateAccessData(metadata, component);
             }
-            handler.objectChanged(this, dataObject);
+            //handler.objectChanged(this, dataObject);
+            reportModifiedDataObject(dataObject);
         }
         else {
-            handler.objectNotModified(this, id);
+            //handler.objectNotModified(this, id);
+            reportUnmodifiedDataObject(id);
             dataObject.dispose();
         }
     }
@@ -3399,18 +3405,22 @@ public class IcalCrawler extends CrawlerBase {
         String id = metadata.getDescribedUri().toString();
 
         if (accessData == null) {
-            handler.objectNew(this, dataObject);
+            //handler.objectNew(this, dataObject);
+            reportNewDataObject(dataObject);
         }
         else if (!accessData.isKnownId(id)) {
             updateAccessData(metadata,sha1Hash);
-            handler.objectNew(this, dataObject);
+            //handler.objectNew(this, dataObject);
+            reportNewDataObject(dataObject);
         }
         else if (isAttachmentChanged(metadata,sha1Hash)) {
             updateAccessData(metadata,sha1Hash);
-            handler.objectChanged(this, dataObject);
+            //handler.objectChanged(this, dataObject);
+            reportModifiedDataObject(dataObject);
         }
         else {
-            handler.objectNotModified(this, id);
+            //handler.objectNotModified(this, id);
+            reportUnmodifiedDataObject(id);
             dataObject.dispose();
         }
     }    
