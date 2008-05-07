@@ -107,6 +107,16 @@ public class HttpAccessor implements DataAccessor {
 	@SuppressWarnings("unchecked") // to allow for an unchecked Map
     private DataObject get(String urlString, DataSource source, AccessData accessData, Map params,
 			RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException {
+	    
+	    // it doesn't make sense to try to access faulty URLs, so this check is performed at the beginning
+	    URI uri = null;
+	    
+	    try {
+	        uri = new URIImpl(urlString);
+	    } catch (Exception e) {
+	        throw new IOException(e);
+	    }
+	    
 		// keep a backup of the originally passed url
 		String originalUrlString = urlString;
 
@@ -190,7 +200,7 @@ public class HttpAccessor implements DataAccessor {
 		}
 
 		// create the actual data object
-		DataObject result = createDataObject(urlString, source, connection, containerFactory);
+		DataObject result = createDataObject(uri, source, connection, containerFactory);
 
 		// register it in the access data
 		updateAccessData(accessData, urlString, connection.getDate());
@@ -249,10 +259,10 @@ public class HttpAccessor implements DataAccessor {
 		}
 	}
 
-	private DataObject createDataObject(String url, DataSource source, HttpURLConnection connection,
+	private DataObject createDataObject(URI uri, DataSource source, HttpURLConnection connection,
 			RDFContainerFactory containerFactory) throws IOException {
 		// create the resulting instance
-		URI uri = new URIImpl(url);
+		
 		RDFContainer metadata = containerFactory.getRDFContainer(uri);
 
 		InputStream stream = HttpClientUtil.getInputStream(connection);

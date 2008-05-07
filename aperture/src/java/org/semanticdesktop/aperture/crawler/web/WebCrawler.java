@@ -270,7 +270,16 @@ public class WebCrawler extends CrawlerBase {
             CrawlJob job = jobsQueue.removeFirst();
             String url = job.getURL();
             int depth = job.getDepth();
-
+            
+            if(logger.isDebugEnabled()) {
+                try {
+                    java.net.URI uri = new java.net.URI(url);
+                } catch (URISyntaxException use) {
+                    logger.debug("Faulty url: " + url);
+                }
+            } 
+            
+            
             // notify that we're processing this URL
             //handler.accessingObject(this, url);
             reportAccessingObject(url);
@@ -371,6 +380,14 @@ public class WebCrawler extends CrawlerBase {
                 }
                 catch (IOException e) {
                     logger.info("I/O error while accessing " + url, e);
+                }
+                catch (Exception e) {
+                    // this will catch RuntimeErrors thrown by the accessor
+                    // problems have been reported, if the crawler tries to access a URL that is faulty
+                    // the accessor will try to create a URI out of it, the URI constructor will throw
+                    // an IllegalArgumentException, which will get past here and propagate upwards killing
+                    // the entire crawler - this catch should prevent it
+                    logger.info("Error while accessing " + url, e);
                 }
             }
         }
@@ -575,7 +592,7 @@ public class WebCrawler extends CrawlerBase {
                         URI linkedResourceUri = null;
                         
                         // if the link isn't properly encoded, createURI will fail and so will accessing it
-                        try {    
+                        try {
                             linkedResourceUri = object.getMetadata().getModel().createURI(link);
                         }
                         catch(IllegalArgumentException iae) {
