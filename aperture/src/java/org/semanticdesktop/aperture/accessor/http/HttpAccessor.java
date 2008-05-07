@@ -110,11 +110,10 @@ public class HttpAccessor implements DataAccessor {
 	    
 	    // it doesn't make sense to try to access faulty URLs, so this check is performed at the beginning
 	    URI uri = null;
-	    
 	    try {
 	        uri = new URIImpl(urlString);
 	    } catch (Exception e) {
-	        throw new IOException(e);
+	        throw new IOException(e.getMessage());
 	    }
 	    
 		// keep a backup of the originally passed url
