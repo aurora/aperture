@@ -10,6 +10,9 @@ import org.semanticdesktop.aperture.util.ResourceUtil;
  * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Oct 15 17:27:29 CEST 2007
  * input file: D:\workspace\aperture/doc/ontology/tagging.rdfs
  * namespace: http://aperture.sourceforge.net/ontologies/taggingl#
+ * 
+ * @deprecated DON'T use it. It was an intermediary solution when the website crawlers got ported from Gnowsis
+ * to the Aperture codebase, this vocabulary is not used anymore, use NAO instead.
  */
 public class TAGGING {
 

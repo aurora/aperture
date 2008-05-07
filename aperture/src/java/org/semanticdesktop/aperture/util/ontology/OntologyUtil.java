@@ -72,6 +72,10 @@ public class OntologyUtil {
         NID3.getNID3Ontology(model);
     }
     
+    /**
+     * @deprecated This method is even more deprecated than the entire class
+     * the TAGGING 'ontology' is not to be used at all, use NAO.
+     */
     public static void getTAGGINGOntology(Model model) throws Exception {
         TAGGING.getTAGGINGOntology(model);
     }

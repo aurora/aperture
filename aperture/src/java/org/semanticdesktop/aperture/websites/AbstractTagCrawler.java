@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -26,13 +24,11 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.UpdateException;
+import org.semanticdesktop.aperture.vocabulary.NAO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
-import org.semanticdesktop.aperture.vocabulary.TAGGING;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import com.aetrion.flickr.FlickrException;
 
 
 /**
@@ -72,7 +68,7 @@ public abstract class AbstractTagCrawler extends CrawlerBase {
 					//RDFContainer rdf=handler.getRDFContainerFactory(this,t).getRDFContainer(turi);
 					RDFContainer rdf=getRDFContainerFactory(t).getRDFContainer(turi);
 					DataObject o=new DataObjectBase(turi,localSource,rdf);
-					rdf.add(RDF.type,TAGGING.Tag);
+					rdf.add(RDF.type,NAO.Tag);
 					
 					// every tag is a root element
 					rdf.add(NIE.rootElementOf,getDataSource().getID());
@@ -134,11 +130,11 @@ public abstract class AbstractTagCrawler extends CrawlerBase {
 			//RDFContainer rdf=handler.getRDFContainerFactory(this,uriString).getRDFContainer(turi);
 			RDFContainer rdf= getRDFContainerFactory(uriString).getRDFContainer(turi);
 			DataObject o=new DataObjectBase(turi,source,rdf);
-			rdf.add(RDF.type,TAGGING.Tag);
+			rdf.add(RDF.type,NAO.Tag);
 			//rdf.add(RDFS.LABEL,item.getName());
 			rdf.add(RDFS.label,URLDecoder.decode(item.getName(),"utf-8"));
 			for (String tag: tags)
-				rdf.add(TAGGING.hasTag,new URIImpl(tag));
+				rdf.add(NAO.hasTag,new URIImpl(tag));
 			//handler.objectNew(this,o);
 			reportNewDataObject(o);
 		}
@@ -150,7 +146,6 @@ public abstract class AbstractTagCrawler extends CrawlerBase {
 	 * @return a list of tags 
 	 * @throws IOException
 	 * @throws SAXException
-	 * @throws FlickrException
 	 * @throws SailUpdateException
 	 * @throws ParserConfigurationException
 	 */

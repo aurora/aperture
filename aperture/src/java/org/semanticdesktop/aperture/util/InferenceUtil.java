@@ -31,7 +31,6 @@ import org.semanticdesktop.aperture.vocabulary.NID3;
 import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.semanticdesktop.aperture.vocabulary.NMO;
 import org.semanticdesktop.aperture.vocabulary.SOURCEFORMAT;
-import org.semanticdesktop.aperture.vocabulary.TAGGING;
 
 
 /**
@@ -212,7 +211,6 @@ public class InferenceUtil {
         NIE.getNIEOntology(m);
         NMO.getNMOOntology(m);
         SOURCEFORMAT.getSOURCEFORMATOntology(m);
-        TAGGING.getTAGGINGOntology(m);
         
         InferenceUtil util = new InferenceUtil();
         util.readOntology(m);
