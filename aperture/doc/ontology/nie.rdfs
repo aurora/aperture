@@ -1,7 +1,7 @@
 <rdf:RDF
     xmlns:nrl="http://www.semanticdesktop.org/ontologies/2007/08/15/nrl#"
-    xmlns:protege="http://protege.stanford.edu/system#"
     xmlns:nmo="http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#"
+    xmlns:protege="http://protege.stanford.edu/system#"
     xmlns:exif="http://www.kanzaki.com/ns/exif#"
     xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns:ncal="http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#"
@@ -11,6 +11,7 @@
     xmlns:nexif="http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#"
     xmlns:nid3="http://www.semanticdesktop.org/ontologies/2007/05/10/nid3#"
     xmlns:nie="http://www.semanticdesktop.org/ontologies/2007/01/19/nie#"
+    xmlns:pimo="http://www.semanticdesktop.org/ontologies/2007/11/01/pimo#"
     xmlns:dcterms="http://purl.org/dc/terms/"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
@@ -284,7 +285,7 @@
   </rdf:Property>
   <rdf:Property rdf:about="http://www.semanticdesktop.org/ontologies/2007/01/19/nie#hasLogicalPart">
     <rdfs:label>hasLogicalPart</rdfs:label>
-    <rdfs:comment>Generic property used to express 'logical' containment relationships between DataObjects. NIE extensions are encouraged to provide more specific subproperties of this one. It is advisable for actual instances of InformationElement to use those specific subproperties. Note the difference between 'physical' containment (hasPart) and logical containment (hasLogicalPart)</rdfs:comment>
+    <rdfs:comment>Generic property used to express 'logical' containment relationships between InformationElements. NIE extensions are encouraged to provide more specific subproperties of this one. It is advisable for actual instances of InformationElement to use those specific subproperties. Note the difference between 'physical' containment (hasPart) and logical containment (hasLogicalPart)</rdfs:comment>
     <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/hasPart"/>
     <rdfs:range rdf:resource="http://www.semanticdesktop.org/ontologies/2007/01/19/nie#InformationElement"/>
     <rdfs:domain rdf:resource="http://www.semanticdesktop.org/ontologies/2007/01/19/nie#InformationElement"/>
