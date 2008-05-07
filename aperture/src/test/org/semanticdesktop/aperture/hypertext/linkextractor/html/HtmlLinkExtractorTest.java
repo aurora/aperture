@@ -46,13 +46,17 @@ public class HtmlLinkExtractorTest extends ApertureTestBase {
     }
     
     public void testCondeNast() throws IOException {
-        List links = getLinks(Boolean.FALSE, CONDENAST_RESOURCE);
-        Model model = RDF2Go.getModelFactory().createModel();
-        model.open();
-        // every link should be a valid uri
-        for (Object obj : links) {
-            URI uri = model.createURI(obj.toString());
-        }
+        List links = getLinks(Boolean.FALSE, DOCS_PATH + "html-condenast.html");
+        // this file will yield faulty urls, but there should be 43 of them
+        // some may not be valid URIs 
+        assertEquals(links.size(), 43);
+    }
+    
+    public void testQuelleDe() throws Exception {
+        List links = getLinks(Boolean.FALSE, DOCS_PATH + "html-quelle.de.html");
+        // this file will yield faulty urls, but there should be 72 of them
+        // some may not be valid URIs 
+        assertEquals(links.size(), 72);
     }
 
     private List getLinks(Boolean includeEmbeddedResources, String resource) throws IOException {
