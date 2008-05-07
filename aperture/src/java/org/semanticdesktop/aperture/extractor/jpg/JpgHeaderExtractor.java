@@ -103,6 +103,9 @@ public class JpgHeaderExtractor {
         addMetadataIfSet(ExifDirectory.TAG_FLASH_ENERGY, NEXIF.flashEnergy);
         addMetadataIfSet(ExifDirectory.TAG_FLASHPIX_VERSION, NEXIF.flashpixVersion);
         addMetadataIfSet(ExifDirectory.TAG_MAKE, NEXIF.make);
+        
+        // Gunnar added this - I want GPS coordinates! Ok?
+        addMetadataIfSet(ExifDirectory.TAG_GPS_INFO, NEXIF.gps);
     }
 
     
