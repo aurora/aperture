@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Nov 11 02:43:34 CET 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed May 07 20:31:36 CEST 2008
  * input file: D:\workspace\aperture/doc/ontology/nco.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/03/22/nco#
  */

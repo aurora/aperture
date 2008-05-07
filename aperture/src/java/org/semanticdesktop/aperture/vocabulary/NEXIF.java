@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Nov 11 02:43:36 CET 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed May 07 20:31:40 CEST 2008
  * input file: D:\workspace\aperture/doc/ontology/nexif.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#
  */
@@ -986,6 +986,7 @@ tagNumber: 11  <br/>
      * Type: Property <br/>
      * Label: gps  <br/>
      * Comment: The location where the picture has been made. This property aggregates values of two properties from the original EXIF specification: gpsLatitute (tag number 2) and gpsLongitude (tag number 4), and gpsAltitude (tag number 6).  <br/>
+     * Domain: http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#Photo  <br/>
      * Range: http://www.w3.org/2003/01/geo/wgs84_pos#Point  <br/>
      */
     public static final URI gps = new URIImpl("http://www.semanticdesktop.org/ontologies/2007/05/10/nexif#gps");

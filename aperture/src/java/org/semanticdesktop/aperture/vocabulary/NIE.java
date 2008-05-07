@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Nov 11 02:43:34 CET 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed May 07 20:31:34 CEST 2008
  * input file: D:\workspace\aperture/doc/ontology/nie.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#
  */
@@ -269,7 +269,7 @@ public class NIE {
     /**
      * Type: Property <br/>
      * Label: hasLogicalPart  <br/>
-     * Comment: Generic property used to express 'logical' containment relationships between DataObjects. NIE extensions are encouraged to provide more specific subproperties of this one. It is advisable for actual instances of InformationElement to use those specific subproperties. Note the difference between 'physical' containment (hasPart) and logical containment (hasLogicalPart)  <br/>
+     * Comment: Generic property used to express 'logical' containment relationships between InformationElements. NIE extensions are encouraged to provide more specific subproperties of this one. It is advisable for actual instances of InformationElement to use those specific subproperties. Note the difference between 'physical' containment (hasPart) and logical containment (hasLogicalPart)  <br/>
      * Domain: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#InformationElement  <br/>
      * Range: http://www.semanticdesktop.org/ontologies/2007/01/19/nie#InformationElement  <br/>
      */
