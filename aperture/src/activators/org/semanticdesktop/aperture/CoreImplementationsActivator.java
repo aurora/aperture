@@ -18,7 +18,9 @@ import org.semanticdesktop.aperture.crawler.imap.ImapCrawlerActivator;
 import org.semanticdesktop.aperture.crawler.web.WebCrawlerActivator;
 import org.semanticdesktop.aperture.extractor.excel.ExcelExtractorActivator;
 import org.semanticdesktop.aperture.extractor.html.HtmlExtractorActivator;
+import org.semanticdesktop.aperture.extractor.jpg.JpgExtractorActivator;
 import org.semanticdesktop.aperture.extractor.mime.MimeExtractorActivator;
+import org.semanticdesktop.aperture.extractor.mp3.Mp3FileExtractorActivator;
 import org.semanticdesktop.aperture.extractor.office.OfficeExtractorActivator;
 import org.semanticdesktop.aperture.extractor.opendocument.OpenDocumentExtractorActivator;
 import org.semanticdesktop.aperture.extractor.openxml.OpenxmlExtractorActivator;
@@ -54,7 +56,7 @@ public class CoreImplementationsActivator implements BundleActivator {
 	
 	private FileAccessorActivator fileAccessorActivator;
 	private HttpAccessorActivator httpAccessorActivator;
-	
+	// crawlers
 	private FilesystemCrawlerActivator fileSystemCrawlerActivator;
 	private IcalCrawlerActivator icalCrawlerActivator;
 	private ImapCrawlerActivator imapCrawlerActivator;
@@ -66,12 +68,14 @@ public class CoreImplementationsActivator implements BundleActivator {
 	private DeliciousActivator deliciousActivator;
 	private FlickrActivator flickrActivator;
 	private IPhotoActivator iphotoActivator;
-    
+    // subcrawlers
 	private VcardSubCrawlerActivator vcardSubCrawlerActivator;
-	
+	// extractors
 	private ExcelExtractorActivator excelExtractorActivator;
 	private HtmlExtractorActivator htmlExtractorActivator;
+	private JpgExtractorActivator jpgExtractorActivator;
 	private MimeExtractorActivator mimeExtractorActivator;
+	private Mp3FileExtractorActivator mp3FileExtractorActivator;
 	private OfficeExtractorActivator officeExtractorActivator;
 	private OpenDocumentExtractorActivator openDocumentExtractorActivator;
 	private OpenxmlExtractorActivator openXmlExtractorActivator;
@@ -89,7 +93,7 @@ public class CoreImplementationsActivator implements BundleActivator {
 	private XmlExtractorActivator xmlExtractorActivator;
 	
 	private ExtractorUtilActivator extractorUtilActivator;
-	
+	// openers
 	private FileOpenerActivator fileOpenerActivator;
 	private HttpOpenerActivator httpOpenerActivator;
     
@@ -128,8 +132,12 @@ public class CoreImplementationsActivator implements BundleActivator {
 		excelExtractorActivator.start(context);
 		htmlExtractorActivator = new HtmlExtractorActivator();
 		htmlExtractorActivator.start(context);
+		jpgExtractorActivator =  new JpgExtractorActivator();
+		jpgExtractorActivator.start(context);
 		mimeExtractorActivator = new MimeExtractorActivator();
 		mimeExtractorActivator.start(context);
+		mp3FileExtractorActivator = new Mp3FileExtractorActivator();
+		mp3FileExtractorActivator.start(context);
 		officeExtractorActivator = new OfficeExtractorActivator();
 		officeExtractorActivator.start(context);
 		openDocumentExtractorActivator = new OpenDocumentExtractorActivator();
@@ -211,8 +219,12 @@ public class CoreImplementationsActivator implements BundleActivator {
 		excelExtractorActivator = null;
 		htmlExtractorActivator.stop(context);
 		htmlExtractorActivator = null;
+		jpgExtractorActivator.stop(context);
+		jpgExtractorActivator = null;
 		mimeExtractorActivator.stop(context);
 		mimeExtractorActivator = null;
+		mp3FileExtractorActivator.stop(context);
+		mp3FileExtractorActivator = null;
 		officeExtractorActivator.stop(context);
 		officeExtractorActivator = null;
 		openDocumentExtractorActivator.stop(context);
