@@ -32,6 +32,8 @@ Export-Package: org.semanticdesktop.aperture,
  org.semanticdesktop.aperture.security.trustdecider.impl,
  org.semanticdesktop.aperture.security.trustmanager,
  org.semanticdesktop.aperture.security.trustmanager.impl,
+ org.semanticdesktop.aperture.subcrawler,
+ org.semanticdesktop.aperture.subcrawler.impl,
  org.semanticdesktop.aperture.util,
  org.semanticdesktop.aperture.util.ontology,
  org.semanticdesktop.aperture.vocabulary

@@ -461,6 +461,16 @@
             <selector refid="bundle.basic.selector" />
         </and>
     </selector>
+	
+	<selector id="bundle.subcrawler.vcard.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/subcrawler/vcard/*" />
+                <filename name="lib/jpim-0.1-patched-by-antoni.jar" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
     
     <selector id="bundle.security.trustdecider.dialog.selector">
         <and>
@@ -532,6 +542,7 @@
             <selector refid="bundle.extractor.wordperfect.selector" />
             <selector refid="bundle.extractor.works.selector" />
             <selector refid="bundle.extractor.xml.selector" />
+            <selector refid="bundle.subcrawler.vcard.selector" />
             <!-- this is used by the above impl -->
             <selector refid="bundle.extractor.util.selector" />
             <selector refid="bundle.opener.file.selector" />

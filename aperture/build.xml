@@ -437,7 +437,8 @@ your copy of ANT at http://ant.apache.org/
         </copy>
     </target>
 
-    <target name="osgi" depends="jar.bundles" />
+    <!-- Leo: this seems not to be used, can be removed anytime. 
+    target name="osgi" depends="jar.bundles" / -->
 
     <target name="javadoc"
             depends="init"
