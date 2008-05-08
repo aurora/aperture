@@ -21,7 +21,6 @@
 	<classpathentry kind="lib" path="lib/poi-3.0-FINAL.jar"/>
 	<classpathentry kind="lib" path="lib/flickrapi-1.0b4.jar"/>
 	<classpathentry kind="lib" path="lib/DFKIUtils2.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-simple-1.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/jcl104-over-slf4j-1.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/activation-1.0.2-upd2.jar"/>
 	<classpathentry kind="lib" path="lib/htmlparser-1.6.jar"/>
@@ -42,5 +41,6 @@
 	<classpathentry kind="lib" path="lib/openrdf-sesame-2.1-onejar.jar"/>
 	<classpathentry kind="lib" path="lib/rdf2go.impl.util-4.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/rdf2go.impl.sesame20-4.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-jdk14-1.3.0.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>
