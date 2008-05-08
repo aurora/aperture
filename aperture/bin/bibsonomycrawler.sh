@@ -1,3 +1,3 @@
 #!/bin/sh
 . `dirname ${0}`/lcp.sh
-java -classpath $LOCALCLASSPATH org.semanticdesktop.aperture.examples.ExampleBibsonomyCrawler $*
+java -classpath $LOCALCLASSPATH -Djava.util.logging.config.file=logging.properties org.semanticdesktop.aperture.examples.ExampleBibsonomyCrawler $*
