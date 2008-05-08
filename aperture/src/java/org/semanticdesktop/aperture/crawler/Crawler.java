@@ -9,8 +9,6 @@ package org.semanticdesktop.aperture.crawler;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import javax.activation.MimeType;
-
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessorRegistry;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -30,6 +28,7 @@ public interface Crawler {
 
     /**
      * Returns the DataSource crawled by this Crawler.
+     * @return the DataSource crawled by this Crawler.
      */
     public DataSource getDataSource();
 
@@ -145,7 +144,7 @@ public interface Crawler {
      * 
      * The second issue is that after this method is called, the crawler will report new or modified objects
      * before this method returns, so the implementations of {@link CrawlerHandler} methods must be reentrant.
-     * See {@link http://en.wikipedia.org/wiki/Reentrant}. It is recommended that processing any metadata in 
+     * See <a href="http://en.wikipedia.org/wiki/Reentrant">wikipedia</a>. It is recommended that processing any metadata in 
      * a DataObject takes place before the invocation of a SubCrawler.
      * 
      * @param subCrawler the subcrawler to be used
