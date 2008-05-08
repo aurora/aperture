@@ -240,12 +240,33 @@
         </and>      
     </selector>
     
+    <selector id="bundle.crawler.mail.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/crawler/mail/*" />
+                <selector refid="jars.mail.selector" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    
     <selector id="bundle.crawler.imap.selector">
         <and>
             <or>
                 <filename name="org/semanticdesktop/aperture/crawler/imap/*" />
                 <filename name="org/semanticdesktop/aperture/datasource/imap/*" />
                 <selector refid="jars.mail.selector" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>      
+    </selector>
+    
+    <selector id="bundle.crawler.mbox.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/crawler/mbox/*" />
+                <filename name="org/semanticdesktop/aperture/datasource/mbox/*" />
+                <filename name="lib/mstor-0.9.11-hacked.jar" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>      
@@ -515,10 +536,11 @@
         	<selector refid="bundle.addressbook.selector" />
             <selector refid="bundle.accessor.file.selector" />
             <selector refid="bundle.accessor.http.selector" />
+            <selector refid="bundle.crawler.mail.selector" />
             <selector refid="bundle.crawler.ical.selector" />
             <selector refid="bundle.crawler.imap.selector" />
+            <selector refid="bundle.crawler.mbox.selector" />
             <selector refid="bundle.crawler.filesystem.selector" />
-            <selector refid="bundle.crawler.web.selector" />
             <selector refid="bundle.crawler.web.selector" />
             <selector refid="bundle.websites.selector" />
             <selector refid="bundle.extractor.excel.selector" />
