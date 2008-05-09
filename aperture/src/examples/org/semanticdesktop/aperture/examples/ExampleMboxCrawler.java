@@ -24,11 +24,11 @@ public class ExampleMboxCrawler extends AbstractExampleCrawler {
 
     private File mboxFile;
 
-    public File getIcalFile() {
+    public File getMboxFile() {
         return mboxFile;
     }
 
-    public void setIcalFile(File mboxFile) {
+    public void setMboxFile(File mboxFile) {
         this.mboxFile = mboxFile;
     }
     
@@ -45,8 +45,8 @@ public class ExampleMboxCrawler extends AbstractExampleCrawler {
 
         // parse the command line options
         for (String arg : remainingOptions) {
-            if (crawler.getIcalFile() == null) {
-                crawler.setIcalFile(new File(arg));
+            if (crawler.getMboxFile() == null) {
+                crawler.setMboxFile(new File(arg));
             }
             else {
                 crawler.exitWithUsageMessage();
@@ -54,7 +54,7 @@ public class ExampleMboxCrawler extends AbstractExampleCrawler {
         }
 
         // check that all required fields are available
-        if (crawler.getIcalFile() == null) {
+        if (crawler.getMboxFile() == null) {
             crawler.exitWithUsageMessage();
         }
 
