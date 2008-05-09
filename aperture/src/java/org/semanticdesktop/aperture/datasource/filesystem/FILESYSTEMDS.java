@@ -7,8 +7,8 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Aug 13 18:04:35 CEST 2007
- * input file: D:\workspace\aperture-nie/src/java/org/semanticdesktop/aperture/datasource/filesystem/filesystemDataSource.ttl
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri May 09 20:13:48 CEST 2008
+ * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/filesystem/filesystemDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/12/filesystemds#
  */
 public class FILESYSTEMDS {
@@ -82,4 +82,11 @@ public class FILESYSTEMDS {
      * Range: http://www.w3.org/2001/XMLSchema#boolean  <br/>
      */
     public static final URI followSymbolicLinks = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/filesystemds#followSymbolicLinks");
+    /**
+     * Type: Property <br/>
+     * Label: Supress the addition of parent->child nie:hasPart triples to the folder metadata  <br/>
+     * Domain: http://aperture.semanticdesktop.org/ontology/2007/08/12/filesystemds#FileSystemDataSource  <br/>
+     * Range: http://www.w3.org/2001/XMLSchema#boolean  <br/>
+     */
+    public static final URI suppressParentChildLinks = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/filesystemds#suppressParentChildLinks");
 }

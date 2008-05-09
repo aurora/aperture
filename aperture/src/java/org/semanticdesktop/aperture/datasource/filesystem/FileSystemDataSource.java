@@ -1,11 +1,18 @@
 package org.semanticdesktop.aperture.datasource.filesystem;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.Node;
+import org.semanticdesktop.aperture.util.ModelUtil;
 import org.semanticdesktop.aperture.datasource.DataSource;
+import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
+import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.config.DomainBoundableDataSource;
-import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.util.ModelUtil;
+import java.util.Collection;
+import java.util.List;
+import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Wed Aug 22 12:40:01 CEST 2007
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Fri May 09 20:13:49 CEST 2008
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/filesystem/filesystemDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/12/filesystemds#FileSystemDataSource
  */
@@ -145,6 +152,32 @@ public class FileSystemDataSource extends DomainBoundableDataSource {
              getConfiguration().remove(FILESYSTEMDS.followSymbolicLinks);
          } else {
              getConfiguration().put(FILESYSTEMDS.followSymbolicLinks,followSymbolicLinks);
+         }
+     }
+
+    /**
+     * Returns the 
+     * 
+     * @return the  or null if no value has been set
+     * @throws NullPointerException if no configuration has been set, use
+     *             {@link #setConfiguration(RDFContainer)} before calling this method
+     */
+     public Boolean getSuppressParentChildLinks() {
+          return getConfiguration().getBoolean(FILESYSTEMDS.suppressParentChildLinks);
+     }
+
+    /**
+     * Sets the 
+     * 
+     * @param suppressParentChildLinks , can be null in which case any previous setting will be removed
+     * @throws NullPointerException if no configuration has been set, use
+     *             {@link #setConfiguration(RDFContainer)} before calling this method
+     */
+     public void setSuppressParentChildLinks(Boolean suppressParentChildLinks) {
+         if ( suppressParentChildLinks == null) {
+             getConfiguration().remove(FILESYSTEMDS.suppressParentChildLinks);
+         } else {
+             getConfiguration().put(FILESYSTEMDS.suppressParentChildLinks,suppressParentChildLinks);
          }
      }
 }

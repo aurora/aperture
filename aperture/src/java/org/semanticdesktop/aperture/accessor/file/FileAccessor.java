@@ -132,8 +132,8 @@ public class FileAccessor implements DataAccessor {
 		// the default behavior is to add the references to children to each
 		// folder data object, this may be overridden by 
 		boolean addFolderChildren = true;
-		if (params != null && params.get("addFolderChildren") != null
-                && params.get("addFolderChildren").equals(Boolean.FALSE)) {
+		if (params != null && params.get("suppressParentChildLinks") != null
+                && params.get("suppressParentChildLinks").equals(Boolean.TRUE)) {
             addFolderChildren = false;
         }
 		

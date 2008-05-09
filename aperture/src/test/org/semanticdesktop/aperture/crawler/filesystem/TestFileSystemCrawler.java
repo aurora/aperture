@@ -8,10 +8,12 @@ package org.semanticdesktop.aperture.crawler.filesystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.ApertureTestBase;
@@ -141,6 +143,92 @@ public class TestFileSystemCrawler extends ApertureTestBase {
         assertFalse(ModelUtil.hasStatement(model, toURI(tmpFile4), NFO.fileName, null));
         
         validate(model,true,configuration.getDescribedUri(),new DataObjectTreeModelTester());
+        model.close();
+        configuration.getModel().close();
+    }
+
+    
+    public void testSuppressParentChildLinks() throws Exception {
+        // create a DataSource
+        RDFContainer configuration = createRDFContainer("urn:test:dummySource");
+        FileSystemDataSource dataSource = new FileSystemDataSource();
+        dataSource.setConfiguration(configuration);
+        dataSource.setRootFolder(tmpDir.getAbsolutePath());
+        dataSource.setMaximumDepth(2);
+
+        // create a Crawler for this DataSource
+        FileSystemCrawler crawler = new FileSystemCrawler();
+        crawler.setDataSource(dataSource);
+
+        // setup a DataAccessorRegistry
+        DataAccessorRegistryImpl registry = new DataAccessorRegistryImpl();
+        registry.add(new FileAccessorFactory());
+        crawler.setDataAccessorRegistry(registry);
+
+        // setup a CrawlerHandler
+        SimpleCrawlerHandler crawlerHandler = new SimpleCrawlerHandler();
+        crawler.setCrawlerHandler(crawlerHandler);
+
+        // start Crawling
+        crawler.crawl();
+
+        // inspect results
+        assertEquals(6, crawlerHandler.getObjectCount());
+
+        Model model = crawlerHandler.getModel();
+
+        checkStatement(toURI(tmpDir), NIE.rootElementOf, dataSource.getID(), model);
+        checkStatement(toURI(subDir), NIE.hasPart, toURI(tmpFile3), model);
+        checkStatement(toURI(tmpDir), NIE.hasPart, toURI(subDir), model);
+        checkStatement(toURI(tmpDir), NIE.hasPart, toURI(tmpFile4), model);
+        checkStatement(toURI(tmpDir), NIE.hasPart, toURI(tmpFile1), model);
+        checkStatement(toURI(tmpDir), NIE.hasPart, toURI(tmpFile2), model);
+        
+        checkStatement(toURI(tmpFile3), NFO.belongsToContainer, toURI(subDir), model);
+        checkStatement(toURI(subDir), NFO.belongsToContainer, toURI(tmpDir), model);
+        checkStatement(toURI(tmpFile4), NFO.belongsToContainer, toURI(tmpDir), model);
+        checkStatement(toURI(tmpFile2), NFO.belongsToContainer, toURI(tmpDir), model);
+        checkStatement(toURI(tmpFile1), NFO.belongsToContainer, toURI(tmpDir), model);
+        
+        // now let's check how it if the suppress option turns off the first batch of links
+        // but does NOT turn off the second one
+ 
+        model.close();
+        
+        // the data soruce is ready
+        dataSource.setSuppressParentChildLinks(Boolean.TRUE);
+
+        // create a Crawler for this DataSource
+        FileSystemCrawler crawler2 = new FileSystemCrawler();
+        crawler2.setDataSource(dataSource);
+
+        // setup a DataAccessorRegistry
+        crawler2.setDataAccessorRegistry(registry);
+
+        // setup a CrawlerHandler
+        SimpleCrawlerHandler crawlerHandler2 = new SimpleCrawlerHandler();
+        crawler2.setCrawlerHandler(crawlerHandler2);
+
+        // start Crawling
+        crawler2.crawl();
+        
+        model = crawlerHandler2.getModel();
+        
+        
+        
+        assertFalse(model.contains(toURI(subDir), NIE.hasPart, toURI(tmpFile3)));
+        assertFalse(model.contains(toURI(tmpDir), NIE.hasPart, toURI(subDir)));
+        assertFalse(model.contains(toURI(tmpDir), NIE.hasPart, toURI(tmpFile4)));
+        assertFalse(model.contains(toURI(tmpDir), NIE.hasPart, toURI(tmpFile1)));
+        assertFalse(model.contains(toURI(tmpDir), NIE.hasPart, toURI(tmpFile2)));
+        
+        checkStatement(toURI(tmpFile3), NFO.belongsToContainer, toURI(subDir), model);
+        checkStatement(toURI(subDir), NFO.belongsToContainer, toURI(tmpDir), model);
+        checkStatement(toURI(tmpFile4), NFO.belongsToContainer, toURI(tmpDir), model);
+        checkStatement(toURI(tmpFile2), NFO.belongsToContainer, toURI(tmpDir), model);
+        checkStatement(toURI(tmpFile1), NFO.belongsToContainer, toURI(tmpDir), model);
+        
+        
         model.close();
         configuration.getModel().close();
     }

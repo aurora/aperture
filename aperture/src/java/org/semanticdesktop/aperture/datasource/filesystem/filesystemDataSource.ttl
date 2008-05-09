@@ -20,6 +20,7 @@
                                             :maximumSize
                                             :includeHiddenResources
                                             :followSymbolicLinks
+                                            :suppressParentChildLinks
                                             source:includePattern
                                             source:excludePattern ) .
                                             
@@ -83,3 +84,14 @@
     	a sourceformat:CheckBoxWidget 
     ] ;
     fresnel:propertyFormatDomain :followSymbolicLinks .  
+    
+:suppressParentChildLinks a rdf:Property ;
+    rdfs:label "Supress the addition of parent->child nie:hasPart triples to the folder metadata" ;
+    rdfs:domain :FileSystemDataSource ;
+    rdfs:range xsd:boolean .
+    
+:suppressParentChildLinksFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+    	a sourceformat:CheckBoxWidget
+    ] ;
+    fresnel:propertyFormatDomain :suppressParentChildLinks .

@@ -115,7 +115,7 @@ public class TestFileAccessor extends ApertureTestBase {
         dataObject.dispose();
         
         Map params = new HashMap();
-        params.put("addFolderChildren", Boolean.FALSE);
+        params.put("suppressParentChildLinks", Boolean.TRUE);
         dataObject = fileAccessor.getDataObject(tmpDir.toURI().toString(), null, params, factory);
         model = dataObject.getMetadata().getModel();
         assertEquals(0,countStatements(model,dataObject.getMetadata().getDescribedUri(),NIE.hasPart));

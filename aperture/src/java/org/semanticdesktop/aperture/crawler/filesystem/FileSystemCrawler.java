@@ -35,6 +35,8 @@ public class FileSystemCrawler extends CrawlerBase {
     private static final boolean DEFAULT_IGNORE_HIDDEN_FILES = true;
 
     private static final boolean DEFAULT_FOLLOW_SYMBOLIC_LINKS = false;
+    
+    private static final boolean DEFAULT_SUPPRESS_PARENT_CHILD_LINKS = false;
 
     private static final int DEFAULT_MAX_DEPTH = Integer.MAX_VALUE;
 
@@ -45,6 +47,8 @@ public class FileSystemCrawler extends CrawlerBase {
     private boolean ignoreHiddenFiles;
 
     private boolean followSymbolicLinks;
+    
+    private boolean suppressParentChildLinks;
 
     private long maximumSize;
 
@@ -111,6 +115,10 @@ public class FileSystemCrawler extends CrawlerBase {
         b = source.getFollowSymbolicLinks();
         followSymbolicLinks = b == null ? DEFAULT_FOLLOW_SYMBOLIC_LINKS : b.booleanValue();
 
+        // determine whether we should suppress the parent->child hasPart triples from the output
+        b = source.getSuppressParentChildLinks();
+        suppressParentChildLinks = b == null ? DEFAULT_SUPPRESS_PARENT_CHILD_LINKS : b.booleanValue();
+        
         // init some other params
         params = new HashMap(2);
         getAccessorFactory();
@@ -270,6 +278,10 @@ public class FileSystemCrawler extends CrawlerBase {
         //if (file.equals(root)) {
         //    params.put("addParent",Boolean.FALSE);
         //}
+        
+        if (suppressParentChildLinks) {
+            params.put("suppressParentChildLinks", Boolean.TRUE);
+        }
         
         try {
             DataObject dataObject = accessor.getDataObjectIfModified(url, source, accessData, params,
