@@ -10,9 +10,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
+import java.util.Map;
 
+import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.Variable;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
@@ -25,6 +30,7 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.FileUtil;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 public class TestFileAccessor extends ApertureTestBase {
 
@@ -91,6 +97,50 @@ public class TestFileAccessor extends ApertureTestBase {
         // extract method
         validate(dataObject.getMetadata());
         dataObject.dispose();
+    }
+    
+    public void testFolderChildrenAccess() throws UrlNotFoundException, MalformedURLException, IOException, ModelException {
+        // create the data object
+        SimpleRDFContainerFactory factory = new SimpleRDFContainerFactory();
+        DataObject dataObject = fileAccessor.getDataObject(tmpDir.toURI().toString(), null, null, factory);
+        assertNotNull(dataObject);
+        assertTrue(dataObject instanceof FolderDataObject);
+        
+        // check its metadata
+        checkStatement(NFO.fileName, "TestFileAccessor", dataObject.getMetadata());
+        Model model = dataObject.getMetadata().getModel();
+        // this model is supposed to contain the parent-child links
+        
+        assertEquals(1,countStatements(model,dataObject.getMetadata().getDescribedUri(),NIE.hasPart));
+        dataObject.dispose();
+        
+        Map params = new HashMap();
+        params.put("addFolderChildren", Boolean.FALSE);
+        dataObject = fileAccessor.getDataObject(tmpDir.toURI().toString(), null, params, factory);
+        model = dataObject.getMetadata().getModel();
+        assertEquals(0,countStatements(model,dataObject.getMetadata().getDescribedUri(),NIE.hasPart));
+        dataObject.dispose();
+        
+        // we don't need to dispose the DataSource because we passed null as the value of DataSource to the
+        // extract method
+        
+    }
+
+    private int countStatements(Model model, URI uri, URI property) {
+        int counter = 0;
+        ClosableIterator<? extends Statement> iter = null;
+        try {
+            iter = model.findStatements(uri,property,Variable.ANY);
+            while (iter.hasNext()) {
+                iter.next();
+                counter++;
+            }
+        } finally {
+            if (iter != null) {
+                iter.close();
+            }
+        }
+        return counter;
     }
 
     public void testNonModifiedFile() throws UrlNotFoundException, IOException {

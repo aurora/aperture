@@ -129,9 +129,17 @@ public class FileAccessor implements DataAccessor {
 		// create the metadata
 		URI id = toURI(file);
 		
+		// the default behavior is to add the references to children to each
+		// folder data object, this may be overridden by 
+		boolean addFolderChildren = true;
+		if (params != null && params.get("addFolderChildren") != null
+                && params.get("addFolderChildren").equals(Boolean.FALSE)) {
+            addFolderChildren = false;
+        }
+		
 		// TODO Return here after resolving the addParent issue
 		//RDFContainer metadata = createMetadata(file, id, isFile, isFolder, addParent, containerFactory);
-		RDFContainer metadata = createMetadata(file, id, isFile, isFolder, containerFactory);
+		RDFContainer metadata = createMetadata(file, id, isFile, isFolder, addFolderChildren, containerFactory);
 		
 		// create the DataObject
 		DataObject result = null;
@@ -183,7 +191,7 @@ public class FileAccessor implements DataAccessor {
 	}
 
 	private RDFContainer createMetadata(File file, URI id, boolean isFile, boolean isFolder, 
-			RDFContainerFactory containerFactory) {
+			boolean addFolderChildren, RDFContainerFactory containerFactory) {
 		// get the RDFContainer instance
 		RDFContainer metadata = containerFactory.getRDFContainer(id);
 		
@@ -220,7 +228,7 @@ public class FileAccessor implements DataAccessor {
 		}
 
 		// add folder-specific metadata
-		else if (isFolder) {
+		else if (isFolder && addFolderChildren) {
 		    
 		    final RDFContainer finalMetadata = metadata;
 		    file.listFiles(new FileFilter() {
