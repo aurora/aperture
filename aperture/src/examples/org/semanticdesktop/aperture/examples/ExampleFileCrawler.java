@@ -27,6 +27,9 @@ import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTest
 public class ExampleFileCrawler extends AbstractExampleCrawler {
 
     private File rootFile;
+    private Boolean suppressParentChildLinks = Boolean.FALSE;
+    
+    public static final String SUPPRESS_PARENT_CHILD_LINKS_OPTION = "--suppressParentChildLinks";
     
     public void crawl() throws ModelException {
         if (rootFile == null) {
@@ -42,6 +45,7 @@ public class ExampleFileCrawler extends AbstractExampleCrawler {
         source.setConfiguration(configuration);
 
         source.setRootFolder(rootFile.getAbsolutePath());
+        source.setSuppressParentChildLinks(suppressParentChildLinks);
         
         // setup a crawler that can handle this type of DataSource
         FileSystemCrawler crawler = new FileSystemCrawler();
@@ -85,7 +89,10 @@ public class ExampleFileCrawler extends AbstractExampleCrawler {
         List<String> remaining = crawler.processCommonOptions(args);
         
         for (String arg : remaining) {
-            if (arg.startsWith("-")) {
+            if (arg.equals(SUPPRESS_PARENT_CHILD_LINKS_OPTION)) {
+                crawler.setSuppressParentChildLinks(Boolean.TRUE);
+                continue;
+            } else if (arg.startsWith("-")) {
                 System.err.println("Unknown option: " + arg);
                 crawler.exitWithUsageMessage();
             } else if (crawler.getRootFile() == null) {
@@ -102,12 +109,28 @@ public class ExampleFileCrawler extends AbstractExampleCrawler {
     
     @Override
     protected String getSpecificExplanationPart() {
-        return "  <root-folder>  - the directory to start crawling";
+        return "   " + SUPPRESS_PARENT_CHILD_LINKS_OPTION + "   Supress the addition of parent->child nie:hasPart triples\n" + 
+               "   <root-folder>  - the directory to start crawling";
     }
 
     @Override
     protected String getSpecificSyntaxPart() {
-        return "<root-folder>";
-        
+        return "[" + SUPPRESS_PARENT_CHILD_LINKS_OPTION + "] " + "<root-folder>";        
+    }
+
+    
+    /**
+     * @return Returns the suppressParentChildLinks.
+     */
+    public synchronized Boolean getSuppressParentChildLinks() {
+        return suppressParentChildLinks;
+    }
+
+    
+    /**
+     * @param suppressParentChildLinks The suppressParentChildLinks to set.
+     */
+    public synchronized void setSuppressParentChildLinks(Boolean suppressParentChildLinks) {
+        this.suppressParentChildLinks = suppressParentChildLinks;
     }
 }
