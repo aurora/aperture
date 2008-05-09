@@ -15,6 +15,7 @@ import org.semanticdesktop.aperture.addressbook.thunderbird.ThunderbirdAddressBo
 import org.semanticdesktop.aperture.crawler.filesystem.FilesystemCrawlerActivator;
 import org.semanticdesktop.aperture.crawler.ical.IcalCrawlerActivator;
 import org.semanticdesktop.aperture.crawler.imap.ImapCrawlerActivator;
+import org.semanticdesktop.aperture.crawler.mbox.MboxCrawlerActivator;
 import org.semanticdesktop.aperture.crawler.web.WebCrawlerActivator;
 import org.semanticdesktop.aperture.extractor.excel.ExcelExtractorActivator;
 import org.semanticdesktop.aperture.extractor.html.HtmlExtractorActivator;
@@ -59,6 +60,7 @@ public class CoreImplementationsActivator implements BundleActivator {
 	// crawlers
 	private FilesystemCrawlerActivator fileSystemCrawlerActivator;
 	private IcalCrawlerActivator icalCrawlerActivator;
+	private MboxCrawlerActivator mboxCrawlerActivator;
 	private ImapCrawlerActivator imapCrawlerActivator;
 	private WebCrawlerActivator	webCrawlerActivator;
 	private AppleAddressBookActivator appleAddressBookActivator;
@@ -109,6 +111,8 @@ public class CoreImplementationsActivator implements BundleActivator {
 		fileSystemCrawlerActivator.start(context);
 		icalCrawlerActivator = new IcalCrawlerActivator();
 		icalCrawlerActivator.start(context);
+		mboxCrawlerActivator = new MboxCrawlerActivator();
+		mboxCrawlerActivator.start(context);
 		imapCrawlerActivator = new ImapCrawlerActivator();
 		imapCrawlerActivator.start(context);
 		webCrawlerActivator = new WebCrawlerActivator();
@@ -196,6 +200,8 @@ public class CoreImplementationsActivator implements BundleActivator {
 		fileSystemCrawlerActivator = null;
 		icalCrawlerActivator.stop(context);
 		icalCrawlerActivator = null;
+		mboxCrawlerActivator.stop(context);
+		mboxCrawlerActivator = null;
 		imapCrawlerActivator.stop(context);
 		imapCrawlerActivator = null;
 		webCrawlerActivator.stop(context);
