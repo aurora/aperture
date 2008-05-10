@@ -228,6 +228,7 @@
                 <filename name="org/semanticdesktop/aperture/datasource/ical/*" />
                 <filename name="lib/ical4j-1.0-beta4.jar" />
                 <filename name="lib/commons-lang-2.3.jar" />
+                <filename name="lib/commons-codec-1.3.jar" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>      
