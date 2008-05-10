@@ -211,7 +211,7 @@
         <and>
             <or>
                 <filename name="org/semanticdesktop/aperture/websites/**" />
-                <filename name="lib/flickrapi-1.0b4.jar" />
+                <filename name="lib/flickrapi-1.0.jar" />
                 <filename name="lib/DFKIUtils2.jar" />
                 <filename name="lib/org.apache.commons.httpclient_3.0.0.rc2.jar" />
             </or>
