@@ -26,7 +26,6 @@
 	<classpathentry kind="lib" path="lib/nrlvalidator-0.1.jar"/>
 	<classpathentry kind="lib" path="lib/unionsail-0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jutf7-0.9.0.jar"/>
-	<classpathentry kind="lib" path="lib/jpim-0.1-patched-by-antoni.jar"/>
 	<classpathentry kind="lib" path="lib/fontbox-0.2.0-dev.jar"/>
 	<classpathentry kind="lib" path="lib/pdfbox-0.7.4-dev-20071030.jar"/>
 	<classpathentry kind="lib" path="lib/mstor-0.9.11-hacked.jar"/>
@@ -43,5 +42,6 @@
 	<classpathentry kind="lib" path="lib/jai_codec-1.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/jai_core-1.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/jaudiotagger-1.0.8.jar"/>
+	<classpathentry kind="lib" path="lib/jpim-0.1-aperture-1.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>

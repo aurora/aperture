@@ -397,7 +397,7 @@
         <and>
         	<or>
             	<filename name="org/semanticdesktop/aperture/extractor/vcard/*" />
-            	<filename name="lib/jpim-0.1-patched-by-antoni.jar" />
+            	<filename name="lib/jpim-0.1-aperture-1.jar" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>      
