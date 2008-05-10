@@ -477,7 +477,7 @@
         <and>
             <or>
                 <filename name="org/semanticdesktop/aperture/outlook/*" />
-                <filename name="lib/jacob-1.10-pre4.jar" />
+                <filename name="lib/jacob-1.10.jar" />
                 <filename name="lib/jacob.dll" />
             </or>
             <selector refid="bundle.basic.selector" />
