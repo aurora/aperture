@@ -322,7 +322,7 @@
         <and>
             <or>
                 <filename name="org/semanticdesktop/aperture/extractor/mp3/*" />
-                <filename name="lib/jaudiotagger.jar" />
+                <filename name="lib/jaudiotagger-1.0.8.jar" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>      
