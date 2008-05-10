@@ -224,7 +224,8 @@
             <or>
                 <filename name="org/semanticdesktop/aperture/crawler/ical/*" />
                 <filename name="org/semanticdesktop/aperture/datasource/ical/*" />
-                <filename name="lib/ical4j-cvs20061019.jar" />
+                <filename name="lib/ical4j-1.0-beta4.jar" />
+                <filename name="lib/commons-lang-2.3.jar" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>      
