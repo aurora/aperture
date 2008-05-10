@@ -269,7 +269,7 @@
             <or>
                 <filename name="org/semanticdesktop/aperture/crawler/mbox/*" />
                 <filename name="org/semanticdesktop/aperture/datasource/mbox/*" />
-                <filename name="lib/mstor-0.9.11-hacked.jar" />
+                <filename name="lib/mstor-0.9.11.jar" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>      
