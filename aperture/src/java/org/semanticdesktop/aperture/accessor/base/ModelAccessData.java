@@ -494,8 +494,38 @@ public class ModelAccessData implements AccessData {
         }
     }
     
-    // this tries to remove untouched IDs gracefully, without creating a gigantic set
     public void removeUntouchedIDs() {
+        ClosableIterator<? extends Statement> iter = null;
+        List<Resource> resourcesToRemove = new LinkedList<Resource>();
+        try {
+            iter = model.findStatements(Variable.ANY, timestamp, Variable.ANY);
+            // we can only delete statements behind the iterator
+            while (iter.hasNext()) {
+                Statement statement = iter.next();
+                Node object = statement.getObject();
+                if (!checkTouched(object)) {
+                    resourcesToRemove.add(statement.getSubject());                    
+                } 
+            }
+            iter.close();
+            for (Resource resource : resourcesToRemove) {
+                model.removeStatements(resource,Variable.ANY,Variable.ANY);
+                // in conformance to the remove() method the incoming referredID links are left alone
+                model.removeStatements(Variable.ANY,aggregates,resource);
+            }
+        } catch (ModelRuntimeException e) {
+            throw e;
+        } finally {
+            if (iter != null) {
+                iter.close();
+            }
+        }
+    }
+    
+    // this tries to remove untouched IDs gracefully, without creating a gigantic set
+    // I commented this method out, since it caused problems, it seems that the NativeStore
+    // doesn't support this kind of statement removal
+    /*public void removeUntouchedIDs() {
         ClosableIterator<? extends Statement> iter = null;
         try {
             iter = model.findStatements(Variable.ANY, timestamp, Variable.ANY);
@@ -506,13 +536,14 @@ public class ModelAccessData implements AccessData {
                     model.removeStatements(previousResource,Variable.ANY,Variable.ANY);
                     // in conformance to the remove() method the incoming referredID links are left alone
                     model.removeStatements(Variable.ANY,aggregates,previousResource);
+                    previousResource = null;
                 }
-                
+                System.out.print("+");
                 Statement statement = iter.next();
-                Node subject = statement.getObject();
-                if (!checkTouched(subject)) {
+                Node object = statement.getObject();
+                if (!checkTouched(object)) {
                     previousResource = statement.getSubject();                    
-                }
+                } 
             }
             // don't forget the last one...
             if (previousResource != null) {
@@ -527,7 +558,7 @@ public class ModelAccessData implements AccessData {
                 iter.close();
             }
         }
-    }
+    }*/
     
     public ClosableIterator getUntouchedIDsIterator() {
         return new UntouchedIterator(model.findStatements(Variable.ANY,timestamp,Variable.ANY));
