@@ -12,18 +12,20 @@ import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.ModelSet;
-import org.openrdf.model.URI;
+import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.rdf2go.RepositoryModel;
 import org.openrdf.rdf2go.RepositoryModelSet;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.nativerdf.NativeStore;
+import org.semanticdesktop.aperture.accessor.AccessData;
+import org.semanticdesktop.aperture.accessor.base.ModelAccessData;
 import org.semanticdesktop.aperture.examples.handler.PerformanceMeasuringCrawlerHandler;
 import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.examples.handler.ValidatingCrawlerHandler;
-import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.nepomuk.nrl.validator.ModelTester;
-import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTester;
 import org.semanticdesktop.nepomuk.nrl.validator.testers.RootElementModelTester;
 
 public abstract class AbstractExampleCrawler {
@@ -164,7 +166,9 @@ public abstract class AbstractExampleCrawler {
         if (accessDataFolder != null) {
             Repository repo = new SailRepository(new NativeStore(accessDataFolder));
             repo.initialize();
-            this.accessData = new RepositoryAccessData(repo,accessDataContext);
+            Model model = new RepositoryModel(accessDataContext,repo);
+            model.open();
+            this.accessData = new ModelAccessData(model);
         }
         return remainingOptions;
     }
