@@ -19,10 +19,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
+import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
@@ -191,7 +195,7 @@ public class WebCrawler extends CrawlerBase {
         }
 
         // normalize http and file URLs
-        url = normalizeURL(url);
+        url = normalizeAndFixURL(url,null).string;
         if (url == null) {
             return;
         }
@@ -284,13 +288,13 @@ public class WebCrawler extends CrawlerBase {
             //handler.accessingObject(this, url);
             reportAccessingObject(url);
 
+            // see if we've ever accessed this url before
+            boolean knownUrl = accessData == null ? false : accessData.isKnownId(url);
+            
             // adjust some registries
             addCrawled(url);
             //crawledUrls.add(url);
             jobsMap.remove(url);
-
-            // see if we've ever accessed this url before
-            boolean knownUrl = accessData == null ? false : accessData.isKnownId(url);
 
             // fetch a DataAccessor for this id
             DataAccessor accessor = getDataAccessor(url);
@@ -412,6 +416,8 @@ public class WebCrawler extends CrawlerBase {
         if (knownUrl) {
             //deprecatedUrls.add(url);
             reportDeletedDataObject(url);
+        } else {
+            accessData.remove(url);
         }
 
         // furthermore we should not list this object as accessed any longer; when it can be accessed normally
@@ -463,89 +469,96 @@ public class WebCrawler extends CrawlerBase {
 
     @SuppressWarnings("unchecked")
     private void processLinks(FileDataObject object, int depth) {
-        InputStream content = null;
-
         // remove any previously registered links
         String url = object.getID().toString();
         if (accessData != null) {
             accessData.removeReferredIDs(url);
         }
+        
+        // first, ensure that the content stream supports mark() and reset()
+        InputStream content = getMarkSupportingContent(object);
+        // bail out if there was a problem obtaining the content
+        if (content == null) { return ; }
 
         // determine the MIME type
-        String mimeType = null;
-        try {
-            int bufferSize = mimeTypeIdentifier.getMinArrayLength();
-            content = object.getContent();
-            if (!content.markSupported()) {
-                content = new BufferedInputStream(content);
-            }
-            content.mark(bufferSize);
-
-            try {
-                byte[] magicBytes = IOUtil.readBytes(content, bufferSize);
-                mimeType = mimeTypeIdentifier.identify(magicBytes, null, object.getID());
-            }
-            finally {
-                content.reset();
-            }
-        }
-        catch (IOException e) {
-            logger.info("IOException while determining MIME type", e);
-            // the stream is now in an undetermined state: remove it to prevent any processing
-            object.setContent(null);
-
-            // no use to continue
-            return;
-        }
-
-        // fall-back to what the server returned
-        if (mimeType == null) {
-            mimeType = object.getMetadata().getString(NIE.mimeType);
-        }
-        else {
-            // overrule the DataObject's MIME type: magic-number based determination is much more reliable
-            // than what web servers return, especially for non-web formats
-            object.getMetadata().put(NIE.mimeType, mimeType);
-        }
-
-        // bail out if MIME type determination has still not produced anything
-        if (mimeType == null) {
-            return;
-        }
+        String mimeType = getMimeType(content, object);
+        // bail out if MIME type determination has  not produced anything
+        if (mimeType == null) { return; }
 
         // fetch a LinkExtractor for this MIME type and exit when there is none
-        LinkExtractor extractor = null;
-        Set factories = linkExtractorRegistry.get(mimeType);
-        if (!factories.isEmpty()) {
-            LinkExtractorFactory factory = (LinkExtractorFactory) factories.iterator().next();
-            extractor = factory.get();
-        }
+        LinkExtractor extractor = getLinkExtractor(mimeType);
+        // bail out if there is no link extractor for this mime type
+        if (extractor == null) { return; }
 
-        if (extractor == null) {
-            return;
-        }
-
-        // Read the stream fully in a ByteArrayInputStream as we will process it entirely (so mark/reset
-        // is a bit inappropriate) and it is likely that a CrawlerHandler implementation will do so too.
-        // FIXME: there are some optimization possibilities here: IOUtil.readBytes uses a
-        // ByteArrayOutputStream that internally uses a growing array, each time copying the old array
-        // into the new array. Finally, its toArray method returns a copy of the internal array.
-        // Optimization possibility: minimize the number of array allocations and copies.
-        if (!(content instanceof ByteArrayInputStream)) {
-            try {
-                content = new ByteArrayInputStream(IOUtil.readBytes(content));
-            }
-            catch (IOException e) {
-                logger.warn("IOException while buffering document", e);
-                object.setContent(null);
-                return;
-            }
-            object.setContent(content);
-        }
+        // get a ByteArrayInputStream (details, see the method)
+        content = getByteArrayContent(content, object);
+        // bail out if there was a problem buffering the stream
+        if (content == null) { return ; }
 
         // extract the links
-        List<String> links = null;
+        List<String> links = getLinks(content,extractor, url);
+        // bail out if no links were produced
+        if (links == null) { return ; }
 
+        // schedule and register these links
+        
+        // Keep a local set of scheduled links to prevent duplicate scheduling ASAP (the schedule
+        // method will take care of normalization and reconsider the issue afterwards). We don't use
+        // crawledUrls or jobsMap for this purpose as, regardless of whether the crawling status of
+        // the link, we must register it in accessData.
+        HashSet<String> scheduledLinks = new HashSet<String>(links.size());
+
+        for (String link : links) {
+            StringUriPair pair = normalizeAndFixURL(link, object.getMetadata().getModel());
+            link = pair.string;
+            URI linkedResourceUri = pair.uri;
+            if (link == null) {
+                // this means that after all the efforts, the link could not be converted to
+                // a correct URI and crawling it will be impossible
+                continue;
+            }
+            if (!url.equals(link) && !scheduledLinks.contains(link)) {
+                if (depth >= 0) {
+                    // if creating the link failed, don't crash out with an exception, just skip it
+                    if(link != null) {
+                        // now we can schedule the link (which might have been encoded)
+                        schedule(link, depth, true);
+                        
+                        if(linkedResourceUri != null) {
+                            object.getMetadata().add(NIE.links,linkedResourceUri);
+                            
+                            // The following triple needs to be added to satiate the validator complaining
+                            // about links to resources that are outside the crawling domain and don't have
+                            // their types set properly
+                            object.getMetadata().getModel().addStatement(linkedResourceUri,RDF.type,NIE.DataObject);
+                            scheduledLinks.add(link);
+                        }
+                    }
+                    else {
+                        logger.warn("WebCrawler is skipping link {}", link);
+                        // don't allow it to get into AccessData
+                        continue;
+                    }
+                }
+                // this is here, because we want to include an entry about a link, even if it
+                // already does contain
+                if (accessData != null) {
+                    accessData.putReferredID(url, link);
+                }
+            }
+        }
+    }
+    
+    private static class StringUriPair {
+        private String string;
+        private URI uri;
+        public StringUriPair(String string, URI uri) {
+            this.string = string;
+            this.uri = uri;
+        }
+    }
+
+    private List<String> getLinks(InputStream content, LinkExtractor extractor, String url) {
         try {
             // as it's a ByteArrayInputStream, its read limit actually has no effect
             content.mark(Integer.MAX_VALUE);
@@ -558,7 +571,7 @@ public class WebCrawler extends CrawlerBase {
             }
 
             // extract all links
-            links = extractor.extractLinks(content, params);
+            return extractor.extractLinks(content, params);
         }
         catch (Exception e) {
             logger.info("IOException while extracting links", e);
@@ -572,99 +585,172 @@ public class WebCrawler extends CrawlerBase {
                 logger.warn("internal error: IOException while resetting a ByteArrayInputStream", e);
             }
         }
+        return null;
+    }
 
-        // schedule and register these links
-        if (links != null) {
-            // Keep a local set of scheduled links to prevent duplicate scheduling ASAP (the schedule
-            // method will take care of normalization and reconsider the issue afterwards). We don't use
-            // crawledUrls or jobsMap for this purpose as, regardless of whether the crawling status of
-            // the link, we must register it in accessData.
-            HashSet<String> scheduledLinks = new HashSet<String>(links.size());
-
-            for (String link : links) {
-                link = normalizeURL(link);
-                if (link == null) {
-                    continue;
-                }
-
-                if (!url.equals(link) && !scheduledLinks.contains(link)) {
-                    if (depth >= 0) {
-                        URI linkedResourceUri = null;
-                        
-                        // if the link isn't properly encoded, createURI will fail and so will accessing it
-                        try {
-                            linkedResourceUri = object.getMetadata().getModel().createURI(link);
-                        }
-                        catch(IllegalArgumentException iae) {
-                            // try again after encoding the link
-                            try {
-                                if (link.startsWith("file:") || link.startsWith("http:") || link.startsWith("https:")) {
-                                    try {
-                                        URL parsedLink = new URL(link);
-                                        java.net.URI parsedUri = new java.net.URI(parsedLink.getProtocol(), parsedLink.getAuthority(), parsedLink.getPath(), parsedLink.getQuery(), parsedLink.getRef());
-                                        link = parsedUri.toString();
-                                        linkedResourceUri = object.getMetadata().getModel().createURI(link);
-                                    }
-                                    catch(MalformedURLException mfe) {
-                                        link = null;
-                                        linkedResourceUri = null;
-                                    }
-                                    catch (URISyntaxException e) {
-                                        link = null;
-                                        linkedResourceUri = null;
-                                   }
-                                }
-                            }
-                            catch (ModelRuntimeException e) {
-                                logger.debug("Unable to create URI for link {}", link);
-                            }
-                        }
-
-                        // if creating the link failed, don't crash out with an exception, just skip it
-                        if(link != null) {
-                            // now we can schedule the link (which might have been encoded)
-                            schedule(link, depth, true);
-                            
-                            if(linkedResourceUri != null) {
-                                object.getMetadata().add(NIE.links,linkedResourceUri);
-                                
-                                // The following triple needs to be added to satiate the validator complaining
-                                // about links to resources that are outside the crawling domain and don't have
-                                // their types set properly
-                                object.getMetadata().getModel().addStatement(linkedResourceUri,RDF.type,NIE.DataObject);
-                                scheduledLinks.add(link);
-                            }
-                        }
-                        else {
-                            logger.warn("WebCrawler is skipping link {}", link);
-                        }
-                    }
-
-                    if (accessData != null) {
-                        accessData.putReferredID(url, link);
-                    }
-                }
+    private InputStream getMarkSupportingContent(FileDataObject object) {
+        try {
+            InputStream content = null;
+            content = object.getContent();
+            if (!content.markSupported()) {
+                content = new BufferedInputStream(content);
             }
+            return content;
+        } catch (IOException ioe) {
+            logger.info("IOException while obtaining the object content", ioe);
+            // the stream is now in an undetermined state: remove it to prevent any processing
+            object.setContent(null);
+            // no use to continue
+            return null;
         }
     }
 
-    private String normalizeURL(String url) {
+    private InputStream getByteArrayContent(InputStream content, FileDataObject object) {
+        // Read the stream fully in a ByteArrayInputStream as we will process it entirely (so mark/reset
+        // is a bit inappropriate) and it is likely that a CrawlerHandler implementation will do so too.
+        // FIXME: there are some optimization possibilities here: IOUtil.readBytes uses a
+        // ByteArrayOutputStream that internally uses a growing array, each time copying the old array
+        // into the new array. Finally, its toArray method returns a copy of the internal array.
+        // Optimization possibility: minimize the number of array allocations and copies.
+        if (!(content instanceof ByteArrayInputStream)) {
+            try {
+                content = new ByteArrayInputStream(IOUtil.readBytes(content));
+            }
+            catch (IOException e) {
+                logger.warn("IOException while buffering document", e);
+                object.setContent(null);
+                return null;
+            }
+            object.setContent(content);
+            return content;
+        } else {
+            // the stream already is buffered, no need to do it once more
+            return content;
+        }
+    }
+
+    private String getMimeType(InputStream content, FileDataObject object) {
+        String mimeType = null;
+        
+        try {
+            int bufferSize = mimeTypeIdentifier.getMinArrayLength();
+            
+            content.mark(bufferSize);
+
+            try {
+                byte[] magicBytes = IOUtil.readBytes(content, bufferSize);
+                mimeType = mimeTypeIdentifier.identify(magicBytes, null, object.getID());
+            }
+            finally {
+                content.reset();
+            }
+        }
+        catch (IOException ioe) {
+            logger.debug("IOError while determining the mime type",ioe);
+            // the stream may now be in an undetermined state, remove it to preclude futher processing
+            try {
+                content.close();
+            } catch (Exception e) {
+                // do nothing, there is no use to
+            }
+            object.setContent(null);
+        }
+        
+        // fall-back to what the server returned
+        if (mimeType == null) {
+            mimeType = object.getMetadata().getString(NIE.mimeType);
+        }
+        else {
+            // overrule the DataObject's MIME type: magic-number based determination is much more reliable
+            // than what web servers return, especially for non-web formats
+            object.getMetadata().put(NIE.mimeType, mimeType);
+        }
+        
+        return mimeType;
+    }
+
+    private LinkExtractor getLinkExtractor(String mimeType) {
+        Set factories = linkExtractorRegistry.get(mimeType);
+        if (!factories.isEmpty()) {
+            LinkExtractorFactory factory = (LinkExtractorFactory) factories.iterator().next();
+            return factory.get();
+        } else {
+            return null;
+        }
+    }
+
+   
+    /**
+     * This method does it's best to turn a string into a valid URI, normalized and clean. This
+     * method is a one-stop-shop for all Url validation and fixing algorithms
+     * @param url
+     * @return
+     */
+    private StringUriPair normalizeAndFixURL(String url, Model model) {
         // normalize http and file URLs
+        String resultUrl = url;
         if (url.startsWith("file:") || url.startsWith("http:") || url.startsWith("https:")) {
             URL parsedUrl;
             try {
                 parsedUrl = new URL(url);
-                return UrlUtil.normalizeURL(parsedUrl).toExternalForm();
+                String externalForm = UrlUtil.normalizeURL(parsedUrl).toExternalForm();
+                // let's apply an additional check
+                resultUrl = externalForm;
             }
             catch (MalformedURLException e) {
                 // if it cannot be parsed, it can definitely never successfully be retrieved: ignore it
-                return null;
+                return new StringUriPair(null, null);
+            } 
+        }
+        
+        // now the URL is more-or-less normalized, we may try to turn it into a URI
+        URI resultUri = null;
+        
+        // let's apply an additional check, it doesn't make sense to crawl URL's that aren't valid uris
+        // because AccessData secretely assumes that ids are uris
+        // this has caused problems
+        try {
+            if (model != null) {
+                resultUri = model.createURI(resultUrl);
+            } else {
+                resultUri = new URIImpl(resultUrl);
             }
         }
-
-        return url;
+        catch(IllegalArgumentException iae) {
+            // try again after encoding the link
+            try {
+                if (resultUrl.startsWith("file:") || resultUrl.startsWith("http:") || resultUrl.startsWith("https:")) {
+                    try {
+                        URL parsedLink = new URL(resultUrl);
+                        java.net.URI parsedUri = new java.net.URI(parsedLink.getProtocol(), parsedLink.getAuthority(), parsedLink.getPath(), parsedLink.getQuery(), parsedLink.getRef());
+                        resultUrl = parsedUri.toString();
+                        resultUri = model.createURI(resultUrl);
+                    }
+                    catch(MalformedURLException mfe) {
+                        resultUrl = null;
+                        resultUri = null;
+                    }
+                    catch (URISyntaxException e) {
+                        resultUrl = null;
+                        resultUri = null;
+                   }
+                } else {
+                    // this means that there is nothing we can possibly do
+                    resultUrl = null;
+                    resultUri = null;
+                }
+            }
+            catch (ModelRuntimeException e) {
+                logger.debug("Unable to create URI for link {}", resultUrl);
+                resultUrl = null;
+                resultUri = null;
+            }
+        }
+        return new StringUriPair(resultUrl,resultUri);
     }
 
+    
+    
     private void removeDeprecatedRedirections() {
         // the access data may get populated with "orphaned redirections", URLs that redirect to other URLs
         // but that themselves are never used as links. This may for example happen due to session IDs in the
