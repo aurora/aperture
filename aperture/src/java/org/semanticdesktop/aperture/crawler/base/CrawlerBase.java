@@ -394,7 +394,8 @@ public abstract class CrawlerBase implements Crawler {
 	protected void reportDeletedDataObject(String url) {
 	    ClosableIterator iter = accessData.getAggregatedIDsClosure(url);
 	    while (iter.hasNext()) {
-	        handler.objectRemoved(this, url);
+	        String urlToReport = (String)iter.next();
+	        handler.objectRemoved(this, urlToReport);
 	        crawlReport.increaseRemovedCount();
 	    }
 	    accessData.remove(url);
