@@ -27,9 +27,9 @@ your copy of ANT at http://ant.apache.org/
         <!-- versions -->
         <property name="project.version.major" value="1.1" />
         <property name="project.version.minor" value="0" />
-        <property name="version-status" value="beta-SNAPSHOT" />
+        <property name="version-status" value="beta_SNAPSHOT" />
         <property name="project.version.full"
-                  value="${project.version.major}.${project.version.minor}-${version-status}" />
+                  value="${project.version.major}.${project.version.minor}.${version-status}" />
         <property name="project.version.osgi"
                   value="${project.version.major}.${project.version.minor}.${version-status}" />
 
@@ -595,7 +595,7 @@ your copy of ANT at http://ant.apache.org/
         <copy todir="${osgirelease.lib.dir}">
             <fileset file="${lib.dir}/rdf2go.api-4.6.2.jar" />
             <fileset file="${lib.dir}/rdf2go.impl.base-4.6.2.jar" />
-            <fileset file="${lib.dir}/rdf2go.impl.util-4.6.1.jar" />
+            <fileset file="${lib.dir}/rdf2go.impl.util-4.6.2.jar" />
             <fileset file="${lib.dir}/rdf2go.impl.sesame20-4.6.2.jar" />
             <fileset file="${lib.dir}/slf4j-api-1.3.0.jar" />
             <fileset file="${lib.dir}/slf4j-jdk14-1.3.0.jar" />
@@ -679,14 +679,14 @@ your copy of ANT at http://ant.apache.org/
     <target name="test"
             depends="compile.test"
             description="test the Aperture core classes">
-        <!--<junit fork="yes"
+        <junit fork="yes"
                printsummary="withOutAndErr"
                failureproperty="unit.test.failed"
                showoutput="yes">
             <classpath refid="classpath.junit" />
             <test name="org.semanticdesktop.aperture.TestAll"
                   outfile="result" />
-        </junit> -->
+        </junit>
         <fail if="unit.test.failed" message="Tests failed." />
     </target>
     
