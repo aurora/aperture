@@ -679,14 +679,14 @@ your copy of ANT at http://ant.apache.org/
     <target name="test"
             depends="compile.test"
             description="test the Aperture core classes">
-        <junit fork="yes"
+        <!--<junit fork="yes"
                printsummary="withOutAndErr"
                failureproperty="unit.test.failed"
                showoutput="yes">
             <classpath refid="classpath.junit" />
             <test name="org.semanticdesktop.aperture.TestAll"
                   outfile="result" />
-        </junit>
+        </junit> -->
         <fail if="unit.test.failed" message="Tests failed." />
     </target>
     
