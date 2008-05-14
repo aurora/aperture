@@ -26,7 +26,6 @@
 	<classpathentry kind="lib" path="lib/jutf7-0.9.0.jar"/>
 	<classpathentry kind="lib" path="lib/fontbox-0.2.0-dev.jar"/>
 	<classpathentry kind="lib" path="lib/pdfbox-0.7.4-dev-20071030.jar"/>
-	<classpathentry kind="lib" path="lib/openrdf-sesame-2.1-onejar.jar"/>
 	<classpathentry kind="lib" path="lib/rdf2go.impl.util-4.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-jdk14-1.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/flickrapi-1.0.jar"/>
@@ -43,5 +42,6 @@
 	<classpathentry kind="lib" path="lib/rdf2go.api-4.6.2.jar"/>
 	<classpathentry kind="lib" path="lib/rdf2go.impl.base-4.6.2.jar"/>
 	<classpathentry kind="lib" path="lib/rdf2go.impl.sesame20-4.6.2.jar"/>
+	<classpathentry kind="lib" path="lib/openrdf-sesame-2.1.1-onejar-osgi.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>

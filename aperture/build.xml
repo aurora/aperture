@@ -600,7 +600,7 @@ your copy of ANT at http://ant.apache.org/
             <fileset file="${lib.dir}/slf4j-api-1.3.0.jar" />
             <fileset file="${lib.dir}/slf4j-jdk14-1.3.0.jar" />
             <fileset file="${lib.dir}/jcl104-over-slf4j-1.3.0.jar" />
-            <fileset file="${lib.dir}/openrdf-sesame-2.1-onejar.jar" />
+            <fileset file="${lib.dir}/openrdf-sesame-2.1.1-onejar-osgi.jar" />
         </copy>
 
         <!-- copy licenses of third party libs -->
