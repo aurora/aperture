@@ -26,7 +26,6 @@ public class MboxCrawlerActivator implements BundleActivator {
 	private MboxDataSourceFactory dataSourceFactory;
 
 	private ServiceRegistration crawlerServiceRegistration;
-	private ServiceRegistration accessorServiceRegistration;
 	private ServiceRegistration dataSourceServiceRegistration;
 
 	/**
@@ -39,8 +38,6 @@ public class MboxCrawlerActivator implements BundleActivator {
 		crawlerFactory = new MboxCrawlerFactory();
 		crawlerServiceRegistration = bc.registerService(CrawlerFactory.class.getName(), crawlerFactory,
 			null);
-		accessorServiceRegistration = bc.registerService(DataAccessorFactory.class.getName(), crawlerFactory,
-            null);
 		
 		dataSourceFactory = new MboxDataSourceFactory();
 		dataSourceServiceRegistration = bc.registerService(DataSourceFactory.class.getName(), dataSourceFactory,
@@ -53,7 +50,6 @@ public class MboxCrawlerActivator implements BundleActivator {
      */
 	public void stop(BundleContext context) throws Exception {
 		crawlerServiceRegistration.unregister();
-		accessorServiceRegistration.unregister();
         dataSourceServiceRegistration.unregister();
 	}
 }
