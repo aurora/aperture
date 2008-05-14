@@ -4,6 +4,7 @@ Bundle-SymbolicName: org.semanticdesktop.aperture.example
 Bundle-Description: Aperture file crawling example
 Bundle-Activator: org.semanticdesktop.aperture.examples.osgi.ExampleFileCrawlerActivator
 Require-Bundle: org.semanticdesktop.aperture,
+ org.semanticdesktop.aperture.impl,
  org.semweb4j.rdf2go.api,
  org.semweb4j.rdf2go.impl.base,
  org.openrdf.rdf2go
