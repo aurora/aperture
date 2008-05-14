@@ -14,10 +14,8 @@ import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.CrawlerRegistry;
-import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
 import org.semanticdesktop.aperture.datasource.DataSourceRegistry;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.filesystem.FILESYSTEMDS;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
@@ -26,18 +24,8 @@ import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierFactory;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifierRegistry;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
-/**
- * Example class that crawls a file system and puts all extracted metadata in a RDF file.
- */
 public class ExampleFileCrawler {
-
-    public static final String IDENTIFY_MIME_TYPE_OPTION = "-identifyMimeType";
-
-    public static final String EXTRACT_CONTENTS_OPTION = "-extractContents";
-
-    public static final String VERBOSE_OPTION = "-verbose";
 
     private File rootFile;
 
