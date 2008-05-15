@@ -15,7 +15,7 @@ public class MBOXDS {
 
     /** Path to the ontology resource */
     public static final String MBOXDS_RESOURCE_PATH = 
-      MBOXDS.class.getPackage().getName().replace('.', '/') + "/MboxDataSource.ttl";
+      MBOXDS.class.getPackage().getName().replace('.', '/') + "/mboxDataSource.ttl";
 
     /**
      * Puts the MBOXDS ontology into the given model.
