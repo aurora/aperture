@@ -453,7 +453,7 @@ public abstract class CrawlerBase implements Crawler {
                     this.subCrawlerStack.push(localSubCrawler);
                 }
             }
-            localSubCrawler.subCrawl(object.getID(), stream, new DefaultSubCrawlerHandler(this),
+            localSubCrawler.subCrawl(object.getID(), stream, new DefaultSubCrawlerHandler(this,object),
                 this.source, this.accessData, charset, mimeType, object.getMetadata());
         }
         finally {
@@ -478,16 +478,18 @@ public abstract class CrawlerBase implements Crawler {
     private static class DefaultSubCrawlerHandler implements SubCrawlerHandler {
 
         private CrawlerBase crawlerBase;
+        private String subCrawledObjectId;
         
         /**
          * A default constructor.
          * 
-         * @param innerHandler the crawler handler that is to receive notifications
-         * @param innerCrawler the crawler that will be used as the source of events passed to the crawler handler
-         * @throws NullPointerException if the handler is null
+         * @param innerCrawler the Crawler instance that performs the crawl
+         * @param object the data object that is being subcrawled
+         * @throws NullPointerException if the object is null
          */
-        public DefaultSubCrawlerHandler(CrawlerBase innerCrawler) {
+        public DefaultSubCrawlerHandler(CrawlerBase innerCrawler, DataObject object) {
             this.crawlerBase = innerCrawler;
+            this.subCrawledObjectId = object.getID().toString();
         }
         
         /**
@@ -501,28 +503,33 @@ public abstract class CrawlerBase implements Crawler {
          * @see SubCrawlerHandler#objectChanged(DataObject)
          */
         public void objectChanged(DataObject object) {
-            //crawlerBase.deprecatedUrls.remove(object.getID().toString());
+            if (crawlerBase.accessData != null) {
+                // add an appropriate reference in the AccessData
+                crawlerBase.accessData.putAggregatedID(subCrawledObjectId, object.getID().toString());
+            }
             crawlerBase.reportModifiedDataObject(object);
-            //innerHandler.objectChanged(localCrawler, object);
         }
         
         /**
          * @see SubCrawlerHandler#objectNew(DataObject)
          */
         public void objectNew(DataObject object) {
-            //crawlerBase.deprecatedUrls.remove(object.getID().toString());
+            if (crawlerBase.accessData != null) {
+                // add an appropriate reference in the AccessData
+                crawlerBase.accessData.putAggregatedID(subCrawledObjectId, object.getID().toString());
+            }
             crawlerBase.reportNewDataObject(object);
-            //innerHandler.objectNew(localCrawler, object);
         }
         
         /**
          * @see SubCrawlerHandler#objectNotModified(String)
          */
         public void objectNotModified(String url) {
-            //crawlerBase.deprecatedUrls.remove(url);
+            if (crawlerBase.accessData != null) {
+                // add an appropriate reference in the AccessData
+                crawlerBase.accessData.putAggregatedID(subCrawledObjectId, url);
+            }
             crawlerBase.reportUnmodifiedDataObject(url);
-            //localCrawler.accessData.touchRecursively(url);
-            //innerHandler.objectNotModified(localCrawler, url);
         }
     }
 }
