@@ -26,9 +26,6 @@ public class PerformanceMeasuringCrawlerHandler extends SimpleCrawlerHandler {
     // in the elapsed time therefore a correct timestamp is not needed
     private long crawlingTime;
 
-    // the time which is need for crawling one file
-    private long crawlingOneFile;
-
     // variables needed for statistic
     int nrFiles;
 
@@ -92,14 +89,14 @@ public class PerformanceMeasuringCrawlerHandler extends SimpleCrawlerHandler {
         // process the contents of an InputStream, if available
         if (object instanceof FileDataObject) {
             nrFiles++;
-            crawlingOneFile = -1 * System.nanoTime();
+            long crawlingOneFile = -1 * System.nanoTime();
             String s = null;
             try {
                 s = (object.getMetadata().getString(NIE.byteSize));
                 if (s != null) {
                         fileSize = Long.parseLong(s);
                 }
-                process((FileDataObject) object);
+                process((FileDataObject) object, dataCrawler);
             }
             catch (Exception e) {
                 System.err.println("Exception while processing file size (" + s + ") of " + object.getID());
