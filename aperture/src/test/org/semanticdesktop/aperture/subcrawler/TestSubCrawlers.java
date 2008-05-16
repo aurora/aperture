@@ -12,6 +12,7 @@ import junit.framework.TestSuite;
 import org.semanticdesktop.aperture.subcrawler.impl.TestDefaultSubCrawlerRegistry;
 import org.semanticdesktop.aperture.subcrawler.impl.TestSubCrawlerRegistryImpl;
 import org.semanticdesktop.aperture.subcrawler.vcard.VcardSubCrawlerTest;
+import org.semanticdesktop.aperture.subcrawler.vcard.TestVcardFileCrawlerCombination;
 
 /**
  * Tests all SubCrawler implementations and related classes.
@@ -23,10 +24,11 @@ public class TestSubCrawlers extends TestSuite {
     }
     
     private TestSubCrawlers() {
-        super("extractors");
+        super("subcrawlers");
         
         // test the various sub crawlers
         addTest(new TestSuite(VcardSubCrawlerTest.class));
+        addTest(new TestSuite(TestVcardFileCrawlerCombination.class));
            
         // test the registries holding the SubCrawlerFactories
         addTest(new TestSuite(TestSubCrawlerRegistryImpl.class));
