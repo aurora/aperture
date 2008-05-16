@@ -257,7 +257,7 @@ your copy of ANT at http://ant.apache.org/
         </antcall>
         <antcall target="createdatasourcevocabulary">
             <param name="vocabulary.input.file"
-                   value="MboxDataSource.ttl" />
+                   value="mboxDataSource.ttl" />
             <param name="vocabulary.package.dir"
                    value="${src.java.mainpackage.dir}/datasource/mbox" />
             <param name="vocabulary.package"
