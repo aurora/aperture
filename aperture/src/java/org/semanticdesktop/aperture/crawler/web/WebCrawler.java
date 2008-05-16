@@ -411,20 +411,16 @@ public class WebCrawler extends CrawlerBase {
     }
 
     private void unregisterUrl(String url, boolean knownUrl) {
-        // if we've accessed this object in the past, we should re-add it to deprecatedIDs, so that it will be
-        // reported as removed
+        // if we've accessed this object in the past, report it as removed
         if (knownUrl) {
-            //deprecatedUrls.add(url);
             reportDeletedDataObject(url);
         } else {
-            accessData.remove(url);
+            // furthermore we should not list this object as accessed any longer; when it can be accessed normally
+            // in the next crawl, it should be reported as a new object
+            if (accessData != null) {
+                accessData.remove(url);
+            }
         }
-
-        // furthermore we should not list this object as accessed any longer; when it can be accessed normally
-        // in the next crawl, it should be reported as a new object
-        //if (accessData != null) {
-        //    accessData.remove(url);
-        //}
     }
 
     private DataAccessor getDataAccessor(String url) {
