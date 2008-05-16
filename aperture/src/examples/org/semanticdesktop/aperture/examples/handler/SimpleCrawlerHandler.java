@@ -22,8 +22,6 @@ import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.ModelSet;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryException;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -42,6 +40,11 @@ import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
+import org.semanticdesktop.aperture.subcrawler.SubCrawler;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerException;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerFactory;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerRegistry;
+import org.semanticdesktop.aperture.subcrawler.impl.DefaultSubCrawlerRegistry;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.NIE;
 
@@ -69,6 +72,8 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     private MimeTypeIdentifier mimeTypeIdentifier;
 
     private ExtractorRegistry extractorRegistry;
+    
+    private SubCrawlerRegistry subCrawlerRegistry;
 
     private boolean identifyingMimeType;
 
@@ -156,6 +161,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         }
         if (extractingContents) {
             extractorRegistry = new DefaultExtractorRegistry();
+            subCrawlerRegistry = new DefaultSubCrawlerRegistry();
         }
     }
 
@@ -199,7 +205,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         if (object instanceof FileDataObject) {
             String s = null;
             try {
-                process((FileDataObject) object);
+                process((FileDataObject) object, dataCrawler);
             }
             catch (Exception e) {
                 System.err.println("Exception while processing file size (" + s + ") of " + object.getID());
@@ -224,7 +230,8 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     }
 
     @SuppressWarnings("unchecked")
-    protected void process(FileDataObject object) throws IOException, ExtractorException, ModelException {
+    protected void process(FileDataObject object, Crawler crawler) 
+        throws IOException, ExtractorException, ModelException, SubCrawlerException {
         // we cannot do anything when MIME type identification is disabled
         if (!identifyingMimeType) {
             return;
@@ -255,28 +262,70 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
                 contentStream.reset();
                 
                 // apply an Extractor if available
-                Set extractors = extractorRegistry.get(mimeType);
-                if (!extractors.isEmpty()) {
-                    ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
-                    Extractor extractor = factory.get();
-                    extractor.extract(id, contentStream, null, mimeType, metadata);
-                }
+                boolean done = applyExtractor(id, contentStream, mimeType, metadata);
+                if (done) {return;}
                 
                 // else try to apply a FileExtractor
-                Set fileextractors = extractorRegistry.getFileExtractorFactories(mimeType);
-                if (!fileextractors.isEmpty()) {
-                    FileExtractorFactory factory = (FileExtractorFactory) fileextractors.iterator().next();
-                    FileExtractor extractor = factory.get();
-                    File originalFile = object.getFile();
-                    if (originalFile != null) {
-                        extractor.extract(id, originalFile, null, mimeType, metadata);
-                    } else {
-                        File tempFile = object.downloadContent();
-                        extractor.extract(id, tempFile, null, mimeType, metadata);
+                done = applyFileExtractor(object, id, mimeType, metadata);
+                
+                // or maybe apply a SubCrawler
+                done = applySubCrawler(id, contentStream, mimeType, object, crawler);
+            }
+        }
+    }
+
+    private boolean applyExtractor(URI id, InputStream contentStream, String mimeType, RDFContainer metadata)
+            throws ExtractorException {
+        Set extractors = extractorRegistry.getExtractorFactories(mimeType);
+        if (!extractors.isEmpty()) {
+            ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
+            Extractor extractor = factory.get();
+            extractor.extract(id, contentStream, null, mimeType, metadata);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    private boolean applyFileExtractor(FileDataObject object, URI id, String mimeType, RDFContainer metadata)
+            throws ExtractorException, IOException {
+        Set fileextractors = extractorRegistry.getFileExtractorFactories(mimeType);
+        if (!fileextractors.isEmpty()) {
+            FileExtractorFactory factory = (FileExtractorFactory) fileextractors.iterator().next();
+            FileExtractor extractor = factory.get();
+            File originalFile = object.getFile();
+            if (originalFile != null) {
+                extractor.extract(id, originalFile, null, mimeType, metadata);
+                return true;
+            }
+            else {
+                File tempFile = object.downloadContent();
+                try {
+                    extractor.extract(id, tempFile, null, mimeType, metadata);
+                    return true;
+                }
+                finally {
+                    if (tempFile != null) {
                         tempFile.delete();
                     }
                 }
             }
+        } else {
+            return false;
+        }
+    }
+    
+    private boolean applySubCrawler(URI id, InputStream contentStream, String mimeType, DataObject object, Crawler crawler)
+            throws SubCrawlerException {
+        Set subCrawlers = subCrawlerRegistry.get(mimeType);
+        if (!subCrawlers.isEmpty()) {
+            SubCrawlerFactory factory = (SubCrawlerFactory)subCrawlers.iterator().next();
+            SubCrawler subCrawler = factory.get();
+            crawler.runSubCrawler(subCrawler, object, contentStream, null, mimeType);
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
