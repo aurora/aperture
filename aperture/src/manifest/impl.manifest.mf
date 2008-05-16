@@ -28,7 +28,8 @@ Bundle-ClassPath: .,
  lib/metadata-extractor-2.4.0-beta-1.jar,
  lib/mstor-0.9.11.jar,
  lib/pdfbox-0.7.4-dev-20071030.jar,
- lib/poi-3.0-FINAL.jar
+ lib/poi-scratchpad-3.0.2-FINAL-20080204.jar,
+ lib/poi-3.0.2-FINAL-20080204.jar
 Require-Bundle: org.semanticdesktop.aperture,
  org.semweb4j.rdf2go.api
 Import-Package: javax.net,
