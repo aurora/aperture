@@ -27,7 +27,7 @@ your copy of ANT at http://ant.apache.org/
         <!-- versions -->
         <property name="project.version.major" value="1.1" />
         <property name="project.version.minor" value="0" />
-        <property name="version-status" value="beta_SNAPSHOT" />
+        <property name="version-status" value="beta" />
         <property name="project.version.full"
                   value="${project.version.major}.${project.version.minor}.${version-status}" />
         <property name="project.version.osgi"
