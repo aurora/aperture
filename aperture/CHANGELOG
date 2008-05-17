@@ -179,12 +179,45 @@ Updated dependencies
   validator
   
 ----------------------------------
-version 1.0.2    (snapshot, unreleased)
+version 1.1.0.beta 17.05.2008
 ----------------------------------
 
-- OSGi bundles now also use aperture version numbers
+This release aims to reduce the memory footprint and increase the range of data
+sources explorable by Aperture. It adds support for MP3 files, vcards and mbox
+mailboxes. The Architecture has been extended with the concept of a SubCrawler,
+that can crawl DataObjects returned by other crawlers thus opening possibilities
+for the development of new, even better exploration components.
+
+New features
+- a redesigned AccessData interface which fulfils two goals
+  - correct handling of data objects embedded in other data objects (SubCrawlers)
+  - no need to store large sets in memory (deprecatedUrls and crawledUrls)
+- new SubCrawler interface, with associated infrastructure
+- the SubCrawler interface comes with a first implementation: the VcardSubCrawler
+  for crawling vcard files, each may potentially contain many vcards
+- the FileExtractor interface - extracts information from formats which are 
+  ill-suited for stream-based processing
+- the first implementation of FileExtractor - the MP3FileExtractor, does what
+  you think it does, extracts ID3 information from MP3 files supports both
+  ID3v1 and ID3v2 tags
 - added workaround to load UTF-7 charset when in OSGi in MailUtil
 - fixed Outlook nullpointerexceptions introduced in last release
-- updated pdfbox to unreleased 0.4 version fixing parsing errors,
+- host of smaller improvements and bugfixes
+
+Updated Dependencies
+- OSGi bundles now also use aperture version numbers
+- updated pdfbox to unreleased 0.7.4 version fixing parsing errors,
   includes update for fontbox
-- added a new dependency on the Java Imaging API - required by the new PDFBox
+- flickrapi updated to 1.0 final
+- ical4j updated to 1.0-beta4
+- jacob updated to 1.10 final 
+- rdf2go and the sesame rdf2go driver updated to version 4.6.2
+- sesame updated to 2.1.1
+- poi updated to 3.0.2
+- commons-codec updated to 1.3
+- commons-httpclien updated to 3.1
+- added commons-lang, required by ical4j
+- added Java Imaging API - required by the new PDFBox
+- added jaudiotagger-1.0.8 - required by the MP3Extractor
+- added jpim-0.1 (with patches) - required by the VcardSubCrawler
+- added mstor-0.9.11 - required by the MboxCrawler
