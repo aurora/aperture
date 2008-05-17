@@ -48,6 +48,7 @@ your copy of ANT at http://ant.apache.org/
         <property name="bin.dir" value="${basedir}/bin" />
         <property name="lib.dir" value="${basedir}/lib" />
         <property name="doc.dir" value="${basedir}/doc" />
+        <property name="patches.dir" value="${basedir}/patches" />
         <property name="doc.ontologies.dir" value="${doc.dir}/ontology" />
 
         <!-- build dirs -->
@@ -95,6 +96,7 @@ your copy of ANT at http://ant.apache.org/
         <property name="release.lib.licenses.dir"
                   value="${release.lib.dir}/licenses" />
         <property name="release.bin.dir" value="${release.dir}/bin" />
+        <property name="release.patches.dir" value="${release.dir}/patches" />
         <property name="release.doc.dir" value="${release.dir}/doc" />
         <property name="release.doc.api.dir" value="${release.doc.dir}/api" />
         <property name="release.src.zip" value="${release.dir}/src.zip" />
@@ -106,6 +108,7 @@ your copy of ANT at http://ant.apache.org/
         <property name="osgirelease.lib.licenses.dir"
                   value="${osgirelease.lib.dir}/licenses" />
         <property name="osgirelease.bin.dir" value="${osgirelease.dir}/bin" />
+        <property name="osgirelease.patches.dir" value="${osgirelease.dir}/patches" />
         <property name="osgirelease.doc.dir" value="${osgirelease.dir}/doc" />
         <property name="osgirelease.doc.api.dir"
                   value="${osgirelease.doc.dir}/api" />
@@ -525,6 +528,12 @@ your copy of ANT at http://ant.apache.org/
                 <include name="*.txt" />
             </fileset>
         </copy>
+        
+        <!-- copy patches applied to third-party libs -->
+        <mkdir dir="${release.patches.dir}" />
+        <copy todir="${release.patches.dir}">
+            <fileset dir="${patches.dir}" />
+        </copy>
 
         <!-- copy jacob.dll to the release's root dir -->
         <copy todir="${release.dir}" file="jacob.dll" />
@@ -610,6 +619,12 @@ your copy of ANT at http://ant.apache.org/
                 <include name="*.txt" />
             </fileset>
         </copy>
+        
+        <!-- copy patches applied to third-party libs -->
+        <mkdir dir="${osgirelease.patches.dir}" />
+        <copy todir="${osgirelease.patches.dir}">
+            <fileset dir="${patches.dir}" />
+        </copy>
 
         <!-- copy documentation files -->
         <!-- the documentation is being maintained on the wiki now and therefore has been
@@ -679,7 +694,7 @@ your copy of ANT at http://ant.apache.org/
     <target name="test"
             depends="compile.test"
             description="test the Aperture core classes">
-        <junit fork="yes"
+       <junit fork="yes"
                printsummary="withOutAndErr"
                failureproperty="unit.test.failed"
                showoutput="yes">
