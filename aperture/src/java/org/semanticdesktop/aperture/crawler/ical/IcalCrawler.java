@@ -1060,11 +1060,11 @@ public class IcalCrawler extends CrawlerBase {
     /**
      * Crawls a single Standard timezone observance component.
      * 
-     * @see #crawlVTimezoneComponent(Component, Resource)
      * @param parentNode the node of the parent component, the ncal:standard link will be attached to this
      *            node
      * @param component the component to be crawled
      * @param rdfContainer the container to store the generated statements in
+     * @see #crawlTimezoneComponent(Component, Resource)
      */
     public void crawlStandardObservance(Component component, Resource parentNode, RDFContainer rdfContainer)  {
         Resource standardParentNode = generateAnonymousNode(rdfContainer);
@@ -1080,7 +1080,7 @@ public class IcalCrawler extends CrawlerBase {
      *            node
      * @param component the component to be crawled
      * @param rdfContainer the container to store the generated statements in
-     * @see #crawlVTimezoneComponent(Component, Resource)
+     * @see #crawlTimezoneComponent(Component, Resource)
      */
     public void crawlDaylightObservance(Component component, Resource parentNode, RDFContainer rdfContainer) {
         Resource daylightParentNode = generateAnonymousNode(rdfContainer);

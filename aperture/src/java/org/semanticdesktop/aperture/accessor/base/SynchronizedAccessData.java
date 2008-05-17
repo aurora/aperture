@@ -134,33 +134,49 @@ public class SynchronizedAccessData implements AccessData {
         return accessData.getAggregatedIDs(id);
     }
 
+    /**
+     * @see AccessData#getAggregatedIDsClosure(String)
+     */
     public synchronized ClosableIterator getAggregatedIDsClosure(String id) {
         return accessData.getAggregatedIDsClosure(id);
     }
 
+    /**
+     * @see AccessData#getUntouchedIDsIterator()
+     */
     public synchronized ClosableIterator getUntouchedIDsIterator() {
         return accessData.getUntouchedIDsIterator();
     }
 
+    /**
+     * @see AccessData#putAggregatedID(String, String)
+     */
     public synchronized void putAggregatedID(String id, String aggregatedID) {
         accessData.putAggregatedID(id, aggregatedID);
     }
 
+    /**
+     * @see AccessData#removeAggregatedID(String, String)
+     */
     public synchronized void removeAggregatedID(String id, String aggregatedID) {
         accessData.removeAggregatedID(id, aggregatedID);
     }
 
+    /**
+     * @see AccessData#removeUntouchedIDs()
+     */
     public synchronized void removeUntouchedIDs() {
         accessData.removeUntouchedIDs();
     }
 
+    /**
+     * @see AccessData#touchRecursively(String)
+     */
     public synchronized void touchRecursively(String id) {
         accessData.touchRecursively(id);
     }
 
     /**
-     * @param id
-     * @return
      * @see org.semanticdesktop.aperture.accessor.AccessData#isTouched(java.lang.String)
      */
     public synchronized boolean isTouched(String id) {
@@ -168,7 +184,6 @@ public class SynchronizedAccessData implements AccessData {
     }
 
     /**
-     * @param id
      * @see org.semanticdesktop.aperture.accessor.AccessData#touch(java.lang.String)
      */
     public synchronized void touch(String id) {

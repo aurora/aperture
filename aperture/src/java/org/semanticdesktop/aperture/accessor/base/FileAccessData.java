@@ -24,6 +24,7 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.util.ArrayMap;
 import org.semanticdesktop.aperture.util.SimpleSAXAdapter;
 import org.semanticdesktop.aperture.util.SimpleSAXParser;
@@ -130,7 +131,7 @@ public class FileAccessData extends AccessDataImpl {
     }
 
     /**
-     * @see AccessData#put(String,String,String)
+     * @see AccessData#put(String, String, String)
      */
     public void put(String id, String key, String value) {
         super.put(id, key, value);

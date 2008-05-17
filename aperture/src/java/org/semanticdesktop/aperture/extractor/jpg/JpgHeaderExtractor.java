@@ -78,7 +78,6 @@ public class JpgHeaderExtractor {
 	 * @param id
 	 * @param jpegFile
 	 * @param result
-	 * @author moeller
 	 */
 	public JpgHeaderExtractor(URI id, InputStream jpegFile, RDFContainer result)  {
 		this.id = id;
@@ -98,12 +97,6 @@ public class JpgHeaderExtractor {
 	/**
      * Extract varios information from JPEG NEXIF header.
      * 
-     * @param id URI identifing the current document
-     * @param stream InputStream of the current document
-     * @param charset 
-     * @param mimeType
-     * @param result RDFContainer holding the extracted information
-     * @author Manuel Moeller, www.manuelm.org
      * @throws ExtractorException
      */
 	public void extractExif() {

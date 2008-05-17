@@ -166,7 +166,7 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
      * semantics of the index may be overridden by the subclasses of this class, but it will always
      * follow the javamail convention that folder indexes are one-based
      * @param index
-     * @return
+     * @return the message placed under the given index
      * @throws MessagingException
      */
     protected Message getMessageFromCurrentFolder(int index) throws MessagingException {
@@ -178,7 +178,7 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
     }
     
     /**
-     * @see {@link PartStreamFactory#getPartStream(Part)}
+     * @see PartStreamFactory#getPartStream(Part)
      */
     public InputStream getPartStream(Part part) throws MessagingException, IOException {
         return part.getInputStream();
@@ -427,7 +427,7 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
      * @param dataSource
      * @param newAccessData
      * @param containerFactory
-     * @return
+     * @return a DataObject instance for the given message
      * @throws MessagingException
      * @throws IOException
      */
@@ -578,13 +578,11 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
     }
     
     /**
-     * Returns a DataObject for an JavaMail folder.
-     * @param folder
-     * @param url
+     * Returns a DataObject for the current JavaMail folder.
      * @param dataSource
      * @param newAccessData
      * @param containerFactory
-     * @return
+     * @return a FolderDataObject instance for the currentFolder
      * @throws MessagingException
      */
     protected FolderDataObject getCurrentFolderObject(DataSource dataSource, AccessData newAccessData,

@@ -58,8 +58,8 @@ public interface FileDataObject extends DataObject {
 
     /**
      * Downloads the entire content of the stream to a temporary file (created with
-     * {@link File#createTempFile()}). It is the responsibility of the user to delete the file if it is no
-     * longer needed. <br/><br/>
+     * {@link File#createTempFile(String, String)}). It is the responsibility of the user to delete the file
+     * if it is no longer needed. <br/><br/>
      * 
      * <b>This method works only if the content stream hasn't been used or if it has been reset prior to
      * calling this method. Otherwise the downloaded file would be corrupted. Aperture tries to check for this

@@ -393,7 +393,7 @@ public class AccessDataImpl implements AccessData {
     /**
      * Returns true if the given id has been touched during the current crawl, false otherwise
      * @param id
-     * @return
+     * @return true if the file has been touched during the current crawl, false otherwise
      */
     public boolean isTouched(String id) {
         ArrayMap infoMap = (ArrayMap) idMap.get(id);

@@ -101,7 +101,7 @@ public class VcardSubCrawler implements SubCrawler {
     private static final String OBJECT_HASH_KEY = "contactHash";
     
     /**
-     * @see SubCrawler#subCrawl(URI, InputStream, AccessData, SubCrawlerHandler, Charset, String, RDFContainer)
+     * @see SubCrawler#subCrawl(URI, InputStream, SubCrawlerHandler, DataSource, AccessData, Charset, String, RDFContainer)
      */
     public void subCrawl(URI id, InputStream stream, SubCrawlerHandler handler, DataSource dataSource,
             AccessData accessData, Charset charset, String mimeType, RDFContainer parentMetadata) throws SubCrawlerException {

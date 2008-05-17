@@ -366,7 +366,7 @@ public abstract class OutlookResource {
          * The oItemType constant identifying the standard type of element stored in this
          * folder. Examples are {@link OlObjectClass#olAppointment} or
          * {@link OlObjectClass#olMail}.
-         * @return
+         * @return default item type
          */
         public int getDefaultItemType() {
             int result = Dispatch.get(getResource(), "DefaultItemType").toInt();
@@ -377,7 +377,7 @@ public abstract class OutlookResource {
          * The oItemType constant identifying the standard type of element stored in this
          * folder. Examples are {@link OlObjectClass#olAppointment} or
          * {@link OlObjectClass#olMail}.
-         * @return
+         * @return the default message class
          */
         public String getDefaultMessageClass() {
             Variant v = Dispatch.get(getResource(), "DefaultMessageClass");
@@ -876,9 +876,9 @@ public abstract class OutlookResource {
     /**
      * Add the recipients of an e-mail or an appointment
      * @param rdf the parent rdf container. Properties will be added linked to this URI
-     * @param parentNode the parent node to add to 
-     * @param resource
-     * @param dispName
+     * @param parentResource the parent node to add to 
+     * @param resource the recipients resource
+     * @param dispName diplay name
      */
     protected void addRecipientsIfNotNull(RDFContainer rdf, Dispatch resource, String dispName,
             OutlookResource parentResource) {

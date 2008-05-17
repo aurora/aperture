@@ -41,8 +41,8 @@ public abstract class AbstractTagCrawler extends CrawlerBase {
 	//Set<String> current;
 	/** 
 	 * @see org.semanticdesktop.aperture.crawler.base.CrawlerBase#crawlObjects()
+	 */
 	@Override
-	**/
 	@SuppressWarnings("unchecked")
     protected ExitCode crawlObjects() {
 		DataSource localSource = getDataSource();

@@ -47,9 +47,6 @@ public class BibsonomyCrawler extends AbstractTagCrawler {
         setDataSource(source);
     }
 
-    /**
-     * @see org.semanticdesktop.aperture.websites.AbstractTagCrawler#crawlTags(java.lang.String)
-     */
     @Override
     protected List<String> crawlTags(String username, String password) throws Exception {
 

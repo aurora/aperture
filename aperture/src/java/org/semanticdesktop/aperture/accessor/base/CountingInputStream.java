@@ -9,24 +9,33 @@ package org.semanticdesktop.aperture.accessor.base;
 import java.io.IOException;
 import java.io.InputStream;
 
-
+/**
+ * A utility class that wraps an {@link InputStream} and counts the bytes read
+ * from the stream to provide the {@link #getCurrentByte()} method.
+ */
 public class CountingInputStream extends InputStream {
     private InputStream wrappedInputStream;
     
     private long currentByte;
     private long markedByte;
 
+    /**
+     * A main constructor.
+     * @param wrappedInputStream
+     */
     public CountingInputStream(InputStream wrappedInputStream) {
         this.wrappedInputStream = wrappedInputStream;
     }
     
+    /**
+     * @return the zero-based index of the next byte to be read (or a count of the bytes that have been read
+     * from this stream).
+     */
     public long getCurrentByte() {
         return currentByte;
     }
     
     /**
-     * @return
-     * @throws IOException
      * @see java.io.InputStream#available()
      */
     public int available() throws IOException {
@@ -34,7 +43,6 @@ public class CountingInputStream extends InputStream {
     }
 
     /**
-     * @throws IOException
      * @see java.io.InputStream#close()
      */
     public void close() throws IOException {
@@ -42,8 +50,6 @@ public class CountingInputStream extends InputStream {
     }
 
     /**
-     * @param obj
-     * @return
      * @see java.lang.Object#equals(java.lang.Object)
      */
     public boolean equals(Object obj) {
@@ -51,7 +57,6 @@ public class CountingInputStream extends InputStream {
     }
 
     /**
-     * @return
      * @see java.lang.Object#hashCode()
      */
     public int hashCode() {
@@ -59,7 +64,6 @@ public class CountingInputStream extends InputStream {
     }
 
     /**
-     * @param readlimit
      * @see java.io.InputStream#mark(int)
      */
     public void mark(int readlimit) {
@@ -68,7 +72,6 @@ public class CountingInputStream extends InputStream {
     }
 
     /**
-     * @return
      * @see java.io.InputStream#markSupported()
      */
     public boolean markSupported() {
@@ -76,8 +79,6 @@ public class CountingInputStream extends InputStream {
     }
 
     /**
-     * @return
-     * @throws IOException
      * @see java.io.InputStream#read()
      */
     public int read() throws IOException {
@@ -86,11 +87,6 @@ public class CountingInputStream extends InputStream {
     }
 
     /**
-     * @param b
-     * @param off
-     * @param len
-     * @return
-     * @throws IOException
      * @see java.io.InputStream#read(byte[], int, int)
      */
     public int read(byte[] b, int off, int len) throws IOException {
@@ -100,9 +96,6 @@ public class CountingInputStream extends InputStream {
     }
 
     /**
-     * @param b
-     * @return
-     * @throws IOException
      * @see java.io.InputStream#read(byte[])
      */
     public int read(byte[] b) throws IOException {
@@ -112,7 +105,6 @@ public class CountingInputStream extends InputStream {
     }
 
     /**
-     * @throws IOException
      * @see java.io.InputStream#reset()
      */
     public void reset() throws IOException {
@@ -121,9 +113,6 @@ public class CountingInputStream extends InputStream {
     }
 
     /**
-     * @param n
-     * @return
-     * @throws IOException
      * @see java.io.InputStream#skip(long)
      */
     public long skip(long n) throws IOException {
@@ -133,7 +122,6 @@ public class CountingInputStream extends InputStream {
     }
 
     /**
-     * @return
      * @see java.lang.Object#toString()
      */
     public String toString() {

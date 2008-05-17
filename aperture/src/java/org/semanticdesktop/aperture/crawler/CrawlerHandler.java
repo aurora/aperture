@@ -98,7 +98,7 @@ public interface CrawlerHandler {
      * the datasource. This is followed by a {@link #clearingObject(Crawler, String)} on every known url.
      * 
      * @param crawler The reporting Crawler.
-     * @see {@link Crawler#clear()}
+     * @see Crawler#clear()
      */
     public void clearStarted(Crawler crawler);
 
@@ -109,7 +109,7 @@ public interface CrawlerHandler {
      * 
      * @param crawler The reporting Crawler.
      * @param url The url of the resource whose crawl results are being cleared.
-     * @see {@link Crawler#clear()}
+     * @see Crawler#clear()
      */
     public void clearingObject(Crawler crawler, String url);
 
@@ -118,7 +118,7 @@ public interface CrawlerHandler {
      * 
      * @param crawler The concerning Crawler.
      * @param exitCode The status with which the clearing stopped.
-     * @see {@link Crawler#clear()}
+     * @see Crawler#clear()
      */
     public void clearFinished(Crawler crawler, ExitCode exitCode);
 }

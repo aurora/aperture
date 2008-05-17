@@ -439,7 +439,7 @@ public abstract class CrawlerBase implements Crawler {
 	}
 
     /** 
-     * @see org.semanticdesktop.aperture.crawler.Crawler#runSubCrawler(org.semanticdesktop.aperture.subcrawler.SubCrawler, org.semanticdesktop.aperture.accessor.DataObject, java.io.InputStream, java.nio.charset.Charset, javax.activation.MimeType)
+     * @see Crawler#runSubCrawler(SubCrawler, DataObject, InputStream, Charset, String)
      */
     public void runSubCrawler(SubCrawler localSubCrawler, DataObject object, InputStream stream,
             Charset charset, String mimeType) throws SubCrawlerException {

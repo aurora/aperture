@@ -51,9 +51,9 @@ public class ConfigurationUtil {
     
     /**
      * Returns the name of the datasource
-     * @deprecated use {@link DataSource#getName(String)} instead
+     * @deprecated use {@link DataSource#getName()} instead
      * @param configuration
-     * @return
+     * @return the name of the data source
      */
     public static String getName(RDFContainer configuration) {
         return configuration.getString(DATASOURCE.dataSourceName);

@@ -88,8 +88,6 @@ public abstract class FilterAccessData implements AccessData {
 	}
 
     /**
-     * @param id
-     * @return
      * @see org.semanticdesktop.aperture.accessor.AccessData#getAggregatedIDs(java.lang.String)
      */
     public Set getAggregatedIDs(String id) {
@@ -97,8 +95,6 @@ public abstract class FilterAccessData implements AccessData {
     }
 
     /**
-     * @param id
-     * @return
      * @see org.semanticdesktop.aperture.accessor.AccessData#getAggregatedIDsClosure(java.lang.String)
      */
     public ClosableIterator getAggregatedIDsClosure(String id) {
@@ -106,7 +102,6 @@ public abstract class FilterAccessData implements AccessData {
     }
 
     /**
-     * @return
      * @see org.semanticdesktop.aperture.accessor.AccessData#getUntouchedIDsIterator()
      */
     public ClosableIterator getUntouchedIDsIterator() {
@@ -114,8 +109,6 @@ public abstract class FilterAccessData implements AccessData {
     }
 
     /**
-     * @param id
-     * @param aggregatedID
      * @see org.semanticdesktop.aperture.accessor.AccessData#putAggregatedID(java.lang.String, java.lang.String)
      */
     public void putAggregatedID(String id, String aggregatedID) {
@@ -123,8 +116,6 @@ public abstract class FilterAccessData implements AccessData {
     }
 
     /**
-     * @param id
-     * @param aggregatedID
      * @see org.semanticdesktop.aperture.accessor.AccessData#removeAggregatedID(java.lang.String, java.lang.String)
      */
     public void removeAggregatedID(String id, String aggregatedID) {
@@ -140,7 +131,6 @@ public abstract class FilterAccessData implements AccessData {
     }
 
     /**
-     * @param id
      * @see org.semanticdesktop.aperture.accessor.AccessData#touchRecursively(java.lang.String)
      */
     public void touchRecursively(String id) {
@@ -148,8 +138,6 @@ public abstract class FilterAccessData implements AccessData {
     }
 
     /**
-     * @param id
-     * @return
      * @see org.semanticdesktop.aperture.accessor.AccessData#isTouched(java.lang.String)
      */
     public boolean isTouched(String id) {
@@ -157,7 +145,6 @@ public abstract class FilterAccessData implements AccessData {
     }
 
     /**
-     * @param id
      * @see org.semanticdesktop.aperture.accessor.AccessData#touch(java.lang.String)
      */
     public void touch(String id) {

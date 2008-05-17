@@ -139,9 +139,9 @@ public class Tag extends AbstractMap<String, String>
 	 * Compares two tags lexicographicallly.
 	 * If names are equal, URIs are compared
 	 * 
-	 * @see java.lang.Comparable#compareTo(T)
-	 * @param o
-	 * @return 1 if
+	 * @see java.lang.Comparable#compareTo(Object)
+	 * @param tag 
+	 * @return as per the general {@link Comparable#compareTo(Object)} contract
 	 */
 	public int compareTo(Tag tag) {
 		if (equals(tag)) {

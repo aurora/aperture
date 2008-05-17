@@ -593,7 +593,7 @@ public enum FrameIdentifier {
    definition.
      * </pre>
      * @param timestamp
-     * @return
+     * @return a {@link Date} instance corresponding to the given timestamp.
      */
     protected Date id3v24timestampToDate(String timestamp) {
         // the Javadocs state that if the ID is not recognized, GMT is returned, we need GMT

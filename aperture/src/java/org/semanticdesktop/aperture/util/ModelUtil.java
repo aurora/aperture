@@ -148,14 +148,17 @@ public class ModelUtil {
     }
     
     /**
-     * Returns a resource that has a given property with the given value. This
-     * method assumes that the inverse of this property is obligatory and
-     * functional. That is exactly one such subject must exist. In other cases
-     * (no subject or more than one subject) an exception is thrown.
+     * Returns a resource that has a given property with the given value. This method assumes that the inverse
+     * of this property is obligatory and functional. That is exactly one such subject must exist. In other
+     * cases (no subject or more than one subject) an exception is thrown.
+     * 
      * @param model
      * @param predicate
      * @param object
-     * @return
+     * @return a resource that has a given property and a give value
+     * @throws NullPointerException if any of the arguments are null
+     * @throws ModelException if there are no, or more than one resources with the given property and the
+     *             given value
      */
     public static Resource getSingleSubjectWithProperty(
         Model model,
@@ -196,7 +199,7 @@ public class ModelUtil {
      * @param model
      * @param predicate
      * @param object
-     * @return
+     * @return all resources that have a given property with the given value
      */
     public static Collection<Resource> getAllSubjectsWithProperty(
         Model model,

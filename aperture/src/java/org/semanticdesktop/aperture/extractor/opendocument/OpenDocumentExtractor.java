@@ -67,7 +67,7 @@ public class OpenDocumentExtractor implements Extractor {
 		ResourceUtil.getURL("org/semanticdesktop/aperture/extractor/opendocument/office.dtd",OpenDocumentExtractor.class).toString();
 
 	/**
-	 * @see {@link Extractor#extract(URI, InputStream, Charset, String, RDFContainer)}
+	 * @see Extractor#extract(URI, InputStream, Charset, String, RDFContainer)
 	 */
 	public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
 			throws ExtractorException {

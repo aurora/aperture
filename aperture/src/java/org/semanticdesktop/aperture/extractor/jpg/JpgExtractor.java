@@ -20,9 +20,8 @@ import org.semanticdesktop.aperture.vocabulary.NEXIF;
 public class JpgExtractor implements Extractor {
 
     /**
-     * Calls the appropriate methods from {@link JpgHeaderExtractor} and {@link JpgBodyExtractor}.
+     * Calls the appropriate methods from {@link JpgHeaderExtractor}.
      * 
-     * @author Manuel Moeller
      * @param id Aperture URI of the current file
      * @param stream InputStream of the current file
      * @param charset irrelevant for images
