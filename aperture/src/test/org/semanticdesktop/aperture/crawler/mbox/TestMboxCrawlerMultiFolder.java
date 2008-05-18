@@ -63,7 +63,7 @@ public class TestMboxCrawlerMultiFolder extends ApertureTestBase {
     private static final String TMP_MAILFOLDER = "aperture-temp-mail-1";
     private static final String TMP_LIST_FOLDER = "lists.sbd";
     
-    private static final String MAIL_SRC = DOCS_PATH + "/mailtest";
+    private static final String MAIL_SRC = DOCS_PATH + "mailtest";
     private static final String LISTS_SRC = MAIL_SRC + "/lists_sbd";
     
     public void setUp() throws IOException {

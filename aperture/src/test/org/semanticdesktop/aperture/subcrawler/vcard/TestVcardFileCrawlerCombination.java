@@ -82,7 +82,7 @@ public class TestVcardFileCrawlerCombination extends ApertureTestBase {
         subDir.mkdir();
 
         tmpFile3 = File.createTempFile("file-", ".vcard", subDir);
-        IOUtil.writeStream(ResourceUtil.getInputStream(DOCS_PATH + "/vcard-rfc2426.vcf"), tmpFile3);
+        IOUtil.writeStream(ResourceUtil.getInputStream(DOCS_PATH + "vcard-rfc2426.vcf"), tmpFile3);
 
     }
 
