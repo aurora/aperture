@@ -91,7 +91,7 @@ public class TestVcardFileCrawlerCombination extends ApertureTestBase {
         FileUtil.deltree(tmpDir);
     }
 
-    public void testCrawler() throws ModelException {
+    public void testCrawler() throws ModelException, InterruptedException {
         // create a DataSource
         RDFContainer configuration = createRDFContainer("urn:test:dummySource");
         FileSystemDataSource dataSource = new FileSystemDataSource();
@@ -131,6 +131,7 @@ public class TestVcardFileCrawlerCombination extends ApertureTestBase {
         
         // recursive removal
         tmpFile3.delete();
+        Thread.sleep(10); //for some sanity ,it seems that a fast server is able to run two crawls in the same milisecond
         crawler.crawl();
         
         // the folder has been modified, three resources have been deleted
