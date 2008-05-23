@@ -157,7 +157,7 @@ public class VocabularyWriter {
             return Syntax.RdfXml;
         } else {
             String extension = fileName.substring(lastDot + 1);
-            if ("rdf".equals(extension) || "rdfs".equals(extension) || "owl".equals(extension)) {
+            if ("rdf".equals(extension) || "rdfs".equals(extension) || "owl".equals(extension) || "xml".equals(extension)) {
                 return Syntax.RdfXml;
             } else if ("ttl".equals(extension) || "nt".equals(extension) || "n3".equals(extension)) {
                 return Syntax.Turtle;
