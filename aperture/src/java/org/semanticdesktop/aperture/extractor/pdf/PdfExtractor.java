@@ -10,8 +10,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Calendar;
+import java.util.List;
 import java.util.StringTokenizer;
 
+import org.jempbox.xmp.XMPMetadata;
+import org.jempbox.xmp.XMPSchemaDublinCore;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
@@ -21,6 +24,7 @@ import org.pdfbox.exceptions.InvalidPasswordException;
 import org.pdfbox.pdfparser.PDFParser;
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.pdmodel.PDDocumentInformation;
+import org.pdfbox.pdmodel.common.PDMetadata;
 import org.pdfbox.util.PDFTextStripper;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
@@ -93,6 +97,16 @@ public class PdfExtractor implements Extractor {
         }
 
         // extract the full-text
+        extractFullText(id, document, result);
+
+        // extract the metadata
+        extractNormalMetadata(id, document, result);
+        
+        // extract the additional bits from the XMP metadata (if they are there)
+        extractXMPMetadata(id, document, result);
+    }
+
+    private void extractFullText(URI id, PDDocument document, RDFContainer result) {
         try {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
@@ -104,12 +118,14 @@ public class PdfExtractor implements Extractor {
             // exception ends here, maybe we can still extract metadata
             logger.warn("IOException while extracting full-text of " + id, e);
         }
-
-        // extract the metadata
+    }
+    
+    private void extractNormalMetadata(URI id, PDDocument document, RDFContainer result) {
         // note: we map both pdf:creator and pdf:producer to aperture:generator
         // note2: every call to PDFBox is wrapper in a separate try-catch, as an error
         // in one of these calls doesn't automatically mean that the others won't work well
         PDDocumentInformation metadata = document.getDocumentInformation();
+        
 
         try {
             addContactStatement(NCO.creator, metadata.getAuthor(), result);
@@ -188,6 +204,41 @@ public class PdfExtractor implements Extractor {
         }
     }
 
+    @SuppressWarnings({ "unchecked", "cast" })
+    private void extractXMPMetadata(URI id, PDDocument document, RDFContainer result) {
+        try {
+            PDDocumentInformation pddi = document.getDocumentInformation();
+            PDMetadata md = document.getDocumentCatalog().getMetadata();
+            if (md == null) { return; }
+            XMPMetadata xmpmd = XMPMetadata.load(md.createInputStream());
+            XMPSchemaDublinCore dcschema = xmpmd.getDublinCoreSchema();
+            
+            String creator = null;
+            try {
+                creator = pddi.getAuthor();
+            } catch (Exception e) {
+                // do nothing, this should have been done already
+            }       
+            try {
+                addContactListMetadata(NCO.creator, dcschema.getCreators(), creator, result);
+            }
+            catch (Exception e) {
+                logger.warn("Exception while extracting modification date of " + id, e);
+            }
+            
+            try {
+                addContactListMetadata(NCO.contributor, dcschema.getContributors(), null, result);
+            }
+            catch (Exception e) {
+                logger.warn("Exception while extracting modification date of " + id, e);
+            }
+                        
+        } catch (Exception e) {
+            logger.warn("Exception while extracting XMP metadata of " + id,e);
+        }
+        
+    }
+    
     private void addStringMetadata(URI property, String value, RDFContainer result) {
         if (value != null) {
             result.add(property, value);
@@ -207,6 +258,16 @@ public class PdfExtractor implements Extractor {
             model.addStatement(contactResource, RDF.type, NCO.Contact);
             model.addStatement(contactResource, NCO.fullname, fullname);
             container.add(uri, contactResource);
+        }
+    }
+    
+    private void addContactListMetadata(URI property, List<String> values, String omitValue, RDFContainer result) {
+        if (values != null) {
+            for (String value : values) {
+                if (omitValue == null || !value.equals(omitValue)) {
+                    addContactStatement(property, value, result);
+                }
+            }
         }
     }
 }

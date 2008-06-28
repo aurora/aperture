@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import org.omg.DynamicAny.DynFixedOperations;
 import org.ontoware.rdf2go.exception.ModelException;
+import org.ontoware.rdf2go.model.Syntax;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
@@ -87,7 +88,6 @@ public class PdfExtractorTest extends ExtractorTestBase {
         checkStatement(NIE.generator, "PDFMaker", container);
         checkStatement(NIE.generator, "Distiller", container);
         checkStatement(NIE.contentLastModified, "2005", container);
-        
         checkOmnipresentStatements(container);
         validate(container);
     }
