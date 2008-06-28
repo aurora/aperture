@@ -36,6 +36,8 @@ public class PdfExtractorTest extends ExtractorTestBase {
     
     private static final String PDF_NO_AUTHOR_DOC = DOCS_PATH + "pdf-no-author.pdf";
     
+    private static final String PDF_MANYAUTHORS_DOC = DOCS_PATH + "pdf-manyauthors.pdf";
+    
     private RDFContainer container;
     
     
@@ -120,6 +122,24 @@ public class PdfExtractorTest extends ExtractorTestBase {
         checkStatement(NIE.plainTextContent, "of people’s recorded tasks", container);
         validate(container);
         
+    }
+    
+    public void testManyauthors() throws ExtractorException, IOException, ModelException {
+        container = getStatements(PDF_MANYAUTHORS_DOC);
+        
+        checkStatement(NIE.title, "A test oo-manyauthors doc", container);
+        checkStatement(NIE.subject, "a test manyauthors subjct", container);
+        checkStatement(NIE.keyword, "test", container);
+        checkStatement(NIE.keyword, "keyword", container);
+        checkStatement(NIE.keyword, "many", container);
+        checkStatement(NIE.keyword, "authors", container);
+        
+        checkMultipleSimpleContacts(NCO.creator, "Antoni Mylka", container);
+        checkMultipleSimpleContacts(NCO.creator, "Leo Sauermann", container);
+        checkMultipleSimpleContacts(NCO.creator, "Christiaan Fluit", container);
+        checkStatement(NIE.plainTextContent, "This is a test pdf file generated " +
+        		"with open office containing more than one author.", container);
+        validate(container);     
     }
     
     public void testNoAuthor() throws Exception {
