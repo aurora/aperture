@@ -52,8 +52,6 @@ public class MP3FileExtractorTest extends FileExtractorTestBase {
         checkStatement(metadata.getDescribedUri(), NID3.recordingYear, metadata.getModel()
                 .createDatatypeLiteral("2007", XSD._integer), metadata);
         checkStatement(NID3.contentType,"Death Metal",metadata);   
-        metadata.getModel().dump();
-        
         assertTrue(metadata.getAll(NID3.albumTitle).size() == 0);
         assertTrue(metadata.getAll(NID3.trackNumber).size() == 0);
         validate(metadata);
