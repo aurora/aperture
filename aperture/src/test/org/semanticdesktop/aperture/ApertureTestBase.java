@@ -148,6 +148,11 @@ public class ApertureTestBase extends TestCase {
      * @param additionalTesters testers that will be used in addition to the default NRLClosedWorldModelTester
      */
     public void validate(Model model, boolean print, URI dataSourceUri, ModelTester ... additionalTesters) {
+        if (validationTurnedOff()) {
+            return;
+        }
+        
+        
         boolean removeFlag = false;
         Statement statement = null;
         if (dataSourceUri != null) {
@@ -174,6 +179,11 @@ public class ApertureTestBase extends TestCase {
         if (removeFlag) {
             model.removeStatement(statement);
         }
+    }
+
+    private boolean validationTurnedOff() {
+        String prop = System.getProperty("aperture.validation.skip");
+        return Boolean.valueOf(prop);
     }
 
     private void validateWithTesters(Model model, boolean print, ModelTester... testers) {

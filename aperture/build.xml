@@ -178,12 +178,19 @@ your copy of ANT at http://ant.apache.org/
         </patternset>
     </target>
 
+    <!-- delete the build folder with the entire content -->
     <target name="clean"
             depends="init"
             description="delete generated classes and distribution results">
         <delete includeemptydirs="true" dir="${build.dir}" />
     </target>
 
+    
+    <!-- ******************************************************************* -->
+    <!-- ************************ COMPILATION TARGETS ********************** -->
+    <!-- ******************************************************************* -->
+    
+    <!-- necessary before the updatedatasources.xml and updatevocabularies.xml -->
     <target name="compileutils"
             depends="init"
             description="Compiles the VocabularyWriter, necessary to generate the vocabulary classes">
@@ -302,6 +309,10 @@ your copy of ANT at http://ant.apache.org/
         </copy>
     </target>
 
+    <!-- ******************************************************************* -->
+	<!-- ************** NORMAL - NON-OSGI JARS GENERATION ****************** -->
+	<!-- ******************************************************************* -->
+    
     <target name="jar"
             depends="compile"
             description="create a jar file with the Aperture core classes">
@@ -329,11 +340,33 @@ your copy of ANT at http://ant.apache.org/
         </jar>
     </target>
 
-    <!-- include the selectors -->
+    <!-- generates all three jars -->
+    <target name="build"
+                depends="jar, jar.examples, jar.test"
+                description="incrementally builds all Aperture jar files" />
+ 
+    <!-- generates all three jars and copies them to lib -->
+    <target name="testbuild"
+    		depends="build"
+    		description="Builds plain jars and copies them to the lib folder">
+    	<copy todir="${lib.dir}">
+        	<fileset dir="${dist.plainjars.dir}">
+        	    <include name="${project.jar}"/>
+        	    <include name="${project-examples.jar}"/>
+        	    <include name="${project-test.jar}" />
+    	    </fileset>
+        </copy>
+    </target>
+
+    <!-- ******************************************************************* -->
+	<!-- *********************** SELECTORS INCLUSION  ********************** -->
+	<!-- ******************************************************************* -->
 	
 	&selectors;
 	
-	<!-- targets for jar files at the highest level -->
+    <!-- ******************************************************************* -->
+	<!-- ******************** OSGI BUNDLES GENERATION ********************** -->
+	<!-- ******************************************************************* -->
 
     <target name="bundle.core.jar"
             depends="compile.activators"
@@ -348,12 +381,13 @@ your copy of ANT at http://ant.apache.org/
             <fileset dir="${classes.java.dir}">
                 <selector refid="bundle.core.coarsegrained.selector" />
             </fileset>
-            <fileset dir="${src.java.dir}">
+            <!-- 29.06.2008 Antoni: I excluded the sources from the bundles -->
+            <!--<fileset dir="${src.java.dir}">
                 <and>
                     <selector refid="bundle.core.coarsegrained.selector" />
                     <selector refid="bundle.exclude.resources.selector" />
                 </and>
-            </fileset>
+            </fileset>-->
             <fileset dir="${classes.activators.dir}">
                 <selector refid="bundle.core.coarsegrained.selector" />
             </fileset>
@@ -382,12 +416,13 @@ your copy of ANT at http://ant.apache.org/
             <fileset dir="${classes.java.dir}">
                 <selector refid="bundle.impl.coarsegrained.selector" />
             </fileset>
-            <fileset dir="${src.java.dir}">
+            <!-- 29.06.2008 Antoni: I excluded the sources from the bundles -->
+            <!--<fileset dir="${src.java.dir}">
                 <and>
                     <selector refid="bundle.impl.coarsegrained.selector" />
                     <selector refid="bundle.exclude.resources.selector" />
                 </and>
-            </fileset>
+            </fileset>-->
             <fileset dir="${classes.activators.dir}">
                 <selector refid="bundle.impl.coarsegrained.selector" />
             </fileset>
@@ -402,7 +437,6 @@ your copy of ANT at http://ant.apache.org/
             </fileset>
         </jar>
     </target>
-
 
     <target name="bundle.example.jar"
             depends="compile.examples"
@@ -420,29 +454,15 @@ your copy of ANT at http://ant.apache.org/
         </jar>
     </target>
 
+    <!-- generates all three bundles -->
     <target name="jar.bundles"
             depends="bundle.core.jar,bundle.impl.jar,bundle.example.jar"
             description="create aperture OSGi bundles" />
-
-    <target name="build"
-            depends="jar, jar.examples, jar.test"
-            description="incrementally builds all Aperture jar files" />
+ 
+    <!-- ******************************************************************* -->
+	<!-- ***************** RELEASE GENERATION AND PACKAGING **************** -->
+	<!-- ******************************************************************* -->
     
-    <target name="testbuild"
-    		depends="build"
-    		description="Builds plain jars and copies them to the lib folder">
-    	<copy todir="${lib.dir}">
-        	<fileset dir="${dist.plainjars.dir}">
-        	    <include name="${project.jar}"/>
-        	    <include name="${project-examples.jar}"/>
-        	    <include name="${project-test.jar}" />
-    	    </fileset>
-        </copy>
-    </target>
-
-    <!-- Leo: this seems not to be used, can be removed anytime. 
-    target name="osgi" depends="jar.bundles" / -->
-
     <target name="javadoc"
             depends="init"
             description="create the javadoc for the core classes">
@@ -460,33 +480,6 @@ your copy of ANT at http://ant.apache.org/
                  doctitle="${project.longname} API release ${project.version.full}"
                  packagenames="org.semanticdesktop.aperture.*"
                  excludepackagenames="org.semanticdesktop.aperture.opener.*">
-            <link href="http://www.openrdf.org/doc/sesame2/api/" />
-            <link href="http://jena.sourceforge.net/javadoc/" />
-            <link href="http://java.sun.com/j2se/1.4.2/docs/api" />
-        </javadoc>
-    </target>
-
-    <target name="javadoc_limitedfornepomuk"
-            depends="init"
-            description="create the javadoc for the interfaces, but not the impl. documentation input for the nepomuk consortium.">
-        <mkdir dir="${javadoc.dir}" />
-        <javadoc destdir="${javadoc.dir}"
-                 sourcepath="${src.java.dir}"
-                 author="true"
-                 version="true"
-                 additionalparam="-breakiterator"
-                 use="true"
-                 classpathref="classpath"
-                 source="${java.src.version}"
-                 windowtitle="${project.longname} API release ${project.version.full}"
-                 doctitle="${project.longname} API release ${project.version.full}">
-            <package name="org.semanticdesktop.aperture.accessor" />
-            <package name="org.semanticdesktop.aperture.crawler" />
-            <package name="org.semanticdesktop.aperture.datasource" />
-            <package name="org.semanticdesktop.aperture.extractor" />
-            <package name="org.semanticdesktop.aperture.mime.identifier" />
-            <package name="org.semanticdesktop.aperture.rdf" />
-            <package name="org.semanticdesktop.aperture.vocabulary" />
             <link href="http://www.openrdf.org/doc/sesame2/api/" />
             <link href="http://jena.sourceforge.net/javadoc/" />
             <link href="http://java.sun.com/j2se/1.4.2/docs/api" />
@@ -645,7 +638,7 @@ your copy of ANT at http://ant.apache.org/
     </target>
 
     <target name="package"
-            depends="release"
+            depends="osgirelease"
             description="create zipped release files, to be uploaded to sourceforge.net">
         <mkdir dir="${package.dir}" />
 
@@ -658,13 +651,7 @@ your copy of ANT at http://ant.apache.org/
         <tar destfile="${package.tgz}" compression="gzip" longfile="gnu">
             <tarfileset dir="${release.dir}" prefix="${package.prefix}" />
         </tar>
-    </target>
-
-    <target name="osgipackage"
-            depends="osgirelease"
-            description="create zipped osgi release files, to be uploaded to sourceforge.net">
-        <mkdir dir="${package.dir}" />
-
+        
         <!-- put the contents of the release dir in a zip file, with the project name as path prefix -->
         <zip destfile="${osgipackage.zip}">
             <zipfileset dir="${osgirelease.dir}" prefix="${package.prefix}" />
@@ -675,7 +662,6 @@ your copy of ANT at http://ant.apache.org/
             <tarfileset dir="${osgirelease.dir}" prefix="${package.prefix}" />
         </tar>
     </target>
-
 
     <!--
 	  To get this to work in Eclipse, either put JUnit into your global ant dependencies or local ant dependencies. 
@@ -701,21 +687,9 @@ your copy of ANT at http://ant.apache.org/
             <classpath refid="classpath.junit" />
             <test name="org.semanticdesktop.aperture.TestAll"
                   outfile="result" />
+            <jvmarg value="-Daperture.validation.skip=${aperture.validation.skip}"/>
         </junit>
         <fail if="unit.test.failed" message="Tests failed." />
     </target>
     
-    <target name="changelog" description="build an overview of commits">
-        <cvschangelog dir="${basedir}" destfile="changelog.xml" />
-        <style in="changelog.xml"
-               out="changelog.html"
-               style="${ant.home}/etc/changelog.xsl">
-            <param name="title" expression="Aperture ChangeLog" />
-            <param name="module" expression="aperture" />
-            <param name="cvsweb"
-                   expression="http://cvs.sourceforge.net/viewcvs.py/aperture/" />
-        </style>
-        <delete file="changelog.xml" />
-    </target>
-
 </project>
