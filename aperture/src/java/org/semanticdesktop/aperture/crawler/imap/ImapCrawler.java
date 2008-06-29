@@ -660,19 +660,45 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
      * @throws MessagingException
      */
     private boolean checkSubfoldersChanged() throws MessagingException {
-        // we still must check the sub-folders
-        boolean subFoldersChanged = true;
-        if (accessData != null && holdsFolders(currentFolder)) {
-            String registeredSubFolders = accessData.get(currentFolderURI.toString(), SUBFOLDERS_KEY);
-
-            if (registeredSubFolders != null) {
-                String subfolders = getSubFoldersString(currentFolder);
-                if (registeredSubFolders.equals(subfolders)) {
-                    subFoldersChanged = false;
-                }
-            }
+        if (accessData == null) {
+            // this is pretty obvious, we don't know anything about the past
+            // we must assume that something has changed
+            return true;
         }
-        return subFoldersChanged;
+        
+        String registeredSubFoldersFromAccessData = accessData.get(currentFolderURI.toString(), SUBFOLDERS_KEY);
+        if (!holdsFolders(currentFolder)) {
+            if (registeredSubFoldersFromAccessData == null) {
+                // this means that there were no subfolders and none have appeared
+                return false;
+            } else {
+                // this means that there were some subfolders but they have disappeared
+                return true;
+            }
+        } else if (registeredSubFoldersFromAccessData == null) {
+            // this means that there were no subfolders but some have appeared
+            return true;
+        }
+        
+        // if we get here this means that:
+        // there is some accessdata
+        // there are some subfolders
+        // there is some information about the subfolders stored in the accessdatas
+        //boolean subFoldersChanged = true;
+        //if (registeredSubFoldersFromAccessData != null) {
+        String subfolders = getSubFoldersString(currentFolder);
+        if (subfolders != null /* the first check shouldn't be necessary*/ 
+            && registeredSubFoldersFromAccessData.equals(subfolders)) {
+            return false;
+        } else {
+            return true;
+        }
+        //} else {
+            // if no subfolders were registered, then the current folder can't have
+            // any subfolder either
+        //    subFoldersChanged = (getSubFoldersString(currentFolder) == null);
+        //}
+        //return subFoldersChanged;
     }
     
     /**
@@ -746,9 +772,16 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
         IMAPFolder imapFolder = (IMAPFolder)currentFolder;
         String currentUriString = currentFolderURI.toString();
         if (newAccessData != null) {
-            newAccessData.put(currentUriString, UID_VALIDITY, String.valueOf(imapFolder.getUIDValidity()));
+            if (holdsMessages(imapFolder)) {
+                newAccessData.put(currentUriString, UID_VALIDITY, String.valueOf(imapFolder.getUIDValidity()));
+            } else {
+                newAccessData.put(currentUriString, UID_VALIDITY, String.valueOf(-1));
+            }
             if (holdsFolders(currentFolder)) {
-                newAccessData.put(currentUriString, SUBFOLDERS_KEY, getSubFoldersString(currentFolder));
+                String subFoldersString = getSubFoldersString(currentFolder);
+                if (subFoldersString != null) {
+                    newAccessData.put(currentUriString, SUBFOLDERS_KEY, subFoldersString);
+                }
             }            
         }
     }
