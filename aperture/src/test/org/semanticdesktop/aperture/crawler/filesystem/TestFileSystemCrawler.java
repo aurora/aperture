@@ -209,6 +209,7 @@ public class TestFileSystemCrawler extends ApertureTestBase {
         SimpleCrawlerHandler crawlerHandler2 = new SimpleCrawlerHandler();
         crawler2.setCrawlerHandler(crawlerHandler2);
 
+        safelySleep(1200); 
         // start Crawling
         crawler2.crawl();
         

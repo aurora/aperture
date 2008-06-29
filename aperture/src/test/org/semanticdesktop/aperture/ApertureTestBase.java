@@ -593,4 +593,22 @@ public class ApertureTestBase extends TestCase {
             closeIterator(queryIterator);
         }
     }
+    
+    /**
+     * Sleep for the given number of 
+     * miliseconds. This method is provided for convenience.
+     * @param timeout The amount of miliseconds to wait.
+     */
+    protected void safelySleep(long timeout) {
+        long begin = System.currentTimeMillis();
+        long end = begin;
+        while (end - begin < timeout) {
+            try {
+                Thread.sleep(timeout - (end - begin));
+            } catch (InterruptedException ie) {
+                // that shouldn't be much of a problem
+            }
+            end = System.currentTimeMillis();
+        }
+    }
 }

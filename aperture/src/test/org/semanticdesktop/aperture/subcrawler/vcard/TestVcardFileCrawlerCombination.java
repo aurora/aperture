@@ -130,12 +130,12 @@ public class TestVcardFileCrawlerCombination extends ApertureTestBase {
         assertTrue(accessData.getStoredIDs().size() == 8);
         
         // recursive removal
-        Thread.sleep(100); //for some sanity ,it seems that a fast server is able to run two crawls in the same milisecond
+        safelySleep(1200); //for some sanity ,it seems that a fast server is able to run two crawls in the same second
         tmpFile3.delete();
         crawler.crawl();
         
-        // the folder has been modified, three resources have been deleted, commented this this particular test failed on the solaris build server
-        //assertNewModUnmodDel(crawlerHandler, 0, 1, 4, 3);
+        // the folder has been modified, three resources have been deleted, 
+        assertNewModUnmodDel(crawlerHandler, 0, 1, 4, 3);
         assertTrue(accessData.getStoredIDs().size() == 5);
 
         Model model = crawlerHandler.getModel();
