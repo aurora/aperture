@@ -39,11 +39,11 @@
 	<classpathentry kind="lib" path="lib/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/rdf2go.api-4.6.2.jar"/>
 	<classpathentry kind="lib" path="lib/rdf2go.impl.base-4.6.2.jar"/>
-	<classpathentry kind="lib" path="lib/openrdf-sesame-2.1.1-onejar-osgi.jar"/>
 	<classpathentry kind="lib" path="lib/rdf2go.impl.sesame20-4.6.2.jar"/>
 	<classpathentry kind="lib" path="lib/rdf2go.impl.util-4.6.2.jar"/>
 	<classpathentry kind="lib" path="lib/poi-3.0.2-FINAL-20080204.jar"/>
 	<classpathentry kind="lib" path="lib/poi-scratchpad-3.0.2-FINAL-20080204.jar"/>
 	<classpathentry kind="lib" path="lib/JempBox-0.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/openrdf-sesame-2.1.2-onejar-osgi.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>
