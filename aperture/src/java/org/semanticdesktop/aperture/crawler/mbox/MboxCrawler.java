@@ -209,7 +209,10 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
                 newAccessData.put(currentFolderURI.toString(), SIZE_KEY, String.valueOf(messageCount));
             }
             if (holdsFolders(currentFolder)) {
-                newAccessData.put(currentFolderURI.toString(), SUBFOLDERS_KEY, getSubFoldersString(currentFolder));
+                String subFoldersString = getSubFoldersString(currentFolder);
+                if (subFoldersString != null) {
+                    newAccessData.put(currentFolderURI.toString(), SUBFOLDERS_KEY, subFoldersString);
+                }
             }
         }
     }

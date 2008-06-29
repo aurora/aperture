@@ -687,9 +687,12 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
     }
     
     protected String getSubFoldersString(Folder folder) throws MessagingException {
-        StringBuilder buffer = new StringBuilder();
-
         Folder[] subFolders = folder.list();
+        if (subFolders.length == 0) {
+            return null;
+        }
+        
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < subFolders.length; i++) {
             Folder subFolder = subFolders[i];
             if (subFolder.exists()) {
