@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:33:00 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:53:41 CEST 2008
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/outlook/outlookDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/12/outlookds#
  */
@@ -15,7 +15,7 @@ public class OUTLOOKDS {
 
     /** Path to the ontology resource */
     public static final String OUTLOOKDS_RESOURCE_PATH = 
-      OUTLOOKDS.class.getPackage().getName().replace('.', '/') + "/outlookDataSource.ttl";
+      "org/semanticdesktop/aperture/outlook/outlookDataSource.ttl";
 
     /**
      * Puts the OUTLOOKDS ontology into the given model.

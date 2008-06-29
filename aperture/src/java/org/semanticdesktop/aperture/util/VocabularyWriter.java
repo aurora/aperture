@@ -232,8 +232,8 @@ public class VocabularyWriter {
             outP.println();
             outP.println("    /** Path to the ontology resource */");
             outP.println("    public static final String " + outputFileN + "_RESOURCE_PATH = ");
-            outP.print("      " + outputFileN + ".class.getPackage().getName().replace('.', '/') + ");
-            outP.println("\"/" + inputRdfF.getName() + "\";");
+            outP.print("      \"" + packagen.replace('.', '/'));
+            outP.println("/" + inputRdfF.getName() + "\";");
             outP.println();
             writeGetOntologyMethod();
             outP.println();

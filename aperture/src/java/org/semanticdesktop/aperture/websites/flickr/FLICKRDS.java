@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Feb 03 20:11:21 CET 2008
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:52:24 CEST 2008
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#
  */
@@ -15,7 +15,7 @@ public class FLICKRDS {
 
     /** Path to the ontology resource */
     public static final String FLICKRDS_RESOURCE_PATH = 
-      FLICKRDS.class.getPackage().getName().replace('.', '/') + "/flickrDataSource.ttl";
+      "org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl";
 
     /**
      * Puts the FLICKRDS ontology into the given model.

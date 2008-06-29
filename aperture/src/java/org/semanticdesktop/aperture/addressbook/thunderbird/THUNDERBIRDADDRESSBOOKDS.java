@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:33:01 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:53:58 CEST 2008
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/addressbook/thunderbird/ThunderbirdAddressbookDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/12/thunderbirdaddresbookds#
  */
@@ -15,7 +15,7 @@ public class THUNDERBIRDADDRESSBOOKDS {
 
     /** Path to the ontology resource */
     public static final String THUNDERBIRDADDRESSBOOKDS_RESOURCE_PATH = 
-      THUNDERBIRDADDRESSBOOKDS.class.getPackage().getName().replace('.', '/') + "/ThunderbirdAddressbookDataSource.ttl";
+      "org/semanticdesktop/aperture/addressbook/thunderbird/ThunderbirdAddressbookDataSource.ttl";
 
     /**
      * Puts the THUNDERBIRDADDRESSBOOKDS ontology into the given model.

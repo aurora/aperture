@@ -93,7 +93,6 @@ public class DataSourceClassGenerator {
 
     // flag that forces the source generation even if the generated class file
     // is newer than the ontology file
-    @SuppressWarnings("unused")
     private boolean forceGeneration;
 
     /** constructor */

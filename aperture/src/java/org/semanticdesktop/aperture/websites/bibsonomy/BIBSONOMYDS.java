@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Feb 03 20:11:22 CET 2008
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:52:34 CEST 2008
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/bibsonomy/bibsonomyDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#
  */
@@ -15,7 +15,7 @@ public class BIBSONOMYDS {
 
     /** Path to the ontology resource */
     public static final String BIBSONOMYDS_RESOURCE_PATH = 
-      BIBSONOMYDS.class.getPackage().getName().replace('.', '/') + "/bibsonomyDataSource.ttl";
+      "org/semanticdesktop/aperture/websites/bibsonomy/bibsonomyDataSource.ttl";
 
     /**
      * Puts the BIBSONOMYDS ontology into the given model.

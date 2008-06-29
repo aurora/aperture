@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:55 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:52:44 CEST 2008
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/iphoto/iphotoDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/11/iphotods#
  */
@@ -15,7 +15,7 @@ public class IPHOTODS {
 
     /** Path to the ontology resource */
     public static final String IPHOTODS_RESOURCE_PATH = 
-      IPHOTODS.class.getPackage().getName().replace('.', '/') + "/iphotoDataSource.ttl";
+      "org/semanticdesktop/aperture/websites/iphoto/iphotoDataSource.ttl";
 
     /**
      * Puts the IPHOTODS ontology into the given model.

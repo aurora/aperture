@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Oct 15 17:27:43 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:42:13 CEST 2008
  * input file: D:\workspace\aperture/doc/ontology/sourceformat.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/sourceformat#
  */
@@ -15,7 +15,7 @@ public class SOURCEFORMAT {
 
     /** Path to the ontology resource */
     public static final String SOURCEFORMAT_RESOURCE_PATH = 
-      SOURCEFORMAT.class.getPackage().getName().replace('.', '/') + "/sourceformat.rdfs";
+      "org/semanticdesktop/aperture/vocabulary/sourceformat.rdfs";
 
     /**
      * Puts the SOURCEFORMAT ontology into the given model.

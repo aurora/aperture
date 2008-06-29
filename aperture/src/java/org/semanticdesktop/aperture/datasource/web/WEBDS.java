@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:59 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:53:31 CEST 2008
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/web/webDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/12/webds#
  */
@@ -15,7 +15,7 @@ public class WEBDS {
 
     /** Path to the ontology resource */
     public static final String WEBDS_RESOURCE_PATH = 
-      WEBDS.class.getPackage().getName().replace('.', '/') + "/webDataSource.ttl";
+      "org/semanticdesktop/aperture/datasource/web/webDataSource.ttl";
 
     /**
      * Puts the WEBDS ontology into the given model.

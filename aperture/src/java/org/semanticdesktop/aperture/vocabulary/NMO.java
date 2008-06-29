@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed May 07 20:31:38 CEST 2008
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:41:52 CEST 2008
  * input file: D:\workspace\aperture/doc/ontology/nmo.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#
  */
@@ -15,7 +15,7 @@ public class NMO {
 
     /** Path to the ontology resource */
     public static final String NMO_RESOURCE_PATH = 
-      NMO.class.getPackage().getName().replace('.', '/') + "/nmo.rdfs";
+      "org/semanticdesktop/aperture/vocabulary/nmo.rdfs";
 
     /**
      * Puts the NMO ontology into the given model.

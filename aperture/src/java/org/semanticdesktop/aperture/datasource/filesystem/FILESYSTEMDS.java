@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Fri May 09 20:13:48 CEST 2008
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:53:01 CEST 2008
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/filesystem/filesystemDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/12/filesystemds#
  */
@@ -15,7 +15,7 @@ public class FILESYSTEMDS {
 
     /** Path to the ontology resource */
     public static final String FILESYSTEMDS_RESOURCE_PATH = 
-      FILESYSTEMDS.class.getPackage().getName().replace('.', '/') + "/filesystemDataSource.ttl";
+      "org/semanticdesktop/aperture/datasource/filesystem/filesystemDataSource.ttl";
 
     /**
      * Puts the FILESYSTEMDS ontology into the given model.

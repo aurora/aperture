@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Oct 15 17:27:40 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:42:06 CEST 2008
  * input file: D:\workspace\aperture/doc/ontology/source2.rdfs
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/12/source#
  */
@@ -15,7 +15,7 @@ public class DATASOURCE {
 
     /** Path to the ontology resource */
     public static final String DATASOURCE_RESOURCE_PATH = 
-      DATASOURCE.class.getPackage().getName().replace('.', '/') + "/source2.rdfs";
+      "org/semanticdesktop/aperture/vocabulary/source2.rdfs";
 
     /**
      * Puts the DATASOURCE ontology into the given model.

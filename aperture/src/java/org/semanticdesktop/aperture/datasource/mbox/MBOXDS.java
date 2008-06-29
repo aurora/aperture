@@ -7,15 +7,15 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Feb 03 20:49:21 CET 2008
- * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/mbox/MboxDataSource.ttl
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:54:08 CEST 2008
+ * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/mbox/mboxDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2008/02/03/mboxds#
  */
 public class MBOXDS {
 
     /** Path to the ontology resource */
     public static final String MBOXDS_RESOURCE_PATH = 
-      MBOXDS.class.getPackage().getName().replace('.', '/') + "/mboxDataSource.ttl";
+      "org/semanticdesktop/aperture/datasource/mbox/mboxDataSource.ttl";
 
     /**
      * Puts the MBOXDS ontology into the given model.

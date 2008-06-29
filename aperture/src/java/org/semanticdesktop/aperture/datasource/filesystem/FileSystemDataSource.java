@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Fri May 09 20:13:49 CEST 2008
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Sun Jun 29 15:53:05 CEST 2008
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/filesystem/filesystemDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/12/filesystemds#FileSystemDataSource
  */

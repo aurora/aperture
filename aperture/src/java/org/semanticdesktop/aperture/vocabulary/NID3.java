@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed May 07 20:31:42 CEST 2008
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:41:59 CEST 2008
  * input file: D:\workspace\aperture/doc/ontology/nid3.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/05/10/nid3#
  */
@@ -15,7 +15,7 @@ public class NID3 {
 
     /** Path to the ontology resource */
     public static final String NID3_RESOURCE_PATH = 
-      NID3.class.getPackage().getName().replace('.', '/') + "/nid3.rdfs";
+      "org/semanticdesktop/aperture/vocabulary/nid3.rdfs";
 
     /**
      * Puts the NID3 ontology into the given model.

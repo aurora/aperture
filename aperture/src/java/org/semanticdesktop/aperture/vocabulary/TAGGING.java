@@ -7,18 +7,15 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Oct 15 17:27:29 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:41:38 CEST 2008
  * input file: D:\workspace\aperture/doc/ontology/tagging.rdfs
  * namespace: http://aperture.sourceforge.net/ontologies/taggingl#
- * 
- * @deprecated DON'T use it. It was an intermediary solution when the website crawlers got ported from Gnowsis
- * to the Aperture codebase, this vocabulary is not used anymore, use NAO instead.
  */
 public class TAGGING {
 
     /** Path to the ontology resource */
     public static final String TAGGING_RESOURCE_PATH = 
-      TAGGING.class.getPackage().getName().replace('.', '/') + "/tagging.rdfs";
+      "org/semanticdesktop/aperture/vocabulary/tagging.rdfs";
 
     /**
      * Puts the TAGGING ontology into the given model.

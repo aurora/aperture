@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Aug 21 16:32:55 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:52:51 CEST 2008
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/delicious/deliciousDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/11/deliciousds#
  */
@@ -15,7 +15,7 @@ public class DELICIOUSDS {
 
     /** Path to the ontology resource */
     public static final String DELICIOUSDS_RESOURCE_PATH = 
-      DELICIOUSDS.class.getPackage().getName().replace('.', '/') + "/deliciousDataSource.ttl";
+      "org/semanticdesktop/aperture/websites/delicious/deliciousDataSource.ttl";
 
     /**
      * Puts the DELICIOUSDS ontology into the given model.

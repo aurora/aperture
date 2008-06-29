@@ -4,14 +4,14 @@ import org.ontoware.rdf2go.model.node.Node;
 import org.semanticdesktop.aperture.util.ModelUtil;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
-import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
+import org.semanticdesktop.aperture.util.ModelUtil;
 import java.util.Collection;
 import java.util.List;
 import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Wed Aug 22 12:40:04 CEST 2007
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Sun Jun 29 15:53:45 CEST 2008
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/outlook/outlookDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/12/outlookds#OutlookDataSource
  */

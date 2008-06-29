@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sat Sep 22 20:25:06 CEST 2007
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:53:21 CEST 2008
  * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/imap/imapDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/12/imapds#
  */
@@ -15,7 +15,7 @@ public class IMAPDS {
 
     /** Path to the ontology resource */
     public static final String IMAPDS_RESOURCE_PATH = 
-      IMAPDS.class.getPackage().getName().replace('.', '/') + "/imapDataSource.ttl";
+      "org/semanticdesktop/aperture/datasource/imap/imapDataSource.ttl";
 
     /**
      * Puts the IMAPDS ontology into the given model.

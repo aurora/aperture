@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Sun Feb 03 20:49:22 CET 2008
- * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/mbox/MboxDataSource.ttl
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Sun Jun 29 15:54:12 CEST 2008
+ * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/mbox/mboxDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2008/02/03/mboxds#MboxDataSource
  */
 public class MboxDataSource extends DomainBoundableDataSource {

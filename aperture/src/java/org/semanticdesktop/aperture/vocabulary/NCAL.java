@@ -7,7 +7,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed May 07 20:31:43 CEST 2008
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:42:02 CEST 2008
  * input file: D:\workspace\aperture/doc/ontology/ncal.rdfs
  * namespace: http://www.semanticdesktop.org/ontologies/2007/04/02/ncal#
  */
@@ -15,7 +15,7 @@ public class NCAL {
 
     /** Path to the ontology resource */
     public static final String NCAL_RESOURCE_PATH = 
-      NCAL.class.getPackage().getName().replace('.', '/') + "/ncal.rdfs";
+      "org/semanticdesktop/aperture/vocabulary/ncal.rdfs";
 
     /**
      * Puts the NCAL ontology into the given model.
