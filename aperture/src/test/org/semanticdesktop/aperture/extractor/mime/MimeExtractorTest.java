@@ -35,6 +35,37 @@ public class MimeExtractorTest extends ExtractorTestBase {
 		container.dispose();
 	}
 	
+	/**
+	 * This test is intended to check for the behavior described in the issue number
+	 * [ 1888018 ] MimeExtractor puts both plain and html in plainTextContent
+	 * The file under test is a multipart/alternative email message containing
+	 * both a plain-text and a html version of the same message. The expected
+	 * behavior would be to put the plain text version in the nie:plainTextContent
+	 * property of the returned container. The html version is to be completely
+	 * disregarded. 
+	 * 
+	 * We check this by looking for some html tags in the extracted plain text.
+	 * They are NOT to be found. (note that <P> is an exception since by chance
+	 * it does appear in the plain text part too)
+	 * 
+	 * @throws ExtractorException
+	 * @throws IOException
+	 * @throws ModelException
+	 */
+    public void testMultipartExtraction() throws ExtractorException, IOException, ModelException {
+        ExtractorFactory factory = new MimeExtractorFactory();
+        Extractor extractor = factory.get();
+        RDFContainer container = extract(DOCS_PATH + "mail-multipart-plain-html.eml", extractor);
+
+        String plainText = container.getString(NMO.plainTextMessageContent);
+        assertFalse(plainText.contains("<font"));
+        assertFalse(plainText.contains("<ul>"));
+        assertFalse(plainText.contains("<li>"));
+        
+        validate(container);
+        container.dispose();
+    }
+	
 	public void testWebArchiveExtraction() throws ExtractorException, IOException {
 		testWebArchiveExtraction("mhtml-firefox.mht");
 		testWebArchiveExtraction("mhtml-internet-explorer.mht");
@@ -45,7 +76,7 @@ public class MimeExtractorTest extends ExtractorTestBase {
 		Extractor extractor = factory.get();
 		RDFContainer container = extract(DOCS_PATH + fileName, extractor);
 		String fullText = container.getString(NMO.plainTextMessageContent);
-		
+		System.out.println(container.getString(NMO.plainTextMessageContent));
 		// check that relevant content was extracted
 		assertTrue(fullText.contains("Project name"));
 		assertTrue(fullText.contains("FAQ"));
