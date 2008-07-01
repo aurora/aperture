@@ -29,6 +29,7 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.ValueFactory;
 import org.semanticdesktop.aperture.util.DateUtil;
 import org.semanticdesktop.aperture.util.UriUtil;
+import org.semanticdesktop.aperture.vocabulary.NAO;
 import org.semanticdesktop.aperture.vocabulary.NCAL;
 import org.semanticdesktop.aperture.vocabulary.NCO;
 import org.semanticdesktop.aperture.vocabulary.NFO;
@@ -85,7 +86,7 @@ public abstract class OutlookResource {
 			saveRedemptionClass = "Redemption.SafeAppointmentItem";
 		}
 
-		protected void addData(RDFContainer rdf) throws IOException {
+		protected void addDetailData(RDFContainer rdf) throws IOException {
 			// save dispatch
 			Dispatch resource = getSaveResource();
 
@@ -98,7 +99,8 @@ public abstract class OutlookResource {
 			addPropertyIfNotNull(rdf, NIE.plainTextContent, resource, "Body");
 
 			// uid
-			addPropertyIfNotNull(rdf, NIE.identifier, resource, "EntryID");
+			// this is handled in addData() of superclass
+			//addPropertyIfNotNull(rdf, NIE.identifier, resource, "EntryID");
 
 			// dtstamp, this is UTZ, so no Timezone?
 			addDateIfNotNull(rdf, NCAL.dtstamp, resource, "CreationTime");
@@ -157,7 +159,7 @@ public abstract class OutlookResource {
 			saveRedemptionClass = "Redemption.SafeContactItem";
 		}
 
-		protected void addData(RDFContainer rdf) throws IOException {
+		protected void addDetailData(RDFContainer rdf) throws IOException {
 			// save dispatch
 			Dispatch resource = getSaveResource();
 			// title
@@ -305,7 +307,7 @@ public abstract class OutlookResource {
 			saveRedemptionClass = "Redemption.SafeDistList";
 		}
 
-		protected void addData(RDFContainer rdf) throws IOException {
+		protected void addDetailData(RDFContainer rdf) throws IOException {
 		// TODO Auto-generated method stub
 
 		}
@@ -323,7 +325,7 @@ public abstract class OutlookResource {
 			super(crawler, resource, ITEMTYPE);
 		}
 
-		protected void addData(RDFContainer rdf) throws IOException {
+		protected void addDetailData(RDFContainer rdf) throws IOException {
 			Dispatch resource = getResource();
 			addPropertyIfNotNull(rdf, NIE.title, resource, "Subject");
 			addPropertyIfNotNull(rdf, NIE.plainTextContent, resource, "Body");
@@ -350,7 +352,7 @@ public abstract class OutlookResource {
 			super(crawler, uri, resource, itemType);
 		}
 
-		protected void addData(RDFContainer rdf) throws IOException {
+		protected void addDetailData(RDFContainer rdf) throws IOException {
 			addPropertyIfNotNull(rdf, NIE.title, getResource(), "Name");
 		}
 
@@ -408,7 +410,7 @@ public abstract class OutlookResource {
 			saveRedemptionClass = "Redemption.SafeMailItem";
 		}
 
-		protected void addData(RDFContainer rdf) throws IOException {
+		protected void addDetailData(RDFContainer rdf) throws IOException {
 			Dispatch resource = getSaveResource();
 			ValueFactory vf = rdf.getValueFactory();
 			
@@ -457,7 +459,7 @@ public abstract class OutlookResource {
 			super(crawler, resource, ITEMTYPE);
 		}
 
-		protected void addData(RDFContainer rdf) throws IOException {
+		protected void addDetailData(RDFContainer rdf) throws IOException {
 			Dispatch resource = getResource();
 			addPropertyIfNotNull(rdf, NIE.title, resource, "Subject");
 			addPropertyIfNotNull(rdf, NIE.plainTextContent, resource, "Body");
@@ -531,7 +533,7 @@ public abstract class OutlookResource {
 			super(crawler, crawler.getUriPrefix() + ITEMTYPE, crawler.getOutlookMapi(), ITEMTYPE);
 		}
 
-		protected void addData(RDFContainer rdf) throws IOException {
+		protected void addDetailData(RDFContainer rdf) throws IOException {
 			rdf.add(NIE.title, "Outlook root folder");
 		}
 
@@ -558,7 +560,7 @@ public abstract class OutlookResource {
 			saveRedemptionClass = "Redemption.SafeTaskItem";
 		}
 
-		protected void addData(RDFContainer rdf) throws IOException {
+		protected void addDetailData(RDFContainer rdf) throws IOException {
 			Dispatch resource = getSaveResource();
 			addPropertyIfNotNull(rdf, NIE.title, resource, "Subject");
 			addPropertyIfNotNull(rdf, NIE.plainTextContent, resource, "Body");
@@ -801,11 +803,41 @@ public abstract class OutlookResource {
 		this.resource = resource;
 		this.itemType = itemType;
 	}
-
+	
 	/**
-	 * add more data about this object
+	 * Add the data about this object.
+	 * This adds basic data (such as the ItemId) and then calls
+	 * addDetailData to get the individual data special for the
+	 * subclasses.
+	 * @param rdf the container to add the rdf to
+	 * @throws IOException if reading is not possible
 	 */
-	protected abstract void addData(RDFContainer rdf) throws IOException;
+	public void addData(RDFContainer rdf) throws IOException {
+	    // rare case that it does not have an entryid: the root folder
+	    String entryid;
+	    try {
+    	    Variant entryidv = Dispatch.get(resource, "EntryID");
+    	    entryid = (entryidv != null) ? entryidv.getString() : null;
+	    } catch (Exception x) {
+	        entryid = null;
+	    }
+	    if (entryid == null)  {
+	        // should never happen, but can happen with root-folder
+	        if (!(this instanceof OutlookResource.RootFolder))
+	            logger.error("cannot get id of "+getUri()+", it is null. type "+getType());
+	    }
+	    else {
+	        rdf.add(NAO.identifier, OutlookCrawler.ITEMID_IDENTIFIERPREFIX + entryid);
+	    }
+	    addDetailData(rdf);
+	}
+
+    /**
+     * Add the detail data about this object.
+     * @param rdf the container to add the rdf to
+     * @throws IOException if reading is not possible
+     */
+	protected abstract void addDetailData(RDFContainer rdf) throws IOException;
 
 	/** ******************* END OF OutlookResource ****************************** */
 

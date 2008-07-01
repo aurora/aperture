@@ -8,15 +8,19 @@ package org.semanticdesktop.aperture.outlook;
 
 import java.io.IOException;
 
+import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.ModelFactory;
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.ModelSet;
+import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.ontoware.rdf2go.util.RDFTool;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
@@ -32,6 +36,7 @@ import org.semanticdesktop.aperture.datasource.config.SubstringPattern;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
+import org.semanticdesktop.aperture.vocabulary.NAO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
 
 /**
@@ -62,6 +67,7 @@ public class TestOutlookCrawler extends ApertureTestBase {
     protected void setUp() throws Exception {
         olds = new OutlookDataSource();
         RDFContainer config = createRDFContainer(TESTID);
+        olds.setConfiguration(config);
         olds.setRootUrl(TESTROOT);
 
         // exclude leo's normal outlook file
@@ -87,18 +93,42 @@ public class TestOutlookCrawler extends ApertureTestBase {
         crawler.getDataSource().getConfiguration().getModel().close();
         crawler = null;
     }
-
-    public void testCrawl() throws Exception {
+    
+    public ModelSet crawlData() throws Exception {
         // setup a CrawlerHandler
         SimpleCrawlerHandler crawlerHandler = new SimpleCrawlerHandler();
         crawler.setCrawlerHandler(crawlerHandler);
 
         crawler.crawl();
 
+        return crawlerHandler.getModelSet();
+    }
+
+    public void testCrawl() throws Exception {
         // dump the ModelSet
-        ModelSet modelSet = crawlerHandler.getModelSet();
+        ModelSet modelSet = crawlData();
         dump(modelSet);
         modelSet.close();
+    }
+    
+    public void testIds() throws Exception {
+        ModelSet modelSet = crawlData();
+        // check the ids
+        String id = RDFTool.getSingleValueString(modelSet, modelSet.createURI(TESTAPPOINTMENTURI), NAO.identifier);
+        System.out.println(id);
+        for (ClosableIterator<Statement> i = modelSet.findStatements(Variable.ANY, modelSet.createURI(TESTAPPOINTMENTURI), Variable.ANY, Variable.ANY); i.hasNext();)
+            System.out.println("stx:"+i.next());
+        assertTrue(modelSet.containsStatements(Variable.ANY, 
+            modelSet.createURI(TESTAPPOINTMENTURI), NAO.identifier, 
+            modelSet.createPlainLiteral(
+            OutlookCrawler.ITEMID_IDENTIFIERPREFIX+"00000000B2CDC30BFF2EED4ABA9C61436A07FE3384002000")));
+
+        assertTrue(modelSet.containsStatements(Variable.ANY, 
+            modelSet.createURI(TESTTASKURI), NAO.identifier, 
+            modelSet.createPlainLiteral(
+                OutlookCrawler.ITEMID_IDENTIFIERPREFIX+"00000000B2CDC30BFF2EED4ABA9C61436A07FE33C4002000")));
+        
+        
     }
 
     public void testCrawlWithDataAccess() throws Exception {
@@ -172,7 +202,7 @@ public class TestOutlookCrawler extends ApertureTestBase {
 
     private void dump(ModelSet modelSet) {
         try {
-            modelSet.writeTo(System.out, Syntax.Ntriples);
+            modelSet.writeTo(System.out, Syntax.Trig);
         }
         catch (IOException ioe) {
             ioe.printStackTrace();

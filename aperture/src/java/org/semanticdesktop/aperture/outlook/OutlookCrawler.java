@@ -127,6 +127,14 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 	 */
 	public final static String NS = "http://www.gnowsis.org/ont/msoutlook/0.1#";
 	
+	/**
+	 * A prefix to distinguish outlook item-identifiers from
+	 * other nao:identifiers.
+	 * to be used as prefix inside values of nao:identifier.
+	 * value is "itemid:"
+	 */
+	public final static String ITEMID_IDENTIFIERPREFIX = "outlookitemid:";
+	
 	private OutlookAccessor accessor;
 	
 	private DomainBoundaries boundaries;
