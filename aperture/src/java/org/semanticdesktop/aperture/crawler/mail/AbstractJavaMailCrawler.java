@@ -178,6 +178,19 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
     }
     
     /**
+     * Returns a message from the current folder optimized for reading the actual content. By default
+     * this method delegates to {@link #getMessageFromCurrentFolder(int)} but it may be overridden.
+     * The returned message object does actually have to belong to the current folder, it may be
+     * a copy. 
+     * @param index the index of the message
+     * @return the message placed under the given index, optimized for reading the actual content
+     * @throws MessagingException
+     */
+    protected Message getMessageContentFromCurrentFolder(int index) throws MessagingException {
+        return getMessageFromCurrentFolder(index);
+    }
+    
+    /**
      * @see PartStreamFactory#getPartStream(Part)
      */
     public InputStream getPartStream(Part part) throws MessagingException, IOException {
@@ -329,7 +342,7 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
 
             try {
                 if (inDomain(uri)) {
-                    crawlMessage(message, uri, folderUri);
+                    crawlMessage((MimeMessage)getMessageContentFromCurrentFolder(i), uri, folderUri);
                 }
             }
             catch (Exception e) {
@@ -749,7 +762,15 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
      * @throws MessagingException if it prooves impossible to find out
      */
     public static boolean holdsFolders(Folder folder) throws MessagingException {
-        return (folder.getType() & Folder.HOLDS_FOLDERS) == Folder.HOLDS_FOLDERS;
+        // this if has been added during the work on issue 2005759
+        // gmail returns wrong type, it is necessary to call list() to determine
+        // if a folder actually contains subfolders
+        if ((folder.getType() & Folder.HOLDS_FOLDERS) == Folder.HOLDS_FOLDERS) {
+            return folder.list().length > 0;
+        } else {
+            // this means that the folder can't have any subfolders "by definition"
+            return false;
+        }
     }
 
     /**
