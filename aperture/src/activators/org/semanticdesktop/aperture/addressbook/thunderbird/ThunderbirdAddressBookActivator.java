@@ -11,42 +11,24 @@ import java.util.Hashtable;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 import org.semanticdesktop.aperture.addressbook.apple.AppleAddressbookCrawlerFactory;
 import org.semanticdesktop.aperture.addressbook.apple.AppleAddressbookDataSourceFactory;
 import org.semanticdesktop.aperture.addressbook.thunderbird.ThunderbirdAddressbookCrawlerFactory;
 import org.semanticdesktop.aperture.addressbook.thunderbird.ThunderbirdAddressbookDataSourceFactory;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
+import org.semanticdesktop.aperture.datasource.BaseDataSourceActivator;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
+import org.semanticdesktop.aperture.detector.DataSourceDetector;
+import org.semanticdesktop.aperture.opener.DataOpenerFactory;
 
-public class ThunderbirdAddressBookActivator implements BundleActivator {
+public class ThunderbirdAddressBookActivator extends BaseDataSourceActivator {
 
-    public static BundleContext bc;
-
-    private ThunderbirdAddressbookCrawlerFactory thunderbirdCrawlerFactory;
-
-    private ThunderbirdAddressbookDataSourceFactory thunderbirdDataSourceFactory;
-    
-    private ServiceRegistration thunderbirdCrawlerServiceRegistration;
-    
-    private ServiceRegistration thunderbirdDataSourceServiceRegistration;
-
-    public void start(BundleContext context) throws Exception {
-
-        ThunderbirdAddressBookActivator.bc = context;
-        
-        thunderbirdCrawlerFactory = new ThunderbirdAddressbookCrawlerFactory();
-        thunderbirdCrawlerServiceRegistration = bc.registerService(CrawlerFactory.class.getName(),
-            thunderbirdCrawlerFactory, null);
-
-        thunderbirdDataSourceFactory = new ThunderbirdAddressbookDataSourceFactory();
-        thunderbirdDataSourceServiceRegistration = bc.registerService(DataSourceFactory.class.getName(), thunderbirdDataSourceFactory,
+    public ThunderbirdAddressBookActivator() {
+        super(ThunderbirdAddressbookCrawlerFactory.class, 
+            ThunderbirdAddressbookDataSourceFactory.class, 
+            ThunderbirdAddressbookDetector.class, 
+            null,
             null);
-
-        
-    }
-
-    public void stop(BundleContext context) throws Exception {
-        thunderbirdCrawlerServiceRegistration.unregister();
-        thunderbirdDataSourceServiceRegistration.unregister();
     }
 }

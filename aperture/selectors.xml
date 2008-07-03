@@ -89,6 +89,16 @@
             <selector refid="bundle.basic.selector" />
         </and>
     </selector>
+	
+    <selector id="bundle.detector.service.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/detector/*" />
+                <filename name="org/semanticdesktop/aperture/detector/impl/*" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
     
     <selector id="bundle.extractor.service.selector">
         <and>
@@ -240,6 +250,7 @@
             <or>
                 <filename name="org/semanticdesktop/aperture/crawler/filesystem/*" />
                 <filename name="org/semanticdesktop/aperture/datasource/filesystem/*" />
+                <filename name="org/semanticdesktop/aperture/detector/filesystem/*" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>      
@@ -519,6 +530,7 @@
             <selector refid="bundle.crawler.service.selector" />
             <selector refid="bundle.subcrawler.service.selector" />
             <selector refid="bundle.datasource.service.selector" />
+            <selector refid="bundle.detector.service.selector" />
             <selector refid="bundle.extractor.service.selector" />
             <selector refid="bundle.opener.service.selector" />
             <selector refid="bundle.rdf.service.selector" />

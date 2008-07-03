@@ -13,50 +13,31 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
+import org.semanticdesktop.aperture.datasource.BaseDataSourceActivator;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
+import org.semanticdesktop.aperture.detector.DataSourceDetector;
 import org.semanticdesktop.aperture.opener.DataOpenerFactory;
 import org.semanticdesktop.aperture.util.OSUtils;
 
-public class OutlookActivator implements BundleActivator {
+public class OutlookActivator extends BaseDataSourceActivator {
 
-	public static BundleContext bc;
+	public OutlookActivator() {
+        super(OutlookCrawlerFactory.class, 
+            OutlookDataSourceFactory.class,
+            OutlookDataSourceDetector.class,
+            OutlookAccessorFactory.class,
+            OutlookOpenerFactory.class);
+    }
 
-	private OutlookCrawlerFactory crawlerFactory;
-	private OutlookDataSourceFactory dataSourceFactory;
-	private OutlookAccessorFactory accessorFactory;
-    private OutlookOpenerFactory openerFactory;
-
-	private ServiceRegistration crawlerServiceRegistration;
-	private ServiceRegistration dataSourceServiceRegistration;
-	private ServiceRegistration accessorServiceRegistration;
-    private ServiceRegistration openerServiceRegistration;
-
-	public void start(BundleContext context) throws Exception {
-        OutlookActivator.bc = context;
+    public void start(BundleContext context) throws Exception {
         if (OSUtils.isWindows()) {
-            crawlerFactory = new OutlookCrawlerFactory();
-            crawlerServiceRegistration = bc.registerService(CrawlerFactory.class.getName(), crawlerFactory,
-                new Hashtable());
-    
-            dataSourceFactory = new OutlookDataSourceFactory();
-            dataSourceServiceRegistration = bc.registerService(DataSourceFactory.class.getName(), dataSourceFactory,
-                new Hashtable());
-    
-            accessorFactory = new OutlookAccessorFactory();
-            accessorServiceRegistration = bc.registerService(DataAccessorFactory.class.getName(), accessorFactory,
-                new Hashtable());
-    
-            openerFactory = new OutlookOpenerFactory();
-            openerServiceRegistration = bc.registerService(DataOpenerFactory.class.getName(), openerFactory, new Hashtable());
+            super.start(context);
         }
     }
 
 	public void stop(BundleContext context) throws Exception {
-	    if (OSUtils.isWindows()) {
-    		crawlerServiceRegistration.unregister();
-            dataSourceServiceRegistration.unregister();
-            accessorServiceRegistration.unregister();
-            openerServiceRegistration.unregister();
-	    }
+        if (OSUtils.isWindows()) {
+            super.stop(context);
+        }
 	}
 }

@@ -12,39 +12,24 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
+import org.semanticdesktop.aperture.datasource.BaseDataSourceActivator;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSourceFactory;
+import org.semanticdesktop.aperture.detector.DataSourceDetector;
+import org.semanticdesktop.aperture.detector.filesystem.HomeFolderDetector;
+import org.semanticdesktop.aperture.opener.DataOpenerFactory;
 
-public class FilesystemCrawlerActivator implements BundleActivator {
+public class FilesystemCrawlerActivator extends BaseDataSourceActivator {
 
+	public FilesystemCrawlerActivator() {
+        super(FileSystemCrawlerFactory.class, 
+            FileSystemDataSourceFactory.class, 
+            HomeFolderDetector.class, 
+            null,
+            null);
+    }
 
-	public static BundleContext bc;
-
-	private FileSystemCrawlerFactory crawlerFactory;
-
-	private FileSystemDataSourceFactory dataSourceFactory;
-
-	private ServiceRegistration crawlerServiceRegistration;
-	private ServiceRegistration dataSourceServiceRegistration;
-
-	public void start(BundleContext context) throws Exception {
-		
-
-		FilesystemCrawlerActivator.bc = context;
-
-		crawlerFactory = new FileSystemCrawlerFactory();
-		crawlerServiceRegistration = bc.registerService(CrawlerFactory.class.getName(), crawlerFactory,
-			new Hashtable());
-		
-		dataSourceFactory = new FileSystemDataSourceFactory();
-		dataSourceServiceRegistration = bc.registerService(DataSourceFactory.class.getName(), dataSourceFactory,
-			new Hashtable());
-	}
-
-	public void stop(BundleContext context) throws Exception {
-		crawlerServiceRegistration.unregister();
-        dataSourceServiceRegistration.unregister();
-	}
 }
 

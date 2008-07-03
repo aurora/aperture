@@ -11,6 +11,7 @@ import org.osgi.framework.BundleContext;
 import org.semanticdesktop.aperture.accessor.AccessorServiceActivator;
 import org.semanticdesktop.aperture.crawler.CrawlerServiceActivator;
 import org.semanticdesktop.aperture.datasource.DataSourceServiceActivator;
+import org.semanticdesktop.aperture.detector.DataSourceDetectorServiceActivator;
 import org.semanticdesktop.aperture.extractor.ExtractorServiceActivator;
 import org.semanticdesktop.aperture.opener.DataOpenerServiceActivator;
 import org.semanticdesktop.aperture.rdf.RDFBundleActivator;
@@ -34,6 +35,8 @@ public class CoreServicesActivator implements BundleActivator {
 
 	private RDFBundleActivator rdfBundleActivator;
 
+    private DataSourceDetectorServiceActivator detectorServiceActivator;
+
 	public void start(BundleContext context) throws Exception {
 		accessorServiceActivator = new AccessorServiceActivator();
 		accessorServiceActivator.start(context);
@@ -52,6 +55,9 @@ public class CoreServicesActivator implements BundleActivator {
 		
 		rdfBundleActivator = new RDFBundleActivator();
 		rdfBundleActivator.start(context);
+		
+		detectorServiceActivator = new DataSourceDetectorServiceActivator();
+		detectorServiceActivator.start(context);
 		
 		bc = context;
 	}
@@ -74,6 +80,9 @@ public class CoreServicesActivator implements BundleActivator {
 		
 		rdfBundleActivator.stop(context);
 		rdfBundleActivator = null;
+		
+		detectorServiceActivator.stop(context);
+		detectorServiceActivator = null;
 		
 		bc = null;
 	}
