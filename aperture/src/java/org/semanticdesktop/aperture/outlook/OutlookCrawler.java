@@ -99,7 +99,9 @@ import com.jacob.com.Variant;
 
 public class OutlookCrawler extends CrawlerBase implements DataOpener {
 
-	/**
+	public static final String OUTLOOKURIPREFIX = "outlook://";
+
+    /**
 	 * Constants from outlook
 	 * 
 	 * 
@@ -619,13 +621,41 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 		ComThread.quitMainSTA();
 	}
 	
+	/**
+	 * due to enduring problems with release, this method is used to kill outlook crawler for sure
+	 */
+	public void killKillKill() {
+	    try {
+    	    if (outlookApp != null)
+    	    {
+    	        outlookApp.safeRelease();
+    	        outlookApp = null;
+    	    }
+    	    if (outlookMapi != null) {
+    	        outlookMapi.safeRelease();
+    	        outlookMapi = null;
+    	    }
+	    } catch (Exception x) {
+	        logger.warn("Stopping outlook/Activex: "+x,x);
+	    }
+	    try {
+	        ComThread.Release();
+	        ComThread.quitMainSTA();
+	        ComThread.doCoUninitialize(); // this is the magic to really kill it at the end, when the software shuts down
+	        // doCoUninitialize will kill the com-thread for the whole process, possibly wrecking and other
+	        // activeX or other outlookcrawlers running in parallel :-/
+	    } catch (Exception x) {
+	        logger.warn("Stopping outlook/Activex: "+x,x);
+	    }
+	}
+	
 	public void setDataSource(DataSource source) {
 		super.setDataSource(source);
 
 		// read uriprefix
 		uriPrefix = ((OutlookDataSource)source).getRootUrl();
 		if (uriPrefix == null) {
-			uriPrefix = "outlook://";
+			uriPrefix = OUTLOOKURIPREFIX;
 			logger.warn("Outlook adapter missing the rootUrl property. Using " + uriPrefix + " instead.");
 		} else
 			logger.info("crawling outlook, uri prefix: "+uriPrefix);

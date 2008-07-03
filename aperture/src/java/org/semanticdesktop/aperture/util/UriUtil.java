@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.Resource;
+import org.ontoware.rdf2go.model.node.URI;
 
 /**
  * Methods related to actions on URIs. The definition of a URI is taken from <a
@@ -120,6 +121,19 @@ public final class UriUtil {
      * @return a random resource.
      */
     public static Resource generateRandomResource(Model model) {
+        return generateRandomURI(model);
+    }
+    
+    /**
+     * This method creates URIs that are used by the framework wherever
+     * a random URI is needed. This method currently creates uris of the form
+     * urn:uuid: with a random UUID at the end, hence they are globally unique. 
+     * In the future some way to configure the behaviour of this method may be 
+     * implemented, generating different algorithms or URI prefixes.
+     * @param model a model for which the random URI should be generated
+     * @return a random URI.
+     */
+    public static URI generateRandomURI(Model model) {
         return model.createURI("urn:uuid:" + UUID.randomUUID().toString());
     }
 }

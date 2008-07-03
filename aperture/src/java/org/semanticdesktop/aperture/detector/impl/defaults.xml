@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<dataSourceDetectors>
+	<dataSourceDetector>
+		<name>org.semanticdesktop.aperture.addressbook.apple.AppleAddressbookDetector</name>
+	</dataSourceDetector>
+	<dataSourceDetector>
+		<name>org.semanticdesktop.aperture.detector.filesystem.HomeFolderDetector</name>
+	</dataSourceDetector>
+	<dataSourceDetector>
+		<name>org.semanticdesktop.aperture.addressbook.thunderbird.ThunderbirdAddressbookDetector</name>
+	</dataSourceDetector>
+	<dataSourceDetector>
+		<name>org.semanticdesktop.aperture.outlook.OutlookDataSourceDetector</name>
+	</dataSourceDetector>
+</dataSourceDetectors>
