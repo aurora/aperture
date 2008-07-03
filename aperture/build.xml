@@ -26,8 +26,8 @@ your copy of ANT at http://ant.apache.org/
 
         <!-- versions -->
         <property name="project.version.major" value="1.1" />
-        <property name="project.version.minor" value="0" />
-        <property name="version-status" value="beta" />
+        <property name="project.version.minor" value="1" />
+        <property name="version-status" value="beta_SNAPSHOT" />
         <property name="project.version.full"
                   value="${project.version.major}.${project.version.minor}.${version-status}" />
         <property name="project.version.osgi"
@@ -76,17 +76,17 @@ your copy of ANT at http://ant.apache.org/
 
         <!-- osgi bundle properties -->
         <property name="bundle.core.jar"
-                  value="${project.bundlename}_${project.version.full}.jar" />
+                  value="${project.bundlename}_${project.version.osgi}.jar" />
         <property name="core.manifest.mf"
                   value="${manifest.dir}/core.manifest.mf" />
 
         <property name="bundle.impl.jar"
-                  value="${project.bundlename}.impl_${project.version.full}.jar" />
+                  value="${project.bundlename}.impl_${project.version.osgi}.jar" />
         <property name="impl.manifest.mf"
                   value="${manifest.dir}/impl.manifest.mf" />
 
         <property name="bundle.example.jar"
-                  value="${project.bundlename}.example_${project.version.full}.jar" />
+                  value="${project.bundlename}.example_${project.version.osgi}.jar" />
         <property name="example.manifest.mf"
                   value="${manifest.dir}/aperture.example.manifest.mf" />
 
@@ -373,8 +373,7 @@ your copy of ANT at http://ant.apache.org/
             description="create the core aperture bundle">
         <mkdir dir="${dist.bundle.dir}" />
         <jar destfile="${dist.bundle.dir}/${bundle.core.jar}"
-             compress="no"
-        	manifest="${core.manifest.mf}">
+             compress="no" manifest="${core.manifest.mf}">
         	<manifest>
         		<attribute name="Bundle-Version" value="${project.version.osgi}"/>
         	</manifest>
@@ -409,7 +408,7 @@ your copy of ANT at http://ant.apache.org/
         <mkdir dir="${dist.bundle.dir}" />
         <jar destfile="${dist.bundle.dir}/${bundle.impl.jar}"
              compress="no"
-             manifest="${impl.manifest.mf}">
+        	 manifest="${impl.manifest.mf}">
         	<manifest>
         		<attribute name="Bundle-Version" value="${project.version.osgi}"/>
         	</manifest>
@@ -444,10 +443,10 @@ your copy of ANT at http://ant.apache.org/
         <mkdir dir="${dist.bundle.dir}" />
         <jar destfile="${dist.bundle.dir}/${bundle.example.jar}"
              compress="no"
-             manifest="${example.manifest.mf}">
-			<manifest>
-				<attribute name="Bundle-Version" value="${project.version.osgi}"/>
-			</manifest>
+        	 manifest="${example.manifest.mf}">
+        	<manifest>
+        	    <attribute name="Bundle-Version" value="${project.version.osgi}"/>
+        	</manifest>
             <fileset dir="${classes.examples.dir}">
                 <filename name="org/semanticdesktop/aperture/examples/osgi/*" />
             </fileset>

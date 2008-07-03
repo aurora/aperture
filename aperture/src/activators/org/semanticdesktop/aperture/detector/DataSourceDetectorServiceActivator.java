@@ -34,7 +34,7 @@ public class DataSourceDetectorServiceActivator implements BundleActivator, Serv
 		
 		bc = context;
 		registry = new DataSourceDetectorRegistryImpl();
-		registration = bc.registerService(DataSourceRegistry.class.getName(), registry,
+		registration = bc.registerService(DataSourceDetectorRegistry.class.getName(), registry,
 			new Hashtable());
 
 		String filter = "(objectclass=" + DataSourceDetector.class.getName() + ")";
