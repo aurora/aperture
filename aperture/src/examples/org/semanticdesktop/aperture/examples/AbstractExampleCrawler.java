@@ -127,7 +127,7 @@ public abstract class AbstractExampleCrawler {
             }
             else if (arg.equals(ACCESS_DATA_FILE_OPTION)) {
                 if (nextArg == null) {
-                    System.err.println("missing value for option " + ACCESS_DATA_STORE_OPTION);
+                    System.err.println("missing value for option " + ACCESS_DATA_FILE_OPTION);
                     exitWithUsageMessage();
                 }
                 accessDataFile = new File(nextArg);
