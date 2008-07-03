@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2007 Aduna.
+ * Copyright (c) 2005 - 2008 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -88,12 +88,11 @@ public class TestMagicMimeTypeIdentifier extends ApertureTestBase {
 		checkMimeType("microsoft-powerpoint-2007beta2.pptm", "application/vnd.openxmlformats-officedocument.presentationml", identifier);
 		checkMimeType("microsoft-powerpoint-2007beta2.pptx", "application/vnd.openxmlformats-officedocument.presentationml", identifier);
 		
-		// try throwing some confusing stuff at it, e.g. files with wrong extensions (lacking a
-		// Word-specific magic number, it should still be able to see that the word document
-		// is an MS office document)
+		// try throwing some confusing stuff at it, e.g. files with wrong extensions
 		checkMimeType("microsoft-word-2000-with-wrong-file-extension.pdf", "application/vnd.ms-office",
 			identifier);
 		checkMimeType("html-handwritten-with-wrong-file-extension.txt", "text/html", identifier);
+        checkMimeType("html-mixed-case-header-and-wrong-extension.txt", "text/html", identifier);
 
 		// The ultimate test: a HTML file using UTF-16 that starts with white space and has a non-HTML file
 		// extension. Regular magic number checking would fail due to the UTF-16 Byte Order Mark and the 2

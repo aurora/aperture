@@ -7,7 +7,7 @@
 COPYRIGHT
 =========
 
-Copyright (c) 2005 - 2007 Aduna.
+Copyright (c) 2005 - 2008 Aduna.
 All rights reserved.
 
 Licensed under the Open Software License version 3.0.
@@ -192,21 +192,13 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 	<mimeType>text/html</mimeType>
 	<extensions>html,htm,htc,shtml,jsp,jspf,php,asp,xhtml</extensions>
 	<allowsLeadingWhiteSpace>true</allowsLeadingWhiteSpace>
-	<magicString>&lt;HEAD</magicString>
-	<magicString>&lt;head</magicString>
-	<magicString>&lt;TITLE</magicString>
-	<magicString>&lt;title</magicString>
-	<magicString>&lt;!doctype HTML</magicString>
-	<magicString>&lt;!DOCTYPE HTML</magicString>
-	<magicString>&lt;!doctype html</magicString>
-	<magicString>&lt;!DOCTYPE html</magicString>
-	<magicString>&lt;!--</magicString>
-	<magicString>&lt;html</magicString>
-	<magicString>&lt;HTML</magicString>
-	<magicString>&lt;BODY</magicString>
-	<magicString>&lt;body</magicString>
-	<magicString>&lt;h1></magicString>
-	<magicString>&lt;H1></magicString>
+	<magicString caseSensitive="false">&lt;HTML</magicString>
+	<magicString caseSensitive="false">&lt;HEAD</magicString>
+	<magicString caseSensitive="false">&lt;BODY</magicString>
+	<magicString caseSensitive="false">&lt;!DOCTYPE HTML</magicString>
+	<magicString caseSensitive="false">&lt;!--</magicString>
+	<magicString caseSensitive="false">&lt;TITLE</magicString>
+	<magicString caseSensitive="false">&lt;H1></magicString>
 </description>
 
 <description>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 - 2007 Aduna.
+ * Copyright (c) 2006 - 2008 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -10,12 +10,21 @@ public class MagicString {
 
     private char[] magicChars;
     
-    public MagicString(char[] magicChars) {
+    private boolean caseSensitive;
+    
+    public MagicString(char[] magicChars, boolean caseSensitive) {
     	if (magicChars == null) {
     		throw new IllegalArgumentException("magicChars should not be null");
     	}
     	
         this.magicChars = magicChars;
+        this.caseSensitive = caseSensitive;
+        
+        if (!caseSensitive) {
+            for (int i = 0; i < magicChars.length; i++) {
+                magicChars[i] = Character.toLowerCase(magicChars[i]);
+            }
+        }
     }
     
     public char[] getMagicChars() {
@@ -34,7 +43,14 @@ public class MagicString {
         
         // check the magic chars
         for (int i = 0; i < magicChars.length; i++) {
-            if (magicChars[i] != chars[i + skippedLeadingChars]) {
+            char magicChar = magicChars[i];
+            char testedChar = chars[i + skippedLeadingChars];
+            
+            if (!caseSensitive) {
+                testedChar = Character.toLowerCase(testedChar);
+            }
+            
+            if (magicChar != testedChar) {
                 return false;
             }
         }

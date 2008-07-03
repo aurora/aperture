@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2007 Aduna.
+ * Copyright (c) 2005 - 2008 Aduna.
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
@@ -38,8 +38,8 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 
     private static final String MIME_TYPES_RESOURCE = "org/semanticdesktop/aperture/mime/identifier/magic/mimetypes.xml";
 
-    private static final int PLAIN_TEXT_TEST_ARRAY_LENGTH = 100; 
-    
+    private static final int PLAIN_TEXT_TEST_ARRAY_LENGTH = 100;
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private ArrayList mimeTypeDescriptions;
@@ -273,11 +273,12 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
             logger.warn("missing magicString content in " + mimeType + " description");
             return;
         }
-
         String magicString = firstChild.getNodeValue();
 
+        boolean caseSensitive = Boolean.parseBoolean(element.getAttribute("caseSensitive"));
+
         // register the magic string
-        magicStrings.add(new MagicString(magicString.toCharArray()));
+        magicStrings.add(new MagicString(magicString.toCharArray(), caseSensitive));
 
         // register as magic bytes, to be used as a fallback
         try {
@@ -373,29 +374,45 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
     public String identify(byte[] firstBytes, String fileName, URI uri) {
         // see if the file is some kind of UTF file
         char[] firstChars = null;
-        byte[] bom = null;
+        byte[] realBom = null;
 
         if (firstBytes != null) {
-            bom = UtfUtil.findMatchingBOM(firstBytes);
-            if (bom != null) {
-                // remove the Byte Order Mark from firstBytes: improves String.toCharArray output and also
-                // improved magic number testing later on, when magic string testing fails
-                int contentLength = firstBytes.length - bom.length;
-                byte[] contentBytes = new byte[contentLength];
-                System.arraycopy(firstBytes, bom.length, contentBytes, 0, contentLength);
-                firstBytes = contentBytes;
+            realBom = UtfUtil.findMatchingBOM(firstBytes);
 
-                // create a character representation of the bytes
-                String charset = UtfUtil.getCharsetName(bom);
-                if (charset != null) {
-                    try {
-                        String string = new String(firstBytes, charset);
-                        firstChars = string.toCharArray();
+            // for the sake of trying to create a String out of chars, we assume UTF-8 when no BOM is found.
+            // Still, we need the actual BOM later on.
+            byte[] tmpBom;
+            int bomLength;
 
-                    }
-                    catch (UnsupportedEncodingException e) {
-                        // ignore, just continue
-                    }
+            if (realBom == null) {
+                tmpBom = UtfUtil.UTF8_BOM;
+                bomLength = 0;
+            }
+            else {
+                tmpBom = realBom;
+                bomLength = tmpBom.length;
+            }
+
+            // remove the Byte Order Mark from firstBytes: improves String.toCharArray output and also
+            // improved magic number testing later on, when magic string testing fails. Make sure that
+            // contentLength is an even number (each char consists of two bytes).
+            int contentLength = firstBytes.length - bomLength;
+            if ((contentLength & 1) == 1) {
+                contentLength--;
+            }
+            byte[] contentBytes = new byte[contentLength];
+            System.arraycopy(firstBytes, bomLength, contentBytes, 0, contentLength);
+
+            // create a character representation of the bytes
+            String charset = UtfUtil.getCharsetName(tmpBom);
+            if (charset != null) {
+                try {
+                    String string = new String(contentBytes, charset);
+                    firstChars = string.toCharArray();
+
+                }
+                catch (UnsupportedEncodingException e) {
+                    // ignore, just continue
                 }
             }
         }
@@ -425,7 +442,7 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 
         // if we could not find a matching description but a UTF BOM was found, the least we know is that it's
         // a textual format
-        if (mimeType == null && bom != null) {
+        if (mimeType == null && realBom != null) {
             return "text/plain";
         }
         // if we didn't find a BOM but the first bytes look like readable characters (no control characters),
@@ -545,13 +562,13 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
         if (bytes == null) {
             return false;
         }
-        
+
         for (int i = 0; i < bytes.length; i++) {
             if (!isReadableASCII(bytes[i])) {
                 return false;
             }
         }
-        
+
         return true;
     }
 
