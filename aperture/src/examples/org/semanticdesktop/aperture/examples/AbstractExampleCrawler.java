@@ -131,14 +131,13 @@ public abstract class AbstractExampleCrawler {
                     exitWithUsageMessage();
                 }
                 accessDataFile = new File(nextArg);
-                if (!accessDataFile.exists()) {
-                    System.err.println("Couldn't create the access data file");
-                }
-                else if (!accessDataFile.isDirectory() || !accessDataFile.canRead()
-                        || !accessDataFile.canWrite()) {
-                    System.err.println(accessDataFile.getAbsolutePath()
-                            + " exists and is not a read/write file (access data)");
-                }
+//                if (!accessDataFile.exists()) {
+//                    System.err.println("Couldn't create the access data file");
+//                }
+//                else if (!accessDataFile.canRead() || !accessDataFile.canWrite()) {
+//                    System.err.println(accessDataFile.getAbsolutePath()
+//                            + " exists and is not a read/write file (access data)");
+//                }
                 i++;
             }
             else if (arg.equals(VALIDATE_OPTION)) {
