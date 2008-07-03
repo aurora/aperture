@@ -21,6 +21,7 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.nativerdf.NativeStore;
 import org.semanticdesktop.aperture.accessor.AccessData;
+import org.semanticdesktop.aperture.accessor.base.FileAccessData;
 import org.semanticdesktop.aperture.accessor.base.ModelAccessData;
 import org.semanticdesktop.aperture.examples.handler.PerformanceMeasuringCrawlerHandler;
 import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
@@ -58,6 +59,8 @@ public abstract class AbstractExampleCrawler {
     
     public static final String ACCESS_DATA_STORE_OPTION = "--accessDataStore";
     
+    public static final String ACCESS_DATA_FILE_OPTION = "--accessDataFile";
+    
     protected abstract String getSpecificSyntaxPart();
     
     protected abstract String getSpecificExplanationPart();
@@ -75,7 +78,8 @@ public abstract class AbstractExampleCrawler {
         boolean validate = false;
         boolean performance = false;
         File nativeStoreFolder = null;
-        File accessDataFolder = null;
+        File accessDataNativeStoreFolder = null;
+        File accessDataFile = null;
         URI accessDataContext = null;
         List<String> remainingOptions = new LinkedList<String>();
         for (int i = 0; i < args.length; i++) {
@@ -110,14 +114,30 @@ public abstract class AbstractExampleCrawler {
                     System.err.println("missing value for option " + ACCESS_DATA_STORE_OPTION);
                     exitWithUsageMessage();
                 }
-                accessDataFolder = new File(nextArg);
-                if (!accessDataFolder.exists() && !accessDataFolder.mkdir()) {
+                accessDataNativeStoreFolder = new File(nextArg);
+                if (!accessDataNativeStoreFolder.exists() && !accessDataNativeStoreFolder.mkdir()) {
                     System.err.println("Couldn't create the native store folder for the access data");
                 }
-                else if (!accessDataFolder.isDirectory() || !accessDataFolder.canRead()
-                        || !accessDataFolder.canWrite()) {
-                    System.err.println(accessDataFolder.getAbsolutePath()
+                else if (!accessDataNativeStoreFolder.isDirectory() || !accessDataNativeStoreFolder.canRead()
+                        || !accessDataNativeStoreFolder.canWrite()) {
+                    System.err.println(accessDataNativeStoreFolder.getAbsolutePath()
                             + " exists and is not a read/write enabled folder (access data)");
+                }
+                i++;
+            }
+            else if (arg.equals(ACCESS_DATA_FILE_OPTION)) {
+                if (nextArg == null) {
+                    System.err.println("missing value for option " + ACCESS_DATA_STORE_OPTION);
+                    exitWithUsageMessage();
+                }
+                accessDataFile = new File(nextArg);
+                if (!accessDataFile.exists()) {
+                    System.err.println("Couldn't create the access data file");
+                }
+                else if (!accessDataFile.isDirectory() || !accessDataFile.canRead()
+                        || !accessDataFile.canWrite()) {
+                    System.err.println(accessDataFile.getAbsolutePath()
+                            + " exists and is not a read/write file (access data)");
                 }
                 i++;
             }
@@ -141,14 +161,17 @@ public abstract class AbstractExampleCrawler {
                 remainingOptions.add(arg);
             }
         }
+        
         if (validate && performance) {
             System.err.println("Cannot specify both validating and performance measuring at the same time");
             exitWithUsageMessage();
         }
-        if (!performance && (outputFile == null) && (nativeStoreFolder == null)) {
+        
+        if (!performance && (outputFile == null) && (nativeStoreFolder == null) && (accessDataFile != null)) {
             System.err.println("When not measuring performance, the output file or the native store folder need to be specified");
             exitWithUsageMessage();
         }
+        
         if (validate) {
             handler = new ValidatingCrawlerHandler(identifyingMimeType,extractingContents,verbose,outputFile, getAdditionalModelTesters());
         } else if (performance) {
@@ -156,6 +179,7 @@ public abstract class AbstractExampleCrawler {
         } else {
             handler = new SimpleCrawlerHandler(identifyingMimeType,extractingContents,verbose,outputFile);
         }
+        
         if (nativeStoreFolder != null) {
             Repository repo = new SailRepository(new NativeStore(nativeStoreFolder));
             repo.initialize();
@@ -163,18 +187,30 @@ public abstract class AbstractExampleCrawler {
             set.open();
             handler.setModelSet(set);
         }
-        if (accessDataFolder != null) {
-            Repository repo = new SailRepository(new NativeStore(accessDataFolder));
+        
+        if (accessDataNativeStoreFolder != null && accessDataFile != null) {
+            System.err.println("Can't specify the access data file and an access data store at the same time");
+            exitWithUsageMessage();
+        } else if (accessDataNativeStoreFolder != null) {
+            Repository repo = new SailRepository(new NativeStore(accessDataNativeStoreFolder));
             repo.initialize();
             Model model = new RepositoryModel(accessDataContext,repo);
             model.open();
             this.accessData = new ModelAccessData(model);
+        } else if (accessDataFile != null) {
+            FileAccessData fileAccessData = new FileAccessData(accessDataFile);
+            fileAccessData.initialize();
+            this.accessData = fileAccessData;
         }
+        
         return remainingOptions;
     }
     
     public static String getCommonSyntaxPart() {
-        return "[--validate] [--performance] [--native <native-store-path>] [--accessDataStore <native-store-path>][-i] [-x] [-v] -o <output-file-path>";
+        return 
+            "[--validate] [--performance] [--native <native-store-path>] \n" +
+            "[--accessDataStore <native-store-path>] [--accessDataStore <file-path>] [-i] \n" +
+            "[-x] [-v] -o <output-file-path> ";
     }
     
     public static String getCommonExplanationPart() {
@@ -184,7 +220,8 @@ public abstract class AbstractExampleCrawler {
         writer.println(getAlignedOption(null) + "(conflicts with --performance)");
         writer.println(getAlignedOption("--performance") + "turns on performance measuring");
         writer.println(getAlignedOption("--native") + "stores the data in the native store");
-        writer.println(getAlignedOption("--accessDataStore") + "stores the incremental crawling info");
+        writer.println(getAlignedOption("--accessDataStore") + "stores the incremental crawling info in a native store");
+        writer.println(getAlignedOption("--accessDataFile") + "stores the incremental crawling info in a file");
         writer.println(getAlignedOption("-i") + "turns on MIME type identification");
         writer.println(getAlignedOption("-x") + "if specified - the program will try to extract the content of");
         writer.println(getAlignedOption("-v") + "verbose output");
