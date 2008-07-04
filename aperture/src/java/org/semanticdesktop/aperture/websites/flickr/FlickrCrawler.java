@@ -1,287 +1,275 @@
 package org.semanticdesktop.aperture.websites.flickr;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
-import java.util.Map.Entry;
-import java.util.logging.Logger;
 
-import javax.xml.parsers.ParserConfigurationException;
-
+import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.ontoware.rdf2go.vocabulary.RDFS;
+import org.semanticdesktop.aperture.accessor.AccessData;
+import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
+import org.semanticdesktop.aperture.crawler.ExitCode;
+import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
+import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.vocabulary.NAO;
+import org.semanticdesktop.aperture.vocabulary.NFO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
-import org.semanticdesktop.aperture.websites.AbstractTagCrawler;
-import org.semanticdesktop.aperture.websites.bibsonomy.BibsonomyDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import com.aetrion.flickr.Flickr;
 import com.aetrion.flickr.FlickrException;
-import com.aetrion.flickr.REST;
-import com.aetrion.flickr.contacts.Contact;
-import com.aetrion.flickr.contacts.ContactsInterface;
+import com.aetrion.flickr.RequestContext;
 import com.aetrion.flickr.people.PeopleInterface;
 import com.aetrion.flickr.people.User;
 import com.aetrion.flickr.photos.Photo;
-import com.aetrion.flickr.photosets.Photoset;
-import com.aetrion.flickr.photosets.PhotosetsInterface;
+import com.aetrion.flickr.photos.PhotoList;
+import com.aetrion.flickr.photos.PhotosInterface;
 import com.aetrion.flickr.tags.Tag;
-import com.aetrion.flickr.tags.TagsInterface;
 
 /**
- * @author Daniel Burkhart Aperture Crawler for a FlickrDatasource
+ * Crawls metadata from Flickr accounts.
  * 
- * crawl a specified Flickr Account for Tags, Images, Friends...
- * 
+ * @author <a href="mailto:kohlschuetter@L3S.de">Christian Kohlschuetter</a>
  */
-public class FlickrCrawler extends AbstractTagCrawler {
-	
-	Flickr flickr;
-	User user;
-	String username;
+public class FlickrCrawler extends CrawlerBase {
 
-	/**
-	 * My Flickr API Key
-	 */
-	private final String API_ID = "f47691529440669449065e6962e1346a";
+    // FIXME make this configurable
+    private static final String API_KEY = "f47691529440669449065e6962e1346a";
+    
+    private static final Logger LOG = LoggerFactory.getLogger(FlickrCrawler.class);
 
-	private static final Logger LOGGER = Logger.getLogger(FlickrCrawler.class
-			.getName());
-
-	private final String FLICKR_URI = "http://www.flickr.com/photos/";
-
-	/** PHOTONS constant */
-	public static final String PHOTONS = "http://example.com/photos#";
-
-	/**
-	 * A default constructor
-	 * @param ds the data source instances with configuration of this crawler
-	 */
-	public FlickrCrawler(DataSource ds) {
-		super();
-		setDataSource(ds);
-	}
-
-	
-
-	/**
-	 * pushes the User objects (of the users friends) into the params-hashmap
-	 * 
-	 * @param userID
-	 *            Flickr ID for the account to crawl
-	 * @param localFlickr
-	 * @return true, if the crawling was finished successful
-	 * @throws FlickrException
-	 * @throws SAXException
-	 * @throws IOException
-	 */
-	@SuppressWarnings({ "unused", "unchecked" })
-    private boolean crawlFriends(String userID, Flickr localFlickr)
-			throws IOException, SAXException, FlickrException {
-		ContactsInterface contactsInterface = localFlickr.getContactsInterface();
-		Collection c = contactsInterface.getPublicList(userID);
-		for (Iterator i = c.iterator(); i.hasNext();) {
-			Contact contact = (Contact) i.next();
-			LOGGER.info("frient found: " + contact.getId() + " ,"
-					+ contact.getUsername());
-		}
-		return true;
-	}
-
-	/**
-	 * gets a list of tags
-	 * 
-	 * @param localUsername the username
-	 * @param password the password
-	 * @return a list of tags
-	 * @throws FlickrException
-	 * @throws SAXException
-	 * @throws IOException
-	 * @throws SailUpdateException 
-	 * @throws ParserConfigurationException 
-	 */
-	@SuppressWarnings("unchecked")
-    protected List<String> crawlTags(String localUsername, String password)
-			throws IOException, SAXException, FlickrException, ParserConfigurationException {
-		this.username = localUsername;
-				
-		LOGGER.fine("Starting import images from Flickr...");
-
-		TagsInterface tags = getFlickr().getTagsInterface();
-
-		Collection<Tag> c = tags.getListUser(getUser().getId());
-		LOGGER.fine("Found "+c.size()+" tags for flickr user "+localUsername);
-		List<String> res=new Vector<String>();
-		for (Tag t: c) {
-			String uri = FLICKR_URI + localUsername + "/tags/" + t.getValue();
-			res.add(uri);
-		}
-		return res;
-	}
-	
-
-
-	/**
-	 * pushes the image objects into the params-hashmap crawls for all images of
-	 * the user
-	 */
-	@SuppressWarnings("unchecked")
-    private boolean crawlImages()
-			throws IOException, SAXException, FlickrException, ParserConfigurationException {
-
-		// first list all photosets from the user
-		Collection c = flickr.getPhotosetsInterface().getList(getUser().getId())
-				.getPhotosets();
-
-		// List of all Photosets for a user
-		for (Iterator i = c.iterator(); i.hasNext();) {
-			Photoset set = (Photoset) i.next();
-			String setID = set.getId();
-			getPhotosFromSet(setID, getFlickr());
-		}
-
-		// list all photos that are not in any photoset and add them
-		addPhotosNotInSet();
-		return true;
-	}
-
-	/**
-	 * Add the flickr photos that are not specified in any set
-	 * 
-	 * @param userID
-	 * @param flickr
-	 * @throws FlickrException
-	 * @throws SAXException
-	 * @throws IOException
-	 */
-	@SuppressWarnings("unchecked")
-    private void addPhotosNotInSet()
-			throws IOException, SAXException, FlickrException {
-		int perpage = 500;
-		//int count = 0;
-		int page = 0;
-		//boolean next = true;
-
-		Collection c = flickr.getPhotosInterface().getNotInSet(perpage, page);
-		for (Iterator i = c.iterator(); i.hasNext();) {
-			Photo photo = (Photo) i.next();
-			LOGGER.info("photo found: " + photo.getId() + " ,"
-					+ photo.getDescription());
-            
-            // TODO: report the found photos
-		}
-
-	}
-
-	@SuppressWarnings("unchecked")
-    private void getPhotosFromSet(String setID, Flickr localFlickr)
-			throws IOException, SAXException, FlickrException {
-		PhotosetsInterface photosetsInterface = localFlickr.getPhotosetsInterface();
-        Collection c = photosetsInterface.getPhotos(setID, 0, Integer.MAX_VALUE);
-		for (Iterator i = c.iterator(); i.hasNext();) {
-			Photo photo = (Photo) i.next();
-			LOGGER.info("photo found: " + photo.getId() + " ,"
-					+ photo.getDescription());
-			
-			// extract data of one photo, handle it
-            crawlPhoto(photo);
-		}
-	}
-
-
-
-	@SuppressWarnings("unchecked")
-    private void crawlPhoto(Photo photo) throws FlickrException, IOException, SAXException {
-        LOGGER.finest("handling original url: " + photo.getOriginalUrl());
-        URIImpl uri  = new URIImpl(photo.getOriginalUrl());
-        // TODO: was the photo alreadz in the AccessData
-        //if (alreadyinAccessData)
-        //    return;
-        
-        //RDFContainer cont =  handler.getRDFContainerFactory(this, photo.getUrl()).getRDFContainer(uri);
-        RDFContainer cont =  getRDFContainerFactory(photo.getUrl()).getRDFContainer(uri);
-        cont.add(RDF.type, new URIImpl(PHOTONS+"Photo"));
-        String title = photo.getTitle();
-        if (title != null)
-        {
-            cont.put(NIE.title, title);
-            cont.put(RDFS.label, title);
-        }
-        // get the meat, above was only minimal
-        photo = flickr.getPhotosInterface().getPhoto(photo.getId(), photo.getSecret());
-        // ADD ALL DATA OF PHOTO
-        photo.getDateAdded();
-        photo.getGeoData();
-        // TODO: extract
-        
-        // EXIF
-        // collection of what?
-        // http://www.flickr.com/services/api/flickr.photos.getExif.html
-        // so you make a big CASE 
-        //Collection exif = flickr.getPhotosInterface().getExif(photo.getId(), photo.getSecret());
-        
-        
-        DataObjectBase d = new DataObjectBase(uri, source, cont);
-        //handler.objectNew(this, d);
-        reportNewDataObject(d);
+    public FlickrCrawler(DataSource ds) {
+        super();
+        setDataSource(ds);
     }
 
-
+    private enum ObjectType {
+        NEW, UNMODIFIED, CHANGED
+    }
 
     @Override
-	protected void crawlTheRest(String localUsername, String password) throws Exception {
-        FlickrDataSource.CrawlType crawlType = ((FlickrDataSource)source).getCrawlType();
-        if (crawlType != null && 
-            (crawlType.equals(FlickrDataSource.CrawlType.ItemsAndTagsCrawlType) || 
-             crawlType.equals(FlickrDataSource.CrawlType.ItemsAndTagsCrawlType))) {
-            this.username = localUsername;
-            crawlImages();
+    @SuppressWarnings("unchecked")
+    protected ExitCode crawlObjects() {
+        final DataSource localSource = getDataSource();
+        final RDFContainer configuration = localSource.getConfiguration();
+        final String username = ConfigurationUtil.getUsername(configuration);
+        final String password = ConfigurationUtil.getPassword(configuration);
+
+        try {
+            FlickrCredentials credentials = new FlickrCredentials(API_KEY, password);
+            Flickr flickr = credentials.getFlickrInterface();
+
+            PeopleInterface peopleIf = flickr.getPeopleInterface();
+            User meUser = peopleIf.findByEmail(username);
+            String meId = meUser.getId();
+
+            // FIXME should we uriencode the meId? (probably not necessary)
+            // FIXME store flickr data from different accounts in different contexts?
+            String contextUriString = "http://www.flickr.com/photos/" + meId +"/";
+
+            String photoUriPrefix = contextUriString;
+
+            PhotosInterface photosIf = flickr.getPhotosInterface();
+            // PhotosetsInterface photosetsIf = flickr.getPhotosetsInterface();
+
+            // FIXME Currently, we only download the first 10 images.
+            PhotoList pl = peopleIf.getPublicPhotos(meId, 10, 0);
+            // PhotoList pl = photosetsIf.getPhotos(meId, 10, 0);
+            
+            for (Iterator<Photo> it = pl.iterator(); it.hasNext();) {
+                Photo photo = it.next();
+                // NOTE to get all information, we need to use photosIf
+                photo = photosIf.getPhoto(photo.getId(), credentials.secret);
+
+                String id = photo.getId();
+                
+                // FIXME we could add this as well
+                // String license = photo.getLicense();
+
+                final String photoUriString = photoUriPrefix + id+ "/";
+
+                accessData.touch(photoUriString);
+
+                ObjectType objectType;
+                String timeMillis = accessData.get(photoUriString, AccessData.DATE_KEY);
+                if (timeMillis == null) {
+                    // FIXME check whether AccessData really works
+                    objectType = ObjectType.NEW;
+                }
+                else {
+                    long t = Long.parseLong(timeMillis);
+                    Date lastUpdate = photo.getLastUpdate();
+                    if (lastUpdate == null || lastUpdate.getTime() > t) {
+                        objectType = ObjectType.CHANGED;
+                    }
+                    else {
+                        //FIXME check whether tags implicate a change in lastUpdate
+                        objectType = ObjectType.UNMODIFIED;
+                    }
+                }
+
+                if (objectType == ObjectType.UNMODIFIED) {
+                    reportUnmodifiedDataObject(photoUriString);
+                    continue;
+                }
+
+                accessData.put(photoUriString, AccessData.DATE_KEY, Long.toString(System.currentTimeMillis()));
+
+                List<DataObject> dataObjects = new ArrayList<DataObject>();
+
+                DataObject objPhotoIE = newDataObject(dataObjects, photoUriString);
+                DataObject objPhotoDOWebsite = newDataObject(dataObjects, photo.getUrl());
+                {
+                    RDFContainer rdf = objPhotoDOWebsite.getMetadata();
+                    rdf.add(RDF.type, NFO.Website);
+                    rdf.add(NFO.fileUrl, photo.getUrl());
+                    rdf.add(NIE.interpretedAs, objPhotoIE.getID());
+                }
+                DataObject objPhotoDOOriginalImage = newDataObject(dataObjects, photo.getUrl());
+                {
+                    RDFContainer rdf = objPhotoDOOriginalImage.getMetadata();
+                    rdf.add(RDF.type, NFO.Image);
+                    photo.setOriginalSecret(credentials.secret);
+                    rdf.add(NFO.fileUrl, photo.getOriginalUrl());
+                    rdf.add(NIE.interpretedAs, objPhotoIE.getID());
+                }
+
+                {
+                    RDFContainer rdf = objPhotoIE.getMetadata();
+                    rdf.add(RDF.type, NIE.InformationElement);
+                    addIfNotNull(rdf, RDFS.label, photo.getTitle());
+                    addIfNotNull(rdf, NIE.title, photo.getTitle());
+                    addIfNotNull(rdf, NIE.contentLastModified, photo.getDateAdded());
+                    addIfNotNull(rdf, NIE.created, photo.getDatePosted());
+                    addIfNotNull(rdf, NIE.contentCreated, photo.getDateTaken());
+                    addIfNotNull(rdf, NIE.description, photo.getDescription());
+                    rdf.add(NIE.isStoredAs, objPhotoDOWebsite.getID());
+                    rdf.add(NIE.mimeType, "image/jpeg");
+                    // FIXME add Owner
+
+                    Collection<Tag> tags = photo.getTags();
+                    for (final Tag t : tags) {
+
+//                        String tagsPrefix = "http://www.flickr.com/people/"+t.getAuthor()+"/tags/";
+                        String tagsPrefix = photoUriString;
+                        final String tagValue = t.getValue();
+                        if (tagValue != null) {
+                            String tag = tagsPrefix + tagValue;
+
+                            DataObject objTag = newDataObject(dataObjects, tag);
+                            rdf.add(NAO.hasTag, objTag.getID());
+                            {
+                                RDFContainer rdfTag = objTag.getMetadata();
+                                rdfTag.add(RDF.type, NAO.Tag);
+                                addIfNotNull(rdfTag, NAO.prefLabel, tagValue);
+                                // FIXME add Creator
+                            }
+                        }
+                    }
+                }
+
+                switch (objectType) {
+                case NEW:
+                    for (DataObject dobj : dataObjects) {
+                        reportNewDataObject(dobj);
+                    }
+                    break;
+                case CHANGED:
+                    for (DataObject dobj : dataObjects) {
+                        reportModifiedDataObject(dobj);
+                    }
+                    break;
+                default:
+                    // unsupported operation, assume new
+                    LOG.info("Unsupported ObjectType, assuming NEW: " + objectType);
+                    for (DataObject dobj : dataObjects) {
+                        reportNewDataObject(dobj);
+                    }
+                }
+
+                // String format = photo.getOriginalFormat();
+                // InputStream in = photosIf.getImageAsStream(photo, Size.ORIGINAL);
+                // System.out.println(in+"/"+in.read());
+                // in.close();
+            }
+            return ExitCode.COMPLETED;
         }
-	}
+        catch (IOException e) {
+            LOG.info("Could not crawl Flickr datasource", e);
+//            e.printStackTrace();
+            return ExitCode.FATAL_ERROR;
+        }
+        catch (FlickrException e) {
+            LOG.info("Could not crawl Flickr datasource", e);
+//            e.printStackTrace();
+            return ExitCode.FATAL_ERROR;
+        }
+        catch (SAXException e) {
+            LOG.info("Could not crawl Flickr datasource", e);
+//            e.printStackTrace();
+            return ExitCode.FATAL_ERROR;
+        }
+        catch (RuntimeException e) {
+            LOG.info("Could not crawl Flickr datasource", e);
+//            e.printStackTrace();
+            return ExitCode.FATAL_ERROR;
+        }
+    }
 
+    private DataObject newDataObject(final Collection<DataObject> dataObjects, final String uriString) {
+        URIImpl turi = new URIImpl(uriString);
+        RDFContainer rdf = getRDFContainerFactory(uriString).getRDFContainer(turi);
+        DataObject dObj = new DataObjectBase(turi, source, rdf);
+        dataObjects.add(dObj);
+        return dObj;
+    }
 
-    /**
-     * Returns the instance of the Flickr class used by this crawler. THis method creates a new
-     * one if none is available at the moment
-     * @return the instnace of the Flickr class used by this crawler
-     * @throws ParserConfigurationException
-     */
-	public Flickr getFlickr() throws ParserConfigurationException {
-		if (flickr == null)
-		{
-			flickr = new Flickr(API_ID, new REST("www.flickr.com", 80));
-		}
-		return flickr;
-	}
+    private void addIfNotNull(final RDFContainer rdf, final URI property, final String value) {
+        if (value != null) {
+            rdf.add(property, value);
+        }
+    }
 
+    private void addIfNotNull(final RDFContainer rdf, final URI property, final Date value) {
+        if (value != null) {
+            rdf.add(property, value);
+        }
+    }
 
+    private static class FlickrCredentials {
 
-	/**
-	 * Returns the user whose credentials are being used by this crawler
-	 * @return the user whose credentials are being used by this crawler
-	 * @throws IOException
-	 * @throws SAXException
-	 * @throws FlickrException
-	 */
-	public User getUser() throws IOException, SAXException, FlickrException {
-		if (user == null)
-		{
-			PeopleInterface peopleInterface = flickr.getPeopleInterface();
-			// Get the Flickr NSID by the username
-			user = peopleInterface.findByUsername(username);
-		}
-		return user;
-	}
-	
-	
+        private String secret;
 
+        private String frob;
 
+        private Flickr flickr;
 
+        public FlickrCredentials(final String apiKey, final String secret) throws IOException,
+                FlickrException, SAXException {
+            this.secret = secret;
+            flickr = new Flickr(apiKey);
+            RequestContext.getRequestContext().setSharedSecret(secret);
 
+//            AuthInterface authIf = flickr.getAuthInterface();
+//            frob = authIf.getFrob();
+        }
+
+        public Flickr getFlickrInterface() {
+            return flickr;
+        }
+
+        public String getFrob() {
+            return frob;
+        }
+    }
 }
