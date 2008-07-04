@@ -63,6 +63,13 @@ public class HomeFolderDetector implements DataSourceDetector {
 	}
 
     public List<DataSourceDescription> detect() throws Exception {
+        /**
+         * Herko ter Horst suggested to use this:
+         * javax.swing.filechooser.FileSytemView.getDefaultDirectory().
+         * 
+         * if the current code is not working, we may try this.
+         */
+        
         String path;
         if (OSUtils.isLinux()) {
             path=getLinuxDir();
