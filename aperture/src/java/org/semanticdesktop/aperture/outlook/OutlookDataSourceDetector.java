@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2006 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2008 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
- * Licensed under the Academic Free License version 3.0.
+ * Licensed under the Open Software License version 3.0.
  */
 package org.semanticdesktop.aperture.outlook;
 
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.jacob.com.ComThread;
 
 /**
- * Detect Microsoft Outlook. This basically instanciates the Microsoft Outlook ActiveX control and tests if
+ * Detect Microsoft Outlook. This instantiates the Microsoft Outlook ActiveX control and tests if
  * this fails or not.
  * 
  * @author sauermann

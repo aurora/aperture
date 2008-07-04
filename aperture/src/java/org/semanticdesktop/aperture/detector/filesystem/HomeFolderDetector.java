@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2008 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
- * Licensed under the Academic Free License version 3.0.
+ * Licensed under the Open Software License version 3.0.
  */
 package org.semanticdesktop.aperture.detector.filesystem;
 
@@ -53,7 +53,13 @@ public class HomeFolderDetector implements DataSourceDetector {
 	}
 
 	private String getLinuxDir() {
-		return System.getProperty("user.home");
+	    String home = System.getProperty("user.home");
+	    File f = new File(home+File.separator+"Documents");
+	    if (f.exists())
+	        // on most *nixes the ~/Documents folder is used for user's documents 
+	        return f.getAbsolutePath();
+	    else
+	        return home;
 	}
 
     public List<DataSourceDescription> detect() throws Exception {

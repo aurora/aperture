@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -12,14 +12,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
-import org.semanticdesktop.aperture.datasource.DataSourceFactory;
-import org.semanticdesktop.aperture.datasource.DataSourceRegistry;
 import org.semanticdesktop.aperture.detector.DataSourceDetector;
 import org.semanticdesktop.aperture.detector.DataSourceDetectorRegistry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A trivial default implementation of the DataSourceDetectorRegistry interface.
@@ -38,25 +33,25 @@ public class DataSourceDetectorRegistryImpl implements DataSourceDetectorRegistr
         
     }
     
-    public void add(DataSourceDetector factory) {
-        if (factory == null) {
-            throw new IllegalArgumentException("factory is not allowed to be null");
+    public void add(DataSourceDetector detector) {
+        if (detector == null) {
+            throw new IllegalArgumentException("detector is not allowed to be null");
         }
 
-        URI type = factory.getSupportedType();
+        URI type = detector.getSupportedType();
         Set<DataSourceDetector> set = registry.get(type);
         if (set == null) {
             set = new HashSet<DataSourceDetector>();
             registry.put(type, set);
         }
-        set.add(factory);
+        set.add(detector);
     }
 
-    public void remove(DataSourceDetector factory) {
-        URI type = factory.getSupportedType();
+    public void remove(DataSourceDetector detector) {
+        URI type = detector.getSupportedType();
         Set<DataSourceDetector> set = registry.get(type);
         if (set != null) {
-            set.remove(factory);
+            set.remove(detector);
 
             if (set.isEmpty()) {
                 registry.remove(type);

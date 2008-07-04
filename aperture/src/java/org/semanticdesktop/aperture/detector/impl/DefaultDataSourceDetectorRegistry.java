@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2005 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
- * Licensed under the Open Software License version 3.0.
+ * Licensed under the Academic Free License version 3.0.
  */
 package org.semanticdesktop.aperture.detector.impl;
 
