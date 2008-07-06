@@ -174,7 +174,30 @@ public class DataObjectFactory {
         ContentType contentType = null;
         String primaryType = null;
 
-        String contentTypeStr = mailPart.getContentType();
+        String contentTypeStr = null;
+        try {
+            contentTypeStr = mailPart.getContentType();
+        } catch (MessagingException me) {
+            /*
+             * This carch has been added during the work on issue number 2005759. It protects the crawler
+             * against servers that have errors in the IMAP protocol implementation and yield exceptions when
+             * trying to download the BODYSTRUCTURE
+             * 
+             * see <a
+             * href="https://sourceforge.net/tracker/index.php?func=detail&aid=2005759&group_id=150969&atid=779500">
+             * here</a> for a description of the error and <a
+             * href="http://java.sun.com/products/javamail/FAQ.html#imapserverbug"> here</a> for the
+             * description of the workaround I've used.
+             */
+            if (me.getMessage().contains("Unable to load BODYSTRUCTURE") &&
+                mailPart instanceof MimeMessage) {
+                mailPart = new MimeMessage((MimeMessage)mailPart);
+                contentTypeStr = mailPart.getContentType();
+            } else {
+                throw me;
+            }
+        }
+        
         if (contentTypeStr != null) {
             contentType = new ContentType(contentTypeStr);
             primaryType = normalizeString(contentType.getPrimaryType());

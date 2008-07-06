@@ -552,21 +552,6 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
         return currentMessages[index-1];
     }
     
-    /**
-     * This method has been added during the work on issue number 2005759. It protects the crawler
-     * against servers that have errors in the IMAP protocol implementation and yield exceptions
-     * when trying to download the BODYSTRUCTURE
-     * 
-     * see <a href="https://sourceforge.net/tracker/index.php?func=detail&aid=2005759&group_id=150969&atid=779500">
-     * here</a> for a description of the error and <a href="http://java.sun.com/products/javamail/FAQ.html#imapserverbug">
-     * here</a> for the description of the workaround I've used.
-     */
-    @Override
-    protected Message getMessageContentFromCurrentFolder(int index) throws MessagingException {
-        // the given index is one-based, conformant to the javamail convention
-        return new MimeMessage((MimeMessage)currentMessages[index-1]);
-    }
-    
     /** 
      * @see org.semanticdesktop.aperture.crawler.mail.AbstractJavaMailCrawler#getPartStream(javax.mail.Part)
      */

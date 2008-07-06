@@ -178,19 +178,6 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
     }
     
     /**
-     * Returns a message from the current folder optimized for reading the actual content. By default
-     * this method delegates to {@link #getMessageFromCurrentFolder(int)} but it may be overridden.
-     * The returned message object does actually have to belong to the current folder, it may be
-     * a copy. 
-     * @param index the index of the message
-     * @return the message placed under the given index, optimized for reading the actual content
-     * @throws MessagingException
-     */
-    protected Message getMessageContentFromCurrentFolder(int index) throws MessagingException {
-        return getMessageFromCurrentFolder(index);
-    }
-    
-    /**
      * @see PartStreamFactory#getPartStream(Part)
      */
     public InputStream getPartStream(Part part) throws MessagingException, IOException {
@@ -342,7 +329,7 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
 
             try {
                 if (inDomain(uri)) {
-                    crawlMessage((MimeMessage)getMessageContentFromCurrentFolder(i), uri, folderUri);
+                    crawlMessage(message, uri, folderUri);
                 }
             }
             catch (Exception e) {
