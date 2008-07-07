@@ -18,6 +18,7 @@ import org.semanticdesktop.aperture.mime.TestMimeStuff;
 import org.semanticdesktop.aperture.rdf.TestRDFContainers;
 import org.semanticdesktop.aperture.security.TestSecurityStuff;
 import org.semanticdesktop.aperture.subcrawler.TestSubCrawlers;
+import org.semanticdesktop.aperture.util.TestUtils;
 
 public class TestAll extends TestSuite {
 
@@ -37,5 +38,6 @@ public class TestAll extends TestSuite {
         addTest(TestLinkExtractors.suite());
         addTest(TestMimeStuff.suite());
         addTest(TestSecurityStuff.suite());
+        addTest(TestUtils.suite());
     }
 }
