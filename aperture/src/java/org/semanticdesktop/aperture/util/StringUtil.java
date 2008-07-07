@@ -81,6 +81,11 @@ public class StringUtil {
         }
     }
     
+    /**
+     * Computes the SHA1 hash for the given byte array.
+     * @param bytes the byte array
+     * @return SHA1 hash for the given byte array
+     */
     public static String sha1Hash(byte [] bytes) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA");
