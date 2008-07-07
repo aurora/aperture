@@ -15,7 +15,7 @@ import org.semanticdesktop.aperture.subcrawler.vcard.VcardSubCrawlerTest;
 import org.semanticdesktop.aperture.subcrawler.vcard.TestVcardFileCrawlerCombination;
 
 /**
- * Tests all SubCrawler implementations and related classes.
+ * Tests all utils
  */
 public class TestUtils extends TestSuite {
 
@@ -26,7 +26,7 @@ public class TestUtils extends TestSuite {
     private TestUtils() {
         super("utils");
         
-        // test the various sub crawlers
+        // test the various utils
         addTest(new TestSuite(InferenceUtilTest.class));
     }
 }
