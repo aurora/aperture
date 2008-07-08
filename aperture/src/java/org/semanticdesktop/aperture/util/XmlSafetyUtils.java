@@ -14,13 +14,9 @@ import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.nio.CharBuffer;
-import java.util.Arrays;
 
 import org.ontoware.rdf2go.model.Model;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-
-import com.sun.xml.internal.ws.util.xml.XmlUtil;
 
 
 public class XmlSafetyUtils {
