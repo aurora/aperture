@@ -14,6 +14,13 @@ import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+import java.util.Arrays;
 
 import org.ontoware.rdf2go.model.Model;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -96,7 +103,7 @@ public class XmlSafetyUtils {
         return new XmlSafeWriter(writer);
     }
     
-    public static OutputStream wrapXmlSafeOutputStream(OutputStream ostream) {
+    public static OutputStream wrapXmlSafeOutputStream(OutputStream ostream, Charset charset) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
@@ -152,25 +159,4 @@ class XmlSafeWriter extends FilterWriter {
             super.write(nstr,0,nstr.length());
         }
     }  
-}
-
-class XmlSafeOutputStream extends FilterOutputStream {
-    public XmlSafeOutputStream(OutputStream out) {
-        super(out);
-    }
-
-    @Override
-    public void write(byte[] b, int off, int len) throws IOException {
-        super.write(b, off, len);
-    }
-
-    @Override
-    public void write(byte[] b) throws IOException {
-        super.write(b);
-    }
-
-    @Override
-    public void write(int b) throws IOException {
-        super.write(b);
-    }
 }

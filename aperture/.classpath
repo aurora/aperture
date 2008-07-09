@@ -45,5 +45,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/poi-scratchpad-3.0.2-FINAL-20080204.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/JempBox-0.2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/openrdf-sesame-2.1.2-onejar-osgi.jar"/>
+	<classpathentry kind="lib" path="lib/aduna-commons-xml-2.0.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>
