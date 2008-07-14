@@ -487,7 +487,11 @@ public class ApertureTestBase extends TestCase {
             assertTrue(iterator.hasNext());
             Statement statement = iterator.next();
             assertFalse(iterator.hasNext());
-            assertEquals(statement.getObject().toString(), object.toString());
+            if (object instanceof Literal) {
+                assertEquals(((Literal)statement.getObject()).getValue(), ((Literal)object).getValue());
+            } else {
+                assertEquals(statement.getObject().toString(), object.toString());
+            }
             iterator.close();
         }
         finally {
