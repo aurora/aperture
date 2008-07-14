@@ -66,7 +66,7 @@ public class XmlSafeModelTests extends ApertureTestBase {
         model.addStatement(s1);
         model.addStatement(s2);
         assertSingleValueProperty(model, new URIImpl("urn:test1"), new URIImpl("urn:prop"),"A correct String");
-        assertSingleValueProperty(model, new URIImpl("urn:test2"), new URIImpl("urn:prop"), "A faulty String");
+        assertSingleValueProperty(model, new URIImpl("urn:test2"), new URIImpl("urn:prop"), "A  faulty   String");
         assertEquals(2,model.size());
     }
     
@@ -104,8 +104,8 @@ public class XmlSafeModelTests extends ApertureTestBase {
         model.addAll(list.iterator());
         
         assertSingleValueProperty(model, new URIImpl("urn:test1"), new URIImpl("urn:prop"), "A correct String");
-        assertSingleValueProperty(model, new URIImpl("urn:test2"), new URIImpl("urn:prop"), "A faulty String");
-        assertSingleValueProperty(model, new URIImpl("urn:test3"), new URIImpl("urn:prop"), "A wrong dtstring");
+        assertSingleValueProperty(model, new URIImpl("urn:test2"), new URIImpl("urn:prop"), "A  faulty   String");
+        assertSingleValueProperty(model, new URIImpl("urn:test3"), new URIImpl("urn:prop"), "A  wrong dtstring");
         
         ClosableIterator<Statement> it = model.findStatements(new URIImpl("urn:test4"),new URIImpl("urn:prop"), Variable.ANY);
         Statement stmt = it.next();
