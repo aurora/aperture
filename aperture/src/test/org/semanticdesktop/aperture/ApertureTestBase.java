@@ -6,6 +6,9 @@
  */
 package org.semanticdesktop.aperture;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,6 +22,7 @@ import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.QueryResultTable;
 import org.ontoware.rdf2go.model.QueryRow;
 import org.ontoware.rdf2go.model.Statement;
+import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.DatatypeLiteral;
 import org.ontoware.rdf2go.model.node.Literal;
 import org.ontoware.rdf2go.model.node.Node;
@@ -614,5 +618,23 @@ public class ApertureTestBase extends TestCase {
             }
             end = System.currentTimeMillis();
         }
+    }
+
+    /**
+     * Tests if the given model serializes properly to Xml
+     * @param modelToCheck
+     * @throws IOException
+     */
+    public void testXmlSafety(Model modelToCheck) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        modelToCheck.writeTo(baos,Syntax.RdfXml);
+        byte [] byteArray = baos.toByteArray();
+        
+        Model newModel = RDF2Go.getModelFactory().createModel();
+        newModel.open();
+        ByteArrayInputStream bais = new ByteArrayInputStream(byteArray);
+        // this should proceed without any exceptions
+        newModel.readFrom(bais,Syntax.RdfXml);
+        newModel.close();
     }
 }

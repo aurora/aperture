@@ -13,7 +13,11 @@ import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
+import org.semanticdesktop.aperture.extractor.word.WordExtractorFactory;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.RDFContainerFactory;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
+import org.semanticdesktop.aperture.util.XmlSafetyUtils;
 import org.semanticdesktop.aperture.vocabulary.NCO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
 
@@ -39,4 +43,20 @@ public class PowerPointExtractorTest extends ExtractorTestBase {
         validate(container);
         container.dispose();
     }        
+    
+    /**
+     * Tests the files gathered in the course of investigating the issue 1976336
+     * @throws Exception
+     */
+    public void testXmlSafeExtraction() throws Exception {
+        ExtractorFactory factory = new PowerPointExtractorFactory();
+        Extractor extractor = factory.get();
+        RDFContainerFactory fac = new RDFContainerFactoryImpl();
+        RDFContainerFactory xmlsafefac = XmlSafetyUtils.wrapXmlSafeRDFContainerFactory(fac);
+        
+        RDFContainer container1 = extract(DOCS_PATH +"microsoft-powerpoint-invalidunicode.ppt",extractor,xmlsafefac);
+        testXmlSafety(container1.getModel());
+        
+        validate(container1);
+    }
 }

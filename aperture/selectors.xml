@@ -184,6 +184,7 @@
 	            <filename name="org/semanticdesktop/aperture/util/*" />
 	            <filename name="org/semanticdesktop/aperture/util/ontology/*" />
 	            <filename name="lib/applewrapper-0.2.jar" />
+	            <filename name="lib/aduna-commons-xml-2.0.jar" />
 	        </or>
             <not>
                 <or>

@@ -20,6 +20,12 @@ import org.semanticdesktop.aperture.util.ResourceUtil;
 public class ExtractorTestBase extends ApertureTestBase {
 
     public RDFContainer extract(String resourceName, Extractor extractor) throws ExtractorException,
+        IOException {
+        RDFContainerFactory factory = new RDFContainerFactoryImpl();
+        return extract( resourceName, extractor, factory);
+    }
+    
+    public RDFContainer extract(String resourceName, Extractor extractor, RDFContainerFactory factory) throws ExtractorException,
             IOException {
         // setup some info
         String uriString = "http://docs-r-us.com/dummy";
@@ -30,7 +36,7 @@ public class ExtractorTestBase extends ApertureTestBase {
         assertNotNull(stream);
 
         // create a container in which the extraction results can be stored
-        RDFContainerFactory factory = new RDFContainerFactoryImpl();
+        
         RDFContainer rdfContainer = factory.newInstance(id);
 
         // apply the extractor

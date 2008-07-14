@@ -6,8 +6,6 @@
  */
 package org.semanticdesktop.aperture.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,7 +13,6 @@ import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.impl.StatementImpl;
 import org.ontoware.rdf2go.model.node.BlankNode;
 import org.ontoware.rdf2go.model.node.Variable;
@@ -45,20 +42,12 @@ public class XmlSafeModelTests extends ApertureTestBase {
     public void tearDown() throws Exception {
         // every model is supposed to produce valid RDF/XML
         
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        model.writeTo(baos,Syntax.RdfXml);
-        byte [] byteArray = baos.toByteArray();
-        
-        Model newModel = RDF2Go.getModelFactory().createModel();
-        newModel.open();
-        ByteArrayInputStream bais = new ByteArrayInputStream(byteArray);
-        // this should proceed without any exceptions
-        newModel.readFrom(bais,Syntax.RdfXml);
+        testXmlSafety(this.model);
         
         this.model.close();
         this.model = null;
     }
-    
+
     /**
      * Tests the addition of a single statement
      * @throws Exception

@@ -40,5 +40,6 @@ Export-Package: org.semanticdesktop.aperture,
  org.semanticdesktop.aperture.util.ontology,
  org.semanticdesktop.aperture.vocabulary
 Bundle-ClassPath: .,
- lib/applewrapper-0.2.jar
+ lib/applewrapper-0.2.jar,
+ lib/aduna-commons-xml-2.0.jar
 Eclipse-LazyStart: true

@@ -57,12 +57,43 @@ public class XmlSafetyUtils {
     /**
      * Strips all invalid XML Character data chars from the given string. If all characters are valid
      * character data chars, this method will return the same String.
-     * 
+     * <p>
+     * This method has been copy-pasted from:
+     * <a href="http://repo.aduna-software.org/svn/info.aduna/commons/xml/trunk/src/main/java/info/aduna/xml/XMLUtil.java">
+     * here</a> and modified slightly. The original version removed the xml-invalid chars altogether
+     * this version substitutes them with spaces
      * @param in the input string
      * @return the input string with all characters that are invalid in xml removed
      */
-    public static String makeXmlSafe(String in) {
-        return XMLUtil.removeInvalidCharacterDataChars(in);
+    public static String makeXmlSafe(String s) {
+     // first check if there are any invalid chars
+        boolean hasInvalidChars = false;
+
+        int length = s.length();
+        for (int i = 0; i < length; i++) {
+            if (!XMLUtil.isValidCharacterDataChar(s.charAt(i))) {
+                hasInvalidChars = true;
+                break;
+            }
+        }
+
+        if (hasInvalidChars) {
+            StringBuilder buffer = new StringBuilder(length);
+            for (int i = 0; i < length; i++) {
+                char c = s.charAt(i);
+                if (XMLUtil.isValidCharacterDataChar(c)) {
+                    buffer.append(c);
+                } else {
+                    // this else block is different from the original aduna-commons-xml method
+                    buffer.append(' ');
+                }
+            }
+
+            return buffer.toString();
+        }
+        else {
+            return s;
+        }
     }
        
     /**
@@ -71,12 +102,12 @@ public class XmlSafetyUtils {
      * character data chars, this method will return the same String. If any invalid characters are
      * encountered, this method returns a substring. The content of the returned substring is taken
      * from the original string, starting at the offset off, continuing for len characters, with
-     * all XML-invalid characters removed.
+     * all XML-invalid characters substituted with spaces.
      * 
      * @param in the input string
      * @param off the offset where the validity checking should begin
      * @param len the length of the substring to be checked
-     * @return the required substring with all XML-invalid characters removed
+     * @return the required substring with all XML-invalid characters substituted with spaces
      */
     public static String makeXmlSafe(String in, int off, int len) {
         if (off == 0 && len == in.length()) {
@@ -87,6 +118,8 @@ public class XmlSafetyUtils {
             char c = in.charAt(i);
             if (XMLUtil.isValidCharacterDataChar(c)) {
                 buffer.append(c);
+            } else {
+                buffer.append(' ');
             }
         }
 
@@ -96,27 +129,26 @@ public class XmlSafetyUtils {
     /**
      * Removes all non-valid XML character data chars from the specified char array. If all characters are
      * valid XML character data chars, this method will return the same array. If the method encounters any
-     * invalid characters it will return a new array whose contents will be copied from s, with the
-     * invalid characters ommited (e.g. the length will be equal to s.length - n where n is the number
-     * of XML-invalid characters).
+     * invalid characters it will return a new array whose contents will be copied from s, with the invalid
+     * characters substituted with spaces
      * 
      * @param s the array to be checked
-     * @return an array whose content is taken from s, with all XML-invalid characters removed
+     * @return an array whose content is taken from s, with all XML-invalid characters substituted with spaces
      */
-    public static char[] makeXmlSafe(char [] s) {
+    public static char[] makeXmlSafe(char[] s) {
         return makeXmlSafe(s, 0, s.length);
     }
     
     /**
-     * Removes all non-valid XML character data chars from the specified char array. If all characters are
-     * valid character data chars, this method will return the same array. If the method encounters any
-     * invalid characters it will return a portion cut from the input array, beginning with the offset
-     * off, whose length will be equal to (len - n) where n is the number of XML-invalid characters.
+     * Removes all non-valid XML character data chars from the specified char array and substitutes them with
+     * spaces. If all characters are valid character data chars, this method will return the same array. If
+     * the method encounters any invalid characters it will return a portion cut from the input array,
+     * beginning with the offset off, whose length will be equal to len.
      * 
      * @param s the array to be checked
      * @param off the offset where checking should begin
-     * @param len of the sub-array to be checked 
-     * @return an array whose content is taken from s, with all XML-invalid characters removed
+     * @param len of the sub-array to be checked
+     * @return an array whose content is taken from s, with all XML-invalid characters substituted with spaces
      */
     public static char[] makeXmlSafe(char [] s, int off, int len) {
         // first check if there are any invalid chars
@@ -135,6 +167,8 @@ public class XmlSafetyUtils {
                 char c = s[i];
                 if (XMLUtil.isValidCharacterDataChar(c)) {
                     buffer.append(c);
+                } else {
+                    buffer.append(' ');
                 }
             }
 
@@ -370,7 +404,9 @@ class XmlSafeWriter extends FilterWriter {
     @Override
     public void write(int c) throws IOException {
         if (XMLUtil.isValidCharacterDataChar(c)) {
-            super.write(c);
+            out.write(c);
+        } else {
+            out.write(' ');
         }
     }
 

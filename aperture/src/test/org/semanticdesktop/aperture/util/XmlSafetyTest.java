@@ -34,7 +34,7 @@ public class XmlSafetyTest extends TestCase {
      * Tests the makeXmlSafe(string) method
      */
     public void testMakeXmlSafeString() {
-        assertEquals(XmlSafetyUtils.makeXmlSafe("A\u0000nton\u0001i\u0002"), "Antoni");
+        assertEquals(XmlSafetyUtils.makeXmlSafe("A\u0000nton\u0001i\u0002"), "A nton i ");
         assertTrue(XmlSafetyUtils.makeXmlSafe("Antoni") == "Antoni");
     }
 
@@ -53,7 +53,8 @@ public class XmlSafetyTest extends TestCase {
         assertTrue(XmlSafetyUtils.makeXmlSafe(a1) == a1);
 
         char[] a2 = new char[] { 'A', 'n', '\u0010', 't', 'o', '\u000B', 'n', 'i' };
-        assertArrayEquals(XmlSafetyUtils.makeXmlSafe(a2), a1);
+        char[] a3 = new char[] { 'A', 'n', ' ', 't', 'o', ' ', 'n', 'i' };
+        assertArrayEquals(XmlSafetyUtils.makeXmlSafe(a2), a3);
     }
     
     /**
@@ -73,7 +74,7 @@ public class XmlSafetyTest extends TestCase {
         // this line checks if the type is ok, if not, we get a ClassCastException
         PlainLiteral plainLiteralBadFixed = (PlainLiteral)XmlSafetyUtils.makeXmlSafe(model, plainLiteralBad);
         assertTrue(plainLiteralBad != plainLiteralBadFixed);
-        assertEquals("Bad literal",plainLiteralBadFixed.getValue());
+        assertEquals("Bad   literal ",plainLiteralBadFixed.getValue());
         
         DatatypeLiteral ddLiteralOk = new DatatypeLiteralImpl("Some datatype literal",XSD._string);
         DatatypeLiteral ddLiteralBad = new DatatypeLiteralImpl("Bad \u0000\u0019literal\u0008", XSD._string);
@@ -81,7 +82,7 @@ public class XmlSafetyTest extends TestCase {
         // this line checks if the type is ok, if not, we get a ClassCastException
         DatatypeLiteral ddLiteralBadFixed = (DatatypeLiteral)XmlSafetyUtils.makeXmlSafe(model, ddLiteralBad);
         assertTrue(ddLiteralBad != ddLiteralBadFixed);
-        assertEquals("Bad literal",ddLiteralBadFixed.getValue());
+        assertEquals("Bad   literal ",ddLiteralBadFixed.getValue());
         
         LanguageTagLiteral ltLiteralOk = new LanguageTagLiteralImpl("Some plain literal","en");
         LanguageTagLiteral ltLiteralBad = new LanguageTagLiteralImpl("Bad \u0000\u0019literal\u0008","en");
@@ -89,7 +90,7 @@ public class XmlSafetyTest extends TestCase {
         // this line checks if the type is ok, if not, we get a ClassCastException
         LanguageTagLiteral ltLiteralBadFixed = (LanguageTagLiteral)XmlSafetyUtils.makeXmlSafe(model, ltLiteralBad);
         assertTrue(ltLiteralBad != ltLiteralBadFixed);
-        assertEquals("Bad literal",ltLiteralBadFixed.getValue());
+        assertEquals("Bad   literal ",ltLiteralBadFixed.getValue());
         
     }
 
@@ -106,16 +107,17 @@ public class XmlSafetyTest extends TestCase {
         xmlSafeWriter.write('\u0000');
         xmlSafeWriter.write('\u0001');
         xmlSafeWriter.write('\u0019');
-        assertTrue(caw.toCharArray().length == 6);
+        assertTrue(caw.toCharArray().length == 9);
 
         xmlSafeWriter.write(new char[] { 'A', 'p', 'e', 'r', 't', 'u', 'r', 'e' });
         xmlSafeWriter.write(new char[] { '\u0004', '\u0005'});
-        assertTrue(caw.toCharArray().length == 14);
+        assertTrue(caw.toCharArray().length == 19);
         xmlSafeWriter.write("xxApe\u0003rtur\u0015exx",2,10);
-        assertTrue(caw.toCharArray().length == 22);
+        assertTrue(caw.toCharArray().length == 29);
 
-        assertArrayEquals(caw.toCharArray(), new char[] { 'A', 'n', 't', 'o', 'n', 'i', 'A', 'p', 'e', 'r',
-                't', 'u', 'r', 'e', 'A', 'p', 'e', 'r', 't', 'u', 'r', 'e' });
+        assertArrayEquals(caw.toCharArray(),
+            new char[] { 'A', 'n', 't', 'o', 'n', 'i', ' ', ' ', ' ', 'A', 'p', 'e', 'r', 't', 'u', 'r', 'e',
+                    ' ', ' ', 'A', 'p', 'e', ' ', 'r', 't', 'u', 'r', ' ', 'e' });
     }
     
     /**
@@ -136,6 +138,4 @@ public class XmlSafetyTest extends TestCase {
         assertEquals("This  is  a faulty string",s2);
         assertEquals(s2,s1);
     }
-    
-    
 }
