@@ -98,10 +98,16 @@ public class FlickrCrawler extends CrawlerBase {
 
                 final String photoUriString = photoUriPrefix + id+ "/";
 
-                accessData.touch(photoUriString);
-
                 ObjectType objectType;
-                String timeMillis = accessData.get(photoUriString, AccessData.DATE_KEY);
+                
+                String timeMillis;
+                if (accessData!=null) {
+                    accessData.touch(photoUriString);
+                    timeMillis = accessData.get(photoUriString, AccessData.DATE_KEY);
+                } else { 
+                    timeMillis=null; 
+                }
+                
                 if (timeMillis == null) {
                     // FIXME check whether AccessData really works
                     objectType = ObjectType.NEW;
@@ -122,8 +128,8 @@ public class FlickrCrawler extends CrawlerBase {
                     reportUnmodifiedDataObject(photoUriString);
                     continue;
                 }
-
-                accessData.put(photoUriString, AccessData.DATE_KEY, Long.toString(System.currentTimeMillis()));
+                
+                if (accessData!=null) accessData.put(photoUriString, AccessData.DATE_KEY, Long.toString(System.currentTimeMillis()));
 
                 List<DataObject> dataObjects = new ArrayList<DataObject>();
 
@@ -135,11 +141,12 @@ public class FlickrCrawler extends CrawlerBase {
                     rdf.add(NFO.fileUrl, photo.getUrl());
                     rdf.add(NIE.interpretedAs, objPhotoIE.getID());
                 }
-                DataObject objPhotoDOOriginalImage = newDataObject(dataObjects, photo.getUrl());
-                {
+                // only attempt downloading original image, if password/secret is set
+                if (credentials.secret!=null) {
+                    DataObject objPhotoDOOriginalImage = newDataObject(dataObjects, photo.getUrl());
                     RDFContainer rdf = objPhotoDOOriginalImage.getMetadata();
                     rdf.add(RDF.type, NFO.Image);
-                    photo.setOriginalSecret(credentials.secret);
+                     photo.setOriginalSecret(credentials.secret);
                     rdf.add(NFO.fileUrl, photo.getOriginalUrl());
                     rdf.add(NIE.interpretedAs, objPhotoIE.getID());
                 }
@@ -254,11 +261,15 @@ public class FlickrCrawler extends CrawlerBase {
 
         private Flickr flickr;
 
+        public FlickrCredentials(final String apiKey) throws IOException, FlickrException, SAXException {
+            this(apiKey,null);
+        }
+        
         public FlickrCredentials(final String apiKey, final String secret) throws IOException,
                 FlickrException, SAXException {
             this.secret = secret;
             flickr = new Flickr(apiKey);
-            RequestContext.getRequestContext().setSharedSecret(secret);
+            if (secret!=null) RequestContext.getRequestContext().setSharedSecret(secret);
 
 //            AuthInterface authIf = flickr.getAuthInterface();
 //            frob = authIf.getFrob();
