@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2008 Aduna and Deutsches Forschungszentrum für Künstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.

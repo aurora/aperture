@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -215,6 +215,12 @@ public class VocabularyWriter {
 		try 
 		{
 			// preamble
+		    outP.println("/*");
+		    outP.println(" * Copyright (c) 2006 - 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.");
+		    outP.println(" * All rights reserved.");
+	        outP.println(" * ");
+            outP.println(" * Licensed under the Academic Free License version 3.0.");
+            outP.println(" */");
 			outP.println("package "+packagen+";");
             outP.println("import java.io.InputStream;");
             outP.println("import java.io.FileNotFoundException;");

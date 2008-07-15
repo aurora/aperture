@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006 - 2007 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2006 - 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
  * Licensed under the Academic Free License version 3.0.
@@ -184,6 +184,12 @@ public class DataSourceClassGenerator {
             List<URI> optionsList = getConfigurationOptionsList(fresnelLensURI);
             
             // preamble
+            outputStream.println("/*");
+            outputStream.println(" * Copyright (c) 2006 - 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.");
+            outputStream.println(" * All rights reserved.");
+            outputStream.println(" * ");
+            outputStream.println(" * Licensed under the Academic Free License version 3.0.");
+            outputStream.println(" */");
             outputStream.println("package " + packageName + ";");
             outputStream.println("import " + URI.class.getName() + ";");
             outputStream.println("import " + Node.class.getName() + ";");

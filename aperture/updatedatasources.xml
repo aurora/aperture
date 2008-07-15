@@ -71,7 +71,7 @@ your copy of ANT at http://ant.apache.org/
                target="${java.target.version}"
                srcdir="${src.dir}"
                includes="**/util/*.java,**/vocabulary/*.java"
-               excludes="**/extractor/**,**/InferenceUtil*"
+               excludes="**/extractor/**,**/*Test*"
                destdir="${classes.java.dir}"
                classpathref="classpath"
                debug="${compile.debug}"
@@ -89,6 +89,7 @@ your copy of ANT at http://ant.apache.org/
     <target name="createdatasourcevocabulary"
             description="generates a single vocabulary class">
         <java classname="org.semanticdesktop.aperture.util.VocabularyWriter">
+            <!--<arg value="-f" />--> <!-- uncomment this arg to force the generation -->
             <arg value="-i" />
             <arg value="${vocabulary.package.dir}/${vocabulary.input.file}" />
             <arg value="-o" />
@@ -105,6 +106,7 @@ your copy of ANT at http://ant.apache.org/
             </classpath>
         </java>
         <java classname="org.semanticdesktop.aperture.util.DataSourceClassGenerator">
+            <!--<arg value="-f" />--> <!-- uncomment this arg to force the generation -->
             <arg value="-i" />
             <arg value="${vocabulary.package.dir}/${vocabulary.input.file}" />
             <arg value="-o" />

@@ -1,9 +1,9 @@
 /*
- * ProgressDialog.java
- *
- * Created on 15 lipiec 2008, 19:57
+ * Copyright (c) 2005 - 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * All rights reserved.
+ * 
+ * Licensed under the Academic Free License version 3.0.
  */
-
 package org.semanticdesktop.aperture.examples.fileinspector;
 
 /**

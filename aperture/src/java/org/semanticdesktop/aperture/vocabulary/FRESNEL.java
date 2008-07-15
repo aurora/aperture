@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2006 - 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * All rights reserved.
+ * 
+ * Licensed under the Academic Free License version 3.0.
+ */
 package org.semanticdesktop.aperture.vocabulary;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
@@ -7,7 +13,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Sun Jun 29 15:42:10 CEST 2008
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Jul 15 22:36:07 CEST 2008
  * input file: D:\workspace\aperture/doc/ontology/fresnel.owl
  * namespace: http://www.w3.org/2004/09/fresnel#
  */
@@ -243,7 +249,7 @@ public class FRESNEL {
      * Type: Instance of http://www.w3.org/2002/07/owl#DatatypeProperty <br/>
      * Label: label style^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Comment: Attaching a symbol appropriate for styling labels (only works in conjunction with propertyFormatDomain).^^http://www.w3.org/2001/XMLSchema#string  <br/>
-     * Domain: _:node13ba8u9l8x93  <br/>
+     * Domain: _:node13ck6vouqx93  <br/>
      * Range: http://www.w3.org/2001/XMLSchema#string  <br/>
      */
     public static final URI labelStyle = new URIImpl("http://www.w3.org/2004/09/fresnel#labelStyle");
@@ -251,7 +257,7 @@ public class FRESNEL {
      * Type: Instance of http://www.w3.org/2002/07/owl#DatatypeProperty <br/>
      * Label: property style^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Comment: Attaching a symbol appropriate for styling properties (only works in conjunction with propertyFormatDomain).^^http://www.w3.org/2001/XMLSchema#string  <br/>
-     * Domain: _:node13ba8u9l8x102  <br/>
+     * Domain: _:node13ck6vouqx102  <br/>
      * Range: http://www.w3.org/2001/XMLSchema#string  <br/>
      */
     public static final URI propertyStyle = new URIImpl("http://www.w3.org/2004/09/fresnel#propertyStyle");
@@ -259,7 +265,7 @@ public class FRESNEL {
      * Type: Instance of http://www.w3.org/2002/07/owl#DatatypeProperty <br/>
      * Label: resource style^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Comment: Attaching a symbol appropriate for styling a resource.  resourceStyle is ignored if not used with :classFormatDomain or :instanceFormatDomain.^^http://www.w3.org/2001/XMLSchema#string  <br/>
-     * Domain: _:node13ba8u9l8x112  <br/>
+     * Domain: _:node13ck6vouqx112  <br/>
      * Range: http://www.w3.org/2001/XMLSchema#string  <br/>
      */
     public static final URI resourceStyle = new URIImpl("http://www.w3.org/2004/09/fresnel#resourceStyle");
@@ -267,7 +273,7 @@ public class FRESNEL {
      * Type: Instance of http://www.w3.org/2002/07/owl#DatatypeProperty <br/>
      * Label: value style^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Comment: Attaching a symbol appropriate for styling the values of a property (only works in conjunction with propertyFormatDomain).^^http://www.w3.org/2001/XMLSchema#string  <br/>
-     * Domain: _:node13ba8u9l8x129  <br/>
+     * Domain: _:node13ck6vouqx129  <br/>
      * Range: http://www.w3.org/2001/XMLSchema#string  <br/>
      */
     public static final URI valueStyle = new URIImpl("http://www.w3.org/2004/09/fresnel#valueStyle");
@@ -291,7 +297,7 @@ public class FRESNEL {
      * Type: Instance of http://www.w3.org/2002/07/owl#ObjectProperty <br/>
      * Label: group^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Comment: Specifies the format group to which a format or a lens belongs.^^http://www.w3.org/2001/XMLSchema#string  <br/>
-     * Domain: _:node13ba8u9l8x83  <br/>
+     * Domain: _:node13ck6vouqx83  <br/>
      * Range: http://www.w3.org/2004/09/fresnel#Group  <br/>
      */
     public static final URI group = new URIImpl("http://www.w3.org/2004/09/fresnel#group");
@@ -300,7 +306,7 @@ public class FRESNEL {
      * Label: hide properties^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Comment: List of all properties which should be hidden.  Must be used together with 'fresnel:showProperties fresnel:allProperties.'^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Domain: http://www.w3.org/2004/09/fresnel#Lens  <br/>
-     * Range: _:node13ba8u9l8x86  <br/>
+     * Range: _:node13ck6vouqx86  <br/>
      */
     public static final URI hideProperties = new URIImpl("http://www.w3.org/2004/09/fresnel#hideProperties");
     /**
@@ -330,7 +336,7 @@ public class FRESNEL {
      * Type: Instance of http://www.w3.org/2002/07/owl#ObjectProperty <br/>
      * Label: label format^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Comment: Assign content formatting to a set of labels (theoretically, this does not make much sense, but it does round out the set of formatting properties; only works in conjunction with propertyFormatDomain).^^http://www.w3.org/2001/XMLSchema#string  <br/>
-     * Domain: _:node13ba8u9l8x90  <br/>
+     * Domain: _:node13ck6vouqx90  <br/>
      * Range: http://www.w3.org/2004/09/fresnel#FormatDescriptionSubstitution  <br/>
      */
     public static final URI labelFormat = new URIImpl("http://www.w3.org/2004/09/fresnel#labelFormat");
@@ -354,7 +360,7 @@ public class FRESNEL {
      * Type: Instance of http://www.w3.org/2002/07/owl#ObjectProperty <br/>
      * Label: property format^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Comment: Assign content formatting to a set of properties (only works in conjunction with propertyFormatDomain).^^http://www.w3.org/2001/XMLSchema#string  <br/>
-     * Domain: _:node13ba8u9l8x96  <br/>
+     * Domain: _:node13ck6vouqx96  <br/>
      * Range: http://www.w3.org/2004/09/fresnel#FormatDescriptionSubstitution  <br/>
      */
     public static final URI propertyFormat = new URIImpl("http://www.w3.org/2004/09/fresnel#propertyFormat");
@@ -363,14 +369,14 @@ public class FRESNEL {
      * Label: property format domain^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Comment: The Format should be used for the specified properties.^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Domain: http://www.w3.org/2004/09/fresnel#Format  <br/>
-     * Range: _:node13ba8u9l8x99  <br/>
+     * Range: _:node13ck6vouqx99  <br/>
      */
     public static final URI propertyFormatDomain = new URIImpl("http://www.w3.org/2004/09/fresnel#propertyFormatDomain");
     /**
      * Type: Instance of http://www.w3.org/2002/07/owl#ObjectProperty <br/>
      * Label: purpose^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Comment: Specifies a purpose for which a lens or format might be appropriate.^^http://www.w3.org/2001/XMLSchema#string  <br/>
-     * Domain: _:node13ba8u9l8x105  <br/>
+     * Domain: _:node13ck6vouqx105  <br/>
      * Range: http://www.w3.org/2004/09/fresnel#Purpose  <br/>
      */
     public static final URI purpose = new URIImpl("http://www.w3.org/2004/09/fresnel#purpose");
@@ -378,7 +384,7 @@ public class FRESNEL {
      * Type: Instance of http://www.w3.org/2002/07/owl#ObjectProperty <br/>
      * Label: resource format^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Comment: Assign content formatting to a set of resources (only works in conjunction with classFormatDomain and instanceFormatDomain).^^http://www.w3.org/2001/XMLSchema#string  <br/>
-     * Domain: _:node13ba8u9l8x109  <br/>
+     * Domain: _:node13ck6vouqx109  <br/>
      * Range: http://www.w3.org/2004/09/fresnel#FormatDescriptionNoSubstitution  <br/>
      */
     public static final URI resourceFormat = new URIImpl("http://www.w3.org/2004/09/fresnel#resourceFormat");
@@ -387,7 +393,7 @@ public class FRESNEL {
      * Label: show properties^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Comment: List of all properties which should be shown.^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Domain: http://www.w3.org/2004/09/fresnel#Lens  <br/>
-     * Range: _:node13ba8u9l8x115  <br/>
+     * Range: _:node13ck6vouqx115  <br/>
      */
     public static final URI showProperties = new URIImpl("http://www.w3.org/2004/09/fresnel#showProperties");
     /**
@@ -402,8 +408,8 @@ public class FRESNEL {
      * Type: Instance of http://www.w3.org/2002/07/owl#ObjectProperty <br/>
      * Label: use^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Comment: Explicit definition of fresnel:Group containing formats that should be used to render the lens or sublens.^^http://www.w3.org/2001/XMLSchema#string  <br/>
-     * Domain: _:node13ba8u9l8x120  <br/>
-     * Range: _:node13ba8u9l8x123  <br/>
+     * Domain: _:node13ck6vouqx120  <br/>
+     * Range: _:node13ck6vouqx123  <br/>
      */
     public static final URI use = new URIImpl("http://www.w3.org/2004/09/fresnel#use");
     /**
@@ -418,7 +424,7 @@ public class FRESNEL {
      * Type: Instance of http://www.w3.org/2002/07/owl#ObjectProperty <br/>
      * Label: value format^^http://www.w3.org/2001/XMLSchema#string  <br/>
      * Comment: Assign content formatting to a set of values (only works in conjunction with propertyFormatDomain).^^http://www.w3.org/2001/XMLSchema#string  <br/>
-     * Domain: _:node13ba8u9l8x126  <br/>
+     * Domain: _:node13ck6vouqx126  <br/>
      * Range: http://www.w3.org/2004/09/fresnel#FormatDescriptionNoSubstitution  <br/>
      */
     public static final URI valueFormat = new URIImpl("http://www.w3.org/2004/09/fresnel#valueFormat");
