@@ -178,12 +178,18 @@ public class FileSystemCrawler extends CrawlerBase {
         }
 
         if (file.isFile() && depth >= 0) {
-            // report the File
-            if (inDomain(file.toURI().toString()) && file.canRead() && file.length() <= maximumSize) {
+            boolean inDomain = inDomain(file.toURI().toString());
+            boolean canRead = file.canRead();
+            boolean smallerThanMax = file.length() <= maximumSize;
+            if ( inDomain && canRead && smallerThanMax) {
+                // report the File
                 crawlSingleFile(file);
-            }
-            else {
-                logger.info("File " + file.toURI() + " is not in domain. Skipping.");
+            } else if (!inDomain) {
+                logger.info("File " + file.toURI() + " is outside the domain boundaries for this crawler. Skipping.");
+            } else if (!canRead) {
+                logger.info("Can't read file " + file.toURI() + ". Skipping.");
+            } else if (!smallerThanMax) {
+                logger.info("File " + file.toURI() + " exceeds the maximum size specified for this crawler. Skipping.");
             }
 
             // by definition we've completed this subtree
