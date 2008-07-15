@@ -64,7 +64,7 @@ public class FileInspectorFrame extends JFrame {
      */
     public FileInspectorPanel getFileInspector() {
         if (fileInspector == null) {
-            fileInspector = new FileInspectorPanel();
+            fileInspector = new FileInspectorPanel(this);
         }
         return fileInspector;
     }

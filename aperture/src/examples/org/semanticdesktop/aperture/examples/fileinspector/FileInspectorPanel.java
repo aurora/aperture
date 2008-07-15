@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -57,6 +58,8 @@ public class FileInspectorPanel extends JPanel {
 
     private RDFContainer lastContainer;
 
+    private JFrame parent;
+    
     /**
      * initialized inference utilities
      */
@@ -65,10 +68,10 @@ public class FileInspectorPanel extends JPanel {
     /**
      * This is the default constructor
      */
-    public FileInspectorPanel() {
+    public FileInspectorPanel(JFrame parent) {
         super();
         initialize();
-
+        this.parent = parent;
         initializeAperture();
     }
 
@@ -114,9 +117,6 @@ public class FileInspectorPanel extends JPanel {
 
         // initialize the extractor registry
         extractorRegistry = new DefaultExtractorRegistry();
-        
-        // intialize Inference Util
-        inferenceUtil = InferenceUtil.createForCoreOntologies();
     };
 
     public void setFile(File file) {
@@ -179,7 +179,14 @@ public class FileInspectorPanel extends JPanel {
 
             // extract the full-text and metadata
             RDFContainer container = null;
-
+            final ProgressDialog dialog = new ProgressDialog(parent,true);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    dialog.setText("Extracting text");
+                    dialog.setLocationByPlatform(true);
+                    dialog.setVisible(true);
+                }
+            });
             Set factories = extractorRegistry.get(mimeType);
             if (factories != null && !factories.isEmpty()) {
                 ExtractorFactory factory = (ExtractorFactory) factories.iterator().next();
@@ -194,11 +201,24 @@ public class FileInspectorPanel extends JPanel {
                 currentExtractor.extract(container.getDescribedUri(), buffer, null, mimeType, container);
                 stream.close();
             }
-            
             // do inference
-            if (inference)
+            if (inference) {
+                if (inferenceUtil == null) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            dialog.setText("Initializing the inference engine (this will happen only once)");
+                        }
+                    });
+                    inferenceUtil = InferenceUtil.createForCoreOntologies();
+                }
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        dialog.setText("Inferring additional triples");
+                        dialog.setVisible(true);
+                    }
+                });
                 inferenceUtil.extendContent(container);
-
+            }
             // update the UI
             final RDFContainer finalContainer = container;
 
@@ -216,6 +236,11 @@ public class FileInspectorPanel extends JPanel {
                     lastContainer = finalContainer;
                 }
             });
+            SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        dialog.setVisible(false);
+                    }
+                });
         }
         catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(this, "File not found: " + file.getPath(), "File not found",
