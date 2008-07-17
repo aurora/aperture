@@ -185,11 +185,11 @@ public class FileSystemCrawler extends CrawlerBase {
                 // report the File
                 crawlSingleFile(file);
             } else if (!inDomain) {
-                logger.info("File " + file.toURI() + " is outside the domain boundaries for this crawler. Skipping.");
+                logger.info("File " + file.toURI() + " is outside the domain boundaries for this data source. Skipping.");
             } else if (!canRead) {
                 logger.info("Can't read file " + file.toURI() + ". Skipping.");
             } else if (!smallerThanMax) {
-                logger.info("File " + file.toURI() + " exceeds the maximum size specified for this crawler. Skipping.");
+                logger.info("File " + file.toURI() + " exceeds the maximum size specified for this data source. Skipping.");
             }
 
             // by definition we've completed this subtree
