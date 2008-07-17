@@ -31,7 +31,7 @@ import org.semanticdesktop.aperture.vocabulary.NCO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
 
 /**
- * A test case for the vcard extractor
+ * A test case for the vcard subcrawler
  */
 public class VcardSubCrawlerTest extends ApertureTestBase {
 
