@@ -6,33 +6,19 @@
  */
 package org.semanticdesktop.aperture.examples;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.Syntax;
-import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.semanticdesktop.aperture.websites.flickr.FlickrCrawler;
-import org.semanticdesktop.aperture.websites.flickr.FlickrDataSource;
-import org.semanticdesktop.aperture.accessor.DataObject;
-import org.semanticdesktop.aperture.accessor.FileDataObject;
-import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
-import org.semanticdesktop.aperture.crawler.Crawler;
-import org.semanticdesktop.aperture.crawler.CrawlerHandler;
-import org.semanticdesktop.aperture.crawler.ExitCode;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
-import org.semanticdesktop.aperture.extractor.ExtractorException;
-import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
-import org.semanticdesktop.aperture.vocabulary.NIE;
+import org.semanticdesktop.aperture.websites.flickr.FlickrCrawler;
+import org.semanticdesktop.aperture.websites.flickr.FlickrDataSource;
 
 public class ExampleFlickrCrawler extends AbstractExampleCrawler {
 	

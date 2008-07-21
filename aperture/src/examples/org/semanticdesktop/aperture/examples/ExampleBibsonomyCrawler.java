@@ -6,33 +6,16 @@
  */
 package org.semanticdesktop.aperture.examples;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.RDF2Go;
-import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.Syntax;
-import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.semanticdesktop.aperture.accessor.DataObject;
-import org.semanticdesktop.aperture.accessor.FileDataObject;
-import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
-import org.semanticdesktop.aperture.crawler.Crawler;
-import org.semanticdesktop.aperture.crawler.CrawlerHandler;
-import org.semanticdesktop.aperture.crawler.ExitCode;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
-import org.semanticdesktop.aperture.extractor.ExtractorException;
-import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
-import org.semanticdesktop.aperture.vocabulary.NIE;
-import org.semanticdesktop.aperture.vocabulary.TAGGING;
-import org.semanticdesktop.aperture.websites.AbstractTagCrawler;
 import org.semanticdesktop.aperture.websites.bibsonomy.BibsonomyCrawler;
 import org.semanticdesktop.aperture.websites.bibsonomy.BibsonomyDataSource;
 
@@ -78,7 +61,7 @@ public class ExampleBibsonomyCrawler extends AbstractExampleCrawler {
         //set the Bibsonomy Username
         source.setConfiguration(configuration);
         source.setUsername(username);
-        source.setCrawlType(BibsonomyDataSource.CrawlType.ItemsAndTagsCrawlType);
+        source.setCrawlType(BibsonomyDataSource.CrawlType.TagsAndItemsCrawlType);
         
         
         // setup a crawler that can handle this type of DataSource
@@ -87,7 +70,6 @@ public class ExampleBibsonomyCrawler extends AbstractExampleCrawler {
         crawler.setDataAccessorRegistry(new DefaultDataAccessorRegistry());
         crawler.setAccessData(new AccessDataImpl());
         crawler.setCrawlerHandler(getHandler());
-        crawler.setAccessData(getAccessData());
         
         // start crawling
         crawler.crawl();

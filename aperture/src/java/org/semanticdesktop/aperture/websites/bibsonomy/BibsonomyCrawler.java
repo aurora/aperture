@@ -125,8 +125,7 @@ public class BibsonomyCrawler extends AbstractTagCrawler {
         // crawl the rest
         BibsonomyDataSource.CrawlType crawlType = ((BibsonomyDataSource)source).getCrawlType();
         if (crawlType != null && 
-            (crawlType.equals(BibsonomyDataSource.CrawlType.ItemsAndTagsCrawlType) || 
-             crawlType.equals(BibsonomyDataSource.CrawlType.ItemsAndTagsCrawlType))) {
+            (crawlType.equals(BibsonomyDataSource.CrawlType.TagsAndItemsCrawlType))) {
             for (Entry<Tag, List<String>> e : links.entrySet()) {
                 reportItem(e.getKey(), e.getValue());
             }

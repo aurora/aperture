@@ -26,8 +26,8 @@
 	rdfs:range :CrawlType .
 	
 :CrawlType a rdfs:Class .
-:ItemsAndTagsCrawlType a :CrawlType .
-:ItemsOnlyCrawlType a :CrawlType .
+:TagsAndItemsCrawlType a :CrawlType .
+:TagsOnlyCrawlType a :CrawlType .
 
 :crawlTypeFormat rdf:type fresnel:Format ;
     fresnel:propertyFormatDomain :crawlType ;
@@ -35,13 +35,13 @@
     	a sourceformat:ComboBoxWidget;
 		sourceformat:hasEntry [ 
 			a sourceformat:ComboBoxEntry ;
-			sourceformat:label "Items and tags" ;
-			sourceformat:value :ItemsAndTagsCrawlType  
+			sourceformat:label "Tags and items" ;
+			sourceformat:value :TagsAndItemsCrawlType  
 		] ;
 		sourceformat:hasEntry [ 
 			a sourceformat:ComboBoxEntry ;
-			sourceformat:label "Items only" ;
-			sourceformat:value :ItemsOnlyCrawlType 
+			sourceformat:label "Tags only" ;
+			sourceformat:value :TagsOnlyCrawlType 
 		] 
     ] . 
     

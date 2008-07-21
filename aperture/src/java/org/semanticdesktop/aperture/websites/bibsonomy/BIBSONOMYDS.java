@@ -55,11 +55,11 @@ public class BIBSONOMYDS {
     /**
      * Type: Instance of http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#CrawlType <br/>
      */
-    public static final URI ItemsAndTagsCrawlType = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#ItemsAndTagsCrawlType");
+    public static final URI TagsAndItemsCrawlType = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#TagsAndItemsCrawlType");
     /**
      * Type: Instance of http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#CrawlType <br/>
      */
-    public static final URI ItemsOnlyCrawlType = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#ItemsOnlyCrawlType");
+    public static final URI TagsOnlyCrawlType = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#TagsOnlyCrawlType");
     /**
      * Type: Property <br/>
      * Label: Crawl type  <br/>

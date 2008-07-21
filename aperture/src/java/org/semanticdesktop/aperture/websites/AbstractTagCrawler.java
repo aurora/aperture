@@ -25,6 +25,7 @@ import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.UpdateException;
 import org.semanticdesktop.aperture.vocabulary.NAO;
+import org.semanticdesktop.aperture.vocabulary.NFO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,7 +131,10 @@ public abstract class AbstractTagCrawler extends CrawlerBase {
 			//RDFContainer rdf=handler.getRDFContainerFactory(this,uriString).getRDFContainer(turi);
 			RDFContainer rdf= getRDFContainerFactory(uriString).getRDFContainer(turi);
 			DataObject o=new DataObjectBase(turi,source,rdf);
-			rdf.add(RDF.type,NAO.Tag);
+			
+			// Report Item add information about websites (items)
+			
+			rdf.add(RDF.type, NFO.Website);
 			//rdf.add(RDFS.LABEL,item.getName());
 			rdf.add(RDFS.label,URLDecoder.decode(item.getName(),"utf-8"));
 			for (String tag: tags)
@@ -160,7 +164,7 @@ public abstract class AbstractTagCrawler extends CrawlerBase {
      *            a URI
      * @return a short name for it, for display.
      */
-    private String getShortName(String uri) {
+    protected String getShortName(String uri) {
         if (uri.indexOf('#') > 0)
             uri = uri.substring(uri.lastIndexOf('#') + 1);
         else if (uri.indexOf('/') > 0)

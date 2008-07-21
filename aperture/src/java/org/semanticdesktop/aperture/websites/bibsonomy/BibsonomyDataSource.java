@@ -60,31 +60,31 @@ public class BibsonomyDataSource extends DataSourceBase {
      * Enum of possible values of the crawlType property
      */
      public static enum CrawlType {
-         /** Constant representing http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#ItemsAndTagsCrawlType*/
-         ItemsAndTagsCrawlType,
-         /** Constant representing http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#ItemsOnlyCrawlType*/
-         ItemsOnlyCrawlType;
+         /** Constant representing http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#TagsAndItemsCrawlType*/
+         TagsAndItemsCrawlType,
+         /** Constant representing http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#TagsOnlyCrawlType*/
+         TagsOnlyCrawlType;
 
          public static CrawlType fromUri(URI uri) {
              if (uri == null) {
                  return null;
              }
-             else if (uri.equals(BIBSONOMYDS.ItemsAndTagsCrawlType)) {
-                 return ItemsAndTagsCrawlType;
+             else if (uri.equals(BIBSONOMYDS.TagsAndItemsCrawlType)) {
+                 return TagsAndItemsCrawlType;
              }
-             else if (uri.equals(BIBSONOMYDS.ItemsOnlyCrawlType)) {
-                 return ItemsOnlyCrawlType;
+             else if (uri.equals(BIBSONOMYDS.TagsOnlyCrawlType)) {
+                 return TagsOnlyCrawlType;
              }
              else {
                  return null;
              }
          }
          public URI toUri() {
-             if (this.equals(ItemsAndTagsCrawlType)) {
-                 return BIBSONOMYDS.ItemsAndTagsCrawlType;
+             if (this.equals(TagsAndItemsCrawlType)) {
+                 return BIBSONOMYDS.TagsAndItemsCrawlType;
              }
-             else if (this.equals(ItemsOnlyCrawlType)) {
-                 return BIBSONOMYDS.ItemsOnlyCrawlType;
+             else if (this.equals(TagsOnlyCrawlType)) {
+                 return BIBSONOMYDS.TagsOnlyCrawlType;
              }
              else {
                  return null;
