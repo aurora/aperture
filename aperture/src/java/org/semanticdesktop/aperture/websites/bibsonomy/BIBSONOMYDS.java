@@ -13,8 +13,8 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Jul 15 22:54:38 CEST 2008
- * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/bibsonomy/bibsonomyDataSource.ttl
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Jul 21 14:59:21 CEST 2008
+ * input file: /Users/pikson/DFKI/psew_workspace/aperture/src/java/org/semanticdesktop/aperture/websites/bibsonomy/bibsonomyDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/11/bibsonomyds#
  */
 public class BIBSONOMYDS {
