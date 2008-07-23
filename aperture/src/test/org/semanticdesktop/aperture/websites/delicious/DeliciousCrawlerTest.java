@@ -7,15 +7,20 @@
 package org.semanticdesktop.aperture.websites.delicious;
 
 import java.io.File;
+import java.util.logging.Logger;
 
 import org.ontoware.rdf2go.model.ModelSet;
+import org.ontoware.rdf2go.model.node.Variable;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.examples.ExampleDeliciousCrawler;
 import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 
 
 public class DeliciousCrawlerTest extends ApertureTestBase {
-
+    
+    
+    
     ExampleDeliciousCrawler crawler;
     DeliciousDataSource deliciousDataSource;
     protected void setUp() throws Exception {
@@ -34,10 +39,11 @@ public class DeliciousCrawlerTest extends ApertureTestBase {
     public void testCrawl() throws Exception {
         crawler.crawl();
         SimpleCrawlerHandler handler = crawler.getHandler();
+        
         ModelSet modelSet = handler.getModelSet();
         modelSet.open();
         modelSet.dump();
-        //TODO verify if content is correct and valid NIE
+        assertTrue(modelSet.containsStatements(Variable.ANY, new URIImpl("http://aperture.sourceforge.net/"), new URIImpl("http://www.semanticdesktop.org/ontologies/2007/01/19/nie#plainTextContent"), Variable.ANY));
     }
 
 }

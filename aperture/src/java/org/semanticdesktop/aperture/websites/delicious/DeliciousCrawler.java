@@ -45,7 +45,7 @@ public class DeliciousCrawler extends AbstractTagCrawler {
     /** URL to the tags API */
 	public static final String TAGS_API="del.icio.us/api/tags/get";
 	/** URL to the posts API */
-	public static final String POSTS_API="del.icio.us/api/posts/get";
+	public static final String POSTS_API="del.icio.us/api/posts/all";
 	
 	private WebAccessData wad= null;
     private LinkedList<CrawlJob> jobsQueue;
@@ -147,10 +147,10 @@ public class DeliciousCrawler extends AbstractTagCrawler {
                 RDFContainer rdf = getRDFContainerFactory(postHref).getRDFContainer(postURI);
               
                 
-                DataAccessor accessor = getDataAccessor(url);
-                RDFContainerFactory containerFactory = getRDFContainerFactory(url);
-                wad = new WebAccessData(accessData);
-                DataObject o = accessor.getDataObjectIfModified(url, source, wad, null,  containerFactory);
+                DataAccessor accessor = getDataAccessor(postHref);
+                RDFContainerFactory containerFactory = getRDFContainerFactory(postHref);
+                //wad = new WebAccessData(accessData);
+                DataObject o = accessor.getDataObject(postHref, source, null, containerFactory);
                 
               
                 
