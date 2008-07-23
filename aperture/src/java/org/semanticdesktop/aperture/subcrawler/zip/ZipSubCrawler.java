@@ -6,9 +6,11 @@
  */
 package org.semanticdesktop.aperture.subcrawler.zip;
 
+import java.io.BufferedInputStream;
 import java.io.FilterInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -20,6 +22,7 @@ import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
+import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.subcrawler.SubCrawler;
@@ -64,10 +67,9 @@ public class ZipSubCrawler implements SubCrawler {
             ZipEntry zipEntry = null;
             
             parentMetadata.add(RDF.type, NFO.Archive);
-            
             while ((zipEntry = zipStream.getNextEntry()) != null && ! stopRequested) {
                 try {
-                    processSingleEntry(zipStream,zipEntry,stream,handler,dataSource,accessData,parentMetadata);
+                    processSingleEntry(zipStream,zipEntry,handler,dataSource,accessData,parentMetadata);
                 } finally {
                     zipStream.closeEntry();
                 }
@@ -80,7 +82,7 @@ public class ZipSubCrawler implements SubCrawler {
         }
     }
 
-    private void processSingleEntry(ZipInputStream zipStream, ZipEntry zipEntry, InputStream stream,
+    private void processSingleEntry(ZipInputStream zipStream, ZipEntry zipEntry, 
             SubCrawlerHandler handler, DataSource dataSource, AccessData accessData,
             RDFContainer parentMetadata) {
         URI uri = parentMetadata.getModel().createURI(
@@ -95,7 +97,7 @@ public class ZipSubCrawler implements SubCrawler {
             try {
                 long lastModifiedDate = Long.parseLong(lastModifiedDateString);
                 long currentModifiedDate = zipEntry.getTime();
-                if (lastModifiedDate == currentModifiedDate) {
+                if (currentModifiedDate != -1 && lastModifiedDate == currentModifiedDate) {
                     handler.objectNotModified(uri.toString());
                     return;
                 }
@@ -108,16 +110,8 @@ public class ZipSubCrawler implements SubCrawler {
         RDFContainerFactory fac = handler.getRDFContainerFactory(uri.toString());
         RDFContainer container = fac.getRDFContainer(uri);
         container.add(RDF.type, NFO.ArchiveItem);
-        container.add(NIE.isPartOf, parentMetadata.getDescribedUri());
-        String name = zipEntry.getName();
-        if (name.equals("/")) {
-            container.add(NFO.fileName, name);
-        } else if (name.endsWith("/")) {
-            // a special case for folder entries, whose names end with a slash 
-            container.add(NFO.fileName, name.substring(name.lastIndexOf('/',name.length()-1)));
-        } else {
-            container.add(NFO.fileName, name.substring(name.lastIndexOf('/',name.length())));
-        }
+        container.add(NIE.isPartOf, parentMetadata.getDescribedUri());        
+        container.add(NFO.fileName,getFileName(zipEntry));
         
         if (zipEntry.getComment() != null) {
             container.add(NIE.comment, zipEntry.getComment());
@@ -133,20 +127,28 @@ public class ZipSubCrawler implements SubCrawler {
             model.addStatement(hashResource, NFO.hashValue, String.valueOf(zipEntry.getCrc()));
             model.addStatement(container.getDescribedUri(), NFO.hasHash, hashResource);
         }
+        if (zipEntry.getTime() != -1) {
+            container.add(NFO.fileLastModified, new Date(zipEntry.getTime()));
+            if (accessData != null) {
+                accessData.put(uri.toString(), LAST_MODIFIED_DATE, String.valueOf(zipEntry.getTime()));
+            }
+        }
 
-        DataObject object = new FileDataObjectBase(container.getDescribedUri(), dataSource, container,
-                new UnclosableStream(stream));
+        DataObject object = null;
+        
+        if (zipEntry.isDirectory()) {
+            object = new FolderDataObjectBase(container.getDescribedUri(), dataSource, container);
+        } else {
+            object = new FileDataObjectBase(container.getDescribedUri(), dataSource, container,
+                    new UnclosableStream(zipStream));
+        }
 
         if (newEntry) {
             handler.objectNew(object);
         }
         else {
             handler.objectChanged(object);
-        }
-
-        // the uncompressed size property has been left out due to a glitch in NFO, which
-        // only allows the uncompressedSize property on an Archive, not an ArchiveItem
-        // zipEntry.getSize();
+        }        
     }
 
     private void closeClosable(ZipInputStream zipStream) {
@@ -157,7 +159,33 @@ public class ZipSubCrawler implements SubCrawler {
                 // there is hardly anything we can do about it now
             }
         }
-        
+    }
+    
+    private String getFileName(ZipEntry entry) {
+        String name = entry.getName();
+        String fileName = null;
+        if (name.equals("/")) {
+            fileName = name;
+        } else if (name.endsWith("/")) {
+            // a special case for folder entries, whose names end with a slash 
+            int lastSlash = name.lastIndexOf('/',name.length()-2);
+            if (lastSlash == -1) {
+                // this happens for folders directly beneath the root of the archive
+                // the name is like 'zip-test/' - slash at the end, no slash at the beginning
+                // we only need to cut off the last slash
+                fileName = name.substring(0,name.length() - 1);
+            } else {
+                // this happens for folders nested deeper within the archive tree
+                // the name is like 'zip-test/subfolder/', we need to cut off the
+                // initial portion 'zip-test/' and the last slash
+                fileName = name.substring(lastSlash + 1, name.length() - 1);
+            }
+        } else {
+            // a common case for normal files, we need to cut off the initial portion, including
+            // the last slash, in order to obtain the file name itself
+            fileName = name.substring(name.lastIndexOf('/',name.length()) + 1);
+        }
+        return fileName;
     }
 
     public void stopSubCrawler() {
@@ -167,7 +195,7 @@ public class ZipSubCrawler implements SubCrawler {
     private class UnclosableStream extends FilterInputStream {
 
         protected UnclosableStream(InputStream in) {
-            super(in);
+            super(new BufferedInputStream(in));
         }
         
         public void close() {

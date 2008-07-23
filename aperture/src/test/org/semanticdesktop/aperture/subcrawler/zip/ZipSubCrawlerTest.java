@@ -8,20 +8,25 @@ package org.semanticdesktop.aperture.subcrawler.zip;
 
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
+import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
+import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler;
+import org.semanticdesktop.aperture.vocabulary.NFO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 /**
  * A test case for the zip subcrawler
@@ -37,12 +42,56 @@ public class ZipSubCrawlerTest extends ApertureTestBase {
     public void testZipTest() throws Exception {
         ZipSubCrawler subCrawler = new ZipSubCrawler();
         metadata = subCrawl(DOCS_PATH + "zip-test.zip", subCrawler);
-        metadata.getModel().writeTo(System.out,Syntax.RdfXml);
+        Model model = metadata.getModel();
+        URI archiveUri = model.createURI("uri:dummyuri");
+        assertTrue(model.contains(archiveUri, RDF.type, NFO.Archive));
+        // everything is directly linked with an isPartOf link to the archive itself
+        List<Resource> parts = findSubjectResourceList(model, NIE.isPartOf, archiveUri);
+        assertEquals("uri:dummyuri/zip-test/", parts.get(0).toString());
+        assertEquals("uri:dummyuri/zip-test/test1.txt", parts.get(1).toString());
+        assertEquals("uri:dummyuri/zip-test/test2.txt", parts.get(2).toString());
+        assertEquals("uri:dummyuri/zip-test/test3.txt", parts.get(3).toString());
+        assertEquals("uri:dummyuri/zip-test/subfolder/", parts.get(4).toString());
+        assertEquals("uri:dummyuri/zip-test/subfolder/test4.txt", parts.get(5).toString());
+        assertEquals("uri:dummyuri/zip-test/subfolder/test5.txt", parts.get(6).toString());
+        assertEquals("uri:dummyuri/zip-test/subfolder/pdf-manyauthors.pdf", parts.get(7).toString());
+        assertEquals("uri:dummyuri/zip-test/microsoft-word-2000.doc", parts.get(8).toString());
+        assertEquals(9,parts.size());
+        
+        // file names
+        assertSingleValueProperty(model, parts.get(0), NFO.fileName, "zip-test");
+        assertSingleValueProperty(model, parts.get(1), NFO.fileName, "test1.txt");
+        assertSingleValueProperty(model, parts.get(2), NFO.fileName, "test2.txt");
+        assertSingleValueProperty(model, parts.get(3), NFO.fileName, "test3.txt");
+        assertSingleValueProperty(model, parts.get(4), NFO.fileName, "subfolder");
+        assertSingleValueProperty(model, parts.get(5), NFO.fileName, "test4.txt");
+        assertSingleValueProperty(model, parts.get(6), NFO.fileName, "test5.txt");
+        assertSingleValueProperty(model, parts.get(7), NFO.fileName, "pdf-manyauthors.pdf");
+        assertSingleValueProperty(model, parts.get(8), NFO.fileName, "microsoft-word-2000.doc");
+        
+        // hashes
+        assertCrc32Hash(model, parts.get(0), 0);
+        assertCrc32Hash(model, parts.get(1), 2227022722L);
+        assertCrc32Hash(model, parts.get(2), 2218881576L);
+        assertCrc32Hash(model, parts.get(3), 2479617527L);
+        assertCrc32Hash(model, parts.get(4), 0);
+        assertCrc32Hash(model, parts.get(5), 4267625106L);
+        assertCrc32Hash(model, parts.get(6), 544725069L);
+        assertCrc32Hash(model, parts.get(7), 1261442136L);
+        assertCrc32Hash(model, parts.get(8), 389689384);
+        
         validate(metadata);
         metadata.dispose();
         metadata = null;
     }
     
+    private void assertCrc32Hash(Model model, Resource resource, long i) {
+        Resource hashResource = findSingleObjectResource(model, resource, NFO.hasHash);
+        assertSingleValueProperty(model, hashResource, RDF.type, NFO.FileHash);
+        assertSingleValueProperty(model, hashResource, NFO.hashAlgorithm, "CRC-32");
+        assertSingleValueProperty(model, hashResource, NFO.hashValue, String.valueOf(i));
+    }
+
     private RDFContainer subCrawl(String string, ZipSubCrawler subCrawler) throws Exception {
         InputStream stream = org.semanticdesktop.aperture.util.ResourceUtil.getInputStream(string, this.getClass());
         ZipSubCrawlerHandler handler = new ZipSubCrawlerHandler();

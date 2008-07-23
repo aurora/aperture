@@ -13,6 +13,8 @@ import org.semanticdesktop.aperture.subcrawler.impl.TestDefaultSubCrawlerRegistr
 import org.semanticdesktop.aperture.subcrawler.impl.TestSubCrawlerRegistryImpl;
 import org.semanticdesktop.aperture.subcrawler.vcard.VcardSubCrawlerTest;
 import org.semanticdesktop.aperture.subcrawler.vcard.TestVcardFileCrawlerCombination;
+import org.semanticdesktop.aperture.subcrawler.zip.ZipSubCrawlerTest;
+import org.semanticdesktop.aperture.subcrawler.zip.ZipSubCrawlerTestCombination;
 
 /**
  * Tests all SubCrawler implementations and related classes.
@@ -29,6 +31,8 @@ public class TestSubCrawlers extends TestSuite {
         // test the various sub crawlers
         addTest(new TestSuite(VcardSubCrawlerTest.class));
         addTest(new TestSuite(TestVcardFileCrawlerCombination.class));
+        addTest(new TestSuite(ZipSubCrawlerTest.class));
+        addTest(new TestSuite(ZipSubCrawlerTestCombination.class));
            
         // test the registries holding the SubCrawlerFactories
         addTest(new TestSuite(TestSubCrawlerRegistryImpl.class));

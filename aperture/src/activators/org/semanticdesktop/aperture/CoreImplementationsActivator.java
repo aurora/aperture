@@ -42,6 +42,7 @@ import org.semanticdesktop.aperture.opener.file.FileOpenerActivator;
 import org.semanticdesktop.aperture.opener.http.HttpOpenerActivator;
 import org.semanticdesktop.aperture.outlook.OutlookActivator;
 import org.semanticdesktop.aperture.subcrawler.vcard.VcardSubCrawlerActivator;
+import org.semanticdesktop.aperture.subcrawler.zip.ZipSubCrawlerActivator;
 import org.semanticdesktop.aperture.websites.bibsonomy.BibsonomyActivator;
 import org.semanticdesktop.aperture.websites.delicious.DeliciousActivator;
 import org.semanticdesktop.aperture.websites.flickr.FlickrActivator;
@@ -49,6 +50,9 @@ import org.semanticdesktop.aperture.websites.iphoto.IPhotoActivator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Activator for the core implementations bundle.
+ */
 public class CoreImplementationsActivator implements BundleActivator {
     
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -72,6 +76,7 @@ public class CoreImplementationsActivator implements BundleActivator {
 	private IPhotoActivator iphotoActivator;
     // subcrawlers
 	private VcardSubCrawlerActivator vcardSubCrawlerActivator;
+	private ZipSubCrawlerActivator zipSubCrawlerActivator;
 	// extractors
 	private ExcelExtractorActivator excelExtractorActivator;
 	private HtmlExtractorActivator htmlExtractorActivator;
@@ -162,12 +167,12 @@ public class CoreImplementationsActivator implements BundleActivator {
 		quattroExtractorActivator.start(context);
 		rtfExtractorActivator = new RtfExtractorActivator();
 		rtfExtractorActivator.start(context);
+		
 		vcardSubCrawlerActivator = new VcardSubCrawlerActivator();
-		try {
-		    vcardSubCrawlerActivator.start(context);
-		} catch (Exception x) {
-		    logger.error("Error starting "+vcardSubCrawlerActivator.getClass().getName()+": "+x, x);
-		}
+		vcardSubCrawlerActivator.start(context);
+		zipSubCrawlerActivator = new ZipSubCrawlerActivator();
+		zipSubCrawlerActivator.start(context);
+		
 		visioExtractorActivator = new VisioExtractorActivator();
 		visioExtractorActivator.start(context);
 		wordExtractorActivator = new WordExtractorActivator();
@@ -263,6 +268,11 @@ public class CoreImplementationsActivator implements BundleActivator {
 		worksExtractorActivator = null;
 		xmlExtractorActivator.stop(context);
 		xmlExtractorActivator = null;
+		
+		vcardSubCrawlerActivator.stop(context);
+		vcardSubCrawlerActivator = null;
+		zipSubCrawlerActivator.stop(context);
+		zipSubCrawlerActivator = null;
 		
 		extractorUtilActivator.stop(context);
 		extractorUtilActivator = null;

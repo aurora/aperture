@@ -291,13 +291,29 @@ public class ApertureTestBase extends TestCase {
     ////////////////////////////////////////// ASSERTIONS ////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    protected Resource findSingleObjectResource(Model model, Resource subject, URI predicate) throws ModelException {
+    /**
+     * Returns a the object of the triple with the given subject and predicate. Asserts that there is only
+     * one such triple.
+     * @param model the model to check in
+     * @param subject the subject of the the triple to be found
+     * @param predicate the predicate of the triple to be found
+     * @return the object of the triple to be found, assumes that there is one and only one such triple
+     */
+    protected Resource findSingleObjectResource(Model model, Resource subject, URI predicate) {
         List<Resource> list = findObjectResourceList(model, subject, predicate);
         assertEquals(1,list.size());
         return list.get(0);
     }
 
-    protected List<Resource> findObjectResourceList(Model model, Resource subject, URI predicate) throws ModelException {
+    /**
+     * Returns a list of objects of all triples with the given subject and predicate
+     * @param model the model to check in
+     * @param subject the subject of the triple to be found
+     * @param predicate the predicate of the triple to be found
+     * @return a list of subjects of all triples with the given subject and predicate 
+     * @throws ModelException if something goes wrong
+     */
+    protected List<Resource> findObjectResourceList(Model model, Resource subject, URI predicate) {
         LinkedList<Resource> result = new LinkedList<Resource>();
         ClosableIterator<? extends Statement> iterator = null;
         try {
@@ -307,6 +323,30 @@ public class ApertureTestBase extends TestCase {
                 Node value = statement.getObject();
                 assertTrue(value instanceof Resource);
                 result.add(value.asResource());
+            }
+            return result;
+        } finally {
+            closeIterator(iterator);
+        }
+    }
+    
+    /**
+     * Returns a list of subjects of all triples with the given subject and predicate
+     * @param model the model to check in
+     * @param predicate the predicate of the triple to be found
+     * @param object the object predicate
+     * @return a list of subjects of all triples with the given subject and predicate 
+     * @throws ModelException if something goes wrong
+     */
+    protected List<Resource> findSubjectResourceList(Model model, URI predicate, Resource object) throws ModelException {
+        LinkedList<Resource> result = new LinkedList<Resource>();
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model.findStatements(Variable.ANY, predicate, object);
+            while (iterator.hasNext()) {
+                Statement statement = iterator.next();
+                Resource subject = statement.getSubject();
+                result.add(subject);
             }
             return result;
         } finally {
@@ -469,8 +509,7 @@ public class ApertureTestBase extends TestCase {
         assertTrue(encounteredValue);
     }
     
-    protected void assertSingleValueProperty(Model model, Resource subject, URI predicate, String objectLabel)
-            throws ModelException {
+    protected void assertSingleValueProperty(Model model, Resource subject, URI predicate, String objectLabel) {
         assertSingleValueProperty(model, subject, predicate, model.createPlainLiteral(objectLabel));
     }
 
@@ -483,8 +522,7 @@ public class ApertureTestBase extends TestCase {
      * @param predicate
      * @param object
      */
-    protected void assertSingleValueProperty(Model model, Resource subject, URI predicate, Node object)
-            throws ModelException {
+    protected void assertSingleValueProperty(Model model, Resource subject, URI predicate, Node object) {
         ClosableIterator<? extends Statement> iterator = null;
         try {
             iterator = model.findStatements(subject, predicate, Variable.ANY);
@@ -492,7 +530,7 @@ public class ApertureTestBase extends TestCase {
             Statement statement = iterator.next();
             assertFalse(iterator.hasNext());
             if (object instanceof Literal) {
-                assertEquals(((Literal)statement.getObject()).getValue(), ((Literal)object).getValue());
+                assertEquals(((Literal)object).getValue(), ((Literal)statement.getObject()).getValue());
             } else {
                 assertEquals(statement.getObject().toString(), object.toString());
             }
@@ -625,7 +663,7 @@ public class ApertureTestBase extends TestCase {
      * @param modelToCheck
      * @throws IOException
      */
-    public void testXmlSafety(Model modelToCheck) throws IOException {
+    protected void testXmlSafety(Model modelToCheck) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         modelToCheck.writeTo(baos,Syntax.RdfXml);
         byte [] byteArray = baos.toByteArray();
