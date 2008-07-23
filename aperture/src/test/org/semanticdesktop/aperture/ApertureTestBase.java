@@ -331,6 +331,20 @@ public class ApertureTestBase extends TestCase {
     }
     
     /**
+     * Returns a the subject of the triple with the given predicate and object. Asserts that there is only
+     * one such triple.
+     * @param model the model to check in
+     * @param predicate the predicate of the triple to be found
+     * @param object the object of the the triple to be found
+     * @return the object of the triple to be found, assumes that there is one and only one such triple
+     */
+    protected Resource findSingleSubjectResource(Model model, URI predicate, Resource object) {
+        List<Resource> list = findSubjectResourceList(model, predicate, object);
+        assertEquals(1,list.size());
+        return list.get(0);
+    }
+    
+    /**
      * Returns a list of subjects of all triples with the given subject and predicate
      * @param model the model to check in
      * @param predicate the predicate of the triple to be found
@@ -338,7 +352,7 @@ public class ApertureTestBase extends TestCase {
      * @return a list of subjects of all triples with the given subject and predicate 
      * @throws ModelException if something goes wrong
      */
-    protected List<Resource> findSubjectResourceList(Model model, URI predicate, Resource object) throws ModelException {
+    protected List<Resource> findSubjectResourceList(Model model, URI predicate, Resource object) {
         LinkedList<Resource> result = new LinkedList<Resource>();
         ClosableIterator<? extends Statement> iterator = null;
         try {

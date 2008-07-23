@@ -110,8 +110,16 @@ public class ZipSubCrawler implements SubCrawler {
         RDFContainerFactory fac = handler.getRDFContainerFactory(uri.toString());
         RDFContainer container = fac.getRDFContainer(uri);
         container.add(RDF.type, NFO.ArchiveItem);
-        container.add(NIE.isPartOf, parentMetadata.getDescribedUri());        
         container.add(NFO.fileName,getFileName(zipEntry));
+        
+        String superfolder = getSuperfolder(zipEntry);
+        if (superfolder != null) {
+            URI superfolderUri = parentMetadata.getModel().createURI(
+                parentMetadata.getDescribedUri().toString() + "/" + superfolder);
+            container.add(NFO.belongsToContainer, superfolderUri);
+        } else {
+            container.add(NFO.belongsToContainer, parentMetadata.getDescribedUri());
+        }
         
         if (zipEntry.getComment() != null) {
             container.add(NIE.comment, zipEntry.getComment());
@@ -134,9 +142,12 @@ public class ZipSubCrawler implements SubCrawler {
             }
         }
 
+        
+        
         DataObject object = null;
         
         if (zipEntry.isDirectory()) {
+            container.add(RDF.type, NFO.Folder);
             object = new FolderDataObjectBase(container.getDescribedUri(), dataSource, container);
         } else {
             object = new FileDataObjectBase(container.getDescribedUri(), dataSource, container,
@@ -181,11 +192,56 @@ public class ZipSubCrawler implements SubCrawler {
                 fileName = name.substring(lastSlash + 1, name.length() - 1);
             }
         } else {
-            // a common case for normal files, we need to cut off the initial portion, including
-            // the last slash, in order to obtain the file name itself
-            fileName = name.substring(name.lastIndexOf('/',name.length()) + 1);
+            // normal files, whose names don't end with a hash
+            int lastSlash = name.lastIndexOf('/',name.length()-1);
+            if (lastSlash == -1) {
+                // this happens for files directly beneath the root of the archive
+                // the name is like 'file.txt' - no slash at the end, no slash at the beginning
+                // we need to return the name itself
+                fileName = name;
+            } else {
+                // this happens for files nested deeper within the archive tree
+                // the name is like 'zip-test/file1.txt', we need to cut off the
+                // initial portion 'zip-test/' 
+                fileName = name.substring(lastSlash + 1, name.length());
+            }
         }
         return fileName;
+    }
+    
+    private String getSuperfolder(ZipEntry entry) {
+        String name = entry.getName();
+        String superfolderName = null;
+        if (name.equals("/")) {
+            superfolderName = null;
+        } else if (name.endsWith("/")) {
+            // a special case for folder entries, whose names end with a slash 
+            int lastSlash = name.lastIndexOf('/',name.length()-2);
+            if (lastSlash == -1) {
+                // this happens for folders directly beneath the root of the archive
+                // the name is like 'zip-test/' - they don't have any superfolder
+                superfolderName = null;
+            } else {
+                // this happens for folders nested deeper within the archive tree
+                // the name is like 'zip-test/subfolder/', we need to cut off the
+                // trailing portion 'subfolder/' 
+                superfolderName = name.substring(0, lastSlash + 1);
+            }
+        } else {
+            // normal files, whose names don't end with a hash
+            int lastSlash = name.lastIndexOf('/',name.length()-1);
+            if (lastSlash == -1) {
+                // this happens for files directly beneath the root of the archive
+                // the name is like 'file.txt' - they have no superfolder
+                superfolderName = null;
+            } else {
+                // this happens for files nested deeper within the archive tree
+                // the name is like 'zip-test/file1.txt', we need to cut off the
+                // trailing portion 'file.txt' 
+                superfolderName = name.substring(0, lastSlash + 1);
+            }
+        }
+        return superfolderName;
     }
 
     public void stopSubCrawler() {
