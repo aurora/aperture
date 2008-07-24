@@ -7,4 +7,7 @@
 	<subCrawlerFactory>
 		<name>org.semanticdesktop.aperture.subcrawler.zip.ZipSubCrawlerFactory</name>
 	</subCrawlerFactory>
+	<subCrawlerFactory>
+		<name>org.semanticdesktop.aperture.subcrawler.gzip.GZipSubCrawlerFactory</name>
+	</subCrawlerFactory>
 </subCrawlerFactories>
