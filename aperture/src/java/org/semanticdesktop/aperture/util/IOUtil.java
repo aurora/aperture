@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.util.zip.Adler32;
 
 import org.ontoware.rdf2go.exception.ModelException;
@@ -76,6 +77,13 @@ public class IOUtil {
      */
     public static String readString(InputStream in) throws IOException {
         return readString(new InputStreamReader(in));
+    }
+    
+    /**
+     * Read the contents of the given stream as a String, using the given Charset.
+     */
+    public static String readString(InputStream in, Charset charset) throws IOException {
+        return readString(new InputStreamReader(in, charset));
     }
 
     /**

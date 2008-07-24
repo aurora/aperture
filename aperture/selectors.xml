@@ -508,6 +508,13 @@
         </and>
     </selector>
     
+    <selector id="bundle.subcrawler.gzip.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/subcrawler/gzip/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
     <selector id="bundle.security.trustdecider.dialog.selector">
         <and>
             <filename name="org/semanticdesktop/aperture/security/trustdecider/dialog/*" />
@@ -580,6 +587,8 @@
             <selector refid="bundle.extractor.works.selector" />
             <selector refid="bundle.extractor.xml.selector" />
             <selector refid="bundle.subcrawler.vcard.selector" />
+            <selector refid="bundle.subcrawler.zip.selector" />
+            <selector refid="bundle.subcrawler.gzip.selector" />
             <!-- this is used by the above impl -->
             <selector refid="bundle.extractor.util.selector" />
             <selector refid="bundle.opener.file.selector" />

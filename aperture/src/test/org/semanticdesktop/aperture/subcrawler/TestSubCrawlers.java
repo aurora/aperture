@@ -9,6 +9,7 @@ package org.semanticdesktop.aperture.subcrawler;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.semanticdesktop.aperture.subcrawler.gzip.GZipSubCrawlerTest;
 import org.semanticdesktop.aperture.subcrawler.impl.TestDefaultSubCrawlerRegistry;
 import org.semanticdesktop.aperture.subcrawler.impl.TestSubCrawlerRegistryImpl;
 import org.semanticdesktop.aperture.subcrawler.vcard.VcardSubCrawlerTest;
@@ -33,6 +34,7 @@ public class TestSubCrawlers extends TestSuite {
         addTest(new TestSuite(TestVcardFileCrawlerCombination.class));
         addTest(new TestSuite(ZipSubCrawlerTest.class));
         addTest(new TestSuite(ZipSubCrawlerTestCombination.class));
+        addTest(new TestSuite(GZipSubCrawlerTest.class));
            
         // test the registries holding the SubCrawlerFactories
         addTest(new TestSuite(TestSubCrawlerRegistryImpl.class));

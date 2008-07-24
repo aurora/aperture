@@ -41,6 +41,7 @@ import org.semanticdesktop.aperture.extractor.xml.XmlExtractorActivator;
 import org.semanticdesktop.aperture.opener.file.FileOpenerActivator;
 import org.semanticdesktop.aperture.opener.http.HttpOpenerActivator;
 import org.semanticdesktop.aperture.outlook.OutlookActivator;
+import org.semanticdesktop.aperture.subcrawler.gzip.GZipSubCrawlerActivator;
 import org.semanticdesktop.aperture.subcrawler.vcard.VcardSubCrawlerActivator;
 import org.semanticdesktop.aperture.subcrawler.zip.ZipSubCrawlerActivator;
 import org.semanticdesktop.aperture.websites.bibsonomy.BibsonomyActivator;
@@ -77,6 +78,7 @@ public class CoreImplementationsActivator implements BundleActivator {
     // subcrawlers
 	private VcardSubCrawlerActivator vcardSubCrawlerActivator;
 	private ZipSubCrawlerActivator zipSubCrawlerActivator;
+	private GZipSubCrawlerActivator gzipSubCrawlerActivator;
 	// extractors
 	private ExcelExtractorActivator excelExtractorActivator;
 	private HtmlExtractorActivator htmlExtractorActivator;
@@ -172,6 +174,8 @@ public class CoreImplementationsActivator implements BundleActivator {
 		vcardSubCrawlerActivator.start(context);
 		zipSubCrawlerActivator = new ZipSubCrawlerActivator();
 		zipSubCrawlerActivator.start(context);
+		gzipSubCrawlerActivator = new GZipSubCrawlerActivator();
+        gzipSubCrawlerActivator.start(context);
 		
 		visioExtractorActivator = new VisioExtractorActivator();
 		visioExtractorActivator.start(context);
@@ -273,6 +277,8 @@ public class CoreImplementationsActivator implements BundleActivator {
 		vcardSubCrawlerActivator = null;
 		zipSubCrawlerActivator.stop(context);
 		zipSubCrawlerActivator = null;
+		gzipSubCrawlerActivator.stop(context);
+        gzipSubCrawlerActivator = null;
 		
 		extractorUtilActivator.stop(context);
 		extractorUtilActivator = null;
