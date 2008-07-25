@@ -74,7 +74,8 @@ public class OutlookDataSourceDetector implements DataSourceDetector {
         } finally {
                 crawler.release();
                 // TODO: this does not work :-/ there will be a daemon thread hanging around. 
-                crawler.killKillKill();
+                // crawler.killKillKill(); calling KillKillKill does indeed fuckup the whole windows
+                // messaging hard. it mustnt be called.
         }
         if (!outlookIsThere)
             return Collections.emptyList();

@@ -86,6 +86,22 @@ import com.jacob.com.Variant;
  * 
  * 10.11.2004 again problems with coCreate. I try to call coInitialize again and do the ComThread.InitSTA();
  * 
+ * 23.7.2008:
+ * calling ComThread.Release();ComThread.quitMainSTA();ComThread.doCoUninitialize(); during normal
+ * system runs (for example, during datasource detection) caused windows messaging to fail in
+ * OSGi/SWT environments. We noticed VM crashes on window/USER32 calls.
+ * 
+ * current approach:
+ * on beginCall()
+ * ComThread.doCoInitialize(0);
+ * and registershutdownhook
+ * 
+ * on endCall():
+ * outlookMapi.safeRelease();
+   outlookMapi = null;
+   outlookApp.safeRelease();
+   outlookApp = null;
+   accessor = null;
  * 
  * <p>
  * Copyright: Copyright (c) 2003-2006
@@ -121,6 +137,8 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 	 * how often did calls to oulook crash? if three times, start the ActiveX again.
 	 */
 	private static int crashed = 0;
+
+    private static boolean registerVMExitCode;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -194,9 +212,40 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 		
 		// accessor
 		accessor = new OutlookAccessor();
+		
+		registerVMExitCode();
 	}
 
 	/**
+	 * When the VM shuts down,
+	 * the Outlook call may cause the STA threads to run as daemons and cause
+	 * the machine to not stop.
+	 * Calling this may help: ComThread.Release();
+                       ComThread.quitMainSTA();
+                       ComThread.doCoUninitialize();
+	 */
+	private static void registerVMExitCode() {
+        if (!registerVMExitCode) {
+            
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+               public void run() {
+                   // no logging anymore...
+                   try {
+                       ComThread.Release();
+                       ComThread.quitMainSTA();
+                       ComThread.doCoUninitialize();
+                   } catch (Throwable x) {
+                       x.printStackTrace(); // logging may be gone already.
+                   }
+               }
+            });
+                        
+            registerVMExitCode = true;
+        }
+        
+    }
+
+    /**
 	 * check if it would be wise to restart our outlook adaption
 	 * 
 	 * @param cause
@@ -610,6 +659,21 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 	public void release() {
 		// GarbageCollect the Adapters.
 		System.gc();
+		
+          try {
+                if (outlookApp != null)
+                {
+                    outlookApp.safeRelease();
+                    outlookApp = null;
+                }
+                if (outlookMapi != null) {
+                    outlookMapi.safeRelease();
+                    outlookMapi = null;
+                }
+            } catch (Exception x) {
+                logger.warn("Stopping outlook/Activex: "+x,x);
+            }
+		
 		/*
 		 * try { if (outlookApp != null) outlookApp.release(); if (outlookMapi != null) outlookMapi.release(); }
 		 * catch (Exception x) { log.warn("Error releasing ms-outlook resources: "+x.toString()); }
@@ -619,6 +683,9 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 		// ComThread.Release();
 		// ComThread.quitMainSTA();
 		ComThread.quitMainSTA();
+		
+		// latest version (pre 23.7.2008):
+		// ComThread.quitMainSTA();
 	}
 	
 	/**
