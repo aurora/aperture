@@ -2,7 +2,7 @@
  * Copyright (c) 2006 - 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
- * Licensed under the Academic Free License version 3.0.
+ * Licensed under the Open Software License version 3.0.
  */
 package org.semanticdesktop.aperture.datasource.web;
 import org.ontoware.rdf2go.model.node.URI;
