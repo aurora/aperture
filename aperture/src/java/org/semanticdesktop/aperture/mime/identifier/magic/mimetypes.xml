@@ -159,6 +159,11 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 </description>
 
 <description>
+	<mimeType>application/x-tar</mimeType>
+	<extensions>tar</extensions>
+</description>
+
+<description>
 	<mimeType>application/x-rar-compressed</mimeType>
 	<extensions>rar</extensions>
 	<magicNumber encoding="hex">52 61 72 21 1a</magicNumber>
