@@ -41,7 +41,9 @@ import org.semanticdesktop.aperture.extractor.xml.XmlExtractorActivator;
 import org.semanticdesktop.aperture.opener.file.FileOpenerActivator;
 import org.semanticdesktop.aperture.opener.http.HttpOpenerActivator;
 import org.semanticdesktop.aperture.outlook.OutlookActivator;
+import org.semanticdesktop.aperture.subcrawler.bzip2.BZip2SubCrawlerActivator;
 import org.semanticdesktop.aperture.subcrawler.gzip.GZipSubCrawlerActivator;
+import org.semanticdesktop.aperture.subcrawler.tar.TarSubCrawlerActivator;
 import org.semanticdesktop.aperture.subcrawler.vcard.VcardSubCrawlerActivator;
 import org.semanticdesktop.aperture.subcrawler.zip.ZipSubCrawlerActivator;
 import org.semanticdesktop.aperture.websites.bibsonomy.BibsonomyActivator;
@@ -79,6 +81,9 @@ public class CoreImplementationsActivator implements BundleActivator {
 	private VcardSubCrawlerActivator vcardSubCrawlerActivator;
 	private ZipSubCrawlerActivator zipSubCrawlerActivator;
 	private GZipSubCrawlerActivator gzipSubCrawlerActivator;
+	private BZip2SubCrawlerActivator bzip2SubCrawlerActivator;
+	private TarSubCrawlerActivator tarSubCrawlerActivator;
+	
 	// extractors
 	private ExcelExtractorActivator excelExtractorActivator;
 	private HtmlExtractorActivator htmlExtractorActivator;
@@ -176,7 +181,11 @@ public class CoreImplementationsActivator implements BundleActivator {
 		zipSubCrawlerActivator.start(context);
 		gzipSubCrawlerActivator = new GZipSubCrawlerActivator();
         gzipSubCrawlerActivator.start(context);
-		
+        bzip2SubCrawlerActivator = new BZip2SubCrawlerActivator();
+        bzip2SubCrawlerActivator.start(context);
+        tarSubCrawlerActivator = new TarSubCrawlerActivator();
+        tarSubCrawlerActivator.start(context);
+        
 		visioExtractorActivator = new VisioExtractorActivator();
 		visioExtractorActivator.start(context);
 		wordExtractorActivator = new WordExtractorActivator();
@@ -279,7 +288,11 @@ public class CoreImplementationsActivator implements BundleActivator {
 		zipSubCrawlerActivator = null;
 		gzipSubCrawlerActivator.stop(context);
         gzipSubCrawlerActivator = null;
-		
+        bzip2SubCrawlerActivator.stop(context);
+        bzip2SubCrawlerActivator = null;
+        tarSubCrawlerActivator.stop(context);
+        tarSubCrawlerActivator = null;
+        
 		extractorUtilActivator.stop(context);
 		extractorUtilActivator = null;
 		

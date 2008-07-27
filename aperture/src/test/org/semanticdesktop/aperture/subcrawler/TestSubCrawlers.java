@@ -9,13 +9,14 @@ package org.semanticdesktop.aperture.subcrawler;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.semanticdesktop.aperture.subcrawler.bzip2.BZip2SubCrawlerTest;
 import org.semanticdesktop.aperture.subcrawler.gzip.GZipSubCrawlerTest;
 import org.semanticdesktop.aperture.subcrawler.impl.TestDefaultSubCrawlerRegistry;
 import org.semanticdesktop.aperture.subcrawler.impl.TestSubCrawlerRegistryImpl;
-import org.semanticdesktop.aperture.subcrawler.vcard.VcardSubCrawlerTest;
+import org.semanticdesktop.aperture.subcrawler.tar.TarSubCrawlerTest;
 import org.semanticdesktop.aperture.subcrawler.vcard.TestVcardFileCrawlerCombination;
+import org.semanticdesktop.aperture.subcrawler.vcard.VcardSubCrawlerTest;
 import org.semanticdesktop.aperture.subcrawler.zip.ZipSubCrawlerTest;
-import org.semanticdesktop.aperture.subcrawler.zip.ZipSubCrawlerTestCombination;
 
 /**
  * Tests all SubCrawler implementations and related classes.
@@ -33,8 +34,9 @@ public class TestSubCrawlers extends TestSuite {
         addTest(new TestSuite(VcardSubCrawlerTest.class));
         addTest(new TestSuite(TestVcardFileCrawlerCombination.class));
         addTest(new TestSuite(ZipSubCrawlerTest.class));
-        addTest(new TestSuite(ZipSubCrawlerTestCombination.class));
         addTest(new TestSuite(GZipSubCrawlerTest.class));
+        addTest(new TestSuite(TarSubCrawlerTest.class));
+        addTest(new TestSuite(BZip2SubCrawlerTest.class));
            
         // test the registries holding the SubCrawlerFactories
         addTest(new TestSuite(TestSubCrawlerRegistryImpl.class));

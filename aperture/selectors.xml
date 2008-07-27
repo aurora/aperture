@@ -495,7 +495,7 @@
         <and>
             <or>
                 <filename name="org/semanticdesktop/aperture/subcrawler/vcard/*" />
-                <filename name="lib/jpim-0.1-patched-by-antoni.jar" />
+                <filename name="lib/jpim-0.1-aperture-1.jar" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>
@@ -511,6 +511,26 @@
     <selector id="bundle.subcrawler.gzip.selector">
         <and>
             <filename name="org/semanticdesktop/aperture/subcrawler/gzip/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.subcrawler.tar.selector">
+        <and>
+        	<or>
+            	<filename name="org/semanticdesktop/aperture/subcrawler/tar/*" />
+            	<filename name="lib/ant-compression-utils-1.7.1.jar" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.subcrawler.bzip2.selector">
+        <and>
+        	<or>
+            	<filename name="org/semanticdesktop/aperture/subcrawler/bzip2/*" />
+            	<filename name="lib/ant-compression-utils-1.7.1.jar" />
+            </or>
             <selector refid="bundle.basic.selector" />
         </and>
     </selector>
@@ -589,6 +609,9 @@
             <selector refid="bundle.subcrawler.vcard.selector" />
             <selector refid="bundle.subcrawler.zip.selector" />
             <selector refid="bundle.subcrawler.gzip.selector" />
+            <selector refid="bundle.subcrawler.tar.selector" />
+            <selector refid="bundle.subcrawler.bzip2.selector" />
+            
             <!-- this is used by the above impl -->
             <selector refid="bundle.extractor.util.selector" />
             <selector refid="bundle.opener.file.selector" />

@@ -10,4 +10,10 @@
 	<subCrawlerFactory>
 		<name>org.semanticdesktop.aperture.subcrawler.gzip.GZipSubCrawlerFactory</name>
 	</subCrawlerFactory>
+	<subCrawlerFactory>
+		<name>org.semanticdesktop.aperture.subcrawler.tar.TarSubCrawlerFactory</name>
+	</subCrawlerFactory>
+	<subCrawlerFactory>
+		<name>org.semanticdesktop.aperture.subcrawler.bzip2.BZip2SubCrawlerFactory</name>
+	</subCrawlerFactory>
 </subCrawlerFactories>
