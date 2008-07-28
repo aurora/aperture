@@ -44,8 +44,7 @@ public class DataObjectBase implements DataObject {
         // of FileDataObjectBase this may lead to unclosed streams. This is a trick learned from PDFBox.
         if (!disposed) {
             Logger logger = LoggerFactory.getLogger(getClass());
-            logger.error("DataObject has not been disposed. URI: " + id + " From DataSource: "
-                    + dataSource.getName() + " [" + dataSource.getID() + "]");
+            logger.error("DataObject has not been disposed. URI: " + id);
 
             // try to dispose of it now
             try {
