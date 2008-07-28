@@ -120,10 +120,10 @@ public class TestMboxCrawler extends ApertureTestBase {
   
     private void assertNewModUnmodDel(MboxTestIncrementalCrawlerHandler handler, int newObjects,
             int changedObjects, int unchangedObjects, int deletedObjects) {
-        assertEquals(handler.getNewObjects().size(), newObjects);
-        assertEquals(handler.getChangedObjects().size(), changedObjects);
-        assertEquals(handler.getUnchangedObjects().size(), unchangedObjects);
-        assertEquals(handler.getDeletedObjects().size(), deletedObjects);
+        assertEquals(newObjects, handler.getNewObjects().size());
+        assertEquals(changedObjects, handler.getChangedObjects().size());
+        assertEquals(unchangedObjects, handler.getUnchangedObjects().size());
+        assertEquals(deletedObjects, handler.getDeletedObjects().size());
     }
     
     private MboxTestIncrementalCrawlerHandler crawl(String fileName, AccessData data, File oldTempFile) throws Exception {
