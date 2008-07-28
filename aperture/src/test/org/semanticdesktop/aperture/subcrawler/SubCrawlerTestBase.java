@@ -48,7 +48,7 @@ import org.semanticdesktop.aperture.vocabulary.NFO;
 /**
  * A base class for archiver tests
  */
-public class AbstractSubcrawlerTest extends ApertureTestBase {
+public class SubCrawlerTestBase extends ApertureTestBase {
     
     /**
      * Performs basic checks of the model. It is used by archivers that have crawled the test archive file.
@@ -114,7 +114,7 @@ public class AbstractSubcrawlerTest extends ApertureTestBase {
         // the handler has spotted one new object and nothing else
     }
     
-    public void testCrawlerIncremental(SubCrawlerFactory factory, String subdirName, String resourceName, String fileExtension, int numberOfCompressedEntries) throws Exception {
+    public void testCrawlerIncremental(SubCrawlerFactory factory, String subdirName, String resourceName, String fileExtension, int numberOfEntries) throws Exception {
         File tmpDir = new File(System.getProperty("java.io.tmpdir"), subdirName).getCanonicalFile();
         try {
             // create a temporary folder containing a temporary file
@@ -168,14 +168,14 @@ public class AbstractSubcrawlerTest extends ApertureTestBase {
             crawler.crawl();
             
             // inspect results (we have 6 files + the compressed entries)
-            assertNewModUnmodDel(crawlerHandler, 6 + numberOfCompressedEntries, 0, 0, 0);
-            assertTrue(accessData.getStoredIDs().size() == 6 + numberOfCompressedEntries);
+            assertNewModUnmodDel(crawlerHandler, 6 + numberOfEntries, 0, 0, 0);
+            assertTrue(accessData.getStoredIDs().size() == 6 + numberOfEntries);
             
             crawler.crawl();
             // recursive touching, the file has been reported as unmodified
             assertTrue(crawlerHandler.getUnchangedObjects().contains(toURI(tmpFile3).toString()));
-            assertNewModUnmodDel(crawlerHandler, 0, 0, 6 + numberOfCompressedEntries, 0);
-            assertTrue(accessData.getStoredIDs().size() == 6 + numberOfCompressedEntries);
+            assertNewModUnmodDel(crawlerHandler, 0, 0, 6 + numberOfEntries, 0);
+            assertTrue(accessData.getStoredIDs().size() == 6 + numberOfEntries);
             
             // recursive removal
             safelySleep(1200); //for some sanity ,it seems that a fast server is able to run two crawls in the same second
@@ -183,7 +183,7 @@ public class AbstractSubcrawlerTest extends ApertureTestBase {
             crawler.crawl();
             
             // the folder has been modified, ten resources have been deleted (zip file + 9 zip entries inside)
-            assertNewModUnmodDel(crawlerHandler, 0, 1, 4, 1 + numberOfCompressedEntries);
+            assertNewModUnmodDel(crawlerHandler, 0, 1, 4, 1 + numberOfEntries);
             assertTrue(accessData.getStoredIDs().size() == 5);
     
             Model model = crawlerHandler.getModel();
@@ -207,14 +207,14 @@ public class AbstractSubcrawlerTest extends ApertureTestBase {
         return new URIImpl(file.toURI().toString());
     }
     
-    protected RDFContainer subCrawl(String resourceName, SubCrawler subCrawler, ArchiverSubCrawlerHandler handler) throws Exception {
+    protected RDFContainer subCrawl(String resourceName, SubCrawler subCrawler, TestBasicSubCrawlerHandler handler) throws Exception {
         InputStream stream = org.semanticdesktop.aperture.util.ResourceUtil.getInputStream(DOCS_PATH + resourceName, this.getClass());
         RDFContainer parentMetadata = new RDFContainerImpl(handler.getModel(),new URIImpl("uri:dummyuri/" + resourceName));
         subCrawler.subCrawl(null, stream, handler, null, null, null, null, parentMetadata);
         return parentMetadata;
     }
     
-    protected class ArchiverSubCrawlerHandler implements SubCrawlerHandler, RDFContainerFactory {
+    protected class TestBasicSubCrawlerHandler implements SubCrawlerHandler, RDFContainerFactory {
         
         protected Model model;
 
@@ -231,7 +231,7 @@ public class AbstractSubcrawlerTest extends ApertureTestBase {
         /**
          * Constructs the ZipSubCrawlerHandler
          */
-        public ArchiverSubCrawlerHandler() throws ModelException {
+        public TestBasicSubCrawlerHandler() throws ModelException {
             model = RDF2Go.getModelFactory().createModel();
             model.open();
             newObjects = new HashSet<String>();
@@ -307,7 +307,7 @@ public class AbstractSubcrawlerTest extends ApertureTestBase {
         }
     }
     
-    protected class CompressorSubCrawlerHandler extends ArchiverSubCrawlerHandler {
+    protected class CompressorSubCrawlerHandler extends TestBasicSubCrawlerHandler {
         
         private String extractedString;
         

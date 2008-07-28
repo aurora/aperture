@@ -7,12 +7,12 @@
 package org.semanticdesktop.aperture.subcrawler.bzip2;
 
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.subcrawler.AbstractSubcrawlerTest;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerTestBase;
 
 /**
  * A test case for the bzip2 subcrawler
  */
-public class BZip2SubCrawlerTest extends AbstractSubcrawlerTest {
+public class BZip2SubCrawlerTest extends SubCrawlerTestBase {
     
     private RDFContainer metadata;
     

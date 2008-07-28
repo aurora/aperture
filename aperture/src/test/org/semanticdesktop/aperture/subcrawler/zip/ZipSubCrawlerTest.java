@@ -13,13 +13,13 @@ import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.subcrawler.AbstractSubcrawlerTest;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerTestBase;
 import org.semanticdesktop.aperture.vocabulary.NFO;
 
 /**
  * A test case for the zip subcrawler
  */
-public class ZipSubCrawlerTest extends AbstractSubcrawlerTest {
+public class ZipSubCrawlerTest extends SubCrawlerTestBase {
     private RDFContainer metadata;
     
     /**
@@ -28,7 +28,7 @@ public class ZipSubCrawlerTest extends AbstractSubcrawlerTest {
      */
     public void testZipTest() throws Exception {
         ZipSubCrawler subCrawler = new ZipSubCrawler();
-        metadata = subCrawl("zip-test.zip", subCrawler, new ArchiverSubCrawlerHandler());
+        metadata = subCrawl("zip-test.zip", subCrawler, new TestBasicSubCrawlerHandler());
         Model model = metadata.getModel();
         
         doBasicArchiverTests(model, "zip-test.zip");

@@ -13,14 +13,14 @@ import org.ontoware.rdf2go.exception.ModelException;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.subcrawler.AbstractSubcrawlerTest;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerTestBase;
 import org.semanticdesktop.aperture.subcrawler.zip.ZipSubCrawlerFactory;
 import org.semanticdesktop.aperture.util.IOUtil;
 
 /**
  * A test case for the gzip subcrawler
  */
-public class GZipSubCrawlerTest extends AbstractSubcrawlerTest {
+public class GZipSubCrawlerTest extends SubCrawlerTestBase {
     
     private RDFContainer metadata;
     

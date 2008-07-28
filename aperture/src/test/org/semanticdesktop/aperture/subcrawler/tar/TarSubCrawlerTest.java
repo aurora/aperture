@@ -7,12 +7,12 @@
 package org.semanticdesktop.aperture.subcrawler.tar;
 
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.subcrawler.AbstractSubcrawlerTest;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerTestBase;
 
 /**
  * A test case for the tar subcrawler
  */
-public class TarSubCrawlerTest extends AbstractSubcrawlerTest {
+public class TarSubCrawlerTest extends SubCrawlerTestBase {
     
     /**
      * A basic test if the extraction actually works
@@ -20,7 +20,7 @@ public class TarSubCrawlerTest extends AbstractSubcrawlerTest {
      */
     public void testTarTest() throws Exception {
         TarSubCrawler subCrawler = new TarSubCrawler();
-        RDFContainer metadata = subCrawl("tar-test.tar", subCrawler, new ArchiverSubCrawlerHandler());
+        RDFContainer metadata = subCrawl("tar-test.tar", subCrawler, new TestBasicSubCrawlerHandler());
         doBasicArchiverTests(metadata.getModel(), "tar-test.tar");
         validate(metadata);
         metadata.dispose();
