@@ -27,6 +27,7 @@
             <filename name="lib/bcprov-jdk14-132.jar" />
             <filename name="lib/jai_codec-1.1.3.jar" />
             <filename name="lib/jai_core-1.1.3.jar" />
+            <filename name="lib/JempBox-0.2.0.jar" />
         </or>   
     </selector>
     
