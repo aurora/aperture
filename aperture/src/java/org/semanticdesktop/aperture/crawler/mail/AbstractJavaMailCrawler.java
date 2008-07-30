@@ -10,12 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.mail.Flags;
@@ -26,20 +22,15 @@ import javax.mail.Part;
 import javax.mail.UIDFolder;
 import javax.mail.internet.MimeMessage;
 
-import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
-import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.Node;
-import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.Variable;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FolderDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
-import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.crawler.mail.DataObjectFactory.PartStreamFactory;
@@ -82,11 +73,8 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
     /** The logger */
     private Logger logger = LoggerFactory.getLogger(getClass());
     
-    private String cachedMessageUrl;
-
-    private Map cachedDataObjectsMap = new HashMap();
-    
-    protected static final String ACCESSED_KEY = "accessed";
+    /** The key used in the access data to mark if a given data object has been accessed or not */
+    public static final String ACCESSED_KEY = "accessed";
     
     /** 
      * The folder currently crawled by the crawler. 
@@ -154,6 +142,9 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
      * Sets the current folder. Implementations are free to perform any optimizations at this point (like
      * prefetching). This method is called AFTER the folder is opened ({@link Folder#open(int)}) but 
      * before any messages are actually crawled.
+     * 
+     * @param folder the folder that is to become the current folder
+     * @throws MessagingException 
      */
     protected void setCurrentFolder(Folder folder)  
         throws MessagingException {
@@ -162,10 +153,12 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
     }
     
     /**
-     * Returns the message from the current folder available at the given index. Note that the exact 
-     * semantics of the index may be overridden by the subclasses of this class, but it will always
-     * follow the javamail convention that folder indexes are one-based
-     * @param index
+     * Returns the message from the current folder available at the given index. Note that the exact semantics
+     * of the index may be overridden by the subclasses of this class, but it will always follow the javamail
+     * convention that folder indexes are one-based
+     * 
+     * @param index a one-based index. The lowest valid value is one (obviously) the highest valid value is
+     *            the one returned by {@link #getCurrentFolderMessageCount()}
      * @return the message placed under the given index
      * @throws MessagingException
      */
@@ -173,6 +166,11 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
         return currentFolder.getMessage(index);
     }
     
+    /**
+     * Returns the amount of messages in the current folder. 
+     * @return the amount of messages in the current folder.
+     * @throws MessagingException
+     */
     protected int getCurrentFolderMessageCount() throws MessagingException {
         return currentFolder.getMessageCount();
     }
@@ -190,7 +188,15 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
 
     /** 
      * Crawls a subfolder tree starting at the given folder up until the given depth. This method is to 
-     * be called by the subclasses after setting up all connection parameters,
+     * be called by the subclasses after setting up all connection parameters.
+     * @param folder the folder where the crawl should be started
+     * @param depth how deep should the crawl proceed <br/>
+     *    <ul>
+     *    <li>-1 - unlimited depth 
+     *    <li>0 or 1 - only the given folder will be crawled 
+     *    <li>2 - only the given folder and it's direct subfolders 
+     *    </ul>
+     * @throws MessagingException
      */
     protected final void crawlFolder(Folder folder, int depth) throws MessagingException {
         if (isStopRequested()) {
@@ -326,10 +332,9 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
             //this variable was never read, I (Antoni Mylka) commented it out
             //long messageID = getMessageUid(folder, message);
             String uri = getMessageUri(folder, message);
-
             try {
                 if (inDomain(uri)) {
-                    crawlMessage(message, uri, folderUri);
+                    crawlSingleMessage(message, uri, folderUri);
                 }
             }
             catch (Exception e) {
@@ -340,184 +345,67 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
         }
     }
     
-    private void crawlMessage(MimeMessage message, String uri, URI folderUri) throws MessagingException {
+    private void crawlSingleMessage(MimeMessage message, String uri, URI folderUri) throws MessagingException, IOException {
         // see if we should skip this message for some reason
         if (!isAcceptable(message)) {
             return;
         }
-        
-        // build a queue of urls to access
-        LinkedList queue = new LinkedList();
-        // first add the uri of the actual message, so that the message itself is
-        // processed first
-        queue.add(uri);
 
-        // process the entire queue
-        while (!queue.isEmpty()) {
-            // fetch the first element in the queue
-            String queuedUri = (String) queue.removeFirst();
-            //handler.accessingObject(this, queuedUri);
-            reportAccessingObject(queuedUri);
-
-            // get this DataObject
-            //RDFContainerFactory containerFactory = handler.getRDFContainerFactory(this, queuedUri);
-            RDFContainerFactory containerFactory = getRDFContainerFactory(queuedUri);
-            try {
-                DataObject object = getObject(message, queuedUri, folderUri, source, accessData,
-                    containerFactory);
-
-                if (object == null) {
-                    // report this object and all its children as unmodified
-                    reportNotModified(queuedUri);
-                }
-                else {
-                    // queue all its children
-                    queueChildren(object, queue);
-
-                    // register parent child relationship (necessary in order to be able to report
-                    // unmodified or deleted attachments)
-                    registerParent(object);
-                    
-                    // attach the message to the parent folder
-                    object.getMetadata().add(NIE.isPartOf,folderUri);
-
-                    // TODO this assumption holds for IMAP, but doesn't hold for mbox, nor any other
-                    // file-based mailboxes out there, this should be reworked
-                    // Report this object as a new object (assumption: objects are always new, never
-                    // changed, since mails are immutable).
-                    // This MUST happen last because the CrawlerHandler will probably dispose of it.
-                    //crawlReport.increaseNewCount();
-                    //handler.objectNew(this, object);
-                    reportNewDataObject(object);
-                }
-            }
-            catch (MessagingException e) {
-                // just log and continue with the next url
-                logger.warn("MessagingException while processing " + queuedUri, e);
-            }
-            catch (UrlNotFoundException e) {
-                // this is most likely an internal error in the DataObjectFactory or DataAccessor, so log
-                // it differently
-                logger.error("Internal error while processing " + queuedUri, e);
-            }
-            catch (IOException e) {
-                // just log and continue with the next url
-                logger.warn("IOException while processing " + queuedUri, e);
-            }
-        }
-        
-        // these lines have been added to make sure that the rare case when two copies of the same message
-        // are placed directly after each-other in the same mbox file is treated correctly
-        // (meaning - two messages are crawled, but both yield identical sets of triples), the same URI and
-        // the same content. Obviously this corrupts the new object count but anyone having a better idea
-        // is welcome to share it with the developers of Aperture
-        cachedDataObjectsMap.clear();
-        cachedMessageUrl = null;
-    }
-    
-    /**
-     * Returns a DataObject representing a single message. This data object contains a flattened version
-     * of the (arbitrary complex) tree-like MIME structure of the message. This method is called repeatedly
-     * for a single MimeMessage. At the first call it creates a cachedDataObjectsMap of all dataObjects that
-     * are to be returned from this message. On all subsequent calls DataObjects from this map are returned.
-     * 
-     * @param message
-     * @param url
-     * @param folderUri
-     * @param dataSource
-     * @param newAccessData
-     * @param containerFactory
-     * @return a DataObject instance for the given message
-     * @throws MessagingException
-     * @throws IOException
-     */
-    protected DataObject getObject(MimeMessage message, String url, URI folderUri, DataSource dataSource,
-            AccessData newAccessData, RDFContainerFactory containerFactory) throws MessagingException,
-            IOException {
-        // See if this url has been accessed before so that we can stop immediately. Note
-        // that no check on message date is done as messages are immutable. Therefore we only have to
-        // check whether the AccessData knows this ID.
-        if (newAccessData != null && newAccessData.get(url, ACCESSED_KEY) != null) {
-            return null;
-        }
-
-        // determine the root message URL, i.e. remove the fragment identifier
-        String messageUrl = url;
-        int index = messageUrl.indexOf('#');
-        if (index == 0) {
-            messageUrl = "";
-        }
-        else if (index > 0) {
-            messageUrl = messageUrl.substring(0, index);
-        }
-
-        // see if we have cached the DataObjects obtained from this message
-        if (!messageUrl.equals(cachedMessageUrl)) {
-            // we haven't: we're going to interpret this message and create all DataObjects at once
-
-            // clear the cache
-            cachedMessageUrl = null;
-            cachedDataObjectsMap.clear();
-
-            // create DataObjects for the mail and its attachments
-            DataObjectFactory factory = new DataObjectFactory();
-            List objects = factory
-                    .createDataObjects(message, messageUrl, folderUri, dataSource, containerFactory,this);
-
-            // register the created DataObjects in the cache map
-            Iterator iterator = objects.iterator();
-            while (iterator.hasNext()) {
-                DataObject object = (DataObject) iterator.next();
-                cachedDataObjectsMap.put(object.getID().toString(), object);
-            }
-
-            // register the message url that these objects came from
-            cachedMessageUrl = messageUrl;
-        }
-
-        // determine the resulting DataObject
-        DataObject result = (DataObject) cachedDataObjectsMap.get(url);
-        if (result == null) {
-            throw new UrlNotFoundException(url);
-        }
-
-        // register the access of this url
-        if (newAccessData != null) {
-            newAccessData.put(url, ACCESSED_KEY, "");
-        }
-
-        return result;
-    }
-
-    private void queueChildren(DataObject object, LinkedList queue) {
-        Model metadata = object.getMetadata().getModel();
-
-        // query for all child URIs
-        ClosableIterator<? extends Statement> statements = null;
+        DataObjectFactory dataObjectFactory = null;
         try {
-            statements = metadata.findStatements(Variable.ANY, NIE.isPartOf, object.getID());
-            // queue these URIs
-            while (statements.hasNext()) {
-                Statement statement = statements.next();
-                Resource resource = statement.getSubject();
-
-                if (resource instanceof URI) {
-                    String id = resource.toString();
-                    if (!queue.contains(id)) {
-                        queue.add(id);
-                    }
+            // construct a data object factory for this message, it will parse the message and prepare a list
+            // of data objects we'll get one by one
+            dataObjectFactory = new DataObjectFactory(message, getRDFContainerFactory(uri),
+                this, this.getDataSource(), new URIImpl(uri), folderUri);
+            
+            // get all the objects from the factory and report them to the AccessData
+            DataObject object = null;
+            
+            /*
+             * Note that the isStopRequested() check is BEFORE getObject(). Otherwise if the crawler is
+             * stopped the object is obtained and only AFTERWARDS this loop is stopped. This object is not
+             * disposed by the dataObjectFactory.disposeRemainingObjects() in the finally clause, yields a
+             * warning message and can potentially lead to problems.
+             */
+            while (!isStopRequested() && (object = dataObjectFactory.getObject()) != null) {
+                // first of all get a string version of the message uri
+                String queuedUri = object.getID().toString();
+                // notify the crawler handler that we're accessing this object
+                reportAccessingObject(queuedUri);            
+                    
+                // See if this url has been accessed before so that we can stop immediately. Note
+                // that no check on message date is done as messages are immutable. Therefore we only have to
+                // check whether the AccessData knows this ID.
+                if (accessData != null && accessData.get(queuedUri, ACCESSED_KEY) != null) {
+                    // report this object and all its children as unmodified, but before you do it, dispose
+                    // the data object
+                    object.dispose();
+                    reportNotModified(queuedUri);
+                    continue;
                 }
-                else {
-                    logger.error("Internal error: unknown child value type: " + resource.getClass());
+    
+                // store the information in the access data that we have met this object, not to crawl it
+                // in future
+                if (accessData != null) {
+                    accessData.put(queuedUri, ACCESSED_KEY, "");
                 }
+    
+                // register parent child relationship (necessary in order to be able to report
+                // unmodified or deleted attachments). This relationship is recorded in the accessdata
+                // no new information is added to the objects metadata RDFContainer
+                registerParent(object);
+                
+                // attach the message to the parent folder
+                object.getMetadata().add(NIE.isPartOf,folderUri);
+    
+                // Report this object as a new object (assumption: objects are always new, never
+                // changed, since mails are immutable).
+                // This MUST happen last because the CrawlerHandler will probably dispose of it.
+                reportNewDataObject(object);
             }
-        }
-        catch (ModelRuntimeException me) {
-            logger.error("Couldn't queue children", me);
-        }
-        finally {
-            if (statements != null) {
-                statements.close();
+        } finally {
+            if (dataObjectFactory != null) {
+                dataObjectFactory.disposeRemainingObjects();
             }
         }
     }
@@ -665,6 +553,15 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
     ////////////////////////////////////////// UTILITY METHODS ///////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
+    /**
+     * Returns the UID of the message.
+     * 
+     * @param folder the folder where the message is located
+     * @param message the message whose UID we want to fetch
+     * @return the UID of the message. This method may return -1 if the message doesn't have an UID or if the
+     *         UID could not be obtained.
+     * @throws MessagingException
+     */
     protected long getMessageUid(Folder folder, Message message) throws MessagingException {
         if (folder instanceof UIDFolder) {
             return ((UIDFolder)folder).getUID(message);
@@ -673,6 +570,14 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
         }
     }
     
+    /**
+     * Returns the amount of non-removed messages in the given array. Each message in the array is checked
+     * with the {@link #isRemoved(Message)} method.
+     * 
+     * @param messages the array of messages we'd like to check
+     * @return the number of messages that have not been marked as removed on the server
+     * @throws MessagingException
+     */
     protected int getMessageCount(Message[] messages) throws MessagingException {
         int result = 0;
 
@@ -686,6 +591,14 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
         return result;
     }
     
+    /**
+     * Returns a string with the names of the subfolders of the given folder. This string may be used to
+     * record the state of the folder in the AccessData instance.
+     * 
+     * @param folder
+     * @return a string with the names of the subfolders of the given folder separated with the @ sign
+     * @throws MessagingException
+     */
     protected String getSubFoldersString(Folder folder) throws MessagingException {
         Folder[] subFolders = folder.list();
         if (subFolders.length == 0) {
@@ -707,11 +620,14 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
         return buffer.toString();
     }
     
+    /**
+     * Reports the given uri as unmodified. This method calls {@link #reportUnmodifiedDataObject(String)} and
+     * updates data structures internal to the AbstractJavaMailCrawler
+     * 
+     * @param uri the uri to be reported as unmodified
+     */
     protected void reportNotModified(String uri) {
         // report this object as unmodified
-        //crawlReport.increaseUnchangedCount();
-        //handler.objectNotModified(this, uri);
-        //deprecatedUrls.remove(uri);
         reportUnmodifiedDataObject(uri);
 
         // repeat recursively on all registered children
@@ -729,14 +645,35 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
         }
     }
 
+    /**
+     * Returns true if the given message has been marked as expunged or deleted
+     * 
+     * @param message the message to check
+     * @return true if the given message has been marked as expunged or deleted
+     * @throws MessagingException
+     */
     protected boolean isRemoved(Message message) throws MessagingException {
         return message.isExpunged() || message.isSet(Flags.Flag.DELETED);
     }
 
+    /**
+     * Returns true if this message is larger than the maximum size defined for the current data source.
+     * 
+     * @param message the message to check
+     * @return true if this message is larger than the maximum size defined for the current data source.
+     * @throws MessagingException
+     */
     protected boolean isTooLarge(Message message) throws MessagingException {
         return message.getSize() > maximumByteSize;
     }
 
+    /**
+     * Returns true if this message can be crawled, according to the criteria defined for this d data source.
+     * 
+     * @param message the message to check
+     * @return true if this message can be crawled, according to the criteria defined for this d data source.
+     * @throws MessagingException
+     */
     protected boolean isAcceptable(Message message) throws MessagingException {
         return !(isRemoved(message) || isTooLarge(message));
     }
@@ -769,4 +706,41 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
     public static boolean holdsMessages(Folder folder) throws MessagingException {
         return (folder.getType() & Folder.HOLDS_MESSAGES) == Folder.HOLDS_MESSAGES;
     }
+    
+// cementery for the code, might still come in handy sometime
+    
+//  Commented out by Antoni in the course of working on 1779556, after the refactoring of the
+//  DataSourceFactory this method is not needed anymore
+//  private void queueChildren(DataObject object, LinkedList queue) {
+//      Model metadata = object.getMetadata().getModel();
+//
+//      // query for all child URIs
+//      ClosableIterator<? extends Statement> statements = null;
+//      try {
+//          statements = metadata.findStatements(Variable.ANY, NIE.isPartOf, object.getID());
+//          // queue these URIs
+//          while (statements.hasNext()) {
+//              Statement statement = statements.next();
+//              Resource resource = statement.getSubject();
+//
+//              if (resource instanceof URI) {
+//                  String id = resource.toString();
+//                  if (!queue.contains(id)) {
+//                      queue.add(id);
+//                  }
+//              }
+//              else {
+//                  logger.error("Internal error: unknown child value type: " + resource.getClass());
+//              }
+//          }
+//      }
+//      catch (ModelRuntimeException me) {
+//          logger.error("Couldn't queue children", me);
+//      }
+//      finally {
+//          if (statements != null) {
+//              statements.close();
+//          }
+//      }
+//  }
 }

@@ -36,6 +36,10 @@ import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.filesystem.FileSystemCrawler;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
+import org.semanticdesktop.aperture.extractor.Extractor;
+import org.semanticdesktop.aperture.extractor.ExtractorException;
+import org.semanticdesktop.aperture.extractor.ExtractorFactory;
+import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -224,14 +228,29 @@ public class SubCrawlerTestBase extends ApertureTestBase {
         protected Set<String> changedObjects;
         protected Set<String> unchangedObjects;
         
+        protected ExtractorRegistry extractorRegistry;
+        
+        protected MimeTypeIdentifier mimeTypeIdentifier;
+        
         //////////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////// CONSTRUCTOR /////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////
         
         /**
-         * Constructs the ZipSubCrawlerHandler
+         * Constructs the TestBasicSubCrawlerHandler
          */
-        public TestBasicSubCrawlerHandler() throws ModelException {
+        public TestBasicSubCrawlerHandler() {
+            initialize(null);
+        }
+        
+        /**
+         * Constructs the TestBasicSubCrawlerHandler
+         */
+        public TestBasicSubCrawlerHandler(ExtractorRegistry registry){
+            initialize(registry);
+        }
+        
+        private void initialize(ExtractorRegistry registry) {
             model = RDF2Go.getModelFactory().createModel();
             model.open();
             newObjects = new HashSet<String>();
@@ -241,6 +260,8 @@ public class SubCrawlerTestBase extends ApertureTestBase {
             newObjects.clear();
             changedObjects.clear();
             unchangedObjects.clear();
+            this.extractorRegistry = registry;
+            this.mimeTypeIdentifier = ((registry != null) ? new MagicMimeTypeIdentifier() : null);
         }
         
         public void close() {
@@ -260,8 +281,49 @@ public class SubCrawlerTestBase extends ApertureTestBase {
         public void objectNew(DataObject object) {
             numberOfObjects++;
             newObjects.add(object.getID().toString());
+            
+            if (object instanceof FileDataObject && extractorRegistry != null) {
+                try {
+                    process((FileDataObject)object);
+                }
+                catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                catch (ExtractorException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            
             // free any resources contained by this DataObject
             object.dispose();
+        }
+        
+        private void process(FileDataObject object) throws IOException, ExtractorException {
+            URI id = object.getID();
+            int minimumArrayLength = mimeTypeIdentifier.getMinArrayLength();
+            InputStream contentStream = object.getContent();
+            contentStream.mark(minimumArrayLength + 10); // add some for safety
+            byte[] bytes = IOUtil.readBytes(contentStream, minimumArrayLength);
+            String mimeType = mimeTypeIdentifier.identify(bytes, null, id);
+            if (mimeType == null) {return;}
+            contentStream.reset();
+            applyExtractor(object.getID(), contentStream, mimeType, object);
+        }
+        
+        private boolean applyExtractor(URI id, InputStream contentStream, String mimeType,
+                DataObject object) throws ExtractorException {
+            Set extractors = extractorRegistry.getExtractorFactories(mimeType);
+            if (!extractors.isEmpty()) {
+                ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
+                Extractor extractor = factory.get();
+                extractor.extract(id, contentStream, null, mimeType, object.getMetadata());
+                return true;
+            }
+            else {
+                return false;
+            }
         }
 
         public void objectNotModified(String url) {
@@ -312,7 +374,7 @@ public class SubCrawlerTestBase extends ApertureTestBase {
         private String extractedString;
         
         public CompressorSubCrawlerHandler() throws ModelException {
-            super();
+            super(null);
         }
 
         public void objectNew(DataObject object) {

@@ -46,8 +46,8 @@ import org.slf4j.LoggerFactory;
  * Creates a set of DataObjects from a MimeMessage.
  * 
  * <p>
- * DataObjectFactory interprets the structure of a MimeMessage and creates a tree of DataObjects that model
- * its contents in a way that is most natural to users. Practically this means that the DataObject tree should
+ * DataObjectFactory interprets the structure of a MimeMessage and creates a list of DataObjects that model
+ * its contents in a way that is most natural to users. Practically this means that the DataObject list should
  * be as similar as possible to how mail readers present the mail.
  * 
  * <p>
@@ -98,7 +98,7 @@ public class DataObjectFactory {
     /**
      * The DataSource that the generated DataObjects will report as source.
      */
-    private DataSource source;
+    private DataSource dataSource;
 
     /**
      * The RDFContainerFactory delivering the RDFContainer to be used in the DataObjects.
@@ -111,13 +111,121 @@ public class DataObjectFactory {
     private PartStreamFactory streamFactory;
 
     /**
+     * The message this factory has been created for
+     */
+    private MimeMessage message;
+    
+    /**
+     * The URI of the message
+     */
+    private URI messageURI;
+    
+    /**
+     * The URI of the folder this message is enclosed in (can be null)
+     */
+    private URI folderUri;
+
+    /**
+     * The list of data objects, generated from the message.
+     */
+    private List<DataObject> dataObjectsToReturn;
+    
+    /**
+     * The index in that list specifying the data object to be returned on the next call to {@link #getObject()}
+     */
+    private int currentDataObjectToReturn;
+
+    /**
+     * Constructs a data object factory for the given message
+     * @param message
+     * @param containerFactory
+     * @param streamFactory
+     * @param dataSource
+     * @param messageUri
+     * @param folderUri
+     * @throws IOException
+     * @throws MessagingException
+     */
+    public DataObjectFactory(MimeMessage message, RDFContainerFactory containerFactory, 
+            PartStreamFactory streamFactory, DataSource dataSource, URI messageUri, URI folderUri) 
+            throws IOException, MessagingException {
+        this.message = message;
+        this.containerFactory = containerFactory;
+        this.streamFactory = streamFactory;
+        this.dataSource = dataSource;
+        this.folderUri = folderUri;
+        this.currentDataObjectToReturn = 0;
+        this.dataObjectsToReturn = new ArrayList<DataObject>(10); // 10 should be more than enough
+        this.messageURI = messageUri;
+        try {
+            createDataObjects();
+        } catch (MessagingException e) {
+            disposeRemainingObjects();
+            throw e;
+        } catch (IOException e) {
+            disposeRemainingObjects();
+            throw e;
+        }
+    }
+    
+    /**
+     * Returns a DataObject representing a single message. This data object contains a flattened version
+     * of the (arbitrary complex) tree-like MIME structure of the message. This method is called repeatedly
+     * for a single MimeMessage. At the first call it creates a cachedDataObjectsMap of all dataObjects that
+     * are to be returned from this message. On all subsequent calls DataObjects from this map are returned.
+     * 
+     * @param message
+     * @param url
+     * @param folderUri
+     * @param dataSource
+     * @param newAccessData
+     * @param containerFactory
+     * @return a DataObject instance for the given message
+     * @throws MessagingException
+     * @throws IOException
+     */
+    public DataObject getObject() throws MessagingException, IOException {
+        if (currentDataObjectToReturn >= dataObjectsToReturn.size()) {
+            return null;
+        } else {
+            DataObject result = dataObjectsToReturn.get(currentDataObjectToReturn);
+            currentDataObjectToReturn++;
+            return result;
+        }
+    }
+    
+    /**
+     * Disposes of the data objects remaining on the list of objects to return. This method must be called if
+     * the user stopped calling the getObject() method BEFORE it returned null, thus marking the fact that all
+     * objects have been read.
+     */
+    public void disposeRemainingObjects() {
+        for (; currentDataObjectToReturn < dataObjectsToReturn.size(); currentDataObjectToReturn++) {
+            dataObjectsToReturn.get(currentDataObjectToReturn).dispose();
+        }
+    }
+
+    /**
+     * Returns a data object with the given url
+     * @param url
+     * @return
+     */
+    public DataObject getObject(String url) {
+        for (DataObject object : dataObjectsToReturn) {
+            if (object.getID().toString().equals(url)) {
+                return object;
+            }
+        }
+        return null;
+    }
+    
+    /**
      * Returns a list of DataObjects that have been created based on the contents of the specified
      * MimeMessage. The order of the DataObjects reflects the order of the message parts they represent, i.e.
      * the first DataObject represents the entire message, subsequent DataObjects represent attachments in a
      * depth first order several layers of attachments can exist when forwarding messages containing
      * attachments).
      * 
-     * @param message The MimeMessage to interpret.
      * @param messageUri The URI to use to identify the specified MimeMessage. URIs of child DataObjects must
      *            be derived from this URI.
      * @param folderUri The URI of the Folder from which these MimeMessages were obtained. The root DataObject
@@ -126,17 +234,10 @@ public class DataObjectFactory {
      * @param factory An RDFContainerFactory that can deliver RDFContainer to be used in the returned
      *            DataObjects.
      * @param lStreamFactory will be used to obtain InputStreams from messages
-     * @return A List of DataObjects derived from the specified MimeMessage. The order of the DataObjects
-     *         reflects the order of the message parts they represent.
      * @throws MessagingException Thrown when accessing the mail contents.
      * @throws IOException Thrown when accessing the mail contents.
      */
-    public List createDataObjects(MimeMessage message, String messageUri, URI folderUri, DataSource dataSource,
-            RDFContainerFactory factory, PartStreamFactory lStreamFactory) throws MessagingException, IOException {
-        // initialize variables
-        this.source = dataSource;
-        this.containerFactory = factory;
-        this.streamFactory = lStreamFactory;
+    private void createDataObjects() throws MessagingException, IOException {
 
         /*
          * create a HashMap representation of this message and all its nested parts
@@ -146,15 +247,13 @@ public class DataObjectFactory {
          * HashMap representation equivalent to the tree-like structure of the MimeMessage.
          * (Which is non-obvious at the first glance - Antoni 06.11.2007)
          */ 
-        HashMap map = handleMailPart(message, new URIImpl(messageUri), MailUtil
-                .getDate(message));
+        HashMap map = handleMailPart(message, messageURI, MailUtil.getDate(message));
 
         // convert the HashMap representation to a DataObject representation
-        ArrayList result = new ArrayList();
-        createDataObjects(map, folderUri, result);
+        createDataObjects(map, folderUri, dataObjectsToReturn);
 
         // The first object is the Message itself, add RDF type to it
-        RDFContainer msgObject = ((DataObject) result.get(0)).getMetadata();
+        RDFContainer msgObject = dataObjectsToReturn.get(0).getMetadata();
         msgObject.add(RDF.type, NMO.Email);
         // Apart from being a message, it is also a MailboxDataObject
         msgObject.add(RDF.type, NMO.MailboxDataObject);
@@ -163,8 +262,6 @@ public class DataObjectFactory {
         if (messageID != null) {
             msgObject.add(NMO.messageId, messageID);
         }
-
-        return result;
     }
 
     /* ----------------------------- Methods for MIME interpretation ----------------------------- */
@@ -307,16 +404,16 @@ public class DataObjectFactory {
             result.put(NMO.contentMimeType, mimeType);
 
             // add message metadata
-            Message message = (Message) mailPart;
-            addObjectIfNotNull(NMO.messageSubject, message.getSubject(), result);
-            addContactArrayIfNotNull(NMO.from, message.getFrom(), result);
-            addContactArrayIfNotNull(NMO.to, message.getRecipients(RecipientType.TO), result);
-            addContactArrayIfNotNull(NMO.cc, message.getRecipients(RecipientType.CC), result);
-            addContactArrayIfNotNull(NMO.bcc, message.getRecipients(RecipientType.BCC), result);
+            Message localMessage = (Message) mailPart;
+            addObjectIfNotNull(NMO.messageSubject, localMessage.getSubject(), result);
+            addContactArrayIfNotNull(NMO.from, localMessage.getFrom(), result);
+            addContactArrayIfNotNull(NMO.to, localMessage.getRecipients(RecipientType.TO), result);
+            addContactArrayIfNotNull(NMO.cc, localMessage.getRecipients(RecipientType.CC), result);
+            addContactArrayIfNotNull(NMO.bcc, localMessage.getRecipients(RecipientType.BCC), result);
             result.put(RDF.type, NMO.Email);
 
-            if (message instanceof MimeMessage) {
-                MimeMessage mimeMessage = (MimeMessage) message;
+            if (localMessage instanceof MimeMessage) {
+                MimeMessage mimeMessage = (MimeMessage) localMessage;
                 addObjectIfNotNull(NMO.sender, mimeMessage.getSender(), result);
             }
         }
@@ -678,7 +775,7 @@ public class DataObjectFactory {
 
     /* ------- Methods for transforming a HashMap to a list of DataObjects ------- */
 
-    private void createDataObjects(HashMap dataObjectHashMap, URI parentUri, ArrayList resultDataObjectList) {
+    private void createDataObjects(HashMap dataObjectHashMap, URI parentUri, List<DataObject> resultDataObjectList) {
         // fetch the minimal set of properties needed to create a DataObject
         URI dataObjectId = (URI) dataObjectHashMap.get(ID_KEY);
         InputStream content = (InputStream) dataObjectHashMap.get(CONTENTS_KEY);
@@ -691,8 +788,8 @@ public class DataObjectFactory {
         // create the DataObject
         DataObject dataObject = 
             (content == null) ? 
-             new DataObjectBase(dataObjectId, source, metadata) : 
-             new FileDataObjectBase(dataObjectId, source, metadata, content);
+             new DataObjectBase(dataObjectId, dataSource, metadata) : 
+             new FileDataObjectBase(dataObjectId, dataSource, metadata, content);
              
         resultDataObjectList.add(dataObject);
 
