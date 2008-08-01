@@ -16,7 +16,4 @@
 	<subCrawlerFactory>
 		<name>org.semanticdesktop.aperture.subcrawler.bzip2.BZip2SubCrawlerFactory</name>
 	</subCrawlerFactory>
-	<subCrawlerFactory>
-		<name>org.semanticdesktop.aperture.subcrawler.mime.MimeSubCrawlerFactory</name>
-	</subCrawlerFactory>
 </subCrawlerFactories>

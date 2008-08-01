@@ -44,7 +44,7 @@ class ImapStreamPool {
      * be closed only when all streams have been closed. <br/><br/>
      * 
      * There is no way to check if the given part actually comes from the store wrapped by this stream
-     * pool. 
+     * pool. That's why this class has package access. 
      * 
      * @param message
      * @return
@@ -58,14 +58,9 @@ class ImapStreamPool {
             store.connect();
             closeRequested = false;
         }
-        InputStream stream = part.getInputStream();
-        if (stream == null) {
-            return null;
-        } else {
-            InputStream result = new ImapInputStream(part.getInputStream(),this);
-            this.streamSet.add(result);
-            return result;
-        }
+        InputStream result = new ImapInputStream(part.getInputStream(),this);
+        this.streamSet.add(result);
+        return result;
     }
     
     public synchronized void requestClose() {

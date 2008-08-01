@@ -51,12 +51,12 @@ import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.mail.AbstractJavaMailCrawler;
-import org.semanticdesktop.aperture.crawler.mail.DataObjectFactory;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.imap.ImapDataSource;
 import org.semanticdesktop.aperture.datasource.imap.ImapDataSource.ConnectionSecurity;
 import org.semanticdesktop.aperture.security.trustmanager.standard.StandardTrustManager;
 import org.semanticdesktop.aperture.util.HttpClientUtil;
+import org.semanticdesktop.aperture.util.UtfUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,27 +82,18 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    /*
-     * The source whose properties we're currently using.
-     * 
-     * A separate DataSource is necessary as the DataAccessor implementation may be passed a different
-     * DataSource. this is the data source instance that served as the basis for setting the values of all
-     * other configuration fields, when this class is used as a Crawler, this is equal (==) to the source
-     * obtained by getDataSource(), actually this value is obtained by calling getDataSource()
-     * 
-     * when this class is used as an accessor, this is equal to the last data source instance passed to the
-     * getDataObject(ifModified) methods, it is obtained from outside. This is the second source where this
-     * reference might come from.
-     * 
-     * The instance returned by the getDataSource() method is never directly used in this class.
-     */  
+    // The source whose properties we're currently using. A separate DataSource is necessary as the
+    // DataAccessor implementation may be passed a different DataSource.
+    // this is the data source instance that served as the basis for setting the values of all
+    // other configuration fields, when this class is used as a Crawler, this is equal (==) to
+    // the source obtained by getDataSource(), when this class is used as an accessor, this
+    // is equal to the last data source instance passed to the getDataObject(ifModified) methods
+    // the source obtained by getDataSource() is never used directly in this class
     private ImapDataSource configuredDataSource;
 
-    /*
-     * A Property instance holding *extra* properties to use when a Session is initiated. This can be used in
-     * apps running on Java < 5.0 to instruct to use a different SocketFactory, when you don't want to
-     * communicate this via the system properties
-     */
+    // A Property instance holding *extra* properties to use when a Session is initiated.
+    // This can be used in apps running on Java < 5.0 to instruct to use a different SocketFactory,
+    // when you don't want to communicate this via the system properties
     private Properties sessionProperties;
 
     private String hostName;
@@ -140,7 +131,6 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
         // determine host name, user name, etc.
         retrieveConfigurationData(getDataSource());
 
-        
         // make sure we have a connection to the mail store
         try {
             ensureConnectedStore();
@@ -339,12 +329,6 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
     public DataObject getDataObjectIfModified(String url, DataSource dataSource, AccessData newAccessData,
             Map params, RDFContainerFactory containerFactory) throws UrlNotFoundException, IOException {
         
-        // we assume that emails are immutable, so if we know this url we don't need to do anything, so it's
-        // best to perform this check right at the beginning of this method
-        if (newAccessData != null && newAccessData.get(url, ACCESSED_KEY) != null) {
-            return null;
-        }
-        
         // reconfigure the crawler for the specified DataSource if necessary
         
         retrieveConfigurationData(dataSource); // Rem: this method modifies fields
@@ -410,11 +394,8 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
                     throw new UrlNotFoundException("unknown UID: " + messageUID);
                 }
                 
-                DataObjectFactory fac = new DataObjectFactory(message, containerFactory, this, dataSource,
-                        new URIImpl(getMessageUri(folder, message)), getFolderURI(folder));
-                
                 // create a DataObject for the requested message or message part
-                return fac.getObject(url); 
+                return getObject(message, url, getFolderURI(folder), dataSource, newAccessData, containerFactory);
             }
             else {
                 // create a DataObject for this Folder
@@ -1117,7 +1098,7 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
         return sessionProperties;
     }
     
-    // cementery for the code, might come in handy 
+    // cementery of the code, might come in handy 
     
 //    @Override
 //    protected boolean checkIfCurrentFolderHasBeenChanged(AccessData newAccessData) throws MessagingException{
