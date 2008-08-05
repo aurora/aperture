@@ -219,18 +219,22 @@ public class PdfExtractor implements Extractor {
             } catch (Exception e) {
                 // do nothing, this should have been done already
             }       
-            try {
-                addContactListMetadata(NCO.creator, dcschema.getCreators(), creator, result);
-            }
-            catch (Exception e) {
-                logger.warn("Exception while extracting modification date of " + id, e);
-            }
-            
-            try {
-                addContactListMetadata(NCO.contributor, dcschema.getContributors(), null, result);
-            }
-            catch (Exception e) {
-                logger.warn("Exception while extracting modification date of " + id, e);
+            if (dcschema != null) {
+                try {
+                    addContactListMetadata(NCO.creator, dcschema.getCreators(), creator, result);
+                }
+                catch (Exception e) {
+                    logger.warn("Exception while extracting XMP dublincore-creators of " + id, e);
+                }
+                
+                try {
+                    addContactListMetadata(NCO.contributor, dcschema.getContributors(), null, result);
+                }
+                catch (Exception e) {
+                    logger.warn("Exception while extracting XMP dublincore-contributors of " + id, e);
+                }
+            } else {
+                logger.debug("No dcschema data found for "+ id);
             }
                         
         } catch (Exception e) {
