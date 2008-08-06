@@ -1,9 +1,3 @@
-/*
- * Copyright (c) 2005 - 2008 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
- * All rights reserved.
- * 
- * Licensed under the Open Software License version 3.0.
- */
 package org.semanticdesktop.aperture.websites.flickr;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
@@ -13,8 +7,8 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Jul 15 22:54:28 CEST 2008
- * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Thu Jul 31 09:42:46 CEST 2008
+ * input file: /Users/ck/Entwicklung/nepomuk/workspace2/aperture/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#
  */
 public class FLICKRDS {
@@ -55,11 +49,11 @@ public class FLICKRDS {
     /**
      * Type: Instance of http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#CrawlType <br/>
      */
-    public static final URI ItemsAndTagsCrawlType = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#ItemsAndTagsCrawlType");
+    public static final URI MetadataAndPicturesCrawlType = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#MetadataAndPicturesCrawlType");
     /**
      * Type: Instance of http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#CrawlType <br/>
      */
-    public static final URI ItemsOnlyCrawlType = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#ItemsOnlyCrawlType");
+    public static final URI MetadataOnlyCrawlType = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#MetadataOnlyCrawlType");
     /**
      * Type: Property <br/>
      * Label: Crawl type  <br/>

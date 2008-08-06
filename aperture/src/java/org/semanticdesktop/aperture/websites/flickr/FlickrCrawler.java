@@ -1,12 +1,16 @@
 /*
- * Copyright (c) 2005 - 2008 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * Copyright (c) 2008 Forschungszentrum L3S
  * All rights reserved.
  * 
  * Licensed under the Open Software License version 3.0.
  */
 package org.semanticdesktop.aperture.websites.flickr;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -25,9 +29,11 @@ import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.NAO;
 import org.semanticdesktop.aperture.vocabulary.NFO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
+import org.semanticdesktop.aperture.websites.flickr.FlickrDataSource.CrawlType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -40,6 +46,7 @@ import com.aetrion.flickr.people.User;
 import com.aetrion.flickr.photos.Photo;
 import com.aetrion.flickr.photos.PhotoList;
 import com.aetrion.flickr.photos.PhotosInterface;
+import com.aetrion.flickr.photos.Size;
 import com.aetrion.flickr.tags.Tag;
 
 /**
@@ -51,7 +58,7 @@ public class FlickrCrawler extends CrawlerBase {
 
     // FIXME make this configurable
     private static final String API_KEY = "f47691529440669449065e6962e1346a";
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(FlickrCrawler.class);
 
     public FlickrCrawler(DataSource ds) {
@@ -63,10 +70,15 @@ public class FlickrCrawler extends CrawlerBase {
         NEW, UNMODIFIED, CHANGED
     }
 
+    // FIXME make this configurable via the GUI
+    private final File localPhotoBasedir = new File(new File(System.getProperty("user.home")), "flickrPhotos");
+
+    private static final int ENTRIES_PER_PAGE = 10;
+
     @Override
     @SuppressWarnings("unchecked")
     protected ExitCode crawlObjects() {
-        final DataSource localSource = getDataSource();
+        final FlickrDataSource localSource = (FlickrDataSource) getDataSource();
         final RDFContainer configuration = localSource.getConfiguration();
         final String username = ConfigurationUtil.getUsername(configuration);
         final String password = ConfigurationUtil.getPassword(configuration);
@@ -76,165 +88,242 @@ public class FlickrCrawler extends CrawlerBase {
             Flickr flickr = credentials.getFlickrInterface();
 
             PeopleInterface peopleIf = flickr.getPeopleInterface();
-            User meUser = peopleIf.findByEmail(username);
+            User meUser;
+
+            if (username.indexOf('@') != -1 && username.indexOf('.') != -1) {
+                meUser = peopleIf.findByEmail(username);
+            }
+            else {
+                // FIXME maybe remove support for Flickr-internal user-IDs
+                meUser = peopleIf.findByUsername(username);
+            }
             String meId = meUser.getId();
 
-            // FIXME should we uriencode the meId? (probably not necessary)
             // FIXME store flickr data from different accounts in different contexts?
-            String contextUriString = "http://www.flickr.com/photos/" + meId +"/";
+            // this requires changes to Aperture's RDF API (context support)
+            String contextUriString = "http://www.flickr.com/photos/" + meId + "/";
 
             String photoUriPrefix = contextUriString;
 
             PhotosInterface photosIf = flickr.getPhotosInterface();
             // PhotosetsInterface photosetsIf = flickr.getPhotosetsInterface();
 
-            // FIXME Currently, we only download the first 10 images.
-            PhotoList pl = peopleIf.getPublicPhotos(meId, 10, 0);
-            // PhotoList pl = photosetsIf.getPhotos(meId, 10, 0);
-            
-            for (Iterator<Photo> it = pl.iterator(); it.hasNext();) {
-                Photo photo = it.next();
-                // NOTE to get all information, we need to use photosIf
-                photo = photosIf.getPhoto(photo.getId(), credentials.secret);
+            // FIXME check why CrawlType is NULL
+            boolean downloadImages = !CrawlType.MetadataOnlyCrawlType.equals(localSource.getCrawlType());
+            if (downloadImages) {
+                localPhotoBasedir.mkdirs();
+            }
 
-                String id = photo.getId();
-                
-                // FIXME we could add this as well
-                // String license = photo.getLicense();
+            boolean notAProUser = false;
 
-                final String photoUriString = photoUriPrefix + id+ "/";
+            int page = 0;
+            int numEntries;
+            do {
+                numEntries = 0;
 
-                ObjectType objectType;
-                
-                String timeMillis;
-                if (accessData!=null) {
-                    accessData.touch(photoUriString);
-                    timeMillis = accessData.get(photoUriString, AccessData.DATE_KEY);
-                } else { 
-                    timeMillis=null; 
-                }
-                
-                if (timeMillis == null) {
-                    // FIXME check whether AccessData really works
-                    objectType = ObjectType.NEW;
-                }
-                else {
-                    long t = Long.parseLong(timeMillis);
-                    Date lastUpdate = photo.getLastUpdate();
-                    if (lastUpdate == null || lastUpdate.getTime() > t) {
-                        objectType = ObjectType.CHANGED;
+                PhotoList pl = peopleIf.getPublicPhotos(meId, ENTRIES_PER_PAGE, page);
+                // PhotoList pl = photosetsIf.getPhotos(meId, ENTRIES_PER_PAGE, page);
+
+                for (Iterator<Photo> it = pl.iterator(); it.hasNext();) {
+                    numEntries++;
+                    Photo photo = it.next();
+                    // NOTE to get all information, we need to use photosIf
+                    photo = photosIf.getPhoto(photo.getId(), credentials.secret);
+
+                    String id = photo.getId();
+
+                    final String photoUriString = photoUriPrefix + id + "/";
+
+                    String timeMillis;
+                    if (accessData != null) {
+                        accessData.touch(photoUriString);
+                        timeMillis = accessData.get(photoUriString, AccessData.DATE_KEY);
                     }
                     else {
-                        //FIXME check whether tags implicate a change in lastUpdate
-                        objectType = ObjectType.UNMODIFIED;
+                        timeMillis = null;
                     }
-                }
 
-                if (objectType == ObjectType.UNMODIFIED) {
-                    reportUnmodifiedDataObject(photoUriString);
-                    continue;
-                }
-                
-                if (accessData!=null) accessData.put(photoUriString, AccessData.DATE_KEY, Long.toString(System.currentTimeMillis()));
+                    ObjectType objectType;
+                    if (timeMillis == null) {
+                        objectType = ObjectType.NEW;
+                    }
+                    else {
+                        long t = Long.parseLong(timeMillis);
+                        Date lastUpdate = photo.getLastUpdate();
+                        if (lastUpdate == null || lastUpdate.getTime() > t) {
+                            objectType = ObjectType.CHANGED;
+                        }
+                        else {
+                            // FIXME check whether tags implicate a change in lastUpdate
+                            objectType = ObjectType.UNMODIFIED;
+                        }
+                    }
 
-                List<DataObject> dataObjects = new ArrayList<DataObject>();
+                    if (objectType == ObjectType.UNMODIFIED) {
+                        reportUnmodifiedDataObject(photoUriString);
+                        continue;
+                    }
 
-                DataObject objPhotoIE = newDataObject(dataObjects, photoUriString);
-                DataObject objPhotoDOWebsite = newDataObject(dataObjects, photo.getUrl());
-                {
-                    RDFContainer rdf = objPhotoDOWebsite.getMetadata();
-                    rdf.add(RDF.type, NFO.Website);
-                    rdf.add(NFO.fileUrl, photo.getUrl());
-                    rdf.add(NIE.interpretedAs, objPhotoIE.getID());
-                }
-                // only attempt downloading original image, if password/secret is set
-                if (credentials.secret!=null) {
+                    if (accessData != null) {
+                        accessData.put(photoUriString, AccessData.DATE_KEY, Long.toString(System
+                                .currentTimeMillis()));
+                    }
+
+                    List<DataObject> dataObjects = new ArrayList<DataObject>();
+
+                    DataObject objPhotoIE = newDataObject(dataObjects, photoUriString);
+                    DataObject objPhotoDOWebsite = newDataObject(dataObjects, photo.getUrl());
+                    {
+                        RDFContainer rdf = objPhotoDOWebsite.getMetadata();
+                        rdf.add(RDF.type, NFO.Website);
+                        rdf.add(NFO.fileUrl, photo.getUrl());
+                        rdf.add(NIE.interpretedAs, objPhotoIE.getID());
+                    }
+
+                    File localCopy = null;
+                    String format;
+
+                    String mimeType = null;
+                    String suffix = "";
+
                     DataObject objPhotoDOOriginalImage = newDataObject(dataObjects, photo.getUrl());
-                    RDFContainer rdf = objPhotoDOOriginalImage.getMetadata();
-                    rdf.add(RDF.type, NFO.Image);
-                     photo.setOriginalSecret(credentials.secret);
-                    rdf.add(NFO.fileUrl, photo.getOriginalUrl());
-                    rdf.add(NIE.interpretedAs, objPhotoIE.getID());
-                }
+                    {
+                        RDFContainer rdf = objPhotoDOOriginalImage.getMetadata();
+                        rdf.add(RDF.type, NFO.Image);
 
-                {
-                    RDFContainer rdf = objPhotoIE.getMetadata();
-                    rdf.add(RDF.type, NIE.InformationElement);
-                    addIfNotNull(rdf, RDFS.label, photo.getTitle());
-                    addIfNotNull(rdf, NIE.title, photo.getTitle());
-                    addIfNotNull(rdf, NIE.contentLastModified, photo.getDateAdded());
-                    addIfNotNull(rdf, NIE.created, photo.getDatePosted());
-                    addIfNotNull(rdf, NIE.contentCreated, photo.getDateTaken());
-                    addIfNotNull(rdf, NIE.description, photo.getDescription());
-                    rdf.add(NIE.isStoredAs, objPhotoDOWebsite.getID());
-                    rdf.add(NIE.mimeType, "image/jpeg");
-                    // FIXME add Owner
+                        String photoUrl = null;
+                        if (photo.getOriginalSecret().length() == 0) {
+                            // You are not a PRO user
+                            // see http://flickrj.sourceforge.net/faq.php?faq_id=1
+                            if (!notAProUser) {
+                                LOG
+                                        .warn("You are not a Flickr-PRO user. Cannot download original image. Attempting largest size possible");
+                                notAProUser = true;
+                            }
+                            Collection<Size> sizes = (Collection<Size>) photosIf.getSizes(photo.getId());
 
-                    Collection<Tag> tags = photo.getTags();
-                    for (final Tag t : tags) {
+                            int largestWidth = -1;
+                            for (Size size : sizes) {
+                                if (size.getWidth() > largestWidth) {
+                                    photoUrl = size.getSource();
+                                    largestWidth = size.getWidth();
+                                    suffix = "_" + size.getWidth() + "x" + size.getHeight();
+                                }
+                            }
+                            format = "jpg";
+                        }
+                        else {
+                            photoUrl = photo.getOriginalUrl();
+                            format = photo.getOriginalFormat();
+                            suffix = "_original";
+                        }
+                        if (photoUrl != null) {
+                            rdf.add(NFO.fileUrl, photoUrl);
+                        }
+                        rdf.add(NIE.interpretedAs, objPhotoIE.getID());
 
-//                        String tagsPrefix = "http://www.flickr.com/people/"+t.getAuthor()+"/tags/";
-                        String tagsPrefix = photoUriString;
-                        final String tagValue = t.getValue();
-                        if (tagValue != null) {
-                            String tag = tagsPrefix + tagValue;
+                        if (downloadImages && photoUrl != null) {
+                            // download the image
 
-                            DataObject objTag = newDataObject(dataObjects, tag);
-                            rdf.add(NAO.hasTag, objTag.getID());
-                            {
-                                RDFContainer rdfTag = objTag.getMetadata();
-                                rdfTag.add(RDF.type, NAO.Tag);
-                                addIfNotNull(rdfTag, NAO.prefLabel, tagValue);
-                                // FIXME add Creator
+                            localCopy = new File(localPhotoBasedir, photo.getId() + suffix + "." + format);
+                            if (localCopy.exists()) {
+                                LOG.info("Skipping photo " + photoUrl + ". File already exists at "
+                                        + localCopy);
+                            }
+                            else {
+                                LOG.info("Copying photo " + photoUrl + " to " + localCopy + " (format "
+                                        + format + ")");
+
+                                URLConnection conn = new URL(photoUrl).openConnection();
+                                InputStream in = conn.getInputStream();
+                                IOUtil.writeStream(in, localCopy);
+                                mimeType = conn.getContentType();
+                                in.close();
                             }
                         }
                     }
-                }
 
-                switch (objectType) {
-                case NEW:
-                    for (DataObject dobj : dataObjects) {
-                        reportNewDataObject(dobj);
+                    {
+                        RDFContainer rdf = objPhotoIE.getMetadata();
+                        rdf.add(RDF.type, NIE.InformationElement);
+                        addIfNotNull(rdf, RDFS.label, photo.getTitle());
+                        addIfNotNull(rdf, NIE.title, photo.getTitle());
+                        addIfNotNull(rdf, NIE.contentLastModified, photo.getDateAdded());
+                        addIfNotNull(rdf, NIE.created, photo.getDatePosted());
+                        addIfNotNull(rdf, NIE.contentCreated, photo.getDateTaken());
+                        addIfNotNull(rdf, NIE.description, photo.getDescription());
+                        rdf.add(NIE.isStoredAs, objPhotoDOWebsite.getID());
+                        if (localCopy != null) {
+                            rdf.add(NIE.isStoredAs, localCopy.toURI().toString());
+                        }
+                        if (mimeType == null) {
+                            mimeType = "image/jpeg";
+                        }
+                        rdf.add(NIE.mimeType, mimeType);
+
+                        Collection<Tag> tags = photo.getTags();
+                        for (final Tag t : tags) {
+                            // String tagsPrefix = "http://www.flickr.com/people/"+t.getAuthor()+"/tags/";
+                            String tagsPrefix = photoUriString;
+                            final String tagValue = t.getValue();
+                            if (tagValue != null) {
+                                String tag = tagsPrefix + tagValue;
+
+                                DataObject objTag = newDataObject(dataObjects, tag);
+                                rdf.add(NAO.hasTag, objTag.getID());
+                                {
+                                    RDFContainer rdfTag = objTag.getMetadata();
+                                    rdfTag.add(RDF.type, NAO.Tag);
+                                    addIfNotNull(rdfTag, NAO.prefLabel, tagValue);
+                                    // FIXME add Creator
+                                }
+                            }
+                        }
                     }
-                    break;
-                case CHANGED:
-                    for (DataObject dobj : dataObjects) {
-                        reportModifiedDataObject(dobj);
-                    }
-                    break;
-                default:
-                    // unsupported operation, assume new
-                    LOG.info("Unsupported ObjectType, assuming NEW: " + objectType);
-                    for (DataObject dobj : dataObjects) {
-                        reportNewDataObject(dobj);
+
+                    switch (objectType) {
+                    case NEW:
+                        for (DataObject dobj : dataObjects) {
+                            reportNewDataObject(dobj);
+                        }
+                        break;
+                    case CHANGED:
+                        for (DataObject dobj : dataObjects) {
+                            reportModifiedDataObject(dobj);
+                        }
+                        break;
+                    default:
+                        // unsupported operation, assume new
+                        LOG.info("Unsupported ObjectType, assuming NEW: " + objectType);
+                        for (DataObject dobj : dataObjects) {
+                            reportNewDataObject(dobj);
+                        }
                     }
                 }
-
-                // String format = photo.getOriginalFormat();
-                // InputStream in = photosIf.getImageAsStream(photo, Size.ORIGINAL);
-                // System.out.println(in+"/"+in.read());
-                // in.close();
+                page++;
             }
+            while (numEntries == ENTRIES_PER_PAGE);
+
             return ExitCode.COMPLETED;
         }
         catch (IOException e) {
             LOG.info("Could not crawl Flickr datasource", e);
-//            e.printStackTrace();
+            // e.printStackTrace();
             return ExitCode.FATAL_ERROR;
         }
         catch (FlickrException e) {
             LOG.info("Could not crawl Flickr datasource", e);
-//            e.printStackTrace();
+            // e.printStackTrace();
             return ExitCode.FATAL_ERROR;
         }
         catch (SAXException e) {
             LOG.info("Could not crawl Flickr datasource", e);
-//            e.printStackTrace();
+            // e.printStackTrace();
             return ExitCode.FATAL_ERROR;
         }
         catch (RuntimeException e) {
             LOG.info("Could not crawl Flickr datasource", e);
-//            e.printStackTrace();
+            // e.printStackTrace();
             return ExitCode.FATAL_ERROR;
         }
     }
@@ -268,17 +357,19 @@ public class FlickrCrawler extends CrawlerBase {
         private Flickr flickr;
 
         public FlickrCredentials(final String apiKey) throws IOException, FlickrException, SAXException {
-            this(apiKey,null);
+            this(apiKey, null);
         }
-        
+
         public FlickrCredentials(final String apiKey, final String secret) throws IOException,
                 FlickrException, SAXException {
             this.secret = secret;
             flickr = new Flickr(apiKey);
-            if (secret!=null) RequestContext.getRequestContext().setSharedSecret(secret);
+            if (secret != null && secret.length() != 0) {
+                RequestContext.getRequestContext().setSharedSecret(secret);
+            }
 
-//            AuthInterface authIf = flickr.getAuthInterface();
-//            frob = authIf.getFrob();
+            // AuthInterface authIf = flickr.getAuthInterface();
+            // frob = authIf.getFrob();
         }
 
         public Flickr getFlickrInterface() {

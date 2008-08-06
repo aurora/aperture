@@ -1,9 +1,3 @@
-/*
- * Copyright (c) 2005 - 2008 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
- * All rights reserved.
- * 
- * Licensed under the Open Software License version 3.0.
- */
 package org.semanticdesktop.aperture.websites.flickr;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Node;
@@ -17,8 +11,8 @@ import java.util.List;
 import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Tue Jul 15 22:54:32 CEST 2008
- * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Thu Jul 31 09:42:47 CEST 2008
+ * input file: /Users/ck/Entwicklung/nepomuk/workspace2/aperture/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#FlickrDataSource
  */
 public class FlickrDataSource extends DataSourceBase {
@@ -86,31 +80,31 @@ public class FlickrDataSource extends DataSourceBase {
      * Enum of possible values of the crawlType property
      */
      public static enum CrawlType {
-         /** Constant representing http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#ItemsAndTagsCrawlType*/
-         ItemsAndTagsCrawlType,
-         /** Constant representing http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#ItemsOnlyCrawlType*/
-         ItemsOnlyCrawlType;
+         /** Constant representing http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#MetadataAndPicturesCrawlType*/
+         MetadataAndPicturesCrawlType,
+         /** Constant representing http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#MetadataOnlyCrawlType*/
+         MetadataOnlyCrawlType;
 
          public static CrawlType fromUri(URI uri) {
              if (uri == null) {
                  return null;
              }
-             else if (uri.equals(FLICKRDS.ItemsAndTagsCrawlType)) {
-                 return ItemsAndTagsCrawlType;
+             else if (uri.equals(FLICKRDS.MetadataAndPicturesCrawlType)) {
+                 return MetadataAndPicturesCrawlType;
              }
-             else if (uri.equals(FLICKRDS.ItemsOnlyCrawlType)) {
-                 return ItemsOnlyCrawlType;
+             else if (uri.equals(FLICKRDS.MetadataOnlyCrawlType)) {
+                 return MetadataOnlyCrawlType;
              }
              else {
                  return null;
              }
          }
          public URI toUri() {
-             if (this.equals(ItemsAndTagsCrawlType)) {
-                 return FLICKRDS.ItemsAndTagsCrawlType;
+             if (this.equals(MetadataAndPicturesCrawlType)) {
+                 return FLICKRDS.MetadataAndPicturesCrawlType;
              }
-             else if (this.equals(ItemsOnlyCrawlType)) {
-                 return FLICKRDS.ItemsOnlyCrawlType;
+             else if (this.equals(MetadataOnlyCrawlType)) {
+                 return FLICKRDS.MetadataOnlyCrawlType;
              }
              else {
                  return null;

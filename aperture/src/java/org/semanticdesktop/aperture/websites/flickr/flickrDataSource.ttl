@@ -7,6 +7,7 @@
 @prefix nie:     <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#> .
 @prefix tagging: <http://aperture.sourceforge.net/ontologies/tagging#> .
 @prefix : <http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#> .
+@prefix nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#> .
 
 :FlickrDataSource a rdfs:Class ;
 	rdfs:subClassOf nie:DataSource ;
@@ -18,7 +19,8 @@
                    fresnel:classLensDomain :FlickrDataSource ;
                    fresnel:showProperties ( source:username 
                                             source:password 
-                                            :crawlType ) .
+                                            :crawlType
+                                           ) .
                                             
 :crawlType a rdf:Property ;
 	rdfs:label "Crawl type" ;
@@ -27,8 +29,9 @@
 	rdfs:range :CrawlType .
 	
 :CrawlType a rdfs:Class .
-:ItemsAndTagsCrawlType a :CrawlType .
-:ItemsOnlyCrawlType a :CrawlType .
+:MetadataAndPicturesCrawlType a :CrawlType .
+:MetadataOnlyCrawlType a :CrawlType .
+
 
 :crawlTypeFormat rdf:type fresnel:Format ;
     fresnel:propertyFormatDomain :crawlType ;
@@ -36,14 +39,14 @@
     	a sourceformat:ComboBoxWidget;
 		sourceformat:hasEntry [ 
 			a sourceformat:ComboBoxEntry ;
-			sourceformat:label "Items and tags" ;
-			sourceformat:value :ItemsAndTagsCrawlType  
+			sourceformat:label "Metadata and Pictures" ;
+			sourceformat:value :MetadataAndPicturesCrawlType  
 		] ;
 		sourceformat:hasEntry [ 
 			a sourceformat:ComboBoxEntry ;
-			sourceformat:label "Items only" ;
-			sourceformat:value :ItemsOnlyCrawlType 
+			sourceformat:label "Metadata only" ;
+			sourceformat:value :MetadataOnlyCrawlType 
 		] 
     ] . 
     
-                                            
+                                                                                  
