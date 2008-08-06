@@ -43,6 +43,7 @@ import com.aetrion.flickr.FlickrException;
 import com.aetrion.flickr.RequestContext;
 import com.aetrion.flickr.people.PeopleInterface;
 import com.aetrion.flickr.people.User;
+import com.aetrion.flickr.photos.Exif;
 import com.aetrion.flickr.photos.Photo;
 import com.aetrion.flickr.photos.PhotoList;
 import com.aetrion.flickr.photos.PhotosInterface;
@@ -186,9 +187,9 @@ public class FlickrCrawler extends CrawlerBase {
                     String mimeType = null;
                     String suffix = "";
 
-                    DataObject objPhotoDOOriginalImage = newDataObject(dataObjects, photo.getUrl());
+                    DataObject objPhotoDO = newDataObject(dataObjects, photo.getUrl());
                     {
-                        RDFContainer rdf = objPhotoDOOriginalImage.getMetadata();
+                        RDFContainer rdf = objPhotoDO.getMetadata();
                         rdf.add(RDF.type, NFO.Image);
 
                         String photoUrl = null;
@@ -279,6 +280,22 @@ public class FlickrCrawler extends CrawlerBase {
                                 }
                             }
                         }
+
+                        // Collection<Exif> exifs = (Collection<Exif>) photosIf.getExif(photo.getId(), photo
+                        // .getSecret());
+                        // for (Exif exif : exifs) {
+                        // // tagSpace + "-" + tag = id (e.g., EXIF-34850)
+                        // String tagSpace = exif.getTagspace();
+                        // String tag = exif.getTag();
+                        //                            
+                        // // human-readable label for tag
+                        // String label = exif.getLabel();
+                        // // human-readable value (sometimes null)
+                        // String cleanValue = exif.getClean();
+                        //                            
+                        // // raw-value for this tag
+                        // String rawValue = exif.getRaw();
+                        // }
                     }
 
                     switch (objectType) {
