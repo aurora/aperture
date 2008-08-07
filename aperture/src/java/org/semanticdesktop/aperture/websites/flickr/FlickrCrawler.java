@@ -85,6 +85,7 @@ public class FlickrCrawler extends CrawlerBase {
         final String password = ConfigurationUtil.getPassword(configuration);
 
         try {
+            // TODO: actually, the shared secret of the flickr API key has to be passed here, not a password
             FlickrCredentials credentials = new FlickrCredentials(API_KEY, password);
             Flickr flickr = credentials.getFlickrInterface();
 
@@ -132,8 +133,21 @@ public class FlickrCrawler extends CrawlerBase {
                     photo = photosIf.getPhoto(photo.getId(), credentials.secret);
 
                     String id = photo.getId();
-
                     final String photoUriString = photoUriPrefix + id + "/";
+
+                    // TODO: photo.getLastUpdate() is broken in flickrj 1.0 but fixed in flickrj 1.1
+                    // determine the date when the photo last changed
+                    Date photoChangeDate =
+                        (photo.getLastUpdate() != null) ?
+                            photo.getLastUpdate()
+                            : photo.getDatePosted();
+                    if (photoChangeDate == null)
+                    {
+                        LOG.warn("missing change-date for photo "+photoUriString+", using current system date");
+                        photoChangeDate = new Date();
+                    }
+                    
+                    
 
                     String timeMillis;
                     if (accessData != null) {
@@ -150,8 +164,7 @@ public class FlickrCrawler extends CrawlerBase {
                     }
                     else {
                         long t = Long.parseLong(timeMillis);
-                        Date lastUpdate = photo.getLastUpdate();
-                        if (lastUpdate == null || lastUpdate.getTime() > t) {
+                        if (photoChangeDate.getTime() > t) {
                             objectType = ObjectType.CHANGED;
                         }
                         else {
@@ -166,8 +179,9 @@ public class FlickrCrawler extends CrawlerBase {
                     }
 
                     if (accessData != null) {
-                        accessData.put(photoUriString, AccessData.DATE_KEY, Long.toString(System
-                                .currentTimeMillis()));
+                        
+                        accessData.put(photoUriString, AccessData.DATE_KEY, 
+                             Long.toString(photoChangeDate.getTime()));
                     }
 
                     List<DataObject> dataObjects = new ArrayList<DataObject>();
@@ -382,7 +396,8 @@ public class FlickrCrawler extends CrawlerBase {
             this.secret = secret;
             flickr = new Flickr(apiKey);
             if (secret != null && secret.length() != 0) {
-                RequestContext.getRequestContext().setSharedSecret(secret);
+                //flickr.setSharedSecret(secret); // this is the code used in 1.1
+                RequestContext.getRequestContext().setSharedSecret(secret); // this is the code used in 1.0
             }
 
             // AuthInterface authIf = flickr.getAuthInterface();

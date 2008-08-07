@@ -19,12 +19,18 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.websites.flickr.FlickrCrawler;
 import org.semanticdesktop.aperture.websites.flickr.FlickrDataSource;
+import org.semanticdesktop.aperture.websites.flickr.FlickrDataSource.CrawlType;
 
 public class ExampleFlickrCrawler extends AbstractExampleCrawler {
 	
 	private static final Logger LOGGER = Logger.getLogger(ExampleFlickrCrawler.class.getName());
 
 	private String username = null;
+
+	/**
+	 * download-dir. Null means: don't download
+	 */
+    private String downloadDirectory = null;
 	
 	public ExampleFlickrCrawler() {
 		super();
@@ -46,20 +52,30 @@ public class ExampleFlickrCrawler extends AbstractExampleCrawler {
 		List<String> remainingOptions = crawler.processCommonOptions(args);
 
 		Iterator<String> iterator = remainingOptions.iterator();
-		while (iterator.hasNext()) {
+		if (iterator.hasNext()) {
 		    String arg = iterator.next();
-		    if (crawler.getUsername() == null) {
+		    if ("-download".equals(arg))
+		    {
+		        String val = iterator.next();
+		        if (val==null)
+		            crawler.exitWithUsageMessage();
+		        crawler.setDownloadDirectory(val);
+		    } else // the rest
 		        crawler.setUsername(arg);
-		    } else {
-		        crawler.exitWithUsageMessage();
-		    }
-		}
+		} else
+		    crawler.exitWithUsageMessage();
+		if (crawler.getUsername() == null)
+		    crawler.exitWithUsageMessage();
 		
         // start crawling and exit afterwards
         crawler.crawl();
     }
 
-	private void crawl() throws Exception {
+	public void setDownloadDirectory(String downloadDirectory) {
+        this.downloadDirectory = downloadDirectory;
+    }
+
+    private void crawl() throws Exception {
 		 // create a data source configuration
         Model model = RDF2Go.getModelFactory().createModel();
         model.open();
@@ -67,8 +83,13 @@ public class ExampleFlickrCrawler extends AbstractExampleCrawler {
 
         // create the DataSource
         FlickrDataSource source = new FlickrDataSource();
-        //set the Flickr Username
         source.setConfiguration(configuration);
+        // download?
+        if (downloadDirectory != null)
+            source.setCrawlType(CrawlType.MetadataAndPicturesCrawlType);
+        else
+            source.setCrawlType(CrawlType.MetadataOnlyCrawlType);
+        //set the Flickr Username
         source.setUsername(username);
         
         // setup a crawler that can handle this type of DataSource
@@ -85,11 +106,18 @@ public class ExampleFlickrCrawler extends AbstractExampleCrawler {
 
     @Override
     protected String getSpecificExplanationPart() {
-        return "  username     - your Flickr username";
+        return getAlignedOption("-download") +"set <pathfordownload> to a directory where\n" +
+        	           getAlignedOption(null)+"downloaded pictures should be stored\n"
+            + getAlignedOption("username")+"your Flickr username";
     }
 
     @Override
     protected String getSpecificSyntaxPart() {
-        return "username";
+        return "[--download <pathfordownload>] username";
+    }
+
+    
+    public String getDownloadDirectory() {
+        return downloadDirectory;
     }
 }
