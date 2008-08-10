@@ -92,8 +92,9 @@ public class AppleAddressbookCrawler extends AddressbookCrawler {
         ClosableIterator<? extends Statement> i = null;
         try {
             model = createSimpleModel();
+            model.open();
+            System.err.println(rdfxml);
             model.readFrom(new StringReader(rdfxml), Syntax.RdfXml);
-            
             i = model.findStatements(Variable.ANY, RDF.type,
                 NCO.Contact);
             while (i.hasNext()) {

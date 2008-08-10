@@ -58,9 +58,11 @@ on urlencode(theText)
 	repeat with eachChar in characters of theText
 		set useChar to eachChar
 		set eachCharNum to ASCII number of eachChar
-		if eachCharNum = 32 then
+		if eachCharNum = 38 then
+			set useChar to "_"
+		else if eachCharNum = 32 then
 			set useChar to "+"
-		else if (eachCharNum ≠ 42) and (eachCharNum ≠ 95) and (eachCharNum < 45 or eachCharNum > 46) and (eachCharNum < 48 or eachCharNum > 57) and (eachCharNum < 65 or eachCharNum > 90) and (eachCharNum < 97 or eachCharNum > 122) then
+		else if (eachCharNum < 42) and (eachCharNum > 95) and (eachCharNum < 45 or eachCharNum > 46) and (eachCharNum < 48 or eachCharNum > 57) and (eachCharNum < 65 or eachCharNum > 90) and (eachCharNum < 97 or eachCharNum > 122) then
 			set firstDig to round (eachCharNum / 16) rounding down
 			set secondDig to eachCharNum mod 16
 			if firstDig > 9 then
@@ -87,7 +89,7 @@ tell application "Finder"
 end tell
 
 tell application "Address Book"
-	set out to "<rdf:RDF xmlns:foaf='http://xmlns.com/foaf/0.1/' xmlns:nco='http://www.semanticdesktop.org/ontologies/2007/03/22/nco#"' xmlns:rdfs='http://www.w3.org/2000/01/rdf-schema#' xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>" & return
+	set out to "<rdf:RDF xmlns:foaf='http://xmlns.com/foaf/0.1/' xmlns:nco='http://www.semanticdesktop.org/ontologies/2007/03/22/nco#' xmlns:rdfs='http://www.w3.org/2000/01/rdf-schema#' xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>" & return
 	repeat with p in people
 		set out to out & "<nco:Contact rdf:about='urn:mac:addressbook:" & my urlencode(name of p) & "'>" & return 
 		set person_name to my xmlescape(name of p)

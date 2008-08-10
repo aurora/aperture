@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.List;
 
 import org.ontoware.rdf2go.exception.ModelException;
+import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.addressbook.apple.AppleAddressbookCrawler;
 import org.semanticdesktop.aperture.addressbook.apple.AppleAddressbookDataSource;
@@ -28,6 +29,8 @@ public class ExampleAppleAddressbookCrawler extends AbstractExampleCrawler {
     public static void main(String[] args) throws Exception {
         // create a new ExampleFileCrawler instance
         ExampleAppleAddressbookCrawler crawler = new ExampleAppleAddressbookCrawler();
+        
+       
 
         List<String> remainingOptions = crawler.processCommonOptions(args);
         
@@ -54,7 +57,7 @@ public class ExampleAppleAddressbookCrawler extends AbstractExampleCrawler {
         crawler.setDataSource(source);
         crawler.setDataAccessorRegistry(new DefaultDataAccessorRegistry());
         crawler.setCrawlerHandler(getHandler());
-        crawler.setAccessData(getAccessData());
+        crawler.setAccessData(new AccessDataImpl());
 
         // start crawling
         crawler.crawl();
