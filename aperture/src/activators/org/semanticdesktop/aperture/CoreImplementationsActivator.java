@@ -271,8 +271,6 @@ public class CoreImplementationsActivator implements BundleActivator {
 		rtfExtractorActivator = null;
 		visioExtractorActivator.stop(context);
 		visioExtractorActivator = null;
-		vcardSubCrawlerActivator.stop(context);
-		vcardSubCrawlerActivator = null;
 		wordExtractorActivator.stop(context);
 		wordExtractorActivator = null;
 		wordPerfectExtractorActivator.stop(context);
