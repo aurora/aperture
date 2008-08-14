@@ -137,17 +137,13 @@ public class FlickrCrawler extends CrawlerBase {
 
                     // TODO: photo.getLastUpdate() is broken in flickrj 1.0 but fixed in flickrj 1.1
                     // determine the date when the photo last changed
-                    Date photoChangeDate =
-                        (photo.getLastUpdate() != null) ?
-                            photo.getLastUpdate()
-                            : photo.getDatePosted();
-                    if (photoChangeDate == null)
-                    {
-                        LOG.warn("missing change-date for photo "+photoUriString+", using current system date");
+                    Date photoChangeDate = (photo.getLastUpdate() != null) ? photo.getLastUpdate() : photo
+                            .getDatePosted();
+                    if (photoChangeDate == null) {
+                        LOG.warn("missing change-date for photo " + photoUriString
+                                + ", using current system date");
                         photoChangeDate = new Date();
                     }
-                    
-                    
 
                     String timeMillis;
                     if (accessData != null) {
@@ -179,9 +175,9 @@ public class FlickrCrawler extends CrawlerBase {
                     }
 
                     if (accessData != null) {
-                        
-                        accessData.put(photoUriString, AccessData.DATE_KEY, 
-                             Long.toString(photoChangeDate.getTime()));
+
+                        accessData.put(photoUriString, AccessData.DATE_KEY, Long.toString(photoChangeDate
+                                .getTime()));
                     }
 
                     List<DataObject> dataObjects = new ArrayList<DataObject>();
@@ -278,8 +274,9 @@ public class FlickrCrawler extends CrawlerBase {
 
                         Collection<Tag> tags = photo.getTags();
                         for (final Tag t : tags) {
-                            // String tagsPrefix = "http://www.flickr.com/people/"+t.getAuthor()+"/tags/";
-                            String tagsPrefix = photoUriString;
+//                            String tagsPrefix = "http://www.flickr.com/people/" + t.getAuthor() + "/tags/";
+                            String tagsPrefix = "http://www.flickr.com/tags/";
+                            // String tagsPrefix = photoUriString;
                             final String tagValue = t.getValue();
                             if (tagValue != null) {
                                 String tag = tagsPrefix + tagValue;
@@ -290,7 +287,6 @@ public class FlickrCrawler extends CrawlerBase {
                                     RDFContainer rdfTag = objTag.getMetadata();
                                     rdfTag.add(RDF.type, NAO.Tag);
                                     addIfNotNull(rdfTag, NAO.prefLabel, tagValue);
-                                    // FIXME add Creator
                                 }
                             }
                         }
@@ -396,7 +392,7 @@ public class FlickrCrawler extends CrawlerBase {
             this.secret = secret;
             flickr = new Flickr(apiKey);
             if (secret != null && secret.length() != 0) {
-                //flickr.setSharedSecret(secret); // this is the code used in 1.1
+                // flickr.setSharedSecret(secret); // this is the code used in 1.1
                 RequestContext.getRequestContext().setSharedSecret(secret); // this is the code used in 1.0
             }
 
