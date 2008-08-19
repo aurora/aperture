@@ -254,7 +254,7 @@ public class ApertureTestBase extends TestCase {
         tempModel.removeAll();
         
         GEO.getGEOOntology(tempModel);
-        validator.addOntology(tempModel, getOntUriFromNs(TAGGING.NS_TAGGING));
+        validator.addOntology(tempModel, getOntUriFromNs(GEO.NS_GEO));
         tempModel.removeAll();
         
         tempModel.close();
