@@ -9,7 +9,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/bcmail-jdk14-132.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk14-132.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/winlaf-0.5.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/demork-2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mail-1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/applewrapper-0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/osgi.core-4.0.jar"/>
@@ -47,5 +46,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/openrdf-sesame-2.1.2-onejar-osgi.jar"/>
 	<classpathentry kind="lib" path="lib/aduna-commons-xml-2.0.jar"/>
 	<classpathentry kind="lib" path="lib/ant-compression-utils-1.7.1.jar"/>
+	<classpathentry kind="lib" path="lib/demork-2.1.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>

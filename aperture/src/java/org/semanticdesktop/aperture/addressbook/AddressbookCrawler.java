@@ -64,14 +64,14 @@ public abstract class AddressbookCrawler extends CrawlerBase {
             //Set before = accessData.getStoredIDs();
             //Set current = new HashSet();
             
-            if (!accessData.isKnownId(contactListUri.toString())) {
+            if ((accessData==null) ||  (!accessData.isKnownId(contactListUri.toString()))) {
                 reportContactListDataObject(contactListUri);
             }
             
             for (Iterator it = people.iterator(); it.hasNext();) {
                 DataObject o = (DataObject) it.next();
                 String sum = computeChecksum(o);
-                if (accessData.isKnownId(o.getID().toString())) {
+                if ((accessData!=null) && (accessData.isKnownId(o.getID().toString()))) {
                     if (accessData.get(o.getID().toString(), ADDRESSBOOK_CHECKSUM_KEY).equals(sum)) {
                         //handler.objectNotModified(this, o.getID().toString());
                         reportUnmodifiedDataObject(o.getID().toString());
@@ -82,10 +82,12 @@ public abstract class AddressbookCrawler extends CrawlerBase {
                     }
                 }
                 else {
-                    accessData.put(o.getID().toString(), ADDRESSBOOK_CHECKSUM_KEY, sum);
+                    if (accessData!=null)
+                        accessData.put(o.getID().toString(), ADDRESSBOOK_CHECKSUM_KEY, sum);
                     //handler.objectNew(this, o);
                     reportNewDataObject(o);
                 }
+                if (stopRequested) break;
             }
 
             // Blah - crawl objects, friends etc.
@@ -94,7 +96,7 @@ public abstract class AddressbookCrawler extends CrawlerBase {
             //before.removeAll(current);
             //deprecatedUrls.addAll(before);
 
-            crawlCompleted = true;
+            if (!stopRequested) crawlCompleted = true;
         }
         catch (Exception e) {
             logger.error("Could not crawl addressbook data source", e);

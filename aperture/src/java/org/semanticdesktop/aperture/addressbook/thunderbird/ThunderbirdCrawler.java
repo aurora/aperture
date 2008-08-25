@@ -104,6 +104,7 @@ public class ThunderbirdCrawler extends AddressbookCrawler {
                 if (o != null)
                     res.add(o);
             }
+            if (stopRequested) break;
         }
         return res;
     }
@@ -344,19 +345,4 @@ public class ThunderbirdCrawler extends AddressbookCrawler {
         return THUNDERBIRD_URI_BASE + "Person:" + id;
     }
 
-    // Private worker as we are trying to force UTF-8.
-    private static String readWholeFile(InputStream is) throws IOException {
-        Reader r = new InputStreamReader(is, Charset.forName("utf-8").newDecoder());
-        StringWriter sw = new StringWriter(1024);
-        char buff[] = new char[1024];
-        while (r.ready()) {
-            int l = r.read(buff);
-            if (l <= 0)
-                break;
-            sw.write(buff, 0, l);
-        }
-        r.close();
-        sw.close();
-        return sw.toString();
-    }
 }

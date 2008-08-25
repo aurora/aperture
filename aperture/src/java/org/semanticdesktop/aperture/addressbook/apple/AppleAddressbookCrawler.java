@@ -110,6 +110,7 @@ public class AppleAddressbookCrawler extends AddressbookCrawler {
                 dorep.getModel().addAll(statementList.iterator());
                 dorep.add(NIE.rootElementOf,getDataSource().getID());
                 res.add(new DataObjectBase(uri, source, dorep));
+                if (stopRequested) break;
             }
         }
         catch (ModelException me) {
