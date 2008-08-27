@@ -9,6 +9,7 @@ package org.semanticdesktop.aperture.crawler;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.semanticdesktop.aperture.addressbook.AbstractAddressbookCrawlerTest;
 import org.semanticdesktop.aperture.addressbook.thunderbird.ThunderbirdCrawlerTest;
 import org.semanticdesktop.aperture.crawler.filesystem.TestFileSystemCrawler;
 import org.semanticdesktop.aperture.crawler.ical.TestIcalCrawler;
@@ -37,5 +38,6 @@ public class TestCrawlers extends TestSuite {
         addTest(new TestSuite(TestMboxCrawler.class));
         addTest(new TestSuite(TestMboxCrawlerMultiFolder.class));
         addTest(new TestSuite(ThunderbirdCrawlerTest.class));
+        addTest(new TestSuite(AbstractAddressbookCrawlerTest.class));
     }
 }

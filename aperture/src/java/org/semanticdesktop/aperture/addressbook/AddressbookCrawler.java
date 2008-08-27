@@ -9,30 +9,24 @@ package org.semanticdesktop.aperture.addressbook;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.BlankNode;
-import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.vocabulary.RDF;
-import org.ontoware.rdf2go.vocabulary.RDFS;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.util.UriUtil;
 import org.semanticdesktop.aperture.vocabulary.NCO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.slf4j.Logger;
@@ -46,57 +40,68 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    /** Key used to store the addressbook entry checksum in the AccessData - used for incremental crawling */
     protected static final String ADDRESSBOOK_CHECKSUM_KEY = "ADDRESSBOOK_CHECKSUM";
 
-    protected ExitCode crawlObjects() {
-        // DataSource source = getDataSource();
-        // RDFContainer configuration = source.getConfiguration();
-        // String username = ConfigurationUtil.getUsername(configuration);
-        // String password = ConfigurationUtil.getPassword(configuration);
+    /**
+     * Crawls the addressbook and returns a list of DataObjects. Each DataObject corresponds to a single
+     * entry in the addresbook.
+     * @return a list of DataObjects representing addressbook entries
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    public abstract List crawlAddressbook() throws Exception;
 
+    /**
+     * Returns the URI of the address book itself
+     * @return the URI of the address book itself
+     */
+    public abstract URI getContactListUri();
+    
+    @SuppressWarnings("unchecked")
+    protected ExitCode crawlObjects() {
         boolean crawlCompleted = false;
 
         try {
-
             List people = crawlAddressbook();
             URI contactListUri = getContactListUri();
             
-            //Set before = accessData.getStoredIDs();
-            //Set current = new HashSet();
-            
-            if ((accessData==null) ||  (!accessData.isKnownId(contactListUri.toString()))) {
+            if (!isStopRequested() && (accessData == null || !accessData.isKnownId(contactListUri.toString()))) {
                 reportContactListDataObject(contactListUri);
             }
             
-            for (Iterator it = people.iterator(); it.hasNext();) {
+            Iterator it = people.iterator();
+            
+            while (!isStopRequested() && it.hasNext()) {
                 DataObject o = (DataObject) it.next();
                 String sum = computeChecksum(o);
-                if ((accessData!=null) && (accessData.isKnownId(o.getID().toString()))) {
+                if (accessData != null && accessData.isKnownId(o.getID().toString())) {
                     if (accessData.get(o.getID().toString(), ADDRESSBOOK_CHECKSUM_KEY).equals(sum)) {
-                        //handler.objectNotModified(this, o.getID().toString());
                         reportUnmodifiedDataObject(o.getID().toString());
                     }
                     else {
-                        //handler.objectChanged(this, o);
                         reportModifiedDataObject(o);
                     }
                 }
                 else {
-                    if (accessData!=null)
+                    if (accessData != null) {
                         accessData.put(o.getID().toString(), ADDRESSBOOK_CHECKSUM_KEY, sum);
-                    //handler.objectNew(this, o);
+                    }
                     reportNewDataObject(o);
                 }
-                if (stopRequested) break;
             }
-
+            // now we need to close all the objects that may not have reached the crawler
+            // do to a stop request.
+            if (it.hasNext()) {
+                crawlCompleted = false;
+                while (it.hasNext()) {
+                    DataObject o = (DataObject) it.next();
+                    o.dispose();
+                }
+            } else {
+                crawlCompleted = true;
+            }
             // Blah - crawl objects, friends etc.
-
-            // report deleted tags
-            //before.removeAll(current);
-            //deprecatedUrls.addAll(before);
-
-            if (!stopRequested) crawlCompleted = true;
         }
         catch (Exception e) {
             logger.error("Could not crawl addressbook data source", e);
@@ -108,13 +113,11 @@ public abstract class AddressbookCrawler extends CrawlerBase {
     }
 
     private void reportContactListDataObject(URI contactListUri) {
-        //RDFContainerFactory rdff = handler.getRDFContainerFactory(this, contactListUri.toString());
         RDFContainerFactory rdff = getRDFContainerFactory(contactListUri.toString());
         RDFContainer rdf = rdff.getRDFContainer(contactListUri);
         rdf.add(RDF.type,NCO.ContactList);
         rdf.add(NIE.rootElementOf,getDataSource().getID());
         DataObjectBase object = new DataObjectBase(contactListUri, source, rdf);
-        //handler.objectNew(this, object);
         reportNewDataObject(object);
     }
 
@@ -129,6 +132,7 @@ public abstract class AddressbookCrawler extends CrawlerBase {
      * @param o - the dataobject to checksum
      * @return a md5 hex-digest as a string.
      */
+    @SuppressWarnings("unchecked")
     private String computeChecksum(DataObject o) {
 
         MessageDigest md;
@@ -183,9 +187,4 @@ public abstract class AddressbookCrawler extends CrawlerBase {
 
         return digest.toString();
     }
-
-    public abstract List crawlAddressbook() throws Exception;
-
-    public abstract URI getContactListUri();
-    
 }
