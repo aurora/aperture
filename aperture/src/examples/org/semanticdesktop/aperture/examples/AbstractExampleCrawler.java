@@ -151,6 +151,7 @@ public abstract class AbstractExampleCrawler {
             }
             else if (arg.equals(IDENTIFY_MIME_OPTION)) {
                 identifyingMimeType = true;
+                System.out.println("IDENTIFYING MIME TYPE");
             }
             else if (arg.equals(EXTRACT_CONTENTS_OPTION)) {
                 identifyingMimeType = true;

@@ -13,6 +13,7 @@ import org.semanticdesktop.aperture.subcrawler.bzip2.BZip2SubCrawlerTest;
 import org.semanticdesktop.aperture.subcrawler.gzip.GZipSubCrawlerTest;
 import org.semanticdesktop.aperture.subcrawler.impl.TestDefaultSubCrawlerRegistry;
 import org.semanticdesktop.aperture.subcrawler.impl.TestSubCrawlerRegistryImpl;
+import org.semanticdesktop.aperture.subcrawler.mime.MimeSubCrawlerTest;
 import org.semanticdesktop.aperture.subcrawler.tar.TarSubCrawlerTest;
 import org.semanticdesktop.aperture.subcrawler.vcard.TestVcardFileCrawlerCombination;
 import org.semanticdesktop.aperture.subcrawler.vcard.VcardSubCrawlerTest;
@@ -37,6 +38,7 @@ public class TestSubCrawlers extends TestSuite {
         addTest(new TestSuite(GZipSubCrawlerTest.class));
         addTest(new TestSuite(TarSubCrawlerTest.class));
         addTest(new TestSuite(BZip2SubCrawlerTest.class));
+        addTest(new TestSuite(MimeSubCrawlerTest.class));
            
         // test the registries holding the SubCrawlerFactories
         addTest(new TestSuite(TestSubCrawlerRegistryImpl.class));

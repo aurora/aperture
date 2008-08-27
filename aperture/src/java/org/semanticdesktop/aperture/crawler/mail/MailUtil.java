@@ -14,19 +14,26 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 
 import org.ontoware.rdf2go.model.node.Literal;
+import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
+import org.semanticdesktop.aperture.accessor.AccessData;
+import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.NCO;
+import org.semanticdesktop.aperture.vocabulary.NIE;
 
 /**
  * Utility methods for JavaMail.
@@ -241,5 +248,93 @@ public class MailUtil {
      */
     private static boolean hasRealValue(String string) {
         return string != null && string.length() > 0;
+    }
+    
+    /**
+     * <p>
+     * Stores in the AccessData the fact that the given object has a parent.
+     * </p>
+     * 
+     * <p>
+     * This method first searches for the parent for the given data object (see {@link #getParent(DataObject)}
+     * If it finds one, it puts a reference between the two. (see
+     * {@link AccessData#putReferredID(String, String)}).
+     * </p>
+     * 
+     * <p>
+     * The parent must already exist within the access data. (see {@link AccessData#isKnownId(String)}).
+     * Otherwise this method won't do anything. This enforces that parents must be crawled and stored in the
+     * access data before their children.
+     * </p>
+     * 
+     * @param object the object whose parent is to be recorded in the access data
+     * @param accessData the access data where the parent-child relationship is to be recorded, it must
+     *            already know the parent ({@link AccessData#isKnownId(String)})
+     */
+    public static void registerParentRelationshipInAccessData(DataObject object, AccessData accessData) {
+        if (accessData == null) {
+            return;
+        }
+
+        URI parent = getParent(object);
+        if (parent != null) {
+            String parentID = parent.toString();
+            String childID = object.getID().toString();
+
+            if (accessData.isKnownId(parentID)) {
+                if (parentID.equals(childID)) {
+                    //logger.error("cyclical " + NIE.isPartOf + " property for " + parentID + ", ignoring");
+                }
+                else {
+                    accessData.putReferredID(parentID, childID);
+                }
+            }
+            else {
+                //logger.error("Internal error: encountered unknown parent: " + parentID + ", child = "
+                //        + childID);
+            }
+        }
+    }
+    
+    /**
+     * <p>
+     * Returns the URI of the object's parent in the containment hierachy.
+     * </p>
+     * 
+     * <p>
+     * B is a parent of A is there exists a triple A nie:isPartOf B. In case there is more than one such
+     * resource, or the resource is not an URI, this method returns null.
+     * </p>
+     * 
+     * @param object the object whose parent we're looking
+     * @return the parent of the given object or null if none exists
+     */
+    @SuppressWarnings("unchecked")
+    public static URI getParent(DataObject object) {
+        // query for all parents
+        Collection parentIDs = object.getMetadata().getAll(NIE.isPartOf);
+
+        // determine all unique parent URIs (the same partOf statement may be returned more than once due
+        // to the use of context in the underlying model)
+        if (!(parentIDs instanceof Set)) {
+            parentIDs = new HashSet(parentIDs);
+        }
+
+        // return the parent if there is only one
+        if (parentIDs.isEmpty()) {
+            return null;
+        }
+        else if (parentIDs.size() > 1) {
+            return null;
+        }
+        else {
+            Node parent = (Node) parentIDs.iterator().next();
+            if (parent instanceof URI) {
+                return (URI) parent;
+            }
+            else {
+                return null;
+            }
+        }
     }
 }

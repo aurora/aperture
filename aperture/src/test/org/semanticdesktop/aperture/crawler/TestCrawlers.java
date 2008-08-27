@@ -12,10 +12,11 @@ import junit.framework.TestSuite;
 import org.semanticdesktop.aperture.addressbook.AbstractAddressbookCrawlerTest;
 import org.semanticdesktop.aperture.addressbook.thunderbird.ThunderbirdCrawlerTest;
 import org.semanticdesktop.aperture.crawler.filesystem.TestFileSystemCrawler;
+import org.semanticdesktop.aperture.crawler.ical.DurationConversionTest;
 import org.semanticdesktop.aperture.crawler.ical.TestIcalCrawler;
 import org.semanticdesktop.aperture.crawler.ical.TestIcalCrawlerIncremental;
 import org.semanticdesktop.aperture.crawler.impl.TestDefaultCrawlerRegistry;
-import org.semanticdesktop.aperture.crawler.ical.DurationConversionTest;
+import org.semanticdesktop.aperture.crawler.mail.DataObjectFactoryTest;
 import org.semanticdesktop.aperture.crawler.mbox.TestMboxCrawler;
 import org.semanticdesktop.aperture.crawler.mbox.TestMboxCrawlerMultiFolder;
 
@@ -24,6 +25,10 @@ import org.semanticdesktop.aperture.crawler.mbox.TestMboxCrawlerMultiFolder;
  */
 public class TestCrawlers extends TestSuite {
 
+    /**
+     * Returns the test suite that tests crawlers
+     * @return the test suite that tests the crawlers
+     */
     public static Test suite() {
         return new TestCrawlers();
     }
@@ -39,5 +44,6 @@ public class TestCrawlers extends TestSuite {
         addTest(new TestSuite(TestMboxCrawlerMultiFolder.class));
         addTest(new TestSuite(ThunderbirdCrawlerTest.class));
         addTest(new TestSuite(AbstractAddressbookCrawlerTest.class));
+        addTest(new TestSuite(DataObjectFactoryTest.class));
     }
 }

@@ -13,7 +13,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.ontoware.rdf2go.ModelFactory;
 import org.ontoware.rdf2go.RDF2Go;
@@ -47,6 +50,7 @@ import org.semanticdesktop.aperture.subcrawler.SubCrawlerRegistry;
 import org.semanticdesktop.aperture.subcrawler.impl.DefaultSubCrawlerRegistry;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.NIE;
+import org.semanticdesktop.aperture.vocabulary.NMO;
 
 /**
  * An example of a simple (but non-trivial) crawler handler.
@@ -82,6 +86,9 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     private boolean verbose;
     
     private File outputFile;
+    
+    private Map<String,Integer> detectedMimeTypes;
+    private int unidentifiedMimeTypes;
 
     /**
      * Constructor. It will store the data in the model set returned by RDF2Go.getModelFactory().createModelSet()
@@ -163,6 +170,9 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
             extractorRegistry = new DefaultExtractorRegistry();
             subCrawlerRegistry = new DefaultSubCrawlerRegistry();
         }
+        
+        this.detectedMimeTypes = new TreeMap<String, Integer>();
+        this.unidentifiedMimeTypes = 0;
     }
 
     /**
@@ -195,7 +205,10 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         nrObjects++;
         this.currentURL = object.getID().toString();
         if (verbose) {
-            System.out.println("N," + System.currentTimeMillis() + "," + currentURL);
+            System.out.print("N," + System.currentTimeMillis() + "," + currentURL);
+            if (!identifyingMimeType) {
+                System.out.println();
+            }
         }
         if (nrObjects % 300 == 0)
             // call garbage collector from time to time
@@ -211,8 +224,12 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
                 System.err.println("Exception while processing file size (" + s + ") of " + object.getID());
                 e.printStackTrace();
             }
+        } else if (verbose) {
+            System.out.print("|no stream");
         }
+        
         disposeDataObject(object);
+        System.out.println();
     }
     
     protected void disposeDataObject(DataObject object) {
@@ -251,7 +268,8 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         // apply the MimeTypeIdentifier
         byte[] bytes = IOUtil.readBytes(contentStream, minimumArrayLength);
         String mimeType = mimeTypeIdentifier.identify(bytes, null, id);
-
+        System.out.print("|mime:" + mimeType);
+        reportDetectedMimeType(mimeType);
         if (mimeType != null) {
             // add the MIME type to the metadata
             RDFContainer metadata = object.getMetadata();
@@ -261,15 +279,32 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
             if (extractingContents) {
                 contentStream.reset();
                 
+                
                 // apply an Extractor if available
                 boolean done = applyExtractor(id, contentStream, mimeType, metadata);
                 if (done) {return;}
                 
                 // else try to apply a FileExtractor
                 done = applyFileExtractor(object, id, mimeType, metadata);
+                if (done) {return;}
                 
                 // or maybe apply a SubCrawler
                 done = applySubCrawler(id, contentStream, mimeType, object, crawler);
+            }
+        }
+    }
+
+    private void reportDetectedMimeType(String mimeType) {
+        if (mimeType == null) {
+            unidentifiedMimeTypes++;
+            return;
+        } else {
+            Integer oldValue = detectedMimeTypes.get(mimeType);
+            if (oldValue == null) {
+                detectedMimeTypes.put(mimeType, new Integer(1));
+            } else {
+                Integer newValue = oldValue + 1;
+                detectedMimeTypes.put(mimeType, newValue);
             }
         }
     }
@@ -280,6 +315,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         if (!extractors.isEmpty()) {
             ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
             Extractor extractor = factory.get();
+            System.out.print("|ex:" + extractor.getClass().getName());
             extractor.extract(id, contentStream, null, mimeType, metadata);
             return true;
         } else {
@@ -295,12 +331,14 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
             FileExtractor extractor = factory.get();
             File originalFile = object.getFile();
             if (originalFile != null) {
+                System.out.print("|fex:" + extractor.getClass().getName());
                 extractor.extract(id, originalFile, null, mimeType, metadata);
                 return true;
             }
             else {
                 File tempFile = object.downloadContent();
                 try {
+                    System.out.print("|fexd:" + extractor.getClass().getName());
                     extractor.extract(id, tempFile, null, mimeType, metadata);
                     return true;
                 }
@@ -321,6 +359,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         if (!subCrawlers.isEmpty()) {
             SubCrawlerFactory factory = (SubCrawlerFactory)subCrawlers.iterator().next();
             SubCrawler subCrawler = factory.get();
+            System.out.print("|sc:" + subCrawler.getClass().getName());
             crawler.runSubCrawler(subCrawler, object, contentStream, null, mimeType);
             return true;
         }
@@ -459,6 +498,14 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         System.out.println("Modified objects: " + crawlReport.getChangedCount());
         System.out.println("Unmodified objects: " + crawlReport.getUnchangedCount());
         System.out.println("Deleted objects: " + crawlReport.getRemovedCount());
+        
+        if (identifyingMimeType) {
+            System.out.println("Objects with unidentified mime types: " + unidentifiedMimeTypes);
+            System.out.println("Detected mime types:");
+            for (Map.Entry<String, Integer> pair: detectedMimeTypes.entrySet()) {
+                System.out.println("  " + pair.getKey() + " : " + pair.getValue());
+            }   
+        }
     }
 
     protected void printAndCloseModelSet() {
