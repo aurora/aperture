@@ -214,12 +214,6 @@ public class DataObjectFactory {
      * single MimeMessage. At the first call it creates a cachedDataObjectsMap of all dataObjects that are to
      * be returned from this message. On all subsequent calls DataObjects from this map are returned.
      * 
-     * @param message
-     * @param url
-     * @param folderUri
-     * @param dataSource
-     * @param newAccessData
-     * @param containerFactory
      * @return a DataObject instance for the given message
      * @throws MessagingException
      * @throws IOException
@@ -254,7 +248,8 @@ public class DataObjectFactory {
      * Returns a data object with the given url
      * 
      * @param url
-     * @return
+     * @return a data object with the given url, chosed from among the objects created from the MimeMessage
+     *         instance passed to the constructor of this DataObjectFactory
      */
     public DataObject getObject(String url) {
         for (DataObject object : dataObjectsToReturn) {
@@ -1061,6 +1056,14 @@ public class DataObjectFactory {
         copyString(NMO.contentMimeType, dataObjectHashMap, metadata);
         copyString(NMO.messageSubject, dataObjectHashMap, metadata);
         copyString(NFO.fileName, dataObjectHashMap, metadata);
+        
+        String messageContent = (String) dataObjectHashMap.get(NMO.plainTextMessageContent);
+        if (messageContent != null) {
+            metadata.add(NMO.plainTextMessageContent, messageContent);
+            // this is necessary to appease the validator,
+            metadata.add(RDF.type, NMO.Email);
+        }
+        
         copyString(NMO.plainTextMessageContent, dataObjectHashMap, metadata);
         copyString(NMO.messageId, dataObjectHashMap, metadata);
 
