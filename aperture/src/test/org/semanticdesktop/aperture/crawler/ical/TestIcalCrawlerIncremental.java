@@ -14,6 +14,7 @@ import java.util.Set;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
 import org.semanticdesktop.aperture.ApertureTestBase;
+import org.semanticdesktop.aperture.TestIncrementalCrawlerHandler;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
@@ -36,16 +37,15 @@ public class TestIcalCrawlerIncremental extends ApertureTestBase {
     }
 
     public void testIncrementalCrawlerHandler() throws Exception {
-        IcalTestIncrementalCrawlerHandler handler = readIcalFile("cal01.ics", accessData, null);
+        TestIncrementalCrawlerHandler handler = readIcalFile("cal01.ics", accessData, null);
         assertNewModUnmodDel(handler, 5, 0, 0, 0);
         handler.close();
     }
 
     public void testOneChangedObject() throws Exception {
-        IcalTestIncrementalCrawlerHandler handler = readIcalFile("cal01.ics", accessData, null);
+        TestIncrementalCrawlerHandler handler = readIcalFile("cal01.ics", accessData, null);
         assertNewModUnmodDel(handler, 5, 0, 0, 0);
-        IcalTestIncrementalCrawlerHandler handler2 = readIcalFile("cal01-1.ics", accessData, handler
-                .getFile());
+        TestIncrementalCrawlerHandler handler2 = readIcalFile("cal01-1.ics", accessData, handler.getFile());
         // the event is reported as changed (new sequence number)
         // all other four components are unchanged
         assertNewModUnmodDel(handler2, 0, 1, 4, 0);
@@ -54,9 +54,8 @@ public class TestIcalCrawlerIncremental extends ApertureTestBase {
     }
 
     public void testOneLetterChangedInTimezone() throws Exception {
-        IcalTestIncrementalCrawlerHandler handler = readIcalFile("cal01.ics", accessData, null);        
-        IcalTestIncrementalCrawlerHandler handler2 = readIcalFile("cal01-2.ics", accessData, handler
-                .getFile());
+        TestIncrementalCrawlerHandler handler = readIcalFile("cal01.ics", accessData, null);        
+        TestIncrementalCrawlerHandler handler2 = readIcalFile("cal01-2.ics", accessData, handler.getFile());
         
         assertNewModUnmodDel(handler, 5, 0, 0, 0);
         assertNewModUnmodDel(handler2, 0, 1, 4, 0);
@@ -65,9 +64,9 @@ public class TestIcalCrawlerIncremental extends ApertureTestBase {
     }
 
     public void testBymonthChangedInTimezone() throws Exception {
-        IcalTestIncrementalCrawlerHandler handler = readIcalFile("cal01.ics", accessData, null);
+        TestIncrementalCrawlerHandler handler = readIcalFile("cal01.ics", accessData, null);
         assertNewModUnmodDel(handler, 5, 0, 0, 0);
-        IcalTestIncrementalCrawlerHandler handler2 = readIcalFile("cal01-5.ics", accessData, handler
+        TestIncrementalCrawlerHandler handler2 = readIcalFile("cal01-5.ics", accessData, handler
                 .getFile());
         assertNewModUnmodDel(handler2, 0, 1, 4, 0);
         handler.close();
@@ -75,19 +74,18 @@ public class TestIcalCrawlerIncremental extends ApertureTestBase {
     }
 
     public void testDtstartChangedInTimezone() throws Exception {
-        IcalTestIncrementalCrawlerHandler handler = readIcalFile("cal01.ics", accessData, null);
+        TestIncrementalCrawlerHandler handler = readIcalFile("cal01.ics", accessData, null);
         assertNewModUnmodDel(handler, 5, 0, 0, 0);
-        IcalTestIncrementalCrawlerHandler handler2 = readIcalFile("cal01-6.ics", accessData, handler
-                .getFile());
+        TestIncrementalCrawlerHandler handler2 = readIcalFile("cal01-6.ics", accessData, handler.getFile());
         assertNewModUnmodDel(handler2, 0, 1, 4, 0);
         handler.close();
         handler2.close();
     }
 
     public void testOneNewComponentAddition() throws Exception {
-        IcalTestIncrementalCrawlerHandler handler = readIcalFile("cal01.ics", accessData, null);
+        TestIncrementalCrawlerHandler handler = readIcalFile("cal01.ics", accessData, null);
         assertNewModUnmodDel(handler, 5, 0, 0, 0);
-        IcalTestIncrementalCrawlerHandler handler2 = readIcalFile("cal01-3.ics", accessData, handler
+        TestIncrementalCrawlerHandler handler2 = readIcalFile("cal01-3.ics", accessData, handler
                 .getFile());
         // we added a new component, other should be unchanged
         assertNewModUnmodDel(handler2, 1, 0, 5, 0);
@@ -96,10 +94,9 @@ public class TestIcalCrawlerIncremental extends ApertureTestBase {
     }
 
     public void testOneComponentDeletion() throws Exception {
-        IcalTestIncrementalCrawlerHandler handler = readIcalFile("cal01.ics", accessData, null);
+        TestIncrementalCrawlerHandler handler = readIcalFile("cal01.ics", accessData, null);
         assertNewModUnmodDel(handler, 5, 0, 0, 0);
-        IcalTestIncrementalCrawlerHandler handler2 = readIcalFile("cal01-4.ics", accessData, handler
-                .getFile());
+        TestIncrementalCrawlerHandler handler2 = readIcalFile("cal01-4.ics", accessData, handler.getFile());
         // we have removed a component, other should be unchanged
         assertNewModUnmodDel(handler2, 0, 0, 4, 1);
         handler.close();
@@ -109,7 +106,7 @@ public class TestIcalCrawlerIncremental extends ApertureTestBase {
     /**
      * Crawls the ICAL file and returns the crawler handler.
      */
-    private IcalTestIncrementalCrawlerHandler readIcalFile(String fileName, AccessData accessData, File file)
+    private TestIncrementalCrawlerHandler readIcalFile(String fileName, AccessData accessData, File file)
             throws Exception {
         InputStream fileStream = ResourceUtil.getInputStream(ICAL_TESTDATA_PATH + fileName,this.getClass());
         assertNotNull(fileStream);
@@ -127,7 +124,8 @@ public class TestIcalCrawlerIncremental extends ApertureTestBase {
         
         icalDataSource.setRootUrl(tempFile.getAbsolutePath());
 
-        IcalTestIncrementalCrawlerHandler testCrawlerHandler = new IcalTestIncrementalCrawlerHandler(tempFile);
+        TestIncrementalCrawlerHandler testCrawlerHandler = new TestIncrementalCrawlerHandler();
+        testCrawlerHandler.setFile(tempFile);
 
         IcalCrawler icalCrawler = new IcalCrawler();
         icalCrawler.setDataSource(icalDataSource);
@@ -143,14 +141,6 @@ public class TestIcalCrawlerIncremental extends ApertureTestBase {
 
         configurationModel.close();
         return testCrawlerHandler;
-    }
-
-    public void assertNewModUnmodDel(IcalTestIncrementalCrawlerHandler handler, int newObjects,
-            int changedObjects, int unchangedObjects, int deletedObjects) {
-        assertEquals(handler.getNewObjects().size(), newObjects);
-        assertEquals(handler.getChangedObjects().size(), changedObjects);
-        assertEquals(handler.getUnchangedObjects().size(), unchangedObjects);
-        assertEquals(handler.getDeletedObjects().size(), deletedObjects);
     }
 
     public File createTempFile(InputStream fis, File file) throws Exception {
@@ -173,7 +163,7 @@ public class TestIcalCrawlerIncremental extends ApertureTestBase {
         return outFile;
     }
     
-    private void printCrawlInformation(IcalTestIncrementalCrawlerHandler handler) {
+    private void printCrawlInformation(TestIncrementalCrawlerHandler handler) {
         System.out.println("New objects:");
         printSet(handler.getNewObjects());
         System.out.println("Modified objects");

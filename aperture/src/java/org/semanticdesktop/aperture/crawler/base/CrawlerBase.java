@@ -190,7 +190,9 @@ public abstract class CrawlerBase implements Crawler {
 		crawlReport = new CrawlReportBase();
 		crawlReport.setCrawlStarted(System.currentTimeMillis());
 
-		domain = ConfigurationUtil.getDomainBoundaries(source.getConfiguration());
+		if (source != null) {
+		    domain = ConfigurationUtil.getDomainBoundaries(source.getConfiguration());
+		}
 
 		// initialize flags
 		stopRequested = false;
@@ -274,7 +276,9 @@ public abstract class CrawlerBase implements Crawler {
 	 * @return true if the crawler is currently stopping, false otherwise
 	 */
 	public boolean isStopRequested() {
-		return stopRequested;
+	    synchronized (subCrawlerMonitor) {
+	        return stopRequested;
+	    }
 	}
 
 	/**

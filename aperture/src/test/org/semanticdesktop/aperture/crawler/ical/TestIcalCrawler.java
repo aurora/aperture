@@ -27,6 +27,7 @@ import org.ontoware.rdf2go.vocabulary.RDF;
 import org.ontoware.rdf2go.vocabulary.RDFS;
 import org.ontoware.rdf2go.vocabulary.XSD;
 import org.semanticdesktop.aperture.ApertureTestBase;
+import org.semanticdesktop.aperture.TestIncrementalCrawlerHandler;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -911,7 +912,7 @@ public class TestIcalCrawler extends ApertureTestBase {
 		
 		icalDataSource.setRootUrl(file.getAbsolutePath());
 
-		IcalTestSimpleCrawlerHandler testCrawlerHandler = new IcalTestSimpleCrawlerHandler();
+		TestIncrementalCrawlerHandler testCrawlerHandler = new TestIncrementalCrawlerHandler();
 
 		IcalCrawler icalCrawler = new IcalCrawler();
 		icalCrawler.setDataSource(icalDataSource);

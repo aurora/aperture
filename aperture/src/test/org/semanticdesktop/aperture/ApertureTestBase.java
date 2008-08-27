@@ -671,6 +671,30 @@ public class ApertureTestBase extends TestCase {
             end = System.currentTimeMillis();
         }
     }
+    
+    /**
+     * Join the given thread. Wait at most the given number of milliseconds. This method is provided for
+     * convenience.
+     * 
+     * @param thread the Thread that is supposed to die
+     * @param timeout The amount of miliseconds to wait for the thread to die.
+     * @throws RuntimeException if the thread hasn't died within the given time
+     */
+    protected void safelyJoin(Thread thread, long timeout) {
+        long begin = System.currentTimeMillis();
+        long end = begin;
+        while (thread.isAlive() && end - begin < timeout) {
+            try {
+                thread.join(timeout - (end - begin));
+            } catch (InterruptedException ie) {
+                // that shouldn't be much of a problem
+            }
+            end = System.currentTimeMillis();
+        }
+        if (thread.isAlive()) {
+            throw new RuntimeException("Thread hasn't died properly");
+        }
+    }
 
     /**
      * Tests if the given model serializes properly to Xml
@@ -688,5 +712,22 @@ public class ApertureTestBase extends TestCase {
         // this should proceed without any exceptions
         newModel.readFrom(bais,Syntax.RdfXml);
         newModel.close();
+    }
+
+    /**
+     * Asserts that the incremental crawling results gathered by the given {@link TestIncrementalCrawlerHandler}
+     * are correct.
+     * @param handler the handler to check
+     * @param newObjects the desired number of new objects
+     * @param changedObjects the desired number of changed objects
+     * @param unchangedObjects the desired number of unchanged objects
+     * @param deletedObjects the desired number of deleted objects
+     */
+    public void assertNewModUnmodDel(TestIncrementalCrawlerHandler handler, int newObjects,
+            int changedObjects, int unchangedObjects, int deletedObjects) {
+        assertEquals(handler.getNewObjects().size(), newObjects);
+        assertEquals(handler.getChangedObjects().size(), changedObjects);
+        assertEquals(handler.getUnchangedObjects().size(), unchangedObjects);
+        assertEquals(handler.getDeletedObjects().size(), deletedObjects);
     }
 }

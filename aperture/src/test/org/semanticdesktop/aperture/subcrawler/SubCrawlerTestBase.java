@@ -24,6 +24,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.ApertureTestBase;
+import org.semanticdesktop.aperture.TestIncrementalCrawlerHandler;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
@@ -195,14 +196,6 @@ public class SubCrawlerTestBase extends ApertureTestBase {
         }
     }
     
-    public void assertNewModUnmodDel(TestIncrementalCrawlerHandler handler, int newObjects,
-            int changedObjects, int unchangedObjects, int deletedObjects) {
-        assertEquals(handler.getNewObjects().size(), newObjects);
-        assertEquals(handler.getChangedObjects().size(), changedObjects);
-        assertEquals(handler.getUnchangedObjects().size(), unchangedObjects);
-        assertEquals(handler.getDeletedObjects().size(), deletedObjects);
-    }
-
     private URI toURI(File file) {
         return new URIImpl(file.toURI().toString());
     }
@@ -332,186 +325,6 @@ public class SubCrawlerTestBase extends ApertureTestBase {
         }
         public String getExtractedString() {
             return extractedString;
-        }
-    }
-    
-    protected class TestIncrementalCrawlerHandler implements CrawlerHandler, RDFContainerFactory {
-        
-        private Model model;
-
-        private int numberOfObjects;
-        
-        private SubCrawlerRegistry subCrawlerRegistry;
-        
-        private MimeTypeIdentifier mimeTypeIdentifier;
-        
-        private Set<String> newObjects;
-        private Set<String> changedObjects;
-        private Set<String> unchangedObjects;
-        private Set<String> deletedObjects;
-        
-        //////////////////////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////// CONSTRUCTOR /////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        public TestIncrementalCrawlerHandler(SubCrawlerRegistry registry) throws ModelException {
-            model = RDF2Go.getModelFactory().createModel();
-            model.open();
-            newObjects = new HashSet<String>();
-            changedObjects = new HashSet<String>();
-            unchangedObjects = new HashSet<String>();
-            deletedObjects = new HashSet<String>();
-            this.mimeTypeIdentifier = new MagicMimeTypeIdentifier();
-            this.subCrawlerRegistry = registry;
-        }
-        
-        public void close() {
-            model.close();
-        }
-       
-        /////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////// CRAWLER HANDLER METHODS //////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        public void crawlStarted(Crawler crawler) {
-            numberOfObjects = 0;
-            newObjects.clear();
-            changedObjects.clear();
-            unchangedObjects.clear();
-            deletedObjects.clear();
-        }
-
-        public void objectChanged(Crawler crawler, DataObject object) {
-            changedObjects.add(object.getID().toString());
-            if (object instanceof FileDataObject) {
-                try {
-                    process((FileDataObject)object,crawler);
-                }
-                catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                catch (SubCrawlerException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-            // free any resources contained by this DataObject
-            object.dispose();
-        }
-
-        public void objectNew(Crawler crawler, DataObject object) {
-            numberOfObjects++;
-            newObjects.add(object.getID().toString());
-            if (object instanceof FileDataObject) {
-                try {
-                    process((FileDataObject)object,crawler);
-                }
-                catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                catch (SubCrawlerException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-            object.dispose();
-        }
-
-        public void objectNotModified(Crawler crawler, String url) {
-            numberOfObjects++;
-            unchangedObjects.add(url);
-        }
-
-        public void objectRemoved(Crawler crawler, String url) {
-            deletedObjects.add(url);
-        }
-        
-        public RDFContainerFactory getRDFContainerFactory(Crawler crawler, String url) {
-            return this;
-        }
-        
-        private void process(FileDataObject object, Crawler crawler) throws IOException, SubCrawlerException {
-            URI id = object.getID();
-            int minimumArrayLength = mimeTypeIdentifier.getMinArrayLength();
-            InputStream contentStream = object.getContent();
-            contentStream.mark(minimumArrayLength + 10); // add some for safety
-            byte[] bytes = IOUtil.readBytes(contentStream, minimumArrayLength);
-            String mimeType = mimeTypeIdentifier.identify(bytes, null, id);
-            if (mimeType == null) {return;}
-            contentStream.reset();
-            applySubCrawler(object.getID(), contentStream, mimeType, object, crawler);
-        }
-        
-        private boolean applySubCrawler(URI id, InputStream contentStream, String mimeType,
-                DataObject object, Crawler crawler) throws SubCrawlerException {
-            Set subCrawlers = subCrawlerRegistry.get(mimeType);
-            if (!subCrawlers.isEmpty()) {
-                SubCrawlerFactory factory = (SubCrawlerFactory) subCrawlers.iterator().next();
-                SubCrawler subCrawler = factory.get();
-                crawler.runSubCrawler(subCrawler, object, contentStream, null, mimeType);
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        
-        //////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////// RDF CONTAINER FACTORY METHOD //////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        public RDFContainer getRDFContainer(URI uri) {
-            return new RDFContainerImpl(model, uri, true);
-        }
-        
-        //////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////// GETTERS AND SETTERS ///////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        public Model getModel() {
-            return model;
-        }
-        
-        public int getNumberOfObjects() {
-            return numberOfObjects;
-        }
-        
-        public Set<String> getChangedObjects() {
-            return changedObjects;
-        }
-        
-        public Set<String> getDeletedObjects() {
-            return deletedObjects;
-        }
-        
-        public Set<String> getNewObjects() {
-            return newObjects;
-        }
-
-        public Set<String> getUnchangedObjects() {
-            return unchangedObjects;
-        }
-        
-        public void crawlStopped(Crawler crawler, ExitCode exitCode) {
-            // we don't need to do anything   
-        }
-
-        public void accessingObject(Crawler crawler, String url) {
-            // we don't need to do anything
-        }
-
-        public void clearFinished(Crawler crawler, ExitCode exitCode) {
-            // we don't need to do anything
-        }
-
-        public void clearStarted(Crawler crawler) {
-            // we don't need to do anything
-        }
-
-        public void clearingObject(Crawler crawler, String url) {
-            // we don't need to do anything        
         }
     }
 }

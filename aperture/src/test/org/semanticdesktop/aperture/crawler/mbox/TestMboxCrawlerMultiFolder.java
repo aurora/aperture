@@ -22,6 +22,7 @@ import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.ontoware.rdf2go.vocabulary.XSD;
 import org.semanticdesktop.aperture.ApertureTestBase;
+import org.semanticdesktop.aperture.TestIncrementalCrawlerHandler;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
@@ -112,7 +113,7 @@ public class TestMboxCrawlerMultiFolder extends ApertureTestBase {
 
     public void testMaximumDepth() throws Exception {
         dataSource.setMaximumDepth(2);
-        MboxTestIncrementalCrawlerHandler handler = crawl(null);
+        TestIncrementalCrawlerHandler handler = crawl(null);
         Model model = handler.getModel();
         
         // let's check if the output contains anything from the three subfolders of lists.sbd
@@ -165,7 +166,7 @@ public class TestMboxCrawlerMultiFolder extends ApertureTestBase {
         boundaries.addExcludePattern(
             new SubstringPattern("/lists.sbd/protege-users/", SubstringCondition.CONTAINS));
         dataSource.setDomainBoundaries(boundaries);
-        MboxTestIncrementalCrawlerHandler handler = crawl(null);
+        TestIncrementalCrawlerHandler handler = crawl(null);
         Model model = handler.getModel();
         
         // these two subfolders should be present
@@ -192,12 +193,13 @@ public class TestMboxCrawlerMultiFolder extends ApertureTestBase {
         
     }
     
-    private MboxTestIncrementalCrawlerHandler crawl(AccessData data) throws Exception {
+    private TestIncrementalCrawlerHandler crawl(AccessData data) throws Exception {
         // create a Crawler for this DataSource
         MboxCrawler crawler = new MboxCrawler();
         crawler.setDataSource(dataSource);
         // setup a CrawlerHandler
-        MboxTestIncrementalCrawlerHandler crawlerHandler = new MboxTestIncrementalCrawlerHandler(tempMailFolder);
+        TestIncrementalCrawlerHandler crawlerHandler = new TestIncrementalCrawlerHandler();
+        crawlerHandler.setFile(tempMailFolder);
         crawler.setCrawlerHandler(crawlerHandler);
         // start Crawling
         crawler.crawl();

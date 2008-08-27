@@ -20,6 +20,7 @@ import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.ApertureTestBase;
+import org.semanticdesktop.aperture.TestIncrementalCrawlerHandler;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
@@ -65,7 +66,7 @@ public class TestMboxCrawler extends ApertureTestBase {
      * @throws ModelException
      */
     public void testCrawler() throws Exception {
-        MboxTestIncrementalCrawlerHandler crawlerHandler = crawl("mbox-aperture-dev",null, null);
+        TestIncrementalCrawlerHandler crawlerHandler = crawl("mbox-aperture-dev",null, null);
         Model model = crawlerHandler.getModel();
         assertNewModUnmodDel(crawlerHandler, 139, 0, 0, 0);
         validate(model);
@@ -74,30 +75,30 @@ public class TestMboxCrawler extends ApertureTestBase {
     
     public void testAddedMail() throws Exception {
         AccessData accessData = new AccessDataImpl();
-        MboxTestIncrementalCrawlerHandler handler1 = crawl("mbox-aperture-inc1",accessData, null);
+        TestIncrementalCrawlerHandler handler1 = crawl("mbox-aperture-inc1",accessData, null);
         // four mails and the mailbox, everything is new
         assertNewModUnmodDel(handler1, 5, 0, 0, 0);
-        MboxTestIncrementalCrawlerHandler handler2 = crawl("mbox-aperture-inc2",accessData, handler1.getFile());
+        TestIncrementalCrawlerHandler handler2 = crawl("mbox-aperture-inc2",accessData, handler1.getFile());
         // one new mail, the mail folder has been changed, while all other four mails are unchanged 
         assertNewModUnmodDel(handler2, 1, 1, 4, 0);
     }
     
     public void testDeletedMail() throws Exception {
         AccessData accessData = new AccessDataImpl();
-        MboxTestIncrementalCrawlerHandler handler1 = crawl("mbox-aperture-inc1",accessData, null);
+        TestIncrementalCrawlerHandler handler1 = crawl("mbox-aperture-inc1",accessData, null);
         // four mails and the mailbox, everything is new
         assertNewModUnmodDel(handler1, 5, 0, 0, 0);
-        MboxTestIncrementalCrawlerHandler handler2 = crawl("mbox-aperture-inc3",accessData, handler1.getFile());
+        TestIncrementalCrawlerHandler handler2 = crawl("mbox-aperture-inc3",accessData, handler1.getFile());
         // no new mails, the mail folder has been changed, three unchanged emails and one deleted email 
         assertNewModUnmodDel(handler2, 0, 1, 3, 1);
     }
     
     public void testModifiedMail() throws Exception {
         AccessData accessData = new AccessDataImpl();
-        MboxTestIncrementalCrawlerHandler handler1 = crawl("mbox-aperture-inc1",accessData, null);
+        TestIncrementalCrawlerHandler handler1 = crawl("mbox-aperture-inc1",accessData, null);
         // four mails and the mailbox, everything is new
         assertNewModUnmodDel(handler1, 5, 0, 0, 0);
-        MboxTestIncrementalCrawlerHandler handler2 = crawl("mbox-aperture-inc4",accessData, handler1.getFile());
+        TestIncrementalCrawlerHandler handler2 = crawl("mbox-aperture-inc4",accessData, handler1.getFile());
         // the crawler doesn't detect changes in emails, the email that has been changed is reported
         // as a new one, while the old one has been deleted
         // one new, the mailbox has been modified, 3 unchanged and 1 deleted
@@ -105,32 +106,24 @@ public class TestMboxCrawler extends ApertureTestBase {
     }
     
     public void testMaximumSize() throws Exception {
-        MboxTestIncrementalCrawlerHandler handler1 = crawl("mbox-testfolder",null, null);
+        TestIncrementalCrawlerHandler handler1 = crawl("mbox-testfolder",null, null);
         // no size restriction, it should find the mailbox, two emails and two attachments
         assertNewModUnmodDel(handler1, 5, 0, 0, 0);
-        MboxTestIncrementalCrawlerHandler handler2 = crawl("mbox-testfolder",null, null, 25000);
+        TestIncrementalCrawlerHandler handler2 = crawl("mbox-testfolder",null, null, 25000);
         // this size restriction should cut out the bigger attachment, together with the email but not the smaller one
         // this behavior is due to the fact that part.getSize() in javamail returns the size of the
         // entire part, together with the content, that's the way it is...
         assertNewModUnmodDel(handler2, 3, 0, 0, 0);
-        MboxTestIncrementalCrawlerHandler handler3 = crawl("mbox-testfolder",null, null, 20);
+        TestIncrementalCrawlerHandler handler3 = crawl("mbox-testfolder",null, null, 20);
         // only the mailbox is returned, all other four dataobjects should be filtered out
         assertNewModUnmodDel(handler3, 1, 0, 0, 0);
     }
-  
-    private void assertNewModUnmodDel(MboxTestIncrementalCrawlerHandler handler, int newObjects,
-            int changedObjects, int unchangedObjects, int deletedObjects) {
-        assertEquals(newObjects, handler.getNewObjects().size());
-        assertEquals(changedObjects, handler.getChangedObjects().size());
-        assertEquals(unchangedObjects, handler.getUnchangedObjects().size());
-        assertEquals(deletedObjects, handler.getDeletedObjects().size());
-    }
     
-    private MboxTestIncrementalCrawlerHandler crawl(String fileName, AccessData data, File oldTempFile) throws Exception {
+    private TestIncrementalCrawlerHandler crawl(String fileName, AccessData data, File oldTempFile) throws Exception {
         return crawl(fileName, data, oldTempFile, -1);
     }
     
-    private MboxTestIncrementalCrawlerHandler crawl(String fileName, AccessData data, File oldTempFile, int maxSize) throws Exception {
+    private TestIncrementalCrawlerHandler crawl(String fileName, AccessData data, File oldTempFile, int maxSize) throws Exception {
         MboxDataSource dataSource = new MboxDataSource();
         dataSource.setConfiguration(configuration);
         
@@ -148,7 +141,8 @@ public class TestMboxCrawler extends ApertureTestBase {
         crawler.setDataSource(dataSource);
         crawler.setAccessData(data);
         // setup a CrawlerHandler
-        MboxTestIncrementalCrawlerHandler crawlerHandler = new MboxTestIncrementalCrawlerHandler(newTempFile);
+        TestIncrementalCrawlerHandler crawlerHandler = new TestIncrementalCrawlerHandler();
+        crawlerHandler.setFile(newTempFile);
         crawler.setCrawlerHandler(crawlerHandler);
 
         // start Crawling
