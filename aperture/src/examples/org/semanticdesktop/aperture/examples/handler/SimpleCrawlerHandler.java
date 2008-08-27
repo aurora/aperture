@@ -12,8 +12,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -49,6 +49,7 @@ import org.semanticdesktop.aperture.subcrawler.SubCrawlerFactory;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerRegistry;
 import org.semanticdesktop.aperture.subcrawler.impl.DefaultSubCrawlerRegistry;
 import org.semanticdesktop.aperture.util.IOUtil;
+import org.semanticdesktop.aperture.vocabulary.NID3;
 import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.semanticdesktop.aperture.vocabulary.NMO;
 
@@ -60,8 +61,11 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     // The main model set, that will contain all data 
     private ModelSet modelSet;
 
-    
-    ////////////////// OBSERVABLE PROPERTIES ///////////////////// 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////// OBSERVABLE PROPERTIES (ELEMENTS OF THE CRAWL REPORT PRINTED AT THE END OF THE CRAWL) /////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /** Number of data objects encountered by the crawler */
     protected int nrObjects;
 
     private long startTime = 0L;
@@ -72,13 +76,30 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
 
     private ExitCode exitCode;
     
-    // the mime type identifier
+    private Map<String,Integer> detectedMimeTypes;
+
+    private int unidentifiedMimeTypes;
+    
+    private int numberOfObjectsWithFullText;
+    
+    private int totalFulltextLength;
+    
+    private int objectsWhereProcessingExceptionOccured;
+    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////// APERTURE REGISTRIES /////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     private MimeTypeIdentifier mimeTypeIdentifier;
 
     private ExtractorRegistry extractorRegistry;
     
     private SubCrawlerRegistry subCrawlerRegistry;
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////// CONFIGURATION FIELDS /////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     private boolean identifyingMimeType;
 
     private boolean extractingContents;
@@ -86,10 +107,11 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     private boolean verbose;
     
     private File outputFile;
-    
-    private Map<String,Integer> detectedMimeTypes;
-    private int unidentifiedMimeTypes;
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////// INITIALIZATION //////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     /**
      * Constructor. It will store the data in the model set returned by RDF2Go.getModelFactory().createModelSet()
      * 
@@ -119,7 +141,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
      * @param outputFile the file where the extracted RDF metadata is to be stored. This argument can also be
      *            set to 'null', in which case the RDF metadata will not be stored in a file. This setting is
      *            useful for performance measurements.
-     * @param modelSet the model set used to store the data
+     * @param newModelSet the model set used to store the data
      * @throws ModelException
      */
     public SimpleCrawlerHandler(boolean identifyingMimeType, boolean extractingContents, boolean verbose, File outputFile, ModelSet newModelSet) {
@@ -128,45 +150,45 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
     
     /**
      * Initializes the fields, called by constructors
-     * @param identifyingMimeType
-     * @param extractingContents
-     * @param verbose
-     * @param outputFile
+     * @param l_identifyingMimeType
+     * @param l_extractingContents
+     * @param l_verbose
+     * @param l_outputFile
      * @param newModelSet
      */
-    private void construct(boolean identifyingMimeType, boolean extractingContents, boolean verbose, File outputFile, ModelSet newModelSet) {        
-        if (newModelSet == null && outputFile == null) {
+    private void construct(boolean l_identifyingMimeType, boolean l_extractingContents, boolean l_verbose, File l_outputFile, ModelSet newModelSet) {        
+        if (newModelSet == null && l_outputFile == null) {
             // this may happen when measuring performance
             this.modelSet = null;
             this.outputFile = null;
-        } else if (newModelSet == null && outputFile != null) {
+        } else if (newModelSet == null && l_outputFile != null) {
             // a common case, we simply want to dump the output to a file
             ModelFactory factory = RDF2Go.getModelFactory();
             this.modelSet = factory.createModelSet();
             this.modelSet.open();
-            this.outputFile = outputFile;
-        } else if (newModelSet != null && outputFile == null){
+            this.outputFile = l_outputFile;
+        } else if (newModelSet != null && l_outputFile == null){
             // this may happen, e.g. if we want to add data to an existing store
             this.modelSet = newModelSet;
             this.outputFile = null;
         }
-        else if (newModelSet != null && outputFile != null) {
+        else if (newModelSet != null && l_outputFile != null) {
             // this means that we want to add data to an existing store, and get a serialization of the whole
             // store at the end of the crawl
             this.modelSet = newModelSet;
-            this.outputFile = outputFile;
+            this.outputFile = l_outputFile;
         }
         
         // set some flags
-        this.identifyingMimeType = identifyingMimeType;
-        this.extractingContents = extractingContents;
-        this.verbose = verbose;
+        this.identifyingMimeType = l_identifyingMimeType;
+        this.extractingContents = l_extractingContents;
+        this.verbose = l_verbose;
         
         // create some identification and extraction components
-        if (identifyingMimeType) {
+        if (l_identifyingMimeType) {
             mimeTypeIdentifier = new MagicMimeTypeIdentifier();
         }
-        if (extractingContents) {
+        if (l_extractingContents) {
             extractorRegistry = new DefaultExtractorRegistry();
             subCrawlerRegistry = new DefaultSubCrawlerRegistry();
         }
@@ -174,6 +196,10 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         this.detectedMimeTypes = new TreeMap<String, Integer>();
         this.unidentifiedMimeTypes = 0;
     }
+    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////// CrawlerHandler METHODS ////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * This method gets called when the crawl has been started
@@ -202,172 +228,9 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
      * @param object the DataObject
      */
     public void objectNew(Crawler dataCrawler, DataObject object) {
-        nrObjects++;
-        this.currentURL = object.getID().toString();
-        if (verbose) {
-            System.out.print("N," + System.currentTimeMillis() + "," + currentURL);
-            if (!identifyingMimeType) {
-                System.out.println();
-            }
-        }
-        if (nrObjects % 300 == 0)
-            // call garbage collector from time to time
-            System.gc();
-
-        // process the contents of an InputStream, if available
-        if (object instanceof FileDataObject) {
-            String s = null;
-            try {
-                process((FileDataObject) object, dataCrawler);
-            }
-            catch (Exception e) {
-                System.err.println("Exception while processing file size (" + s + ") of " + object.getID());
-                e.printStackTrace();
-            }
-        } else if (verbose) {
-            System.out.print("|no stream");
-        }
-        
-        disposeDataObject(object);
-        System.out.println();
+        processDataObject(dataCrawler, object, "N");
     }
     
-    protected void disposeDataObject(DataObject object) {
-        object.dispose();
-        // really dispose the RDFContainer when noOutput
-        // what is it for?
-//        if (modelSet == null) {
-//            try {
-//                ((Repository) object.getMetadata().getModel().getUnderlyingModelImplementation()).shutDown();
-//            }
-//            catch (RepositoryException e) {
-//                e.printStackTrace();
-//            }
-//        }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected void process(FileDataObject object, Crawler crawler) 
-        throws IOException, ExtractorException, ModelException, SubCrawlerException {
-        // we cannot do anything when MIME type identification is disabled
-        if (!identifyingMimeType) {
-            return;
-        }
-
-        URI id = object.getID();
-
-        // Create a buffer around the object's stream large enough to be able to reset the stream
-        // after MIME type identification has taken place. Add some extra to the minimum array
-        // length required by the MimeTypeIdentifier for safety.
-        int minimumArrayLength = mimeTypeIdentifier.getMinArrayLength();
-        // we don't specify our own buffer size anymore, I commented this out (Antoni Mylka)
-        //int bufferSize = Math.max(minimumArrayLength, 8192);
-        InputStream contentStream = object.getContent();
-        contentStream.mark(minimumArrayLength + 10); // add some for safety
-
-        // apply the MimeTypeIdentifier
-        byte[] bytes = IOUtil.readBytes(contentStream, minimumArrayLength);
-        String mimeType = mimeTypeIdentifier.identify(bytes, null, id);
-        System.out.print("|mime:" + mimeType);
-        reportDetectedMimeType(mimeType);
-        if (mimeType != null) {
-            // add the MIME type to the metadata
-            RDFContainer metadata = object.getMetadata();
-            metadata.add(NIE.mimeType, mimeType);
-
-            
-            if (extractingContents) {
-                contentStream.reset();
-                
-                
-                // apply an Extractor if available
-                boolean done = applyExtractor(id, contentStream, mimeType, metadata);
-                if (done) {return;}
-                
-                // else try to apply a FileExtractor
-                done = applyFileExtractor(object, id, mimeType, metadata);
-                if (done) {return;}
-                
-                // or maybe apply a SubCrawler
-                done = applySubCrawler(id, contentStream, mimeType, object, crawler);
-            }
-        }
-    }
-
-    private void reportDetectedMimeType(String mimeType) {
-        if (mimeType == null) {
-            unidentifiedMimeTypes++;
-            return;
-        } else {
-            Integer oldValue = detectedMimeTypes.get(mimeType);
-            if (oldValue == null) {
-                detectedMimeTypes.put(mimeType, new Integer(1));
-            } else {
-                Integer newValue = oldValue + 1;
-                detectedMimeTypes.put(mimeType, newValue);
-            }
-        }
-    }
-
-    private boolean applyExtractor(URI id, InputStream contentStream, String mimeType, RDFContainer metadata)
-            throws ExtractorException {
-        Set extractors = extractorRegistry.getExtractorFactories(mimeType);
-        if (!extractors.isEmpty()) {
-            ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
-            Extractor extractor = factory.get();
-            System.out.print("|ex:" + extractor.getClass().getName());
-            extractor.extract(id, contentStream, null, mimeType, metadata);
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
-    private boolean applyFileExtractor(FileDataObject object, URI id, String mimeType, RDFContainer metadata)
-            throws ExtractorException, IOException {
-        Set fileextractors = extractorRegistry.getFileExtractorFactories(mimeType);
-        if (!fileextractors.isEmpty()) {
-            FileExtractorFactory factory = (FileExtractorFactory) fileextractors.iterator().next();
-            FileExtractor extractor = factory.get();
-            File originalFile = object.getFile();
-            if (originalFile != null) {
-                System.out.print("|fex:" + extractor.getClass().getName());
-                extractor.extract(id, originalFile, null, mimeType, metadata);
-                return true;
-            }
-            else {
-                File tempFile = object.downloadContent();
-                try {
-                    System.out.print("|fexd:" + extractor.getClass().getName());
-                    extractor.extract(id, tempFile, null, mimeType, metadata);
-                    return true;
-                }
-                finally {
-                    if (tempFile != null) {
-                        tempFile.delete();
-                    }
-                }
-            }
-        } else {
-            return false;
-        }
-    }
-    
-    private boolean applySubCrawler(URI id, InputStream contentStream, String mimeType, DataObject object, Crawler crawler)
-            throws SubCrawlerException {
-        Set subCrawlers = subCrawlerRegistry.get(mimeType);
-        if (!subCrawlers.isEmpty()) {
-            SubCrawlerFactory factory = (SubCrawlerFactory)subCrawlers.iterator().next();
-            SubCrawler subCrawler = factory.get();
-            System.out.print("|sc:" + subCrawler.getClass().getName());
-            crawler.runSubCrawler(subCrawler, object, contentStream, null, mimeType);
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
     /**
      * This method gets called when the crawler has encountered an object that has been modified
      * 
@@ -375,15 +238,9 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
      * @param object the DataObject
      */
     public void objectChanged(Crawler dataCrawler, DataObject object) {
-        // as we do not use incremental crawling, this should not happen
-        object.dispose();
-        this.currentURL = object.getID().toString();
-        if (verbose) {
-            System.out.println("C," + System.currentTimeMillis() + "," + currentURL);
-        }
-        //printUnexpectedEventWarning("changed");
+        processDataObject(dataCrawler, object, "C");
     }
-
+    
     /**
      * This method gets called when the crawler has encountered an object that has not been modified.
      * 
@@ -391,13 +248,8 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
      * @param url the URI of the object.
      */
     public void objectNotModified(Crawler crawler, String url) {
-        // as we do not use incremental crawling, this should not happen
         this.currentURL = url;
-        if (verbose) {
-            System.out.println("U," + System.currentTimeMillis() + "," + currentURL);
-        }
-        
-        //printUnexpectedEventWarning("unmodified");
+        printlnIfVerbose("U," + System.currentTimeMillis() + "," + currentURL);
     }
 
     /**
@@ -408,20 +260,16 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
      * @param url the URI of the DataObject
      */
     public void objectRemoved(Crawler dataCrawler, String url) {
-        // as we do not use incremental crawling, this should not happen
-        //printUnexpectedEventWarning("removed");
         this.currentURL = url;
-        if (verbose) {
-            System.out.println("D," + System.currentTimeMillis() + "," + currentURL);
-        }
+        printlnIfVerbose("D," + System.currentTimeMillis() + "," + currentURL);
     }
-
+    
     /**
      * This method gets called when the crawler started clearing the data source.
      * @param crawler the crawler
      */
     public void clearStarted(Crawler crawler) {
-        // as we do not use incremental crawling, this should not happen
+        // we don't call clear, this should not happen
         printUnexpectedEventWarning("clearStarted");
     }
 
@@ -431,7 +279,7 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
      * @param url the URI of the data object
      */
     public void clearingObject(Crawler crawler, String url) {
-        // as we do not use incremental crawling, this should not happen
+        // we don't call clear, this should not happen
         printUnexpectedEventWarning("clearingObject");
     }
 
@@ -440,9 +288,21 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
      * @param crawler the crawler
      * @param exitCode the exitCode
      */
-    public void clearFinished(Crawler crawler, ExitCode exitCode) {
-        // as we do not use incremental crawling, this should not happen
+    public void clearFinished(Crawler crawler, ExitCode l_exitCode) {
+        // we don't call clear, this should not happen
         printUnexpectedEventWarning("clear finished");
+    }
+    
+    /**
+     * This method gets called when the crawler finishes crawling a data source
+     * @param crawler the crawler
+     * @param code the exit code.
+     */
+    public void crawlStopped(Crawler crawler, ExitCode code) {
+        printAndCloseModelSet();
+        printCrawlReport(crawler.getCrawlReport());
+        this.finishTime = System.currentTimeMillis();
+        this.exitCode = code;
     }
 
     /**
@@ -471,21 +331,223 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         return new RDFContainerImpl(model, uri);
     }
 
-    private void printUnexpectedEventWarning(String event) {
-        // as we don't keep track of access data in this example code, some events should never occur
-        System.err.println("encountered unexpected event (" + event + ") with non-incremental crawler");
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////// DATA OBJECT PROCESSING METHODS //////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    private void processDataObject(Crawler dataCrawler, DataObject object, String verbosePrefix) {
+        nrObjects++;
+        this.currentURL = object.getID().toString();
+        
+        printIfVerbose(verbosePrefix + "," + System.currentTimeMillis() + "," + currentURL);
+
+        if (nrObjects % 300 == 0)
+            // call garbage collector from time to time
+            System.gc();
+
+        // process the contents of an InputStream, if available
+        if (object instanceof FileDataObject) {
+            String s = null;
+            try {
+                process((FileDataObject) object, dataCrawler);
+            }
+            catch (Exception e) {
+                objectsWhereProcessingExceptionOccured++;
+                System.err.println("Exception while processing file size (" + s + ") of " + object.getID());
+                e.printStackTrace();
+            }
+        } else {
+            printIfVerbose("|no stream");
+        }
+        
+        reportDetectedMimeType(object);
+        reportDetectedFullText(object);
+        disposeDataObject(object);
+        printlnIfVerbose("");
     }
 
     /**
-     * This method gets called when the crawler finishes crawling a data source
-     * @param crawler the crawler
-     * @param code the exit code.
+     * Disposes the data object.
+     * @param object the data object to dispose
      */
-    public void crawlStopped(Crawler crawler, ExitCode code) {
-        printAndCloseModelSet();
-        printCrawlReport(crawler.getCrawlReport());
-        this.finishTime = System.currentTimeMillis();
-        this.exitCode = code;
+    protected void disposeDataObject(DataObject object) {
+        object.dispose();
+    }
+
+    /**
+     * Processes the FileDataObject - tries to identify the mime type and to apply an appropriate extraction
+     * component - an Extractor, a FileExtractor or a SubCrawler.
+     * 
+     * @param object the object to process
+     * @param crawler the crawler that submitted the object for processing
+     * @throws IOException
+     * @throws ExtractorException
+     * @throws ModelException
+     * @throws SubCrawlerException
+     */
+    @SuppressWarnings("unchecked")
+    protected void process(FileDataObject object, Crawler crawler) 
+        throws IOException, ExtractorException, ModelException, SubCrawlerException {
+        // we cannot do anything when MIME type identification is disabled
+        if (!identifyingMimeType) {
+            return;
+        }
+
+        URI id = object.getID();
+
+        // Create a buffer around the object's stream large enough to be able to reset the stream
+        // after MIME type identification has taken place. Add some extra to the minimum array
+        // length required by the MimeTypeIdentifier for safety.
+        int minimumArrayLength = mimeTypeIdentifier.getMinArrayLength();
+        // we don't specify our own buffer size anymore, I commented this out (Antoni Mylka)
+        //int bufferSize = Math.max(minimumArrayLength, 8192);
+        InputStream contentStream = object.getContent();
+        contentStream.mark(minimumArrayLength + 10); // add some for safety
+
+        // apply the MimeTypeIdentifier
+        byte[] bytes = IOUtil.readBytes(contentStream, minimumArrayLength);
+        String mimeType = mimeTypeIdentifier.identify(bytes, null, id);
+        if (mimeType != null) {
+            // add the MIME type to the metadata
+            RDFContainer metadata = object.getMetadata();
+            metadata.add(NIE.mimeType, mimeType);
+
+            if (extractingContents) {
+                contentStream.reset();
+                           
+                // apply an Extractor if available
+                boolean done = applyExtractor(id, contentStream, mimeType, metadata);
+                if (done) {return;}
+                
+                // else try to apply a FileExtractor
+                done = applyFileExtractor(object, id, mimeType, metadata);
+                if (done) {return;}
+                
+                // or maybe apply a SubCrawler
+                done = applySubCrawler(id, contentStream, mimeType, object, crawler);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void reportDetectedMimeType(DataObject object) {
+        Collection mimeTypes = object.getMetadata().getAll(NIE.mimeType);
+        if (mimeTypes == null || mimeTypes.size() == 0) {
+            unidentifiedMimeTypes++;
+            return;
+        } else {
+            for (Object mimeTypeObject : mimeTypes) {
+                String mimeType = mimeTypeObject.toString();
+                printIfVerbose("|mime:" + mimeType);
+                Integer oldValue = detectedMimeTypes.get(mimeType);
+                if (oldValue == null) {
+                    detectedMimeTypes.put(mimeType, new Integer(1));
+                } else {
+                    Integer newValue = oldValue + 1;
+                    detectedMimeTypes.put(mimeType, newValue);
+                }
+            }
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void reportDetectedFullText(DataObject object) {
+        Collection fullTexts = object.getMetadata().getAll(NIE.plainTextContent);
+        fullTexts.addAll(object.getMetadata().getAll(NMO.plainTextMessageContent));
+        fullTexts.addAll(object.getMetadata().getAll(NID3.unsynchronizedTextContent));
+        if (fullTexts == null || fullTexts.size() == 0) {
+            return;
+        } else {
+            numberOfObjectsWithFullText++;
+            for (Object fullTextObject : fullTexts) {
+                String fullText = fullTextObject.toString();
+                totalFulltextLength += fullText.length();
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean applyExtractor(URI id, InputStream contentStream, String mimeType, RDFContainer metadata)
+            throws ExtractorException {
+        Set extractors = extractorRegistry.getExtractorFactories(mimeType);
+        if (!extractors.isEmpty()) {
+            ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
+            Extractor extractor = factory.get();
+            System.out.print("|ex:" + extractor.getClass().getName());
+            extractor.extract(id, contentStream, null, mimeType, metadata);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean applyFileExtractor(FileDataObject object, URI id, String mimeType, RDFContainer metadata)
+            throws ExtractorException, IOException {
+        Set fileextractors = extractorRegistry.getFileExtractorFactories(mimeType);
+        if (!fileextractors.isEmpty()) {
+            FileExtractorFactory factory = (FileExtractorFactory) fileextractors.iterator().next();
+            FileExtractor extractor = factory.get();
+            File originalFile = object.getFile();
+            if (originalFile != null) {
+                System.out.print("|fex:" + extractor.getClass().getName());
+                extractor.extract(id, originalFile, null, mimeType, metadata);
+                return true;
+            }
+            else {
+                File tempFile = object.downloadContent();
+                try {
+                    System.out.print("|fexd:" + extractor.getClass().getName());
+                    extractor.extract(id, tempFile, null, mimeType, metadata);
+                    return true;
+                }
+                finally {
+                    if (tempFile != null) {
+                        tempFile.delete();
+                    }
+                }
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean applySubCrawler(URI id, InputStream contentStream, String mimeType, DataObject object,
+            Crawler crawler) throws SubCrawlerException {
+        Set subCrawlers = subCrawlerRegistry.get(mimeType);
+        if (!subCrawlers.isEmpty()) {
+            SubCrawlerFactory factory = (SubCrawlerFactory) subCrawlers.iterator().next();
+            SubCrawler subCrawler = factory.get();
+            System.out.print("|sc:" + subCrawler.getClass().getName());
+            crawler.runSubCrawler(subCrawler, object, contentStream, null, mimeType);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////// HELPERS ////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    private void printUnexpectedEventWarning(String event) {
+        System.err.println("encountered unexpected event (" + event + ") with non-incremental crawler");
+    }
+    
+    private void printIfVerbose(String string) {
+        if (verbose) {
+            System.out.print(string);
+        }
+    }
+    
+    private void printlnIfVerbose(String string) {
+        if (verbose) {
+            System.out.println(string);
+        }
     }
     
     private void printCrawlReport(CrawlReport crawlReport) {
@@ -498,6 +560,9 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         System.out.println("Modified objects: " + crawlReport.getChangedCount());
         System.out.println("Unmodified objects: " + crawlReport.getUnchangedCount());
         System.out.println("Deleted objects: " + crawlReport.getRemovedCount());
+        System.out.println("New or modified objects with full text: " + numberOfObjectsWithFullText);
+        System.out.println("Total length of the extracted full text: " + totalFulltextLength);
+        System.out.println("Exceptions while processing objects: " + objectsWhereProcessingExceptionOccured);
         
         if (identifyingMimeType) {
             System.out.println("Objects with unidentified mime types: " + unidentifiedMimeTypes);
@@ -508,6 +573,9 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         }
     }
 
+    /**
+     * Prints the model set to the output file (if necessary) and closes it.
+     */
     protected void printAndCloseModelSet() {
         try {
             if (outputFile != null) {
@@ -527,10 +595,18 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         }
     }
     
+    /**
+     * Returns the model set with the crawl results
+     * @return the model set with the crawl results
+     */
     public ModelSet getModelSet() {
         return modelSet;
     }
     
+    /**
+     * Sets the model set where the crawl results will be stored
+     * @param modelSet the model set where the crawl results are to be stored
+     */
     public void setModelSet(ModelSet modelSet) {
         this.modelSet = modelSet;
     }
