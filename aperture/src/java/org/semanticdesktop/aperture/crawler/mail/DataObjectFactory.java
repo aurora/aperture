@@ -1064,7 +1064,6 @@ public class DataObjectFactory {
             metadata.add(RDF.type, NMO.Email);
         }
         
-        copyString(NMO.plainTextMessageContent, dataObjectHashMap, metadata);
         copyString(NMO.messageId, dataObjectHashMap, metadata);
 
         copyInt(NIE.byteSize, dataObjectHashMap, metadata);
