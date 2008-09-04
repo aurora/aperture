@@ -274,8 +274,8 @@ public class FlickrCrawler extends CrawlerBase {
 
                         Collection<Tag> tags = photo.getTags();
                         for (final Tag t : tags) {
-                            String tagsPrefix = "http://www.flickr.com/photos/" + t.getAuthor() + "/tags/";
-//                            String tagsPrefix = "http://www.flickr.com/tags/";
+                            // This line have to stay that way, because otherwise suggestions won't work in Nepomuk
+                            String tagsPrefix = "http://www.flickr.com/photos/" + meId + "/tags/";
                             // String tagsPrefix = photoUriString;
                             final String tagValue = t.getValue();
                             if (tagValue != null) {
