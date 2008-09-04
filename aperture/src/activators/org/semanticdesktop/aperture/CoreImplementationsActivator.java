@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture;
 
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.semanticdesktop.aperture.accessor.file.FileAccessorActivator;
@@ -177,8 +178,12 @@ public class CoreImplementationsActivator implements BundleActivator {
 		
 		vcardSubCrawlerActivator = new VcardSubCrawlerActivator();
 		vcardSubCrawlerActivator.start(context);
-		zipSubCrawlerActivator = new ZipSubCrawlerActivator();
-		zipSubCrawlerActivator.start(context);
+		try{
+		    zipSubCrawlerActivator = new ZipSubCrawlerActivator();
+		    zipSubCrawlerActivator.start(context);
+		}catch(Throwable t){
+		    logger.warn("Could not register and start zipSubCrawlerActivator correctly " +  t);
+		}
 		gzipSubCrawlerActivator = new GZipSubCrawlerActivator();
         gzipSubCrawlerActivator.start(context);
         bzip2SubCrawlerActivator = new BZip2SubCrawlerActivator();
@@ -282,8 +287,11 @@ public class CoreImplementationsActivator implements BundleActivator {
 		
 		vcardSubCrawlerActivator.stop(context);
 		vcardSubCrawlerActivator = null;
-		zipSubCrawlerActivator.stop(context);
-		zipSubCrawlerActivator = null;
+		
+		if(zipSubCrawlerActivator != null){
+		    zipSubCrawlerActivator.stop(context);
+		    zipSubCrawlerActivator = null;
+		}
 		gzipSubCrawlerActivator.stop(context);
         gzipSubCrawlerActivator = null;
         bzip2SubCrawlerActivator.stop(context);
