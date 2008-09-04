@@ -274,8 +274,8 @@ public class FlickrCrawler extends CrawlerBase {
 
                         Collection<Tag> tags = photo.getTags();
                         for (final Tag t : tags) {
-//                            String tagsPrefix = "http://www.flickr.com/people/" + t.getAuthor() + "/tags/";
-                            String tagsPrefix = "http://www.flickr.com/tags/";
+                            String tagsPrefix = "http://www.flickr.com/photos/" + t.getAuthor() + "/tags/";
+//                            String tagsPrefix = "http://www.flickr.com/tags/";
                             // String tagsPrefix = photoUriString;
                             final String tagValue = t.getValue();
                             if (tagValue != null) {
