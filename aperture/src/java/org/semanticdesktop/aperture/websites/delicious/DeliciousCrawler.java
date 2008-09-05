@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.util.logging.Level;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
@@ -28,6 +29,7 @@ import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
+import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.FilterAccessData;
 import org.semanticdesktop.aperture.crawler.web.CrawlJob;
 import org.semanticdesktop.aperture.datasource.DataSource;
@@ -35,6 +37,8 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.NAO;
 import org.semanticdesktop.aperture.vocabulary.NFO;
 import org.semanticdesktop.aperture.websites.AbstractTagCrawler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -48,6 +52,8 @@ import de.dfki.util.xml.XML.DOM;
  */
 public class DeliciousCrawler extends AbstractTagCrawler {
 
+    private Logger log=LoggerFactory.getLogger(DeliciousCrawler.class);
+    
     /** URL to the tags API */
 	public static final String TAGS_API="del.icio.us/api/tags/get";
 	/** URL to the posts API */
@@ -150,15 +156,23 @@ public class DeliciousCrawler extends AbstractTagCrawler {
                 reportUnmodifiedDataObject(postHref);
             }else{
                 accessData.put(postHref, AccessData.DATE_KEY, Long.toString(new Date().getTime()));
-                RDFContainer rdf = getRDFContainerFactory(postHref).getRDFContainer(postURI);
+                RDFContainer rdf;
               
                 
                 DataAccessor accessor = getDataAccessor(postHref);
                 RDFContainerFactory containerFactory = getRDFContainerFactory(postHref);
                 //wad = new WebAccessData(accessData);
-                DataObject o = accessor.getDataObject(postHref, source, null, containerFactory);
-                
-              
+                DataObject o;
+                try { 
+                    o = accessor.getDataObject(postHref, source, null, containerFactory);
+                    rdf=o.getMetadata();
+                } catch (Throwable ex) { 
+                    // "sub-crawling" the posted URI failed, 
+                    // just make up an empty data-object
+                    log.debug("Could not crawl web-site, continuing. ", ex);
+                    rdf=getRDFContainerFactory(postHref).getRDFContainer(postURI);
+                    o=new DataObjectBase(postURI, source, rdf);
+                }
                 
                 rdf.add(RDF.type, NFO.Website);
               
