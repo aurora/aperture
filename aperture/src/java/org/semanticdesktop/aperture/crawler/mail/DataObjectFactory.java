@@ -98,11 +98,6 @@ public class DataObjectFactory {
         public InputStream getPartStream(Part part) throws MessagingException, IOException;
     }
 
-    // TODO: we could use the URL format specified in RFC 2192 to construct a proper IMAP4 URL.
-    // Right now we use something home-grown for representing attachments rather than isections.
-    // To investigate: does JavaMail provide us with enough information for constructing proper
-    // URLs for attachments? Perhaps we can create them ourselves by carefully counting BodyParts?
-
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
@@ -665,6 +660,14 @@ public class DataObjectFactory {
         }
     }
 
+    /**
+     * An equivalent of the {@link #extractMessageSinglePartMetadata(Part, HashMap, String)} method for
+     * mailParts taht aren't messages (most likely attachments). Provided for symmetry and readability.
+     * 
+     * @param mailPart this param is there for symmetry, it is not actually used.
+     * @param result the hashmap representation of the mail part metadata
+     * @param mimeType the mime type of the mail part
+     */
     private void extractNonMessageSinglePartMetadata(Part mailPart, HashMap result, String mimeType) {
         // this is most likely an attachment: set the InputStream's mime type as the data object's
         // primary MIME type
@@ -1196,6 +1199,7 @@ public class DataObjectFactory {
     /**
      * Transfer all properties from one interpreted mail part to another, taking care to merge information
      * rather than overwrite it when appropriate.
+     * @throws IOException
      */
     private void transferInfo(HashMap fromObject, HashMap toObject) throws IOException {
         // transfer content stream if applicable
