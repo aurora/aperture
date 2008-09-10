@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2006 - 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * All rights reserved.
+ * 
+ * Licensed under the Academic Free License version 3.0.
+ */
 package org.semanticdesktop.aperture.websites.flickr;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
@@ -7,7 +13,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Thu Jul 31 09:42:46 CEST 2008
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Sep 10 18:58:36 CEST 2008
  * input file: /Users/ck/Entwicklung/nepomuk/workspace2/aperture/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#
  */
@@ -62,4 +68,12 @@ public class FLICKRDS {
      * Range: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#CrawlType  <br/>
      */
     public static final URI crawlType = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#crawlType");
+    /**
+     * Type: Property <br/>
+     * Label: Photo Folder  <br/>
+     * Comment: Path to the folder where local copies of your photos will be stored  <br/>
+     * Domain: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#FileSystemDataSource  <br/>
+     * Range: http://www.w3.org/2001/XMLSchema#string  <br/>
+     */
+    public static final URI targetFolder = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#targetFolder");
 }

@@ -43,7 +43,6 @@ import com.aetrion.flickr.FlickrException;
 import com.aetrion.flickr.RequestContext;
 import com.aetrion.flickr.people.PeopleInterface;
 import com.aetrion.flickr.people.User;
-import com.aetrion.flickr.photos.Exif;
 import com.aetrion.flickr.photos.Photo;
 import com.aetrion.flickr.photos.PhotoList;
 import com.aetrion.flickr.photos.PhotosInterface;
@@ -71,8 +70,7 @@ public class FlickrCrawler extends CrawlerBase {
         NEW, UNMODIFIED, CHANGED
     }
 
-    // FIXME make this configurable via the GUI
-    private final File localPhotoBasedir = new File(new File(System.getProperty("user.home")), "flickrPhotos");
+    private final static File localPhotoBasedirDefault = new File(new File(System.getProperty("user.home")), "flickrPhotos");
 
     private static final int ENTRIES_PER_PAGE = 10;
 
@@ -112,6 +110,15 @@ public class FlickrCrawler extends CrawlerBase {
 
             // FIXME check why CrawlType is NULL
             boolean downloadImages = !CrawlType.MetadataOnlyCrawlType.equals(localSource.getCrawlType());
+            
+            File localPhotoBasedir;
+            try {
+                localPhotoBasedir = new File(localSource.getTargetFolder());
+            } catch(NullPointerException e) {
+                localPhotoBasedir = localPhotoBasedirDefault;
+                localSource.setTargetFolder(localPhotoBasedir.getPath());
+            }
+            
             if (downloadImages) {
                 localPhotoBasedir.mkdirs();
             }

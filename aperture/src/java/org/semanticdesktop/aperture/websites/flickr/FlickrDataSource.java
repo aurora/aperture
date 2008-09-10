@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2006 - 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * All rights reserved.
+ * 
+ * Licensed under the Academic Free License version 3.0.
+ */
 package org.semanticdesktop.aperture.websites.flickr;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Node;
@@ -11,7 +17,7 @@ import java.util.List;
 import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Thu Jul 31 09:42:47 CEST 2008
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Wed Sep 10 18:58:37 CEST 2008
  * input file: /Users/ck/Entwicklung/nepomuk/workspace2/aperture/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#FlickrDataSource
  */
@@ -73,6 +79,32 @@ public class FlickrDataSource extends DataSourceBase {
              getConfiguration().remove(org.semanticdesktop.aperture.vocabulary.DATASOURCE.password);
          } else {
              getConfiguration().put(org.semanticdesktop.aperture.vocabulary.DATASOURCE.password,password);
+         }
+     }
+
+    /**
+     * Returns the Path to the folder where local copies of your photos will be stored
+     * 
+     * @return the Path to the folder where local copies of your photos will be stored or null if no value has been set
+     * @throws NullPointerException if no configuration has been set, use
+     *             {@link #setConfiguration(RDFContainer)} before calling this method
+     */
+     public String getTargetFolder() {
+          return getConfiguration().getString(FLICKRDS.targetFolder);
+     }
+
+    /**
+     * Sets the Path to the folder where local copies of your photos will be stored
+     * 
+     * @param targetFolder Path to the folder where local copies of your photos will be stored, can be null in which case any previous setting will be removed
+     * @throws NullPointerException if no configuration has been set, use
+     *             {@link #setConfiguration(RDFContainer)} before calling this method
+     */
+     public void setTargetFolder(String targetFolder) {
+         if ( targetFolder == null) {
+             getConfiguration().remove(FLICKRDS.targetFolder);
+         } else {
+             getConfiguration().put(FLICKRDS.targetFolder,targetFolder);
          }
      }
 

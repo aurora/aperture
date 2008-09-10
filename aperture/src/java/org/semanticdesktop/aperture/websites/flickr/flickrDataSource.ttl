@@ -19,6 +19,7 @@
                    fresnel:classLensDomain :FlickrDataSource ;
                    fresnel:showProperties ( source:username 
                                             source:password 
+                                            :targetFolder
                                             :crawlType
                                            ) .
                                             
@@ -39,7 +40,7 @@
     	a sourceformat:ComboBoxWidget;
 		sourceformat:hasEntry [ 
 			a sourceformat:ComboBoxEntry ;
-			sourceformat:label "Metadata and Pictures" ;
+			sourceformat:label "Metadata and Photos" ;
 			sourceformat:value :MetadataAndPicturesCrawlType  
 		] ;
 		sourceformat:hasEntry [ 
@@ -49,4 +50,14 @@
 		] 
     ] . 
     
-                                                                                  
+:targetFolder a rdf:Property ;
+    rdfs:label "Photo Folder" ;
+    rdfs:comment "Path to the folder where local copies of your photos will be stored" ;
+    rdfs:domain :FileSystemDataSource ;
+    rdfs:range xsd:string .
+    
+:targetFolderFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+    	a sourceformat:TextFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :targetFolder .
