@@ -473,7 +473,9 @@ public class SimpleCrawlerHandler implements CrawlerHandler, RDFContainerFactory
         if (!extractors.isEmpty()) {
             ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
             Extractor extractor = factory.get();
-            System.out.print("|ex:" + extractor.getClass().getName());
+            if (verbose) {
+                System.out.print("|ex:" + extractor.getClass().getName());
+            }
             extractor.extract(id, contentStream, null, mimeType, metadata);
             return true;
         }
