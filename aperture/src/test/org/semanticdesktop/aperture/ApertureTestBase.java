@@ -655,8 +655,9 @@ public class ApertureTestBase extends TestCase {
     }
     
     /**
-     * Sleep for the given number of 
-     * miliseconds. This method is provided for convenience.
+     * Sleep for the given number of miliseconds. This method is provided for convenience. It is immune to
+     * InterruptedExceptions. If you need to be able to interrupt the sleep with the {@link Thread#interrupt()}
+     * method, use {@link #interruptibleSleep(long)}
      * @param timeout The amount of miliseconds to wait.
      */
     protected void safelySleep(long timeout) {
@@ -668,6 +669,21 @@ public class ApertureTestBase extends TestCase {
             } catch (InterruptedException ie) {
                 // that shouldn't be much of a problem
             }
+            end = System.currentTimeMillis();
+        }
+    }
+    
+    /**
+     * Sleep for the given number of miliseconds. This method is provided for convenience. The sleep
+     * may be interrupted by the {@link Thread#interrupt()}. Compare with {@link #safelySleep(long)}
+     * @param timeout The amount of miliseconds to wait.
+     * @throws InterruptedException if the sleep is interrupted.
+     */
+    protected void interruptibleSleep(long timeout) throws InterruptedException {
+        long begin = System.currentTimeMillis();
+        long end = begin;
+        while (end - begin < timeout) {
+            Thread.sleep(timeout - (end - begin));
             end = System.currentTimeMillis();
         }
     }

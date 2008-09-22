@@ -31,238 +31,347 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
  */
 public class ThreadedExtractorWrapper implements Extractor {
 
-	/**
-	 * The maximum time per MB of data that the wrapped Extractor is allowed to work on the read data before
-	 * it is considered to be hanging, in milliseconds.
-	 */
-	private static final long MAX_PROCESSING_TIME_PER_MB = 10L * 1000L; // 10 seconds
+    /**
+     * The maximum time per MB of data that the wrapped Extractor is allowed to work on the read data before
+     * it is considered to be hanging, in milliseconds.
+     */
+    public static final long DEFAULT_MAX_PROCESSING_TIME_PER_MB = 10L * 1000L; // 10 seconds
 
-	/**
-	 * The minimum maximum processing time that the wrapped Extractor is allowed to work on the read data
-	 * before it is considered to be hanging. This minimum gives a lower bound for very small files.
-	 */
-	private static final long MINIMUM_MAX_PROCESSING_TIME = 30L * 1000L; // 30 seconds
+    /**
+     * The minimum maximum processing time that the wrapped Extractor is allowed to work on the read data
+     * before it is considered to be hanging. This minimum gives a lower bound for very small files.
+     */
+    public static final long DEFAULT_MINIMUM_MAX_PROCESSING_TIME = 30L * 1000L; // 30 seconds
 
-	/**
-	 * The maximum time between two reads that the wrapped Extractor is allowed to work on the read data
-	 * before it is considered to be hanging.
-	 */
-	private static final long MAX_IDLE_READ_TIME = 30L * 1000L; // 30 seconds
+    /**
+     * The maximum time between two reads that the wrapped Extractor is allowed to work on the read data
+     * before it is considered to be hanging.
+     */
+    public static final long DEFAULT_MAX_IDLE_READ_TIME = 30L * 1000L; // 30 seconds
 
-	/**
-	 * The wrapped Extractor.
-	 */
-	private Extractor extractor;
+    /**
+     * The wrapped Extractor.
+     */
+    private Extractor extractor;
 
-	/**
-	 * Flag that indicates that a request to stop extracting has been issued.
-	 */
-	private boolean stopRequested;
+    /**
+     * Flag that indicates that a request to stop extracting has been issued.
+     */
+    private boolean stopRequested;
+    
+    /**
+     * The actual max processing time per MB for this ThreadedExtractorWrapper instance
+     */
+    private long maxProcessingTimePerMb = DEFAULT_MAX_PROCESSING_TIME_PER_MB;
+    
+    /**
+     * The actual minimal processing time.
+     */
+    private long minimumMaxProcessingTime = DEFAULT_MINIMUM_MAX_PROCESSING_TIME;
 
-	/**
-	 * Creates a new wrapper for the specified Extractor.
-	 * 
-	 * @param extractor The Extractor to wrap.
-	 */
-	public ThreadedExtractorWrapper(Extractor extractor) {
-		this.extractor = extractor;
-		stopRequested = false;
-	}
+    /**
+     * The actual max idle read time.
+     */
+    private long maxIdleReadTime = DEFAULT_MAX_IDLE_READ_TIME;
+    
+    /**
+     * Creates a new wrapper for the specified Extractor. It uses default timeout values. It is equivalent to
+     * 
+     * <pre>
+     * new ThreadedExtractorWrapper(extractor, DEFAULT_MAX_PROCESSING_TIME_PER_MB,
+     *         DEFAULT_MINIMUM_MAX_PROCESSING_TIME, DEFAULT_MAX_IDLE_READ_TIME);
+     * </pre>
+     * 
+     * @param extractor The Extractor to wrap.
+     * @see #DEFAULT_MAX_PROCESSING_TIME_PER_MB
+     * @see #DEFAULT_MINIMUM_MAX_PROCESSING_TIME
+     * @see #DEFAULT_MAX_IDLE_READ_TIME
+     */
+    public ThreadedExtractorWrapper(Extractor extractor) {
+        this.extractor = extractor;
+        stopRequested = false;
+    }
+    
+    /**
+     * Creates a new wrapper for the specified Extractor. It allows the user to customize the timeout
+     * values.
+     * @param extractor The Extractor to wrap.
+     * @param maxProcessingTimePerMb  see {@link #DEFAULT_MAX_PROCESSING_TIME_PER_MB}
+     * @param minimumMaxProcessingTime see {@link #DEFAULT_MINIMUM_MAX_PROCESSING_TIME}
+     * @param maxIdleReadTime see {@link #DEFAULT_MAX_IDLE_READ_TIME}
+     */
+    public ThreadedExtractorWrapper(Extractor extractor, long maxProcessingTimePerMb,
+            long minimumMaxProcessingTime, long maxIdleReadTime) {
+        this.extractor = extractor;
+        this.stopRequested = false;
+        this.maxProcessingTimePerMb = maxProcessingTimePerMb;
+        this.minimumMaxProcessingTime = minimumMaxProcessingTime;
+        this.maxIdleReadTime = maxIdleReadTime;
+    }
 
-	/**
-	 * Interrupts processing of the wrapped extractor as soon as possible.
-	 */
-	public void stop() {
-		stopRequested = true;
-	}
+    /**
+     * Interrupts processing of the wrapped extractor as soon as possible.
+     */
+    public void stop() {
+        stopRequested = true;
+    }
 
-	/**
-	 * Starts the extraction process using the wrapped Extractor on a separate thread. This Thread is
-	 * interrupted as soon as no progress is reported.
-	 */
-	public void extract(URI id, InputStream input, Charset charset, String mimeType, RDFContainer result)
-			throws ExtractorException {
-		ExtractionStream monitoredStream = new ExtractionStream(input);
+    /**
+     * Starts the extraction process using the wrapped Extractor on a separate thread. This Thread is
+     * interrupted as soon as no progress is reported. In this case an {@link ExtractionAbortedException} will
+     * be thrown.l
+     * 
+     * @throws ExtractorException if any problem with the extractor occurs, this is exactly the same Exception
+     *             instance as the one thrown by the extractor.
+     * @throws ExtractionAbortedException if the extractor wrapper decided that the extractor has stalled and
+     *             the extraction has been aborted
+     */
+    public void extract(URI id, InputStream input, Charset charset, String mimeType, RDFContainer result)
+            throws ExtractorException {
+        ExtractionStream monitoredStream = new ExtractionStream(input);
 
-		ExtractionThread thread = new ExtractionThread(id, monitoredStream, charset, mimeType, result);
-		thread.start();
+        ExtractionThread thread = new ExtractionThread(id, monitoredStream, charset, mimeType, result);
+        thread.start();
 
-		while (true) {
-			// wait for the thread to finish its work
-			long waitTime;
-			if (monitoredStream.allBytesRead()) {
-				waitTime = MAX_PROCESSING_TIME_PER_MB * monitoredStream.getTotalBytesRead() / (1024 * 1024);
-				waitTime = Math.max(waitTime, MINIMUM_MAX_PROCESSING_TIME);
-			}
-			else {
-				waitTime = MAX_IDLE_READ_TIME;
-			}
+        while (true) {
+            long waitTime;
+            if (monitoredStream.allBytesRead()) {
+                /*
+                 * This means that the underlying extractor has read all bytes within the underlying stream,
+                 * we must wait until the processing ends. We assume that the processing time is linearly
+                 * dependent on the file length (with the maxProcessingTimePerMb coefficient).
+                 */
+                waitTime = (long)(maxProcessingTimePerMb * monitoredStream.getTotalBytesRead() / 
+                        (1024.0 * 1024.0));
+                /*
+                 * Very small files don't fit into this linear heuristic, so we place a bound, that allows
+                 * very small files to be processed in fixed time (minimumMaxProcessingTime)
+                 */
+                waitTime = Math.max(waitTime, minimumMaxProcessingTime);
+            }
+            else {
+                /*
+                 * This means that the extractor hasn't stopped reading. We try to detect if if has hanged
+                 * during reading.
+                 */
+                waitTime = maxIdleReadTime;
+            }
 
-			waitTime -= System.currentTimeMillis() - monitoredStream.getLastAccessTime();
+            /*
+             * We may be in the middle of an interval between two reads. We need to subtract the time that
+             * has already elapsed since the last read from the overall waiting time.
+             */
+            waitTime -= (System.currentTimeMillis() - monitoredStream.getLastAccessTime());
 
-			if (waitTime <= 0L || !thread.isAlive()) {
-				break;
-			}
+            /*
+             * This indicates that the extraction thread has stopped, which in turn means that the extractor
+             * has finished extracting data. This is OK, we may safely bail out from this loop. 
+             */
+            if (!thread.isAlive()) {
+                break;
+            }
+            
+            /*
+             * This will occur if the time that has elapsed since the last read is greater than the time we
+             * may wait. E.g. the processing time is longer than the max processing time for the given file
+             * length, or the time between reads is longer than the max time between reads. This means that
+             * we officially declare this extractor as stalled and bail out from this loop.
+             */
+            if (waitTime <= 0L) {
+                break;
+            }
 
-			try {
-				thread.join(waitTime);
-			}
-			catch (InterruptedException e) {
-				throw new ExtractorException(e);
-			}
-		}
+            try {
+                /*
+                 * Now we wait for the computed amount of miliseconds. We use the join method, so if the
+                 * extractor finishes earlier, the join method will also finish and the isAlive() check will
+                 * make this loop end gracefully. On the other hand, if the extractor doesn't finish within
+                 * the prescribed time, we'll get to decide later what to do with it.
+                 */
+                thread.join(waitTime);
+            }
+            catch (InterruptedException e) {
+                throw new ExtractorException(e);
+            }
+        }
 
-		if (thread.isAlive()) {
-			thread.abortExtraction();
-			throw new ExtractorException("Extractor aborted");
-		}
-		else {
-			// throw any exceptions that may have been thrown during the operation of the Extractor
-			Exception e = thread.getException();
-			if (e != null) {
-				if (e instanceof ExtractorException) {
-					throw (ExtractorException) e;
-				}
-				else {
-					throw (RuntimeException) e;
-				}
-			}
-		}
-	}
+        if (thread.isAlive()) {
+            /*
+             * This indicates that the previous loop ended with a decision that the extractor has hanged. We
+             * must abort the extraction and throw an appropriate exception.
+             */
+            thread.abortExtraction();
+            throw new ExtractionAbortedException();
+        }
+        else {
+            /*
+             * This means that the extraction thread has ended, which in turn means that the extraction
+             * process has ended with a success, or the extractor has thrown some exception, if there are any
+             * exceptions we need to propagate them further to the user.
+             */
+            Exception e = thread.getException();
+            if (e != null) {
+                if (e instanceof ExtractorException) {
+                    throw (ExtractorException) e;
+                }
+                else {
+                    throw (RuntimeException) e;
+                }
+            }
+        }
+    }
+    
+    /** An exception that gets thrown if the underlying extractor hangs. */
+    public static class ExtractionInterruptedException extends IOException {
 
-	private class ExtractionThread extends Thread {
+        private static final long serialVersionUID = -4052987146699550288L;
 
-		private URI id;
+        /** The default constructor */
+        public ExtractionInterruptedException() {
+            super("Extraction interrupted upon request");
+        }
+    }
 
-		private InputStream input;
+    /**
+     * An exception that gets thrown if the extraction is aborted per user request i.e. when the
+     * {@link ThreadedExtractorWrapper#stop()} method is called.
+     */
+    public static class ExtractionAbortedException extends ExtractorException {
 
-		private Charset charset;
+        private static final long serialVersionUID = -1806199350296089459L;
 
-		private String mimeType;
+        /** The default constructor */
+        public ExtractionAbortedException() {
+            super("Extraction has been aborted due to problems with the extractor");
+        }
+    }
 
-		private RDFContainer result;
+    private class ExtractionThread extends Thread {
 
-		private Exception exception;
+        private URI id;
 
-		public ExtractionThread(URI id, InputStream input, Charset charset, String mimeType,
-				RDFContainer result) {
-			this.id = id;
-			this.input = input;
-			this.charset = charset;
-			this.mimeType = mimeType;
-			this.result = result;
-		}
+        private InputStream input;
 
-		public void run() {
-			try {
-				extractor.extract(id, input, charset, mimeType, result);
-			}
-			catch (Exception e) {
-				exception = e;
-			}
-		}
+        private Charset charset;
 
-		public void abortExtraction() {
-			interrupt();
-		}
+        private String mimeType;
 
-		public Exception getException() {
-			return exception;
-		}
-	}
+        private RDFContainer result;
 
-	private class ExtractionStream extends FilterInputStream {
+        private Exception exception;
 
-		private long lastAccessTime;
+        public ExtractionThread(URI id, InputStream input, Charset charset, String mimeType,
+                RDFContainer result) {
+            this.id = id;
+            this.input = input;
+            this.charset = charset;
+            this.mimeType = mimeType;
+            this.result = result;
+        }
 
-		private boolean allBytesRead;
+        public void run() {
+            try {
+                extractor.extract(id, input, charset, mimeType, result);
+            }
+            catch (Exception e) {
+                exception = e;
+            }
+        }
 
-		private int totalBytesRead;
+        public void abortExtraction() {
+            interrupt();
+        }
 
-		public ExtractionStream(InputStream in) {
-			super(in);
+        public Exception getException() {
+            return exception;
+        }
+    }
 
-			lastAccessTime = System.currentTimeMillis();
-			allBytesRead = false;
-			totalBytesRead = 0;
-		}
+    private class ExtractionStream extends FilterInputStream {
 
-		public long getLastAccessTime() {
-			return lastAccessTime;
-		}
+        private long lastAccessTime;
 
-		public boolean allBytesRead() {
-			return allBytesRead;
-		}
+        private boolean allBytesRead;
 
-		public int getTotalBytesRead() {
-			return totalBytesRead;
-		}
+        private int totalBytesRead;
 
-		public int read() throws IOException {
-			checkStopRequested();
+        public ExtractionStream(InputStream in) {
+            super(in);
 
-			int result = super.read();
+            lastAccessTime = System.currentTimeMillis();
+            allBytesRead = false;
+            totalBytesRead = 0;
+        }
 
-			if (result >= 0) {
-				lastAccessTime = System.currentTimeMillis();
-				totalBytesRead++;
-			}
-			else {
-				allBytesRead = true;
-			}
+        public long getLastAccessTime() {
+            return lastAccessTime;
+        }
 
-			return result;
-		}
+        public boolean allBytesRead() {
+            return allBytesRead;
+        }
 
-		public int read(byte[] b) throws IOException {
-			checkStopRequested();
+        public int getTotalBytesRead() {
+            return totalBytesRead;
+        }
 
-			int result = super.read(b);
+        public int read() throws IOException {
+            checkStopRequested();
 
-			if (result >= 0) {
-				lastAccessTime = System.currentTimeMillis();
-				totalBytesRead += result;
-			}
-			else {
-				allBytesRead = true;
-			}
+            int result = super.read();
 
-			return result;
-		}
+            if (result >= 0) {
+                lastAccessTime = System.currentTimeMillis();
+                totalBytesRead++;
+            }
+            else {
+                allBytesRead = true;
+            }
 
-		public int read(byte[] b, int off, int len) throws IOException {
-			checkStopRequested();
+            return result;
+        }
 
-			int result = super.read(b, off, len);
+        public int read(byte[] b) throws IOException {
+            checkStopRequested();
 
-			if (result >= 0) {
-				lastAccessTime = System.currentTimeMillis();
-				totalBytesRead += result;
-			}
-			else {
-				allBytesRead = true;
-			}
+            int result = super.read(b);
 
-			return result;
-		}
+            if (result >= 0) {
+                lastAccessTime = System.currentTimeMillis();
+                totalBytesRead += result;
+            }
+            else {
+                allBytesRead = true;
+            }
 
-		public void close() throws IOException {
-			super.close();
-			allBytesRead = true;
-		}
+            return result;
+        }
 
-		private void checkStopRequested() throws ExtractionInterruptedException {
-			if (stopRequested) {
-				throw new ExtractionInterruptedException();
-			}
-		}
-	}
+        public int read(byte[] b, int off, int len) throws IOException {
+            checkStopRequested();
 
-	public static class ExtractionInterruptedException extends IOException {
+            int result = super.read(b, off, len);
 
-		public ExtractionInterruptedException() {
-			super("Extraction interrupted upon request");
-		}
-	}
+            if (result >= 0) {
+                lastAccessTime = System.currentTimeMillis();
+                totalBytesRead += result;
+            }
+            else {
+                allBytesRead = true;
+            }
+
+            return result;
+        }
+
+        public void close() throws IOException {
+            super.close();
+            allBytesRead = true;
+        }
+
+        private void checkStopRequested() throws ExtractionInterruptedException {
+            if (stopRequested) {
+                throw new ExtractionInterruptedException();
+            }
+        }
+    }
 }
