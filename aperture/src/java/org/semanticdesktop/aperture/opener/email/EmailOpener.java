@@ -69,7 +69,7 @@ public class EmailOpener implements DataOpener {
         openCommand(correctURI);
     }
 
-    public void openCommand(String uri) throws IOException{
+    public void openCommand(String uri) throws IOException{ 
         try
         {
             Socket sock = null;
