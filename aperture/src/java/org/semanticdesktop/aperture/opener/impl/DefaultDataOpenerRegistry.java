@@ -12,6 +12,8 @@ import java.util.Set;
 
 import org.semanticdesktop.aperture.opener.DataOpenerFactory;
 import org.semanticdesktop.aperture.opener.DataOpenerRegistry;
+import org.semanticdesktop.aperture.opener.email.EmailOpener;
+import org.semanticdesktop.aperture.opener.email.EmailOpenerFactory;
 import org.semanticdesktop.aperture.opener.file.FileOpenerFactory;
 import org.semanticdesktop.aperture.opener.http.HttpOpenerFactory;
 
@@ -24,6 +26,7 @@ public class DefaultDataOpenerRegistry implements DataOpenerRegistry {
 		openers=new HashSet();
 		openers.add(new FileOpenerFactory());
 		openers.add(new HttpOpenerFactory());
+		openers.add(new EmailOpenerFactory());
 	}
 	
 	public void add(DataOpenerFactory factory) {
