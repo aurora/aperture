@@ -76,7 +76,6 @@ public class MimeExtractorTest extends ExtractorTestBase {
 		Extractor extractor = factory.get();
 		RDFContainer container = extract(DOCS_PATH + fileName, extractor);
 		String fullText = container.getString(NMO.plainTextMessageContent);
-		System.out.println(container.getString(NMO.plainTextMessageContent));
 		// check that relevant content was extracted
 		assertTrue(fullText.contains("Project name"));
 		assertTrue(fullText.contains("FAQ"));
