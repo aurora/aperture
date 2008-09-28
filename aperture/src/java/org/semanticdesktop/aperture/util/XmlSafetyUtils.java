@@ -17,9 +17,6 @@ import java.io.Writer;
 import java.util.Iterator;
 
 import org.ontoware.aifbcommons.collection.ClosableIterator;
-import org.ontoware.rdf2go.ModelFactory;
-import org.ontoware.rdf2go.RDF2Go;
-import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Diff;
 import org.ontoware.rdf2go.model.Model;
@@ -28,7 +25,6 @@ import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.impl.AbstractModel;
 import org.ontoware.rdf2go.model.impl.DelegatingModel;
-import org.ontoware.rdf2go.model.impl.DiffImpl;
 import org.ontoware.rdf2go.model.node.BlankNode;
 import org.ontoware.rdf2go.model.node.DatatypeLiteral;
 import org.ontoware.rdf2go.model.node.LanguageTagLiteral;
