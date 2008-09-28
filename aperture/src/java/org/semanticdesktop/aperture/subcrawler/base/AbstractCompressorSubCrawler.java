@@ -60,28 +60,6 @@ public abstract class AbstractCompressorSubCrawler implements SubCrawler {
             URI contentUri = getContentUri(parentMetadata.getDescribedUri());
             uncompressedStream = getUncompressedStream(stream);
             
-            /*
-             * this is a really unelegant hack, it is intended to cover the very popular case of
-             * .tar.gz and .tar.bz2 archives. Without it, the compressor would return a stream
-             * with an uncompressed tar file. Unfortunately the tar format doesn't have any
-             * magic header and the mime type identifier would not be able to recognize it. 
-             * In a positive case, the mime type identifier would fall back to the extension-based
-             * recognition, which would regonize the .tar extension (if the user didn't forget to
-             * pass the URI to the mime type identifier). 
-             * In the worst case the name of the 'root' folder of the archive would start at the
-             * very first byte of the tar file and the mime type identifier would treat it as
-             * the magic prefix. This means that a tar file containing the 'pkutils' folder would
-             * be identifier as a zip file (or any other mime type identifier by a magic string).
-             * This would obviously lead to a catastrophe. That's why I introduced this hack in hope
-             * that it will filter out the most common cases, and tread them correctly.
-             */
-            if (contentUri.toString().endsWith(".tar")) {
-                TarSubCrawlerFactory fac = new TarSubCrawlerFactory();
-                SubCrawler sc = fac.get();
-                sc.subCrawl(id, uncompressedStream, handler, dataSource, accessData, charset, mimeType, parentMetadata);
-                return;
-            }
-            
             parentMetadata.add(RDF.type, NFO.Archive);
             
             boolean newEntry = true;

@@ -87,6 +87,7 @@ public class TestMagicMimeTypeIdentifier extends ApertureTestBase {
 		checkMimeType("microsoft-powerpoint-2007beta2.ppsx", "application/vnd.openxmlformats-officedocument.presentationml", identifier);
 		checkMimeType("microsoft-powerpoint-2007beta2.pptm", "application/vnd.openxmlformats-officedocument.presentationml", identifier);
 		checkMimeType("microsoft-powerpoint-2007beta2.pptx", "application/vnd.openxmlformats-officedocument.presentationml", identifier);
+		checkMimeType("tar-test.tar", "application/x-tar", identifier);
 		
 		// try throwing some confusing stuff at it, e.g. files with wrong extensions
 		checkMimeType("microsoft-word-2000-with-wrong-file-extension.pdf", "application/vnd.ms-office",
