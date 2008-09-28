@@ -72,7 +72,6 @@ public class ThreadedExtractorWrapperTest extends ApertureTestBase {
                 ThreadedExtractorWrapper.DEFAULT_MAX_PROCESSING_TIME_PER_MB,
                 ThreadedExtractorWrapper.DEFAULT_MINIMUM_MAX_PROCESSING_TIME, 200);
         wrapper.extract(null, _stream, null, null, null); // nothing should happen
-        System.out.println("--");
         initializeStream(4*1024);
         _readPlan.clear();
         _readPlan.add(new PlanPoint(1024, 100));
