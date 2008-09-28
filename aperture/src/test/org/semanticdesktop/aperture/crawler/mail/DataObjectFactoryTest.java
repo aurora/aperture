@@ -8,13 +8,18 @@ package org.semanticdesktop.aperture.crawler.mail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
@@ -215,13 +220,79 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         
         validate(container2);
         obj2.dispose();
-        
+    }
+    
+    /**
+     * A test for a message that has been taken from within a thread. It contains References: and In-Reply-To:
+     * headers. It is a multipart/mixed message, whose first part is a multipart/alternative. An example of
+     * the ingenuity of the SF mailing list software, they add the ads and the mailing list signature as
+     * attachments. All the 'References:' and 'In-Reply-To:' headers should appear in the extracted RDF.
+     * 
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    public void testMessageInAThread() throws Exception {
+        DataObjectFactory fac = wrapEmail("mail-threaded.eml");
+        DataObject obj = fac.getObject();
+        RDFContainer metadata = obj.getMetadata();
+        Model model = metadata.getModel();
+        fac.getObject().dispose();
+        fac.getObject().dispose();
+        assertNull(fac.getObject());
+
+        assertEquals("<452A6646.10207@dfki.de>", findSingleObjectNode(model, metadata.getDescribedUri(),
+            NMO.messageId).asLiteral().getValue());
+        assertReferencedEmails(obj, NMO.references, "<452A03DB.3020705@dfki.de>",
+            "<452A168F.7010108@aduna-software.com>", "<452A5832.2080801@dfki.de>",
+            "<452A6537.1030309@aduna-software.com>");
+        assertReferencedEmails(obj, NMO.inReplyTo, "<452A6537.1030309@aduna-software.com>");
+        validate(obj);
+        obj.dispose();
     }
 
+    /**
+     * Tests whether the 'References:' and 'In-Reply-To:' are extracted correctly from a forwarded message.
+     * The .eml file that is tested has a following structure
+     * 
+     * <pre>
+     * multipart/mixed
+     * - plain text (my greeting)
+     * - multipart/mixed (the forwarded message)
+     *   - multipart/alternative (the leo's reply)
+     *     - plain text - plain text content
+     *     - html text - the html text contet
+     *   - plain text - the sourceforge ad
+     *   - plain text - the sourceforge list signature
+     * </pre>
+     * 
+     * This structure should yield four data objects. (my greeting, leo's reply in plain text, the ad and the
+     * signature). The second data object should have correct References: and In-Reply-To links.
+     */
+    public void testForwardedMessageWithReferecesAndInReplyToHeaders() throws Exception {
+        DataObjectFactory fac = wrapEmail("mail-forwarded-references.eml");
+        DataObject myGreeting = fac.getObject(); 
+        DataObject forwardedMsg = fac.getObject(); 
+        DataObject sfAd = fac.getObject();
+        DataObject sfSig = fac.getObject();
+        assertNull(fac.getObject()); 
+
+        assertMessageId("<48DFA882.5010502@poczta.onet.pl>", myGreeting);
+        assertMessageId("<46ADDEF5.6080504@dfki.de>", forwardedMsg);
+        assertMessageContentContains("A test message that contains a forwarded message",myGreeting);
+        assertMessageContentContains("There are two concrete benefits to using XRIs identified",forwardedMsg);
+        assertMessageContentContains("This SF.net email is sponsored by: Splunk Inc.",sfAd);
+        assertMessageContentContains("Aperture-devel mailing list",sfSig); 
+        assertReferencedEmails(forwardedMsg, NMO.references, "<46AA316B.40604@dfki.de>",
+            "<21635b740707300447w71553199j7e14e44f47727f37@mail.gmail.com>");
+        assertReferencedEmails(forwardedMsg, NMO.inReplyTo,
+            "<21635b740707300447w71553199j7e14e44f47727f37@mail.gmail.com>");
+        validate(myGreeting);
+    }
+    
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////// BASIC PLUMBING /////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     private void testSenderAndReceiver(Model model, URI emailUri, String senderName, String senderEmail,
             String receiverName, String receiverEmail) {
         Resource sender = findSingleObjectResource(model, emailUri, NMO.from);
@@ -283,6 +354,31 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         DataObjectFactory fac = new DataObjectFactory(msg,containerFactory,null,null,
             new URIImpl("uri:dummymailuri:" + resourceName), null);
         return fac;
+    }
+    
+    private void assertMessageId(String id, DataObject obj) {
+        assertEquals(id, findSingleObjectNode(obj.getMetadata().getModel(), obj.getID(), NMO.messageId)
+                .asLiteral().getValue());
+    }
+    
+    private void assertMessageContentContains(String string, DataObject obj) {
+        assertTrue(obj.getMetadata().getString(NMO.plainTextMessageContent).contains(string));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void assertReferencedEmails(DataObject object, URI prop, String ... ids) {
+        Set<String> referencedIdsSet = new TreeSet<String>();
+        referencedIdsSet.addAll(Arrays.asList(ids));
+        Collection<Node> nodes = object.getMetadata().getAll(prop);
+        assertEquals(referencedIdsSet.size(), nodes.size());
+        Model model = object.getMetadata().getModel();
+        for (Node node : nodes) {
+            Resource res = node.asResource();
+            assertSingleValueProperty(model, res, RDF.type, NMO.Email);
+            String value = findSingleObjectNode(model, res, NMO.messageId).asLiteral().getValue();
+            assertTrue(referencedIdsSet.remove(value));
+        }
+        assertTrue(referencedIdsSet.isEmpty());
     }
 }
 

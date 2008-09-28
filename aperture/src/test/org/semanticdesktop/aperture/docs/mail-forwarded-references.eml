@@ -1,0 +1,1028 @@
+X-Mozilla-Status: 0000
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+FCC: mailbox://nobody@Local%20Folders/Sent
+X-Identity-Key: id2
+Message-ID: <48DFA882.5010502@poczta.onet.pl>
+Date: Sun, 28 Sep 2008 17:53:38 +0200
+From: =?UTF-8?B?QW50b25pIE15xYJrYQ==?= <antoni_mylka@poczta.onet.pl>
+X-Mozilla-Draft-Info: internal/draft; vcard=0; receipt=0; uuencode=0
+User-Agent: Thunderbird 2.0.0.17 (Windows/20080914)
+MIME-Version: 1.0
+To: aperture-devel <aperture-devel@lists.sourceforge.net>
+Subject: [Fwd: Re: [Aperture-devel] [nepomuk] a need for a URI scheme for
+ desktop resources, the "semdesk" uri scheme RFC?]
+Content-Type: multipart/mixed;
+ boundary="------------020206010707020705020707"
+
+This is a multi-part message in MIME format.
+--------------020206010707020705020707
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+
+A test message that contains a forwarded message. The forwarded message 
+references other messages. The extracted rdf should contain all this 
+information.
+
+Antoni
+
+--------------020206010707020705020707
+Content-Type: message/rfc822;
+ name="Re: [Aperture-devel] [nepomuk] a need for a URI scheme for desktop resources,the \"semdesk\" uri scheme RFC?.eml"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename*0="Re: [Aperture-devel] [nepomuk] a need for a URI scheme for d";
+ filename*1="esktop resources, the \"semdesk\" uri scheme RFC?.eml"
+
+X-Account-Key: account3
+X-Mozilla-Keys:                                                                                 
+Received: from lists-outbound.sourceforge.net ([66.35.250.225]:6378 "EHLO
+	lists-outbound.sourceforge.net") by ps23.test.onet.pl with ESMTP
+	id <S4830605AbXG3Mw3>; Mon, 30 Jul 2007 14:52:29 +0200
+Received: from sc8-sf-list2-new.sourceforge.net (sc8-sf-list2-new-b.sourceforge.net [10.3.1.94])
+	by sc8-sf-spam2.sourceforge.net (Postfix) with ESMTP
+	id 1379B1271D; Mon, 30 Jul 2007 05:52:26 -0700 (PDT)
+Received: from sc8-sf-mx2-b.sourceforge.net ([10.3.1.92]
+	helo=mail.sourceforge.net)
+	by sc8-sf-list2-new.sourceforge.net with esmtp (Exim 4.43)
+	id 1IFUjU-00016w-0T for aperture-devel@lists.sourceforge.net;
+	Mon, 30 Jul 2007 05:52:20 -0700
+Received: from mailgw1.uni-kl.de ([131.246.120.220])
+	by mail.sourceforge.net with esmtps (TLSv1:AES256-SHA:256)
+	(Exim 4.44) id 1IFUjU-0005xG-MH
+	for aperture-devel@lists.sourceforge.net;
+	Mon, 30 Jul 2007 05:52:24 -0700
+Received: from dfki-1002.dfki.uni-kl.de (dfki-1002.dfki.uni-kl.de
+	[131.246.195.2])
+	by mailgw1.uni-kl.de (8.13.8/8.13.8/Debian-3) with ESMTP id
+	l6UCq89Z009691; Mon, 30 Jul 2007 14:52:08 +0200
+Received: from serv-4100.kl.dfki.de (serv-4100.kl.dfki.de [192.168.41.180])
+	by dfki-1002.dfki.uni-kl.de (8.13.8+Sun/8.11.4) with ESMTP id
+	l6UCoija025119; Mon, 30 Jul 2007 14:50:44 +0200 (CEST)
+Received: from [192.168.41.37] (port-4137.kl.dfki.de [192.168.41.37])
+	by serv-4100.kl.dfki.de (8.13.8+Sun/8.13.8) with ESMTP id
+	l6UCqD2W007034; Mon, 30 Jul 2007 14:52:13 +0200 (CEST)
+Message-ID: <46ADDEF5.6080504@dfki.de>
+Date:	Mon, 30 Jul 2007 14:52:05 +0200
+From:	Leo Sauermann <leo.sauermann@dfki.de>
+Organization: DFKI GmbH
+User-Agent: Thunderbird 1.5.0.12 (Windows/20070509)
+MIME-Version: 1.0
+To:	Mikhail Kotelnikov <mikhail.kotelnikov@gmail.com>
+References: <46AA316B.40604@dfki.de>
+	<21635b740707300447w71553199j7e14e44f47727f37@mail.gmail.com>
+In-Reply-To: <21635b740707300447w71553199j7e14e44f47727f37@mail.gmail.com>
+X-Spam-Score: 0.5 (/)
+X-Spam-Report: Spam Filtering performed by sourceforge.net.
+	See http://spamassassin.org/tag/ for more details.
+	Report problems to
+	http://sf.net/tracker/?func=add&group_id=1&atid=200001
+	0.0 HTML_MESSAGE           BODY: HTML included in message
+	0.5 HTML_20_30             BODY: Message is 20% to 30% HTML
+Cc:	=?ISO-8859-1?Q?Sebastian_Tr=FCg?= <strueg@mandriva.com>,
+	Antoni Mylka <antoni.mylka@gmail.com>,
+	Aperture Developers <aperture-devel@lists.sourceforge.net>,
+	NEPOMUK Mailinglist <nepomuk@nepomuk.semanticdesktop.org>
+Subject: Re: [Aperture-devel] [nepomuk] a need for a URI scheme for desktop
+ resources, the "semdesk" uri scheme RFC?
+X-BeenThere: aperture-devel@lists.sourceforge.net
+X-Mailman-Version: 2.1.8
+Precedence: list
+List-Id: <aperture-devel.lists.sourceforge.net>
+List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/aperture-devel>, 
+	<mailto:aperture-devel-request@lists.sourceforge.net?subject=unsubscribe>
+List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=aperture-devel>
+List-Post: <mailto:aperture-devel@lists.sourceforge.net>
+List-Help: <mailto:aperture-devel-request@lists.sourceforge.net?subject=help>
+List-Subscribe:	<https://lists.sourceforge.net/lists/listinfo/aperture-devel>, 
+	<mailto:aperture-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: multipart/mixed; boundary="===============0526903546=="
+Sender:	aperture-devel-bounces@lists.sourceforge.net
+Errors-To: aperture-devel-bounces@lists.sourceforge.net
+X-OnetAntySpam: NIE, to nie jest SPAM
+X-OrigFrom: aperture-devel-bounces@lists.sourceforge.net
+X-ZA0: unknown (-1,0)
+
+This is a multi-part message in MIME format.
+--===============0526903546==
+Content-Type: multipart/alternative;
+	boundary="------------030604030803010005020107"
+
+This is a multi-part message in MIME format.
+--------------030604030803010005020107
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Hi Mikhail,
+
+the original question I need feedback on (extended)
+* if there is another standardized way to solve this - how does KDE
+solve it?
+* How did microsoft plan to do it with WinFS? any experience?
+* would you like to join the task-force TF-Ont-Id to work on this?
+* Do you think we should develop this as Nepomuk standard or a W3C standard?
+
+
+
+(now the XRI side-track:)
+
+I think we need a desktop scheme, not a web-scheme, we need a 
+non-HTTP-BASED uri scheme, because on the desktop you usually don't have 
+a HTTP service running, and  http has some issues when used on the 
+desktop (arguments below in original post)
+
+I have looked at XRI last year, while writing "Cool URIs for the 
+Semantic Web" and I share the opinion of Thompson and Orchard about XRI 
+(a draft):
+http://www.w3.org/2001/tag/doc/URNsAndRegistries-50
+
+"We have shown that |http:| identifiers for XRIs can achieve the goals 
+of XRI with substation benefits. The XRI goals of persistent identifiers 
+and location independence are already available with |http:| 
+identifiers. There are two concrete benefits to using XRIs identified in 
+the previous analysis: that users cannot waste time by erroneously 
+dereferencing namespace names that do not have namespace documents, and 
+that an extra HTTP GET request is avoided when documents move. The XRI 
+identifier solution's downsides are adding a new identifier scheme with 
+the software and human costs and seemingly mandatory increased network 
+costs ( our example shows 2 HTTP GETs instead of 1). Given these costs 
+and benefits, deploying a new registrar, resolution mechanism and 
+related software to layer on top of existing web functionality is not 
+justified*.*"
+
+basically, XRI is adding complexity to HTTP uris.
+
+And this also counts for most other invented URI schemes, refer to  
+"URNsAndRegistries-50" for good arguments.
+I add a note into the RFC draft in our SVN that we don't use XRI because 
+of this.
+
+thanks for the pointers,
+this question will pop up again,
+
+Leo
+
+
+It was Mikhail Kotelnikov who said at the right time 30.07.2007 13:47 
+the following words:
+> Hi!
+>
+> Please look into the XRI standard. "XRI open standards 
+> <http://www.oasis-open.org/committees/xri> developed at OASIS 
+> <http://www.oasis-open.org/> by: Visa International, The Boeing 
+> Company, AMD, Nomura Research Institute, NeuStar, AmSoft, Booz Allen 
+> Hamilton, Epok, PlaNetwork, Cordance..."
+> This  standard allows you to uniquely identify resources (XRI), to 
+> create corresponding names (inames) and resolve these names 
+> afterwards. Please note that this is ALREADY a working standard, there 
+> are already working implementations for that, there is already 
+> integration with Yadis/OpenID and so on.
+> Some (random) references:
+>
+>     * http://www.xdi.org/ - "XDI.ORG <http://XDI.ORG> is an
+>       international non-profit public trust organization governing
+>       open public XRI and XDI infrastructure. XRI (Extensible Resource
+>       Identifier) <http://en.wikipedia.org/wiki/XRI> and XDI (XRI Data
+>       Interchange) <http://en.wikipedia.org/wiki/XDI> are open
+>       standards for digital identity addressing and trusted data
+>       sharing developed at OASIS <http://www.oasis-open.org/>, the
+>       leading XML e-business standards body. XRI and XDI
+>       infrastructure enables individuals and organizations to
+>       establish persistent, privacy-protected Internet identities and
+>       form long-term, trusted peer-to-peer data sharing relationships."
+>     * http://www.inames.net/
+>     * http://dev.inames.net/wiki/OpenID_Discovery_Proxy_Service
+>       <http://dev.inames.net/wiki/OpenID_Discovery_Proxy_Service> -
+>       OpenID Discovery Proxy Service (OpenId and inames integration)
+>     * http://www.oasis-open.org/committees/download.php/17293 -
+>       Extensible Resource Identifier (XRI) Resolution V2.0 - "This
+>       document defines both generic and trusted HTTP(S)-based
+>       resolution protocols for Extensible Resource Identifiers (XRIs)
+>       as defined by Extensible Resource Identifier (XRI) Syntax V2.0
+>       [XRISyntax] or higher."
+>     * http://www.digitalidworld.com/modules.php?op=modload&name=News&file=article&sid=212&mode=chrono&order=0
+>       <http://www.digitalidworld.com/modules.php?op=modload&name=News&file=article&sid=212&mode=chrono&order=0>
+>       - XDI: Weaving the "Dataweb"
+>     * http://yadis.org/ - Yadis/OpenId
+>
+> Please note that I don't propose to use all this stuff as is, but it 
+> would be definitely interesting to understand how it works and see if 
+> it CAN be used for our goals or not. From my personal point of view, 
+> if Nepomuk will develop something new in this field then we should (at 
+> least) clearly reference existing standards and mark why they cannot 
+> be used in our case.
+>
+> Best regards,
+> Mikhail
+>
+>
+>
+> On 7/27/07, *Leo Sauermann* <leo.sauermann@dfki.de 
+> <mailto:leo.sauermann@dfki.de>> wrote:
+>
+>     Hi Nepomuk, Aperture,
+>
+>     On the semantic desktop, we need URIs to identify and locate, and
+>     possibly retrieve RDF information, about every resource on the
+>     desktop.
+>     For the "file" uri scheme, this works perfectly, but there are
+>     resources
+>     stored in databases, often managed by applications, that are, even
+>     using
+>     the dirtiest hacks, not accessible using an existing URI scheme.
+>
+>     two examples to illustrate the problem:
+>     * identifying e-mails stored in the desktop e-mail client
+>     * identifying contacts, appointments, todos from the local PIM
+>     application
+>
+>     although each application may expose a way to identify these resources
+>     uniquely, this is neither standardized nor captured by the file://
+>     uri
+>     scheme.
+>
+>     We have repeatedly tried to come up with hacks to identify desktop
+>     resources, and have discussed this longer [5] but now, given the
+>     pressure of nepomuks standardization effort, we should not
+>     continue with
+>     a hack but standardize and recommend our practice[4] in an RFC at
+>     IETF [3].
+>
+>     This may seem a big effort, but I think it could be an outcome of our
+>     current work that lasts a little longer. And its concise, the scheme
+>     could start with identification, and leaves retrieval and opening the
+>     resource to the operating system.
+>
+>     Nepomuk people have asked about desktop URIs, I talked with Antoni
+>     about
+>     this for longer, and have been pondering on this since 4 years
+>     myself.
+>     Its time now to start a broader discussion. Otherwise, we may end up
+>     with a hack that is crappily implemented for nepomuk and does not
+>     last.
+>     For this, I have updated the [LocalId] wiki page in the internal
+>     Nepomuk
+>     wiki and started writing an example RFC. [2]
+>
+>     please give feedback:
+>     * if there is another standardized way to solve this - how does KDE
+>     solve it?
+>     * would you like to join the task-force TF-Ont-Id to work on this?
+>
+>     Feedback that is not helpful:
+>     * "please use http URIs" - this is not possible, because desktops have
+>     changing DNS names, so the URI will change once you switch
+>     network. And
+>     HTTP uris are not retrievable for desktop pcs. Even with the hacks we
+>     thought of, it is not clean.
+>     and the HTTP port is not fixed, for each user there may be a different
+>     port. Also,
+>     opening an http server on the desktop may be a security risk in many
+>     environments. And, there is the file:// uri scheme
+>     standardized by IETF. http is not the silver bullet on the desktop, I
+>     have to admit.
+>
+>     I also think that creating this standard within Nepomuk, and later
+>     asking W3C or OASIS to bless it will not work. This discussion should
+>     rather be hosted on the W3C semantic web deployment WG in the first
+>     place. This would give the operating system developers and the desktop
+>     search engine people at W3C (apple, microsoft, google are W3 members)
+>     the chance to work on it, and if they work on it, they may even
+>     implement it.
+>
+>     With NIE and NRL we have the problem that its "our standard" and
+>     W3C-frenzy people may stick to the vCard/iCal/exif work done by W3C
+>     "just because its W3C". So I would rather host this discussion on a
+>     broader level.
+>
+>     I am well aware that this is an ugly job and will take a year to
+>     get to
+>     somewhere, but - we have a year - and I am really eager to get
+>     this done
+>     right.
+>
+>     best
+>     Leo
+>
+>     [LocalId]
+>     http://nepomuk.semanticdesktop.org/xwiki/bin/view/Main/LocalId
+>     [2]
+>     http://svn.nepomuk.semanticdesktop.org/repos/trunk/paper/2007/semanticdesktop_urischeme/RFC_semdesk_urischeme.txt
+>
+>     because this is only accessible for nepomukians, here is the plaintext
+>     of my humble start:
+>     [3] http://www.iana.org/assignments/uri-schemes.html
+>     [4] http://tools.ietf.org/html/rfc4395#page-9
+>     [5]
+>     http://sourceforge.net/mailarchive/forum.php?thread_name=46766527.70907%40dfki.uni-kl.de&forum_name=aperture-devel
+>     <http://sourceforge.net/mailarchive/forum.php?thread_name=46766527.70907%40dfki.uni-kl.de&forum_name=aperture-devel>
+>
+>     Network Working Group
+>     Request for Comments:
+>     Category:
+>
+>
+>
+>                         The Semantic Desktop URI scheme
+>
+>     Status of this Memo
+>
+>        This document specifies an Internet standards track protocol
+>     for the
+>        Internet community, and requests discussion and suggestions for
+>        improvements.  Please refer to the current edition of the "Internet
+>        Official Protocol Standards" (STD 1) for the standardization state
+>        and status of this protocol.  Distribution of this memo is
+>     unlimited.
+>
+>     Abstract
+>
+>        This document specifies defines the "semdesk" Uniform Resource
+>     Identifier (URI)
+>        scheme for desktop resources, used to
+>        identify resources on desktop operating systems within RDF.
+>        The scheme is used to identify resources within databases or
+>     desktop
+>        applications, that are not captured by file:// ([RFC1738])
+>        Ways to retrieve RDF representations via a desktop resolving
+>     protocol are suggested.
+>
+>
+>     Introduction
+>     we cannot use RFC1738 because they are not capture there, we
+>     cannot use "info:"
+>     http://www.rfc-editor.org/rfc/rfc4452.txt because they are not to
+>     be registered,
+>     and we cannot use "urn:" http://www.rfc-editor.org/rfc/rfc2141.txt
+>     because our
+>     identifiers are location dependent.
+>
+>     We cannot use HTTP URIs, because desktops have
+>     changing DNS names, so the URI will change once you switch
+>     network. And
+>     HTTP uris are not retrievable for desktop pcs. Even with the hacks we
+>     thought of, it is not clean. The HTTP port for a desktop may be
+>     blocked
+>     or multiple users on one machine may collide ports.
+>     Also, opening an http server on the desktop may be a security risk
+>     in #
+>     many environments. And, there is the file:// uri scheme
+>     standardized by IETF that shows how to do it.
+>     http is not the silver bullet on the desktop, I have to admit.
+>
+>
+>     1. The "semdesk" URI scheme
+>     Semantic Desktop URIs have several parts, including an application
+>     specific part,
+>     hostname information and a path within the application's namespace.
+>     The name "semdesk" stems from the requirement to identify
+>     resources for
+>     further annotations using the RDF technology. On desktops that are not
+>     aware of annotations or semantic databases, a way of uniquely
+>     identifying
+>     resources is also handy, thus it is not required to run RDF
+>     applications
+>     to use the semdesk URI scheme.
+>
+>     The scheme is intended to be used by desktop search engines to
+>     identify
+>     resources from desktop applications. This allows resources to be
+>     identified independent of implementation.
+>
+>     This RFC uses a similar approach to URIs as the HTTP RFC:
+>
+>        URIs in HTTP can be represented in absolute form or relative to
+>     some
+>        known base URI [11], depending upon the context of their use.
+>     The two
+>        forms are differentiated by the fact that absolute URIs always
+>     begin
+>        with a scheme name followed by a colon. For definitive
+>     information on
+>        URL syntax and semantics, see "Uniform Resource Identifiers (URI):
+>        Generic Syntax and Semantics," RFC 2396 [42] (which replaces RFCs
+>        1738 [4] and RFC 1808 [11]). This specification adopts the
+>        definitions of "URI-reference", "absoluteURI", "relativeURI",
+>     "port",
+>        "host","abs_path", "rel_path", and "authority" from that
+>        specification.
+>
+>     The elements of a semdesk uri are:
+>
+>     semdesk://[host]/[application]/[abs_path]
+>
+>     [host] identifies the desktop computer using the DNS name or the
+>     IP address.
+>     This part is optional, as most personal computers have changing
+>     names and
+>     users are not aware of their name, also when users switch their
+>     network the
+>     IP address or hostname may change (especially with dialup connections)
+>     Use the [host] part only when the hostname is a registered DNS
+>     name and
+>     statically configured for the desktop computer.
+>
+>     [application] - a unique string identifying the application that
+>     manages
+>     the resource. only alphanumeric characters allowed, no punctuation
+>     or other
+>     delimiters. An Informal registry of application names is hosted at
+>     http://www.semanticdesktop.org <http://www.semanticdesktop.org>.
+>     It is possible to use non-standard
+>     application identifiers.
+>
+>     registered application identifers are (experimental, under
+>     frequent change):
+>     * kde - items within the K Desktop environment, KAddressBook, etc
+>     * msoutlook - resources within microsoft outlook
+>     * email - identifying e-mails within local desktop e-mail clients.
+>       Each client has to register at the operating system, one scheme
+>     is used
+>
+>     [abs_path] the Path identifies the resource uniquely within the
+>     application.
+>     The same restrictions apply as within RFC 2396 and RFC 2616.
+>
+>     1.1 Examples
+>
+>     For msoutlook:
+>     semdesk:///msoutlook/item/00000000ECD4B99358B9814B9DAFE2255CD8AE9A44B42F00
+>     semdesk:///msoutlook/folder/00000000ECD4B99358B9814B9DAFE2255CD8AE9A44B42F00
+>
+>
+>     for e-mails:
+>     The emails can either be identified by their message-id, their folder,
+>     or their standardized IMAP URI.
+>
+>     semdesk:///email/messageid:23979723@example.com
+>     <mailto:semdesk:///email/messageid:23979723@example.com>
+>     semdesk:///email/imap://joe@example.com/INBOX;45
+>     <http://semdesk:///email/imap://joe@example.com/INBOX;45>
+>
+>
+>     2 Retrieval and opening of resources
+>
+>     Operating systems or services running on the OS have to provide
+>     ways to
+>     retrieve a description of the identified resource.
+>     The retrieval method is similar to HTTP-GET.
+>     We cannot propose a definitive standard, as each operating system
+>     has different
+>     approaches, but the protocol should somehow go like this:
+>
+>     GET semdesk:///email/messageid:23979723@example.com
+>     <mailto:semdesk:///email/messageid:23979723@example.com>
+>     accept: application/rdf+xml
+>
+>     Implementations use existing protocols (operating system calls, DLLs,
+>     DBUS messages, etc) to
+>     provide this functionality, but are platform dependent.
+>
+>     An operating system service may implement methods to open resources
+>     identified
+>     using the semdesk URI scheme:
+>
+>     START semdesk:///email/messageid:23979723@example.com
+>     <mailto:semdesk:///email/messageid:23979723@example.com>
+>
+>     This call will invoke a desktop application to show the identified
+>     resource to the user
+>
+>
+>     --
+>     ____________________________________________________
+>     DI Leo Sauermann       http://www.dfki.de/~sauermann
+>     <http://www.dfki.de/%7Esauermann>
+>
+>     Deutsches Forschungszentrum fuer
+>     Kuenstliche Intelligenz DFKI GmbH
+>     Trippstadter Strasse 122
+>     P.O. Box 2080           Fon:   +49 631 20575-116
+>     D-67663 Kaiserslautern  Fax:   +49 631 20575-102
+>     Germany                 Mail:  leo.sauermann@dfki.de
+>     <mailto:leo.sauermann@dfki.de>
+>
+>     Geschaeftsfuehrung:
+>     Prof.Dr.Dr.h.c.mult. Wolfgang Wahlster (Vorsitzender)
+>     Dr. Walter Olthoff
+>     Vorsitzender des Aufsichtsrats:
+>     Prof. Dr. h.c. Hans A. Aukes
+>     Amtsgericht Kaiserslautern, HRB 2313
+>     ____________________________________________________
+>
+>
+
+
+-- 
+____________________________________________________
+DI Leo Sauermann       http://www.dfki.de/~sauermann 
+
+Deutsches Forschungszentrum fuer 
+Kuenstliche Intelligenz DFKI GmbH
+Trippstadter Strasse 122
+P.O. Box 2080           Fon:   +49 631 20575-116
+D-67663 Kaiserslautern  Fax:   +49 631 20575-102
+Germany                 Mail:  leo.sauermann@dfki.de
+
+Geschaeftsfuehrung:
+Prof.Dr.Dr.h.c.mult. Wolfgang Wahlster (Vorsitzender)
+Dr. Walter Olthoff
+Vorsitzender des Aufsichtsrats:
+Prof. Dr. h.c. Hans A. Aukes
+Amtsgericht Kaiserslautern, HRB 2313
+____________________________________________________
+
+
+--------------030604030803010005020107
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+Hi Mikhail,<br>
+<br>
+the original question I need feedback on (extended)<br>
+* if there is another standardized way to solve this - how does KDE<br>
+solve it?<br>
+* How did microsoft plan to do it with WinFS? any experience?<br>
+* would you like to join the task-force TF-Ont-Id to work on this?
+<br>
+* Do you think we should develop this as Nepomuk standard or a W3C
+standard?<br>
+<br>
+<br>
+<br>
+(now the XRI side-track:) <br>
+<br>
+I think we need a desktop scheme, not a web-scheme, we need a
+non-HTTP-BASED uri scheme, because on the desktop you usually don't
+have a HTTP service running, and&nbsp; http has some issues when used on the
+desktop (arguments below in original post)<br>
+<br>
+I have looked at XRI last year, while writing "Cool URIs for the
+Semantic Web" and I share the opinion of Thompson and Orchard about XRI
+(a draft):<br>
+<a class="moz-txt-link-freetext" href="http://www.w3.org/2001/tag/doc/URNsAndRegistries-50">http://www.w3.org/2001/tag/doc/URNsAndRegistries-50</a><br>
+<br>
+"We have shown that <code>http:</code> identifiers for XRIs can
+achieve
+the goals of XRI with substation benefits. The XRI goals of persistent
+identifiers and location independence are already available with <code>http:</code>
+identifiers. There are two concrete benefits to using XRIs identified
+in the previous analysis: that users cannot waste time by erroneously
+dereferencing namespace names that do not have namespace documents, and
+that an extra HTTP GET request is avoided when documents move. The XRI
+identifier solution's downsides are adding a new identifier scheme with
+the software and human costs and seemingly mandatory increased network
+costs ( our example shows 2 HTTP GETs instead of 1). Given these costs
+and benefits, deploying a new registrar, resolution mechanism and
+related software to layer on top of existing web functionality is not
+justified<b>.</b>"<br>
+<br>
+basically, XRI is adding complexity to HTTP uris.<br>
+<br>
+And this also counts for most other invented URI schemes, refer to&nbsp;
+"URNsAndRegistries-50" for good arguments. <br>
+I add a note into the RFC draft in our SVN that we don't use XRI
+because of this.<br>
+<br>
+thanks for the pointers,<br>
+this question will pop up again,<br>
+<br>
+Leo<br>
+<br>
+<br>
+It was Mikhail Kotelnikov who said at the right time 30.07.2007 13:47
+the following words:
+<blockquote
+ cite="mid21635b740707300447w71553199j7e14e44f47727f37@mail.gmail.com"
+ type="cite">Hi!<br>
+  <br>
+Please look into the XRI standard. "<a
+ href="http://www.oasis-open.org/committees/xri">XRI open standards</a>
+developed at <a href="http://www.oasis-open.org/">OASIS</a> by: Visa
+International, The Boeing Company, AMD, Nomura Research Institute,
+NeuStar, AmSoft, Booz Allen Hamilton, Epok, PlaNetwork, Cordance..."
+  <br>
+This&nbsp; standard allows you to uniquely identify resources (XRI), to
+create corresponding names (inames) and resolve these names afterwards.
+Please note that this is ALREADY a working standard, there are already
+working implementations for that, there is already integration with
+Yadis/OpenID and so on.
+  <br>
+Some (random) references:<br>
+  <ul>
+    <li><a href="http://www.xdi.org/">http://www.xdi.org/</a> - "<a
+ href="http://XDI.ORG">XDI.ORG</a> is an international non-profit
+public trust organization governing open public XRI and XDI
+infrastructure. <a href="http://en.wikipedia.org/wiki/XRI">XRI
+(Extensible Resource Identifier)</a> and <a
+ href="http://en.wikipedia.org/wiki/XDI">XDI (XRI Data Interchange)</a>
+are open standards for digital identity addressing and trusted data
+sharing developed at <a href="http://www.oasis-open.org/">OASIS</a>,
+the leading XML e-business standards body.
+XRI and XDI infrastructure enables individuals and organizations to
+establish persistent, privacy-protected Internet identities and form
+long-term, trusted peer-to-peer data sharing relationships."</li>
+    <li><a href="http://www.inames.net/">http://www.inames.net/</a></li>
+    <li><a
+ href="http://dev.inames.net/wiki/OpenID_Discovery_Proxy_Service">http://dev.inames.net/wiki/OpenID_Discovery_Proxy_Service
+      </a> -<span> OpenID Discovery Proxy Service (OpenId and inames
+integration)</span></li>
+    <li><span><a
+ href="http://www.oasis-open.org/committees/download.php/17293">http://www.oasis-open.org/committees/download.php/17293</a>
+- Extensible Resource Identifier (XRI) Resolution V2.0 - "This document
+defines both generic and trusted HTTP(S)-based resolution protocols for
+Extensible Resource Identifiers (XRIs) as defined by Extensible
+Resource Identifier (XRI) Syntax V2.0 [XRISyntax] or higher."</span></li>
+    <li><span><a
+ href="http://www.digitalidworld.com/modules.php?op=modload&amp;name=News&amp;file=article&amp;sid=212&amp;mode=chrono&amp;order=0">http://www.digitalidworld.com/modules.php?op=modload&amp;name=News&amp;file=article&amp;sid=212&amp;mode=chrono&amp;order=0
+      </a> - </span>XDI: Weaving the "Dataweb"</li>
+    <li><span><a href="http://yadis.org/">http://yadis.org/</a> -
+Yadis/OpenId<br>
+      </span></li>
+  </ul>
+Please note that I don't propose to use all this stuff as is, but it
+would be definitely
+interesting to understand how it works and see if
+it CAN be used for our goals or not. From my personal point of view, if
+Nepomuk will develop
+something new in this field then we should (at least) clearly reference
+existing standards and mark why they cannot be used in our case.<br>
+  <br>
+Best regards,<br>
+Mikhail<br>
+  <br>
+  <br>
+  <br>
+  <div><span class="gmail_quote">On 7/27/07, <b
+ class="gmail_sendername">Leo Sauermann</b> &lt;<a
+ href="mailto:leo.sauermann@dfki.de">leo.sauermann@dfki.de</a>&gt;
+wrote:</span>
+  <blockquote class="gmail_quote"
+ style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Hi
+Nepomuk, Aperture,<br>
+    <br>
+On the semantic desktop, we need URIs to identify and locate, and<br>
+possibly retrieve RDF information, about every resource on the desktop.<br>
+For the "file" uri scheme, this works perfectly, but there are
+resources
+    <br>
+stored in databases, often managed by applications, that are, even using<br>
+the dirtiest hacks, not accessible using an existing URI scheme.<br>
+    <br>
+two examples to illustrate the problem:<br>
+* identifying e-mails stored in the desktop e-mail client
+    <br>
+* identifying contacts, appointments, todos from the local PIM
+application<br>
+    <br>
+although each application may expose a way to identify these resources<br>
+uniquely, this is neither standardized nor captured by the <a class="moz-txt-link-freetext" href="file://">file://</a> uri
+    <br>
+scheme.<br>
+    <br>
+We have repeatedly tried to come up with hacks to identify desktop<br>
+resources, and have discussed this longer [5] but now, given the<br>
+pressure of nepomuks standardization effort, we should not continue
+with
+    <br>
+a hack but standardize and recommend our practice[4] in an RFC at IETF
+[3].<br>
+    <br>
+This may seem a big effort, but I think it could be an outcome of our<br>
+current work that lasts a little longer. And its concise, the scheme
+    <br>
+could start with identification, and leaves retrieval and opening the<br>
+resource to the operating system.<br>
+    <br>
+Nepomuk people have asked about desktop URIs, I talked with Antoni about<br>
+this for longer, and have been pondering on this since 4 years myself.
+    <br>
+Its time now to start a broader discussion. Otherwise, we may end up<br>
+with a hack that is crappily implemented for nepomuk and does not last.<br>
+For this, I have updated the [LocalId] wiki page in the internal
+Nepomuk
+    <br>
+wiki and started writing an example RFC. [2]<br>
+    <br>
+please give feedback:<br>
+* if there is another standardized way to solve this - how does KDE<br>
+solve it?<br>
+* would you like to join the task-force TF-Ont-Id to work on this?
+    <br>
+    <br>
+Feedback that is not helpful:<br>
+* "please use http URIs" - this is not possible, because desktops have<br>
+changing DNS names, so the URI will change once you switch network. And<br>
+HTTP uris are not retrievable for desktop pcs. Even with the hacks we
+    <br>
+thought of, it is not clean.<br>
+and the HTTP port is not fixed, for each user there may be a different<br>
+port. Also,<br>
+opening an http server on the desktop may be a security risk in many<br>
+environments. And, there is the <a class="moz-txt-link-freetext" href="file://">file://</a> uri scheme
+    <br>
+standardized by IETF. http is not the silver bullet on the desktop, I<br>
+have to admit.<br>
+    <br>
+I also think that creating this standard within Nepomuk, and later<br>
+asking W3C or OASIS to bless it will not work. This discussion should
+    <br>
+rather be hosted on the W3C semantic web deployment WG in the first<br>
+place. This would give the operating system developers and the desktop<br>
+search engine people at W3C (apple, microsoft, google are W3 members)<br>
+the chance to work on it, and if they work on it, they may even<br>
+implement it.<br>
+    <br>
+With NIE and NRL we have the problem that its "our standard" and<br>
+W3C-frenzy people may stick to the vCard/iCal/exif work done by W3C
+    <br>
+"just because its W3C". So I would rather host this discussion on a<br>
+broader level.<br>
+    <br>
+I am well aware that this is an ugly job and will take a year to get to<br>
+somewhere, but - we have a year - and I am really eager to get this
+done
+    <br>
+right.<br>
+    <br>
+best<br>
+Leo<br>
+    <br>
+[LocalId] <a
+ href="http://nepomuk.semanticdesktop.org/xwiki/bin/view/Main/LocalId">http://nepomuk.semanticdesktop.org/xwiki/bin/view/Main/LocalId</a><br>
+[2]<br>
+    <a
+ href="http://svn.nepomuk.semanticdesktop.org/repos/trunk/paper/2007/semanticdesktop_urischeme/RFC_semdesk_urischeme.txt">http://svn.nepomuk.semanticdesktop.org/repos/trunk/paper/2007/semanticdesktop_urischeme/RFC_semdesk_urischeme.txt</a><br>
+    <br>
+because this is only accessible for nepomukians, here is the plaintext<br>
+of my humble start:<br>
+[3] <a href="http://www.iana.org/assignments/uri-schemes.html">http://www.iana.org/assignments/uri-schemes.html</a><br>
+[4] <a href="http://tools.ietf.org/html/rfc4395#page-9">http://tools.ietf.org/html/rfc4395#page-9</a><br>
+[5]<br>
+    <a
+ href="http://sourceforge.net/mailarchive/forum.php?thread_name=46766527.70907%40dfki.uni-kl.de&amp;forum_name=aperture-devel">http://sourceforge.net/mailarchive/forum.php?thread_name=46766527.70907%40dfki.uni-kl.de&amp;forum_name=aperture-devel
+    </a><br>
+    <br>
+Network Working Group<br>
+Request for Comments:<br>
+Category:<br>
+    <br>
+    <br>
+    <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The Semantic Desktop URI scheme<br>
+    <br>
+Status of this Memo<br>
+    <br>
+&nbsp;&nbsp; This document specifies an Internet standards track protocol for the
+    <br>
+&nbsp;&nbsp; Internet community, and requests discussion and suggestions for<br>
+&nbsp;&nbsp; improvements.&nbsp;&nbsp;Please refer to the current edition of the "Internet<br>
+&nbsp;&nbsp; Official Protocol Standards" (STD 1) for the standardization state
+    <br>
+&nbsp;&nbsp; and status of this protocol.&nbsp;&nbsp;Distribution of this memo is unlimited.<br>
+    <br>
+Abstract<br>
+    <br>
+&nbsp;&nbsp; This document specifies defines the "semdesk" Uniform Resource
+Identifier (URI)<br>
+&nbsp;&nbsp; scheme for desktop resources, used to
+    <br>
+&nbsp;&nbsp; identify resources on desktop operating systems within RDF.<br>
+&nbsp;&nbsp; The scheme is used to identify resources within databases or desktop<br>
+&nbsp;&nbsp; applications, that are not captured by <a class="moz-txt-link-freetext" href="file://">file://</a> ([RFC1738])<br>
+&nbsp;&nbsp; Ways to retrieve RDF representations via a desktop resolving
+protocol are suggested.
+    <br>
+    <br>
+    <br>
+Introduction<br>
+we cannot use RFC1738 because they are not capture there, we cannot use
+"info:"<br>
+    <a href="http://www.rfc-editor.org/rfc/rfc4452.txt">http://www.rfc-editor.org/rfc/rfc4452.txt</a>
+because they are not to be registered,
+    <br>
+and we cannot use "urn:" <a
+ href="http://www.rfc-editor.org/rfc/rfc2141.txt">http://www.rfc-editor.org/rfc/rfc2141.txt</a>
+because our<br>
+identifiers are location dependent.<br>
+    <br>
+We cannot use HTTP URIs, because desktops have
+    <br>
+changing DNS names, so the URI will change once you switch network. And<br>
+HTTP uris are not retrievable for desktop pcs. Even with the hacks we<br>
+thought of, it is not clean. The HTTP port for a desktop may be blocked
+    <br>
+or multiple users on one machine may collide ports.<br>
+Also, opening an http server on the desktop may be a security risk in #<br>
+many environments. And, there is the <a class="moz-txt-link-freetext" href="file://">file://</a> uri scheme<br>
+standardized by IETF that shows how to do it.
+    <br>
+http is not the silver bullet on the desktop, I have to admit.<br>
+    <br>
+    <br>
+1. The "semdesk" URI scheme<br>
+Semantic Desktop URIs have several parts, including an application
+specific part,<br>
+hostname information and a path within the application's namespace.
+    <br>
+The name "semdesk" stems from the requirement to identify resources for<br>
+further annotations using the RDF technology. On desktops that are not<br>
+aware of annotations or semantic databases, a way of uniquely
+identifying
+    <br>
+resources is also handy, thus it is not required to run RDF applications<br>
+to use the semdesk URI scheme.<br>
+    <br>
+The scheme is intended to be used by desktop search engines to identify<br>
+resources from desktop applications. This allows resources to be
+    <br>
+identified independent of implementation.<br>
+    <br>
+This RFC uses a similar approach to URIs as the HTTP RFC:<br>
+    <br>
+&nbsp;&nbsp; URIs in HTTP can be represented in absolute form or relative to some<br>
+&nbsp;&nbsp; known base URI [11], depending upon the context of their use. The
+two
+    <br>
+&nbsp;&nbsp; forms are differentiated by the fact that absolute URIs always begin<br>
+&nbsp;&nbsp; with a scheme name followed by a colon. For definitive information on<br>
+&nbsp;&nbsp; URL syntax and semantics, see "Uniform Resource Identifiers (URI):
+    <br>
+&nbsp;&nbsp; Generic Syntax and Semantics," RFC 2396 [42] (which replaces RFCs<br>
+&nbsp;&nbsp; 1738 [4] and RFC 1808 [11]). This specification adopts the<br>
+&nbsp;&nbsp; definitions of "URI-reference", "absoluteURI", "relativeURI",
+"port",
+    <br>
+&nbsp;&nbsp; "host","abs_path", "rel_path", and "authority" from that<br>
+&nbsp;&nbsp; specification.<br>
+    <br>
+The elements of a semdesk uri are:<br>
+    <br>
+semdesk://[host]/[application]/[abs_path]<br>
+    <br>
+[host] identifies the desktop computer using the DNS name or the IP
+address.<br>
+This part is optional, as most personal computers have changing names
+and<br>
+users are not aware of their name, also when users switch their network
+the
+    <br>
+IP address or hostname may change (especially with dialup connections)<br>
+Use the [host] part only when the hostname is a registered DNS name and<br>
+statically configured for the desktop computer.<br>
+    <br>
+[application] - a unique string identifying the application that
+manages
+    <br>
+the resource. only alphanumeric characters allowed, no punctuation or
+other<br>
+delimiters. An Informal registry of application names is hosted at<br>
+    <a href="http://www.semanticdesktop.org">http://www.semanticdesktop.org
+    </a>. It is possible to use non-standard<br>
+application identifiers.<br>
+    <br>
+registered application identifers are (experimental, under frequent
+change):<br>
+* kde - items within the K Desktop environment, KAddressBook, etc
+    <br>
+* msoutlook - resources within microsoft outlook<br>
+* email - identifying e-mails within local desktop e-mail clients.<br>
+&nbsp;&nbsp;Each client has to register at the operating system, one scheme is
+used<br>
+    <br>
+[abs_path] the Path identifies the resource uniquely within the
+application.
+    <br>
+The same restrictions apply as within RFC 2396 and RFC 2616.<br>
+    <br>
+1.1 Examples<br>
+    <br>
+For msoutlook:<br>
+semdesk:///msoutlook/item/00000000ECD4B99358B9814B9DAFE2255CD8AE9A44B42F00<br>
+semdesk:///msoutlook/folder/00000000ECD4B99358B9814B9DAFE2255CD8AE9A44B42F00
+    <br>
+    <br>
+for e-mails:<br>
+The emails can either be identified by their message-id, their folder,<br>
+or their standardized IMAP URI.<br>
+    <br>
+    <a href="mailto:semdesk:///email/messageid:23979723@example.com">semdesk:///email/messageid:23979723@example.com
+    </a><br>
+    <a href="http://semdesk:///email/imap://joe@example.com/INBOX;45">semdesk:///email/imap://joe@example.com/INBOX;45</a><br>
+    <br>
+    <br>
+2 Retrieval and opening of resources<br>
+    <br>
+Operating systems or services running on the OS have to provide ways to
+    <br>
+retrieve a description of the identified resource.<br>
+The retrieval method is similar to HTTP-GET.<br>
+We cannot propose a definitive standard, as each operating system has
+different<br>
+approaches, but the protocol should somehow go like this:
+    <br>
+    <br>
+GET <a href="mailto:semdesk:///email/messageid:23979723@example.com">semdesk:///email/messageid:23979723@example.com</a><br>
+accept: application/rdf+xml<br>
+    <br>
+Implementations use existing protocols (operating system calls, DLLs,
+    <br>
+DBUS messages, etc) to<br>
+provide this functionality, but are platform dependent.<br>
+    <br>
+An operating system service may implement methods to open resources<br>
+identified<br>
+using the semdesk URI scheme:<br>
+    <br>
+START <a href="mailto:semdesk:///email/messageid:23979723@example.com">semdesk:///email/messageid:23979723@example.com</a><br>
+    <br>
+This call will invoke a desktop application to show the identified<br>
+resource to the user<br>
+    <br>
+    <br>
+--<br>
+____________________________________________________<br>
+DI Leo Sauermann&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://www.dfki.de/%7Esauermann">http://www.dfki.de/~sauermann</a><br>
+    <br>
+Deutsches Forschungszentrum fuer<br>
+Kuenstliche Intelligenz DFKI GmbH
+    <br>
+Trippstadter Strasse 122<br>
+P.O. Box 2080&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fon:&nbsp;&nbsp; +49 631 20575-116<br>
+D-67663 Kaiserslautern&nbsp;&nbsp;Fax:&nbsp;&nbsp; +49 631 20575-102<br>
+Germany&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mail:&nbsp;&nbsp;<a href="mailto:leo.sauermann@dfki.de">leo.sauermann@dfki.de
+    </a><br>
+    <br>
+Geschaeftsfuehrung:<br>
+Prof.Dr.Dr.h.c.mult. Wolfgang Wahlster (Vorsitzender)<br>
+Dr. Walter Olthoff<br>
+Vorsitzender des Aufsichtsrats:<br>
+Prof. Dr. h.c. Hans A. Aukes<br>
+Amtsgericht Kaiserslautern, HRB 2313<br>
+____________________________________________________<br>
+    <br>
+  </blockquote>
+  </div>
+  <br>
+</blockquote>
+<br>
+<br>
+<pre class="moz-signature" cols="72">-- 
+____________________________________________________
+DI Leo Sauermann       <a class="moz-txt-link-freetext" href="http://www.dfki.de/~sauermann">http://www.dfki.de/~sauermann</a> 
+
+Deutsches Forschungszentrum fuer 
+Kuenstliche Intelligenz DFKI GmbH
+Trippstadter Strasse 122
+P.O. Box 2080           Fon:   +49 631 20575-116
+D-67663 Kaiserslautern  Fax:   +49 631 20575-102
+Germany                 Mail:  <a class="moz-txt-link-abbreviated" href="mailto:leo.sauermann@dfki.de">leo.sauermann@dfki.de</a>
+
+Geschaeftsfuehrung:
+Prof.Dr.Dr.h.c.mult. Wolfgang Wahlster (Vorsitzender)
+Dr. Walter Olthoff
+Vorsitzender des Aufsichtsrats:
+Prof. Dr. h.c. Hans A. Aukes
+Amtsgericht Kaiserslautern, HRB 2313
+____________________________________________________
+</pre>
+</body>
+</html>
+
+--------------030604030803010005020107--
+
+
+--===============0526903546==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+-------------------------------------------------------------------------
+This SF.net email is sponsored by: Splunk Inc.
+Still grepping through log files to find problems?  Stop.
+Now Search log events and configuration files using AJAX and a browser.
+Download your FREE copy of Splunk now >>  http://get.splunk.com/
+--===============0526903546==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+Aperture-devel mailing list
+Aperture-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/aperture-devel
+
+--===============0526903546==--
+
+
+
+--------------020206010707020705020707--
+

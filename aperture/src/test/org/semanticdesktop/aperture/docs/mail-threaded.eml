@@ -1,0 +1,342 @@
+From - Mon Oct  9 18:08:19 2006
+X-Account-Key: account3
+X-UIDL: 0000ed56034ba735
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 10000000
+Received: from lists-outbound.sourceforge.net ([66.35.250.225]:54678 "EHLO
+	lists-outbound.sourceforge.net") by ps10.test.onet.pl with ESMTP
+	id <S100827472AbWJIPKv>; Mon, 9 Oct 2006 17:10:51 +0200
+Received: from sc8-sf-list2-new.sourceforge.net (unknown [10.3.1.94])
+	by sc8-sf-spam2.sourceforge.net (Postfix) with ESMTP
+	id 67CA616074; Mon,  9 Oct 2006 08:10:49 -0700 (PDT)
+Received: from sc8-sf-mx2-b.sourceforge.net ([10.3.1.92]
+	helo=mail.sourceforge.net)
+	by sc8-sf-list2-new.sourceforge.net with esmtp (Exim 4.43)
+	id 1GWwmE-000847-Fb for aperture-devel@lists.sourceforge.net;
+	Mon, 09 Oct 2006 08:10:46 -0700
+Received: from mailgate1.uni-kl.de ([131.246.120.5])
+	by mail.sourceforge.net with esmtps (TLSv1:AES256-SHA:256)
+	(Exim 4.44) id 1GWwmE-0003Jz-6p
+	for aperture-devel@lists.sourceforge.net;
+	Mon, 09 Oct 2006 08:10:47 -0700
+Received: from dfki-2203.dfki.uni-kl.de (pc-210.dfki.uni-kl.de
+	[131.246.241.70])
+	by mailgate1.uni-kl.de (8.13.4/8.13.4/Debian-3sarge3) with ESMTP id
+	k99FARWR012281; Mon, 9 Oct 2006 17:10:27 +0200
+Received: from serv-3100.kl.dfki.de (serv-3100.kl.dfki.de [192.168.31.180])
+	by dfki-2203.dfki.uni-kl.de (8.11.7p1+Sun/8.11.4) with ESMTP id
+	k99FARv21299; Mon, 9 Oct 2006 17:10:27 +0200 (MEST)
+Received: from [192.168.31.36] (port-3126.kl.dfki.de [192.168.31.36])
+	by serv-3100.kl.dfki.de (8.13.7+Sun/8.13.7) with ESMTP id
+	k99FAQwf021725; Mon, 9 Oct 2006 17:10:26 +0200 (CEST)
+Message-ID: <452A6646.10207@dfki.de>
+Date:	Mon, 09 Oct 2006 17:09:58 +0200
+From:	Leo Sauermann <leo.sauermann@dfki.de>
+Organization: DFKI GmbH
+User-Agent: Thunderbird 1.5.0.7 (Windows/20060909)
+MIME-Version: 1.0
+To:	Christiaan Fluit <christiaan.fluit@aduna-software.com>
+References: <452A03DB.3020705@dfki.de>
+	<452A168F.7010108@aduna-software.com>	<452A5832.2080801@dfki.de>
+	<452A6537.1030309@aduna-software.com>
+In-Reply-To: <452A6537.1030309@aduna-software.com>
+X-Spam-Score: 0.1 (/)
+X-Spam-Report: Spam Filtering performed by sourceforge.net.
+	See http://spamassassin.org/tag/ for more details.
+	Report problems to
+	http://sf.net/tracker/?func=add&group_id=1&atid=200001
+	0.1 HTML_30_40             BODY: Message is 30% to 40% HTML
+	0.0 HTML_MESSAGE           BODY: HTML included in message
+Cc:	Aperture Developers <aperture-devel@lists.sourceforge.net>
+Subject: Re: [Aperture-devel] New Aperture Developer
+X-BeenThere: aperture-devel@lists.sourceforge.net
+X-Mailman-Version: 2.1.8
+Precedence: list
+List-Id: <aperture-devel.lists.sourceforge.net>
+List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/aperture-devel>, 
+	<mailto:aperture-devel-request@lists.sourceforge.net?subject=unsubscribe>
+List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum=aperture-devel>
+List-Post: <mailto:aperture-devel@lists.sourceforge.net>
+List-Help: <mailto:aperture-devel-request@lists.sourceforge.net?subject=help>
+List-Subscribe:	<https://lists.sourceforge.net/lists/listinfo/aperture-devel>, 
+	<mailto:aperture-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: multipart/mixed; boundary="===============2120612111=="
+Sender:	aperture-devel-bounces@lists.sourceforge.net
+Errors-To: aperture-devel-bounces@lists.sourceforge.net
+X-OnetAntySpam: NIE, to nie jest SPAM
+X-OrigFrom: aperture-devel-bounces@lists.sourceforge.net
+X-ZA0: unknown (-1,0)
+Status:   
+
+This is a multi-part message in MIME format.
+--===============2120612111==
+Content-Type: multipart/alternative;
+	boundary="------------040000070900080702060605"
+
+This is a multi-part message in MIME format.
+--------------040000070900080702060605
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Es begab sich aber da Christiaan Fluit zur rechten Zeit 09.10.2006 17:05 
+folgendes schrieb:
+> Leo Sauermann wrote:
+>   
+>> I would go for DC and other popular vocabs as well.
+>>
+>> note we have a wikipage to discuss these things here:
+>> https://gnowsis.opendfki.de/wiki/ApertureDiscussion
+>>
+>> if you have any ideas about DC, add them here:
+>> https://gnowsis.opendfki.de/wiki/ApertureDiscussion#Vocabulary:useDCinsteadofdata
+>>     
+>
+> I have made some notes during the last weeks, I'll add them here soon.
+>
+>   
+>> I would keep the RDFContainer. Its a good thing. I would only build it 
+>> on top of RDF2GO, so that it can be used on both jena and sesame.
+>> https://gnowsis.opendfki.de/wiki/ApertureDiscussion#RDFContainerbasedonRDF2GO
+>>     
+>
+> I see. I'm still considering this, not sure whether it's a good approach:
+>
+> pros:
+>
+> - bindings for various RDF stores that we get for free
+>
+> cons:
+>
+> - is RDF2GO still using java.net.URIs? That would mean a lot of 
+> conversions that are potentially not necessary, e.g. when using a Sesame 
+> Repository: org.openrdf.model.URIs get translated to java.net.URIs and 
+> back to org.openrdf.model.URIs.
+>   
+we are contiously ranting about this to Max and finally he has changed 
+his mind... I think its ok in the latest version
+
+
+> - RDFContainer lacks full RDF graph access. A simple getStatements 
+> method with a subject parameter would solve this though. I've also read 
+> comments by Gunnar about having to cast RDFContainer to 
+> SesameRDFContainer in code he wrote, I guess he had the same problem?
+>
+>   
+and exactly that would be solved by RDF2GO, where you would have a 
+proper model with all methods you need. (including querying, whatever)
+
+
+>>> Once we have completed this move, we might also look at the AccessData 
+>>> API.
+>>> [snip]
+>>>       
+>> hm, I would think that using an rdfgraph here is overkill.
+>> I always thought we can implement the AccessData interface on top of the 
+>> store you are actually crawling to.
+>>     
+>
+> That's what I did with RepositoryAccessData. It wraps a Repository, 
+> which *can* be the same as used by the CrawlerHandler.
+>
+> I'm already using this code in AutoFocus, which has dramatically 
+> improved the memory requirements of WebCrawler. This crawler used to 
+> keep the entire hypertext graph in main memory. Both the AccessData and 
+> the CrawlerHandler use the same Repository, using contexts to keep 
+> information separate (you really want to enforce that AccessData only 
+> reads and writes its own data).
+>
+> However, the AccessData API limits the data that it can hold to simple 
+> key-value pairs, with the exception of the notion of "referred IDs", 
+> which are used for indicating links, nested objects, etc. Whenever you 
+> have some other graph-like data, you cannot store it properly in the 
+> AccessData, unless you're willing to encode multiple values in a single 
+> string. Also, the value is often a primitive value but can also be 
+> another URI (e.g. a redirectsTo property between two URLs). Right now 
+> these URIs are stored as literals by RepositoryAccessData.
+>
+>
+> Regards,
+>
+> Chris
+> --
+>
+> -------------------------------------------------------------------------
+> Take Surveys. Earn Cash. Influence the Future of IT
+> Join SourceForge.net's Techsay panel and you'll get the chance to share your
+> opinions on IT & business topics through brief surveys -- and earn cash
+> http://www.techsay.com/default.php?page=join.php&p=sourceforge&CID=DEVDEV
+> _______________________________________________
+> Aperture-devel mailing list
+> Aperture-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/aperture-devel
+>   
+
+
+-- 
+____________________________________________________
+DI Leo Sauermann       http://www.dfki.de/~sauermann 
+DFKI GmbH
+P.O. Box 2080          Fon:   +49 631 205-3503
+67608 Kaiserslautern   Fax:   +49 631 205-3472
+Germany                Mail:  leo.sauermann@dfki.de
+____________________________________________________
+
+
+--------------040000070900080702060605
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+Es begab sich aber da Christiaan Fluit zur rechten Zeit 09.10.2006
+17:05 folgendes schrieb:
+<blockquote cite="mid452A6537.1030309@aduna-software.com" type="cite">
+  <pre wrap="">Leo Sauermann wrote:
+  </pre>
+  <blockquote type="cite">
+    <pre wrap="">I would go for DC and other popular vocabs as well.
+
+note we have a wikipage to discuss these things here:
+<a class="moz-txt-link-freetext" href="https://gnowsis.opendfki.de/wiki/ApertureDiscussion">https://gnowsis.opendfki.de/wiki/ApertureDiscussion</a>
+
+if you have any ideas about DC, add them here:
+<a class="moz-txt-link-freetext" href="https://gnowsis.opendfki.de/wiki/ApertureDiscussion#Vocabulary:useDCinsteadofdata">https://gnowsis.opendfki.de/wiki/ApertureDiscussion#Vocabulary:useDCinsteadofdata</a>
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->
+I have made some notes during the last weeks, I'll add them here soon.
+
+  </pre>
+  <blockquote type="cite">
+    <pre wrap="">I would keep the RDFContainer. Its a good thing. I would only build it 
+on top of RDF2GO, so that it can be used on both jena and sesame.
+<a class="moz-txt-link-freetext" href="https://gnowsis.opendfki.de/wiki/ApertureDiscussion#RDFContainerbasedonRDF2GO">https://gnowsis.opendfki.de/wiki/ApertureDiscussion#RDFContainerbasedonRDF2GO</a>
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->
+I see. I'm still considering this, not sure whether it's a good approach:
+
+pros:
+
+- bindings for various RDF stores that we get for free
+
+cons:
+
+- is RDF2GO still using java.net.URIs? That would mean a lot of 
+conversions that are potentially not necessary, e.g. when using a Sesame 
+Repository: org.openrdf.model.URIs get translated to java.net.URIs and 
+back to org.openrdf.model.URIs.
+  </pre>
+</blockquote>
+we are contiously ranting about this to Max and finally he has changed
+his mind... I think its ok in the latest version<br>
+<br>
+<br>
+<blockquote cite="mid452A6537.1030309@aduna-software.com" type="cite">
+  <pre wrap="">
+- RDFContainer lacks full RDF graph access. A simple getStatements 
+method with a subject parameter would solve this though. I've also read 
+comments by Gunnar about having to cast RDFContainer to 
+SesameRDFContainer in code he wrote, I guess he had the same problem?
+
+  </pre>
+</blockquote>
+and exactly that would be solved by RDF2GO, where you would have a
+proper model with all methods you need. (including querying, whatever)<br>
+<br>
+<br>
+<blockquote cite="mid452A6537.1030309@aduna-software.com" type="cite">
+  <pre wrap=""></pre>
+  <blockquote type="cite">
+    <blockquote type="cite">
+      <pre wrap="">Once we have completed this move, we might also look at the AccessData 
+API.
+[snip]
+      </pre>
+    </blockquote>
+    <pre wrap="">hm, I would think that using an rdfgraph here is overkill.
+I always thought we can implement the AccessData interface on top of the 
+store you are actually crawling to.
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->
+That's what I did with RepositoryAccessData. It wraps a Repository, 
+which *can* be the same as used by the CrawlerHandler.
+
+I'm already using this code in AutoFocus, which has dramatically 
+improved the memory requirements of WebCrawler. This crawler used to 
+keep the entire hypertext graph in main memory. Both the AccessData and 
+the CrawlerHandler use the same Repository, using contexts to keep 
+information separate (you really want to enforce that AccessData only 
+reads and writes its own data).
+
+However, the AccessData API limits the data that it can hold to simple 
+key-value pairs, with the exception of the notion of "referred IDs", 
+which are used for indicating links, nested objects, etc. Whenever you 
+have some other graph-like data, you cannot store it properly in the 
+AccessData, unless you're willing to encode multiple values in a single 
+string. Also, the value is often a primitive value but can also be 
+another URI (e.g. a redirectsTo property between two URLs). Right now 
+these URIs are stored as literals by RepositoryAccessData.
+
+
+Regards,
+
+Chris
+--
+
+-------------------------------------------------------------------------
+Take Surveys. Earn Cash. Influence the Future of IT
+Join SourceForge.net's Techsay panel and you'll get the chance to share your
+opinions on IT &amp; business topics through brief surveys -- and earn cash
+<a class="moz-txt-link-freetext" href="http://www.techsay.com/default.php?page=join.php&p=sourceforge&CID=DEVDEV">http://www.techsay.com/default.php?page=join.php&amp;p=sourceforge&amp;CID=DEVDEV</a>
+_______________________________________________
+Aperture-devel mailing list
+<a class="moz-txt-link-abbreviated" href="mailto:Aperture-devel@lists.sourceforge.net">Aperture-devel@lists.sourceforge.net</a>
+<a class="moz-txt-link-freetext" href="https://lists.sourceforge.net/lists/listinfo/aperture-devel">https://lists.sourceforge.net/lists/listinfo/aperture-devel</a>
+  </pre>
+</blockquote>
+<br>
+<br>
+<pre class="moz-signature" cols="72">-- 
+____________________________________________________
+DI Leo Sauermann       <a class="moz-txt-link-freetext" href="http://www.dfki.de/~sauermann">http://www.dfki.de/~sauermann</a> 
+DFKI GmbH
+P.O. Box 2080          Fon:   +49 631 205-3503
+67608 Kaiserslautern   Fax:   +49 631 205-3472
+Germany                Mail:  <a class="moz-txt-link-abbreviated" href="mailto:leo.sauermann@dfki.de">leo.sauermann@dfki.de</a>
+____________________________________________________
+</pre>
+</body>
+</html>
+
+--------------040000070900080702060605--
+
+
+--===============2120612111==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+-------------------------------------------------------------------------
+Take Surveys. Earn Cash. Influence the Future of IT
+Join SourceForge.net's Techsay panel and you'll get the chance to share your
+opinions on IT & business topics through brief surveys -- and earn cash
+http://www.techsay.com/default.php?page=join.php&p=sourceforge&CID=DEVDEV
+--===============2120612111==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+Aperture-devel mailing list
+Aperture-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/aperture-devel
+
+--===============2120612111==--

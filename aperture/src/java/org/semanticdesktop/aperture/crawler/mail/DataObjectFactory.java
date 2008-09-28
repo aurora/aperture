@@ -30,6 +30,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
@@ -41,6 +43,7 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.HtmlParserUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.util.UriUtil;
 import org.semanticdesktop.aperture.vocabulary.NFO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
 import org.semanticdesktop.aperture.vocabulary.NMO;
@@ -259,7 +262,7 @@ public class DataObjectFactory {
      * Initializes the list of DataObjects that have been created based on the contents of the specified
      * MimeMessage. The order of the DataObjects reflects the order of the message parts they represent, i.e.
      * the first DataObject represents the entire message, subsequent DataObjects represent attachments in a
-     * depth first order several layers of attachments can exist when forwarding messages containing
+     * depth first order. Several layers of attachments can exist when forwarding messages containing
      * attachments).
      * 
      * @throws MessagingException Thrown when accessing the mail contents.
@@ -278,10 +281,10 @@ public class DataObjectFactory {
         // Apart from being a message, it is also a MailboxDataObject
         msgContainer.add(RDF.type, NMO.MailboxDataObject);
         // the messageID property belongs to the message as a whole, that's why it's not called anywhere else
-        String messageID = message.getMessageID();
-        if (messageID != null) {
-            msgContainer.add(NMO.messageId, messageID);
-        }
+//        String messageID = message.getMessageID();
+//        if (messageID != null) {
+//            msgContainer.add(NMO.messageId, messageID);
+//        }
     }
 
     /* ----------------------------- Methods for MIME interpretation ----------------------------- */
@@ -464,19 +467,6 @@ public class DataObjectFactory {
             HashMap result = handleMailPart(nestedMessage, uri, MailUtil.getDate(nestedMessage));
             
             /*
-             * We need to pull in the message id at this level, because this is one of the two places during
-             * the message tree traversal, where we actually operate on an instance of the Message interface,
-             * all other traversal-related methods operate on javax.mail.Part, and the messageid is a property
-             * of a message and not a part.
-             */
-            if (nestedMessage instanceof MimeMessage) {
-                String messageId = ((MimeMessage)nestedMessage).getMessageID();
-                if (messageId != null) {
-                    result.put(NMO.messageId, messageId);
-                }
-            }
-            
-            /*
              * Also, this is also the only place where we can mark the attached message as an Email by it's 
              * own right. Otherwise, it would simply be a MimeEntity, or an attachment.
              */
@@ -549,7 +539,7 @@ public class DataObjectFactory {
              * we only insert the message creation date for mail parts that aren't attachments, otherwise the
              * metadata extracted from the attached file may have different content creation date, thus the
              * extractor will add a second contentCreated triple which will violate the maxCardinality
-             * constrained defined in NIE for the nie:contentCreated property
+             * constraint defined in NIE for the nie:contentCreated property
              */ 
             result.put(NIE.contentCreated, messageCreationDate);
         }
@@ -642,15 +632,21 @@ public class DataObjectFactory {
         Message localMessage = (Message) mailPart;
         try {
             addObjectIfNotNull(NMO.messageSubject, localMessage.getSubject(), result);
+            addObjectIfNotNull(NMO.messageId, localMessage.getHeader("Message-ID"), result);
             addContactArrayIfNotNull(NMO.from, localMessage.getFrom(), result);
             addContactArrayIfNotNull(NMO.to, localMessage.getRecipients(RecipientType.TO), result);
             addContactArrayIfNotNull(NMO.cc, localMessage.getRecipients(RecipientType.CC), result);
             addContactArrayIfNotNull(NMO.bcc, localMessage.getRecipients(RecipientType.BCC), result);
+            
+            addBlankMessageArrayIfNotNull(NMO.references,localMessage.getHeader("References"), result);
+            addBlankMessageArrayIfNotNull(NMO.inReplyTo, localMessage.getHeader("In-Reply-To"), result);
+            
         } catch (Exception e) {
-            // do nothing, this catch has been introduced as a temporary workaround, not to crash the crawling
-            // process in case the crawled email contains a header like this:
-            // From: <Saved by Mozilla 5.0 (Windows; en-US)>
-            // TODO, turn this catch into something that works on a per-field basis
+            /*
+             * do nothing, this catch has been introduced as a temporary workaround, not to crash the crawling
+             * process in case the crawled email contains a header like this: From: <Saved by Mozilla 5.0
+             * (Windows; en-US)> TODO, turn this catch into something that works on a per-field basis
+             */ 
         }
         result.put(RDF.type, NMO.Email);
 
@@ -658,6 +654,13 @@ public class DataObjectFactory {
             MimeMessage mimeMessage = (MimeMessage) localMessage;
             addObjectIfNotNull(NMO.sender, mimeMessage.getSender(), result);
         }
+    }
+
+    private void addBlankMessageArrayIfNotNull(URI uri, String[] headers, HashMap result) {
+        if (headers == null || headers.length == 0) {
+            return;
+        }
+        result.put(uri, headers);
     }
 
     /**
@@ -1067,7 +1070,7 @@ public class DataObjectFactory {
             metadata.add(RDF.type, NMO.Email);
         }
         
-        copyString(NMO.messageId, dataObjectHashMap, metadata);
+        copyStringArray(NMO.messageId, dataObjectHashMap, metadata);
 
         copyInt(NIE.byteSize, dataObjectHashMap, metadata);
 
@@ -1080,6 +1083,9 @@ public class DataObjectFactory {
         copyAddresses(NMO.bcc, dataObjectHashMap, metadata);
 
         copyUri(RDF.type, dataObjectHashMap, metadata);
+        
+        copyBlankMessages(NMO.inReplyTo, dataObjectHashMap, metadata);
+        copyBlankMessages(NMO.references, dataObjectHashMap, metadata);
 
         // a really crappy workaround, the hashmap allows the mail types to have only one type
         // this means, that attachments can be marked as attachments, but thay can't be marked
@@ -1105,6 +1111,15 @@ public class DataObjectFactory {
         }
     }
 
+    private void copyStringArray(URI predicate, HashMap map, RDFContainer metadata) {
+        String[] value = (String[]) map.get(predicate);
+        if (value != null) {
+            for (String string : value) {
+                metadata.add(predicate, string);
+            }
+        }
+    }
+    
     private void copyString(URI predicate, HashMap map, RDFContainer metadata) {
         String value = (String) map.get(predicate);
         if (value != null) {
@@ -1152,6 +1167,22 @@ public class DataObjectFactory {
         }
         catch (ModelRuntimeException e) {
             logger.error("ModelException while handling address metadata", e);
+        }
+    }
+    
+    private void copyBlankMessages(URI predicate, HashMap map, RDFContainer metadata) {
+        Object value = map.get(predicate);
+        if (value == null || !(value instanceof String [])) return;
+        String [] headers = (String[])value;
+        Model model = metadata.getModel();
+        for (String header : headers) {
+            String [] subheaders = header.split("\\s+");
+            for (String subheader : subheaders) {
+                Resource res = UriUtil.generateRandomResource(model);
+                model.addStatement(res,NMO.messageId,subheader);
+                model.addStatement(res,RDF.type,NMO.Email);
+                model.addStatement(metadata.getDescribedUri(),predicate,res);
+            }
         }
     }
 
@@ -1240,8 +1271,8 @@ public class DataObjectFactory {
                 !keyString.equals(CONTENTS_KEY) && // the CONTENTS has been handled already
                 !keyString.equals(NIE.mimeType.toString()) &&  // the mime type has been handled already
                 !keyString.equals(CHILDREN_KEY)  && // the children have been handled already
-                !keyString.equals(NIE.byteSize.toString())) {  // the 'to' object has better knowledge of the size of the
-                                                    // overall message (e.g. in multipart/alternative)
+                !keyString.equals(NIE.byteSize.toString())) { // the 'to' object has better knowledge of the size of
+                                                              // the overall message (e.g. in multipart/alternative)
                 toObject.put(entry.getKey(), entry.getValue());
             }
         }

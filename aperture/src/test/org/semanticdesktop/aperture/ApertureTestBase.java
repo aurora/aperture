@@ -31,6 +31,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
+import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.vocabulary.GEO;
@@ -107,7 +108,16 @@ public class ApertureTestBase extends TestCase {
     //////////////////////////////////////////// VALIDATION //////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
-	/**
+    /**
+     * Validates the metadata of the given DataObject and prints the report on the standard output.
+     * 
+     * @param object
+     */
+    public void validate(DataObject object) {
+        validate(object.getMetadata(), true);
+    }
+    
+    /**
 	 * Validates the content of the given container and prints the report to the standard output.
 	 * @param container
 	 */
@@ -292,12 +302,14 @@ public class ApertureTestBase extends TestCase {
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     
     /**
-     * Returns a the object of the triple with the given subject and predicate. Asserts that there is only
-     * one such triple.
+     * Returns a the object of the triple with the given subject and predicate. Asserts that there is only one
+     * such triple and that the object of that triple is a Resource.
+     * 
      * @param model the model to check in
      * @param subject the subject of the the triple to be found
      * @param predicate the predicate of the triple to be found
-     * @return the object of the triple to be found, assumes that there is one and only one such triple
+     * @return the object of the triple to be found, assumes that there is one and only one such triple and
+     *         that it is a resource
      */
     protected Resource findSingleObjectResource(Model model, Resource subject, URI predicate) {
         List<Resource> list = findObjectResourceList(model, subject, predicate);
@@ -306,12 +318,14 @@ public class ApertureTestBase extends TestCase {
     }
 
     /**
-     * Returns a list of objects of all triples with the given subject and predicate
+     * Returns a list of objects of all triples with the given subject and predicate. Asserts that all those
+     * objects are Resources.
+     * 
      * @param model the model to check in
      * @param subject the subject of the triple to be found
      * @param predicate the predicate of the triple to be found
-     * @return a list of subjects of all triples with the given subject and predicate 
-     * @throws ModelException if something goes wrong
+     * @return a list of objects of all triples with the given subject and predicate, converted to Resource
+     *         instances
      */
     protected List<Resource> findObjectResourceList(Model model, Resource subject, URI predicate) {
         LinkedList<Resource> result = new LinkedList<Resource>();
@@ -323,6 +337,44 @@ public class ApertureTestBase extends TestCase {
                 Node value = statement.getObject();
                 assertTrue(value instanceof Resource);
                 result.add(value.asResource());
+            }
+            return result;
+        } finally {
+            closeIterator(iterator);
+        }
+    }
+    
+    /**
+     * Returns a the object of the triple with the given subject and predicate. Asserts that there is only
+     * one such triple.
+     * @param model the model to check in
+     * @param subject the subject of the the triple to be found
+     * @param predicate the predicate of the triple to be found
+     * @return the object of the triple to be found, assumes that there is one and only one such triple
+     */
+    protected Node findSingleObjectNode(Model model, Resource subject, URI predicate) {
+        List<Node> list = findObjectNodeList(model, subject, predicate);
+        assertEquals(1,list.size());
+        return list.get(0);
+    }
+    
+    /**
+     * Returns a list of objects of all triples with the given subject and predicate. Asserts that all
+     * those objects are Resources.
+     * @param model the model to check in
+     * @param subject the subject of the triple to be found
+     * @param predicate the predicate of the triple to be found
+     * @return a list of objects of all triples with the given subject and predicate 
+     */
+    protected List<Node> findObjectNodeList(Model model, Resource subject, URI predicate) {
+        LinkedList<Node> result = new LinkedList<Node>();
+        ClosableIterator<? extends Statement> iterator = null;
+        try {
+            iterator = model.findStatements(subject, predicate, Variable.ANY);
+            while (iterator.hasNext()) {
+                Statement statement = iterator.next();
+                Node value = statement.getObject();
+                result.add(value);
             }
             return result;
         } finally {
