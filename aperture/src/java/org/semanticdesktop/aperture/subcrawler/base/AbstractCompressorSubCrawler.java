@@ -23,7 +23,6 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.subcrawler.SubCrawler;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerException;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler;
-import org.semanticdesktop.aperture.subcrawler.tar.TarSubCrawlerFactory;
 import org.semanticdesktop.aperture.vocabulary.NFO;
 
 /**
