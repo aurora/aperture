@@ -39,6 +39,7 @@ import org.semanticdesktop.aperture.extractor.word.WordExtractorActivator;
 import org.semanticdesktop.aperture.extractor.wordperfect.WordPerfectExtractorActivator;
 import org.semanticdesktop.aperture.extractor.works.WorksExtractorActivator;
 import org.semanticdesktop.aperture.extractor.xml.XmlExtractorActivator;
+import org.semanticdesktop.aperture.opener.email.EmailOpenerActivator;
 import org.semanticdesktop.aperture.opener.file.FileOpenerActivator;
 import org.semanticdesktop.aperture.opener.http.HttpOpenerActivator;
 import org.semanticdesktop.aperture.outlook.OutlookActivator;
@@ -111,7 +112,7 @@ public class CoreImplementationsActivator implements BundleActivator {
 	// openers
 	private FileOpenerActivator fileOpenerActivator;
 	private HttpOpenerActivator httpOpenerActivator;
-    
+    private EmailOpenerActivator emailOpenerActivator;
     
     
 	public void start(BundleContext context) throws Exception {
@@ -178,12 +179,8 @@ public class CoreImplementationsActivator implements BundleActivator {
 		
 		vcardSubCrawlerActivator = new VcardSubCrawlerActivator();
 		vcardSubCrawlerActivator.start(context);
-		try{
-		    zipSubCrawlerActivator = new ZipSubCrawlerActivator();
-		    zipSubCrawlerActivator.start(context);
-		}catch(Throwable t){
-		    logger.warn("Could not register and start zipSubCrawlerActivator correctly " +  t);
-		}
+	    zipSubCrawlerActivator = new ZipSubCrawlerActivator();
+	    zipSubCrawlerActivator.start(context);
 		gzipSubCrawlerActivator = new GZipSubCrawlerActivator();
         gzipSubCrawlerActivator.start(context);
         bzip2SubCrawlerActivator = new BZip2SubCrawlerActivator();
@@ -209,6 +206,8 @@ public class CoreImplementationsActivator implements BundleActivator {
 		fileOpenerActivator.start(context);
 		httpOpenerActivator = new HttpOpenerActivator();
 		httpOpenerActivator.start(context);
+		emailOpenerActivator = new EmailOpenerActivator();
+		emailOpenerActivator.start(context);
         
 		bc = context;	
 	}
@@ -306,6 +305,8 @@ public class CoreImplementationsActivator implements BundleActivator {
 		fileOpenerActivator = null;
 		httpOpenerActivator.stop(context);
 		httpOpenerActivator = null;
+		emailOpenerActivator.stop(context);
+		emailOpenerActivator = null;
 		
 		bc = null;	
 	}

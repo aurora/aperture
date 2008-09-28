@@ -73,7 +73,8 @@
         <and>
             <or>
                 <filename name="org/semanticdesktop/aperture/subcrawler/*" />
-                <filename name="org/semanticdesktop/aperture/subcrawler/impl/*" />             
+                <filename name="org/semanticdesktop/aperture/subcrawler/impl/*" />
+                <filename name="org/semanticdesktop/aperture/subcrawler/base/*" />             
             </or>
             <selector refid="bundle.basic.selector" />
         </and>
@@ -480,6 +481,13 @@
             <selector refid="bundle.basic.selector" />
         </and>
     </selector>
+    
+    <selector id="bundle.opener.email.selector">
+        <and>
+            <filename name="org/semanticdesktop/aperture/opener/email/*" />
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
 
     <selector id="bundle.outlook.selector">
         <and>
@@ -617,6 +625,7 @@
             <selector refid="bundle.extractor.util.selector" />
             <selector refid="bundle.opener.file.selector" />
             <selector refid="bundle.opener.http.selector" />
+            <selector refid="bundle.opener.email.selector" />
             <selector refid="bundle.outlook.selector" />
             <selector refid="bundle.security.socketfactory.standard.selector" />
             <filename name="org/semanticdesktop/aperture/CoreImplementationsActivator.*" />

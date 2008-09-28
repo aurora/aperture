@@ -1,0 +1,35 @@
+/*
+ * Copyright (c) 2006 - 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
+ * All rights reserved.
+ * 
+ * Licensed under the Academic Free License version 3.0.
+ */
+package org.semanticdesktop.aperture.opener.email;
+
+import java.util.Hashtable;
+
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
+import org.semanticdesktop.aperture.opener.DataOpenerFactory;
+
+public class EmailOpenerActivator implements BundleActivator {
+
+	public static BundleContext bc;
+
+	private DataOpenerFactory factory;
+
+	private ServiceRegistration registration;
+
+	public void start(BundleContext context) throws Exception {
+		EmailOpenerActivator.bc = context;
+		factory = new EmailOpenerFactory();
+		registration = bc.registerService(DataOpenerFactory.class.getName(), factory,
+			new Hashtable());
+	}
+
+    public void stop(BundleContext context) throws Exception {
+        registration.unregister();
+    }
+}

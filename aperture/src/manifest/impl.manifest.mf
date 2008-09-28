@@ -2,6 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Aperture implementations
 Bundle-SymbolicName: org.semanticdesktop.aperture.impl
+Bundle-Version: 1.2.0.beta
 Bundle-Localization: plugin
 Bundle-ClassPath: .,
  lib/activation-1.0.2-upd2.jar,
@@ -21,15 +22,16 @@ Bundle-ClassPath: .,
  lib/jai_codec-1.1.3.jar,
  lib/jai_core-1.1.3.jar,
  lib/jaudiotagger-1.0.8.jar,
- lib/JempBox-0.2.0.jar,
  lib/jpim-0.1-aperture-1.jar,
  lib/jutf7-0.9.0.jar,
  lib/mail-1.4.jar,
  lib/metadata-extractor-2.4.0-beta-1.jar,
  lib/mstor-0.9.11.jar,
  lib/pdfbox-0.7.4-dev-20071030.jar,
- lib/poi-scratchpad-3.0.2-FINAL-20080204.jar,
- lib/poi-3.0.2-FINAL-20080204.jar
+ lib/ant-compression-utils-1.7.1.jar,
+ lib/JempBox-0.2.0.jar,
+ lib/poi-3.0.2-FINAL-20080204.jar,
+ lib/poi-scratchpad-3.0.2-FINAL-20080204.jar
 Require-Bundle: org.semanticdesktop.aperture,
  org.semweb4j.rdf2go.api
 Import-Package: javax.net,
@@ -81,13 +83,18 @@ Export-Package: org.semanticdesktop.aperture,
  org.semanticdesktop.aperture.extractor.xml,
  org.semanticdesktop.aperture.hypertext.linkextractor.html,
  org.semanticdesktop.aperture.mime.identifier.magic,
+ org.semanticdesktop.aperture.opener.email,
  org.semanticdesktop.aperture.opener.file,
  org.semanticdesktop.aperture.opener.http,
  org.semanticdesktop.aperture.outlook,
  org.semanticdesktop.aperture.security.socketfactory.standard,
  org.semanticdesktop.aperture.security.trustdecider.dialog,
  org.semanticdesktop.aperture.security.trustmanager.standard,
+ org.semanticdesktop.aperture.subcrawler.bzip2,
+ org.semanticdesktop.aperture.subcrawler.gzip,
+ org.semanticdesktop.aperture.subcrawler.tar,
  org.semanticdesktop.aperture.subcrawler.vcard,
+ org.semanticdesktop.aperture.subcrawler.zip,
  org.semanticdesktop.aperture.websites,
  org.semanticdesktop.aperture.websites.bibsonomy,
  org.semanticdesktop.aperture.websites.delicious,
