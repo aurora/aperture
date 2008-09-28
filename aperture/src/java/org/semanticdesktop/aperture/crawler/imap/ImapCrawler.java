@@ -63,9 +63,22 @@ import org.slf4j.LoggerFactory;
 import com.sun.mail.imap.IMAPFolder;
 
 /**
- * A Combined Crawler and DataAccessor implementation for IMAP. Note that the same instance of
- * ImapCrawler cannot be used as a crawler and as a DataAccessor at the same time. Please use
- * separate instances, or use the appropriate factory, which will enforce this for you.
+ * A Combined Crawler and DataAccessor implementation for IMAP.
+ * 
+ * <p>
+ * Note that the same instance of ImapCrawler cannot be used as a crawler and as a DataAccessor at the same
+ * time. Please use separate instances, or use the appropriate factory, which will enforce this for you.
+ * </p>
+ * 
+ * <p>
+ * A known issue: the incremental crawling only works correctly for servers that persist UIDs for each folder.
+ * Otherwise each crawl will start from scratch and report all objects as new. This occurs on IMAP servers
+ * backed by the 'mh' message storage mechanism. See 
+ * <a href="http://sourceforge.net/mailarchive/forum.php?thread_name=97d19f3c0809181546g3d817e28j82dd928960a166e4%40mail.gmail.com&forum_name=aperture-devel">
+ * this email to aperture-dev </a> 
+ * and <a href=http://mailman2.u.washington.edu/pipermail/imap-protocol/2007-March/000436.html"> 
+ * this post from Marc Crispin - inventor of IMAP</a> for more details.
+ * </p>
  */
 @SuppressWarnings("unchecked")
 public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor {
