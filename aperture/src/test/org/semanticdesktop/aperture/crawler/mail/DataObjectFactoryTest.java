@@ -58,6 +58,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     public void testOrdinarySinglePartPlainTextEmail() throws Exception {
         DataObjectFactory fac = wrapEmail("mail-thunderbird-1.5.eml");
         DataObject obj = fac.getObject();
+        assertFalse(obj instanceof FileDataObject);
         // there should only be one data object
         assertNull(fac.getObject()); 
         URI emailUri = obj.getID();
@@ -111,6 +112,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     public void testMultipartAlternative() throws Exception {
         DataObjectFactory fac = wrapEmail("mail-multipart-plain-html.eml");
         DataObject obj = fac.getObject();
+        assertFalse(obj instanceof FileDataObject);
         // there should only be one data object
         assertNull(fac.getObject()); 
         URI emailUri = obj.getID();
@@ -151,10 +153,13 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     public void testMultipartMixed() throws Exception {
         DataObjectFactory fac = wrapEmail("mail-multipart-test.eml");
         DataObject obj1 = fac.getObject();
+        assertFalse(obj1 instanceof FileDataObject);
         assertNotNull(obj1);
         DataObject obj2 = fac.getObject();
+        assertTrue(obj2 instanceof FileDataObject);
         assertNotNull(obj2);
         DataObject obj3 = fac.getObject();
+        assertFalse(obj3 instanceof FileDataObject);
         assertNotNull(obj3);
         assertNull(fac.getObject());
         
@@ -234,6 +239,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     public void testMessageInAThread() throws Exception {
         DataObjectFactory fac = wrapEmail("mail-threaded.eml");
         DataObject obj = fac.getObject();
+        assertFalse(obj instanceof FileDataObject);
         RDFContainer metadata = obj.getMetadata();
         Model model = metadata.getModel();
         fac.getObject().dispose();
@@ -271,9 +277,13 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     public void testForwardedMessageWithReferecesAndInReplyToHeaders() throws Exception {
         DataObjectFactory fac = wrapEmail("mail-forwarded-references.eml");
         DataObject myGreeting = fac.getObject(); 
-        DataObject forwardedMsg = fac.getObject(); 
+        assertFalse(myGreeting instanceof FileDataObject);
+        DataObject forwardedMsg = fac.getObject();
+        assertFalse(forwardedMsg instanceof FileDataObject);
         DataObject sfAd = fac.getObject();
+        assertFalse(sfAd instanceof FileDataObject);
         DataObject sfSig = fac.getObject();
+        assertFalse(sfSig instanceof FileDataObject);
         assertNull(fac.getObject()); 
 
         assertMessageId("<48DFA882.5010502@poczta.onet.pl>", myGreeting);
