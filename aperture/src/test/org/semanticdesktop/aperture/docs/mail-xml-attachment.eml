@@ -1,0 +1,87 @@
+Return-Path: christiaan.fluit@aduna-software.com
+Received: from core.aduna.info (LHLO core.aduna-software.com)
+ (87.233.177.133) by core.aduna-software.com with LMTP; Mon, 29 Sep 2008
+ 21:49:37 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by core.aduna-software.com (Postfix) with ESMTP id 6AD74128002
+	for <chris@aduna-software.com>; Mon, 29 Sep 2008 21:49:37 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at 
+X-Spam-Flag: NO
+X-Spam-Score: -1.746
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.746 tagged_above=-10 required=4 tests=[AWL=-0.736,
+	BAYES_05=-1.11, RDNS_DYNAMIC=0.1]
+Received: from core.aduna-software.com ([127.0.0.1])
+	by localhost (core.aduna-software.com [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id b9kiXEw6D24F for <chris@aduna-software.com>;
+	Mon, 29 Sep 2008 21:49:36 +0200 (CEST)
+Received: from [192.168.1.101] (53578E99.cable.casema.nl [83.87.142.153])
+	by core.aduna-software.com (Postfix) with ESMTP id 6606C128001
+	for <chris@aduna-software.com>; Mon, 29 Sep 2008 21:49:36 +0200 (CEST)
+Message-ID: <48E1314C.7000900@aduna-software.com>
+Date: Mon, 29 Sep 2008 21:49:32 +0200
+From: Christiaan Fluit <christiaan.fluit@aduna-software.com>
+User-Agent: Thunderbird 2.0.0.17 (Windows/20080914)
+MIME-Version: 1.0
+To: chris@aduna-software.com
+Subject: test
+Content-Type: multipart/mixed;
+ boundary="------------020504070207010204050205"
+
+This is a multi-part message in MIME format.
+--------------020504070207010204050205
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+
+test mail.
+
+--------------020504070207010204050205
+Content-Type: text/xml;
+ name="line.xml"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="line.xml"
+
+<?xml version="1.0"?>
+<!DOCTYPE MapModel []>
+<MapModel version="1.0">
+
+<ModelObjectSet>
+
+<ModelObject ID="m0"/>
+<ModelObject ID="m1"/>
+<ModelObject ID="m2"/>
+<ModelObject ID="m3"/>
+<ModelObject ID="m4"/>
+<ModelObject ID="m5"/>
+<ModelObject ID="m6"/>
+
+</ModelObjectSet>
+
+
+<LinkSet>
+<Link>
+	<ConnectedObjects refs="m0 m1"/>
+</Link>
+<Link>
+	<ConnectedObjects refs="m1 m2"/>
+</Link>
+<Link>
+	<ConnectedObjects refs="m2 m3"/>
+</Link>
+<Link>
+	<ConnectedObjects refs="m3 m4"/>
+</Link>
+<Link>
+	<ConnectedObjects refs="m4 m5"/>
+</Link>
+<Link>
+	<ConnectedObjects refs="m5 m6"/>
+</Link>
+</LinkSet>
+
+</MapModel>
+
+--------------020504070207010204050205--
+
+ 	  	 

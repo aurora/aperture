@@ -182,18 +182,15 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         validate(container1);
         
         // then some tests of the attached message (which should reside in the third data object);
-        URI emailUri3 = obj3.getID();
-        assertEquals(emailUri3.toString(), "uri:dummymailuri:mail-multipart-test.eml#2");
-        RDFContainer container3 = obj3.getMetadata();
-        Model model3 = container3.getModel();
-        testSenderAndReceiver(model3, emailUri3, "Leo Sauermann","leo.sauermann@dfki.de","Antoni Mylka","antoni.mylka@gmail.com");
-        testStandardMessageMetadata(model3, emailUri3, "iso-8859-2", "message/rfc822", "text/plain",
+        assertEquals(obj3.getID().toString(), "uri:dummymailuri:mail-multipart-test.eml#2");
+        Model model3 = obj3.getMetadata().getModel();
+        testSenderAndReceiver(model3, obj3.getID(), "Leo Sauermann","leo.sauermann@dfki.de","Antoni Mylka","antoni.mylka@gmail.com");
+        testStandardMessageMetadata(model3, obj3.getID(), "iso-8859-2", "message/rfc822", "text/plain",
             "Re: [Aperture-devel] Developer's Checklists", "1341", "2008-07-25T10:50:18",
             "<488993CA.8070205@dfki.de>");
-        String content3 = container3.getString(NMO.plainTextMessageContent);
-        assertTrue(content3.contains("> http://aperture.wiki.sourceforge.net/DevelopersChecklists"));
-        assertTrue(content3.contains("> about all this, but it may nevertheless be interesting."));
-        validate(container3);
+        assertMessageContentContains("> http://aperture.wiki.sourceforge.net/DevelopersChecklists", obj3);
+        assertMessageContentContains("> about all this, but it may nevertheless be interesting.", obj3);
+        validate(model3);
         obj3.dispose();
         
         // the second data object should be a FileDataObject containing a PDF
@@ -208,18 +205,11 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         assertSingleValueProperty(model2, pdfUri, NIE.mimeType, "application/pdf");
         assertSingleValueProperty(model2, pdfUri, NFO.fileName, "pdf-openoffice-2.0-writer.pdf");
         
-        // now apply the mime type identifier
-        MimeTypeIdentifier mimeTypeIdentifier = new MagicMimeTypeIdentifier();
-        int minimumArrayLength = mimeTypeIdentifier.getMinArrayLength();
-        contentStream.mark(minimumArrayLength + 10); // add some for safety
-        byte[] bytes = IOUtil.readBytes(contentStream, minimumArrayLength);
-        String mimeType = mimeTypeIdentifier.identify(bytes, null, pdfUri);
-        assertEquals(mimeType, "application/pdf");
-        contentStream.reset();
+        assertMimeType("application/pdf", pdfUri, contentStream);
 
         // and the extractor
         Extractor extractor = new PdfExtractorFactory().get();
-        extractor.extract(pdfUri, contentStream, null, mimeType, container2);
+        extractor.extract(pdfUri, contentStream, null, "application/pdf", container2);
         String contentString = container2.getString(NIE.plainTextContent);
         assertEquals("This is an example document created with OpenOffice 2.0\r\n",contentString);
         
@@ -235,7 +225,6 @@ public class DataObjectFactoryTest extends ApertureTestBase {
      * 
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
     public void testMessageInAThread() throws Exception {
         DataObjectFactory fac = wrapEmail("mail-threaded.eml");
         DataObject obj = fac.getObject();
@@ -273,6 +262,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
      * 
      * This structure should yield four data objects. (my greeting, leo's reply in plain text, the ad and the
      * signature). The second data object should have correct References: and In-Reply-To links.
+     * @throws Exception 
      */
     public void testForwardedMessageWithReferecesAndInReplyToHeaders() throws Exception {
         DataObjectFactory fac = wrapEmail("mail-forwarded-references.eml");
@@ -297,6 +287,28 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         assertReferencedEmails(forwardedMsg, NMO.inReplyTo,
             "<21635b740707300447w71553199j7e14e44f47727f37@mail.gmail.com>");
         validate(myGreeting);
+    }
+    
+    /**
+     * Tests whether .xml files attached to the email are returned as separate FileDataObjects. Problems have
+     * been reported with XML attachments being mistakenly returned as DataObjects with their entire content
+     * being returned as NMO.messagePlainTextContent (with all the tags).
+     * 
+     * @throws Exception
+     */
+    public void testXmlAttachment() throws Exception {
+        DataObjectFactory fac = wrapEmail("mail-xml-attachment.eml");
+        DataObject mailContent = fac.getObject();
+        assertFalse(mailContent instanceof FileDataObject);
+        DataObject xmlAttachment = fac.getObject();
+        assertTrue(xmlAttachment instanceof FileDataObject);
+        assertNull(fac.getObject());
+        assertMessageContentContains("test mail.", mailContent);
+        testSenderAndReceiver(mailContent.getMetadata().getModel(), mailContent.getID(), "Christiaan Fluit", 
+            "christiaan.fluit@aduna-software.com", null, "chris@aduna-software.com");
+        assertEquals("line.xml",xmlAttachment.getMetadata().getString(NFO.fileName));
+        assertMimeType("text/xml", new URIImpl("uri:line.xml"), ((FileDataObject)xmlAttachment).getContent());
+        validate(mailContent);
     }
     
     //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -389,6 +401,16 @@ public class DataObjectFactoryTest extends ApertureTestBase {
             assertTrue(referencedIdsSet.remove(value));
         }
         assertTrue(referencedIdsSet.isEmpty());
+    }
+    
+    private void assertMimeType(String desiredMimeType, URI uri, InputStream stream) throws Exception {
+        MimeTypeIdentifier mimeTypeIdentifier = new MagicMimeTypeIdentifier();
+        int minimumArrayLength = mimeTypeIdentifier.getMinArrayLength();
+        stream.mark(minimumArrayLength + 10); // add some for safety
+        byte[] bytes = IOUtil.readBytes(stream, minimumArrayLength);
+        String mimeType = mimeTypeIdentifier.identify(bytes, null, uri);
+        assertEquals(mimeType, desiredMimeType);
+        stream.reset();
     }
 }
 
