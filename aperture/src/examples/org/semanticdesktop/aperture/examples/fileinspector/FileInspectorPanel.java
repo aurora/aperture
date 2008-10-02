@@ -34,6 +34,8 @@ import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
+import org.semanticdesktop.aperture.extractor.FileExtractor;
+import org.semanticdesktop.aperture.extractor.FileExtractorFactory;
 import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
@@ -200,6 +202,21 @@ public class FileInspectorPanel extends JPanel {
                 buffer = new BufferedInputStream(stream, 8192);
                 currentExtractor.extract(container.getDescribedUri(), buffer, null, mimeType, container);
                 stream.close();
+            } else {
+                Set filefactories = extractorRegistry.getFileExtractorFactories(mimeType);
+                if (filefactories != null && !filefactories.isEmpty()) {
+                    FileExtractorFactory factory = (FileExtractorFactory) filefactories.iterator().next();
+                    FileExtractor currentFileExtractor = factory.get();
+
+                    RDFContainerFactoryImpl containerFactory = new RDFContainerFactoryImpl();
+                    container = containerFactory.newInstance(file.toURI().toString());
+
+                    // FIXME: use mark() and reset() instead of opening a second stream
+                    stream = new FileInputStream(file);
+                    buffer = new BufferedInputStream(stream, 8192);
+                    currentFileExtractor.extract(container.getDescribedUri(), file, null, mimeType, container);
+                    stream.close();
+                }
             }
             // do inference
             if (inference) {
