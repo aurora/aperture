@@ -372,6 +372,13 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
     }
 
     public String identify(byte[] firstBytes, String fileName, URI uri) {
+        // Knowledge we gained through the years:
+        if (fileName.toLowerCase().endsWith(".pdf.part"))
+        {
+            logger.debug("File "+fileName+" is considered as a part, therefore faulty. No mimetype returned.");
+            return null;
+        }
+        
         // see if the file is some kind of UTF file
         char[] firstChars = null;
         byte[] realBom = null;
