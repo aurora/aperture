@@ -54,13 +54,13 @@ public class FileInspectorPanel extends JPanel {
 
     private ExtractorRegistry extractorRegistry = null;
 
-    private Extractor currentExtractor;
-
     private JLabel statusBar = null;
 
     private RDFContainer lastContainer;
 
     private JFrame parent;
+    
+    private boolean extractorAvailable;
     
     /**
      * initialized inference utilities
@@ -167,7 +167,7 @@ public class FileInspectorPanel extends JPanel {
         });
 
         try {
-            currentExtractor = null;
+            extractorAvailable = false;
 
             // determine the mime type
             FileInputStream stream = new FileInputStream(file);
@@ -191,8 +191,9 @@ public class FileInspectorPanel extends JPanel {
             });
             Set factories = extractorRegistry.get(mimeType);
             if (factories != null && !factories.isEmpty()) {
+                extractorAvailable = true;
                 ExtractorFactory factory = (ExtractorFactory) factories.iterator().next();
-                currentExtractor = factory.get();
+                Extractor extractor = factory.get();
 
                 RDFContainerFactoryImpl containerFactory = new RDFContainerFactoryImpl();
                 container = containerFactory.newInstance(file.toURI().toString());
@@ -200,22 +201,18 @@ public class FileInspectorPanel extends JPanel {
                 // FIXME: use mark() and reset() instead of opening a second stream
                 stream = new FileInputStream(file);
                 buffer = new BufferedInputStream(stream, 8192);
-                currentExtractor.extract(container.getDescribedUri(), buffer, null, mimeType, container);
+                extractor.extract(container.getDescribedUri(), buffer, null, mimeType, container);
                 stream.close();
             } else {
                 Set filefactories = extractorRegistry.getFileExtractorFactories(mimeType);
                 if (filefactories != null && !filefactories.isEmpty()) {
+                    extractorAvailable = true;
                     FileExtractorFactory factory = (FileExtractorFactory) filefactories.iterator().next();
                     FileExtractor currentFileExtractor = factory.get();
 
                     RDFContainerFactoryImpl containerFactory = new RDFContainerFactoryImpl();
                     container = containerFactory.newInstance(file.toURI().toString());
-
-                    // FIXME: use mark() and reset() instead of opening a second stream
-                    stream = new FileInputStream(file);
-                    buffer = new BufferedInputStream(stream, 8192);
                     currentFileExtractor.extract(container.getDescribedUri(), file, null, mimeType, container);
-                    stream.close();
                 }
             }
             // do inference
@@ -279,7 +276,7 @@ public class FileInspectorPanel extends JPanel {
                 public void run() {
                     FileInspectorPanel.this.setCursor(null);
 
-                    if (currentExtractor == null) {
+                    if (!extractorAvailable) {
                         statusBar
                                 .setText("<html><b><font color=\"red\">No extractor available for this mime type!</font></b></html>");
                     }
@@ -287,8 +284,6 @@ public class FileInspectorPanel extends JPanel {
                         statusBar.setText(" "); // make sure it has a non-empty string or else its preferred
                                                 // height will change!!
                     }
-
-                    currentExtractor = null;
                 }
             });
         }
