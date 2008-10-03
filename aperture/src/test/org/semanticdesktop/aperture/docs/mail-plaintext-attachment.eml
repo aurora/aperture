@@ -1,0 +1,50 @@
+Return-Path: christiaan.fluit@aduna-software.com
+Received: from core.aduna.info (LHLO core.aduna-software.com)
+ (87.233.177.133) by core.aduna-software.com with LMTP; Wed, 1 Oct 2008
+ 13:39:52 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by core.aduna-software.com (Postfix) with ESMTP id AC99A128001
+	for <chris@aduna-software.com>; Wed,  1 Oct 2008 13:39:52 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at 
+X-Spam-Flag: NO
+X-Spam-Score: -2.585
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.585 tagged_above=-10 required=4 tests=[AWL=0.014,
+	BAYES_00=-2.599]
+Received: from core.aduna-software.com ([127.0.0.1])
+	by localhost (core.aduna-software.com [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id XMLPgFg3sR0p for <chris@aduna-software.com>;
+	Wed,  1 Oct 2008 13:39:50 +0200 (CEST)
+Received: from [10.1.0.11] (home.aduna-software.com [213.84.59.34])
+	by core.aduna-software.com (Postfix) with ESMTP id DDBABAA037A
+	for <chris@aduna-software.com>; Wed,  1 Oct 2008 13:39:49 +0200 (CEST)
+Message-ID: <48E3617E.701@aduna-software.com>
+Date: Wed, 01 Oct 2008 13:39:42 +0200
+From: Christiaan Fluit <christiaan.fluit@aduna-software.com>
+User-Agent: Thunderbird 2.0.0.17 (Windows/20080914)
+MIME-Version: 1.0
+To: chris@aduna-software.com
+Subject: test
+Content-Type: multipart/mixed;
+ boundary="------------020102020006090802080809"
+
+This is a multi-part message in MIME format.
+--------------020102020006090802080809
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Example body text.
+
+
+--------------020102020006090802080809
+Content-Type: text/plain;
+ name="attachment.txt"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="attachment.txt"
+
+test attachment.
+
+--------------020102020006090802080809--
+
+ 	  	 

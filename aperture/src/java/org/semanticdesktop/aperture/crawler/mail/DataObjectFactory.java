@@ -502,29 +502,6 @@ public class DataObjectFactory {
         Object content = normalSinglePart.getContent();
         
         /*
-         * When this message is called the content will always be either a string, because this part is a
-         * normal message (either the root message or a forwarded message), or an attachment containing the
-         * binary stream. All kinds of multipart issues have been solved on a higher level. Note that this
-         * method does not contain any further recursive calls.
-         */
-        if (content instanceof String && ("text/plain".equals(mimeType) || "text/html".equals(mimeType))) {
-            // this should happen only for plaintext and html 
-            addStringContent((String)content,mimeType,result);
-        } else if (content instanceof InputStream || (mimeType != null && mimeType.startsWith("text/"))) {
-            // the second or condition is a special case for text/xml and other plaintext types, javamail
-            // seems to return the content of all text/... parts as a String, even when it should be returned
-            // as a stream and processed by the extractors
-            result.put(CONTENTS_KEY, streamFactory.getPartStream(normalSinglePart));
-        } else {
-            // a serious error, if it happens - it is a bug and let the users report it
-            throw new MessagingException("the content should be a string or a stream");
-        }
-        
-        if (charsetStr != null) {
-            result.put(NIE.characterSet, charsetStr);
-        }
-        
-        /*
          * The file name is not null only if this part is an attachment.
          */
         String fileName = normalSinglePart.getFileName();
@@ -547,6 +524,30 @@ public class DataObjectFactory {
              */ 
             result.put(NIE.contentCreated, messageCreationDate);
         }
+        
+        /*
+         * When this message is called the content will always be either a string, because this part is a
+         * normal message (either the root message or a forwarded message), or an attachment containing the
+         * binary stream. All kinds of multipart issues have been solved on a higher level. Note that this
+         * method does not contain any further recursive calls. 
+         */
+        if (content instanceof String && (fileName == null)) {
+            // this should happen only for message parts that have no file names
+            addStringContent((String)content,mimeType,result);
+        } else if (content instanceof InputStream || (fileName != null)) {
+            // the second or condition is a special case for text/xml and other plaintext types, javamail
+            // seems to return the content of all text/... parts as a String, even when it should be returned
+            // as a stream and processed by the extractors
+            result.put(CONTENTS_KEY, streamFactory.getPartStream(normalSinglePart));
+        } else {
+            // a serious error, if it happens - it is a bug and let the users report it
+            throw new MessagingException("the content should be a string or a stream");
+        }
+        
+        if (charsetStr != null) {
+            result.put(NIE.characterSet, charsetStr);
+        }
+
         return result;
     }
     

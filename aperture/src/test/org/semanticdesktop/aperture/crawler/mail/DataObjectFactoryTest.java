@@ -311,6 +311,43 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         validate(mailContent);
     }
     
+    /**
+     * <p>
+     * Tests whether .txt files attached to the email are returned as separate FileDataObjects instead of as
+     * DataObjects with their content already extracted.
+     * </p>
+     * 
+     * The MIME structure of this .eml file is:
+     * 
+     * <pre>
+     * multipart/mixed
+     *   text/plain - body text
+     *   text/plain, filename=&quot;attachment.txt&quot; - attachment text
+     * </pre>
+     * 
+     * <p>
+     * Obviously, it should yield two DataObjects. The second one should be a FileDataObject.
+     * </p>
+     * 
+     * @throws Exception
+     */
+    public void testPlainTextAttachment() throws Exception {
+        DataObjectFactory fac = wrapEmail("mail-plaintext-attachment.eml");
+        DataObject mail = fac.getObject();
+        assertTrue(mail.getMetadata().getString(NMO.plainTextMessageContent).contains("Example body text."));
+        assertNotNull(mail);
+        DataObject attachment = fac.getObject();
+        assertTrue(attachment instanceof FileDataObject);
+        String content = IOUtil.readString(((FileDataObject)attachment).getContent());
+        assertTrue(content.contains("test attachment"));
+        assertEquals("attachment.txt",attachment.getMetadata().getString(NFO.fileName));
+        assertTrue(attachment.getMetadata().getAll(RDF.type).contains(NFO.Attachment));
+        assertNull(fac.getObject());
+        validate(attachment);
+        mail.dispose();
+        attachment.dispose();
+    }
+    
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////// BASIC PLUMBING /////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////
