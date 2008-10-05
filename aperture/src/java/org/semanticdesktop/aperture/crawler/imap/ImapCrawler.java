@@ -546,6 +546,9 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
             if (logger.isDebugEnabled()) { logger.debug("Prefetching content info of " + currentMessages.length + " msgs"); }
             profile = new FetchProfile();
             profile.add(FetchProfile.Item.CONTENT_INFO);
+            profile.add("Message-ID");
+            profile.add("In-Reply-To");
+            profile.add("References");
             currentFolder.fetch(currentMessages, profile);
             if (logger.isDebugEnabled()) { logger.debug("Prefetching content info completed"); }
             
