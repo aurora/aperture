@@ -148,8 +148,14 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 
 <description>
 	<mimeType>application/gzip</mimeType>
-	<extensions>gz,tgz,z</extensions>
+	<extensions>gz,tgz</extensions>
 	<magicNumber encoding="hex">1f 8b 08</magicNumber>
+</description>
+
+<description>
+	<mimeType>application/x-compress</mimeType>
+	<extensions>z</extensions>
+	<magicNumber encoding="hex">1f 9d 90</magicNumber>
 </description>
 
 <description>
