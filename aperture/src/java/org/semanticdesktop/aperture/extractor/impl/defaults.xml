@@ -10,9 +10,9 @@
 	<extractorFactory>
 		<name>org.semanticdesktop.aperture.extractor.jpg.JpgExtractorFactory</name>
 	</extractorFactory>
-	<extractorFactory>
+	<!-- <extractorFactory>
 		<name>org.semanticdesktop.aperture.extractor.mime.MimeExtractorFactory</name>
-	</extractorFactory>
+	</extractorFactory> -->
 	<extractorFactory>
 		<name>org.semanticdesktop.aperture.extractor.office.OfficeExtractorFactory</name>
 	</extractorFactory>

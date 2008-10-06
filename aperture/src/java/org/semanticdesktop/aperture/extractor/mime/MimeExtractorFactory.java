@@ -12,7 +12,14 @@ import java.util.Set;
 
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
+import org.semanticdesktop.aperture.subcrawler.mime.MimeSubCrawler;
+import org.semanticdesktop.aperture.subcrawler.mime.MimeSubCrawlerFactory;
 
+/**
+ * A factory for MimeExtractor instances.
+ * 
+ * @deprecated Use {@link MimeSubCrawlerFactory} and {@link MimeSubCrawler}s instead
+ */
 public class MimeExtractorFactory implements ExtractorFactory {
 
 	private static final Set MIME_TYPES;

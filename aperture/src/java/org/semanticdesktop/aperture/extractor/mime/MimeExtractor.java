@@ -31,6 +31,7 @@ import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.HtmlParserUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.subcrawler.mime.MimeSubCrawler;
 import org.semanticdesktop.aperture.vocabulary.NMO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,8 @@ import org.slf4j.LoggerFactory;
  * 
  * <p>
  * Only typical body parts are processed during full-text extraction, (binary) attachments are not handled.
+ * 
+ * @deprecated Use {@link MimeSubCrawler} instead. 
  */
 public class MimeExtractor implements Extractor {
 
