@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -180,6 +182,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
                      "Antoni Mylka\r\n",
                      content); 
         validate(container1);
+        obj1.dispose();
         
         // then some tests of the attached message (which should reside in the third data object);
         assertEquals(obj3.getID().toString(), "uri:dummymailuri:mail-multipart-test.eml#2");
@@ -287,6 +290,10 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         assertReferencedEmails(forwardedMsg, NMO.inReplyTo,
             "<21635b740707300447w71553199j7e14e44f47727f37@mail.gmail.com>");
         validate(myGreeting);
+        myGreeting.dispose();
+        forwardedMsg.dispose();
+        sfAd.dispose();
+        sfSig.dispose();
     }
     
     /**
@@ -309,6 +316,8 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         assertEquals("line.xml",xmlAttachment.getMetadata().getString(NFO.fileName));
         assertMimeType("text/xml", new URIImpl("uri:line.xml"), ((FileDataObject)xmlAttachment).getContent());
         validate(mailContent);
+        mailContent.dispose();
+        xmlAttachment.dispose();
     }
     
     /**
@@ -346,6 +355,53 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         validate(attachment);
         mail.dispose();
         attachment.dispose();
+    }
+    
+    /**
+     * Tests whether the @link {@link DataObjectFactory#getObjectAndDisposeAllOtherObjects(String)} works
+     * correctly. The method will process an email that yields four data objects, will try to obtain the third
+     * one, and then will check if all others have been disposed already.
+     * 
+     * @throws Exception
+     */
+    public void testGetObjectAndDisposeAllOther() throws Exception {
+        DataObjectFactory fac = wrapEmail("mail-forwarded-references.eml");
+        DataObject object = fac.getObjectAndDisposeAllOtherObjects("uri:dummymailuri:mail-forwarded-references.eml#1-1");
+        assertFalse(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml").getModel().isOpen());
+        assertFalse(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml#1").getModel().isOpen());
+        assertTrue(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml#1-1").getModel().isOpen());
+        assertFalse(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml#1-2").getModel().isOpen());
+        assertMessageContentContains("This SF.net email is sponsored by: Splunk Inc.", object);
+        object.dispose();
+    }
+
+    /**
+     * <p>
+     * Tests whether the @link {@link DataObjectFactory#getObject(String)} works correctly. The method will
+     * process an email that originally yields four data objects, will try to obtain the third one, and then
+     * will check that no other object has been disposed in the process.
+     * </p>
+     * 
+     * <p>
+     * The second part of the text will call the {@link DataObjectFactory#disposeRemainingObjects()} method
+     * and will check if all models have been properly disposed.
+     * </p>
+     * 
+     * @throws Exception
+     */
+    public void testGetObjectString() throws Exception {
+        DataObjectFactory fac = wrapEmail("mail-forwarded-references.eml");
+        DataObject object = fac.getObject("uri:dummymailuri:mail-forwarded-references.eml#1-1");
+        assertTrue(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml").getModel().isOpen());
+        assertTrue(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml#1").getModel().isOpen());
+        assertTrue(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml#1-1").getModel().isOpen());
+        assertTrue(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml#1-2").getModel().isOpen());
+        assertMessageContentContains("This SF.net email is sponsored by: Splunk Inc.", object);
+        fac.disposeRemainingObjects();
+        assertFalse(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml").getModel().isOpen());
+        assertFalse(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml#1").getModel().isOpen());
+        assertFalse(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml#1-1").getModel().isOpen());
+        assertFalse(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml#1-2").getModel().isOpen());
     }
     
     //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -389,7 +445,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         assertTrue(emailTypes.contains(NIE.DataObject));
     }
 
-    private RDFContainerFactory containerFactory;
+    private DataObjectFactoryTestRDFContainerFactory containerFactory;
     
     @Override public void setUp() {
         this.containerFactory = new DataObjectFactoryTestRDFContainerFactory();
@@ -399,11 +455,17 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         containerFactory = null;
     }
     
-    class DataObjectFactoryTestRDFContainerFactory implements RDFContainerFactory {
+    private static class DataObjectFactoryTestRDFContainerFactory implements RDFContainerFactory {
+        private Map<String,RDFContainer> returnedContainers;
+        public DataObjectFactoryTestRDFContainerFactory() {
+            this.returnedContainers = new HashMap<String, RDFContainer>();
+        }
         public RDFContainer getRDFContainer(URI uri) {
             Model model = RDF2Go.getModelFactory().createModel();
             model.open();
-            return new RDFContainerImpl(model,uri);
+            RDFContainer res = new RDFContainerImpl(model,uri);
+            returnedContainers.put(uri.toString(), res);
+            return res;
         }
     }
     

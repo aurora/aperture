@@ -246,7 +246,7 @@ public class DataObjectFactory {
      * Returns a data object with the given url
      * 
      * @param url
-     * @return a data object with the given url, chosed from among the objects created from the MimeMessage
+     * @return a data object with the given url, chosen from among the objects created from the MimeMessage
      *         instance passed to the constructor of this DataObjectFactory
      */
     public DataObject getObject(String url) {
@@ -256,6 +256,27 @@ public class DataObjectFactory {
             }
         }
         return null;
+    }
+    
+    /**
+     * Returns a data object with the given url chosen from the set of objects created from the MimeMessage
+     * instance passed to the constructor of this DataObjectFactory. All other data objects from that set are
+     * disposed. If there is no data object with the given url - all data objects are disposed.
+     * 
+     * @param url
+     * @return a data object with the given url, or null if no such data object exists
+     */
+    public DataObject getObjectAndDisposeAllOtherObjects(String url) {
+        DataObject objectToReturn = null;
+        for (DataObject object : dataObjectsToReturn) {
+            if (object.getID().toString().equals(url)) {
+                objectToReturn = object;
+            }
+            else {
+                object.dispose();
+            }
+        }
+        return objectToReturn;
     }
 
     /**

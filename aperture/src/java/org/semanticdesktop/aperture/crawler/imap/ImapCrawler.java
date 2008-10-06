@@ -427,7 +427,7 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
                         new URIImpl(getMessageUri(folder, message)), getFolderURI(folder));
                 
                 // create a DataObject for the requested message or message part
-                return fac.getObject(url); 
+                return fac.getObjectAndDisposeAllOtherObjects(url); 
             }
             else {
                 // create a DataObject for this Folder
