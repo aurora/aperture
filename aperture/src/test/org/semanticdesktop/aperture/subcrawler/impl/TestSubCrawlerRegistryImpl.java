@@ -14,6 +14,9 @@ import junit.framework.TestCase;
 import org.semanticdesktop.aperture.subcrawler.SubCrawler;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerFactory;
 
+/**
+ * Tests the {@link SubCrawlerRegistryImpl} class.
+ */
 public class TestSubCrawlerRegistryImpl extends TestCase {
 
     public void testBasics() {
@@ -49,22 +52,9 @@ public class TestSubCrawlerRegistryImpl extends TestCase {
         public Set getSupportedMimeTypes() {
             return Collections.singleton(mimeType);
         }
-    }
-    
-    private static class DummySubCrawlerFactory implements SubCrawlerFactory {
 
-        private String mimeType;
-        
-        public DummySubCrawlerFactory(String mimeType) {
-            this.mimeType = mimeType;
-        }
-
-        public Set getSupportedMimeTypes() {
-            return Collections.singleton(mimeType);
-        }
-
-        public SubCrawler get() {
-            return null;
+        public String getUriPrefix() {
+            return "dummy";
         }
     }
 }

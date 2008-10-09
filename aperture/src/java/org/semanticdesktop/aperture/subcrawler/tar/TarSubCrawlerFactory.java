@@ -19,6 +19,9 @@ import org.semanticdesktop.aperture.subcrawler.SubCrawlerFactory;
 public class TarSubCrawlerFactory implements SubCrawlerFactory {
 
 	private static final Set MIME_TYPES;
+	
+	/** Prefix used for uris of entries inside tar archives */
+	public static final String TAR_URI_PREFIX = "tar";
 
 	static {
 		HashSet set = new HashSet();
@@ -34,4 +37,8 @@ public class TarSubCrawlerFactory implements SubCrawlerFactory {
 	public Set getSupportedMimeTypes() {
 		return MIME_TYPES;
 	}
+
+    public String getUriPrefix() {
+        return TAR_URI_PREFIX;
+    }
 }

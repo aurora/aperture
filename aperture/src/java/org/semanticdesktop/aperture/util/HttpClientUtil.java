@@ -6,15 +6,10 @@
  */
 package org.semanticdesktop.aperture.util;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
 import java.util.zip.GZIPInputStream;
-
-import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.Syntax;
 
 /**
  * Utility methods for clients dealing with HTTP communication.
@@ -79,6 +74,51 @@ public class HttpClientUtil {
         StringBuilder result = new StringBuilder(s.length() + 10);
         formUrlEncode(s, result);
         return result.toString();
+    }
+    
+    /** 
+     * Does the same as HttpClientUtil.formUrlEncode (i.e. RFC 1738) except for some characters
+     * that are to be left as they are. (e.g. slashes in imap folder uris - RFC 2192).
+     * @param string the string to be encoded
+     * @return the encoded folder name
+     */
+    public static String formUrlEncode(String string, String charsToLeave) {
+        int length = string.length();
+        StringBuilder buffer = new StringBuilder(length + 10);
+
+        for (int i = 0; i < length; i++) {
+            char c = string.charAt(i);
+
+            // Only characters in the range 48 - 57 (numbers), 65 - 90 (upper case letters), 97 - 122
+            // (lower case letters) can be left unencoded. The rest needs to be escaped.
+
+            if (c == ' ') {
+                // replace all spaces with a '+'
+                buffer.append('+');
+            }
+            else {
+                int cInt = c;
+                if (cInt >= 48 && cInt <= 57 || cInt >= 65 && cInt <= 90 || cInt >= 97 && cInt <= 122
+                        || (charsToLeave.indexOf(c) != -1)) {
+                    // alphanumeric character or slash
+                    buffer.append(c);
+                }
+                else {
+                    // escape all non-alphanumerics
+                    buffer.append('%');
+                    String hexVal = Integer.toHexString(c);
+
+                    // ensure use of two characters
+                    if (hexVal.length() == 1) {
+                        buffer.append('0');
+                    }
+
+                    buffer.append(hexVal);
+                }
+            }
+        }
+
+        return buffer.toString();
     }
 
     /**

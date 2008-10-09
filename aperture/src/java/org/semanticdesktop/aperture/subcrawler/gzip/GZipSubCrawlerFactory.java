@@ -20,6 +20,9 @@ import org.semanticdesktop.aperture.subcrawler.SubCrawlerFactory;
 public class GZipSubCrawlerFactory implements SubCrawlerFactory {
 
 	private static final Set MIME_TYPES;
+	
+	/** Prefix used for uris of entries inside gzip archives */
+    public static final String GZIP_URI_PREFIX = "gzip";
 
 	static {
 		HashSet set = new HashSet();
@@ -35,4 +38,8 @@ public class GZipSubCrawlerFactory implements SubCrawlerFactory {
 	public Set getSupportedMimeTypes() {
 		return MIME_TYPES;
 	}
+
+    public String getUriPrefix() {
+        return GZIP_URI_PREFIX;
+    }
 }

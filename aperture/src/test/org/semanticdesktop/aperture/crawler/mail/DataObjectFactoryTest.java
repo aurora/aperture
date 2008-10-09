@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -74,21 +74,24 @@ public class DataObjectFactoryTest extends ApertureTestBase {
          */
         Resource sender = findSingleObjectResource(model, emailUri, NMO.from);
         assertSingleValueProperty(model, sender, NCO.fullname, "Christiaan Fluit");
-        List<Resource> senderEmailAddresses = findObjectResourceList(model, sender, NCO.hasEmailAddress);
+        Set<Resource> senderEmailAddresses = findObjectResourceSet(model, sender, NCO.hasEmailAddress);
         Resource receiver = findSingleObjectResource(model, emailUri, NMO.to);
         assertSingleValueProperty(model, receiver, NCO.fullname, "Christiaan Fluit");
-        List<Resource> receiverEmailAddresses = findObjectResourceList(model, receiver, NCO.hasEmailAddress);
+        Set<Resource> receiverEmailAddresses = findObjectResourceSet(model, receiver, NCO.hasEmailAddress);
         
         /*
          * This is a test that confirms the problem with loosing information which address was the sender
          * and which was the receiver if both have the same name.
          */
-        assertEquals(2,senderEmailAddresses.size()); 
-        assertTrue(RDFTool.getSingleValueString(model, senderEmailAddresses.get(0), NCO.emailAddress).equalsIgnoreCase("christiaan.fluit@aduna.biz"));
-        assertTrue(RDFTool.getSingleValueString(model, senderEmailAddresses.get(1), NCO.emailAddress).equalsIgnoreCase("christiaan.fluit@aduna.biz"));
+        assertEquals(2,senderEmailAddresses.size());
+        Iterator<Resource> it = senderEmailAddresses.iterator();
+        assertTrue(RDFTool.getSingleValueString(model, it.next(), NCO.emailAddress).equalsIgnoreCase("christiaan.fluit@aduna.biz"));
+        assertTrue(RDFTool.getSingleValueString(model, it.next(), NCO.emailAddress).equalsIgnoreCase("christiaan.fluit@aduna.biz"));
+        
         assertEquals(2,receiverEmailAddresses.size()); 
-        assertTrue(senderEmailAddresses.contains(receiverEmailAddresses.get(0)));
-        assertTrue(senderEmailAddresses.contains(receiverEmailAddresses.get(1)));
+        it = receiverEmailAddresses.iterator();
+        assertTrue(senderEmailAddresses.contains(it.next()));
+        assertTrue(senderEmailAddresses.contains(it.next()));
         assertEquals(sender,receiver); // the sender and receiver are the same resource
         
         testStandardMessageMetadata(model, emailUri, "iso-8859-1", "message/rfc822", 
@@ -437,7 +440,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         // this exhibits the problem with brackets
         assertSingleValueProperty(model, emailUri, NMO.messageId, messageId);
         
-        List<Resource> emailTypes = findObjectResourceList(model, emailUri, RDF.type);
+        Set<Resource> emailTypes = findObjectResourceSet(model, emailUri, RDF.type);
         assertEquals(4,emailTypes.size());
         assertTrue(emailTypes.contains(NMO.Email));
         assertTrue(emailTypes.contains(NMO.MimeEntity));

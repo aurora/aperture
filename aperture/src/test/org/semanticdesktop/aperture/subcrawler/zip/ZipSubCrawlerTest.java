@@ -6,11 +6,12 @@
  */
 package org.semanticdesktop.aperture.subcrawler.zip;
 
-import java.util.List;
+import java.util.Set;
 
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerTestBase;
@@ -31,23 +32,24 @@ public class ZipSubCrawlerTest extends SubCrawlerTestBase {
         metadata = subCrawl("zip-test.zip", subCrawler, new TestBasicSubCrawlerHandler());
         Model model = metadata.getModel();
         
-        doBasicArchiverTests(model, "zip-test.zip");
+        doBasicArchiverTests(model, "zip-test.zip", "zip");
         
         URI archiveUri = model.createURI("uri:dummyuri/zip-test.zip");
         Resource ziptestfolder = findSingleSubjectResource(model, NFO.belongsToContainer, archiveUri);
-        List<Resource> ziptestContent = findSubjectResourceList(model, NFO.belongsToContainer, ziptestfolder);
-        List<Resource> subfolderContent = findSubjectResourceList(model, NFO.belongsToContainer, ziptestContent.get(3));
+        Set<Resource> ziptestContent = findSubjectResourceSet(model, NFO.belongsToContainer, ziptestfolder);
+        URI subfolderUri = model.createURI("zip:uri:dummyuri/zip-test.zip!/subfolder/");
+        Set<Resource> subfolderContent = findSubjectResourceSet(model, NFO.belongsToContainer, subfolderUri);
         
         // hashes
         assertCrc32Hash(model, ziptestfolder, 0);
-        assertCrc32Hash(model, ziptestContent.get(0), 2227022722L);
-        assertCrc32Hash(model, ziptestContent.get(1), 2218881576L);
-        assertCrc32Hash(model, ziptestContent.get(2), 2479617527L);
-        assertCrc32Hash(model, ziptestContent.get(3), 0);
-        assertCrc32Hash(model, subfolderContent.get(0), 4267625106L);
-        assertCrc32Hash(model, subfolderContent.get(1), 544725069L);
-        assertCrc32Hash(model, subfolderContent.get(2), 1261442136L);
-        assertCrc32Hash(model, ziptestContent.get(4), 389689384);
+        assertCrc32Hash(model, new URIImpl("zip:uri:dummyuri/zip-test.zip!/zip-test/test1.txt"), 2227022722L);
+        assertCrc32Hash(model, new URIImpl("zip:uri:dummyuri/zip-test.zip!/zip-test/test2.txt"), 2218881576L);
+        assertCrc32Hash(model, new URIImpl("zip:uri:dummyuri/zip-test.zip!/zip-test/test3.txt"), 2479617527L);
+        assertCrc32Hash(model, new URIImpl("zip:uri:dummyuri/zip-test.zip!/zip-test/subfolder/"), 0);
+        assertCrc32Hash(model, new URIImpl("zip:uri:dummyuri/zip-test.zip!/zip-test/subfolder/test4.txt"), 4267625106L);
+        assertCrc32Hash(model, new URIImpl("zip:uri:dummyuri/zip-test.zip!/zip-test/subfolder/test5.txt"), 544725069L);
+        assertCrc32Hash(model, new URIImpl("zip:uri:dummyuri/zip-test.zip!/zip-test/subfolder/pdf-manyauthors.pdf"), 1261442136L);
+        assertCrc32Hash(model, new URIImpl("zip:uri:dummyuri/zip-test.zip!/zip-test/microsoft-word-2000.doc"), 389689384);
         
         validate(metadata);
         metadata.dispose();

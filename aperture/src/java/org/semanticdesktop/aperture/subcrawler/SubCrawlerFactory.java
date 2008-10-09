@@ -27,4 +27,12 @@ public interface SubCrawlerFactory {
      * @return A SubCrawler instance.
      */
     public SubCrawler get();
+    
+    /**
+     * Returns the prefix used to construct uris. See the documentation of the {@link SubCrawler} class for
+     * more details.
+     * 
+     * @return the prefix used to construct uris
+     */
+    public String getUriPrefix();
 }

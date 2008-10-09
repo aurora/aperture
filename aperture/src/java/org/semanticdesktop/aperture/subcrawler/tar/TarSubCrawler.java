@@ -8,7 +8,6 @@ package org.semanticdesktop.aperture.subcrawler.tar;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.zip.ZipInputStream;
 
 import org.apache.tools.tar.TarEntry;
 import org.apache.tools.tar.TarInputStream;
@@ -35,15 +34,12 @@ public class TarSubCrawler extends AbstractArchiverSubCrawler {
         private TarEntry entry;
         public TarSubCrawlerEntry(TarEntry entry) { this.entry = entry; }
         // this hack has been introduced because of a quirk in the solaris tar
-        // if you write tar cvf tar-test.tar zip-test/
-        // the 'root' folder of the archive will be zip-test// (double hash at the end)
+        // if you write "tar cvf tar-test.tar zip-test/"
+        // the 'root' folder of the archive will be "zip-test//" (double hash at the end)
         // this problem doesn't come up if you write 
-        // tar cvf tar-test.tar zip-test
+        // "tar cvf tar-test.tar zip-test"
         // but the former option also happens, that's why I replace all double slashes with a single slash
-        @Override public String getName()               { return entry.getName().replaceAll("//", "/"); }
-        @Override public String getComment()            { return null; }
-        @Override public long getCompressedSize()       { return -1; }
-        @Override public long getCrc()                  { return -1; }
+        @Override public String getPath()               { return entry.getName().replaceAll("//", "/"); }
         @Override public long getLastModificationTime() { return entry.getModTime().getTime(); }
         @Override public boolean isDirectory()          { return entry.isDirectory(); }
     }
@@ -51,6 +47,11 @@ public class TarSubCrawler extends AbstractArchiverSubCrawler {
     @Override
     protected ArchiveInputStream getArchiveInputStream(InputStream in) {
         return new TarSubCrawlerInputStream(in);
+    }
+
+    @Override
+    public String getUriPrefix() {
+        return TarSubCrawlerFactory.TAR_URI_PREFIX;
     }
 
 }

@@ -21,7 +21,7 @@ public class TarSubCrawlerTest extends SubCrawlerTestBase {
     public void testTarTest() throws Exception {
         TarSubCrawler subCrawler = new TarSubCrawler();
         RDFContainer metadata = subCrawl("tar-test.tar", subCrawler, new TestBasicSubCrawlerHandler());
-        doBasicArchiverTests(metadata.getModel(), "tar-test.tar");
+        doBasicArchiverTests(metadata.getModel(), "tar-test.tar", "tar");
         validate(metadata);
         metadata.dispose();
         metadata = null;

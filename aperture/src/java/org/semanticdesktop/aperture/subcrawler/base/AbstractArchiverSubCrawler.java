@@ -35,21 +35,26 @@ import org.semanticdesktop.aperture.vocabulary.NIE;
  * A SubCrawler Implementation working with archive files, i.e. files containing a number
  * of other files. This tries to be an abstraction over all known archive systems (zip, tar etc.)
  */
-public abstract class AbstractArchiverSubCrawler implements SubCrawler {
+public abstract class AbstractArchiverSubCrawler extends AbstractSubCrawler {
     
     /**
      * A key used within the AccessData to connect an entry with the date of the last modification.
      */
     private static final String LAST_MODIFIED_DATE = "lastModified";
     
+    /**
+     * A flag indicating that a stop has been requested by the client. If the SubCrawler is within the
+     * {@link #subCrawl(URI, InputStream, SubCrawlerHandler, DataSource, AccessData, Charset, String, RDFContainer)}
+     * method, it should terminate as soon as possible.
+     */
     private boolean stopRequested = false;
     
-    /** An input stream encapsulating an archive */
-    protected abstract class ArchiveInputStream extends FilterInputStream {
+    /** An input stream encapsulating an archive stream with compressed data */
+    protected abstract static class ArchiveInputStream extends FilterInputStream {
         /**
          * The main constructor
          * @param in the input stream to be wrapped
-          */
+         */
         public ArchiveInputStream(InputStream in) {
             super (in);
         }
@@ -65,17 +70,28 @@ public abstract class AbstractArchiverSubCrawler implements SubCrawler {
          */
         public abstract void closeEntry() throws IOException;
     }
+    
     /** Encapsulates an archive entry */
-    protected abstract class ArchiveEntry {
-        public abstract String getName();
-        public abstract long getLastModificationTime();
-        public abstract boolean isDirectory();
-        public abstract String getComment();
-        public abstract long getCompressedSize();
-        public abstract long getCrc();
+    protected abstract static class ArchiveEntry {
+        /** @return the archive entry comment */
+        public String getComment() { return null; }
+        /** @return the compressed size of the entry */
+        public long getCompressedSize() { return -1; }
+        /** @return the crc 32 checksum of the entry */
+        public long getCrc() { return -1; }
+        /** @return the last modification time */
+        public long getLastModificationTime() { return -1; }
+        /** @return the path of the archive entry within the archive file */
+        public String getPath() { return null; }
+        /** @return true if the archive entry refers to a directory */
+        public boolean isDirectory() { return false; }
     }
     
-    protected abstract ArchiveInputStream getArchiveInputStream(InputStream in);
+    /** 
+     * @param compressedStream the stream with the compressed archive data 
+     * @return and ArchiveInputStream encapsulating the given compressed stream 
+     */
+    protected abstract ArchiveInputStream getArchiveInputStream(InputStream compressedStream);
     
     /**
      * @see SubCrawler#subCrawl(URI, InputStream, SubCrawlerHandler, DataSource, AccessData, Charset, String, RDFContainer)
@@ -118,15 +134,19 @@ public abstract class AbstractArchiverSubCrawler implements SubCrawler {
     private void processSingleEntry(ArchiveInputStream archiveStream, ArchiveEntry archiveEntry, 
             SubCrawlerHandler handler, DataSource dataSource, AccessData accessData,
             RDFContainer parentMetadata) {
-        URI uri = parentMetadata.getModel().createURI(
-            parentMetadata.getDescribedUri().toString() + "/" + archiveEntry.getName());
+        
+        URI uri = createChildUri(parentMetadata.getDescribedUri(), archiveEntry.getPath());
+        
         boolean newEntry = true;
         if (accessData != null && accessData.isKnownId(uri.toString())) {
             newEntry = false;
         }
-        String lastModifiedDateString = null;
-        if (!newEntry
-                && (lastModifiedDateString = accessData.get(uri.toString(), LAST_MODIFIED_DATE)) != null) {
+        
+        String lastModifiedDateString = (accessData != null) ? 
+                accessData.get(uri.toString(), LAST_MODIFIED_DATE) : 
+                null;
+        
+        if ( !newEntry && lastModifiedDateString != null) {
             try {
                 long lastModifiedDate = Long.parseLong(lastModifiedDateString);
                 long currentModifiedDate = archiveEntry.getLastModificationTime();
@@ -147,8 +167,7 @@ public abstract class AbstractArchiverSubCrawler implements SubCrawler {
         
         String superfolder = getSuperfolder(archiveEntry);
         if (superfolder != null) {
-            URI superfolderUri = parentMetadata.getModel().createURI(
-                parentMetadata.getDescribedUri().toString() + "/" + superfolder);
+            URI superfolderUri = createChildUri(parentMetadata.getDescribedUri(), superfolder);
             container.add(NFO.belongsToContainer, superfolderUri);
         } else {
             container.add(NFO.belongsToContainer, parentMetadata.getDescribedUri());
@@ -205,50 +224,50 @@ public abstract class AbstractArchiverSubCrawler implements SubCrawler {
     }
     
     private String getFileName(ArchiveEntry entry) {
-        String name = entry.getName();
+        String path = entry.getPath();
         String fileName = null;
-        if (name.equals("/")) {
-            fileName = name;
-        } else if (name.endsWith("/")) {
+        if (path.equals("/")) {
+            fileName = path;
+        } else if (path.endsWith("/")) {
             // a special case for folder entries, whose names end with a slash 
-            int lastSlash = name.lastIndexOf('/',name.length()-2);
+            int lastSlash = path.lastIndexOf('/',path.length()-2);
             if (lastSlash == -1) {
                 // this happens for folders directly beneath the root of the archive
                 // the name is like 'zip-test/' - slash at the end, no slash at the beginning
                 // we only need to cut off the last slash
-                fileName = name.substring(0,name.length() - 1);
+                fileName = path.substring(0,path.length() - 1);
             } else {
                 // this happens for folders nested deeper within the archive tree
                 // the name is like 'zip-test/subfolder/', we need to cut off the
                 // initial portion 'zip-test/' and the last slash
-                fileName = name.substring(lastSlash + 1, name.length() - 1);
+                fileName = path.substring(lastSlash + 1, path.length() - 1);
             }
         } else {
             // normal files, whose names don't end with a hash
-            int lastSlash = name.lastIndexOf('/',name.length()-1);
+            int lastSlash = path.lastIndexOf('/',path.length()-1);
             if (lastSlash == -1) {
                 // this happens for files directly beneath the root of the archive
                 // the name is like 'file.txt' - no slash at the end, no slash at the beginning
                 // we need to return the name itself
-                fileName = name;
+                fileName = path;
             } else {
                 // this happens for files nested deeper within the archive tree
                 // the name is like 'zip-test/file1.txt', we need to cut off the
                 // initial portion 'zip-test/' 
-                fileName = name.substring(lastSlash + 1, name.length());
+                fileName = path.substring(lastSlash + 1, path.length());
             }
         }
         return fileName;
     }
     
     private String getSuperfolder(ArchiveEntry entry) {
-        String name = entry.getName();
+        String path = entry.getPath();
         String superfolderName = null;
-        if (name.equals("/")) {
+        if (path.equals("/")) {
             superfolderName = null;
-        } else if (name.endsWith("/")) {
+        } else if (path.endsWith("/")) {
             // a special case for folder entries, whose names end with a slash 
-            int lastSlash = name.lastIndexOf('/',name.length()-2);
+            int lastSlash = path.lastIndexOf('/',path.length()-2);
             if (lastSlash == -1) {
                 // this happens for folders directly beneath the root of the archive
                 // the name is like 'zip-test/' - they don't have any superfolder
@@ -257,11 +276,11 @@ public abstract class AbstractArchiverSubCrawler implements SubCrawler {
                 // this happens for folders nested deeper within the archive tree
                 // the name is like 'zip-test/subfolder/', we need to cut off the
                 // trailing portion 'subfolder/' 
-                superfolderName = name.substring(0, lastSlash + 1);
+                superfolderName = path.substring(0, lastSlash + 1);
             }
         } else {
             // normal files, whose names don't end with a hash
-            int lastSlash = name.lastIndexOf('/',name.length()-1);
+            int lastSlash = path.lastIndexOf('/',path.length()-1);
             if (lastSlash == -1) {
                 // this happens for files directly beneath the root of the archive
                 // the name is like 'file.txt' - they have no superfolder
@@ -270,7 +289,7 @@ public abstract class AbstractArchiverSubCrawler implements SubCrawler {
                 // this happens for files nested deeper within the archive tree
                 // the name is like 'zip-test/file1.txt', we need to cut off the
                 // trailing portion 'file.txt' 
-                superfolderName = name.substring(0, lastSlash + 1);
+                superfolderName = path.substring(0, lastSlash + 1);
             }
         }
         return superfolderName;
@@ -286,7 +305,7 @@ public abstract class AbstractArchiverSubCrawler implements SubCrawler {
          * @param in the input stream to wrap
          */
         protected UnclosableStream(InputStream in) {
-            super(new BufferedInputStream(in));
+            super(in.markSupported() ? in : new BufferedInputStream(in));
         }
         /** the close() implementation does not close the underlying stream */
         public void close() {

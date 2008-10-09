@@ -28,7 +28,7 @@ import org.semanticdesktop.aperture.vocabulary.NFO;
 /**
  * A SubCrawler Implementation working with compressors.
  */
-public abstract class AbstractCompressorSubCrawler implements SubCrawler {
+public abstract class AbstractCompressorSubCrawler extends AbstractSubCrawler {
     
     /**
      * Returns a stream that uncompresses the data
@@ -103,22 +103,22 @@ public abstract class AbstractCompressorSubCrawler implements SubCrawler {
         }
     }
     
-    // this should actually be the responsibility of the concrete compressors
-    // it may be moved downwards in future...
-    private URI getContentUri(URI archiveUri) {
-        String uriString = archiveUri.toString();
-        if (uriString.endsWith(".gz")) {
-            // cut of '.gz' from the end
-            return new URIImpl(uriString.substring(0,uriString.length() - 3));
-        } else if (uriString.endsWith(".bz2")) {
-            // cut of '.gz' from the end
-            return new URIImpl(uriString.substring(0,uriString.length() - 4));
-        } else if (uriString.endsWith(".tgz") || uriString.endsWith(".tbz")) {
-            // cut off 'tgz' and replace it with 'tar'
-            return new URIImpl(uriString.substring(0,uriString.length() - 3) + "tar");
+    /**
+     * Returns the uri of the content file, this method is supposed to strip the compressor-specific suffix
+     * (like .gz or .bz2). It is meant to be overridden by the concrete compressor subcrawler subclasses.
+     * 
+     * @param archiveUri the uri of the archive
+     * @return the uri of the compressed file content
+     */
+    protected URI getContentUri(URI archiveUri) {
+        // this method is supposed to be overridden, so either there is an error, or a subclass
+        // has called super.getContentUri, therefore we invent an arbitrary extension
+        String string = archiveUri.toString();
+        int hashIndex = string.indexOf("/");
+        if (hashIndex != -1) {
+            return createChildUri(archiveUri, string.substring(hashIndex) + ".content");
         } else {
-            // this means that the extension is wrong, we invent an arbitrary one
-            return new URIImpl(uriString + ".content");
+            return createChildUri(archiveUri, string + ".content");
         }
     }
 

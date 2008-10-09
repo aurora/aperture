@@ -20,6 +20,9 @@ import org.semanticdesktop.aperture.subcrawler.SubCrawlerFactory;
 public class BZip2SubCrawlerFactory implements SubCrawlerFactory {
 
 	private static final Set MIME_TYPES;
+	
+	/** Prefix used for uris of entries inside bzip2 archives */
+    public static final String BZIP2_URI_PREFIX = "bzip2";
 
 	static {
 		HashSet set = new HashSet();
@@ -35,4 +38,8 @@ public class BZip2SubCrawlerFactory implements SubCrawlerFactory {
 	public Set getSupportedMimeTypes() {
 		return MIME_TYPES;
 	}
+
+    public String getUriPrefix() {
+        return BZIP2_URI_PREFIX;
+    }
 }

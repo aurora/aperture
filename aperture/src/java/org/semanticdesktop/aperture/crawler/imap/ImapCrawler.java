@@ -830,7 +830,7 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
     
     /* -------------------- Methods related to URI generation (RFC 2192) -------------------- */
     
-    private String getFolderURIPrefix(Folder folder) throws MessagingException {
+    private String getFolderURIPrefix(Folder folder) {
         StringBuilder buffer = new StringBuilder(100);
         URLName url = store.getURLName();
 
@@ -849,7 +849,7 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
 
         // append path
         buffer.append('/');
-        buffer.append(encodeFolderName(folder.getFullName()));
+        buffer.append(HttpClientUtil.formUrlEncode(folder.getFullName(), "/"));
 
         return buffer.toString();
     }
@@ -879,51 +879,6 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
         else {
             return null;
         }
-    }
-
-    /** 
-     * Does the same as HttpClientUtil.formUrlEncode (i.e. RFC 1738) except for encoding the slash,
-     * which should not be encoded according to RFC 2192.
-     * @param string the string to be encoded
-     * @return the encoded folder name
-     */
-    public static String encodeFolderName(String string) {
-        int length = string.length();
-        StringBuilder buffer = new StringBuilder(length + 10);
-
-        for (int i = 0; i < length; i++) {
-            char c = string.charAt(i);
-
-            // Only characters in the range 48 - 57 (numbers), 65 - 90 (upper case letters), 97 - 122
-            // (lower case letters) can be left unencoded. The rest needs to be escaped.
-
-            if (c == ' ') {
-                // replace all spaces with a '+'
-                buffer.append('+');
-            }
-            else {
-                int cInt = c;
-                if (cInt >= 48 && cInt <= 57 || cInt >= 65 && cInt <= 90 || cInt >= 97 && cInt <= 122
-                        || cInt == 46) {
-                    // alphanumeric character or slash
-                    buffer.append(c);
-                }
-                else {
-                    // escape all non-alphanumerics
-                    buffer.append('%');
-                    String hexVal = Integer.toHexString(c);
-
-                    // ensure use of two characters
-                    if (hexVal.length() == 1) {
-                        buffer.append('0');
-                    }
-
-                    buffer.append(hexVal);
-                }
-            }
-        }
-
-        return buffer.toString();
     }
     
     @Override

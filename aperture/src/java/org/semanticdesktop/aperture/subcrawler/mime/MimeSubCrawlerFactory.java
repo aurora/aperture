@@ -21,6 +21,8 @@ import org.semanticdesktop.aperture.subcrawler.SubCrawlerFactory;
 public class MimeSubCrawlerFactory implements SubCrawlerFactory {
 
 	private static final Set MIME_TYPES;
+	
+	public static String MIME_URI_PREFIX = "mime";
 
 	static {
 		HashSet set = new HashSet();
@@ -37,4 +39,8 @@ public class MimeSubCrawlerFactory implements SubCrawlerFactory {
 	public Set getSupportedMimeTypes() {
 		return MIME_TYPES;
 	}
+
+    public String getUriPrefix() {
+        return MIME_URI_PREFIX;
+    }
 }

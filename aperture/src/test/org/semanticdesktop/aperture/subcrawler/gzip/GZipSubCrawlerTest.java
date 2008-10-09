@@ -32,7 +32,7 @@ public class GZipSubCrawlerTest extends SubCrawlerTestBase {
         GZipSubCrawler subCrawler = new GZipSubCrawler();
         CompressorSubCrawlerHandler handler = new CompressorSubCrawlerHandler();
         metadata = subCrawl("gzip-txt-gziptest.txt.gz", subCrawler, handler);
-        doBasicCompressorTest(metadata.getModel(), "gzip-txt-gziptest.txt.gz", "gzip-txt-gziptest.txt");
+        doBasicCompressorTest(metadata.getModel(), "gzip-txt-gziptest.txt.gz", "gzip-txt-gziptest.txt","gzip");
  
         // the extracted text is as follows, this means that the decompression works
         assertEquals("This is a text file for Aperture\n", handler.getExtractedString());

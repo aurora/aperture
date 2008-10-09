@@ -13,9 +13,15 @@ import java.util.Set;
 import org.semanticdesktop.aperture.subcrawler.SubCrawler;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerFactory;
 
+/**
+ * A factory for {@link ZipSubCrawler} instances
+ */
 public class ZipSubCrawlerFactory implements SubCrawlerFactory {
 
 	private static final Set MIME_TYPES;
+	
+	/** Prefix used for uris of entries inside zip archives */
+    public static final String ZIP_URI_PREFIX = "zip";
 
 	static {
 		HashSet set = new HashSet();
@@ -31,4 +37,8 @@ public class ZipSubCrawlerFactory implements SubCrawlerFactory {
 	public Set getSupportedMimeTypes() {
 		return MIME_TYPES;
 	}
+
+    public String getUriPrefix() {
+        return ZIP_URI_PREFIX;
+    }
 }

@@ -24,7 +24,7 @@ public class BZip2SubCrawlerTest extends SubCrawlerTestBase {
         BZip2SubCrawler subCrawler = new BZip2SubCrawler();
         CompressorSubCrawlerHandler handler = new CompressorSubCrawlerHandler();
         metadata = subCrawl("bzip2-txt-bziptest.txt.bz2", subCrawler, handler);
-        doBasicCompressorTest(metadata.getModel(), "bzip2-txt-bziptest.txt.bz2", "bzip2-txt-bziptest.txt");
+        doBasicCompressorTest(metadata.getModel(), "bzip2-txt-bziptest.txt.bz2", "bzip2-txt-bziptest.txt","bzip2");
  
         // the extracted text is as follows, this means that the decompression works
         assertEquals("This is a text file for Aperture\n", handler.getExtractedString());

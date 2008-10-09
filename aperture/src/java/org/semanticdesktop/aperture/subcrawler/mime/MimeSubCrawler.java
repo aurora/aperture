@@ -8,11 +8,16 @@ package org.semanticdesktop.aperture.subcrawler.mime;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 
+import javax.mail.Header;
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.internet.MimeMessage;
@@ -31,9 +36,11 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.UpdateException;
 import org.semanticdesktop.aperture.rdf.ValueFactory;
-import org.semanticdesktop.aperture.subcrawler.SubCrawler;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerException;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler;
+import org.semanticdesktop.aperture.subcrawler.base.AbstractSubCrawler;
+import org.semanticdesktop.aperture.util.StringUtil;
 
 /**
  * <p>
@@ -44,22 +51,22 @@ import org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler;
  * It is basically a thin wrapper around the DataObjectFactory.
  * </p>
  */
-public class MimeSubCrawler implements SubCrawler, DataObjectFactory.PartStreamFactory {
+public class MimeSubCrawler extends AbstractSubCrawler implements DataObjectFactory.PartStreamFactory {
     
     private boolean stopRequested;
     
-    @SuppressWarnings("unchecked")
     public void subCrawl(URI id, InputStream stream, SubCrawlerHandler handler, DataSource dataSource,
             AccessData accessData, Charset charset, String mimeType, RDFContainer parentMetadata)
             throws SubCrawlerException {
         DataObjectFactory fac = null;
         try {
             MimeMessage msg = new MimeMessage(null, stream);
-            URI messageUri = parentMetadata.getDescribedUri();
-            RDFContainerFactory myFac = 
-                new FilteringRDFContainerFactory(
-                    handler.getRDFContainerFactory(parentMetadata.getDescribedUri().toString()),
-                    parentMetadata);
+            URI messageUri = createChildUri(parentMetadata.getDescribedUri(), getMessageId(msg));
+//            RDFContainerFactory myFac = 
+//                new FilteringRDFContainerFactory(
+//                    handler.getRDFContainerFactory(parentMetadata.getDescribedUri().toString()),
+//                    parentMetadata);
+            RDFContainerFactory myFac = handler.getRDFContainerFactory(messageUri.toString());
             fac = new DataObjectFactory(msg,myFac,this,dataSource,messageUri,null);
             DataObject object = null;
             
@@ -70,19 +77,20 @@ public class MimeSubCrawler implements SubCrawler, DataObjectFactory.PartStreamF
              * can potentially lead to problems.
              */
             while (!stopRequested && (object = fac.getObject()) != null) {
-                /*
-                 * we bypass the data object that corresponds to the message itself. by virtue of the
-                 * FilterRDFContainerFactory, the metadata of this object is actually the same instance as the
-                 * parent metadata passed as an argument to this method.
-                 */
-                if (object.getID().equals(parentMetadata.getDescribedUri())) {
-                    /*
-                     * we may safely call dispose here, because the object metadata is our
-                     * UnDisposableRDFContainer
-                     */
-                    object.dispose();
-                    continue;
-                }
+                
+//                /*
+//                 * we bypass the data object that corresponds to the message itself. by virtue of the
+//                 * FilterRDFContainerFactory, the metadata of this object is actually the same instance as the
+//                 * parent metadata passed as an argument to this method.
+//                 */
+//                if (object.getID().equals(parentMetadata.getDescribedUri())) {
+//                    /*
+//                     * we may safely call dispose here, because the object metadata is our
+//                     * UnDisposableRDFContainer
+//                     */
+//                    object.dispose();
+//                    continue;
+//                }
 
                 // first of all get a string version of the message uri
                 String queuedUri = object.getID().toString();           
@@ -142,284 +150,328 @@ public class MimeSubCrawler implements SubCrawler, DataObjectFactory.PartStreamF
     public void stopSubCrawler() {
         stopRequested = true;
     }
+    
+    private String getMessageId(Message message) throws MessagingException {
+        String [] messageIds = message.getHeader("Message-ID");
+        String id = null;
+        
+        if (messageIds != null && messageIds.length > 0) {
+            id = messageIds[0];
+            if (id.startsWith("<")) {
+                id = id.substring(1);
+            }
+            if (id.endsWith(">")) {
+                id = id.substring(0,id.length() - 1);
+            }
+            try {
+                id = URLEncoder.encode(id, "UTF-8");
+            }
+            catch (UnsupportedEncodingException e) {
+                // this obviously won't happen
+            }
+        } else {
+            /*
+             * This is insane, but you never know...
+             */
+            StringBuilder builder = new StringBuilder();
+            Enumeration enumeration = message.getAllHeaders();
+            /*
+             * This obviously depends on the headers being returned in the same
+             * order every time the message is read. Let's hope this is actually
+             * the case, didn't actually test it.
+             */
+            while (enumeration.hasMoreElements()) {
+                Header header = (Header)enumeration.nextElement();
+                builder.append(header.getName());
+                builder.append(header.getValue());
+            }
+            id = StringUtil.sha1Hash(builder.toString());
+        }
+        return id;
+    }
+    
+    @Override
+    public String getUriPrefix() {
+        return MimeSubCrawlerFactory.MIME_URI_PREFIX;
+    }
 
     public InputStream getPartStream(Part part) throws MessagingException, IOException {
         return part.getInputStream();
     }
     
-    private class FilteringRDFContainerFactory implements RDFContainerFactory {
-        private RDFContainerFactory wrappedFactory;
-        private RDFContainer filterContainer;
-        FilteringRDFContainerFactory(RDFContainerFactory factory, RDFContainer filterContainer) {
-            this.wrappedFactory = factory;
-            this.filterContainer = new UndisposableRDFContainer(filterContainer);
-        }
-        public RDFContainer getRDFContainer(URI uri) {
-            if (uri.equals(filterContainer.getDescribedUri())) {
-                return filterContainer;
-            } else {
-                return wrappedFactory.getRDFContainer(uri);
-            }
-        }
-    }
-    
-    private class UndisposableRDFContainer implements RDFContainer {
-        private RDFContainer wrappedContainer;
-        UndisposableRDFContainer(RDFContainer container) {
-            this.wrappedContainer = container;
-        }
-        /**
-         * @param statement
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#add(org.ontoware.rdf2go.model.Statement)
-         */
-        public void add(Statement statement) throws UpdateException {
-            wrappedContainer.add(statement);
-        }
-        /**
-         * @param property
-         * @param value
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#add(org.ontoware.rdf2go.model.node.URI, boolean)
-         */
-        public void add(URI property, boolean value) throws UpdateException {
-            wrappedContainer.add(property, value);
-        }
-        /**
-         * @param property
-         * @param value
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#add(org.ontoware.rdf2go.model.node.URI, java.util.Calendar)
-         */
-        public void add(URI property, Calendar value) throws UpdateException {
-            wrappedContainer.add(property, value);
-        }
-        /**
-         * @param property
-         * @param value
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#add(org.ontoware.rdf2go.model.node.URI, java.util.Date)
-         */
-        public void add(URI property, Date value) throws UpdateException {
-            wrappedContainer.add(property, value);
-        }
-        /**
-         * @param property
-         * @param value
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#add(org.ontoware.rdf2go.model.node.URI, int)
-         */
-        public void add(URI property, int value) throws UpdateException {
-            wrappedContainer.add(property, value);
-        }
-        /**
-         * @param property
-         * @param value
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#add(org.ontoware.rdf2go.model.node.URI, long)
-         */
-        public void add(URI property, long value) throws UpdateException {
-            wrappedContainer.add(property, value);
-        }
-        /**
-         * @param property
-         * @param value
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#add(org.ontoware.rdf2go.model.node.URI, org.ontoware.rdf2go.model.node.Node)
-         */
-        public void add(URI property, Node value) throws UpdateException {
-            wrappedContainer.add(property, value);
-        }
-        /**
-         * @param property
-         * @param value
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#add(org.ontoware.rdf2go.model.node.URI, java.lang.String)
-         */
-        public void add(URI property, String value) throws UpdateException {
-            wrappedContainer.add(property, value);
-        }
-        /**
-         * 
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#dispose()
-         */
-        public void dispose() {
-            /*
-             * ignore the call to dispose
-             */
-        }
-        /**
-         * @param property
-         * @return
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getAll(org.ontoware.rdf2go.model.node.URI)
-         */
-        @SuppressWarnings("unchecked")
-        public Collection getAll(URI property) {
-            return wrappedContainer.getAll(property);
-        }
-        /**
-         * @param property
-         * @return
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getBoolean(org.ontoware.rdf2go.model.node.URI)
-         */
-        public Boolean getBoolean(URI property) {
-            return wrappedContainer.getBoolean(property);
-        }
-        /**
-         * @param property
-         * @return
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getCalendar(org.ontoware.rdf2go.model.node.URI)
-         */
-        public Calendar getCalendar(URI property) {
-            return wrappedContainer.getCalendar(property);
-        }
-        /**
-         * @param property
-         * @return
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getDate(org.ontoware.rdf2go.model.node.URI)
-         */
-        public Date getDate(URI property) {
-            return wrappedContainer.getDate(property);
-        }
-        /**
-         * @return
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getDescribedUri()
-         */
-        public URI getDescribedUri() {
-            return wrappedContainer.getDescribedUri();
-        }
-        /**
-         * @param property
-         * @return
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getInteger(org.ontoware.rdf2go.model.node.URI)
-         */
-        public Integer getInteger(URI property) {
-            return wrappedContainer.getInteger(property);
-        }
-        /**
-         * @param property
-         * @return
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getLong(org.ontoware.rdf2go.model.node.URI)
-         */
-        public Long getLong(URI property) {
-            return wrappedContainer.getLong(property);
-        }
-        /**
-         * @return
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getModel()
-         */
-        public Model getModel() {
-            return wrappedContainer.getModel();
-        }
-        /**
-         * @param property
-         * @return
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getNode(org.ontoware.rdf2go.model.node.URI)
-         */
-        public Node getNode(URI property) {
-            return wrappedContainer.getNode(property);
-        }
-        /**
-         * @param property
-         * @return
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getString(org.ontoware.rdf2go.model.node.URI)
-         */
-        public String getString(URI property) {
-            return wrappedContainer.getString(property);
-        }
-        /**
-         * @param property
-         * @return
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getURI(org.ontoware.rdf2go.model.node.URI)
-         */
-        public URI getURI(URI property) {
-            return wrappedContainer.getURI(property);
-        }
-        /**
-         * @return
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getValueFactory()
-         */
-        public ValueFactory getValueFactory() {
-            return wrappedContainer.getValueFactory();
-        }
-        /**
-         * @param property
-         * @param value
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#put(org.ontoware.rdf2go.model.node.URI, boolean)
-         */
-        public void put(URI property, boolean value) throws UpdateException {
-            wrappedContainer.put(property, value);
-        }
-        /**
-         * @param property
-         * @param value
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#put(org.ontoware.rdf2go.model.node.URI, java.util.Calendar)
-         */
-        public void put(URI property, Calendar value) throws UpdateException {
-            wrappedContainer.put(property, value);
-        }
-        /**
-         * @param property
-         * @param value
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#put(org.ontoware.rdf2go.model.node.URI, java.util.Date)
-         */
-        public void put(URI property, Date value) throws UpdateException {
-            wrappedContainer.put(property, value);
-        }
-        /**
-         * @param property
-         * @param value
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#put(org.ontoware.rdf2go.model.node.URI, int)
-         */
-        public void put(URI property, int value) throws UpdateException {
-            wrappedContainer.put(property, value);
-        }
-        /**
-         * @param property
-         * @param value
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#put(org.ontoware.rdf2go.model.node.URI, long)
-         */
-        public void put(URI property, long value) throws UpdateException {
-            wrappedContainer.put(property, value);
-        }
-        /**
-         * @param property
-         * @param value
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#put(org.ontoware.rdf2go.model.node.URI, org.ontoware.rdf2go.model.node.Node)
-         */
-        public void put(URI property, Node value) throws UpdateException {
-            wrappedContainer.put(property, value);
-        }
-        /**
-         * @param property
-         * @param value
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#put(org.ontoware.rdf2go.model.node.URI, java.lang.String)
-         */
-        public void put(URI property, String value) throws UpdateException {
-            wrappedContainer.put(property, value);
-        }
-        /**
-         * @param statement
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#remove(org.ontoware.rdf2go.model.Statement)
-         */
-        public void remove(Statement statement) throws UpdateException {
-            wrappedContainer.remove(statement);
-        }
-        /**
-         * @param property
-         * @throws UpdateException
-         * @see org.semanticdesktop.aperture.rdf.RDFContainer#remove(org.ontoware.rdf2go.model.node.URI)
-         */
-        public void remove(URI property) throws UpdateException {
-            wrappedContainer.remove(property);
-        }
-    }
+//    private class FilteringRDFContainerFactory implements RDFContainerFactory {
+//        private RDFContainerFactory wrappedFactory;
+//        private RDFContainer filterContainer;
+//        FilteringRDFContainerFactory(RDFContainerFactory factory, RDFContainer filterContainer) {
+//            this.wrappedFactory = factory;
+//            this.filterContainer = new UndisposableRDFContainer(filterContainer);
+//        }
+//        public RDFContainer getRDFContainer(URI uri) {
+//            if (uri.equals(filterContainer.getDescribedUri())) {
+//                return filterContainer;
+//            } else {
+//                return wrappedFactory.getRDFContainer(uri);
+//            }
+//        }
+//    }
+//    
+//    private class UndisposableRDFContainer implements RDFContainer {
+//        private RDFContainer wrappedContainer;
+//        UndisposableRDFContainer(RDFContainer container) {
+//            this.wrappedContainer = container;
+//        }
+//        /**
+//         * @param statement
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#add(org.ontoware.rdf2go.model.Statement)
+//         */
+//        public void add(Statement statement) throws UpdateException {
+//            wrappedContainer.add(statement);
+//        }
+//        /**
+//         * @param property
+//         * @param value
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#add(org.ontoware.rdf2go.model.node.URI, boolean)
+//         */
+//        public void add(URI property, boolean value) throws UpdateException {
+//            wrappedContainer.add(property, value);
+//        }
+//        /**
+//         * @param property
+//         * @param value
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#add(org.ontoware.rdf2go.model.node.URI, java.util.Calendar)
+//         */
+//        public void add(URI property, Calendar value) throws UpdateException {
+//            wrappedContainer.add(property, value);
+//        }
+//        /**
+//         * @param property
+//         * @param value
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#add(org.ontoware.rdf2go.model.node.URI, java.util.Date)
+//         */
+//        public void add(URI property, Date value) throws UpdateException {
+//            wrappedContainer.add(property, value);
+//        }
+//        /**
+//         * @param property
+//         * @param value
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#add(org.ontoware.rdf2go.model.node.URI, int)
+//         */
+//        public void add(URI property, int value) throws UpdateException {
+//            wrappedContainer.add(property, value);
+//        }
+//        /**
+//         * @param property
+//         * @param value
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#add(org.ontoware.rdf2go.model.node.URI, long)
+//         */
+//        public void add(URI property, long value) throws UpdateException {
+//            wrappedContainer.add(property, value);
+//        }
+//        /**
+//         * @param property
+//         * @param value
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#add(org.ontoware.rdf2go.model.node.URI, org.ontoware.rdf2go.model.node.Node)
+//         */
+//        public void add(URI property, Node value) throws UpdateException {
+//            wrappedContainer.add(property, value);
+//        }
+//        /**
+//         * @param property
+//         * @param value
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#add(org.ontoware.rdf2go.model.node.URI, java.lang.String)
+//         */
+//        public void add(URI property, String value) throws UpdateException {
+//            wrappedContainer.add(property, value);
+//        }
+//        /**
+//         * 
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#dispose()
+//         */
+//        public void dispose() {
+//            /*
+//             * ignore the call to dispose
+//             */
+//        }
+//        /**
+//         * @param property
+//         * @return
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getAll(org.ontoware.rdf2go.model.node.URI)
+//         */
+//        @SuppressWarnings("unchecked")
+//        public Collection getAll(URI property) {
+//            return wrappedContainer.getAll(property);
+//        }
+//        /**
+//         * @param property
+//         * @return
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getBoolean(org.ontoware.rdf2go.model.node.URI)
+//         */
+//        public Boolean getBoolean(URI property) {
+//            return wrappedContainer.getBoolean(property);
+//        }
+//        /**
+//         * @param property
+//         * @return
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getCalendar(org.ontoware.rdf2go.model.node.URI)
+//         */
+//        public Calendar getCalendar(URI property) {
+//            return wrappedContainer.getCalendar(property);
+//        }
+//        /**
+//         * @param property
+//         * @return
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getDate(org.ontoware.rdf2go.model.node.URI)
+//         */
+//        public Date getDate(URI property) {
+//            return wrappedContainer.getDate(property);
+//        }
+//        /**
+//         * @return
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getDescribedUri()
+//         */
+//        public URI getDescribedUri() {
+//            return wrappedContainer.getDescribedUri();
+//        }
+//        /**
+//         * @param property
+//         * @return
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getInteger(org.ontoware.rdf2go.model.node.URI)
+//         */
+//        public Integer getInteger(URI property) {
+//            return wrappedContainer.getInteger(property);
+//        }
+//        /**
+//         * @param property
+//         * @return
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getLong(org.ontoware.rdf2go.model.node.URI)
+//         */
+//        public Long getLong(URI property) {
+//            return wrappedContainer.getLong(property);
+//        }
+//        /**
+//         * @return
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getModel()
+//         */
+//        public Model getModel() {
+//            return wrappedContainer.getModel();
+//        }
+//        /**
+//         * @param property
+//         * @return
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getNode(org.ontoware.rdf2go.model.node.URI)
+//         */
+//        public Node getNode(URI property) {
+//            return wrappedContainer.getNode(property);
+//        }
+//        /**
+//         * @param property
+//         * @return
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getString(org.ontoware.rdf2go.model.node.URI)
+//         */
+//        public String getString(URI property) {
+//            return wrappedContainer.getString(property);
+//        }
+//        /**
+//         * @param property
+//         * @return
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getURI(org.ontoware.rdf2go.model.node.URI)
+//         */
+//        public URI getURI(URI property) {
+//            return wrappedContainer.getURI(property);
+//        }
+//        /**
+//         * @return
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#getValueFactory()
+//         */
+//        public ValueFactory getValueFactory() {
+//            return wrappedContainer.getValueFactory();
+//        }
+//        /**
+//         * @param property
+//         * @param value
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#put(org.ontoware.rdf2go.model.node.URI, boolean)
+//         */
+//        public void put(URI property, boolean value) throws UpdateException {
+//            wrappedContainer.put(property, value);
+//        }
+//        /**
+//         * @param property
+//         * @param value
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#put(org.ontoware.rdf2go.model.node.URI, java.util.Calendar)
+//         */
+//        public void put(URI property, Calendar value) throws UpdateException {
+//            wrappedContainer.put(property, value);
+//        }
+//        /**
+//         * @param property
+//         * @param value
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#put(org.ontoware.rdf2go.model.node.URI, java.util.Date)
+//         */
+//        public void put(URI property, Date value) throws UpdateException {
+//            wrappedContainer.put(property, value);
+//        }
+//        /**
+//         * @param property
+//         * @param value
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#put(org.ontoware.rdf2go.model.node.URI, int)
+//         */
+//        public void put(URI property, int value) throws UpdateException {
+//            wrappedContainer.put(property, value);
+//        }
+//        /**
+//         * @param property
+//         * @param value
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#put(org.ontoware.rdf2go.model.node.URI, long)
+//         */
+//        public void put(URI property, long value) throws UpdateException {
+//            wrappedContainer.put(property, value);
+//        }
+//        /**
+//         * @param property
+//         * @param value
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#put(org.ontoware.rdf2go.model.node.URI, org.ontoware.rdf2go.model.node.Node)
+//         */
+//        public void put(URI property, Node value) throws UpdateException {
+//            wrappedContainer.put(property, value);
+//        }
+//        /**
+//         * @param property
+//         * @param value
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#put(org.ontoware.rdf2go.model.node.URI, java.lang.String)
+//         */
+//        public void put(URI property, String value) throws UpdateException {
+//            wrappedContainer.put(property, value);
+//        }
+//        /**
+//         * @param statement
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#remove(org.ontoware.rdf2go.model.Statement)
+//         */
+//        public void remove(Statement statement) throws UpdateException {
+//            wrappedContainer.remove(statement);
+//        }
+//        /**
+//         * @param property
+//         * @throws UpdateException
+//         * @see org.semanticdesktop.aperture.rdf.RDFContainer#remove(org.ontoware.rdf2go.model.node.URI)
+//         */
+//        public void remove(URI property) throws UpdateException {
+//            wrappedContainer.remove(property);
+//        }
+//    }
 }

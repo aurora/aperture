@@ -16,6 +16,8 @@ import org.semanticdesktop.aperture.subcrawler.SubCrawlerFactory;
 public class VcardSubCrawlerFactory implements SubCrawlerFactory {
 
 	private static final Set MIME_TYPES;
+	
+	public static String VCARD_URI_PREFIX = "vcard";
 
 	static {
 		HashSet set = new HashSet();
@@ -31,4 +33,8 @@ public class VcardSubCrawlerFactory implements SubCrawlerFactory {
 	public Set getSupportedMimeTypes() {
 		return MIME_TYPES;
 	}
+
+    public String getUriPrefix() {
+        return VCARD_URI_PREFIX;
+    }
 }

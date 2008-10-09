@@ -7,7 +7,9 @@
 package org.semanticdesktop.aperture.subcrawler.vcard;
 
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.model.Model;
@@ -27,24 +29,43 @@ import org.ontoware.rdf2go.vocabulary.XSD;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerTestBase;
 import org.semanticdesktop.aperture.vocabulary.NCO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
 
 /**
  * A test case for the vcard subcrawler
  */
-public class VcardSubCrawlerTest extends ApertureTestBase {
+public class VcardSubCrawlerTest extends SubCrawlerTestBase {
 
     private RDFContainer metadata;
-    private VcardTestIncrementalSubCrawlerHandler handler;
+    private TestBasicSubCrawlerHandler handler;
     
     public void testRfc2426ExampleExtraction() throws Exception {
         VcardSubCrawler subCrawler = new VcardSubCrawler();
         metadata = subCrawl(DOCS_PATH + "vcard-rfc2426.vcf", subCrawler);
         Model model = metadata.getModel();
         assertStatementCount(2, model, Variable.ANY, RDF.type, NCO.PersonContact);        
-        assertNewModUnmodDel(handler, 2, 0, 0, 0);
+        assertNewModUnmod(handler, 2, 0, 0, 0);
+        
         validate(metadata);
+        metadata.dispose();
+        metadata = null;
+    }
+    
+    /**
+     * The vcard-rfc2426.vcf contains more than one vcard, therefore the vcards inside will get a proper
+     * vcard: uri. This test checks this. It uses an iterator because at the time of writing the jpim library
+     * generated its own uids in a really crappy way that changed with each crawl.
+     * 
+     * @throws Exception
+     */
+    public void testRfc2426VcardUris() throws Exception {
+        VcardSubCrawler subCrawler = new VcardSubCrawler();
+        metadata = subCrawl(DOCS_PATH + "vcard-rfc2426.vcf", subCrawler);
+        Iterator<String> id = handler.getNewObjects().iterator();
+        assertTrue(id.next().startsWith("vcard:uri:dummyuri!/"));
+        assertTrue(id.next().startsWith("vcard:uri:dummyuri!/"));
         metadata.dispose();
         metadata = null;
     }
@@ -54,7 +75,7 @@ public class VcardSubCrawlerTest extends ApertureTestBase {
         metadata = subCrawl(DOCS_PATH + "vcard-antoni-outlook2003.vcf", subCrawler);
         // note that NO additional data objects have been reported, this
         // file contains only one contact
-        assertNewModUnmodDel(handler, 0, 0, 0, 0);
+        assertNewModUnmod(handler, 0, 0, 0, 0);
         validate(metadata);
         metadata.dispose();
         metadata = null;
@@ -65,7 +86,7 @@ public class VcardSubCrawlerTest extends ApertureTestBase {
         metadata = subCrawl(DOCS_PATH + "vcard-antoni-kontact.vcf", subCrawler);
         // note that NO additional data objects have been reported, this
         // file contains only one contact
-        assertNewModUnmodDel(handler, 0, 0, 0, 0);
+        assertNewModUnmod(handler, 0, 0, 0, 0);
         validate(metadata);
         metadata.dispose();
         metadata = null;
@@ -76,7 +97,7 @@ public class VcardSubCrawlerTest extends ApertureTestBase {
         metadata = subCrawl(DOCS_PATH + "vcard-dirk.vcf", subCrawler);
         // note that NO additional data objects have been reported, this
         // file contains only one contact
-        assertNewModUnmodDel(handler, 0, 0, 0, 0);
+        assertNewModUnmod(handler, 0, 0, 0, 0);
         validate(metadata);
         metadata.dispose();
         metadata = null;
@@ -85,8 +106,26 @@ public class VcardSubCrawlerTest extends ApertureTestBase {
     public void testSapVcardsExtraction() throws Exception {
         VcardSubCrawler subCrawler = new VcardSubCrawler();
         metadata = subCrawl(DOCS_PATH + "vcard-vCards-SAP.vcf", subCrawler);
-        assertNewModUnmodDel(handler, 30, 0, 0, 0);
+        assertNewModUnmod(handler, 30, 0, 0, 0);
         validate(metadata);
+        metadata.dispose();
+        metadata = null;
+    }
+    
+    /**
+     * The vcard-vCards-SAP.vcf contains more than one vcard, therefore the vcards inside will get a proper
+     * vcard: uri. This test checks this. It uses an iterator because at the time of writing the jpim library
+     * generated its own uids in a really crappy way that changed with each crawl.
+     * 
+     * @throws Exception
+     */
+    public void testSapVcardsUris() throws Exception {
+        VcardSubCrawler subCrawler = new VcardSubCrawler();
+        metadata = subCrawl(DOCS_PATH + "vcard-vCards-SAP.vcf", subCrawler);
+        Iterator<String> id = handler.getNewObjects().iterator();
+        for (int i = 0; i < 30; i++) {
+            assertTrue(id.next().startsWith("vcard:uri:dummyuri!/"));
+        }
         metadata.dispose();
         metadata = null;
     }
@@ -131,7 +170,7 @@ public class VcardSubCrawlerTest extends ApertureTestBase {
         assertSingleValueProperty(model, affiliation, RDF.type, NCO.Affiliation);
         
         
-        List<Resource> telephoneNumbers = findObjectResourceList(model, affiliation, NCO.hasPhoneNumber);
+        Set<Resource> telephoneNumbers = findObjectResourceSet(model, affiliation, NCO.hasPhoneNumber);
         assertEquals(2, telephoneNumbers.size());
         assertSparqlQuery(model,
             "PREFIX nco: <" + NCO.NS_NCO + "> " +
@@ -158,7 +197,7 @@ public class VcardSubCrawlerTest extends ApertureTestBase {
         metadata = subCrawl(DOCS_PATH + "vcard-rfc2426.vcf", subCrawler);
         Model model = metadata.getModel();
         Resource frankDawsonContact = findContact(model, "Frank Dawson");
-        List<Resource> emails = findObjectResourceList(model,frankDawsonContact, NCO.hasEmailAddress);
+        Set<Resource> emails = findObjectResourceSet(model,frankDawsonContact, NCO.hasEmailAddress);
         assertEquals(2, emails.size());
         assertSparqlQuery(model,
             "PREFIX nco: <" + NCO.NS_NCO + "> " +
@@ -185,6 +224,7 @@ public class VcardSubCrawlerTest extends ApertureTestBase {
         metadata = subCrawl(DOCS_PATH + "vcard-rfc2426.vcf", subCrawler);
         Model model = metadata.getModel();
         Resource frankDawsonContact = findContact(model, "Frank Dawson");
+        assertTrue(frankDawsonContact.toString().startsWith("vcard:"));
         Resource affiliation = findSingleObjectResource(model, frankDawsonContact, NCO.hasAffiliation);
         assertSingleValueProperty(model, affiliation, RDF.type, NCO.Affiliation);
         Resource address = findSingleObjectResource(model, affiliation, NCO.hasPostalAddress);
@@ -262,9 +302,8 @@ public class VcardSubCrawlerTest extends ApertureTestBase {
         metadata = subCrawl(DOCS_PATH + "vcard-dirk.vcf", subCrawler);
         Model model = metadata.getModel();
         Resource dirkContact = findContact(model, "Dirk");
+        assertEquals("uri:dummyuri",dirkContact.toString());
         assertSingleValueProperty(model, dirkContact, NCO.note, "The canonical Dirk\r\n");
-        //model.writeTo(System.out);
-        validate(metadata);
         metadata.dispose();
         metadata = null;
     }
@@ -303,18 +342,10 @@ public class VcardSubCrawlerTest extends ApertureTestBase {
 
     private RDFContainer subCrawl(String string, VcardSubCrawler subCrawler) throws Exception {
         InputStream stream = org.semanticdesktop.aperture.util.ResourceUtil.getInputStream(string, this.getClass());
-        handler = new VcardTestIncrementalSubCrawlerHandler();
+        handler = new TestBasicSubCrawlerHandler();
         RDFContainer parentMetadata = new RDFContainerImpl(handler.getModel(),new URIImpl("uri:dummyuri"));
         subCrawler.subCrawl(null, stream, handler, null, null, null, null, parentMetadata);
         return parentMetadata;
-    }
-    
-    private void assertNewModUnmodDel(VcardTestIncrementalSubCrawlerHandler subCrawlerHandler, int newObjects,
-            int changedObjects, int unchangedObjects, int deletedObjects) {
-        assertEquals(subCrawlerHandler.getNewObjects().size(), newObjects);
-        assertEquals(subCrawlerHandler.getChangedObjects().size(), changedObjects);
-        assertEquals(subCrawlerHandler.getUnchangedObjects().size(), unchangedObjects);
-        assertEquals(subCrawlerHandler.getDeletedObjects().size(), deletedObjects);
     }
     
     private void assertStatementCount(int count, Model model, ResourceOrVariable subject, UriOrVariable predicate, NodeOrVariable object) {

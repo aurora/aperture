@@ -32,9 +32,6 @@ import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
 import org.semanticdesktop.aperture.accessor.file.FileAccessorFactory;
 import org.semanticdesktop.aperture.accessor.impl.DataAccessorRegistryImpl;
-import org.semanticdesktop.aperture.crawler.Crawler;
-import org.semanticdesktop.aperture.crawler.CrawlerHandler;
-import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.filesystem.FileSystemCrawler;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 import org.semanticdesktop.aperture.extractor.Extractor;
@@ -61,50 +58,59 @@ public class SubCrawlerTestBase extends ApertureTestBase {
      * details.
      * 
      * @param model
+     * @param resourceName 
      * @throws Exception
      */
-    protected void doBasicArchiverTests(Model model, String resourceName) throws Exception {
+    protected void doBasicArchiverTests(Model model, String resourceName, String prefix) throws Exception {
         URI archiveUri = model.createURI("uri:dummyuri/" + resourceName);
         assertTrue(model.contains(archiveUri, RDF.type, NFO.Archive));
         // everything that is directly linked with an isPartOf link to the archive itself
-        Resource ziptestfolder = findSingleSubjectResource(model, NFO.belongsToContainer, archiveUri);
-        checkStatement(ziptestfolder.asURI(), RDF.type, NFO.Folder, model);
-        assertEquals(archiveUri.toString() + "/zip-test/", ziptestfolder.toString());
+        Resource testfolder = findSingleSubjectResource(model, NFO.belongsToContainer, archiveUri);
+        String folderPath = testfolder.toString();
+        checkStatement(testfolder.asURI(), RDF.type, NFO.Folder, model);
+        assertEquals(prefix + ":" + archiveUri.toString() + "!/zip-test/", folderPath);
+        Set<Resource> testContent = findSubjectResourceSet(model, NFO.belongsToContainer, testfolder);        
         
-        List<Resource> ziptestContent = findSubjectResourceList(model, NFO.belongsToContainer, ziptestfolder);        
-        assertEquals(ziptestfolder.toString() + "test1.txt", ziptestContent.get(0).toString());
-        assertEquals(ziptestfolder.toString() + "test2.txt", ziptestContent.get(1).toString());
-        assertEquals(ziptestfolder.toString() + "test3.txt", ziptestContent.get(2).toString());
-        assertEquals(ziptestfolder.toString() + "subfolder/", ziptestContent.get(3).toString());
-        assertEquals(ziptestfolder.toString() + "microsoft-word-2000.doc", ziptestContent.get(4).toString());
-        assertEquals(5, ziptestContent.size());
-        checkStatement(ziptestContent.get(3).asURI(), RDF.type, NFO.Folder, model);
+        assertTrue(testContent.contains(new URIImpl(folderPath + "test1.txt")));
+        assertTrue(testContent.contains(new URIImpl(folderPath + "test2.txt")));
+        assertTrue(testContent.contains(new URIImpl(folderPath + "test3.txt")));
+        assertTrue(testContent.contains(new URIImpl(folderPath + "subfolder/")));
+        assertTrue(testContent.contains(new URIImpl(folderPath + "microsoft-word-2000.doc")));
         
-        List<Resource> subfolderContent = findSubjectResourceList(model, NFO.belongsToContainer, ziptestContent.get(3));        
-        assertEquals(ziptestfolder.toString() + "subfolder/test4.txt", subfolderContent.get(0).toString());
-        assertEquals(ziptestfolder.toString() + "subfolder/test5.txt", subfolderContent.get(1).toString());
-        assertEquals(ziptestfolder.toString() + "subfolder/pdf-manyauthors.pdf", subfolderContent.get(2).toString());
+        assertEquals(5, testContent.size());
+        URI subfolderUri = new URIImpl(folderPath + "subfolder/");
+        checkStatement(subfolderUri, RDF.type, NFO.Folder, model);
+        
+        Set<Resource> subfolderContent = findSubjectResourceSet(model, NFO.belongsToContainer, subfolderUri);        
+        
+        assertTrue(subfolderContent.contains(new URIImpl(folderPath + "subfolder/test4.txt")));
+        assertTrue(subfolderContent.contains(new URIImpl(folderPath + "subfolder/test5.txt")));
+        assertTrue(subfolderContent.contains(new URIImpl(folderPath + "subfolder/pdf-manyauthors.pdf")));
+        
         assertEquals(3, subfolderContent.size());
         
         // file names
-        assertSingleValueProperty(model, ziptestfolder, NFO.fileName, "zip-test");
-        assertSingleValueProperty(model, ziptestContent.get(0), NFO.fileName, "test1.txt");
-        assertSingleValueProperty(model, ziptestContent.get(1), NFO.fileName, "test2.txt");
-        assertSingleValueProperty(model, ziptestContent.get(2), NFO.fileName, "test3.txt");
-        assertSingleValueProperty(model, ziptestContent.get(3), NFO.fileName, "subfolder");
-        assertSingleValueProperty(model, subfolderContent.get(0), NFO.fileName, "test4.txt");
-        assertSingleValueProperty(model, subfolderContent.get(1), NFO.fileName, "test5.txt");
-        assertSingleValueProperty(model, subfolderContent.get(2), NFO.fileName, "pdf-manyauthors.pdf");
-        assertSingleValueProperty(model, ziptestContent.get(4), NFO.fileName, "microsoft-word-2000.doc");
+        assertSingleValueProperty(model, testfolder, NFO.fileName, "zip-test");
+        assertSingleValueProperty(model, new URIImpl(folderPath + "test1.txt"), NFO.fileName, "test1.txt");
+        assertSingleValueProperty(model, new URIImpl(folderPath + "test2.txt"), NFO.fileName, "test2.txt");
+        assertSingleValueProperty(model, new URIImpl(folderPath + "test3.txt"), NFO.fileName, "test3.txt");
+        assertSingleValueProperty(model, new URIImpl(folderPath + "subfolder/"), NFO.fileName, "subfolder");
+        assertSingleValueProperty(model, new URIImpl(folderPath + "subfolder/test4.txt"), NFO.fileName, "test4.txt");
+        assertSingleValueProperty(model, new URIImpl(folderPath + "subfolder/test5.txt"), NFO.fileName, "test5.txt");
+        assertSingleValueProperty(model, new URIImpl(folderPath + "subfolder/pdf-manyauthors.pdf"), NFO.fileName, "pdf-manyauthors.pdf");
+        assertSingleValueProperty(model, new URIImpl(folderPath + "microsoft-word-2000.doc"), NFO.fileName, "microsoft-word-2000.doc");
     }
     
     /**
      * A basic test if the extraction actually works
+     * @param model 
+     * @param resourceName 
+     * @param contentFileName 
      * @throws Exception
      */
-    public void doBasicCompressorTest(Model model, String resourceName, String contentFileName) throws Exception {
+    public void doBasicCompressorTest(Model model, String resourceName, String contentFileName, String prefix) throws Exception {
         String compressedFileUri = "uri:dummyuri/" + resourceName;
-        String contentUri = "uri:dummyuri/" + contentFileName;
+        String contentUri = prefix + ":uri:dummyuri/" + resourceName + "!/" + contentFileName;
         URI archiveUri = model.createURI(compressedFileUri);
         // the archiveUri is an archive
         assertTrue(model.contains(archiveUri, RDF.type, NFO.Archive));
@@ -119,6 +125,15 @@ public class SubCrawlerTestBase extends ApertureTestBase {
         // the handler has spotted one new object and nothing else
     }
     
+    /**
+     * Tests the incremental crawling
+     * @param factory
+     * @param subdirName
+     * @param resourceName
+     * @param fileExtension
+     * @param numberOfEntries
+     * @throws Exception
+     */
     public void testCrawlerIncremental(SubCrawlerFactory factory, String subdirName, String resourceName, String fileExtension, int numberOfEntries) throws Exception {
         File tmpDir = new File(System.getProperty("java.io.tmpdir"), subdirName).getCanonicalFile();
         try {
@@ -209,6 +224,22 @@ public class SubCrawlerTestBase extends ApertureTestBase {
         RDFContainer parentMetadata = new RDFContainerImpl(handler.getModel(),new URIImpl("uri:dummyuri/" + resourceName));
         subCrawler.subCrawl(null, stream, handler, null, null, null, null, parentMetadata);
         return parentMetadata;
+    }
+    
+    /**
+     * Asserts that the incremental crawling results gathered by the given {@link TestIncrementalCrawlerHandler}
+     * are correct.
+     * @param handler the handler to check
+     * @param newObjects the desired number of new objects
+     * @param changedObjects the desired number of changed objects
+     * @param unchangedObjects the desired number of unchanged objects
+     * @param deletedObjects the desired number of deleted objects
+     */
+    public void assertNewModUnmod(TestBasicSubCrawlerHandler handler, int newObjects,
+            int changedObjects, int unchangedObjects, int deletedObjects) {
+        assertEquals(handler.getNewObjects().size(), newObjects);
+        assertEquals(handler.getChangedObjects().size(), changedObjects);
+        assertEquals(handler.getUnchangedObjects().size(), unchangedObjects);
     }
     
     protected class TestBasicSubCrawlerHandler implements SubCrawlerHandler, RDFContainerFactory {

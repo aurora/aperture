@@ -43,6 +43,7 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.subcrawler.SubCrawler;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerException;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler;
+import org.semanticdesktop.aperture.subcrawler.base.AbstractSubCrawler;
 import org.semanticdesktop.aperture.util.DateUtil;
 import org.semanticdesktop.aperture.util.StringUtil;
 import org.semanticdesktop.aperture.util.UriUtil;
@@ -96,7 +97,7 @@ import org.semanticdesktop.aperture.vocabulary.NIE;
  * case if we used other properties, or consecutive numbers marking the position of the contact in a file
  * (which change if new contacts are added or removed)).
  */
-public class VcardSubCrawler implements SubCrawler {
+public class VcardSubCrawler extends AbstractSubCrawler {
 
     private static final String OBJECT_HASH_KEY = "contactHash";
     
@@ -138,7 +139,12 @@ public class VcardSubCrawler implements SubCrawler {
      * @see SubCrawler#stopSubCrawler()
      */
     public void stopSubCrawler() {
-    // hehe, not supported (yet)
+    // haha, not supported (yet)
+    }
+    
+    @Override
+    public String getUriPrefix() {
+        return VcardSubCrawlerFactory.VCARD_URI_PREFIX;
     }
 
     private void processAddressBook(Contact[] contacts, RDFContainer parentMetadata,
@@ -597,7 +603,7 @@ public class VcardSubCrawler implements SubCrawler {
         } else {
             contactIdentifier = contactHash;
         }
-        return container.getModel().createURI(container.getDescribedUri().toString() + "#" + contactIdentifier);
+        return createChildUri(container.getDescribedUri(), contactIdentifier);
     }
     
     private String getContactHash(Contact contact, ContactMarshaller marshaller) {

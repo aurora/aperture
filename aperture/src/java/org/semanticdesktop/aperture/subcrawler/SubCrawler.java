@@ -21,6 +21,28 @@ import org.semanticdesktop.aperture.rdf.RDFContainer;
  * <p>
  * An AccessData instance can optionally be specified to a SubCrawler, allowing it to perform incremental
  * crawling, i.e. to scan and report the differences in the stream since the last crawl.
+ * </p>
+ * 
+ * <p>
+ * The uris of the data objects found inside other data objects have a fixed form, consisting of three basic
+ * parts:
+ * </p>
+ * 
+ * <pre>
+ * &lt;prefix&gt;:&lt;parent-object-uri&gt;!/&lt;path&gt;
+ * </pre>
+ * 
+ * <ul>
+ * <li>&lt;prefix&gt; - the uri prefix, characteristic for a particular SubCrawler, returned by the
+ * {@link SubCrawlerFactory#getUriPrefix()} method</li>
+ * <li>&lt;parent-object-uri&gt; - the uri of the parent data object, it is obtained from the parentMetadata
+ * parameter to the {@link #subCrawl}
+ * method, by calling {@link RDFContainer#getDescribedUri()}</li>
+ * <li>&lt;path&gt; - an internal path of the 'child' data object inside the 'parent' data object</li>
+ * </ul>
+ * 
+ * This scheme has been inspired by the apache commons VFS project, homepaged under 
+ * <a href="http://commons.apache.org/vfs/">http://commons.apache.org/vfs</a>
  */
 public interface SubCrawler {
 

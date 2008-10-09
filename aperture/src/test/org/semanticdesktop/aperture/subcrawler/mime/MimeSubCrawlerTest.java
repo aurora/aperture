@@ -6,7 +6,9 @@
  */
 package org.semanticdesktop.aperture.subcrawler.mime;
 
-import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.ontoware.rdf2go.model.Model;
+import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.subcrawler.SubCrawler;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerFactory;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerTestBase;
@@ -29,17 +31,22 @@ public class MimeSubCrawlerTest extends SubCrawlerTestBase {
 		SubCrawlerFactory factory = new MimeSubCrawlerFactory();
 		SubCrawler subCrawler = factory.get();
 		TestBasicSubCrawlerHandler handler = new TestBasicSubCrawlerHandler();
-		RDFContainer container = subCrawl("mail-thunderbird-1.5.eml", subCrawler, handler);
-
+		subCrawl("mail-thunderbird-1.5.eml", subCrawler, handler);
+		Model model = handler.getModel();
+		// let's see if the uri is OK
+		URI messageUri = new URIImpl("mime:uri:dummyuri/mail-thunderbird-1.5.eml!/43F9C862.9040605%2540aduna.biz");
+		assertTrue(handler.getNewObjects().contains(messageUri.toString()));
+		assertNewModUnmod(handler, 1, 0, 0, 0);
+		
 		// check the extraction results
-		checkStatement(NMO.plainTextMessageContent, "test body", container);
-		checkStatement(NMO.messageSubject, "test subject", container);
-		checkStatement(NIE.contentCreated, "2006", container);
+		assertTrue(findSingleObjectNode(model, messageUri, NMO.plainTextMessageContent).asLiteral().getValue().contains("test body"));
+		assertTrue(findSingleObjectNode(model, messageUri, NMO.messageSubject).asLiteral().getValue().equals("test subject"));
+		assertTrue(findSingleObjectNode(model, messageUri, NIE.contentCreated).asLiteral().getValue().contains("2006"));
 
-		assertEquals("emailperson:Christiaan+Fluit", container.getURI(NMO.from).toString());
-		assertEquals("emailperson:Christiaan+Fluit", container.getURI(NMO.to).toString());
-        validate(container);
-		container.dispose();
+		assertTrue(findSingleObjectResource(model, messageUri, NMO.from).toString().equals("emailperson:Christiaan+Fluit"));
+		assertTrue(findSingleObjectResource(model, messageUri, NMO.to).toString().equals("emailperson:Christiaan+Fluit"));
+        validate(model);
+		model.close();
 	}
 	
 	/**
@@ -60,15 +67,16 @@ public class MimeSubCrawlerTest extends SubCrawlerTestBase {
         SubCrawlerFactory factory = new MimeSubCrawlerFactory();
         SubCrawler subCrawler = factory.get();
         TestBasicSubCrawlerHandler handler = new TestBasicSubCrawlerHandler();
-        RDFContainer container = subCrawl("mail-multipart-plain-html.eml", subCrawler, handler);
-
-        String plainText = container.getString(NMO.plainTextMessageContent);
+        subCrawl("mail-multipart-plain-html.eml", subCrawler, handler);
+        Model model = handler.getModel();
+        URI messageUri = new URIImpl("mime:uri:dummyuri/mail-multipart-plain-html.eml!/CONFIRMITblZz02H67y00000e88%2540smtp.buzzsponge.com");
+        String plainText = findSingleObjectNode(model, messageUri, NMO.plainTextMessageContent).asLiteral().getValue();
         assertFalse(plainText.contains("<font"));
         assertFalse(plainText.contains("<ul>"));
         assertFalse(plainText.contains("<li>"));
         
-        validate(container);
-        container.dispose();
+        validate(model);
+        model.close();
     }
 	
     /**
@@ -76,17 +84,18 @@ public class MimeSubCrawlerTest extends SubCrawlerTestBase {
      * @throws Exception
      */
 	public void testWebArchiveExtraction() throws Exception {
-		testWebArchiveExtraction("mhtml-firefox.mht");
-		testWebArchiveExtraction("mhtml-internet-explorer.mht");
+		testWebArchiveExtraction("mhtml-firefox.mht","mime:uri:dummyuri/mhtml-firefox.mht!/a84960ec4d6ca3bf7d4894387f10ed6f7b1051b7");
+		testWebArchiveExtraction("mhtml-internet-explorer.mht","mime:uri:dummyuri/mhtml-internet-explorer.mht!/e4f1762ab5c1c4d6e957b9945b5fc42c38f40246");
 	}
 	
-	private void testWebArchiveExtraction(String fileName) throws Exception {
+	private void testWebArchiveExtraction(String fileName, String uri) throws Exception {
 	    SubCrawlerFactory factory = new MimeSubCrawlerFactory();
         SubCrawler subCrawler = factory.get();
         TestBasicSubCrawlerHandler handler = new TestBasicSubCrawlerHandler();
-        RDFContainer container = subCrawl(fileName, subCrawler, handler);
-
-		String fullText = container.getString(NMO.plainTextMessageContent);
+        
+        subCrawl(fileName, subCrawler, handler);
+        URI messageUri = new URIImpl(uri);
+		String fullText = findSingleObjectNode(handler.getModel(), messageUri, NMO.plainTextMessageContent).asLiteral().getValue();
 		// check that relevant content was extracted
 		assertTrue(fullText.contains("Project name"));
 		assertTrue(fullText.contains("FAQ"));
@@ -95,7 +104,7 @@ public class MimeSubCrawlerTest extends SubCrawlerTestBase {
 		// check that HTML markup was removed
 		assertFalse(fullText.contains("<P>"));
 		assertFalse(fullText.contains("<p>"));
-        validate(container);
-		container.dispose();
+        validate(handler.getModel());
+		handler.close();
 	}
 }

@@ -9,8 +9,9 @@ package org.semanticdesktop.aperture;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -312,9 +313,9 @@ public class ApertureTestBase extends TestCase {
      *         that it is a resource
      */
     protected Resource findSingleObjectResource(Model model, Resource subject, URI predicate) {
-        List<Resource> list = findObjectResourceList(model, subject, predicate);
-        assertEquals(1,list.size());
-        return list.get(0);
+        Set<Resource> set = findObjectResourceSet(model, subject, predicate);
+        assertEquals(1,set.size());
+        return set.iterator().next();
     }
 
     /**
@@ -327,8 +328,8 @@ public class ApertureTestBase extends TestCase {
      * @return a list of objects of all triples with the given subject and predicate, converted to Resource
      *         instances
      */
-    protected List<Resource> findObjectResourceList(Model model, Resource subject, URI predicate) {
-        LinkedList<Resource> result = new LinkedList<Resource>();
+    protected Set<Resource> findObjectResourceSet(Model model, Resource subject, URI predicate) {
+        HashSet<Resource> result = new HashSet<Resource>();
         ClosableIterator<? extends Statement> iterator = null;
         try {
             iterator = model.findStatements(subject, predicate, Variable.ANY);
@@ -353,9 +354,9 @@ public class ApertureTestBase extends TestCase {
      * @return the object of the triple to be found, assumes that there is one and only one such triple
      */
     protected Node findSingleObjectNode(Model model, Resource subject, URI predicate) {
-        List<Node> list = findObjectNodeList(model, subject, predicate);
-        assertEquals(1,list.size());
-        return list.get(0);
+        Set<Node> set = findObjectNodeSet(model, subject, predicate);
+        assertEquals(1,set.size());
+        return set.iterator().next();
     }
     
     /**
@@ -366,8 +367,8 @@ public class ApertureTestBase extends TestCase {
      * @param predicate the predicate of the triple to be found
      * @return a list of objects of all triples with the given subject and predicate 
      */
-    protected List<Node> findObjectNodeList(Model model, Resource subject, URI predicate) {
-        LinkedList<Node> result = new LinkedList<Node>();
+    protected Set<Node> findObjectNodeSet(Model model, Resource subject, URI predicate) {
+        HashSet<Node> result = new HashSet<Node>();
         ClosableIterator<? extends Statement> iterator = null;
         try {
             iterator = model.findStatements(subject, predicate, Variable.ANY);
@@ -391,9 +392,9 @@ public class ApertureTestBase extends TestCase {
      * @return the object of the triple to be found, assumes that there is one and only one such triple
      */
     protected Resource findSingleSubjectResource(Model model, URI predicate, Resource object) {
-        List<Resource> list = findSubjectResourceList(model, predicate, object);
-        assertEquals(1,list.size());
-        return list.get(0);
+        Set<Resource> set = findSubjectResourceSet(model, predicate, object);
+        assertEquals(1,set.size());
+        return set.iterator().next();
     }
     
     /**
@@ -404,8 +405,8 @@ public class ApertureTestBase extends TestCase {
      * @return a list of subjects of all triples with the given subject and predicate 
      * @throws ModelException if something goes wrong
      */
-    protected List<Resource> findSubjectResourceList(Model model, URI predicate, Resource object) {
-        LinkedList<Resource> result = new LinkedList<Resource>();
+    protected Set<Resource> findSubjectResourceSet(Model model, URI predicate, Resource object) {
+        HashSet<Resource> result = new HashSet<Resource>();
         ClosableIterator<? extends Statement> iterator = null;
         try {
             iterator = model.findStatements(Variable.ANY, predicate, object);
