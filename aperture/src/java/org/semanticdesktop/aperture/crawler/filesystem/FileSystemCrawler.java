@@ -109,7 +109,7 @@ public class FileSystemCrawler extends CrawlerBase {
 
         // determine whether we should crawl hidden files and directories
         Boolean b = source.getIncludeHiddenResources();
-        ignoreHiddenFiles = b == null ? DEFAULT_IGNORE_HIDDEN_FILES : b.booleanValue();
+        ignoreHiddenFiles = b == null ? DEFAULT_IGNORE_HIDDEN_FILES : !b.booleanValue();
 
         // determine whether we should crawl symbolic links
         b = source.getFollowSymbolicLinks();
