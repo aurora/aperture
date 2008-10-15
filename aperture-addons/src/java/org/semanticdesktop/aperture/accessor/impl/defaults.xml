@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<dataAccessorFactories>
+	<dataAccessorFactory>
+		<name>org.semanticdesktop.aperture.accessor.file.FileAccessorFactory</name>
+	</dataAccessorFactory>
+	<dataAccessorFactory>
+		<name>dfki.km.medico.aperture.accessor.webdav.WebdavAccessorFactory</name>
+	</dataAccessorFactory>
+</dataAccessorFactories>
