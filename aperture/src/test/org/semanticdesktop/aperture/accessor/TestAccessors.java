@@ -10,6 +10,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.semanticdesktop.aperture.accessor.base.CountingInputStreamTest;
+import org.semanticdesktop.aperture.accessor.base.TestFaultyFileAccessdata;
 import org.semanticdesktop.aperture.accessor.base.TestFileAccessData;
 import org.semanticdesktop.aperture.accessor.base.TestFileDataObject;
 import org.semanticdesktop.aperture.accessor.base.TestModelAccessData;
@@ -33,6 +34,7 @@ public class TestAccessors extends TestSuite {
         addTest(new TestSuite(CountingInputStreamTest.class));
         addTest(new TestSuite(TestFileAccessData.class));
         addTest(new TestSuite(TestFileDataObject.class));
+        addTest(new TestSuite(TestFaultyFileAccessdata.class));
         addTest(new TestSuite(TestModelAccessData.class));
         addTest(new TestSuite(TestSynchronizedAccessData.class));
         addTest(new TestSuite(TestAccessDataImpl.class));
