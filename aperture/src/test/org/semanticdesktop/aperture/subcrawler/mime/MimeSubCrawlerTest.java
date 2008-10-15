@@ -34,9 +34,8 @@ public class MimeSubCrawlerTest extends SubCrawlerTestBase {
 		subCrawl("mail-thunderbird-1.5.eml", subCrawler, handler);
 		Model model = handler.getModel();
 		// let's see if the uri is OK
-		URI messageUri = new URIImpl("mime:uri:dummyuri/mail-thunderbird-1.5.eml!/43F9C862.9040605%2540aduna.biz");
-		assertTrue(handler.getNewObjects().contains(messageUri.toString()));
-		assertNewModUnmod(handler, 1, 0, 0, 0);
+		URI messageUri = new URIImpl("uri:dummyuri/mail-thunderbird-1.5.eml");
+		assertNewModUnmod(handler, 0, 0, 0, 0); // all metadata in the parent container, no new objects
 		
 		// check the extraction results
 		assertTrue(findSingleObjectNode(model, messageUri, NMO.plainTextMessageContent).asLiteral().getValue().contains("test body"));
@@ -69,7 +68,7 @@ public class MimeSubCrawlerTest extends SubCrawlerTestBase {
         TestBasicSubCrawlerHandler handler = new TestBasicSubCrawlerHandler();
         subCrawl("mail-multipart-plain-html.eml", subCrawler, handler);
         Model model = handler.getModel();
-        URI messageUri = new URIImpl("mime:uri:dummyuri/mail-multipart-plain-html.eml!/CONFIRMITblZz02H67y00000e88%2540smtp.buzzsponge.com");
+        URI messageUri = new URIImpl("uri:dummyuri/mail-multipart-plain-html.eml");
         String plainText = findSingleObjectNode(model, messageUri, NMO.plainTextMessageContent).asLiteral().getValue();
         assertFalse(plainText.contains("<font"));
         assertFalse(plainText.contains("<ul>"));
@@ -78,14 +77,38 @@ public class MimeSubCrawlerTest extends SubCrawlerTestBase {
         validate(model);
         model.close();
     }
+    
+    /**
+     * This tests whether the subcrawler can process .eml file with attachments correctly. I.e. all metadata of the
+     * parent email is to be placed in the parent metadata container, whereas the metadata of the attachments
+     * is supposed to be returned in separate data objects with uris like:
+     * 
+     *  <pre>
+     *  mime:file://path/to/file.eml!/#1
+     *  mime:file://path/to/file.eml!/#2
+     *  </pre>
+     *  
+     *  I.e. prefix is 'mime', the parent uri is 'file://path/to/file.eml' and the internal path is /#1
+     * 
+     * @throws Exception  
+     */
+    public void testAttachmentExtraction() throws Exception {
+        SubCrawlerFactory factory = new MimeSubCrawlerFactory();
+        SubCrawler subCrawler = factory.get();
+        TestBasicSubCrawlerHandler handler = new TestBasicSubCrawlerHandler();
+        subCrawl("mail-multipart-test.eml", subCrawler, handler);
+        assertNewModUnmod(handler, 2, 0, 0, 0); // two attachments - two new objects
+        assertTrue(handler.getNewObjects().contains("mime:uri:dummyuri/mail-multipart-test.eml!/#1"));
+        assertTrue(handler.getNewObjects().contains("mime:uri:dummyuri/mail-multipart-test.eml!/#2"));
+    }
 	
     /**
      * Tests the extraction of the mht web archive files
      * @throws Exception
      */
 	public void testWebArchiveExtraction() throws Exception {
-		testWebArchiveExtraction("mhtml-firefox.mht","mime:uri:dummyuri/mhtml-firefox.mht!/a84960ec4d6ca3bf7d4894387f10ed6f7b1051b7");
-		testWebArchiveExtraction("mhtml-internet-explorer.mht","mime:uri:dummyuri/mhtml-internet-explorer.mht!/e4f1762ab5c1c4d6e957b9945b5fc42c38f40246");
+		testWebArchiveExtraction("mhtml-firefox.mht","uri:dummyuri/mhtml-firefox.mht");
+		testWebArchiveExtraction("mhtml-internet-explorer.mht","uri:dummyuri/mhtml-internet-explorer.mht");
 	}
 	
 	private void testWebArchiveExtraction(String fileName, String uri) throws Exception {
