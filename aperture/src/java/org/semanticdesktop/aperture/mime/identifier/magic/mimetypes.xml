@@ -768,7 +768,7 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 
 <description>
 	<mimeType>image/jpeg</mimeType>
-	<extensions>jpg</extensions>
+	<extensions>jpg,jpeg</extensions>
 	<magicNumber encoding="hex">ff d8 ff</magicNumber>
 </description>
 
