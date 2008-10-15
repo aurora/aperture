@@ -102,6 +102,10 @@ public class ExampleFileCrawler extends AbstractExampleCrawler {
                 crawler.exitWithUsageMessage();
             }
         }
+        
+        if (crawler.getRootFile() == null) {
+            crawler.exitWithUsageMessage();
+        }
 
         // start crawling and exit afterwards
         crawler.crawl();
