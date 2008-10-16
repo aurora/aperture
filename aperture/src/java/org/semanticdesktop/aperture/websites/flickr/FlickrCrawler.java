@@ -24,6 +24,7 @@ import org.ontoware.rdf2go.vocabulary.RDFS;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
+import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
@@ -274,7 +275,8 @@ public class FlickrCrawler extends CrawlerBase {
                         addIfNotNull(rdf, NIE.description, photo.getDescription());
                         rdf.add(NIE.isStoredAs, objPhotoDOWebsite.getID());
                         if (localCopy != null) {
-                            rdf.add(NIE.isStoredAs, localCopy.toURI().toString());
+                            DataObject file = newFileDataObject(dataObjects, localCopy);
+                            rdf.add(NIE.isStoredAs, file.getID());
                         }
                         if (mimeType == null) {
                             mimeType = "image/jpeg";
@@ -372,6 +374,23 @@ public class FlickrCrawler extends CrawlerBase {
         return dObj;
     }
 
+    private DataObject newFileDataObject(final Collection<DataObject> dataObjects, final File file) {
+        String fileUri = file.toURI().toString();
+        // force host component
+        if(fileUri.startsWith("file:") && !fileUri.startsWith("file://")) {
+            fileUri = "file://"+fileUri.substring("file:".length());
+        }
+        
+        URIImpl turi = new URIImpl(fileUri);
+        RDFContainer rdf = getRDFContainerFactory(fileUri).getRDFContainer(turi);
+        DataObject dObj = new FileDataObjectBase(turi, source, rdf, file);
+        
+        RDFContainer md = dObj.getMetadata();
+        md.add(NFO.fileUrl, turi);
+        
+        dataObjects.add(dObj);
+        return dObj;
+    }
     private void addIfNotNull(final RDFContainer rdf, final URI property, final String value) {
         if (value != null) {
             rdf.add(property, value);
