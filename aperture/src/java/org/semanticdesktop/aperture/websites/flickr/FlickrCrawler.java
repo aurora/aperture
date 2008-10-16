@@ -88,16 +88,18 @@ public class FlickrCrawler extends CrawlerBase {
             Flickr flickr = credentials.getFlickrInterface();
 
             PeopleInterface peopleIf = flickr.getPeopleInterface();
-            User meUser;
 
+            String meId;
             if (username.indexOf('@') != -1 && username.indexOf('.') != -1) {
+                User meUser;
                 meUser = peopleIf.findByEmail(username);
+                meId = meUser.getId();
             }
             else {
                 // FIXME maybe remove support for Flickr-internal user-IDs
-                meUser = peopleIf.findByUsername(username);
+                // meUser = peopleIf.findByUsername(username);
+                meId = username;
             }
-            String meId = meUser.getId();
 
             // FIXME store flickr data from different accounts in different contexts?
             // this requires changes to Aperture's RDF API (context support)
