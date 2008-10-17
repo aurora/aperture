@@ -162,6 +162,8 @@ public class FileAccessData extends AccessDataImpl {
         referredIDMap = null;
         aggregatedIDMap = null;
         super.initialize();
+        int oldAutoSaveInterval = autoSaveInterval; 
+        autoSaveInterval = 0; //disable autosave during initialization
         if (dataFile != null && dataFile.exists()) {
             FileInputStream fileStream = new FileInputStream(dataFile);
             BufferedInputStream buffer = new BufferedInputStream(fileStream);
@@ -169,6 +171,7 @@ public class FileAccessData extends AccessDataImpl {
             read(zipStream);
             zipStream.close();
         }
+        autoSaveInterval = oldAutoSaveInterval;
     }
 
     public void store() throws IOException {

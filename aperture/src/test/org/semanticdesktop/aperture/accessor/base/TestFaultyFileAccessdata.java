@@ -26,21 +26,21 @@ public class TestFaultyFileAccessdata extends ApertureTestBase {
         File tempFile = File.createTempFile("ad-faulty", "xml");
         tempFile.deleteOnExit();
         IOUtil.writeStream(ResourceUtil.getInputStream(DOCS_PATH + "faulty-fileaccessdata-throws-exception.xml", getClass()), tempFile);
-        FileAccessData fad = new FileAccessData(tempFile);
+        FileAccessData fad = new FileAccessData(tempFile,3);
         fad.initialize();
         assertEquals(1137,fad.getSize());
         fad.store();
     }
     
     /**
-     * Parses a file that used to throw an Exception.
+     * Parses a file that used to be ignored.
      * @throws Exception 
      */
     public void testIgnoredAccessData() throws Exception {
         File tempFile = File.createTempFile("ad-faulty", "xml");
         tempFile.deleteOnExit();
         IOUtil.writeStream(ResourceUtil.getInputStream(DOCS_PATH + "faulty-fileaccessdata-is-ignored.xml", getClass()), tempFile);
-        FileAccessData fad = new FileAccessData(tempFile);
+        FileAccessData fad = new FileAccessData(tempFile,3);
         fad.initialize();
         assertEquals(850,fad.getSize());
         fad.store();
