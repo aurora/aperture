@@ -105,6 +105,24 @@ public class TestMagicMimeTypeIdentifier extends ApertureTestBase {
 		// classified correctly
 		checkMimeType("xml-utf8-bom", "text/xml", identifier);
 	}
+	
+	/**
+	 * Tests whether the crawler can correctly extract the file name from the subcrawled uri. The docx files
+	 * are normal zip archives, therefore the magic number test indicates that they are zip files. To correctly
+	 * identify the file as Office 2007 docx, the mime type identifier needs to take the extension into account
+	 * which means that it has to extract the correct file name.
+	 * 
+	 * @throws Exception
+	 */
+	public void testSubCrawledUri() throws Exception {
+	    MagicMimeTypeIdentifierFactory factory = new MagicMimeTypeIdentifierFactory();
+        MimeTypeIdentifier identifier = factory.get();
+	    InputStream stream = ResourceUtil.getInputStream(DOCS_PATH + "microsoft-word-2007beta2.docx",this.getClass());
+	    byte[] bytes = IOUtil.readBytes(stream, identifier.getMinArrayLength());
+	    String uri = "zip:mime:file:/C:/Users/Chris/Desktop/docx%20problem/Useful%20documents1.eml!/86b313dc282850fef1762fb400171750%2540amrapali.com#1!/Board+paper.docx";
+	    String determinedType = identifier.identify(bytes, null, new URIImpl(uri));
+	    assertEquals("application/vnd.openxmlformats-officedocument.wordprocessingml", determinedType);
+	}
 
 	private void checkMimeType(String resourceName, String mimeType, MimeTypeIdentifier identifier)
 			throws IOException {

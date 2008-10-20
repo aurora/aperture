@@ -430,8 +430,11 @@ public class MagicMimeTypeIdentifier implements MimeTypeIdentifier {
 
         if (extension == null && uri != null) {
             extension = uri.toString();
-            extension = removeFragment('?', extension);
-            extension = removeFragment('#', extension);
+            if (!uri.toString().contains("!")) {
+                // don't remove the query on a subcrawled uri
+                extension = removeFragment('?', extension);
+                extension = removeFragment('#', extension);
+            }
         }
 
         if (extension != null) {
