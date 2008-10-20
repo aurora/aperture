@@ -73,11 +73,17 @@ import com.sun.mail.imap.IMAPFolder;
  * <p>
  * A known issue: the incremental crawling only works correctly for servers that persist UIDs for each folder.
  * Otherwise each crawl will start from scratch and report all objects as new. This occurs on IMAP servers
- * backed by the 'mh' message storage mechanism. See 
- * <a href="http://sourceforge.net/mailarchive/forum.php?thread_name=97d19f3c0809181546g3d817e28j82dd928960a166e4%40mail.gmail.com&forum_name=aperture-devel">
- * this email to aperture-dev </a> 
- * and <a href=http://mailman2.u.washington.edu/pipermail/imap-protocol/2007-March/000436.html"> 
- * this post from Marc Crispin - inventor of IMAP</a> for more details.
+ * backed by the 'mh' message storage mechanism. See <a href="http://sourceforge.net/mailarchive/forum.php?thread_name=97d19f3c0809181546g3d817e28j82dd928960a166e4%40mail.gmail.com&forum_name=aperture-devel"
+ * > this email to aperture-dev </a> and <a
+ * href=http://mailman2.u.washington.edu/pipermail/imap-protocol/2007-March/000436.html"> this post from Marc
+ * Crispin - inventor of IMAP</a> for more details.
+ * </p>
+ * 
+ * <p>
+ * A workaround for the above issue has been implemented. If you really need to work with such IMAP servers,
+ * and are really sure that you will not delete emails between crawls, use the
+ * {@link ImapDataSource#setIgnoreUidValidity(Boolean)} method, to tell the crawler to ignore the UID
+ * validity, and treat the UIDs as if they were persistent.
  * </p>
  */
 @SuppressWarnings("unchecked")
