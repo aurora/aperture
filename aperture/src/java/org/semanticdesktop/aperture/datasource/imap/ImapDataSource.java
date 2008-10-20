@@ -2,7 +2,7 @@
  * Copyright (c) 2006 - 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
- * Licensed under the Open Software License version 3.0.
+ * Licensed under the Academic Free License version 3.0.
  */
 package org.semanticdesktop.aperture.datasource.imap;
 import org.ontoware.rdf2go.model.node.URI;
@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Tue Jul 15 22:55:29 CEST 2008
- * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/imap/imapDataSource.ttl
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Mon Oct 20 11:57:12 CEST 2008
+ * input file: D:\ganymedeworkspace\aperture-trunk/src/java/org/semanticdesktop/aperture/datasource/imap/imapDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/12/imapds#ImapDataSource
  */
 public class ImapDataSource extends DomainBoundableDataSource {
@@ -263,6 +263,32 @@ public class ImapDataSource extends DomainBoundableDataSource {
              getConfiguration().remove(IMAPDS.maximumDepth);
          } else {
              getConfiguration().put(IMAPDS.maximumDepth,maximumDepth);
+         }
+     }
+
+    /**
+     * Returns the Should the crawler ignore the UID validity? THIS OPTION MAY BE DANGEROUS, USE AT YOUR OWN RISK, ONLY ON FAULTY SERVERS THAT DON'T PERSIST EMAIL IDs, ONLY IF YOU DON'T DELETE ANY EMAILS AND ONLY IF YOU REALLY NEED IT!!!! IF YOU DO DELETE AN EMAIL FROM SUCH A SERVER, THE CRAWLER WILL RETURN WRONG RESULTS
+     * 
+     * @return the Should the crawler ignore the UID validity? THIS OPTION MAY BE DANGEROUS, USE AT YOUR OWN RISK, ONLY ON FAULTY SERVERS THAT DON'T PERSIST EMAIL IDs, ONLY IF YOU DON'T DELETE ANY EMAILS AND ONLY IF YOU REALLY NEED IT!!!! IF YOU DO DELETE AN EMAIL FROM SUCH A SERVER, THE CRAWLER WILL RETURN WRONG RESULTS or null if no value has been set
+     * @throws NullPointerException if no configuration has been set, use
+     *             {@link #setConfiguration(RDFContainer)} before calling this method
+     */
+     public Boolean getIgnoreUidValidity() {
+          return getConfiguration().getBoolean(IMAPDS.ignoreUidValidity);
+     }
+
+    /**
+     * Sets the Should the crawler ignore the UID validity? THIS OPTION MAY BE DANGEROUS, USE AT YOUR OWN RISK, ONLY ON FAULTY SERVERS THAT DON'T PERSIST EMAIL IDs, ONLY IF YOU DON'T DELETE ANY EMAILS AND ONLY IF YOU REALLY NEED IT!!!! IF YOU DO DELETE AN EMAIL FROM SUCH A SERVER, THE CRAWLER WILL RETURN WRONG RESULTS
+     * 
+     * @param ignoreUidValidity Should the crawler ignore the UID validity? THIS OPTION MAY BE DANGEROUS, USE AT YOUR OWN RISK, ONLY ON FAULTY SERVERS THAT DON'T PERSIST EMAIL IDs, ONLY IF YOU DON'T DELETE ANY EMAILS AND ONLY IF YOU REALLY NEED IT!!!! IF YOU DO DELETE AN EMAIL FROM SUCH A SERVER, THE CRAWLER WILL RETURN WRONG RESULTS, can be null in which case any previous setting will be removed
+     * @throws NullPointerException if no configuration has been set, use
+     *             {@link #setConfiguration(RDFContainer)} before calling this method
+     */
+     public void setIgnoreUidValidity(Boolean ignoreUidValidity) {
+         if ( ignoreUidValidity == null) {
+             getConfiguration().remove(IMAPDS.ignoreUidValidity);
+         } else {
+             getConfiguration().put(IMAPDS.ignoreUidValidity,ignoreUidValidity);
          }
      }
 

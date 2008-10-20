@@ -2,7 +2,7 @@
  * Copyright (c) 2006 - 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
- * Licensed under the Open Software License version 3.0.
+ * Licensed under the Academic Free License version 3.0.
  */
 package org.semanticdesktop.aperture.datasource.imap;
 import java.io.InputStream;
@@ -13,8 +13,8 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Tue Jul 15 22:55:25 CEST 2008
- * input file: D:\workspace\aperture/src/java/org/semanticdesktop/aperture/datasource/imap/imapDataSource.ttl
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Mon Oct 20 11:57:12 CEST 2008
+ * input file: D:\ganymedeworkspace\aperture-trunk/src/java/org/semanticdesktop/aperture/datasource/imap/imapDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/12/imapds#
  */
 public class IMAPDS {
@@ -113,6 +113,14 @@ public class IMAPDS {
      * Range: http://www.w3.org/2001/XMLSchema#long  <br/>
      */
     public static final URI maximumSize = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/imapds#maximumSize");
+    /**
+     * Type: Property <br/>
+     * Label: Ignore UID Validity?  <br/>
+     * Comment: Should the crawler ignore the UID validity? THIS OPTION MAY BE DANGEROUS, USE AT YOUR OWN RISK, ONLY ON FAULTY SERVERS THAT DON'T PERSIST EMAIL IDs, ONLY IF YOU DON'T DELETE ANY EMAILS AND ONLY IF YOU REALLY NEED IT!!!! IF YOU DO DELETE AN EMAIL FROM SUCH A SERVER, THE CRAWLER WILL RETURN WRONG RESULTS  <br/>
+     * Domain: http://aperture.semanticdesktop.org/ontology/2007/08/12/imapds#IMAPDataSource  <br/>
+     * Range: http://www.w3.org/2001/XMLSchema#boolean  <br/>
+     */
+    public static final URI ignoreUidValidity = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/12/imapds#ignoreUidValidity");
     /**
      * Type: Property <br/>
      * Label: Connection security  <br/>

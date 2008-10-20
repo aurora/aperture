@@ -520,7 +520,17 @@ public class DataObjectFactory {
         HashMap result = new HashMap();
         result.put(ID_KEY, uri);
         
-        Object content = normalSinglePart.getContent();
+        Object content = null;
+        try {
+            normalSinglePart.getContent();
+        } catch (Exception e) {
+            /*
+             * this happened when the message had an X-UNKNOWN encoding and javamail threw an
+             * UnsupportedEncodingException, just leave it as it is, we can hardly do anything meaningful, and
+             * it should definitely not stop the crawl
+             */
+            logger.warn("Coudln't get the message content",e);
+        }
         
         /*
          * The file name is not null only if this part is an attachment.
@@ -560,8 +570,8 @@ public class DataObjectFactory {
             // seems to return the content of all text/... parts as a String, even when it should be returned
             // as a stream and processed by the extractors
             result.put(CONTENTS_KEY, streamFactory.getPartStream(normalSinglePart));
-        } else {
-            // a serious error, if it happens - it is a bug and let the users report it
+        } else if (content != null) {
+            // a serious error, if it happens - it is a bug and let the users report it, a null value is OK
             throw new MessagingException("the content should be a string or a stream");
         }
         

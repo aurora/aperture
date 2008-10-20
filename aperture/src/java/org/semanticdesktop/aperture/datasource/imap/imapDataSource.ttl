@@ -23,6 +23,7 @@
                                              :includeInbox
                                              :maximumSize
                                              :maximumDepth
+                                             :ignoreUidValidity
                                              :connectionSecurity 
                                              :sslFileName
                                              :sslFilePassword 
@@ -100,6 +101,19 @@
         a sourceformat:IntegerFieldWidget 
     ] ;
     fresnel:propertyFormatDomain :maximumSize .
+    
+:ignoreUidValidity a rdf:Property ;
+    rdfs:label "Ignore UID Validity?" ;
+    rdfs:comment "Should the crawler ignore the UID validity? THIS OPTION MAY BE DANGEROUS, USE AT YOUR OWN RISK, ONLY ON FAULTY SERVERS THAT DON'T PERSIST EMAIL IDs, ONLY IF YOU DON'T DELETE ANY EMAILS AND ONLY IF YOU REALLY NEED IT!!!! IF YOU DO DELETE AN EMAIL FROM SUCH A SERVER, THE CRAWLER WILL RETURN WRONG RESULTS" ;
+    rdfs:domain :IMAPDataSource ;
+    rdfs:range xsd:boolean .
+    
+:ignoreUidValidityFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+        a sourceformat:CheckBoxWidget 
+    ] ;
+    fresnel:propertyFormatDomain :ignoreUidValidity .
+    
     
 :connectionSecurity a rdf:Property ;
 	rdfs:label "Connection security" ;

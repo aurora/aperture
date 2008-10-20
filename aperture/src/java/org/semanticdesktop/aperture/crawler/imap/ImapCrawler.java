@@ -131,6 +131,8 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
     private boolean ignoreSSLCertificates = false;
 
     private boolean useSSLCertificateFile = false;
+    
+    private boolean ignoreUidValidity = false;
 
     private String SSLCertificateFile;
 
@@ -150,59 +152,59 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
     /* ----------------------------- Crawler implementation ----------------------------- */
 
     protected ExitCode crawlObjects() {
-        // determine host name, user name, etc.
-        retrieveConfigurationData(getDataSource());
-
-        
-        // make sure we have a connection to the mail store
         try {
-            ensureConnectedStore();
-        }
-        catch (MessagingException e) {
-            logger.warn("Unable to connect to IMAP mail store", e);
-            closeConnection();
-            return ExitCode.FATAL_ERROR;
-        }
-
-        // crawl the folder contents
-        boolean fatalError = false;
-
-        try {
-            // crawl all specified base folders
-            int nrFolders = baseFolders.size();
-            if (nrFolders == 0) {
-                crawlFolder(store.getDefaultFolder(), 0);
+            // determine host name, user name, etc.
+            retrieveConfigurationData(getDataSource());
+    
+            // make sure we have a connection to the mail store
+            try {
+                ensureConnectedStore();
             }
-            else {
-                for (int i = 0; i < nrFolders; i++) {
-                    String baseFolderName = (String) baseFolders.get(i);
-                    Folder baseFolder = store.getFolder(baseFolderName);
-                    crawlFolder(baseFolder, 0);
+            catch (MessagingException e) {
+                logger.warn("Unable to connect to IMAP mail store", e);
+                return ExitCode.FATAL_ERROR;
+            }
+    
+            // crawl the folder contents
+            boolean fatalError = false;
+    
+            try {
+                // crawl all specified base folders
+                int nrFolders = baseFolders.size();
+                if (nrFolders == 0) {
+                    crawlFolder(store.getDefaultFolder(), 0);
+                }
+                else {
+                    for (int i = 0; i < nrFolders; i++) {
+                        String baseFolderName = (String) baseFolders.get(i);
+                        Folder baseFolder = store.getFolder(baseFolderName);
+                        crawlFolder(baseFolder, 0);
+                    }
+                }
+    
+                // The inbox is a magic folder - include it if config option set.
+                if (includeInbox) {
+                    crawlFolder(store.getFolder("INBOX"), 0);
                 }
             }
-
-            // The inbox is a magic folder - include it if config option set.
-            if (includeInbox) {
-                crawlFolder(store.getFolder("INBOX"), 0);
+            catch (MessagingException e) {
+                logger.warn("MessagingException while crawling", e);
+                fatalError = true;
             }
-        }
-        catch (MessagingException e) {
-            logger.warn("MessagingException while crawling", e);
-            fatalError = true;
-        }
 
-        // terminate the connection
-        closeConnection();
-
-        // determine the correct exit code
-        if (fatalError) {
-            return ExitCode.FATAL_ERROR;
-        }
-        else if (isStopRequested()) {
-            return ExitCode.STOP_REQUESTED;
-        }
-        else {
-            return ExitCode.COMPLETED;
+            // determine the correct exit code
+            if (fatalError) {
+                return ExitCode.FATAL_ERROR;
+            }
+            else if (isStopRequested()) {
+                return ExitCode.STOP_REQUESTED;
+            }
+            else {
+                return ExitCode.COMPLETED;
+            }
+        } finally {
+         // terminate the connection
+            closeConnection();
         }
     }
 
@@ -239,6 +241,14 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
         }
         else {
             includeInbox = includeInboxB.booleanValue();
+        }
+        
+        Boolean ignoreUidValidityB = configuredDataSource.getIgnoreUidValidity();
+        if (ignoreUidValidityB == null) {
+            ignoreUidValidity = false;
+        }
+        else {
+            ignoreUidValidity = ignoreUidValidityB.booleanValue();
         }
 
         Integer maxDepthI = configuredDataSource.getMaximumDepth();
@@ -762,9 +772,9 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
             deprecatedChildren = new HashSet(deprecatedChildren);
         }
         for (Object uri : deprecatedChildren) {
+            reportDeletedDataObject(uri.toString());
             accessData.remove(uri.toString());
         }
-        accessData.remove(folderUriString);
         folderContentChanged = true;
         return folderContentChanged;
     }
@@ -798,7 +808,11 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
             return false;
         }
         long newValidity = ((UIDFolder)currentFolder).getUIDValidity();
-        return oldValidity == newValidity;
+        if (ignoreUidValidity) {
+            return true;
+        } else {
+            return oldValidity == newValidity;
+        }
     }
 
     @Override

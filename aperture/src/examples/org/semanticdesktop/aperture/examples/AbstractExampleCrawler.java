@@ -223,7 +223,8 @@ public abstract class AbstractExampleCrawler {
         writer.println(getAlignedOption("--accessDataStore") + "stores the incremental crawling info in a native store");
         writer.println(getAlignedOption("--accessDataFile") + "stores the incremental crawling info in a file");
         writer.println(getAlignedOption("-i") + "turns on MIME type identification");
-        writer.println(getAlignedOption("-x") + "if specified - the program will try to extract the content of");
+        writer.println(getAlignedOption("-x") + "if specified - the program will try to extract the content\n" + 
+                       getAlignedOption("") + "of the data objects returned by the crawler");
         writer.println(getAlignedOption("-v") + "verbose output");
         writer.println(getAlignedOption("-o path") + "path to the output file");
         writer.println(getAlignedOption(null) + "optional if --performance is specified)");
@@ -232,7 +233,7 @@ public abstract class AbstractExampleCrawler {
     
     protected static String getAlignedOption(String option) {
         if (option == null || option.length()==0) {
-            return "                   ";
+            return "                  ";
         }
         StringBuilder builder = new StringBuilder(30);
         int startPoint = 0;
