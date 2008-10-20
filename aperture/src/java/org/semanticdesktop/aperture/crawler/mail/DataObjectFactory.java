@@ -522,7 +522,7 @@ public class DataObjectFactory {
         
         Object content = null;
         try {
-            normalSinglePart.getContent();
+            content = normalSinglePart.getContent();
         } catch (Exception e) {
             /*
              * this happened when the message had an X-UNKNOWN encoding and javamail threw an
