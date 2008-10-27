@@ -221,3 +221,72 @@ Updated Dependencies
 - added jaudiotagger-1.0.8 - required by the MP3Extractor
 - added jpim-0.1 (with patches) - required by the VcardSubCrawler
 - added mstor-0.9.11 - required by the MboxCrawler
+
+
+----------------------------------
+version 1.2.0 27.10.2008
+----------------------------------
+
+After three years of development Aperture is stable enough to drop the
+.beta suffix from the release. 1.2.0 leverages architectural improvements
+made in 1.1.0.beta to bring support for compressed archives and to streamline
+email processing. A completely new service - the DataSourceDetector allows 
+applications to provide suggestions to users about the data sources on their
+desktops. A host of bugfixes and minor improvements rounds the image
+of the leanest and meanest version of Aperture ever made. Enjoy.
+
+What's new?
+- a completely new Aperture service - the DataSourceDetectors - can be used 
+  to provide advice to the user about the data sources on the desktop
+- new subcrawlers for .zip, .gzip, tar and bzip2 compressed files
+- unification of the email handling - now the ImapCrawler, MboxCrawler and the
+  MimeSubCrawler use the same code in the DataObjectFactory to convert emails
+  to RDF. The MimeExtractor has been deprecated, switch to MimeSubCrawler
+- some bugfixes in the email handling code, plain text, and xml attachments
+  are treated correctly, threads are reflected in the resulting rdf
+- the pdf extractor has some basic support for XMP metadata (thanks to JempBox)
+- a completely new XmlSafetyUtil class that helps to deal with characters that
+  are valid in RDF, but invalid in XML - thus breaking the serialization
+- the uris of subcrawled resources follow the pattern established by the
+  Apache Commons VFS project.
+- new Sesame 2.2.1 bundled with Aperture features dramatic performance 
+  optimizations, e.g. the aperture test suite is 2 times faster, this may also
+  be a boost for your application
+
+Bugs fixed:
+2181955   improve IMAPCrawler Performance
+2167006   MimeSubCrawler generates two DataObjects for .eml file
+2166909   Aperture generates unreadable FileAccessData files
+2166890   MagicMimeTypeIdentifier mixes up subcrawled uris
+2157232   FileSystemCrawler reverses semantics of hidden folder 
+2149106   Deprecate MimeExtractor
+2140058   DataObjectFactory converts too many text and html mail parts
+2138734   ImapCrawler does not dispose unused DataObjects
+2136722   XML attachments are processed incorrectly.
+2051959   Addressbook crawler - null accessdata and stop
+2017492   Fix license headers
+2017422   FileInspector starts slowly 
+2014817   Misleading logging statement in FileSystemCrawler
+2009501   improve MIME type detection based on magic strings
+1986714   Vocabulary classes throw errors when they are reloaded
+1986707   Tests are ran twice when generating a release
+1976336   Aperture extracts illegal unicode from PDFs
+1944758   exception in imapcrawler with folders that have only message
+1888018   MimeExtractor puts both plain and html in plainTextContent
+1650578   GZIP-related exception while accessing webpage
+1543874   PdfExtractor only returns first author 
+
+Feature requests:
+2149529   Implement commons-VFS-like uris for SubCrawlers
+2058144   implement proper threading support in DataObjectFactory
+2052009   CrawlerHandlerBase and the CrawlerHandlers in the test s
+2042093   Expand the CrawlReport in CLI apps
+2019478   Implement zip/gzip subcrawlers
+2012786   Create a test suite for the aperture.util package
+2009216   DataSourceDetectors architecture
+1986749   Update to Sesame 2.1.2
+1986696   Add waiting time between crawls in junit tests
+1986680   Evaluate and implement the HTMLExtractor patch by jm
+1868457   ThreadedExtractorWrapper: parametrizable timeout values
+1779556   Unify handling of emails
+1641723   Things to do for alpha-4
