@@ -12,9 +12,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.semanticdesktop.aperture.extractor.ExtractorFactory;
-import org.semanticdesktop.aperture.extractor.ExtractorRegistry;
-import org.semanticdesktop.aperture.extractor.FileExtractorFactory;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerFactory;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerRegistry;
 

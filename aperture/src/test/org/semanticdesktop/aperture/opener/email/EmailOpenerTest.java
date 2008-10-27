@@ -8,10 +8,10 @@ package org.semanticdesktop.aperture.opener.email;
 
 import java.io.IOException;
 
+import junit.framework.TestCase;
+
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
-
-import junit.framework.TestCase;
 
 
 public class EmailOpenerTest extends TestCase {

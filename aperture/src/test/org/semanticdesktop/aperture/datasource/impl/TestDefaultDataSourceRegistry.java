@@ -10,7 +10,6 @@ import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.datasource.filesystem.FILESYSTEMDS;
 import org.semanticdesktop.aperture.datasource.imap.IMAPDS;
 import org.semanticdesktop.aperture.datasource.web.WEBDS;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 public class TestDefaultDataSourceRegistry extends ApertureTestBase {
 

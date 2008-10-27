@@ -8,7 +8,6 @@ package org.semanticdesktop.aperture.crawler.impl;
 
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.datasource.filesystem.FILESYSTEMDS;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 public class TestDefaultCrawlerRegistry extends ApertureTestBase {
 

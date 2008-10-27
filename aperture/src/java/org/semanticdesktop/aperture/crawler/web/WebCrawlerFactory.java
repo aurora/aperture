@@ -15,7 +15,6 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.web.WEBDS;
 import org.semanticdesktop.aperture.hypertext.linkextractor.LinkExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 public class WebCrawlerFactory implements CrawlerFactory {
 

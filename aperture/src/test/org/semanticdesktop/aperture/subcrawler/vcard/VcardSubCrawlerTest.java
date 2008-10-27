@@ -8,7 +8,6 @@ package org.semanticdesktop.aperture.subcrawler.vcard;
 
 import java.io.InputStream;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.ontoware.aifbcommons.collection.ClosableIterator;
@@ -20,13 +19,11 @@ import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.NodeOrVariable;
 import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.ResourceOrVariable;
-import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.UriOrVariable;
 import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.ontoware.rdf2go.vocabulary.XSD;
-import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerTestBase;

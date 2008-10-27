@@ -15,10 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.Stack;
 
 import org.ontoware.aifbcommons.collection.ClosableIterator;

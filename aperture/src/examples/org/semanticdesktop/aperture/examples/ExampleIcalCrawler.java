@@ -13,7 +13,6 @@ import org.ontoware.rdf2go.exception.ModelException;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.crawler.ical.IcalCrawler;
 import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
-import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
 import org.semanticdesktop.nepomuk.nrl.validator.ModelTester;

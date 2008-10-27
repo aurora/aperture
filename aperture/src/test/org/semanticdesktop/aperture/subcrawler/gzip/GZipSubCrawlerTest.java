@@ -6,16 +6,8 @@
  */
 package org.semanticdesktop.aperture.subcrawler.gzip;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-
-import org.ontoware.rdf2go.exception.ModelException;
-import org.semanticdesktop.aperture.accessor.DataObject;
-import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerTestBase;
-import org.semanticdesktop.aperture.subcrawler.zip.ZipSubCrawlerFactory;
-import org.semanticdesktop.aperture.util.IOUtil;
 
 /**
  * A test case for the gzip subcrawler

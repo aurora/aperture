@@ -10,13 +10,13 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.semanticdesktop.aperture.accessor.base.CountingInputStreamTest;
+import org.semanticdesktop.aperture.accessor.base.TestAccessDataImpl;
 import org.semanticdesktop.aperture.accessor.base.TestFaultyFileAccessdata;
 import org.semanticdesktop.aperture.accessor.base.TestFileAccessData;
 import org.semanticdesktop.aperture.accessor.base.TestFileDataObject;
 import org.semanticdesktop.aperture.accessor.base.TestModelAccessData;
-import org.semanticdesktop.aperture.accessor.base.TestAccessDataImpl;
-import org.semanticdesktop.aperture.accessor.base.TestSynchronizedAccessData;
 import org.semanticdesktop.aperture.accessor.base.TestNativeStoreModelAccessData;
+import org.semanticdesktop.aperture.accessor.base.TestSynchronizedAccessData;
 import org.semanticdesktop.aperture.accessor.file.TestFileAccessor;
 import org.semanticdesktop.aperture.accessor.impl.TestDefaultDataAccessorRegistry;
 

@@ -9,12 +9,9 @@ package org.semanticdesktop.aperture.crawler.mbox;
 import java.util.Collections;
 import java.util.Set;
 
-import org.semanticdesktop.aperture.accessor.DataAccessor;
-import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.datasource.imap.IMAPDS;
 import org.semanticdesktop.aperture.datasource.mbox.MBOXDS;
 
 /**

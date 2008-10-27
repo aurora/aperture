@@ -6,7 +6,6 @@
  */
 package org.semanticdesktop.aperture.examples;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
@@ -16,18 +15,15 @@ import java.util.regex.PatternSyntaxException;
 import org.ontoware.rdf2go.exception.ModelException;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.crawler.web.WebCrawler;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;
 import org.semanticdesktop.aperture.datasource.config.RegExpPattern;
 import org.semanticdesktop.aperture.datasource.config.SubstringCondition;
 import org.semanticdesktop.aperture.datasource.config.SubstringPattern;
 import org.semanticdesktop.aperture.datasource.web.WebDataSource;
-import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.hypertext.linkextractor.impl.DefaultLinkExtractorRegistry;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
-import org.semanticdesktop.nepomuk.nrl.validator.ModelTester;
 
 /**
  * Example class that crawls a web site or locally stored hypertext graph and dumps all extracted information

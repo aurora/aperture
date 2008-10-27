@@ -9,11 +9,6 @@ package org.semanticdesktop.aperture.util;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.semanticdesktop.aperture.subcrawler.impl.TestDefaultSubCrawlerRegistry;
-import org.semanticdesktop.aperture.subcrawler.impl.TestSubCrawlerRegistryImpl;
-import org.semanticdesktop.aperture.subcrawler.vcard.VcardSubCrawlerTest;
-import org.semanticdesktop.aperture.subcrawler.vcard.TestVcardFileCrawlerCombination;
-
 /**
  * Tests all utils
  */

@@ -7,8 +7,6 @@
 package org.semanticdesktop.aperture.extractor.jpg;
 
 import java.io.InputStream;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -20,7 +18,6 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.util.UriUtil;
 import org.semanticdesktop.aperture.vocabulary.GEO;
 import org.semanticdesktop.aperture.vocabulary.NEXIF;

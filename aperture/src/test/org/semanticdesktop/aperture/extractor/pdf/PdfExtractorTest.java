@@ -8,9 +8,7 @@ package org.semanticdesktop.aperture.extractor.pdf;
 
 import java.io.IOException;
 
-import org.omg.DynamicAny.DynFixedOperations;
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.model.Syntax;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;

@@ -6,18 +6,12 @@
  */
 package org.semanticdesktop.aperture.examples;
 
-import java.io.File;
 import java.util.List;
 
 import org.ontoware.rdf2go.exception.ModelException;
-import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.addressbook.apple.AppleAddressbookCrawler;
 import org.semanticdesktop.aperture.addressbook.apple.AppleAddressbookDataSource;
-import org.semanticdesktop.aperture.crawler.ical.IcalCrawler;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
-import org.semanticdesktop.aperture.datasource.ical.IcalDataSource;
-import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
 

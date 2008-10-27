@@ -7,7 +7,6 @@
 package org.semanticdesktop.aperture.extractor.presentations;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;

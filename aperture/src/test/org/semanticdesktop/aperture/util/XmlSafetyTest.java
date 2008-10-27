@@ -11,6 +11,8 @@ import java.io.CharArrayWriter;
 import java.io.StringReader;
 import java.io.Writer;
 
+import junit.framework.TestCase;
+
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.BlankNode;
@@ -22,8 +24,6 @@ import org.ontoware.rdf2go.model.node.impl.DatatypeLiteralImpl;
 import org.ontoware.rdf2go.model.node.impl.LanguageTagLiteralImpl;
 import org.ontoware.rdf2go.model.node.impl.PlainLiteralImpl;
 import org.ontoware.rdf2go.vocabulary.XSD;
-
-import junit.framework.TestCase;
 
 /**
  * Tests the methods from the XmlSafetyUtil class.

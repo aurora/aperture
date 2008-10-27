@@ -9,7 +9,6 @@ package org.semanticdesktop.aperture.extractor.visio;
 import java.io.IOException;
 
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.model.Syntax;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;

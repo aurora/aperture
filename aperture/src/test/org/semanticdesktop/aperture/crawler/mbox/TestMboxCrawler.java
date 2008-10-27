@@ -8,46 +8,19 @@ package org.semanticdesktop.aperture.crawler.mbox;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
-import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.Statement;
-import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.TestIncrementalCrawlerHandler;
 import org.semanticdesktop.aperture.accessor.AccessData;
-import org.semanticdesktop.aperture.accessor.DataObject;
-import org.semanticdesktop.aperture.accessor.FileDataObject;
-import org.semanticdesktop.aperture.accessor.FolderDataObject;
-import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
-import org.semanticdesktop.aperture.accessor.file.FileAccessorFactory;
-import org.semanticdesktop.aperture.accessor.impl.DataAccessorRegistryImpl;
-import org.semanticdesktop.aperture.crawler.Crawler;
-import org.semanticdesktop.aperture.crawler.CrawlerHandler;
-import org.semanticdesktop.aperture.crawler.ExitCode;
-import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
-import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;
-import org.semanticdesktop.aperture.datasource.config.SubstringCondition;
-import org.semanticdesktop.aperture.datasource.config.SubstringPattern;
 import org.semanticdesktop.aperture.datasource.mbox.MboxDataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
-import org.semanticdesktop.aperture.util.FileUtil;
-import org.semanticdesktop.aperture.util.IOUtil;
-import org.semanticdesktop.aperture.util.ModelUtil;
 import org.semanticdesktop.aperture.util.ResourceUtil;
-import org.semanticdesktop.aperture.vocabulary.NFO;
-import org.semanticdesktop.aperture.vocabulary.NIE;
-import org.semanticdesktop.nepomuk.nrl.validator.ModelTester;
-import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTester;
 
 public class TestMboxCrawler extends ApertureTestBase {
 

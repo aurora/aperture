@@ -11,10 +11,8 @@ import java.io.InputStream;
 
 import org.apache.tools.bzip2.CBZip2InputStream;
 import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.subcrawler.base.AbstractCompressorSubCrawler;
 import org.semanticdesktop.aperture.util.UriUtil;
-import org.semanticdesktop.aperture.util.UrlUtil;
 
 /**
  * A SubCrawler Implementation working with BZIP2 archives.

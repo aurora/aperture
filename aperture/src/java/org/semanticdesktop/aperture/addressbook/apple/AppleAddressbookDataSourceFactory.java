@@ -6,18 +6,10 @@
  */
 package org.semanticdesktop.aperture.addressbook.apple;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
-import org.semanticdesktop.aperture.util.ResourceUtil;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * AppleAddressbookDataSourceFactory returns instances of the AppleAddressbookDataSource class. 

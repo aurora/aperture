@@ -10,7 +10,6 @@ import java.io.IOException;
 
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
-import org.semanticdesktop.aperture.ApertureTestBase;
 
 public class TestModelAccessData extends AccessDataTest {
 

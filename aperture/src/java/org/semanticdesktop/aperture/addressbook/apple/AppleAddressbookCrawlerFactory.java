@@ -12,7 +12,6 @@ import java.util.Set;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSource;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 public class AppleAddressbookCrawlerFactory implements CrawlerFactory {
 

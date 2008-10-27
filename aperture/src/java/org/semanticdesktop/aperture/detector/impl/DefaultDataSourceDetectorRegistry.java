@@ -13,7 +13,6 @@ import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.semanticdesktop.aperture.datasource.DataSourceFactory;
 import org.semanticdesktop.aperture.detector.DataSourceDetector;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.util.SimpleSAXAdapter;

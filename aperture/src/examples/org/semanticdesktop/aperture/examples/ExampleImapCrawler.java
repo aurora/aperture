@@ -6,23 +6,17 @@
  */
 package org.semanticdesktop.aperture.examples;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
 import org.ontoware.rdf2go.exception.ModelException;
-import org.pdfbox.util.operator.SetHorizontalTextScaling;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.crawler.imap.ImapCrawler;
-import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
-import org.semanticdesktop.aperture.datasource.imap.IMAPDS;
 import org.semanticdesktop.aperture.datasource.imap.ImapDataSource;
 import org.semanticdesktop.aperture.datasource.imap.ImapDataSource.ConnectionSecurity;
 import org.semanticdesktop.aperture.examples.handler.IMAPUrisValidatingCrawlerHandler;
-import org.semanticdesktop.aperture.examples.handler.SimpleCrawlerHandler;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 /**
  * Demonstrates how to crawl an IMAP mail folder.

@@ -6,19 +6,12 @@
  */
 package org.semanticdesktop.aperture.opener.email;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.logging.Level;
 
 import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.opener.DataOpener;
-import org.semanticdesktop.aperture.opener.file.FileOpener;
-import org.semanticdesktop.aperture.util.OSUtils;
-import org.semanticdesktop.aperture.websites.flickr.FlickrCrawler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

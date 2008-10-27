@@ -8,12 +8,9 @@ package org.semanticdesktop.aperture.crawler.filesystem;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import org.ontoware.rdf2go.exception.ModelException;
-import org.ontoware.rdf2go.exception.ModelRuntimeException;
 import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.ApertureTestBase;
@@ -26,7 +23,6 @@ import org.semanticdesktop.aperture.accessor.impl.DataAccessorRegistryImpl;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
-import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
 import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;
 import org.semanticdesktop.aperture.datasource.config.SubstringCondition;

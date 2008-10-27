@@ -7,13 +7,7 @@
 package org.semanticdesktop.aperture.addressbook.thunderbird;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
 import java.net.MalformedURLException;
-import java.nio.charset.Charset;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;

@@ -17,7 +17,6 @@ import org.ontoware.rdf2go.model.ModelSet;
 import org.ontoware.rdf2go.model.Statement;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.vocabulary.RDF;
-import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
 import org.semanticdesktop.aperture.vocabulary.GEO;
@@ -35,7 +34,6 @@ import org.semanticdesktop.nepomuk.nrl.validator.ValidationMessage;
 import org.semanticdesktop.nepomuk.nrl.validator.ValidationReport;
 import org.semanticdesktop.nepomuk.nrl.validator.exception.StandaloneValidatorException;
 import org.semanticdesktop.nepomuk.nrl.validator.impl.StandaloneValidatorImpl;
-import org.semanticdesktop.nepomuk.nrl.validator.testers.DataObjectTreeModelTester;
 import org.semanticdesktop.nepomuk.nrl.validator.testers.NRLClosedWorldModelTester;
 
 /**

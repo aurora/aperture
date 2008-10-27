@@ -14,8 +14,6 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.semanticdesktop.aperture.datasource.DataSourceFactory;
-import org.semanticdesktop.aperture.datasource.DataSourceRegistry;
 import org.semanticdesktop.aperture.detector.impl.DataSourceDetectorRegistryImpl;
 
 /**

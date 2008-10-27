@@ -10,7 +10,6 @@ import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.vocabulary.DATASOURCE;
 
 public class TestConfigurationUtil extends ApertureTestBase {
 

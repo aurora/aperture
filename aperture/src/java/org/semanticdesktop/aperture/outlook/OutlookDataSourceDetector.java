@@ -13,8 +13,6 @@ import java.util.List;
 import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.URI;
-import org.semanticdesktop.aperture.datasource.config.DomainBoundaries;
-import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
 import org.semanticdesktop.aperture.detector.DataSourceDescription;
 import org.semanticdesktop.aperture.detector.DataSourceDetector;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
@@ -22,8 +20,6 @@ import org.semanticdesktop.aperture.util.OSUtils;
 import org.semanticdesktop.aperture.util.UriUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.jacob.com.ComThread;
 
 /**
  * Detect Microsoft Outlook. This instantiates the Microsoft Outlook ActiveX control and tests if

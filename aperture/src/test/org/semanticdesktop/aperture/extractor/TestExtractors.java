@@ -32,7 +32,6 @@ import org.semanticdesktop.aperture.extractor.word.WordExtractorTest;
 import org.semanticdesktop.aperture.extractor.wordperfect.WordPerfectExtractorTest;
 import org.semanticdesktop.aperture.extractor.works.WorksExtractorTest;
 import org.semanticdesktop.aperture.extractor.xml.XmlExtractorTest;
-import org.semanticdesktop.aperture.subcrawler.vcard.VcardSubCrawlerTest;
 
 /**
  * Tests all Extractor implementations and related classes.

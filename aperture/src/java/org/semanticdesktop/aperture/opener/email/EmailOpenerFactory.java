@@ -6,13 +6,10 @@
  */
 package org.semanticdesktop.aperture.opener.email;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.semanticdesktop.aperture.opener.DataOpener;
 import org.semanticdesktop.aperture.opener.DataOpenerFactory;
-import org.semanticdesktop.aperture.opener.http.HttpOpener;
 
 
 public class EmailOpenerFactory implements DataOpenerFactory {

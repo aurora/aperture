@@ -9,7 +9,6 @@ package org.semanticdesktop.aperture.crawler.mbox;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.semanticdesktop.aperture.accessor.DataAccessorFactory;
 import org.semanticdesktop.aperture.crawler.CrawlerFactory;
 import org.semanticdesktop.aperture.datasource.DataSourceFactory;
 import org.semanticdesktop.aperture.datasource.mbox.MboxDataSourceFactory;

@@ -10,8 +10,8 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.ApertureTestBase;
+import org.semanticdesktop.aperture.util.ResourceUtil;
 
 public class CountingInputStreamTest extends ApertureTestBase {
 

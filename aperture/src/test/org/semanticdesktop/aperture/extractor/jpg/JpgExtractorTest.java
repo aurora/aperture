@@ -10,7 +10,6 @@ import java.io.IOException;
 
 import org.ontoware.rdf2go.exception.ModelException;
 import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.extractor.Extractor;
@@ -20,8 +19,6 @@ import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.vocabulary.GEO;
 import org.semanticdesktop.aperture.vocabulary.NEXIF;
-
-import com.drew.imaging.jpeg.JpegProcessingException;
 
 public class JpgExtractorTest extends ExtractorTestBase {
 

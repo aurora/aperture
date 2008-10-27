@@ -5,8 +5,9 @@
  * Licensed under the Academic Free License version 3.0.
  */
 package org.semanticdesktop.aperture.websites.flickr;
-import java.io.InputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;

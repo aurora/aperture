@@ -6,10 +6,7 @@
  */
 package org.semanticdesktop.aperture.addressbook.apple;
 
-import java.io.PrintWriter;
-
 import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;

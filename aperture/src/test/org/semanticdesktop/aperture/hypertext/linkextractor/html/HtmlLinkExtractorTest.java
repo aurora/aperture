@@ -11,9 +11,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
-import org.ontoware.rdf2go.RDF2Go;
-import org.ontoware.rdf2go.model.Model;
-import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.hypertext.linkextractor.LinkExtractor;
 import org.semanticdesktop.aperture.util.ResourceUtil;

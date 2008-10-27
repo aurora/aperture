@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 import org.ontoware.rdf2go.model.node.URI;
-import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.subcrawler.base.AbstractCompressorSubCrawler;
 import org.semanticdesktop.aperture.util.UriUtil;
 

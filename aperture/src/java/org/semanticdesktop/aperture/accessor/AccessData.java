@@ -7,7 +7,6 @@
 package org.semanticdesktop.aperture.accessor;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.ontoware.aifbcommons.collection.ClosableIterator;
