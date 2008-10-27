@@ -25,13 +25,12 @@ your copy of ANT at http://ant.apache.org/
                   value="org.semanticdesktop.aperture" />
 
         <!-- versions -->
-        <property name="project.version.major" value="1.1" />
-        <property name="project.version.minor" value="1" />
-        <property name="version-status" value="beta_SNAPSHOT" />
+        <property name="project.version.major" value="1.2" />
+        <property name="project.version.minor" value="0" />
         <property name="project.version.full"
-                  value="${project.version.major}.${project.version.minor}.${version-status}" />
+                  value="${project.version.major}.${project.version.minor}" />
         <property name="project.version.osgi"
-                  value="${project.version.major}.${project.version.minor}.${version-status}" />
+                  value="${project.version.major}.${project.version.minor}" />
 
         <!-- input dirs -->
         <property name="src.dir" value="${basedir}/src" />

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Aperture Plug-in
 Bundle-SymbolicName: org.semanticdesktop.aperture
-Bundle-Version: 1.2.0.beta
+Bundle-Version: 1.2.0
 Bundle-Localization: plugin
 Require-Bundle: org.semweb4j.rdf2go.api,
  org.semweb4j.rdf2go.impl.base
