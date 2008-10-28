@@ -633,6 +633,16 @@ your copy of ANT at http://ant.apache.org/
         <copy todir="${osgirelease.doc.api.dir}">
             <fileset dir="${javadoc.dir}" />
         </copy>
+    	
+    	<!-- create src.zip file -->
+        <zip destfile="${osgirelease.src.zip}" basedir="${basedir}">
+            <include name="src/**" />
+            <include name="build.xml" />
+            <include name="selectors.xml" />
+
+            <!-- this seems to be default behaviour but it doesn't hurt to be explicit -->
+            <exclude name="**/CVS, **/.svn/**" />
+        </zip>
     </target>
 
     <target name="package"
