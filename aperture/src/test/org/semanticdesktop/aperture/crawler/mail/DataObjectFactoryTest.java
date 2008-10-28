@@ -217,7 +217,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         Extractor extractor = new PdfExtractorFactory().get();
         extractor.extract(pdfUri, contentStream, null, "application/pdf", container2);
         String contentString = container2.getString(NIE.plainTextContent);
-        assertEquals("This is an example document created with OpenOffice 2.0\r\n",contentString);
+        assertEquals("This is an example document created with OpenOffice 2.0",contentString);
         
         validate(container2);
         obj2.dispose();
