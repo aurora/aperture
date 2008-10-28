@@ -18,7 +18,7 @@ import org.semanticdesktop.aperture.subcrawler.base.AbstractArchiverSubCrawler;
  */
 public class ZipSubCrawler extends AbstractArchiverSubCrawler {
 
-    /** An {@link AbstractArchiverSubCrawler.ArchiveInputStream} encapsulating a stream of ZIP-ped data */
+    /** An ArchiveInputStream encapsulating a stream of ZIP-ped data */
     protected static class ZipSubCrawlerInputStream extends AbstractArchiverSubCrawler.ArchiveInputStream {
         
         /** Constructs a ZipSubCrawlerInputStream
@@ -33,7 +33,7 @@ public class ZipSubCrawler extends AbstractArchiverSubCrawler {
         @Override public void closeEntry() throws IOException { ((ZipInputStream)in).closeEntry(); }        
     }
     
-    /** An {@link AbstractArchiverSubCrawler.ArchiveEntry} encapsulating a {@link ZipEntry}*/
+    /** An ArchiveEntry encapsulating a {@link ZipEntry}*/
     protected static class ZipSubCrawlerEntry extends AbstractArchiverSubCrawler.ArchiveEntry {
         private ZipEntry entry;
         /** Constructs a ZipSubCrawlerEntry 

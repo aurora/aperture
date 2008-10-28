@@ -18,7 +18,6 @@ import java.util.Iterator;
 
 import org.ontoware.aifbcommons.collection.ClosableIterator;
 import org.ontoware.rdf2go.exception.ModelRuntimeException;
-import org.ontoware.rdf2go.model.Diff;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.ModelIO;
 import org.ontoware.rdf2go.model.Statement;
@@ -58,7 +57,7 @@ public class XmlSafetyUtils {
      * <a href="http://repo.aduna-software.org/svn/info.aduna/commons/xml/trunk/src/main/java/info/aduna/xml/XMLUtil.java">
      * here</a> and modified slightly. The original version removed the xml-invalid chars altogether
      * this version substitutes them with spaces
-     * @param in the input string
+     * @param s the input string
      * @return the input string with all characters that are invalid in xml removed
      */
     public static String makeXmlSafe(String s) {
@@ -277,15 +276,15 @@ public class XmlSafetyUtils {
      * characters that are invalid in XML.
      * <p>
      * Note that the current implementation handles the add... methods and the methods that read from readers.
-     * Id doesn't handle the update methods {@link AbstractModel#update(Diff)} and {@link 
+     * Id doesn't handle the update methods AbstractModel#update(Diff) and {@link 
      * AbstractModel#update(org.ontoware.rdf2go.model.DiffReader)} and the methods that read from input
      * streams i.e. {@link ModelIO#readFrom(java.io.InputStream)},
      * {@link ModelIO#readFrom(java.io.InputStream, Syntax)},
-     * {@link ModelIO#readFrom(java.io.InputStream, Syntax, Stsring)}. So it's still possible for XML-invalid
+     * {@link ModelIO#readFrom(java.io.InputStream, Syntax, String)}. So it's still possible for XML-invalid
      * characters to sneak in via these channels. The user is advised to take care about this.
      * 
      * @param model
-     * @return
+     * @return an xml-safe version of the given model
      */
     public static Model wrapXmlSafeModel(Model model) {
         if (! (model instanceof XmlSafeModel )) {
@@ -319,7 +318,7 @@ public class XmlSafetyUtils {
      * Returns a wrapper around the given factory that guarantees that all the rdf containers created
      * by that factory will be XML-safe
      * @param factory
-     * @return
+     * @return an xml-save version of the RDFContainerFactory
      */
     public static org.semanticdesktop.aperture.accessor.RDFContainerFactory 
         wrapXmlSafeAccessorRDFContainerFactory(
@@ -331,7 +330,7 @@ public class XmlSafetyUtils {
      * Returns a wrapper around the given factory that guarantees that all the rdf containers created
      * by that factory will be XML-safe
      * @param factory
-     * @return
+     * @return and xml-safe versionof the RDFContainerFactory
      */
     public static org.semanticdesktop.aperture.rdf.RDFContainerFactory
         wrapXmlSafeRDFContainerFactory(
@@ -432,6 +431,7 @@ class XmlSafeModel extends DelegatingModel {
         super(model);
     }
         
+    @Override
     public void addAll(Iterator<? extends Statement> it) throws ModelRuntimeException {
         while (it.hasNext()) {
             Statement stmt = it.next();
@@ -439,6 +439,7 @@ class XmlSafeModel extends DelegatingModel {
         }
     }
     
+    @Override
     public void addModel(Model modelToAdd) throws ModelRuntimeException {
         ClosableIterator<Statement> iter = null;
         try {
@@ -449,30 +450,37 @@ class XmlSafeModel extends DelegatingModel {
         }
     }
 
+    @Override
     public Resource addReificationOf(Statement arg0, Resource arg1) {
         return getDelegatedModel().addReificationOf(XmlSafetyUtils.makeXmlSafe(getDelegatedModel(), arg0),arg1);
     }
 
+    @Override
     public BlankNode addReificationOf(Statement arg0) {
         return getDelegatedModel().addReificationOf(XmlSafetyUtils.makeXmlSafe(getDelegatedModel(),arg0));
     }
 
+    @Override
     public void addStatement(Resource arg0, URI arg1, Node arg2) throws ModelRuntimeException {
         getDelegatedModel().addStatement(arg0, arg1, XmlSafetyUtils.makeXmlSafe(getDelegatedModel(),arg2));
     }
 
+    @Override
     public void addStatement(Resource arg0, URI arg1, String arg2, String arg3) throws ModelRuntimeException {
         getDelegatedModel().addStatement(arg0, arg1, XmlSafetyUtils.makeXmlSafe(arg2), arg3);
     }
 
+    @Override
     public void addStatement(Resource arg0, URI arg1, String arg2, URI arg3) throws ModelRuntimeException {
         getDelegatedModel().addStatement(arg0, arg1, XmlSafetyUtils.makeXmlSafe(arg2), arg3);
     }
 
+    @Override
     public void addStatement(Resource arg0, URI arg1, String arg2) throws ModelRuntimeException {
         getDelegatedModel().addStatement(arg0, arg1, XmlSafetyUtils.makeXmlSafe(arg2));
     }
 
+    @Override
     public void addStatement(Statement stmt) throws ModelRuntimeException {
         Statement newStmt = XmlSafetyUtils.makeXmlSafe(getDelegatedModel(), stmt);
         if (newStmt == stmt) {
@@ -482,14 +490,17 @@ class XmlSafeModel extends DelegatingModel {
         }
     }
 
+    @Override
     public void addStatement(String arg0, URI arg1, String arg2, String arg3) throws ModelRuntimeException {
         getDelegatedModel().addStatement(arg0, arg1, XmlSafetyUtils.makeXmlSafe(arg2), arg3);
     }
 
+    @Override
     public void addStatement(String arg0, URI arg1, String arg2, URI arg3) throws ModelRuntimeException {
         getDelegatedModel().addStatement(arg0, arg1, XmlSafetyUtils.makeXmlSafe(arg2), arg3);
     }
 
+    @Override
     public void addStatement(String arg0, URI arg1, String arg2) throws ModelRuntimeException {
         getDelegatedModel().addStatement(arg0, arg1, XmlSafetyUtils.makeXmlSafe(arg2));
     }
