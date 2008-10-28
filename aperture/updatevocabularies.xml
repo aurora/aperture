@@ -73,7 +73,7 @@ your copy of ANT at http://ant.apache.org/
                target="${java.target.version}"
                srcdir="${src.dir}"
                includes="**/util/*.java,**/vocabulary/*.java"
-               excludes="**/extractor/**,**/*Test*"
+               excludes="**/extractor/**,**/*Test*,**/XmlSafety*,**/Inference*"
                destdir="${classes.java.dir}"
                classpathref="classpath"
                debug="${compile.debug}"
@@ -91,7 +91,7 @@ your copy of ANT at http://ant.apache.org/
     <target name="createvocabulary"
             description="generates a single vocabulary class">
         <java classname="org.semanticdesktop.aperture.util.VocabularyWriter">
-            <!--<arg value="-f" />--> <!-- uncomment this arg to force the generation -->
+            <!--<arg value="-f" /> --> <!-- uncomment this arg to force the generation -->
             <arg value="-i" />
             <arg value="${doc.ontologies.dir}/${vocabulary.input.file}" />
             <arg value="-o" />
