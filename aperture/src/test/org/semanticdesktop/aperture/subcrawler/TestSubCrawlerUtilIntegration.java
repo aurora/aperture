@@ -52,5 +52,29 @@ public class TestSubCrawlerUtilIntegration extends ApertureTestBase {
             assertFalse(entry.getValue().getModel().isOpen());
         }
     }
+    
+    /**
+     * Tests if the method can extract a file whose name contains a space from inside a ZIP archive.
+     * @throws Exception 
+     */
+    public void testGetDataObjectWithSpace() throws Exception {
+        InputStream stream = ResourceUtil.getInputStream(DOCS_PATH + "zip-problem.zip",
+            getClass());
+        URI uri = new URIImpl(
+            "zip:" +
+               "file:///C:/somefolder/zip-problem.zip" +
+            "!/D_/Installers/installer+2005.1+rc1/icon-16x16.gif");
+        TestRDFContainerFactory fac = new TestRDFContainerFactory();
+        DataObject obj = SubCrawlerUtil.getDataObject(uri, stream, null, null, null, fac,
+            new DefaultSubCrawlerRegistry());
+        assertNotNull(obj);
+        assertTrue(obj instanceof FileDataObject);
+        assertMimeType("image/png", uri, ((FileDataObject)obj).getContent());
+        
+        obj.dispose();
+        for (Map.Entry<String, RDFContainer> entry : fac.returnedContainers.entrySet()) {
+            assertFalse(entry.getValue().getModel().isOpen());
+        }
+    }
 }
 

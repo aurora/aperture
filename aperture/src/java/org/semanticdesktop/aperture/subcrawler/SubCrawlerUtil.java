@@ -285,7 +285,7 @@ public class SubCrawlerUtil {
         }
         endIndex = string.lastIndexOf("!");
         if (endIndex > 0 && startIndex > 0) {
-            return string.substring(endIndex + 1);
+            return string.substring(endIndex + 1).replace('+', ' ');
         }
         else {
             return null;
