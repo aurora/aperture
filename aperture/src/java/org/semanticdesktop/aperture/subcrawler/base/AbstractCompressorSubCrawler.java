@@ -85,11 +85,7 @@ public abstract class AbstractCompressorSubCrawler extends AbstractSubCrawler {
         }
         catch (Exception e) {
             throw new SubCrawlerException(e);
-        } finally {
-            // the programmer should have closed the stream by disposing of the data object
-            // but it won't hurt if we do it by ourselves
-            closeClosable(uncompressedStream);
-        }
+        } 
     }
 
     private void closeClosable(InputStream gzipStream) {

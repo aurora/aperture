@@ -9,8 +9,11 @@ package org.semanticdesktop.aperture;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -33,8 +36,12 @@ import org.ontoware.rdf2go.model.node.Variable;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.DataObject;
+import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
+import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
+import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
+import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.GEO;
 import org.semanticdesktop.aperture.vocabulary.NCAL;
 import org.semanticdesktop.aperture.vocabulary.NCO;
@@ -57,7 +64,21 @@ import org.semanticdesktop.nepomuk.nrl.validator.testers.NRLClosedWorldModelTest
  */
 public class ApertureTestBase extends TestCase {
 
-	protected static final String DOCS_PATH = "org/semanticdesktop/aperture/docs/";
+	public static class TestRDFContainerFactory implements RDFContainerFactory {
+        public Map<String,RDFContainer> returnedContainers;
+        public TestRDFContainerFactory() {
+            this.returnedContainers = new HashMap<String, RDFContainer>();
+        }
+        public RDFContainer getRDFContainer(URI uri) {
+            Model model = RDF2Go.getModelFactory().createModel();
+            model.open();
+            RDFContainer res = new RDFContainerImpl(model,uri);
+            returnedContainers.put(uri.toString(), res);
+            return res;
+        }
+    }
+
+    protected static final String DOCS_PATH = "org/semanticdesktop/aperture/docs/";
     
     protected static StandaloneValidator validator;
 
@@ -705,6 +726,16 @@ public class ApertureTestBase extends TestCase {
         finally {
             closeIterator(queryIterator);
         }
+    }
+    
+    protected void assertMimeType(String desiredMimeType, URI uri, InputStream stream) throws Exception {
+        MimeTypeIdentifier mimeTypeIdentifier = new MagicMimeTypeIdentifier();
+        int minimumArrayLength = mimeTypeIdentifier.getMinArrayLength();
+        stream.mark(minimumArrayLength + 10); // add some for safety
+        byte[] bytes = IOUtil.readBytes(stream, minimumArrayLength);
+        String mimeType = mimeTypeIdentifier.identify(bytes, null, uri);
+        assertEquals(mimeType, desiredMimeType);
+        stream.reset();
     }
     
     /**

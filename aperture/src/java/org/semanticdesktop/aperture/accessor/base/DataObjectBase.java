@@ -28,6 +28,8 @@ public class DataObjectBase implements DataObject {
 
     private boolean disposed;
 
+    private DataObject wrappedDataObject;
+    
     public DataObjectBase() {}
 
     public DataObjectBase(URI id, DataSource dataSource, RDFContainer metadata) {
@@ -86,5 +88,16 @@ public class DataObjectBase implements DataObject {
         disposed = true;
         // Added after discussion on the aperture-devel mailing list. 10.11.2006
         metadata.dispose();
+        if (wrappedDataObject != null) {
+            wrappedDataObject.dispose();
+        }
+    }
+    
+    public DataObject getWrappedDataObject() {
+        return wrappedDataObject;
+    }
+    
+    public void setWrappedDataObject(DataObject wrappedDataObject) {
+        this.wrappedDataObject = wrappedDataObject;
     }
 }

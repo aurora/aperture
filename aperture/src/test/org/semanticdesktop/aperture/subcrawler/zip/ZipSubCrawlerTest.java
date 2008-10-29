@@ -6,6 +6,7 @@
  */
 package org.semanticdesktop.aperture.subcrawler.zip;
 
+import java.io.InputStream;
 import java.util.Set;
 
 import org.ontoware.rdf2go.model.Model;
@@ -13,8 +14,11 @@ import org.ontoware.rdf2go.model.node.Resource;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
+import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.rdf.impl.RDFContainerFactoryImpl;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerTestBase;
+import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.vocabulary.NFO;
 
 /**
@@ -58,6 +62,19 @@ public class ZipSubCrawlerTest extends SubCrawlerTestBase {
     
     public void testZipSubCrawlerIncrementalCombination() throws Exception {
         testCrawlerIncremental(new ZipSubCrawlerFactory(), "TestZipSubCrawlerCombination.tmpDir", "zip-test.zip", ".zip",9);
+    }
+    
+    /**
+     * Tests whether entries from inside zip files are accessed correctly
+     */
+    public void testAccessingSubcrawledZipEntries() throws Exception {
+        InputStream stream = ResourceUtil.getInputStream(DOCS_PATH + "zip-test.zip",getClass());
+        String path = "/zip-test/test2.txt";
+        URI parentUri = new URIImpl("uri:dummyuri/zip-test.zip");
+        ZipSubCrawler subCrawler = new ZipSubCrawler();
+        DataObject obj = subCrawler.getDataObject(parentUri, path, stream, null, null, null, new RDFContainerFactoryImpl());
+        assertNotNull(obj);
+        assertEquals(new URIImpl("zip:uri:dummyuri/zip-test.zip!/zip-test/test2.txt"),obj.getID());
     }
     
     private void assertCrc32Hash(Model model, Resource resource, long i) {

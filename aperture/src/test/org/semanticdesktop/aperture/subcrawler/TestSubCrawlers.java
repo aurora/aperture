@@ -9,6 +9,8 @@ package org.semanticdesktop.aperture.subcrawler;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.semanticdesktop.aperture.subcrawler.base.AbstractArchiverSubCrawlerTest;
+import org.semanticdesktop.aperture.subcrawler.base.AbstractSubCrawlerTest;
 import org.semanticdesktop.aperture.subcrawler.bzip2.BZip2SubCrawlerTest;
 import org.semanticdesktop.aperture.subcrawler.gzip.GZipSubCrawlerTest;
 import org.semanticdesktop.aperture.subcrawler.impl.TestDefaultSubCrawlerRegistry;
@@ -30,6 +32,12 @@ public class TestSubCrawlers extends TestSuite {
     
     private TestSubCrawlers() {
         super("subcrawlers");
+        
+        // test the abstract subcrawler
+        addTest(new TestSuite(AbstractSubCrawlerTest.class));
+        addTest(new TestSuite(AbstractArchiverSubCrawlerTest.class));
+        addTest(new TestSuite(TestSubCrawlerUtil.class));
+        addTest(new TestSuite(TestSubCrawlerUtilIntegration.class));
         
         // test the various sub crawlers
         addTest(new TestSuite(VcardSubCrawlerTest.class));

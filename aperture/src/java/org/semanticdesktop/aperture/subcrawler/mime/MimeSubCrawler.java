@@ -6,8 +6,10 @@
  */
 package org.semanticdesktop.aperture.subcrawler.mime;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
@@ -39,6 +41,7 @@ import org.semanticdesktop.aperture.rdf.ValueFactory;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerException;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler;
 import org.semanticdesktop.aperture.subcrawler.base.AbstractSubCrawler;
+import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.StringUtil;
 
 /**
@@ -65,8 +68,7 @@ public class MimeSubCrawler extends AbstractSubCrawler implements DataObjectFact
                 new FilteringRDFContainerFactory(
                     handler.getRDFContainerFactory(parentMetadata.getDescribedUri().toString()),
                     parentMetadata,attachmentUriPrefix);
-//            RDFContainerFactory myFac = handler.getRDFContainerFactory(messageUri.toString());
-            fac = new DataObjectFactory(msg,myFac,this,dataSource,attachmentUriPrefix,null);
+            fac = new DataObjectFactory(msg,myFac,this,dataSource,attachmentUriPrefix,null,"");
             DataObject object = null;
             
             /*
@@ -75,8 +77,7 @@ public class MimeSubCrawler extends AbstractSubCrawler implements DataObjectFact
              * dataObjectFactory.disposeRemainingObjects() in the finally clause, yields a warning message and
              * can potentially lead to problems.
              */
-            while (!stopRequested && (object = fac.getObject()) != null) {
-                
+            while (!stopRequested && (object = fac.getObject()) != null) { 
                 /*
                  * we bypass the data object that corresponds to the message itself. by virtue of the
                  * FilterRDFContainerFactory, the metadata of this object is actually the same instance as the

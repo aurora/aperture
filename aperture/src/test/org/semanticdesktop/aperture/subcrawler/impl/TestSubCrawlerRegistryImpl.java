@@ -21,28 +21,36 @@ public class TestSubCrawlerRegistryImpl extends TestCase {
 
     public void testBasics() {
         SubCrawlerRegistryImpl registry = new SubCrawlerRegistryImpl();
-        SubCrawlerFactory factory1 = new DummyFactory("text/plain");
-        SubCrawlerFactory factory2 = new DummyFactory("text/html");
+        SubCrawlerFactory factory1 = new DummyFactory("text/plain","txt");
+        SubCrawlerFactory factory2 = new DummyFactory("text/html","html");
         
         registry.add(factory1);
         registry.add(factory2);
         
         assertEquals(2, registry.getAll().size());
         assertEquals(1, registry.get("text/html").size());
+        assertEquals(1, registry.get("text/plain").size());
+        assertEquals(1, registry.getByPrefix("txt").size());
+        assertEquals(1, registry.getByPrefix("html").size());
         
         registry.remove(factory2);
 
         assertEquals(1, registry.getAll().size());
         assertEquals(0, registry.get("text/html").size());
-        assertEquals(1, registry.get("text/plain").size());        
+        assertEquals(1, registry.get("text/plain").size());
+        assertEquals(1, registry.getByPrefix("txt").size());
+        assertEquals(0, registry.getByPrefix("html").size());
     }
     
     private static class DummyFactory implements SubCrawlerFactory {
 
         private String mimeType;
         
-        public DummyFactory(String mimeType) {
+        private String prefix;
+        
+        public DummyFactory(String mimeType, String prefix) {
             this.mimeType = mimeType;
+            this.prefix = prefix;
         }
         
         public SubCrawler get() {
@@ -54,7 +62,7 @@ public class TestSubCrawlerRegistryImpl extends TestCase {
         }
 
         public String getUriPrefix() {
-            return "dummy";
+            return prefix;
         }
     }
 }

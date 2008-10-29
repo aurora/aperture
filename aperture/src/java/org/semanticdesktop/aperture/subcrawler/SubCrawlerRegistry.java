@@ -30,6 +30,14 @@ public interface SubCrawlerRegistry {
      */
     public Set get(String mimeType);
 
+    
+    /**
+     * Returns all subcrawler factories that support the specified uri prefix.
+     * @param prefix the uri prefix
+     * @return a set of SubCrawlerFactories that support the specified prefix
+     */
+    public Set getByPrefix(String prefix);
+    
     /**
      * Returns all SubCrawlerFactories registered in this SubCrawlerRegistry.
      * 

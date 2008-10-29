@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.ontoware.rdf2go.model.node.URI;
+import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
@@ -29,7 +30,7 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
     private CountingInputStream content;
     
     private File file;
-    
+
     public FileDataObjectBase() { }
     
     public FileDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata, InputStream content) {
@@ -102,6 +103,11 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
         }
     }
     
+    /**
+     * Closes the stream encapsulated by this FileDataObject. If this object contains a wrapped data object
+     * (set with the {@link #setWrappedDataObject(DataObject)}) method - the wrapped data object is also
+     * disposed.
+     */
     public void dispose() {
         closeContent();
         super.dispose();

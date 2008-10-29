@@ -43,6 +43,7 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.HtmlParserUtil;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerUtil;
 import org.semanticdesktop.aperture.util.UriUtil;
 import org.semanticdesktop.aperture.vocabulary.NFO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
@@ -160,6 +161,12 @@ public class DataObjectFactory {
     private int currentDataObjectToReturn;
 
     /**
+     * Normally all attachments have an uri that looks like &lt;message-uri&gt;#1, the hash in the middle
+     * is default, if this field is non-null, the value of this field is used instead of hash. 
+     */
+    private String partUriDelimiter;
+
+    /**
      * Constructs a data object factory for the given message
      * 
      * @param message
@@ -169,13 +176,15 @@ public class DataObjectFactory {
      * @param dataSource
      * @param messageUri
      * @param folderUri
+     * @param partUriDelimiter 
      * @throws IOException
      * @throws MessagingException
      */
     public DataObjectFactory(MimeMessage message, RDFContainerFactory containerFactory,
-            PartStreamFactory streamFactory, DataSource dataSource, URI messageUri, URI folderUri)
+            PartStreamFactory streamFactory, DataSource dataSource, URI messageUri, URI folderUri, String partUriDelimiter)
             throws IOException, MessagingException {
         this.message = message;
+        this.partUriDelimiter = partUriDelimiter;
         this.containerFactory = containerFactory;
         this.dataSource = dataSource;
         this.folderUri = folderUri;
@@ -206,6 +215,23 @@ public class DataObjectFactory {
         }
     }
 
+    /**
+     * A simplified constructor that implies the default part uri delimiter
+     * @param message
+     * @param containerFactory
+     * @param streamFactory
+     * @param dataSource
+     * @param messageUri
+     * @param folderUri
+     * @throws IOException
+     * @throws MessagingException
+     */
+    public DataObjectFactory(MimeMessage message, RDFContainerFactory containerFactory,
+            PartStreamFactory streamFactory, DataSource dataSource, URI messageUri, URI folderUri)
+            throws IOException, MessagingException {
+        this(message,containerFactory,streamFactory,dataSource,messageUri,folderUri,null);
+    }
+    
     /**
      * Returns a DataObject representing a single message. This data object contains a flattened version of
      * the (arbitrary complex) tree-like MIME structure of the message. This method is called repeatedly for a
@@ -1260,7 +1286,11 @@ public class DataObjectFactory {
 
     private String getBodyPartURIPrefix(URI parentURI) {
         String prefix = parentURI.toString();
-        return prefix + (prefix.indexOf('#') < 0 ? "#" : "-");
+        if (partUriDelimiter == null) {
+            return prefix + (prefix.indexOf('#') < 0 ? "#" : "-");
+        } else {
+            return prefix + (SubCrawlerUtil.getSubCrawledObjectPath(parentURI).length() == 1 ? "" : "-");
+        }
     }
 
     /**

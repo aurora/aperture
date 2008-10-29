@@ -24,6 +24,7 @@ import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.subcrawler.PathNotFoundException;
 import org.semanticdesktop.aperture.subcrawler.SubCrawler;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerException;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler;
@@ -130,6 +131,40 @@ public abstract class AbstractArchiverSubCrawler extends AbstractSubCrawler {
             closeClosable(archiveStream);
         }
     }
+    
+    @Override
+    public DataObject getDataObject(URI parentUri, String path, InputStream stream, DataSource dataSource, Charset charset,
+            String mimeType, RDFContainerFactory factory) throws SubCrawlerException, PathNotFoundException {
+        if (stream == null) {
+            throw new SubCrawlerException("The stream cannot be null");
+        } 
+        
+        ArchiveInputStream archiveStream = null;
+        try {
+            archiveStream = getArchiveInputStream(stream);
+            ArchiveEntry archiveEntry = null;
+            DataObject result = null;
+            while ((archiveEntry = archiveStream.getNextEntry()) != null) {
+                if (("/" + archiveEntry.getPath()).equals(path)) {
+                    result = convertEntryToDataObject(parentUri, path, archiveStream, archiveEntry,
+                        dataSource, factory, false);
+                    break;
+                }
+                else {
+                    archiveStream.closeEntry();
+                }
+            }
+            if (result == null) {
+                closeClosable(archiveStream);
+                throw new PathNotFoundException(getClass().getName(),parentUri,path);
+            } else {
+                return result;
+            }
+        }
+        catch (Exception e) {
+            throw new SubCrawlerException(e);
+        } 
+    } 
 
     private void processSingleEntry(ArchiveInputStream archiveStream, ArchiveEntry archiveEntry, 
             SubCrawlerHandler handler, DataSource dataSource, AccessData accessData,
@@ -161,16 +196,37 @@ public abstract class AbstractArchiverSubCrawler extends AbstractSubCrawler {
         }
 
         RDFContainerFactory fac = handler.getRDFContainerFactory(uri.toString());
+        
+        DataObject object = convertEntryToDataObject(parentMetadata.getDescribedUri(), archiveEntry.getPath(),
+            archiveStream, archiveEntry, dataSource, fac, true);
+        
+        Date lastModificationDate = object.getMetadata().getDate(NFO.fileLastModified);
+        if (lastModificationDate != null && accessData != null) {
+            accessData.put(uri.toString(), LAST_MODIFIED_DATE, 
+                String.valueOf(lastModificationDate.getTime()));
+        }
+
+        if (newEntry) {
+            handler.objectNew(object);
+        }
+        else {
+            handler.objectChanged(object);
+        }        
+    }
+    
+    private DataObject convertEntryToDataObject(URI parentUri, String path, ArchiveInputStream archiveStream,
+            ArchiveEntry archiveEntry, DataSource dataSource, RDFContainerFactory fac, boolean unclosable) {
+        URI uri = createChildUri(parentUri, (path.startsWith("/") ? path.substring(1) : path));
         RDFContainer container = fac.getRDFContainer(uri);
         container.add(RDF.type, NFO.ArchiveItem);
         container.add(NFO.fileName,getFileName(archiveEntry));
         
         String superfolder = getSuperfolder(archiveEntry);
         if (superfolder != null) {
-            URI superfolderUri = createChildUri(parentMetadata.getDescribedUri(), superfolder);
+            URI superfolderUri = createChildUri(parentUri, superfolder);
             container.add(NFO.belongsToContainer, superfolderUri);
         } else {
-            container.add(NFO.belongsToContainer, parentMetadata.getDescribedUri());
+            container.add(NFO.belongsToContainer, parentUri);
         }
         
         if (archiveEntry.getComment() != null) {
@@ -189,10 +245,6 @@ public abstract class AbstractArchiverSubCrawler extends AbstractSubCrawler {
         }
         if (archiveEntry.getLastModificationTime() != -1) {
             container.add(NFO.fileLastModified, new Date(archiveEntry.getLastModificationTime()));
-            if (accessData != null) {
-                accessData.put(uri.toString(), LAST_MODIFIED_DATE, 
-                    String.valueOf(archiveEntry.getLastModificationTime()));
-            }
         }
 
         DataObject object = null;
@@ -200,17 +252,15 @@ public abstract class AbstractArchiverSubCrawler extends AbstractSubCrawler {
         if (archiveEntry.isDirectory()) {
             container.add(RDF.type, NFO.Folder);
             object = new FolderDataObjectBase(container.getDescribedUri(), dataSource, container);
+        } else if (unclosable) {
+            object = new FileDataObjectBase(container.getDescribedUri(), dataSource, container,
+                new UnclosableStream(archiveStream));
         } else {
             object = new FileDataObjectBase(container.getDescribedUri(), dataSource, container,
-                    new UnclosableStream(archiveStream));
+                archiveStream.markSupported() ? archiveStream : new BufferedInputStream(archiveStream));
         }
-
-        if (newEntry) {
-            handler.objectNew(object);
-        }
-        else {
-            handler.objectChanged(object);
-        }        
+        
+        return object;
     }
 
     private void closeClosable(ArchiveInputStream zipStream) {

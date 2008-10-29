@@ -10,16 +10,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.ontoware.rdf2go.RDF2Go;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.Resource;
@@ -31,13 +28,11 @@ import org.ontoware.rdf2go.vocabulary.XSD;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
-import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.pdf.PdfExtractorFactory;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
-import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.vocabulary.NCO;
@@ -220,6 +215,33 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         assertTrue(contentString.contains("This is an example document created with OpenOffice 2.0"));
         
         validate(container2);
+        obj2.dispose();
+    }
+
+    /**
+     * This method tests the partUriDelimiter feature. It allows the user to customize the delimiter between the
+     * uri of the message and the part identifiers
+     * @throws Exception
+     */
+    public void testPartUriDelimiter() throws Exception {
+        InputStream stream = ResourceUtil.getInputStream(DOCS_PATH + "mail-multipart-test.eml", this.getClass());
+        MimeMessage msg =  new MimeMessage(null, stream);
+        DataObjectFactory fac = new DataObjectFactory(msg,containerFactory,null,null,
+            new URIImpl("mime:zip:uri:dummymailuri:somefile.zip!/mail-multipart-test.eml!/"), null,"");
+        DataObject obj1 = fac.getObject();
+        DataObject obj2 = fac.getObject();
+        DataObject obj3 = fac.getObject();
+        
+        URI emailUri = obj1.getID();
+        assertEquals(emailUri.toString(), "mime:zip:uri:dummymailuri:somefile.zip!/mail-multipart-test.eml!/");
+        obj1.dispose();
+        
+        
+        assertEquals(obj3.getID().toString(), "mime:zip:uri:dummymailuri:somefile.zip!/mail-multipart-test.eml!/2");
+        obj3.dispose();
+
+        URI pdfUri = obj2.getID();
+        assertEquals(pdfUri.toString(), "mime:zip:uri:dummymailuri:somefile.zip!/mail-multipart-test.eml!/1");
         obj2.dispose();
     }
     
@@ -448,28 +470,14 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         assertTrue(emailTypes.contains(NIE.DataObject));
     }
 
-    private DataObjectFactoryTestRDFContainerFactory containerFactory;
+    private TestRDFContainerFactory containerFactory;
     
     @Override public void setUp() {
-        this.containerFactory = new DataObjectFactoryTestRDFContainerFactory();
+        this.containerFactory = new TestRDFContainerFactory();
     }
     
     @Override public void tearDown() {
         containerFactory = null;
-    }
-    
-    private static class DataObjectFactoryTestRDFContainerFactory implements RDFContainerFactory {
-        private Map<String,RDFContainer> returnedContainers;
-        public DataObjectFactoryTestRDFContainerFactory() {
-            this.returnedContainers = new HashMap<String, RDFContainer>();
-        }
-        public RDFContainer getRDFContainer(URI uri) {
-            Model model = RDF2Go.getModelFactory().createModel();
-            model.open();
-            RDFContainer res = new RDFContainerImpl(model,uri);
-            returnedContainers.put(uri.toString(), res);
-            return res;
-        }
     }
     
     private DataObjectFactory wrapEmail(String resourceName) throws MessagingException, IOException {
@@ -503,16 +511,6 @@ public class DataObjectFactoryTest extends ApertureTestBase {
             assertTrue(referencedIdsSet.remove(value));
         }
         assertTrue(referencedIdsSet.isEmpty());
-    }
-    
-    private void assertMimeType(String desiredMimeType, URI uri, InputStream stream) throws Exception {
-        MimeTypeIdentifier mimeTypeIdentifier = new MagicMimeTypeIdentifier();
-        int minimumArrayLength = mimeTypeIdentifier.getMinArrayLength();
-        stream.mark(minimumArrayLength + 10); // add some for safety
-        byte[] bytes = IOUtil.readBytes(stream, minimumArrayLength);
-        String mimeType = mimeTypeIdentifier.identify(bytes, null, uri);
-        assertEquals(mimeType, desiredMimeType);
-        stream.reset();
     }
 }
 

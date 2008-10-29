@@ -21,9 +21,14 @@ import org.semanticdesktop.aperture.subcrawler.SubCrawlerRegistry;
 public class SubCrawlerRegistryImpl implements SubCrawlerRegistry {
 
     /**
-     * A mapping from MIME types (Strings) to Sets of ExtractorFactories.
+     * A mapping from MIME types (Strings) to Sets of SubCrawlerFactories.
      */
     private HashMap subCrawlerFactories = new HashMap();
+    
+    /**
+     * A mapping from URI prefixes (Strings) to Sets of SubCrawlerFactories
+     */
+    private HashMap uriPrefixFactories = new HashMap();
     
     public void add(SubCrawlerFactory factory) {
         if (factory == null) {
@@ -42,6 +47,14 @@ public class SubCrawlerRegistryImpl implements SubCrawlerRegistry {
 
             factorySet.add(factory);
         }
+        
+        String prefix = factory.getUriPrefix();
+        Set factorySet = (Set) uriPrefixFactories.get(prefix);
+        if (factorySet == null) {
+            factorySet = new HashSet();
+            uriPrefixFactories.put(prefix, factorySet);
+        }
+        factorySet.add(factory);
     }
 
     public void remove(SubCrawlerFactory factory) {
@@ -57,10 +70,29 @@ public class SubCrawlerRegistryImpl implements SubCrawlerRegistry {
                 }
             }
         }
+        String prefix = factory.getUriPrefix();
+        Set factorySet = (Set) uriPrefixFactories.get(prefix);
+        if (factorySet != null) {
+            factorySet.remove(factory);
+
+            if (factorySet.isEmpty()) {
+                uriPrefixFactories.remove(prefix);
+            }
+        }
     }
         
     public Set get(String mimeType) {
         Set factorySet = (Set) subCrawlerFactories.get(mimeType);
+        if (factorySet == null) {
+            return Collections.EMPTY_SET;
+        }
+        else {
+            return new HashSet(factorySet);
+        }
+    }
+    
+    public Set getByPrefix(String prefix) {
+        Set factorySet = (Set) uriPrefixFactories.get(prefix);
         if (factorySet == null) {
             return Collections.EMPTY_SET;
         }
