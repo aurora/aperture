@@ -56,7 +56,7 @@ public class TestSubCrawlerUtil extends TestCase {
      */
     public void testGetSubCrawledObjectPath() {
         pathTest("zip:mime:file:/C:/Users/Chris/Desktop/docx%20problem/Useful%20documents1.eml!" +
-                   "/86b313dc282850fef1762fb400171750%2540amrapali.com#1!/Board+paper.docx","/Board+paper.docx");
+                   "/86b313dc282850fef1762fb400171750%2540amrapali.com#1!/Board+paper.docx","/Board paper.docx");
         pathTest("file:/C:/Users/Chris/Desktop/docx%20problem/Useful%20documents1.eml",null);
         pathTest("mime:file:///D:/mails/mail.eml!/234873476-23467@domain.com","/234873476-23467@domain.com");
     }
