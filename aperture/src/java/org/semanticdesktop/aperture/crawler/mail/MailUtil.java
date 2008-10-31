@@ -101,18 +101,15 @@ public class MailUtil {
     
     /**
      * Returns the stereotypical date of a Message. This is equal to the sent date or, if not available, the
-     * received date or, if not available, the retrieval date (i.e., "new Date()").
+     * received date.
      * @param message the message we want to get the date for
-     * @return the stereotypical date of a message
+     * @return the stereotypical date of a message, or 'null' when there is no such date.
      * @throws MessagingException
      */
     public static Date getDate(Message message) throws MessagingException {
         Date result = message.getSentDate();
         if (result == null) {
             result = message.getReceivedDate();
-            if (result == null) {
-                result = new Date();
-            }
         }
 
         return result;

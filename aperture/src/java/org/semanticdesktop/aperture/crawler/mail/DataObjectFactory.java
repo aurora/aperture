@@ -579,7 +579,9 @@ public class DataObjectFactory {
              * extractor will add a second contentCreated triple which will violate the maxCardinality
              * constraint defined in NIE for the nie:contentCreated property
              */ 
-            result.put(NIE.contentCreated, messageCreationDate);
+            if (messageCreationDate != null) {
+                result.put(NIE.contentCreated, messageCreationDate);
+            }
         }
         
         /*
