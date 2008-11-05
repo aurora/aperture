@@ -22,6 +22,7 @@ import org.semanticdesktop.aperture.accessor.FileDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
+import org.semanticdesktop.aperture.util.HttpClientUtil;
 
 /**
  * A utility class containing some methods useful when working with subcrawlers and subcrawled resources.
@@ -285,7 +286,7 @@ public class SubCrawlerUtil {
         }
         endIndex = string.lastIndexOf("!");
         if (endIndex > 0 && startIndex > 0) {
-            return string.substring(endIndex + 1).replace('+', ' ');
+            return HttpClientUtil.formUrlDecode(string.substring(endIndex + 1));
         }
         else {
             return null;
