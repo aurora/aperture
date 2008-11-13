@@ -460,6 +460,50 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     }
     
     /**
+     * Tests whether non-text attachments have a charset property. They should not. (issue 2278007).
+     * @throws Exception
+     */
+    public void testSuperfluousCharsets() throws Exception {
+        DataObjectFactory fac = wrapEmail("mail-multipart-test.eml");
+        DataObject email = fac.getObject();
+        DataObject pdf = fac.getObject();
+        DataObject forwardedEmail = fac.getObject();
+        
+        assertNull(pdf.getMetadata().getString(NIE.characterSet));
+        email.dispose();
+        pdf.dispose();
+        forwardedEmail.dispose();
+    }
+    
+    /**
+     * Tests whether email, that don't have any explicit charset specified, get a default
+     * us-ascii setting, according to RFC2045. The us-ascii will be converted to iso-8859-1, so
+     * therefore we expect iso-8859-1
+     * @throws Exception
+     */
+    public void testCorrectlyInferredRFC2045Charset() throws Exception {
+        DataObjectFactory fac = wrapEmail("mail-thunderbird-1.5-unspecifiedcharset.eml");
+        DataObject email = fac.getObject();
+        assertEquals("iso-8859-1",email.getMetadata().getString(NIE.characterSet));
+        email.dispose();
+    }
+    
+    /**
+     * Tests whether plaintext attachments, that don't have any explicit charset specified, get a default
+     * us-ascii setting, according to RFC2045. The us-ascii will be converted to iso-8859-1, so
+     * therefore we expect iso-8859-1
+     * @throws Exception
+     */
+    public void testCorrectlyInferredRFC2045CharsetPlaintextAttachment() throws Exception {
+        DataObjectFactory fac = wrapEmail("mail-plaintext-attachment.eml");
+        DataObject email = fac.getObject();
+        DataObject attachment = fac.getObject();
+        assertEquals("iso-8859-1",attachment.getMetadata().getString(NIE.characterSet));
+        email.dispose();
+        attachment.dispose();
+    }
+    
+    /**
      * Tests whether the @link {@link DataObjectFactory#getObjectAndDisposeAllOtherObjects(String)} works
      * correctly. The method will process an email that yields four data objects, will try to obtain the third
      * one, and then will check if all others have been disposed already.

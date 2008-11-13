@@ -443,7 +443,7 @@ public class DataObjectFactory {
             Date messageCreationDate, boolean emptyContent, boolean firstPart) throws MessagingException, IOException {
         // determine the content type properties of this mail
         String mimeType = getMimeTypeFromContentType(contentType);
-        String charsetStr = getCharsetStringFromContentType(contentType, mimeType);
+        String charsetStr = getCharsetStringFromContentType(contentType, mimeType, mailPart);
 
         HashMap result = null;
         // these three methods are responsible for putting the CONTENTS_KEY in the result hash map
@@ -488,19 +488,31 @@ public class DataObjectFactory {
         }
     }
 
-    private String getCharsetStringFromContentType(ContentType contentType, String mimeType) {
+    private String getCharsetStringFromContentType(ContentType contentType, String mimeType, Part part) {
         String charsetStr = null;
 
         if (contentType != null) {
             charsetStr = normalizeString(contentType.getParameter("charset"));
         }
 
-        if (charsetStr == null && "text/plain".equals(mimeType)) {
+        if (charsetStr == null && (part instanceof MimeMessage || mimeType.startsWith("text/"))) {
+            /*
+             * This piece of code is nonsense, because the MimeUtility.javaCharset method will convert
+             * us-ascii to a so-called java charset equivalent, which in this case is iso-8859-1
+             */
             // set the defaults according to RFC 2045
             charsetStr = "us-ascii";
         }
-
-        return normalizeCharset(charsetStr);
+        
+        if (charsetStr == null || charsetStr.length() == 0) {
+            return null;
+        }
+        else {
+            charsetStr = MimeUtility.javaCharset(charsetStr);
+            // note: even MimeUtility.javaCharset may return different casings of the same charset
+            charsetStr = charsetStr.toLowerCase();
+            return charsetStr;
+        }
     }
 
     /**
@@ -585,7 +597,7 @@ public class DataObjectFactory {
             result.put(NFO.fileName, fileName);
             // everything that has a file name is an attachment
             result.put(RDF.type, NFO.Attachment);
-        } else {
+        } else if (firstPart) {
             /*
              * we only insert the message creation date for mail parts that aren't attachments, otherwise the
              * metadata extracted from the attached file may have different content creation date, thus the
@@ -1297,20 +1309,6 @@ public class DataObjectFactory {
             string = string.trim().toLowerCase();
         }
         return string;
-    }
-
-    private String normalizeCharset(String charsetStr) {
-        if (charsetStr == null || charsetStr.length() == 0) {
-            charsetStr = MimeUtility.getDefaultJavaCharset();
-        }
-        else {
-            charsetStr = MimeUtility.javaCharset(charsetStr);
-        }
-
-        // note: even MimeUtility.javaCharset may return different casings of the same charset
-        charsetStr = charsetStr.toLowerCase();
-
-        return charsetStr;
     }
 
     private void addContactArrayIfNotNull(URI predicate, Address[] addresses, HashMap result) {
