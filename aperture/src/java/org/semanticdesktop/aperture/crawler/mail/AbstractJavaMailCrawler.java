@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 import javax.mail.Flags;
 import javax.mail.Folder;
@@ -85,6 +86,11 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
      * @see #setCurrentFolder(Folder) 
      */
     protected URI currentFolderURI;
+    
+    /**
+     * An executor service for the MessageDataObjects.
+     */
+    protected ExecutorService executorService;
  
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////// ABSTRACT METHODS ///////////////////////////////////////////
@@ -352,7 +358,7 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
         try {
             // construct a data object factory for this message, it will parse the message and prepare a list
             // of data objects we'll get one by one
-            dataObjectFactory = new DataObjectFactory(message, getRDFContainerFactory(uri),
+            dataObjectFactory = new DataObjectFactory(message, getRDFContainerFactory(uri), executorService,
                 this, this.getDataSource(), new URIImpl(uri), folderUri);
             
             // get all the objects from the factory and report them to the AccessData

@@ -23,26 +23,47 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A trivial default implementation of FileDataObject. 
+ * A trivial default implementation of FileDataObject.
  */
 public class FileDataObjectBase extends DataObjectBase implements FileDataObject {
 
     private CountingInputStream content;
-    
+
     private File file;
 
-    public FileDataObjectBase() { }
-    
+    /**
+     * Default constructor.
+     */
+    public FileDataObjectBase() {}
+
+    /**
+     * Constructor accepting a content stream.
+     * 
+     * @param id URI of this data object (obligatory)
+     * @param dataSource the data source where this data object came from (optional)
+     * @param metadata the metadata of this data object (obligatory)
+     * @param content the content stream (must support mark()).
+     */
     public FileDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata, InputStream content) {
         super(id, dataSource, metadata);
         setContent(content);
     }
-    
+
+    /**
+     * Constructor accepting a file.
+     * 
+     * @param id URI of this data object (obligatory)
+     * @param dataSource the data source where this data object came from (optional)
+     * @param metadata the metadata of this data object (obligatory)
+     * @param file the java.io.File instance with the content of this data object. The file must be non-null,
+     *            must exist and be readable, otherwise exceptions will be thrown
+     */
     public FileDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata, File file) {
         super(id, dataSource, metadata);
         setFile(file);
     }
-    
+
+    @Override
     public void finalize() throws Throwable {
         try {
             // Just try to close the InputStream once more: can remedy nasty programming errors.
@@ -53,7 +74,6 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
             super.finalize();
         }
     }
-    
 
     public void setContent(InputStream content) {
         if (content != null && !content.markSupported()) {
@@ -63,19 +83,22 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
         this.content = new CountingInputStream(content);
         this.file = null;
     }
-    
+
     public InputStream getContent() {
         return content;
     }
-    
+
     public void setFile(File file) {
         if (file == null) {
             throw new NullPointerException("the file passed to a FileDataObject base cannot be null");
-        } else if ( !file.exists()) {
+        }
+        else if (!file.exists()) {
             throw new IllegalArgumentException("File not found: " + file);
-        } else if ( !file.isFile()) {
+        }
+        else if (!file.isFile()) {
             throw new IllegalArgumentException("Not a normal file: " + file);
-        } else if ( !file.canRead()) {
+        }
+        else if (!file.canRead()) {
             throw new IllegalArgumentException("File not readable: " + file);
         }
         closeContent();
@@ -87,33 +110,48 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
             // this can't happen because we check for this case
         }
     }
-    
+
     public File getFile() {
         return file;
     }
-    
+
+    /**
+     * Sets the file without checking if it exists and is readable, and without updating the content.
+     * Subclasses should excercise caution when using this method.
+     * 
+     * @param file the file to set
+     */
+    protected void setFileWithoutChecks(File file) {
+        this.file = file;
+    }
+
     public File downloadContent() throws IOException {
         if (content.getCurrentByte() != 0) {
-            throw new IOException("The content stream hasn't been reset before calling getFile(), " +
-            		"can't create a temporary file");
-        } else {
-            File file = File.createTempFile("aperture","tmp");
+            throw new IOException("The content stream hasn't been reset before calling getFile(), "
+                    + "can't create a temporary file");
+        }
+        else {
+            File file = File.createTempFile("aperture", "tmp");
             IOUtil.writeStream(content, file);
             return file;
         }
     }
-    
+
     /**
      * Closes the stream encapsulated by this FileDataObject. If this object contains a wrapped data object
      * (set with the {@link #setWrappedDataObject(DataObject)}) method - the wrapped data object is also
      * disposed.
      */
+    @Override
     public void dispose() {
         closeContent();
         super.dispose();
     }
-    
-    private void closeContent() {
+
+    /**
+     * Closes the content stream and sets it to null.
+     */
+    protected void closeContent() {
         try {
             if (content != null) {
                 content.close();
@@ -124,5 +162,5 @@ public class FileDataObjectBase extends DataObjectBase implements FileDataObject
             Logger logger = LoggerFactory.getLogger(getClass());
             logger.error("IOException while closing stream", e);
         }
-    }   
+    }
 }

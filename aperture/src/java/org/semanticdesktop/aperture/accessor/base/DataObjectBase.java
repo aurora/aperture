@@ -100,4 +100,8 @@ public class DataObjectBase implements DataObject {
     public void setWrappedDataObject(DataObject wrappedDataObject) {
         this.wrappedDataObject = wrappedDataObject;
     }
+    
+    protected boolean isDisposed() {
+        return disposed;
+    }
 }

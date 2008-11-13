@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.Executors;
 
 import javax.mail.FetchProfile;
 import javax.mail.Flags;
@@ -175,6 +176,8 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
             boolean fatalError = false;
     
             try {
+                executorService = Executors.newSingleThreadExecutor();
+                
                 // crawl all specified base folders
                 int nrFolders = baseFolders.size();
                 if (nrFolders == 0) {
@@ -211,6 +214,9 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
         } finally {
          // terminate the connection
             closeConnection();
+            if (executorService != null) {
+                executorService.shutdown();
+            }
         }
     }
 
@@ -439,7 +445,7 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
                     throw new UrlNotFoundException("unknown UID: " + messageUID);
                 }
                 
-                DataObjectFactory fac = new DataObjectFactory(message, containerFactory, this, dataSource,
+                DataObjectFactory fac = new DataObjectFactory(message, containerFactory, null, this, dataSource,
                         new URIImpl(getMessageUri(folder, message)), getFolderURI(folder));
                 
                 // create a DataObject for the requested message or message part

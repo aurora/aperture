@@ -1,0 +1,794 @@
+Return-Path: <users-return-418-Christiaan.Fluit=aduna.biz@glazedlists.dev.java.net>
+X-Original-To: Christiaan.Fluit@aduna.biz
+Delivered-To: cflu@mail.aduna.biz
+Received: from dev.java.net (s006.sfo.collab.net [64.125.133.206])
+	by mail.aduna.biz (Postfix) with SMTP id 644C4105100
+	for <Christiaan.Fluit@aduna.biz>; Wed, 19 Jan 2005 02:00:00 +0100 (CET)
+Received: (qmail 2472 invoked by uid 5302); 19 Jan 2005 00:59:13 -0000
+Mailing-List: contact users-help@glazedlists.dev.java.net; run by ezmlm
+Precedence: bulk
+X-No-Archive: yes
+list-help: <mailto:users-help@glazedlists.dev.java.net>
+list-unsubscribe: <mailto:users-unsubscribe@glazedlists.dev.java.net>
+list-post: <mailto:users@glazedlists.dev.java.net>
+Reply-To: users@glazedlists.dev.java.net
+Delivered-To: mailing list users@glazedlists.dev.java.net
+Received: (qmail 2459 invoked from network); 19 Jan 2005 00:59:13 -0000
+Mime-Version: 1.0 (Apple Message framework v619)
+In-Reply-To: <41ED9E3F.7060909@nighthawkrad.net>
+References: <41ECABD4.1090809@nighthawkrad.net> <41ED884C.1040708@nighthawkrad.net> <41ED8919.3030803@nighthawkrad.net> <147F062B-69A6-11D9-9CFE-000D932AA1D4@swank.ca> <41ED9E3F.7060909@nighthawkrad.net>
+Content-Type: multipart/mixed; boundary=Apple-Mail-2--1059847940
+Message-Id: <603D9020-69B5-11D9-9CFE-000D932AA1D4@swank.ca>
+From: Jesse Wilson <jesse@swank.ca>
+Date: Tue, 18 Jan 2005 19:59:30 -0500
+To: users@glazedlists.dev.java.net
+X-Mailer: Apple Mail (2.619)
+Subject:  Re: UnsupportedOperationException
+
+--Apple-Mail-2--1059847940
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset=US-ASCII;
+	format=flowed
+
+
+Hey Randy - - -
+
+I looked at that code you sent, and I couldn't reproduce your problem.
+In fact, I got the application working exactly as you've planned.
+
+I've attached my .java file that contains a few changes I had to make
+to get the program running. Most of them were as a consequence of
+not having access to your ConfigFile class and others.
+
+Run diff between the two files to see exactly my changes.
+
+There weren't any memory errors to be seen, so it must be in your
+ConfigFile or another class.
+
+Cheers,
+Jesse
+
+
+
+--Apple-Mail-2--1059847940
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	x-mac-type=54455854;
+	x-unix-mode=0644;
+	x-mac-creator=4A455350;
+	name="ConfigFilePanel.java"
+Content-Disposition: attachment;
+	filename=ConfigFilePanel.java
+
+import java.util.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.awt.event.*;
+import javax.swing.table.*;
+import java.applet.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+// glazed lists
+import ca.odell.glazedlists.*;
+import ca.odell.glazedlists.swing.*;
+import ca.odell.glazedlists.gui.*;
+import ca.odell.glazedlists.util.*;
+
+
+public class ConfigFilePanel extends JPanel {
+   private final static Color DEFAULT_BACKGROUND_COLOR = new Color(238, 238,
+           238);
+   private EventList configEventList = new BasicEventList();
+   private SortedList configSortedList;
+   private TextFilterList configTextFiltered1;
+   private TextFilterList configTextFiltered2;
+   private TextFilterList studiesTextFiltered13;
+   private JTable table;
+   private TableComparatorChooser tableSorter;
+   private EventTableModel configTableModel;
+   private EventSelectionModel myEventSelectionModel;
+
+   private int configFileRow = -1;
+   private JPanel pane = new JPanel();
+   private JButton updateButton = new JButton("Update");
+      // this stores the pairs of values from an input file
+   //private ConfigFile myConfig = new ConfigFile("PropertiesFile.config", "IID Configuration File");
+   private Properties myConfig = new Properties();
+
+   public ConfigFilePanel() {
+       setLayout(new BorderLayout());
+
+       myConfig.put("Pepsi", "Cola");
+       myConfig.put("Coca-Cola", "Cola");
+       myConfig.put("7-up", "Lemon Lime");
+       
+       // Get data from the properties file
+       Enumeration valueEnum = myConfig.propertyNames();
+
+       for (Enumeration propEnum = myConfig.propertyNames();
+               propEnum.hasMoreElements();) {
+           ArrayList prop = new ArrayList(2);
+
+           String key = (String) propEnum.nextElement();
+           String value = (String) myConfig.getProperty(key);
+
+           prop.add(key);
+           prop.add((value == null) ? "" : value);
+
+           System.out.println(prop.toString());
+           System.out.println(prop.get(1).getClass());
+
+           configEventList.add(prop);
+       }
+       
+
+       configSortedList = new SortedList(configEventList,
+               new PropListComparator());
+
+       configTextFiltered1 = new TextFilterList(configSortedList,
+               new ArrayTextFilterator());
+       configTextFiltered2 = new TextFilterList(configTextFiltered1,
+               new ArrayTextFilterator());
+
+       configTableModel = new EventTableModel(configSortedList, new ConfigTableFormat());
+
+       table = new JTable(configTableModel);
+              table.getColumnModel().getColumn(0).setPreferredWidth(30);
+       table.getColumnModel().getColumn(1).setPreferredWidth(30);
+       tableSorter = new TableComparatorChooser(table, configSortedList, false);
+
+       // Add a custom renderer to the table
+       TableCellRenderer renderer = new ConfigFilePanel.CustomTableCellRenderer();
+
+       try {
+           table.setDefaultRenderer(Class.forName("java.lang.String"), renderer);
+       } catch (ClassNotFoundException cnfe) {
+           cnfe.printStackTrace();
+       }
+
+       // Set table properties
+       table.setRowHeight(20);
+       table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+       //Create the scroll pane and add the table to it.
+       JScrollPane scrollPane = new JScrollPane(table);
+
+       // Do not allow movable columns
+       table.getTableHeader().setReorderingAllowed(false);
+
+       //Add the scroll paneto this panel.
+       add(scrollPane, BorderLayout.CENTER);
+   }
+   
+   class PropListComparator implements Comparator {
+       private Comparator cc = ComparatorFactory.comparable();
+       public int compare(Object a, Object b) {
+           ArrayList al = (ArrayList)a;
+           ArrayList bl = (ArrayList)b;
+           return cc.compare(al.get(0), bl.get(0));
+       }
+   }
+
+   public void addUpdateActionListener(ActionListener l) {
+       updateButton.addActionListener(l);
+   }
+
+   public void setValueAt(String value, int row) {
+       // should thow an out of bounds exception here
+       configTableModel.setValueAt(value, row, 1);
+   }
+
+   public void setConfigFileRow(int configFileRow) {
+       this.configFileRow = configFileRow;
+   }
+
+   public int getConfigFileRow() {
+       return configFileRow;
+   }
+
+   public Object getValueAt(int row) {
+       Object value = configTableModel.getValueAt(row, 1);
+
+       return (value == null) ? "" : value;
+   }
+
+   public void saveFieldsToConfigFile() {
+       // Stop cell editing before saving the table contents.  Without this
+       // the cell which is selected would not get saved.         if (table.getCellEditor() != null) {
+           table.getCellEditor().stopCellEditing();
+       //}
+
+       int rowCount = table.getRowCount();
+       
+       for (int row = 0; row < rowCount; row++) {
+           myConfig.put((String) table.getValueAt(row, 0),
+               (String) table.getValueAt(row, 1));
+       }
+
+       //myConfig.saveFieldsToPropsFile();
+   }
+
+   /**
+    * Create the GUI and show it.
+    */
+   private static void createAndShowGUI() {
+       //Make sure we have nice window decorations.
+       JFrame.setDefaultLookAndFeelDecorated(true);
+
+       //Create and set up the window.
+       JFrame frame = new JFrame("Config File Panel");
+       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+       //Create and set up the content pane.
+       ConfigFilePanel newContentPane = new ConfigFilePanel();
+       newContentPane.setOpaque(true); //content panes must be opaque
+       frame.setContentPane(newContentPane);
+
+       //Display the window.
+       frame.pack();
+       frame.setVisible(true);
+   }
+
+   public static void main(String[] args) {
+       javax.swing.SwingUtilities.invokeLater(new Runnable() {
+               public void run() {
+                   createAndShowGUI();
+               }
+           });
+   }
+
+   public ArrayList getSelectedConfig() {
+       int[] selectedRows = table.getSelectedRows();
+       ArrayList confArray = (ArrayList) configSortedList.get(selectedRows[0]);
+       table.setRowSelectionAllowed(true);
+       table.setEditingRow(selectedRows[0]);
+       return confArray;
+   }
+
+
+   /**
+    * Custom renderer for the table
+    */
+   class CustomTableCellRenderer extends DefaultTableCellRenderer {
+       public Component getTableCellRendererComponent(JTable table,
+           Object value, boolean isSelected, boolean hasFocus, int row,
+           int column) {
+           Component cell = super.getTableCellRendererComponent(table, value,
+                   isSelected, hasFocus, row, column);
+           if (column == 0) {
+               cell.setBackground(DEFAULT_BACKGROUND_COLOR);
+           } else if (column == 1) {
+               cell.setBackground(Color.WHITE);
+           }
+           //cell.setFont(DEFAULT_FONT);
+           return cell;
+       }
+   }
+   
+   class ArrayTextFilterator implements TextFilterator {
+       public void getFilterStrings(List baseList, Object element) {
+           baseList.addAll((Collection)element);
+       }
+       
+   }
+}
+
+
+class ConfigTableFormat implements WritableTableFormat  { 
+    public int getColumnCount() {
+            return 2;
+   }
+   
+   public String getColumnName(int column) {
+       if (column == 0) {
+           return "Key";
+       } else if (column == 1) {
+           return "Value";
+       }
+       return null;
+   }
+
+   public Object getColumnValue(Object baseObject, int column) {
+       ArrayList prop = new ArrayList(2);
+       prop = (ArrayList) baseObject;
+             if (baseObject == null) {
+           return new String("");
+       }
+            if (column == 0) {
+           return prop.get(0);
+       } else if (column == 1) {
+           return prop.get(1);
+       }
+
+       return new String("");
+   }
+
+ public boolean isEditable(Object p0, int p1)
+ {
+     // Only allow the second column to be editable
+     if(p1 == 1)
+       return true;
+     else
+       return false;
+ }
+
+ public Object setColumnValue(Object p0, Object p1, int p2)
+ {
+     System.out.println("Base Object: " + p0 +  ", Edited Value: " + p1 + ", Column: " + p2);
+
+     ArrayList retVal = new ArrayList(2);
+     String s1 = "TestingKey";
+     String s2 = "TestingValue";
+     retVal.add( s1);
+     retVal.add( s2);         System.out.println(retVal);
+     p0 = null;
+     p1 = null;
+     p2 = -1;
+          return retVal;
+ }
+}
+
+
+
+--Apple-Mail-2--1059847940
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset=US-ASCII;
+	delsp=yes;
+	format=flowed
+
+
+
+
+On 18-Jan-05, at 6:39 PM, Randy Kohlstedt wrote:
+
+> Thanks for the quick reply.  As you said, it should be really easy to  
+> get the functionality I need, so I'm open to taking a different  
+> approach if there is an easier way to do it, which there probably is.
+>
+> Here's the complete stack trace I was getting.  I think where it  
+> actually throws the exception instead of the OutOfMemoryError is where  
+> I try to click on another cell when the GUI stops responding.  The 2  
+> lines that start out "Base Object" are System.out statements in the  
+> setColumnValue method of my class that implements WritableTableFormat.
+>
+> Exception in thread "AWT-EventQueue-0" java.lang.OutOfMemoryError:  
+> Java heap space
+> Exception in thread "AWT-EventQueue-0" java.lang.OutOfMemoryError:  
+> Java heap space
+> Exception in thread "AWT-EventQueue-0" java.lang.OutOfMemoryError:  
+> Java heap space
+> Exception in thread "AWT-EventQueue-0" java.lang.OutOfMemoryError:  
+> Java heap space
+> Exception in thread "AWT-EventQueue-0" java.lang.OutOfMemoryError:  
+> Java heap space
+> Exception in thread "AWT-EventQueue-0" java.lang.OutOfMemoryError:  
+> Java heap space
+> Base Object: [test.testPropf, test Valuef], Edited Value: dfafd,  
+> Column: 1
+> [TestingKey, TestingValue]
+> Exception in thread "AWT-EventQueue-0"  
+> java.util.ConcurrentModificationException: Cannot begin a new event  
+> while another event is in progress
+>    at  
+> ca.odell.glazedlists.event.ListEventAssembler.beginEvent(ListEventAssem 
+> bler.java:98)
+>    at  
+> ca.odell.glazedlists.event.ListEventAssembler.beginEvent(ListEventAssem 
+> bler.java:76)
+>    at ca.odell.glazedlists.SortedList.listChanged(SortedList.java:129)
+>    at  
+> ca.odell.glazedlists.event.ListEventPublisher.fireEvent(ListEventPublis 
+> her.java:134)
+>    at  
+> ca.odell.glazedlists.event.ListEventAssembler.fireEvent(ListEventAssemb 
+> ler.java:298)
+>    at  
+> ca.odell.glazedlists.event.ListEventAssembler.commitEvent(ListEventAsse 
+> mbler.java:262)
+>    at ca.odell.glazedlists.BasicEventList.set(BasicEventList.java:205)
+>    at  
+> ca.odell.glazedlists.TransformedList.set(TransformedList.java:176)
+>    at  
+> ca.odell.glazedlists.swing.EventTableModel.setValueAt(EventTableModel.j 
+> ava:242)
+>    at javax.swing.JTable.setValueAt(JTable.java:1875)
+>    at javax.swing.JTable.editingStopped(JTable.java:3333)
+>    at  
+> javax.swing.AbstractCellEditor.fireEditingStopped(AbstractCellEditor.ja 
+> va:124)
+>    at  
+> javax.swing.DefaultCellEditor$EditorDelegate.stopCellEditing(DefaultCel 
+> lEditor.java:329)
+>    at  
+> javax.swing.DefaultCellEditor.stopCellEditing(DefaultCellEditor.java: 
+> 214)
+>    at  
+> javax.swing.JTable$GenericEditor.stopCellEditing(JTable.java:3677)
+>    at javax.swing.JTable.editCellAt(JTable.java:2616)
+>    at  
+> javax.swing.plaf.basic.BasicTableUI$Handler.adjustFocusAndSelection(Bas 
+> icTableUI.java:922)
+>    at  
+> javax.swing.plaf.basic.BasicTableUI$Handler.mousePressed(BasicTableUI.j 
+> ava:889)
+>    at  
+> java.awt.AWTEventMulticaster.mousePressed(AWTEventMulticaster.java: 
+> 222)
+>    at java.awt.Component.processMouseEvent(Component.java:5485)
+>    at javax.swing.JComponent.processMouseEvent(JComponent.java:3093)
+>    at java.awt.Component.processEvent(Component.java:5253)
+>    at java.awt.Container.processEvent(Container.java:1966)
+> Exception in thread "AWT-EventQueue-0" java.lang.OutOfMemoryError:  
+> Java heap space
+> Exception in thread "AWT-EventQueue-0" java.lang.OutOfMemoryError:  
+> Java heap space
+> Process exited with exit code 0.
+>
+> The following is the class that displays the config table:
+>
+> public class ConfigFilePanel extends JPanel {
+>    private final static Color DEFAULT_BACKGROUND_COLOR = new  
+> Color(238, 238,
+>            238);
+>    private EventList configEventList = new BasicEventList();
+>    private SortedList configSortedList;
+>    private TextFilterList configTextFiltered1;
+>    private TextFilterList configTextFiltered2;
+>    private TextFilterList studiesTextFiltered13;
+>    private JTable table;
+>    private TableComparatorChooser tableSorter;
+>    private EventTableModel configTableModel;
+>    private EventSelectionModel myEventSelectionModel;
+>
+>    private int configFileRow = -1;
+>    private JPanel pane = new JPanel();
+>    private JButton updateButton = new JButton("Update");
+>       // this stores the pairs of values from an input file
+>    private ConfigFile myConfig = new  
+> ConfigFile("PropertiesFile.config",
+>            "IID Configuration File");
+>
+>    public ConfigFilePanel() {
+>        setLayout(new BorderLayout());
+>
+>        // Get data from the properties file
+>        Enumeration valueEnum = myConfig.propertyNames();
+>
+>        for (Enumeration propEnum = myConfig.propertyNames();
+>                propEnum.hasMoreElements();) {
+>            ArrayList prop = new ArrayList(2);
+>
+>            String key = (String) propEnum.nextElement();
+>            String value = (String) myConfig.getProperty(key);
+>
+>            prop.add(key);
+>            prop.add((value == null) ? "" : value);
+>
+>            System.out.println(prop.toString());
+>            System.out.println(prop.get(1).getClass());
+>
+>            configEventList.add(prop);
+>        }
+>
+>        configSortedList = new SortedList(configEventList,
+>                new PropListComparator());
+>
+>        configTextFiltered1 = new TextFilterList(configSortedList,
+>                new String[] { "Key" });
+>        configTextFiltered2 = new TextFilterList(configTextFiltered1,
+>                new String[] { "Value" });
+>
+>        configTableModel = new EventTableModel(configSortedList, new  
+> ConfigTableFormat());
+>
+>        table = new JTable(configTableModel);
+>                
+> table.getColumnModel().getColumn(0).setPreferredWidth(30);
+>        table.getColumnModel().getColumn(1).setPreferredWidth(30);
+>        tableSorter = new TableComparatorChooser(table,  
+> configSortedList, false);
+>
+>        // Add a custom renderer to the table
+>        TableCellRenderer renderer = new  
+> ConfigFilePanel.CustomTableCellRenderer();
+>
+>        try {
+>            table.setDefaultRenderer(Class.forName("java.lang.String"),  
+> renderer);
+>        } catch (ClassNotFoundException cnfe) {
+>            cnfe.printStackTrace();
+>        }
+>
+>        // Set table properties
+>        table.setRowHeight(20);
+>         
+> table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SE 
+> LECTION);
+>
+>        //Create the scroll pane and add the table to it.
+>        JScrollPane scrollPane = new JScrollPane(table);
+>
+>        // Do not allow movable columns
+>        table.getTableHeader().setReorderingAllowed(false);
+>
+>        //Add the scroll paneto this panel.
+>        add(scrollPane, BorderLayout.CENTER);
+>    }
+>
+>    public void addUpdateActionListener(ActionListener l) {
+>        updateButton.addActionListener(l);
+>    }
+>
+>    public void setValueAt(String value, int row) {
+>        // should thow an out of bounds exception here
+>        configTableModel.setValueAt(value, row, 1);
+>    }
+>
+>    public void setConfigFileRow(int configFileRow) {
+>        this.configFileRow = configFileRow;
+>    }
+>
+>    public int getConfigFileRow() {
+>        return configFileRow;
+>    }
+>
+>    public Object getValueAt(int row) {
+>        Object value = configTableModel.getValueAt(row, 1);
+>
+>        return (value == null) ? "" : value;
+>    }
+>
+>    public void saveFieldsToConfigFile() {
+>        // Stop cell editing before saving the table contents.  Without  
+> this
+>        // the cell which is selected would not get saved.         if  
+> (table.getCellEditor() != null) {
+>            table.getCellEditor().stopCellEditing();
+>        }
+>
+>        int rowCount = table.getRowCount();
+>
+>        for (int row = 0; row < rowCount; row++) {
+>            myConfig.put((String) table.getValueAt(row, 0),
+>                (String) table.getValueAt(row, 1));
+>        }
+>
+>        myConfig.saveFieldsToPropsFile();
+>    }
+>
+>    /**
+>     * Create the GUI and show it.
+>     */
+>    private static void createAndShowGUI() {
+>        //Make sure we have nice window decorations.
+>        JFrame.setDefaultLookAndFeelDecorated(true);
+>
+>        //Create and set up the window.
+>        JFrame frame = new JFrame("Config File Panel");
+>        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+>
+>        //Create and set up the content pane.
+>        ConfigFilePanel newContentPane = new ConfigFilePanel();
+>        newContentPane.setOpaque(true); //content panes must be opaque
+>        frame.setContentPane(newContentPane);
+>
+>        //Display the window.
+>        frame.pack();
+>        frame.setVisible(true);
+>    }
+>
+>    public static void main(String[] args) {
+>        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+>                public void run() {
+>                    createAndShowGUI();
+>                }
+>            });
+>    }
+>
+>    public ArrayList getSelectedConfig() {
+>        int[] selectedRows = table.getSelectedRows();
+>        ArrayList confArray = (ArrayList)  
+> configSortedList.get(selectedRows[0]);
+>        table.setRowSelectionAllowed(true);
+>        table.setEditingRow(selectedRows[0]);
+>        return confArray;
+>    }
+>
+>
+>    /**
+>     * Custom renderer for the table
+>     */
+>    class CustomTableCellRenderer extends DefaultTableCellRenderer {
+>        public Component getTableCellRendererComponent(JTable table,
+>            Object value, boolean isSelected, boolean hasFocus, int row,
+>            int column) {
+>            Component cell = super.getTableCellRendererComponent(table,  
+> value,
+>                    isSelected, hasFocus, row, column);
+>            if (column == 0) {
+>                cell.setBackground(DEFAULT_BACKGROUND_COLOR);
+>            } else if (column == 1) {
+>                cell.setBackground(Color.WHITE);
+>            }
+>            cell.setFont(DEFAULT_FONT);
+>            return cell;
+>        }
+>    }
+> }
+>
+>
+>
+>
+> ======================================================================= 
+> ==============
+>
+>
+>
+> My class that implements WritableTableFormat is as follows:
+>
+> public class ConfigTableFormat implements WritableTableFormat  {       
+> public int getColumnCount() {
+>             return 2;
+>    }
+>
+>    public String getColumnName(int column) {
+>        if (column == 0) {
+>            return "Key";
+>        } else if (column == 1) {
+>            return "Value";
+>        }
+>        return null;
+>    }
+>
+>    public Object getColumnValue(Object baseObject, int column) {
+>        ArrayList prop = new ArrayList(2);
+>        prop = (ArrayList) baseObject;
+>              if (baseObject == null) {
+>            return new String("");
+>        }
+>             if (column == 0) {
+>            return prop.get(0);
+>        } else if (column == 1) {
+>            return prop.get(1);
+>        }
+>
+>        return new String("");
+>    }
+>
+>  public boolean isEditable(Object p0, int p1)
+>  {
+>      // Only allow the second column to be editable
+>      if(p1 == 1)
+>        return true;
+>      else
+>        return false;
+>  }
+>
+>  public Object setColumnValue(Object p0, Object p1, int p2)
+>  {
+>      System.out.println("Base Object: " + p0 +  ", Edited Value: " +  
+> p1 + ", Column: " + p2);
+>
+>      ArrayList retVal = new ArrayList(2);
+>      String s1 = "TestingKey";
+>      String s2 = "TestingValue";
+>      retVal.add( s1);
+>      retVal.add( s2);         System.out.println(retVal);
+>      p0 = null;
+>      p1 = null;
+>      p2 = -1;
+>           return retVal;
+>  }
+> }
+>
+>
+>>
+>> Hey Randy .  . . .
+>>
+>>> However, when editing a cell, then selecting a different cell I get  
+>>> a  different error than before:
+>>> Exception in thread "AWT-EventQueue-0" java.lang.OutOfMemoryError:   
+>>> Java heap space
+>>> Exception in thread "AWT-EventQueue-0"   
+>>> java.util.ConcurrentModificationException: Cannot begin a new event   
+>>> while another event is in progress    at   
+>>> ca.odell.glazedlists.event.ListEventAssembler.beginEvent(ListEventAss 
+>>> em bler.java:98) ...
+>>
+>>
+>> The first Exception is really scary! "OutOfMemoryError".
+>> Either your program is legitimately consuming all possible
+>> memory (unlikely) or something horrible is happening
+>> and we have a memory leak.
+>>
+>> Here's a shortlist of all the places Glazed Lists could be leaking   
+>> memory:
+>>  - You could be creating an infinite number of change objects.
+>>  - You could be creating an infinitely sized List.
+>>  - An error in one of our internal data structures is causing an   
+>> infinite number
+>>    of nodes to be created.
+>>
+>> This is probably a serious issue, and it is very possible that it's a  
+>>  problem with
+>> Glazed Lists. If you could provide me with a complete stack trace of  
+>> the
+>> exceptions you're getting, I might be able to better diagnose the   
+>> problem.
+>> Even better, if you can provide me with your code, we can solve this   
+>> immediately.
+>> You don't have to send your application-specific code, just a small   
+>> class or two
+>> that suffers from this problem. If you'd still rather not send code,  
+>> a  stack trace
+>> will get us started.
+>>
+>>
+>>> What I basically need to be able to do is modify the example program  
+>>>  IssuesBrowser from part 2 of the tutorial to allow a user to edit   
+>>> cells inline, and store each modified cell.  I need to be able to  
+>>> sort  the table (which I have working), but do not need to filter  
+>>> it.
+>>
+>>
+>> This should be really easy. I'm anxious to find out what the problem  
+>> is.
+>>
+>> Cheers,
+>> Jesse
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: users-unsubscribe@glazedlists.dev.java.net
+>> For additional commands, e-mail: users-help@glazedlists.dev.java.net
+>>
+>
+>
+> -- 
+> Randy Kohlstedt
+> 414.220.4295 x303 [office]
+> 414.220.4296 [fax]
+> Nighthawk Radiology Services
+> 223 N. Water Street
+> Suite 200
+> Milwaukee, WI  53202
+> CONFIDENTIALITY NOTICE:   This email, including any attachments,  
+> contains information from NightHawk Radiology Services, which may be  
+> confidential or privileged. The information is intended to be for the  
+> use of the individual or entity named above. If you are not the  
+> intended recipient, be aware that any disclosure, copying,  
+> distribution or use of the contents of this information is prohibited.  
+> If you have received this email in error, please notify NightHawk  
+> Radiology Services immediately by forwarding message to  
+> rkohlstedt@nighthawkrad.net and destroy all electronic and hard copies  
+> of the communication, including attachments.
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: users-unsubscribe@glazedlists.dev.java.net
+> For additional commands, e-mail: users-help@glazedlists.dev.java.net
+>
+>
+>
+> ___________________________________________________________
+> $0 Web Hosting with up to 120MB web space, 1000 MB Transfer
+> 10 Personalized POP and Web E-mail Accounts, and much more.
+> Signup at www.doteasy.com
+>
+
+
+--Apple-Mail-2--1059847940
+Content-Type: text/plain; charset=us-ascii
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: users-unsubscribe@glazedlists.dev.java.net
+For additional commands, e-mail: users-help@glazedlists.dev.java.net
+--Apple-Mail-2--1059847940--
+

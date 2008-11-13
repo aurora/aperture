@@ -8,11 +8,15 @@ package org.semanticdesktop.aperture.crawler.mail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -28,10 +32,9 @@ import org.ontoware.rdf2go.vocabulary.XSD;
 import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FileDataObject;
+import org.semanticdesktop.aperture.accessor.MessageDataObject;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.pdf.PdfExtractorFactory;
-import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
-import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.ResourceUtil;
@@ -55,7 +58,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     public void testOrdinarySinglePartPlainTextEmail() throws Exception {
         DataObjectFactory fac = wrapEmail("mail-thunderbird-1.5.eml");
         DataObject obj = fac.getObject();
-        assertFalse(obj instanceof FileDataObject);
+        assertTrue(obj instanceof MessageDataObject);
         // there should only be one data object
         assertNull(fac.getObject()); 
         URI emailUri = obj.getID();
@@ -112,7 +115,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     public void testMultipartAlternative() throws Exception {
         DataObjectFactory fac = wrapEmail("mail-multipart-plain-html.eml");
         DataObject obj = fac.getObject();
-        assertFalse(obj instanceof FileDataObject);
+        assertTrue(obj instanceof MessageDataObject);
         // there should only be one data object
         assertNull(fac.getObject()); 
         URI emailUri = obj.getID();
@@ -153,13 +156,13 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     public void testMultipartMixed() throws Exception {
         DataObjectFactory fac = wrapEmail("mail-multipart-test.eml");
         DataObject obj1 = fac.getObject();
-        assertFalse(obj1 instanceof FileDataObject);
+        assertTrue(obj1 instanceof MessageDataObject);
         assertNotNull(obj1);
         DataObject obj2 = fac.getObject();
         assertTrue(obj2 instanceof FileDataObject);
         assertNotNull(obj2);
         DataObject obj3 = fac.getObject();
-        assertFalse(obj3 instanceof FileDataObject);
+        assertTrue(obj3 instanceof MessageDataObject);
         assertNotNull(obj3);
         assertNull(fac.getObject());
         
@@ -226,7 +229,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     public void testPartUriDelimiter() throws Exception {
         InputStream stream = ResourceUtil.getInputStream(DOCS_PATH + "mail-multipart-test.eml", this.getClass());
         MimeMessage msg =  new MimeMessage(null, stream);
-        DataObjectFactory fac = new DataObjectFactory(msg,containerFactory,null,null,
+        DataObjectFactory fac = new DataObjectFactory(msg,containerFactory,service,null,null,
             new URIImpl("mime:zip:uri:dummymailuri:somefile.zip!/mail-multipart-test.eml!/"), null,"");
         DataObject obj1 = fac.getObject();
         DataObject obj2 = fac.getObject();
@@ -243,6 +246,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         URI pdfUri = obj2.getID();
         assertEquals(pdfUri.toString(), "mime:zip:uri:dummymailuri:somefile.zip!/mail-multipart-test.eml!/1");
         obj2.dispose();
+        service.shutdown();
     }
     
     /**
@@ -256,7 +260,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     public void testMessageInAThread() throws Exception {
         DataObjectFactory fac = wrapEmail("mail-threaded.eml");
         DataObject obj = fac.getObject();
-        assertFalse(obj instanceof FileDataObject);
+        assertTrue(obj instanceof MessageDataObject);
         RDFContainer metadata = obj.getMetadata();
         Model model = metadata.getModel();
         fac.getObject().dispose();
@@ -295,21 +299,30 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     public void testForwardedMessageWithReferecesAndInReplyToHeaders() throws Exception {
         DataObjectFactory fac = wrapEmail("mail-forwarded-references.eml");
         DataObject myGreeting = fac.getObject(); 
-        assertFalse(myGreeting instanceof FileDataObject);
+        assertTrue(myGreeting instanceof MessageDataObject);
         DataObject forwardedMsg = fac.getObject();
-        assertFalse(forwardedMsg instanceof FileDataObject);
+        assertTrue(forwardedMsg instanceof MessageDataObject);
         DataObject sfAd = fac.getObject();
-        assertFalse(sfAd instanceof FileDataObject);
+        assertTrue(sfAd instanceof FileDataObject);
         DataObject sfSig = fac.getObject();
-        assertFalse(sfSig instanceof FileDataObject);
+        assertTrue(sfSig instanceof FileDataObject);
         assertNull(fac.getObject()); 
 
         assertMessageId("<48DFA882.5010502@poczta.onet.pl>", myGreeting);
         assertMessageId("<46ADDEF5.6080504@dfki.de>", forwardedMsg);
         assertMessageContentContains("A test message that contains a forwarded message",myGreeting);
         assertMessageContentContains("There are two concrete benefits to using XRIs identified",forwardedMsg);
-        assertMessageContentContains("This SF.net email is sponsored by: Splunk Inc.",sfAd);
-        assertMessageContentContains("Aperture-devel mailing list",sfSig); 
+        
+        /*
+         * The two last data objects are unnamed plain text message parts - attachments, they should be
+         * interpreted as such i.e. no content in the metadata, everything is a plain text FileDataObject
+         */
+        assertNull(sfAd.getMetadata().getString(NMO.plainTextMessageContent));
+        assertAsciiFileContentContains(sfAd, "This SF.net email is sponsored by: Splunk Inc.");
+        
+        assertNull(sfSig.getMetadata().getString(NMO.plainTextMessageContent));
+        assertAsciiFileContentContains(sfSig, "Aperture-devel mailing list");
+        
         assertReferencedEmails(forwardedMsg, NMO.references, "<46AA316B.40604@dfki.de>",
             "<21635b740707300447w71553199j7e14e44f47727f37@mail.gmail.com>");
         assertReferencedEmails(forwardedMsg, NMO.inReplyTo,
@@ -331,7 +344,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     public void testXmlAttachment() throws Exception {
         DataObjectFactory fac = wrapEmail("mail-xml-attachment.eml");
         DataObject mailContent = fac.getObject();
-        assertFalse(mailContent instanceof FileDataObject);
+        assertTrue(mailContent instanceof MessageDataObject);
         DataObject xmlAttachment = fac.getObject();
         assertTrue(xmlAttachment instanceof FileDataObject);
         assertNull(fac.getObject());
@@ -369,7 +382,6 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         DataObjectFactory fac = wrapEmail("mail-plaintext-attachment.eml");
         DataObject mail = fac.getObject();
         assertTrue(mail.getMetadata().getString(NMO.plainTextMessageContent).contains("Example body text."));
-        assertNotNull(mail);
         DataObject attachment = fac.getObject();
         assertTrue(attachment instanceof FileDataObject);
         String content = IOUtil.readString(((FileDataObject)attachment).getContent());
@@ -380,6 +392,71 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         validate(attachment);
         mail.dispose();
         attachment.dispose();
+    }
+    
+    /**
+     * <p>
+     * The .eml file tested in this test has been submitted with a problem.
+     * </p>
+     * 
+     * <p>
+     * It has a following mime structure:
+     * 
+     * <pre>
+     * multipart/mixed
+     * - plain text (the text of the message)
+     * - plain text (a text/plain attachment with a name: ConfigFilePanel.java)
+     * - plain text (a text/plain attachment without a name)
+     * - plain text (a text/plain attachment without a name)
+     * </pre>
+     * 
+     * </p>
+     * 
+     * <p>
+     * <ol>
+     * <li>Four data objects should be returned, a MessageDataObject for the first part, and three FileDataObjects
+     * for three subsequent parts.</li>
+     * <li>The second dataobject should contain a filename.</li>
+     * <li>The plaintext attachment should NOT be reported as messages.</li>
+     * <li>The unnamed file attachments should NOT get a contentCreated
+     * property.</li>
+     * </ol>
+     *    
+     * </p>
+     * 
+     * @throws Exception
+     */
+    public void testUnsupportedOperationException() throws Exception {
+        DataObjectFactory fac = wrapEmail("mail-UnsupportedOperationException.eml");
+        DataObject mail = fac.getObject();
+        assertTrue(mail.getMetadata().getString(NMO.plainTextMessageContent).contains(
+            "I've attached my .java file"));
+        assertTrue(mail instanceof MessageDataObject);
+        
+        DataObject javaAttachment = fac.getObject();
+        assertTrue(javaAttachment instanceof FileDataObject);
+        assertEquals("ConfigFilePanel.java",javaAttachment.getMetadata().getString(NFO.fileName));
+        assertFalse(javaAttachment.getMetadata().getAll(RDF.type).contains(NMO.Message));
+        
+        DataObject firstUnnamedAttachment = fac.getObject();
+        assertTrue(firstUnnamedAttachment instanceof FileDataObject);
+        assertNull(firstUnnamedAttachment.getMetadata().getString(NFO.fileName));
+        assertNull(firstUnnamedAttachment.getMetadata().getDate(NIE.contentCreated));
+        assertFalse(firstUnnamedAttachment.getMetadata().getAll(RDF.type).contains(NMO.Message));
+        
+        DataObject secondUnnamedAttachment = fac.getObject();
+        assertTrue(secondUnnamedAttachment instanceof FileDataObject);
+        assertNull(secondUnnamedAttachment.getMetadata().getString(NFO.fileName));
+        assertNull(secondUnnamedAttachment.getMetadata().getDate(NIE.contentCreated));
+        assertFalse(secondUnnamedAttachment.getMetadata().getAll(RDF.type).contains(NMO.Message));
+        
+        for (RDFContainer cont : containerFactory.returnedContainers.values()) {
+            validate(cont);
+        }
+        mail.dispose();
+        javaAttachment.dispose();
+        firstUnnamedAttachment.dispose();
+        secondUnnamedAttachment.dispose();
     }
     
     /**
@@ -396,7 +473,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         assertFalse(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml#1").getModel().isOpen());
         assertTrue(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml#1-1").getModel().isOpen());
         assertFalse(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml#1-2").getModel().isOpen());
-        assertMessageContentContains("This SF.net email is sponsored by: Splunk Inc.", object);
+        assertAsciiFileContentContains(object, "This SF.net email is sponsored by: Splunk Inc.");
         object.dispose();
     }
 
@@ -421,7 +498,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         assertTrue(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml#1").getModel().isOpen());
         assertTrue(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml#1-1").getModel().isOpen());
         assertTrue(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml#1-2").getModel().isOpen());
-        assertMessageContentContains("This SF.net email is sponsored by: Splunk Inc.", object);
+        assertAsciiFileContentContains(object, "This SF.net email is sponsored by: Splunk Inc.");
         fac.disposeRemainingObjects();
         assertFalse(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml").getModel().isOpen());
         assertFalse(containerFactory.returnedContainers.get("uri:dummymailuri:mail-forwarded-references.eml#1").getModel().isOpen());
@@ -471,19 +548,23 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     }
 
     private TestRDFContainerFactory containerFactory;
+    private ExecutorService service;
     
     @Override public void setUp() {
         this.containerFactory = new TestRDFContainerFactory();
+        this.service = Executors.newSingleThreadExecutor();
     }
     
     @Override public void tearDown() {
         containerFactory = null;
+        service.shutdown();
+        service = null;
     }
     
     private DataObjectFactory wrapEmail(String resourceName) throws MessagingException, IOException {
         InputStream stream = ResourceUtil.getInputStream(DOCS_PATH + resourceName, this.getClass());
         MimeMessage msg =  new MimeMessage(null, stream);
-        DataObjectFactory fac = new DataObjectFactory(msg,containerFactory,null,null,
+        DataObjectFactory fac = new DataObjectFactory(msg,containerFactory,service, null,null,
             new URIImpl("uri:dummymailuri:" + resourceName), null);
         return fac;
     }
@@ -495,6 +576,12 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     
     private void assertMessageContentContains(String string, DataObject obj) {
         assertTrue(obj.getMetadata().getString(NMO.plainTextMessageContent).contains(string));
+    }
+    
+    private void assertAsciiFileContentContains(DataObject obj, String string) throws IOException {
+        assertTrue(IOUtil.readString(
+            new InputStreamReader(((FileDataObject) obj).getContent(), Charset.forName("US-ASCII")))
+                .contains(string));
     }
     
     @SuppressWarnings("unchecked")

@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 import javax.mail.Address;
 import javax.mail.BodyPart;
@@ -37,8 +38,8 @@ import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
-import org.semanticdesktop.aperture.accessor.base.DataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
+import org.semanticdesktop.aperture.accessor.base.MessageDataObjectBase;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.util.HtmlParserUtil;
@@ -113,11 +114,12 @@ public class DataObjectFactory {
      * Key used to store a DataObject's children in the intermediate HashMap representation.
      */
     private static final String CHILDREN_KEY = "children";
-
+    
     /**
-     * Key used to store a DataObject's content (an InputStream) in the intermediate HashMap representation.
+     * Key used to store a reference to the original javax.mail.internet.MimeMessage instance for data
+     * objects representing messages.
      */
-    private static final String CONTENTS_KEY = "contents";
+    private static final String MAIL_PART_KEY = "mail-part";
 
     /**
      * The DataSource that the generated DataObjects will report as source.
@@ -153,6 +155,11 @@ public class DataObjectFactory {
      * The list of data objects, generated from the message.
      */
     private List<DataObject> dataObjectsToReturn;
+    
+    /**
+     * The Executor service for MessageDataObjects
+     */
+    private ExecutorService executorService;
 
     /**
      * The index in that list specifying the data object to be returned on the next call to
@@ -171,6 +178,7 @@ public class DataObjectFactory {
      * 
      * @param message
      * @param containerFactory
+     * @param executorService
      * @param streamFactory a factory of streams for mail parts, this parameter can be null, in which case a
      *            default implementation will be used, that simply calls {@link Part#getInputStream()}
      * @param dataSource
@@ -180,11 +188,12 @@ public class DataObjectFactory {
      * @throws IOException
      * @throws MessagingException
      */
-    public DataObjectFactory(MimeMessage message, RDFContainerFactory containerFactory,
+    public DataObjectFactory(MimeMessage message, RDFContainerFactory containerFactory, ExecutorService executorService,
             PartStreamFactory streamFactory, DataSource dataSource, URI messageUri, URI folderUri, String partUriDelimiter)
             throws IOException, MessagingException {
         this.message = message;
         this.partUriDelimiter = partUriDelimiter;
+        this.executorService = executorService;
         this.containerFactory = containerFactory;
         this.dataSource = dataSource;
         this.folderUri = folderUri;
@@ -219,6 +228,7 @@ public class DataObjectFactory {
      * A simplified constructor that implies the default part uri delimiter
      * @param message
      * @param containerFactory
+     * @param executorService
      * @param streamFactory
      * @param dataSource
      * @param messageUri
@@ -226,10 +236,10 @@ public class DataObjectFactory {
      * @throws IOException
      * @throws MessagingException
      */
-    public DataObjectFactory(MimeMessage message, RDFContainerFactory containerFactory,
+    public DataObjectFactory(MimeMessage message, RDFContainerFactory containerFactory, ExecutorService executorService,
             PartStreamFactory streamFactory, DataSource dataSource, URI messageUri, URI folderUri)
             throws IOException, MessagingException {
-        this(message,containerFactory,streamFactory,dataSource,messageUri,folderUri,null);
+        this(message,containerFactory,executorService, streamFactory,dataSource,messageUri,folderUri,null);
     }
     
     /**
@@ -317,7 +327,7 @@ public class DataObjectFactory {
      */
     private void createDataObjects() throws MessagingException, IOException {
         // perform a depth-first crawl over the entire structure of the mime message, return hashmaps
-        HashMap map = handleMailPart(message, messageURI, MailUtil.getDate(message));
+        HashMap map = handleMailPart(message, messageURI, MailUtil.getDate(message), true);
         // convert the HashMap representation to a DataObject representation and add them to the list
         createDataObjects(map, folderUri, dataObjectsToReturn);
 
@@ -361,7 +371,7 @@ public class DataObjectFactory {
      *         mailPart
      *         </ul>
      */
-    private HashMap handleMailPart(Part mailPart, URI uri, Date messageCreationDate)
+    private HashMap handleMailPart(Part mailPart, URI uri, Date messageCreationDate, boolean firstPart)
             throws MessagingException, IOException {
         // determine the primary type of this Part
         ContentType contentType = null;
@@ -409,7 +419,7 @@ public class DataObjectFactory {
             }
         }
         else {
-            return handleSinglePart(mailPart, contentType, uri, messageCreationDate, false);
+            return handleSinglePart(mailPart, contentType, uri, messageCreationDate, false, firstPart);
         }
     }
 
@@ -430,7 +440,7 @@ public class DataObjectFactory {
      *         </ul>
      */
     private HashMap handleSinglePart(Part mailPart, ContentType contentType, URI uri,
-            Date messageCreationDate, boolean emptyContent) throws MessagingException, IOException {
+            Date messageCreationDate, boolean emptyContent, boolean firstPart) throws MessagingException, IOException {
         // determine the content type properties of this mail
         String mimeType = getMimeTypeFromContentType(contentType);
         String charsetStr = getCharsetStringFromContentType(contentType, mimeType);
@@ -448,7 +458,7 @@ public class DataObjectFactory {
         }
         else {
             // it is a normal single part, it may be a forwarded message or an attachment, or the message itself
-            result = handleNormalSinglePart(mailPart, charsetStr, mimeType, uri, messageCreationDate);
+            result = handleNormalSinglePart(mailPart, charsetStr, mimeType, uri, messageCreationDate, firstPart);
         }
 
         extractGenericSinglePartMetadata(mailPart, result, messageCreationDate);
@@ -462,6 +472,9 @@ public class DataObjectFactory {
         else {
             extractNonMessageSinglePartMetadata(mailPart, result, mimeType);
         }
+        
+        result.put(MAIL_PART_KEY, mailPart);
+        
 
         return result;
     }
@@ -511,7 +524,7 @@ public class DataObjectFactory {
              * already and this specific Part contains no additional useful information
              */
             Message nestedMessage = (Message) content;
-            HashMap result = handleMailPart(nestedMessage, uri, MailUtil.getDate(nestedMessage));
+            HashMap result = handleMailPart(nestedMessage, uri, MailUtil.getDate(nestedMessage), true);
             
             /*
              * Also, this is also the only place where we can mark the attached message as an Email by it's 
@@ -541,7 +554,7 @@ public class DataObjectFactory {
      * @throws IOException
      */
     private HashMap handleNormalSinglePart(Part normalSinglePart, String charsetStr, String mimeType, URI uri,
-            Date messageCreationDate)
+            Date messageCreationDate, boolean firstPart)
     throws MessagingException, IOException {
         HashMap result = new HashMap();
         result.put(ID_KEY, uri);
@@ -590,18 +603,20 @@ public class DataObjectFactory {
          * binary stream. All kinds of multipart issues have been solved on a higher level. Note that this
          * method does not contain any further recursive calls. 
          */
-        if (content instanceof String && (fileName == null)) {
-            // this should happen only for message parts that have no file names
+        if (content instanceof String && (fileName == null) && firstPart) {
+            // this should happen only for message parts that have no file names, and we know that these
+            // parts are not unnamed plaintext attachments
             addStringContent((String)content,mimeType,result);
-        } else if (content instanceof InputStream || (fileName != null)) {
-            // the second or condition is a special case for text/xml and other plaintext types, javamail
-            // seems to return the content of all text/... parts as a String, even when it should be returned
-            // as a stream and processed by the extractors
-            result.put(CONTENTS_KEY, streamFactory.getPartStream(normalSinglePart));
-        } else if (content != null) {
-            // a serious error, if it happens - it is a bug and let the users report it, a null value is OK
-            throw new MessagingException("the content should be a string or a stream");
-        }
+        } 
+//        else if (content instanceof InputStream || (fileName != null)) {
+//            // the second or condition is a special case for text/xml and other plaintext types, javamail
+//            // seems to return the content of all text/... parts as a String, even when it should be returned
+//            // as a stream and processed by the extractors
+//            result.put(CONTENTS_KEY, streamFactory.getPartStream(normalSinglePart));
+//        } else if (content != null) {
+//            // a serious error, if it happens - it is a bug and let the users report it, a null value is OK
+//            throw new MessagingException("the content should be a string or a stream");
+//        }
         
         if (charsetStr != null) {
             result.put(NIE.characterSet, charsetStr);
@@ -797,7 +812,7 @@ public class DataObjectFactory {
             return null;
         }
 
-        HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true);
+        HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true, true);
         if (parent == null) {
             return null;
         }
@@ -808,7 +823,7 @@ public class DataObjectFactory {
         // interpret every nested part
         int nrParts = part.getCount();
         ArrayList children = new ArrayList(nrParts);
-
+        boolean first = true;
         for (int i = 0; i < nrParts; i++) {
             BodyPart bodyPart = part.getBodyPart(i);
             if (bodyPart == null) {
@@ -816,8 +831,8 @@ public class DataObjectFactory {
             }
 
             URI bodyURI = new URIImpl(uriPrefix + i);
-            HashMap childResult = handleMailPart(bodyPart, bodyURI, date);
-
+            HashMap childResult = handleMailPart(bodyPart, bodyURI, date, first);
+            first = false;
             if (childResult != null) {
                 children.add(childResult);
             }
@@ -866,7 +881,7 @@ public class DataObjectFactory {
         }
 
         // interpret the selected alternative part
-        HashMap child = handleMailPart(part.getBodyPart(index), uri, date);
+        HashMap child = handleMailPart(part.getBodyPart(index), uri, date, true);
 
         // If this part was nested in a message, we should merge the obtained info with a data object
         // modeling all message info, in all other cases (e.g. when the multipart/alternative was
@@ -875,7 +890,7 @@ public class DataObjectFactory {
         // be returned.
         Part parentPart = part.getParent();
         if (parentPart instanceof Message) {
-            HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true);
+            HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true, true);
 
             if (parent == null) {
                 return child;
@@ -898,7 +913,7 @@ public class DataObjectFactory {
             return null;
         }
 
-        HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true);
+        HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true, true);
         if (parent == null) {
             return null;
         }
@@ -921,7 +936,7 @@ public class DataObjectFactory {
             URI bodyURI = new URIImpl(bodyURIPrefix + i);
 
             // interpret this part
-            HashMap child = handleMailPart(bodyPart, bodyURI, date);
+            HashMap child = handleMailPart(bodyPart, bodyURI, date, false);
             if (child != null) {
                 children.add(child);
             }
@@ -941,7 +956,7 @@ public class DataObjectFactory {
             return null;
         }
 
-        HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true);
+        HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true, true);
         if (parent == null) {
             return null;
         }
@@ -977,7 +992,7 @@ public class DataObjectFactory {
 
             // interpret this body part
             URI bodyURI = new URIImpl(bodyURIPrefix + i);
-            HashMap child = handleMailPart(bodyPart, bodyURI, date);
+            HashMap child = handleMailPart(bodyPart, bodyURI, date, false);
 
             // append it to the part object in the appropriate way
             if (child != null) {
@@ -1012,7 +1027,7 @@ public class DataObjectFactory {
         // interpret the first body part, which contains the actual content
         HashMap child = null;
         if (part.getCount() >= 2) {
-            child = handleMailPart(part.getBodyPart(partIndex), uri, date);
+            child = handleMailPart(part.getBodyPart(partIndex), uri, date, false);
         }
         else {
             logger.warn("multipart/signed or multipart/encrypted without enough body parts, uri = " + uri);
@@ -1022,7 +1037,7 @@ public class DataObjectFactory {
         // else we simply return the child
         Part parentPart = part.getParent();
         if (parentPart instanceof Message) {
-            HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true);
+            HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true, true);
             if (parent == null) {
                 return child;
             }
@@ -1046,7 +1061,7 @@ public class DataObjectFactory {
             return null;
         }
 
-        HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true);
+        HashMap parent = handleSinglePart(parentPart, contentType, uri, date, true, true);
         if (parent == null) {
             return null;
         }
@@ -1054,7 +1069,7 @@ public class DataObjectFactory {
         // the first part contains a human-readable error message and will be treated as the mail body
         int count = part.getCount();
         if (count > 0) {
-            HashMap errorPart = handleMailPart(part.getBodyPart(0), uri, date);
+            HashMap errorPart = handleMailPart(part.getBodyPart(0), uri, date, true);
             if (errorPart != null) {
                 transferInfo(errorPart, parent);
             }
@@ -1063,7 +1078,7 @@ public class DataObjectFactory {
         // the optional third part contains the (partial) returned message and will become an attachment
         if (count > 2) {
             URI nestedURI = new URIImpl(getBodyPartURIPrefix(uri) + "0");
-            HashMap returnedMessage = handleMailPart(part.getBodyPart(2), nestedURI, date);
+            HashMap returnedMessage = handleMailPart(part.getBodyPart(2), nestedURI, date, true);
             if (returnedMessage != null) {
                 ArrayList children = new ArrayList();
                 children.add(returnedMessage);
@@ -1094,16 +1109,34 @@ public class DataObjectFactory {
             List<DataObject> resultDataObjectList) {
         // fetch the minimal set of properties needed to create a DataObject
         URI dataObjectId = (URI) dataObjectHashMap.get(ID_KEY);
-        InputStream content = (InputStream) dataObjectHashMap.get(CONTENTS_KEY);
+        //InputStream content = (InputStream) dataObjectHashMap.get(CONTENTS_KEY);
+        Part mailPart = (Part)dataObjectHashMap.get(MAIL_PART_KEY);
         RDFContainer metadata = containerFactory.getRDFContainer(dataObjectId);
 
-        if (content != null && !content.markSupported()) {
-            content = new BufferedInputStream(content, 16384);
-        }
+        
 
         // create the DataObject
-        DataObject dataObject = (content == null) ? new DataObjectBase(dataObjectId, dataSource, metadata)
-                : new FileDataObjectBase(dataObjectId, dataSource, metadata, content);
+        DataObject dataObject = null;
+        //Object mimeMessage = dataObjectHashMap.get(MIME_MESSAGE_KEY);
+        
+        if (mailPart instanceof MimeMessage) {
+            dataObject = new MessageDataObjectBase(dataObjectId,dataSource,metadata,(MimeMessage)mailPart,executorService);
+//        } else if (content == null) {
+//            dataObject = new DataObjectBase(dataObjectId, dataSource, metadata); 
+        } else {
+            InputStream content = null;
+            try {
+                content = streamFactory.getPartStream(mailPart);
+            }
+            catch (Exception e) {
+                logger.warn("Couldn't get a stream from a mail part" + e);
+            }
+            
+            if (content != null && !content.markSupported()) {
+                content = new BufferedInputStream(content, 16384);
+            }
+            dataObject = new FileDataObjectBase(dataObjectId, dataSource, metadata, content);   
+        } 
 
         resultDataObjectList.add(dataObject);
 
@@ -1302,10 +1335,10 @@ public class DataObjectFactory {
      */
     private void transferInfo(HashMap fromObject, HashMap toObject) throws IOException {
         // transfer content stream if applicable
-        Object content = fromObject.get(CONTENTS_KEY);
-        if (content != null) {
-            toObject.put(CONTENTS_KEY, content);
-        }
+//        Object content = fromObject.get(CONTENTS_KEY);
+//        if (content != null) {
+//            toObject.put(CONTENTS_KEY, content);
+//        }
 
         // transfer mime type, carefully placing it as mime type or content mime type
         Object fromType = fromObject.get(NIE.mimeType);
@@ -1336,7 +1369,7 @@ public class DataObjectFactory {
             // are better than those from the toObject
             String keyString = entry.getKey().toString();
             if (!keyString.equals(ID_KEY) && // obviously the identifier should not be overwritten 
-                !keyString.equals(CONTENTS_KEY) && // the CONTENTS has been handled already
+                !keyString.equals(MAIL_PART_KEY) && // the mail part should not be overwritten
                 !keyString.equals(NIE.mimeType.toString()) &&  // the mime type has been handled already
                 !keyString.equals(CHILDREN_KEY)  && // the children have been handled already
                 !keyString.equals(NIE.byteSize.toString())) { // the 'to' object has better knowledge of the size of

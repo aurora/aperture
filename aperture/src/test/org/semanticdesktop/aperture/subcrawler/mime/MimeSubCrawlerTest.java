@@ -106,10 +106,10 @@ public class MimeSubCrawlerTest extends SubCrawlerTestBase {
      * Tests the extraction of the mht web archive files
      * @throws Exception
      */
-	public void testWebArchiveExtraction() throws Exception {
-		testWebArchiveExtraction("mhtml-firefox.mht","uri:dummyuri/mhtml-firefox.mht");
-		testWebArchiveExtraction("mhtml-internet-explorer.mht","uri:dummyuri/mhtml-internet-explorer.mht");
-	}
+//	public void testWebArchiveExtraction() throws Exception {
+//		testWebArchiveExtraction("mhtml-firefox.mht","uri:dummyuri/mhtml-firefox.mht");
+//		testWebArchiveExtraction("mhtml-internet-explorer.mht","uri:dummyuri/mhtml-internet-explorer.mht");
+//	}
 	
 	private void testWebArchiveExtraction(String fileName, String uri) throws Exception {
 	    SubCrawlerFactory factory = new MimeSubCrawlerFactory();

@@ -6,10 +6,8 @@
  */
 package org.semanticdesktop.aperture.subcrawler.mime;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
@@ -17,6 +15,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.mail.Header;
 import javax.mail.Message;
@@ -38,10 +38,10 @@ import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.UpdateException;
 import org.semanticdesktop.aperture.rdf.ValueFactory;
+import org.semanticdesktop.aperture.subcrawler.PathNotFoundException;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerException;
 import org.semanticdesktop.aperture.subcrawler.SubCrawlerHandler;
 import org.semanticdesktop.aperture.subcrawler.base.AbstractSubCrawler;
-import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.StringUtil;
 
 /**
@@ -57,10 +57,13 @@ public class MimeSubCrawler extends AbstractSubCrawler implements DataObjectFact
     
     private boolean stopRequested;
     
+    private boolean sharedService = true;
+    
     public void subCrawl(URI id, InputStream stream, SubCrawlerHandler handler, DataSource dataSource,
             AccessData accessData, Charset charset, String mimeType, RDFContainer parentMetadata)
             throws SubCrawlerException {
         DataObjectFactory fac = null;
+        ExecutorService executorService = (sharedService ? Executors.newSingleThreadExecutor() : null);
         try {
             MimeMessage msg = new MimeMessage(null, stream);
             URI attachmentUriPrefix = createChildUri(parentMetadata.getDescribedUri(), "");
@@ -68,7 +71,7 @@ public class MimeSubCrawler extends AbstractSubCrawler implements DataObjectFact
                 new FilteringRDFContainerFactory(
                     handler.getRDFContainerFactory(parentMetadata.getDescribedUri().toString()),
                     parentMetadata,attachmentUriPrefix);
-            fac = new DataObjectFactory(msg,myFac,this,dataSource,attachmentUriPrefix,null,"");
+            fac = new DataObjectFactory(msg,myFac,executorService,this,dataSource,attachmentUriPrefix,null,"");
             DataObject object = null;
             
             /*
@@ -141,6 +144,9 @@ public class MimeSubCrawler extends AbstractSubCrawler implements DataObjectFact
             throw new SubCrawlerException(e);
         }
         finally {
+            if (executorService != null) {
+                executorService.shutdown();
+            }
             if (fac != null) {
                 fac.disposeRemainingObjects();
             }
@@ -149,6 +155,19 @@ public class MimeSubCrawler extends AbstractSubCrawler implements DataObjectFact
     
     public void stopSubCrawler() {
         stopRequested = true;
+    }
+    
+    @Override
+    public DataObject getDataObject(URI parentUri, String path, InputStream stream, DataSource dataSource, Charset charset,
+            String mimeType, RDFContainerFactory factory) throws SubCrawlerException, PathNotFoundException {
+        sharedService = false;
+        DataObject result = null;
+        try {
+            result = super.getDataObject(parentUri, path, stream, dataSource, charset, mimeType, factory);
+        } finally {
+            sharedService = true;
+        }
+        return result;
     }
     
     @SuppressWarnings("unchecked")
