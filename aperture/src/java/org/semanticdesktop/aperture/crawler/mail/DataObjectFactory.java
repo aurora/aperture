@@ -603,7 +603,7 @@ public class DataObjectFactory {
          * binary stream. All kinds of multipart issues have been solved on a higher level. Note that this
          * method does not contain any further recursive calls. 
          */
-        if (content instanceof String && (fileName == null) && firstPart) {
+        if (content != null && content instanceof String && (fileName == null) && firstPart) {
             // this should happen only for message parts that have no file names, and we know that these
             // parts are not unnamed plaintext attachments
             addStringContent((String)content,mimeType,result);
