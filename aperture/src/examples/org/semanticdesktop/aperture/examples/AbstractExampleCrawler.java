@@ -233,7 +233,7 @@ public abstract class AbstractExampleCrawler {
     
     protected static String getAlignedOption(String option) {
         if (option == null || option.length()==0) {
-            return "                  ";
+            return "                   ";
         }
         StringBuilder builder = new StringBuilder(30);
         int startPoint = 0;
