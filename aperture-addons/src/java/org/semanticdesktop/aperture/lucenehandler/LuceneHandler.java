@@ -7,8 +7,7 @@
 package org.semanticdesktop.aperture.lucenehandler;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.text.ParseException;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -33,9 +32,11 @@ import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
-import org.semanticdesktop.aperture.examples.CrawlerHandlerBase;
+import org.semanticdesktop.aperture.crawler.base.CrawlerHandlerBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An example handler for Lucene. This class cares for updating a lucene index
@@ -56,7 +57,7 @@ public class LuceneHandler extends CrawlerHandlerBase implements CrawlerHandler 
 	/**
 	 * java logger for simplicity
 	 */
-	private static Logger log = Logger.getLogger(LuceneHandler.class.getName());
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	IndexWriter writer;
 	
@@ -96,11 +97,11 @@ public class LuceneHandler extends CrawlerHandlerBase implements CrawlerHandler 
 		try {
 			writer = new IndexWriter(indexDir, analyzer, false);
 		} catch (Exception y) {
-			log.info("creating new index");
+			logger.info("creating new index");
 			try {
 				writer = new IndexWriter(indexDir, analyzer, true);
 			} catch (Exception e) {
-				log.log(Level.SEVERE,"cannot create store, this is a problem: "+e, e);
+				logger.error("cannot create store, this is a problem: "+e, e);
 				throw new RuntimeException(e);
 			}
 		} 
@@ -117,7 +118,7 @@ public class LuceneHandler extends CrawlerHandlerBase implements CrawlerHandler 
 		try {
 			removeUri(new URIImpl(url));
 		} catch (IOException e) {
-			log.log(Level.WARNING, "error removing object: "+e, e);
+			logger.warn("Error removing object: "+e, e);
 		}
 	}
 
@@ -137,29 +138,37 @@ public class LuceneHandler extends CrawlerHandlerBase implements CrawlerHandler 
 		writer.close();
 		} catch (Exception x)
 		{
-			log.log(Level.WARNING, "cannot store data: "+x,x);
+			logger.warn("cannot store data: "+x,x);
 		}
 		
 	}
 
 	public void objectNew(Crawler crawler, DataObject object) {
 		// extract full text and more
-		processBinary(object);
+		try {
+			processBinary(object);
+		} catch (Exception e) {
+			logger.warn("Cannot process "+object+": "+e,e);
+		} 
 		
 		Document doc = objectToDocument(object);
 		if (doc != null)
 			try {
-				log.fine("adding document to index: " + object.getID());
+				logger.debug("adding document to index: " + object.getID());
 				writer.addDocument(doc);
 			} catch (IOException e1) {
-				log.log(Level.FINE, "error storign doc: "+e1, e1);
+				logger.warn("error storing doc: "+e1, e1);
 			}
 		object.dispose();
 	}
 
 	public void objectChanged(Crawler crawler, DataObject object) {
 		// extract full text and more
-		processBinary(object);
+		try {
+			processBinary(object);
+		} catch (Exception e) {
+			logger.warn("Cannot process "+object+": "+e,e);
+		} 
 		
 		Document doc = objectToDocument(object);
 		
@@ -167,14 +176,14 @@ public class LuceneHandler extends CrawlerHandlerBase implements CrawlerHandler 
 		try {
 			removeUri(object.getID());
 		} catch (IOException e) {
-			log.log(Level.WARNING,"cannot remove old version of "+object.getID()+": "+e, e);
+			logger.warn("cannot remove old version of "+object.getID()+": "+e, e);
 		}
 		if (doc != null)
 			try {
-				log.fine("adding document to index: " + object.getID());
+				logger.debug("adding document to index: " + object.getID());
 				writer.addDocument(doc);
 			} catch (IOException e1) {
-				log.log(Level.FINE, "error storign doc: "+e1, e1);
+				logger.warn("Error storing doc: "+e1, e1);
 			}
 		object.dispose();
 	}
@@ -203,7 +212,12 @@ public class LuceneHandler extends CrawlerHandlerBase implements CrawlerHandler 
 			if (s.getObject() instanceof DatatypeLiteral) {
 				DatatypeLiteral l = (DatatypeLiteral) s.getObject();
 				if (l.getDatatype().equals(XSD._dateTime)){
-					String date = DateTools.dateToString(RDFTool.string2Date(l.getValue()), Resolution.SECOND) ;
+					String date;
+					try {
+						date = DateTools.dateToString(RDFTool.string2Date(l.getValue()), Resolution.SECOND);
+					} catch (ParseException e) {
+						throw new RuntimeException(e);
+					}
 					doc.add(new Field(s.getPredicate().toString(),date,Field.Store.YES, Field.Index.TOKENIZED));
 				}
 				else {
