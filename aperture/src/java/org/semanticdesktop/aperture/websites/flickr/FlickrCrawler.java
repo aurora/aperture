@@ -135,8 +135,13 @@ public class FlickrCrawler extends CrawlerBase {
 
                 PhotoList pl = peopleIf.getPublicPhotos(meId, ENTRIES_PER_PAGE, page);
                 // PhotoList pl = photosetsIf.getPhotos(meId, ENTRIES_PER_PAGE, page);
-
+                
                 for (Iterator<Photo> it = pl.iterator(); it.hasNext();) {
+                    
+                    if (isStopRequested()) {
+                        break;
+                    }
+                    
                     numEntries++;
                     Photo photo = it.next();
                     // NOTE to get all information, we need to use photosIf
@@ -340,9 +345,13 @@ public class FlickrCrawler extends CrawlerBase {
                 }
                 page++;
             }
-            while (numEntries == ENTRIES_PER_PAGE);
+            while (numEntries == ENTRIES_PER_PAGE && !isStopRequested());
 
-            return ExitCode.COMPLETED;
+            if (isStopRequested()) {
+                return ExitCode.STOP_REQUESTED;
+            } else {
+                return ExitCode.COMPLETED;
+            }
         }
         catch (IOException e) {
             LOG.info("Could not crawl Flickr datasource", e);
