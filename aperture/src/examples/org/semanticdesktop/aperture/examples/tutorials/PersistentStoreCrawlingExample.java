@@ -23,11 +23,15 @@ import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.CrawlerHandler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
+import org.semanticdesktop.aperture.crawler.base.CrawlerHandlerBase;
 import org.semanticdesktop.aperture.crawler.filesystem.FileSystemCrawler;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
-import org.semanticdesktop.aperture.examples.handler.CrawlerHandlerBase;
+import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
+import org.semanticdesktop.aperture.mime.identifier.impl.DefaultMimeTypeIdentifierRegistry;
+import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
+import org.semanticdesktop.aperture.subcrawler.impl.DefaultSubCrawlerRegistry;
 
 /**
  * A simple example how to use an Aperture crawler with persistent storage
@@ -79,6 +83,7 @@ public class PersistentStoreCrawlingExample {
         // this call will prepare a persistent modelSet that will store information
         // in the folder defined above
         ModelSet modelSet = createPersistentModelSet(nativeStoreFolder);
+        System.out.println("Storing results into folder "+nativeStoreFolder.getAbsolutePath());
         // this crawler handler implementation (see below) will store information
         // in the provided model set
         CrawlerHandler handler = new UserDefinedStoreCrawlerHandler(modelSet);
@@ -135,6 +140,8 @@ class UserDefinedStoreCrawlerHandler extends CrawlerHandlerBase {
      * @param modelSet the ModelSet used to store the extracted data.
      */
     public UserDefinedStoreCrawlerHandler(ModelSet modelSet) {
+        super (new MagicMimeTypeIdentifier(), new DefaultExtractorRegistry(), 
+            new DefaultSubCrawlerRegistry());
         this.modelSet = modelSet;
     }
 
@@ -177,7 +184,12 @@ class UserDefinedStoreCrawlerHandler extends CrawlerHandlerBase {
      */
     public void objectNew(Crawler crawler, DataObject object) {
         // first we try to extract the information from the binary file
-        processBinary(object);
+        try {
+            processBinary(crawler, object);
+        } catch (Exception x) {
+            // do some proper logging now in real applications
+            x.printStackTrace();
+        }
         // then we add this information to our persistent model
         modelSet.addModel(object.getMetadata().getModel());
         // don't forget to dispose of the DataObject
@@ -195,7 +207,12 @@ class UserDefinedStoreCrawlerHandler extends CrawlerHandlerBase {
         // first we remove old information about the data object
         modelSet.removeModel(object.getID());
         // then we try to extract metadata and fulltext from the file
-        processBinary(object);
+        try {
+            processBinary(crawler, object);
+        } catch (Exception x) {
+            // do some proper logging now in real applications
+            x.printStackTrace();
+        }
         // an then we add the information from the temporary model to our
         // 'persistent' model
         modelSet.addModel(object.getMetadata().getModel());

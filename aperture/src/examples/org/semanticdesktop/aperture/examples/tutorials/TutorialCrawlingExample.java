@@ -19,11 +19,14 @@ import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
 import org.semanticdesktop.aperture.crawler.Crawler;
 import org.semanticdesktop.aperture.crawler.ExitCode;
+import org.semanticdesktop.aperture.crawler.base.CrawlerHandlerBase;
 import org.semanticdesktop.aperture.crawler.filesystem.FileSystemCrawler;
 import org.semanticdesktop.aperture.datasource.filesystem.FileSystemDataSource;
-import org.semanticdesktop.aperture.examples.handler.CrawlerHandlerBase;
+import org.semanticdesktop.aperture.extractor.impl.DefaultExtractorRegistry;
+import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
+import org.semanticdesktop.aperture.subcrawler.impl.DefaultSubCrawlerRegistry;
 
 public class TutorialCrawlingExample {
 
@@ -72,6 +75,8 @@ class TutorialCrawlerHandler extends CrawlerHandlerBase {
     private ModelSet modelSet;
 
     public TutorialCrawlerHandler() throws ModelException {
+        super (new MagicMimeTypeIdentifier(), new DefaultExtractorRegistry(), 
+            new DefaultSubCrawlerRegistry());
         modelSet = RDF2Go.getModelFactory().createModelSet();
         modelSet.open();
     }
@@ -98,7 +103,12 @@ class TutorialCrawlerHandler extends CrawlerHandlerBase {
     
     public void objectNew(Crawler crawler, DataObject object) {
         // first we try to extract the information from the binary file
-        processBinary(object);
+        try {
+            processBinary(crawler, object);
+        } catch (Exception x) {
+            // do some proper logging now in real applications
+            x.printStackTrace();
+        }
         // then we add this information to our persistent model
         modelSet.addModel(object.getMetadata().getModel());
         // don't forget to dispose of the DataObject
@@ -109,7 +119,12 @@ class TutorialCrawlerHandler extends CrawlerHandlerBase {
         // first we remove old information about the data object
         modelSet.removeModel(object.getID());
         // then we try to extract metadata and fulltext from the file
-        processBinary(object);
+        try {
+            processBinary(crawler, object);
+        } catch (Exception x) {
+            // do some proper logging now in real applications
+            x.printStackTrace();
+        }
         // an then we add the information from the temporary model to our
         // 'persistent' model
         modelSet.addModel(object.getMetadata().getModel());

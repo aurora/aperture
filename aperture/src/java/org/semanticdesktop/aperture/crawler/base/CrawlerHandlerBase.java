@@ -29,15 +29,33 @@ import org.semanticdesktop.aperture.extractor.FileExtractorFactory;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
+import org.semanticdesktop.aperture.subcrawler.SubCrawler;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerException;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerFactory;
+import org.semanticdesktop.aperture.subcrawler.SubCrawlerRegistry;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.NIE;
 
 /**
- * A trivial default implementation of the CrawlerHandler interface. The method implementations are simplest
+ * A base implementation of the CrawlerHandler interface. The method implementations are simplest
  * possible, that fulfill the contract. The applications are expected to override the methods they need.
  * 
- * The {@link #processBinary(DataObject)} object is provided as a reference implementation to
+ * The {@link #processBinary(Crawler, DataObject)} object is provided as a reference implementation to
  * show how to use the MIMEtype-detector and the extractors.
+ * 
+ * <h3>Subclassing CrawlerHandlerBase</h3>
+ * Create a subclass of this class to integrate Aperture into existing applications.
+ * <ul>
+ *  <li>Write a constructor or initializing method to set the {@link #mimeTypeIdentifier},
+ *  {@link #extractorRegistry} and {@link #subCrawlerRegistry}.</li>
+ *  <li>Review the method {@link #getRDFContainerFactory(Crawler, String)} to influence the RDF containers used.</li>
+ *  <li>Override all objectXXX methods to handle the data, possibly calling {@link #processBinary(Crawler, DataObject)}
+ *  to extract the contents of binary streams.</li>
+ * </ul>
+ * The objectXXX methods need to be implemented to do something with the dataobjects found by Aperture.
+ * 
+ * @author leo sauermann
+ * @author antoni mylka 
  */
 public class CrawlerHandlerBase implements CrawlerHandler {
 
@@ -47,16 +65,49 @@ public class CrawlerHandlerBase implements CrawlerHandler {
     protected boolean extractingContents = true;
     
     /**
-     * Mime-type identifier, must be set by overriding classes
+     * Mime-type identifier, <b>must</b> be set by overriding classes
      * to use processBinary
      */
     protected MimeTypeIdentifier mimeTypeIdentifier;
     
     /**
-     * Extractor registry,  must be set by overriding classes
+     * Extractor registry, <b>may</b> be set by overriding classes
      * to use processBinary
      */
     protected ExtractorRegistry extractorRegistry;
+    
+    /**
+     * Subcrawler registry, <b>may</b> be set by overriding classes
+     * to use processBinary
+     */
+    protected SubCrawlerRegistry subCrawlerRegistry;
+
+    /**
+     * Construct and empty BaseCrawlerHandler.
+     * set the extractorRegistry, mimeTypeIdentifier, and subCrawlerRegistry yourself.
+     */
+    public CrawlerHandlerBase() {
+        
+    }
+    
+    
+    
+    /**
+     * Construct an initialised BaseCrawlerHandler.
+     * Pass the needed objects for binary handling.
+     * @param mimeTypeIdentifier initialised MimeTypeIdentifier 
+     * @param extractorRegistry initialised ExtractorRegistry, can be null if binary handling is not needed
+     * @param subCrawlerRegistry initialised SubCrawlerRegistry, can be null if binary handling is not needed
+     */
+    public CrawlerHandlerBase(MimeTypeIdentifier mimeTypeIdentifier, ExtractorRegistry extractorRegistry,
+            SubCrawlerRegistry subCrawlerRegistry) {
+        super();
+        this.mimeTypeIdentifier = mimeTypeIdentifier;
+        this.extractorRegistry = extractorRegistry;
+        this.subCrawlerRegistry = subCrawlerRegistry;
+    }
+
+
 
     /**
      * Returns an rdf container factory. This method implementation returns a factory which delivers simple
@@ -174,22 +225,27 @@ public class CrawlerHandlerBase implements CrawlerHandler {
      * Identify the mime-type, invoke Extractors.
      * Interprets the boolean value "extractingContents"
      * which is by default true.
+     * @param crawler the crawler that reported the dataObject. The crawler will be used to invoke
+     * subcrawlers, if needed. The control then stays within the crawler's thread.
      * @param dataObject the data object to process.
      * When the passed DataObject is not a FileDataObject,
      * nothing will be done.
      * @throws IOException when the stream cannot be read
      * @throws ExctractorException when the extractor fails
+     * @throws SubCrawlerException when the extraction of contents using a {@link SubCrawler} failed.
      */
-    protected void processBinary(DataObject dataObject) throws IOException, ExtractorException {
+    protected void processBinary(Crawler crawler, DataObject dataObject) throws IOException, ExtractorException,
+        SubCrawlerException {
         // we cannot do anything when MIME type identification is disabled
         if (!extractingContents) {
             return;
         }
         // check prerequisites
         if (mimeTypeIdentifier == null)
-            throw new RuntimeException("mimeTypeIdentifier is not set");
-        if (extractorRegistry == null)
-            throw new RuntimeException("extractorRegistry is not set");
+            throw new RuntimeException("MimeTypeIdentifier is not set. ");
+        if (dataObject == null)
+            throw new NullPointerException("dataObject is null. This parameter must be set.");
+        
         // process the contents on an InputStream, if available
         if (dataObject instanceof FileDataObject) {
             FileDataObject object = (FileDataObject) dataObject;
@@ -215,27 +271,46 @@ public class CrawlerHandlerBase implements CrawlerHandler {
 
                 bufferedStream.reset();
                 
-                // apply an Extractor if available
-                Set extractors = extractorRegistry.getExtractorFactories(mimeType);
-                if (!extractors.isEmpty()) {
-                    ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
-                    Extractor extractor = factory.get();
-                    extractor.extract(id, bufferedStream, null, mimeType, metadata);
-                    return;
+                // ************************************************************
+                // EXTRACTORS - only works when the extractor registry was set!
+                if (extractorRegistry != null)
+                {
+                    // apply an Extractor if available
+                    Set extractors = extractorRegistry.getExtractorFactories(mimeType);
+                    if (!extractors.isEmpty()) {
+                        ExtractorFactory factory = (ExtractorFactory) extractors.iterator().next();
+                        Extractor extractor = factory.get();
+                        extractor.extract(id, bufferedStream, null, mimeType, metadata);
+                        return; // this could be made configurable: allowing multiple extractors to work on one stream
+                    }
+                    
+                    // else try to apply a FileExtractor
+                    Set fileextractors = extractorRegistry.getFileExtractorFactories(mimeType);
+                    if (!fileextractors.isEmpty()) {
+                        FileExtractorFactory factory = (FileExtractorFactory) fileextractors.iterator().next();
+                        FileExtractor extractor = factory.get();
+                        File originalFile = object.getFile();
+                        if (originalFile != null) {
+                            extractor.extract(id, originalFile, null, mimeType, metadata);
+                        } else {
+                            File tempFile = object.downloadContent();
+                            extractor.extract(id, tempFile, null, mimeType, metadata);
+                            tempFile.delete();
+                        }
+                        return; // this could be made configurable: allowing multiple extractors to work on one stream
+                    }
                 }
                 
-                // else try to apply a FileExtractor
-                Set fileextractors = extractorRegistry.getFileExtractorFactories(mimeType);
-                if (!fileextractors.isEmpty()) {
-                    FileExtractorFactory factory = (FileExtractorFactory) fileextractors.iterator().next();
-                    FileExtractor extractor = factory.get();
-                    File originalFile = object.getFile();
-                    if (originalFile != null) {
-                        extractor.extract(id, originalFile, null, mimeType, metadata);
-                    } else {
-                        File tempFile = object.downloadContent();
-                        extractor.extract(id, tempFile, null, mimeType, metadata);
-                        tempFile.delete();
+                //**************************************************
+                // Subcrawlers - only works when subCrawlerRegistry is set
+                if (subCrawlerRegistry != null) {
+                    Set subcrawlerFactories = subCrawlerRegistry.get(mimeType);
+                    for (Object sub : subcrawlerFactories) {
+                        SubCrawlerFactory subcrawlerfactory = (SubCrawlerFactory)sub;
+                        SubCrawler subcrawler = subcrawlerfactory.get();
+                        // Hand over control to the crawler again - the thread will return after the subcrawler is finished.
+                        crawler.runSubCrawler(subcrawler, dataObject, bufferedStream, null, mimeType);
+                        return; // this could be made configurable: allowing multiple subcrawlers to work on one stream
                     }
                 }
             }
