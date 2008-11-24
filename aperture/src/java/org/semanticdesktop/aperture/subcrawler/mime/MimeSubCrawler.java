@@ -46,7 +46,7 @@ import org.semanticdesktop.aperture.util.StringUtil;
 
 /**
  * <p>
- * An SubCrawer implementation for message/rfc822-style messages.
+ * A SubCrawer implementation for message/rfc822-style messages.
  * </p>
  * 
  * <p>
