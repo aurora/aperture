@@ -146,7 +146,7 @@ public class LuceneHandler extends CrawlerHandlerBase implements CrawlerHandler 
 	public void objectNew(Crawler crawler, DataObject object) {
 		// extract full text and more
 		try {
-			processBinary(crawler, object);
+			processBinary(object);
 		} catch (Exception e) {
 			logger.warn("Cannot process "+object+": "+e,e);
 		} 
@@ -165,7 +165,7 @@ public class LuceneHandler extends CrawlerHandlerBase implements CrawlerHandler 
 	public void objectChanged(Crawler crawler, DataObject object) {
 		// extract full text and more
 		try {
-			processBinary(crawler, object);
+			processBinary(object);
 		} catch (Exception e) {
 			logger.warn("Cannot process "+object+": "+e,e);
 		} 
