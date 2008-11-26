@@ -37,6 +37,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.DataObject;
+import org.semanticdesktop.aperture.accessor.MessageDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.FileDataObjectBase;
 import org.semanticdesktop.aperture.accessor.base.MessageDataObjectBase;
@@ -101,6 +102,19 @@ public class DataObjectFactory {
          * @throws IOException
          */
         public InputStream getPartStream(Part part) throws MessagingException, IOException;
+        
+        /**
+         * Creates a message data object for the given parameters
+         * @param dataObjectId
+         * @param dataSource
+         * @param metadata
+         * @param msg
+         * @param executorService
+         * @return a message data object for the given parameters
+         * @throws MessagingException 
+         */
+        public MessageDataObject createDataObject(URI dataObjectId, DataSource dataSource,
+                RDFContainer metadata, MimeMessage msg, ExecutorService executorService) throws MessagingException;
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -205,6 +219,10 @@ public class DataObjectFactory {
             this.streamFactory = new PartStreamFactory() {
                 public InputStream getPartStream(Part part) throws MessagingException, IOException {
                     return part.getInputStream();
+                }
+                public MessageDataObject createDataObject(URI dataObjectId, DataSource dataSource,
+                        RDFContainer metadata, MimeMessage msg, ExecutorService executorService) {
+                    return new MessageDataObjectBase(dataObjectId,dataSource,metadata,msg,executorService);
                 }
             };
         } else {
@@ -1129,12 +1147,15 @@ public class DataObjectFactory {
 
         // create the DataObject
         DataObject dataObject = null;
-        //Object mimeMessage = dataObjectHashMap.get(MIME_MESSAGE_KEY);
         
         if (mailPart instanceof MimeMessage) {
-            dataObject = new MessageDataObjectBase(dataObjectId,dataSource,metadata,(MimeMessage)mailPart,executorService);
-//        } else if (content == null) {
-//            dataObject = new DataObjectBase(dataObjectId, dataSource, metadata); 
+            try {
+                dataObject = streamFactory.createDataObject(dataObjectId, dataSource, metadata,
+                    (MimeMessage) mailPart, executorService);
+            }
+            catch (MessagingException e) {
+                logger.warn("Couldn't create a data object for a message",e);
+            } 
         } else {
             InputStream content = null;
             try {
@@ -1148,7 +1169,12 @@ public class DataObjectFactory {
                 content = new BufferedInputStream(content, 16384);
             }
             dataObject = new FileDataObjectBase(dataObjectId, dataSource, metadata, content);   
-        } 
+        }
+        
+        if (dataObject == null) {
+            // this may theoretically happen if the stream factory throws an exception
+            return;
+        }
 
         resultDataObjectList.add(dataObject);
 

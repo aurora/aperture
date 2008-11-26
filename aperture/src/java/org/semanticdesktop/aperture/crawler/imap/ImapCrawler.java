@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.mail.FetchProfile;
@@ -48,6 +49,7 @@ import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataAccessor;
 import org.semanticdesktop.aperture.accessor.DataObject;
+import org.semanticdesktop.aperture.accessor.MessageDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.UrlNotFoundException;
 import org.semanticdesktop.aperture.crawler.ExitCode;
@@ -56,6 +58,7 @@ import org.semanticdesktop.aperture.crawler.mail.DataObjectFactory;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.imap.ImapDataSource;
 import org.semanticdesktop.aperture.datasource.imap.ImapDataSource.ConnectionSecurity;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.security.trustmanager.standard.StandardTrustManager;
 import org.semanticdesktop.aperture.util.HttpClientUtil;
 import org.slf4j.Logger;
@@ -615,6 +618,16 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
     @Override
     public InputStream getPartStream(Part part) throws MessagingException, IOException{
         return streamPool.getStreamForAMessage(part);
+    }
+    
+    /**
+     * @throws MessagingException 
+     * @see org.semanticdesktop.aperture.crawler.mail.AbstractJavaMailCrawler#createDataObject(org.ontoware.rdf2go.model.node.URI, org.semanticdesktop.aperture.datasource.DataSource, org.semanticdesktop.aperture.rdf.RDFContainer, javax.mail.internet.MimeMessage, java.util.concurrent.ExecutorService)
+     */
+    @Override
+    public MessageDataObject createDataObject(URI dataObjectId, DataSource dataSource, RDFContainer metadata,
+            MimeMessage msg, ExecutorService executorService) throws MessagingException {
+        return streamPool.getObjectForAMessage(dataObjectId,dataSource,metadata,msg,executorService);
     }
 
     /**

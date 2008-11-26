@@ -30,7 +30,9 @@ import org.ontoware.rdf2go.model.node.Node;
 import org.ontoware.rdf2go.model.node.URI;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
+import org.semanticdesktop.aperture.accessor.MessageDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
+import org.semanticdesktop.aperture.accessor.base.MessageDataObjectBase;
 import org.semanticdesktop.aperture.crawler.mail.AbstractJavaMailCrawler;
 import org.semanticdesktop.aperture.crawler.mail.DataObjectFactory;
 import org.semanticdesktop.aperture.crawler.mail.MailUtil;
@@ -217,6 +219,11 @@ public class MimeSubCrawler extends AbstractSubCrawler implements DataObjectFact
 
     public InputStream getPartStream(Part part) throws MessagingException, IOException {
         return part.getInputStream();
+    }
+    
+    public MessageDataObject createDataObject(URI dataObjectId, DataSource dataSource, RDFContainer metadata,
+            MimeMessage msg, ExecutorService executorService) throws MessagingException {
+        return new MessageDataObjectBase(dataObjectId,dataSource,metadata,msg,executorService);
     }
     
     private class FilteringRDFContainerFactory implements RDFContainerFactory {

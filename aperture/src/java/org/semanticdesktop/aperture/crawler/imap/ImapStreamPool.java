@@ -10,12 +10,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.Store;
+import javax.mail.internet.MimeMessage;
 
+import org.ontoware.rdf2go.model.node.URI;
+import org.semanticdesktop.aperture.accessor.MessageDataObject;
+import org.semanticdesktop.aperture.accessor.base.MessageDataObjectBase;
+import org.semanticdesktop.aperture.datasource.DataSource;
+import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,11 +38,13 @@ class ImapStreamPool {
     private boolean closeRequested;
     private Store store;
     private Set<InputStream> streamSet;
+    private Set<MessageDataObject> objectSet;
     
     public ImapStreamPool(Store store) {
         this.store = store;
         closeRequested = false;
         streamSet = new HashSet<InputStream>();
+        objectSet = new HashSet<MessageDataObject>();
     }
     
     /**
@@ -68,9 +77,23 @@ class ImapStreamPool {
         }
     }
     
+    public synchronized MessageDataObject getObjectForAMessage(URI dataObjectId, DataSource dataSource,
+            RDFContainer metadata, MimeMessage msg, ExecutorService executorService) throws MessagingException {
+        if (!store.isConnected()) {
+            // this should work. I've checked out the source code of the javax.mail.Service class
+            // and it seems that all the settings are preserved, so we can use the 0-argument
+            // connect() method
+            store.connect();
+            closeRequested = false;
+        }
+        MessageDataObject result = new ImapDataObject(dataObjectId,dataSource,metadata,msg,executorService,this);
+        this.objectSet.add(result);
+        return result;
+    }
+    
     public synchronized void requestClose() {
         this.closeRequested = true;
-        if (streamSet.isEmpty()) {
+        if (streamSet.isEmpty() && objectSet.isEmpty()) {
             closeStore();
         }
     }
@@ -78,6 +101,17 @@ class ImapStreamPool {
     private synchronized void notifyStreamClosed(InputStream stream) {
         if (streamSet.contains(stream)) {
             streamSet.remove(stream);
+            if (closeRequested) {
+                closeStore();
+            }
+        } else {
+            logger.warn("Trying to return a stream that doesn't belong here");
+        }
+    }
+
+    private synchronized void notifyObjectClosed(ImapDataObject obj) {
+        if (objectSet.contains(obj)) {
+            objectSet.remove(obj);
             if (closeRequested) {
                 closeStore();
             }
@@ -93,6 +127,29 @@ class ImapStreamPool {
         catch (MessagingException e) {
             logger.warn("Couldn't close the IMAP store",e);
         }
+    }
+    
+    private static class ImapDataObject extends MessageDataObjectBase {
+        
+        private ImapStreamPool pool;
+        private MimeMessage msg;
+        
+        public ImapDataObject(URI id, DataSource dataSource, RDFContainer metadata, MimeMessage message,
+                ExecutorService service, ImapStreamPool pool) {
+            super(id, dataSource, metadata, message, service);
+            this.pool = pool;
+        }
+
+        /**
+         * @see org.semanticdesktop.aperture.accessor.base.MessageDataObjectBase#dispose()
+         */
+        @Override
+        public void dispose() {
+            super.dispose();
+            pool.notifyObjectClosed(this);
+        }
+        
+        
     }
     
     private static class ImapInputStream extends InputStream {

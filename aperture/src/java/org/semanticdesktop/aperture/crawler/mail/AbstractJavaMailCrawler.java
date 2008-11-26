@@ -28,8 +28,10 @@ import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.accessor.AccessData;
 import org.semanticdesktop.aperture.accessor.DataObject;
 import org.semanticdesktop.aperture.accessor.FolderDataObject;
+import org.semanticdesktop.aperture.accessor.MessageDataObject;
 import org.semanticdesktop.aperture.accessor.RDFContainerFactory;
 import org.semanticdesktop.aperture.accessor.base.FolderDataObjectBase;
+import org.semanticdesktop.aperture.accessor.base.MessageDataObjectBase;
 import org.semanticdesktop.aperture.crawler.base.CrawlerBase;
 import org.semanticdesktop.aperture.crawler.mail.DataObjectFactory.PartStreamFactory;
 import org.semanticdesktop.aperture.datasource.DataSource;
@@ -183,6 +185,15 @@ public abstract class AbstractJavaMailCrawler extends CrawlerBase implements Dat
      */
     public InputStream getPartStream(Part part) throws MessagingException, IOException {
         return part.getInputStream();
+    }
+    
+    /**
+     * @throws MessagingException 
+     * @see PartStreamFactory#createDataObject(URI, DataSource, RDFContainer, MimeMessage, ExecutorService)
+     */
+    public MessageDataObject createDataObject(URI dataObjectId, DataSource dataSource, RDFContainer metadata,
+            MimeMessage msg, ExecutorService executorService) throws MessagingException {
+        return new MessageDataObjectBase(dataObjectId, dataSource, metadata, msg, executorService);
     }
     
     //////////////////////////////////////////////////////////////////////////////////////////////////////
