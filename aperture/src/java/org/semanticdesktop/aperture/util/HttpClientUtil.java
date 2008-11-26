@@ -87,7 +87,7 @@ public class HttpClientUtil {
                 String character = "";
                 do {
                     i += 3;
-                } while (string.charAt(i) == '%' && i < length);
+                } while (i < length && string.charAt(i) == '%');
                 try {
                     character = URLDecoder.decode(string.substring(start,i),"UTF-8");
                 } catch (Exception e) {
