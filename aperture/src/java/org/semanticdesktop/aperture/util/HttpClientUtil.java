@@ -135,25 +135,37 @@ public class HttpClientUtil {
             }
             else {
                 int cInt = (int) c;
+                
                 if (cInt >= 48 && cInt <= 57 || // numbers
                     cInt >= 65 && cInt <= 90 || // uppercase
                     cInt >= 97 && cInt <= 122 || // lowercase
                     cInt == 45 || cInt == 95 || cInt == 46 || cInt == 126 || //hyphen, underscode, dot, tilde
-                    (charsToLeave != null && charsToLeave.indexOf(c) != -1)) { 
+                    (charsToLeave != null && charsToLeave.indexOf(c) != -1)) {
+                    /*
+                     * The RFC 3986 calls these the UNRESERVED CHARACTERS - section 2.3
+                     */
                     buffer.append(c);
                 }
+                else if (cInt == '*') {
+                    /*
+                     * for some bizarre reason the URL encoder does not percent-encode a '*' character, even
+                     * though according to the RFC3986 it is not on the UNRESERVED CHARACTERS list. That's why
+                     * we treat this case separately.
+                     */
+                    buffer.append("%2a");
+                }
                 else {
+                    /*
+                     * all characters that are not on unreserved list, and are not on the charsToLeave list
+                     * must be percent encoded
+                     */
+                    String stringVal = String.valueOf((char)c);
                     String hexVal = null;
                     try {
-                        hexVal = URLEncoder.encode(String.valueOf((char)c), "UTF-8");
+                        hexVal = URLEncoder.encode(stringVal, "UTF-8");
                     }
                     catch (UnsupportedEncodingException e) {
                         // this will not happen
-                    }
-
-                    // ensure use of two characters
-                    if (hexVal.length() == 1) {
-                        buffer.append('0');
                     }
 
                     buffer.append(hexVal);

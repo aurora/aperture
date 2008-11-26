@@ -13,12 +13,18 @@ import junit.framework.TestCase;
  */
 public class HttpClientUtilTest extends TestCase {
 
+    /**
+     * Tests if the formUrlEncode method works correctl.
+     */
     public void testFormUrlEncode() {
         testEncode("Antoni+My%C5%82ka", "Antoni My\u0142ka");
         testEncode("Antoni+My%C5%82%C5%82ka", "Antoni My\u0142\u0142ka");
         testEncode("/D_/Installers/installer+2005.1+rc1/icon-16x16.gif",
             "/D_/Installers/installer 2005.1 rc1/icon-16x16.gif");
-
+        
+        testEncode("%2a", "*"); // star is a bug in URLEncoder class, it must be correctly encoded
+        testEncode("/demo/DynaStruct/%230%2amerge%3C2%3E0%2a%23a003Yz%23","/demo/DynaStruct/#0*merge<2>0*#a003Yz#");
+        
         // %6F is a small letter o
         // a single character from the basic ASCII set
         // %C5%82 is a polish letter l with a stroke
@@ -41,7 +47,10 @@ public class HttpClientUtilTest extends TestCase {
         testDecode("/D_/Installers/installer 2005.1 rc1/icon-16x16.gif",
             "/D_/Installers/installer+2005.1+rc1/icon-16x16.gif");
         testDecode("Antoni My\u0142\u0142ka", "Antoni+My%C5%82%C5%82ka");// two diacritic marks one after
-                                                                         // another
+        testDecode("*","%2a"); // star is a bug in URLEncoder class, it must be correctly decoded
+        testDecode("/demo/DynaStruct/#0*merge<2>0*#a003Yz#","/demo/DynaStruct/%230%2amerge%3C2%3E0%2a%23a003Yz%23");
+        
+        // another
         // // %6F is a small letter o
         // a single character from the basic ASCII set
         // %C5%82 is a polish letter l with a stroke
@@ -50,7 +59,6 @@ public class HttpClientUtilTest extends TestCase {
         // the codepoint is \ufeba, the utf-8 represenation is ef ba ba
         // this tests if the decode method can operate with one-byte, two-byte and three-byte escape sequences
         testDecode("Antoni My\u0142kfd\ufebafa", "Ant%6Fni+My%C5%82kfd%EF%BA%BAfa");
-
     }
 
     private void testDecode(String decoded, String encoded) {
