@@ -1,0 +1,58 @@
+@prefix fresnel:  <http://www.w3.org/2004/09/fresnel#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix sourceformat: <http://aperture.semanticdesktop.org/ontology/sourceformat#> .
+@prefix source: <http://aperture.semanticdesktop.org/ontology/2007/08/12/source#> .
+@prefix nie:     <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#> .
+@prefix tagging: <http://aperture.sourceforge.net/ontologies/tagging#> .
+@prefix : <http://aperture.semanticdesktop.org/ontology/2008/11/14/bibsonomyds#> .
+
+:BibsonomyDataSource a rdfs:Class ;
+	rdfs:subClassOf nie:DataSource ;
+	rdfs:label "Bibsonomy Data Source" ;
+	rdfs:comment "Describes a bibsonomy account" .
+
+:BibsonomyDataSourceLens rdf:type fresnel:Lens ;
+                   fresnel:purpose fresnel:defaultLens ;
+                   fresnel:classLensDomain :BibsonomyDataSource ;
+                   fresnel:showProperties ( :apiusername
+                                            :apikey
+                                            :crawledusername ) .
+     
+:apiusername a rdf:Property ;
+    rdfs:label "API username" ;
+    rdfs:comment "The username associated with the API key. Necessary for programmatic access to bibsonomy. It can be different from the name of the account that is to be crawled." ;
+    rdfs:domain :BibsonomyDataSource ;
+    rdfs:range xsd:string .
+    
+:apiusernameFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+        a sourceformat:TextFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :apiusername .
+    
+:apikey a rdf:Property ;
+    rdfs:label "API key" ;
+    rdfs:comment "The API key" ;
+    rdfs:domain :BibsonomyDataSource ;
+    rdfs:range xsd:string .
+    
+:apikeyFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+        a sourceformat:TextFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :apikey .
+
+:crawledusername a rdf:Property ;
+    rdfs:label "Crawled username" ;
+    rdfs:comment "The name of the account that is to be crawled" ;
+    rdfs:domain :BibsonomyDataSource ;
+    rdfs:range xsd:string .
+    
+:crawledusernameFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+        a sourceformat:TextFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :crawledusername .
+    
