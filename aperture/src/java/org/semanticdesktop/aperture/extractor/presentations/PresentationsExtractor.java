@@ -2,7 +2,7 @@
  * Copyright (c) 2006 - 2008 Aduna.
  * All rights reserved.
  * 
- * Licensed under the Open Software License version 3.0.
+ * Licensed under the Aperture BSD-style license.
  */
 package org.semanticdesktop.aperture.extractor.presentations;
 

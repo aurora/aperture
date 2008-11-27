@@ -2,7 +2,7 @@
  * Copyright (c) 2005 - 2008 Aduna.
  * All rights reserved.
  * 
- * Licensed under the Academic Free License version 3.0.
+ * Licensed under the Aperture BSD-style license.
  */
 package org.semanticdesktop.aperture.examples.osgi;
 

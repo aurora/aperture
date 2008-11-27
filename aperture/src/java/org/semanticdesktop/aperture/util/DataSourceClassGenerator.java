@@ -2,7 +2,7 @@
  * Copyright (c) 2006 - 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
- * Licensed under the Academic Free License version 3.0.
+ * Licensed under the Aperture BSD-style license.
  */
 package org.semanticdesktop.aperture.util;
 
@@ -188,7 +188,7 @@ public class DataSourceClassGenerator {
             outputStream.println(" * Copyright (c) 2006 - 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.");
             outputStream.println(" * All rights reserved.");
             outputStream.println(" * ");
-            outputStream.println(" * Licensed under the Academic Free License version 3.0.");
+            outputStream.println(" * Licensed under the Aperture BSD-style license.");
             outputStream.println(" */");
             outputStream.println("package " + packageName + ";");
             outputStream.println("import " + URI.class.getName() + ";");

@@ -2,7 +2,8 @@
  * Copyright (c) 2008 Aduna and Deutsches Forschungszentrum fuer Kuenstliche Intelligenz DFKI GmbH.
  * All rights reserved.
  * 
- * Licensed under the Academic Free License version 3.0.
+ * The copyright holders listed above license this file to you under the Aperture BSD-style license.
+ * See the Aperture-LICENSE.txt file distributed with this work for details. 
  */
 package org.semanticdesktop.aperture.examples.detector;
 
