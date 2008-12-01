@@ -54,144 +54,144 @@ import org.xml.sax.SAXException;
  */
 public class OpenDocumentExtractor implements Extractor {
 
-	// used to append to extracted text, to make it more readable
-	private static final String END_OF_LINE = System.getProperty("line.separator", "\n");
-	
-	private Logger logger = LoggerFactory.getLogger(getClass());
+    // used to append to extracted text, to make it more readable
+    private static final String END_OF_LINE = System.getProperty("line.separator", "\n");
 
-	// used to fool the parser, when it tries to load the system dtd.
-	// seems to work better than tricks such as providing a dummy EntityResolver, which is probably parser
-	// implementation-dependent
-	// (see e.g. http://www.jroller.com/comments/santhosh/Weblog/putoff_dtd_parsing_html)
-	private static final String SYSTEM_ID =
-		ResourceUtil.getURL("org/semanticdesktop/aperture/extractor/opendocument/office.dtd",OpenDocumentExtractor.class).toString();
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
-	/**
-	 * @see Extractor#extract(URI, InputStream, Charset, String, RDFContainer)
-	 */
-	public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
-			throws ExtractorException {
-		byte[] contentBytes = null;
-		byte[] metadataBytes = null;
+    // used to fool the parser, when it tries to load the system dtd.
+    // seems to work better than tricks such as providing a dummy EntityResolver, which is probably parser
+    // implementation-dependent
+    // (see e.g. http://www.jroller.com/comments/santhosh/Weblog/putoff_dtd_parsing_html)
+    private static final String SYSTEM_ID = ResourceUtil.getURL(
+        "org/semanticdesktop/aperture/extractor/opendocument/office.dtd", OpenDocumentExtractor.class)
+            .toString();
 
-		// fetch the byte arrays from the zip file that contain the document content and metadata
-		try {
-			ZipInputStream zipStream = new ZipInputStream(stream);
-			ZipEntry entry = null;
-			while ((entry = zipStream.getNextEntry()) != null) {
-				String entryName = entry.getName();
-				if ("content.xml".equals(entryName)) {
-					contentBytes = IOUtil.readBytes(zipStream);
-				}
-				else if ("meta.xml".equals(entryName)) {
-					metadataBytes = IOUtil.readBytes(zipStream);
-				}
+    /**
+     * @see Extractor#extract(URI, InputStream, Charset, String, RDFContainer)
+     */
+    public void extract(URI id, InputStream stream, Charset charset, String mimeType, RDFContainer result)
+            throws ExtractorException {
+        byte[] contentBytes = null;
+        byte[] metadataBytes = null;
 
-				zipStream.closeEntry();
-			}
-			zipStream.close();
-		}
-		catch (IOException e) {
-			throw new ExtractorException(e);
-		}
-        
+        // fetch the byte arrays from the zip file that contain the document content and metadata
+        try {
+            ZipInputStream zipStream = new ZipInputStream(stream);
+            ZipEntry entry = null;
+            while ((entry = zipStream.getNextEntry()) != null) {
+                String entryName = entry.getName();
+                if ("content.xml".equals(entryName)) {
+                    contentBytes = IOUtil.readBytes(zipStream);
+                }
+                else if ("meta.xml".equals(entryName)) {
+                    metadataBytes = IOUtil.readBytes(zipStream);
+                }
+
+                zipStream.closeEntry();
+            }
+            zipStream.close();
+        }
+        catch (IOException e) {
+            throw new ExtractorException(e);
+        }
+
         // determine the type of the document
         // TODO there is no document type determination
         {
-            result.add(RDF.type,NFO.Document);
+            result.add(RDF.type, NFO.Document);
         }
 
-		// extract the document text
-		if (contentBytes != null) {
-			extractFullText(contentBytes, result);
-		}
+        // extract the document text
+        if (contentBytes != null) {
+            extractFullText(contentBytes, result);
+        }
 
-		// extract the metadata
-		if (metadataBytes != null) {
-			extractMetadata(metadataBytes, result);
-		}
-	}
+        // extract the metadata
+        if (metadataBytes != null) {
+            extractMetadata(metadataBytes, result);
+        }
+    }
 
-	private void extractFullText(byte[] bytes, RDFContainer result) throws ExtractorException {
-		// create a SimpleSaxParser
-		SimpleSAXParser parser = null;
-		try {
-			parser = new SimpleSAXParser();
-		}
-		catch (Exception e) {
-			// this is an internal error rather than an extraction problem, hence the RuntimeException
-			throw new RuntimeException("unable to instantiate SAXParser", e);
-		}
+    private void extractFullText(byte[] bytes, RDFContainer result) throws ExtractorException {
+        // create a SAXPparser
+        javax.xml.parsers.SAXParser parser = null;
+        try {
+            parser = javax.xml.parsers.SAXParserFactory.newInstance().newSAXParser();
+        }
+        catch (Exception e) {
+            // this is an internal error rather than an extraction problem, hence the RuntimeException
+            throw new RuntimeException("unable to instantiate SAXParser", e);
+        }
 
-		// create a listener that will interpret the document events
-		ContentExtractor contentExtractor = new ContentExtractor();
-		parser.setListener(contentExtractor);
+        // create a listener that will interpret the document events
+        ContentExtractor contentExtractor = new ContentExtractor();
 
-		// parse the byte array
-		ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
-		try {
-			parser.parse(stream, SYSTEM_ID);
-		}
-		catch (SAXException e) {
-			throw new ExtractorException(e);
-		}
-		catch (IOException e) {
-			throw new ExtractorException(e);
-		}
+        // parse the byte array
+        ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
+        try {
+            parser.parse(stream, contentExtractor, SYSTEM_ID);
+        }
+        catch (SAXException e) {
+            throw new ExtractorException(e);
+        }
+        catch (IOException e) {
+            throw new ExtractorException(e);
+        }
 
-		// put the extracted full-text in the RDF container
-		String contents = contentExtractor.getContents();
-		if (contents != null && !contents.equals("")) {
-			result.add(NIE.plainTextContent, contents);
-		}
-	}
+        // put the extracted full-text in the RDF container
+        String contents = contentExtractor.getContents();
+        if (contents != null && !contents.equals("")) {
+            result.add(NIE.plainTextContent, contents);
+        }
+    }
 
-	/**
-	 * Reads the metadata of the document from the specified byte array
-	 */
-	private void extractMetadata(byte[] bytes, RDFContainer result) throws ExtractorException {
-		// create a DocumentBuilder instance
-		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-		docBuilderFactory.setNamespaceAware(true);
-		docBuilderFactory.setValidating(false);
-		docBuilderFactory.setExpandEntityReferences(false);
-		DocumentBuilder docBuilder;
-		try {
-			docBuilder = docBuilderFactory.newDocumentBuilder();
-		}
-		catch (ParserConfigurationException e) {
-			// this is an internal error rather than an extraction problem, hence the RuntimeException
-			throw new RuntimeException("unable to instantiate DocumentBuilder", e);
-		}
+    /**
+     * Reads the metadata of the document from the specified byte array
+     */
+    private void extractMetadata(byte[] bytes, RDFContainer result) throws ExtractorException {
+        // create a DocumentBuilder instance
+        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        docBuilderFactory.setNamespaceAware(true);
+        docBuilderFactory.setValidating(false);
+        docBuilderFactory.setExpandEntityReferences(false);
+        DocumentBuilder docBuilder;
+        try {
+            docBuilder = docBuilderFactory.newDocumentBuilder();
+        }
+        catch (ParserConfigurationException e) {
+            // this is an internal error rather than an extraction problem, hence the RuntimeException
+            throw new RuntimeException("unable to instantiate DocumentBuilder", e);
+        }
 
-		// parse the XML using the DocumentBuilder
-		ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
-		Document doc;
-		try {
-			doc = docBuilder.parse(stream, SYSTEM_ID);
-		}
-		catch (SAXException e) {
-			throw new ExtractorException(e);
-		}
-		catch (IOException e) {
-			throw new ExtractorException(e);
-		}
+        // parse the XML using the DocumentBuilder
+        ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
+        Document doc;
+        try {
+            doc = docBuilder.parse(stream, SYSTEM_ID);
+        }
+        catch (SAXException e) {
+            throw new ExtractorException(e);
+        }
+        catch (IOException e) {
+            throw new ExtractorException(e);
+        }
 
-		// iterate over the nodes containing the metadata
-		Element rootelement = doc.getDocumentElement();
-		Node metaNode = rootelement.getFirstChild();
-		NodeList metaChildren = metaNode.getChildNodes();
-		int nrChildren = metaChildren.getLength();
+        // iterate over the nodes containing the metadata
+        Element rootelement = doc.getDocumentElement();
+        Node metaNode = rootelement.getFirstChild();
+        NodeList metaChildren = metaNode.getChildNodes();
+        int nrChildren = metaChildren.getLength();
 
-		for (int i = 0; i < nrChildren; i++) {
-			Node metaChild = metaChildren.item(i);
-			addOasisMetadataPropertyToRdfContainer(metaChild, result);
-			mapToApertureProperty(metaChild,result);
-		}
-	}
-	
-	private void addOasisMetadataPropertyToRdfContainer(Node node, RDFContainer result) {
-	    String nameSpace = node.getNamespaceURI();
+        for (int i = 0; i < nrChildren; i++) {
+            Node metaChild = metaChildren.item(i);
+            addOasisMetadataPropertyToRdfContainer(metaChild, result);
+            mapToApertureProperty(metaChild, result);
+        }
+    }
+
+    private void addOasisMetadataPropertyToRdfContainer(Node node, RDFContainer result) {
+        String nameSpace = node.getNamespaceURI();
         if (nameSpace != null) {
             if (!nameSpace.endsWith("/")) {
                 nameSpace += "/";
@@ -201,23 +201,23 @@ public class OpenDocumentExtractor implements Extractor {
                 String uriString = nameSpace + node.getLocalName();
                 String text = getText(node);
                 URI predicate = result.getValueFactory().createURI(uriString);
-                
+
                 if (text != null) {
                     result.add(predicate, text);
-                } 
+                }
             }
             catch (ModelException e) {
                 logger.error("ModelException while adding statement, ignoring", e);
             }
         }
 
-	}
-	
-   private String getText(Node node) {
+    }
+
+    private String getText(Node node) {
         if (node instanceof Attr) {
-            return ((Attr)node).getValue();
+            return ((Attr) node).getValue();
         }
-        
+
         Node child = node.getFirstChild();
         if (child instanceof Text) {
             return ((Text) child).getWholeText();
@@ -226,9 +226,9 @@ public class OpenDocumentExtractor implements Extractor {
             return null;
         }
     }
-	
-	private void mapToApertureProperty(Node metaChild, RDFContainer result) {
-	    String name = metaChild.getNodeName();
+
+    private void mapToApertureProperty(Node metaChild, RDFContainer result) {
+        String name = metaChild.getNodeName();
 
         // determine which metadata property we're dealing with
         if ("dc:creator".equals(name)) {
@@ -255,7 +255,7 @@ public class OpenDocumentExtractor implements Extractor {
         // TODO get back to it after introducing nie:printdate
         else if ("meta:print-date".equals(name)) {
             addDateStatement(NIE.informationElementDate, metaChild.getFirstChild(), result);
-            //addDateStatement(DATA.printDate, metaChild.getFirstChild(), result);
+            // addDateStatement(DATA.printDate, metaChild.getFirstChild(), result);
         }
         else if ("dc:language".equals(name)) {
             addStatement(NIE.language, metaChild.getFirstChild(), result);
@@ -285,24 +285,24 @@ public class OpenDocumentExtractor implements Extractor {
         else if ("meta:document-statistic".equals(name)) {
             NamedNodeMap attributes = metaChild.getAttributes();
             if (attributes != null) {
-                for (int i = 0; i<attributes.getLength(); i++) {
+                for (int i = 0; i < attributes.getLength(); i++) {
                     Node node = attributes.item(i);
                     addOasisMetadataPropertyToRdfContainer(node, result);
                     if (node instanceof Attr) {
-                        mapStatisticsAttributeToApertureProperty((Attr)node, result);
+                        mapStatisticsAttributeToApertureProperty((Attr) node, result);
                     }
                 }
             }
         }
-	}
+    }
 
-	/**
-	 * Many kinds of document statics fields are stored in the document metadata.
-	 * @param statisticsAttribute
-	 * @param result
-	 */
-    private void mapStatisticsAttributeToApertureProperty(Attr statisticsAttribute, 
-           RDFContainer result) {
+    /**
+     * Many kinds of document statics fields are stored in the document metadata.
+     * 
+     * @param statisticsAttribute
+     * @param result
+     */
+    private void mapStatisticsAttributeToApertureProperty(Attr statisticsAttribute, RDFContainer result) {
         String name = statisticsAttribute.getNodeName();
 
         // determine which metadata property we're dealing with
@@ -311,102 +311,101 @@ public class OpenDocumentExtractor implements Extractor {
             if (pageNodeValue != null) {
                 try {
                     int pageCount = Integer.parseInt(pageNodeValue);
-                    result.add(RDF.type,NFO.PaginatedTextDocument);
+                    result.add(RDF.type, NFO.PaginatedTextDocument);
                     result.add(NFO.pageCount, pageCount);
                 }
                 catch (NumberFormatException e) {
                     // ignore
                 }
-             }
-         }
-     }
-	
-	private void addStatement(URI uri, Node node, RDFContainer container) {
-		if (node != null) {
-			addStatement(uri, node.getNodeValue(), container);
-		}
-	}
+            }
+        }
+    }
 
-	private void addStatement(URI uri, String value, RDFContainer container) {
-		if (value != null) {
-			container.add(uri, value);
-		}
-	}
+    private void addStatement(URI uri, Node node, RDFContainer container) {
+        if (node != null) {
+            addStatement(uri, node.getNodeValue(), container);
+        }
+    }
 
-	private void addDateStatement(URI uri, Node node, RDFContainer container) {
-		if (node != null) {
-			String value = node.getNodeValue();
-			if (value != null) {
-				try {
-					Date date = DateUtil.string2DateTime(value);
-					container.add(uri, date);
-				}
-				catch (ParseException e) {
-					// ignore
-				}
-			}
-		}
-	}
-    
+    private void addStatement(URI uri, String value, RDFContainer container) {
+        if (value != null) {
+            container.add(uri, value);
+        }
+    }
+
+    private void addDateStatement(URI uri, Node node, RDFContainer container) {
+        if (node != null) {
+            String value = node.getNodeValue();
+            if (value != null) {
+                try {
+                    Date date = DateUtil.string2DateTime(value);
+                    container.add(uri, date);
+                }
+                catch (ParseException e) {
+                    // ignore
+                }
+            }
+        }
+    }
+
     private void addContactStatement(URI uri, String fullname, RDFContainer container) {
         Model model = container.getModel();
         Resource contactResource = UriUtil.generateRandomResource(model);
-        model.addStatement(contactResource,RDF.type,NCO.Contact);
-        model.addStatement(contactResource,NCO.fullname,fullname);
-        container.add(uri,contactResource);
+        model.addStatement(contactResource, RDF.type, NCO.Contact);
+        model.addStatement(contactResource, NCO.fullname, fullname);
+        container.add(uri, contactResource);
     }
 
-	/**
-	 * Inner class for extracting full-text from the content.xml part of an OpenDocument/OpenOffice/StarOffice
-	 * document.
-	 */
-	private static class ContentExtractor extends SimpleSAXAdapter {
+    /**
+     * Inner class for extracting full-text from the content.xml part of an OpenDocument/OpenOffice/StarOffice
+     * document.
+     */
+    private static class ContentExtractor extends org.xml.sax.helpers.DefaultHandler {
 
-		private static final String OFFICE_BODY = "office:body";
+        private static final String OFFICE_BODY = "office:body";
 
-		private static final String MATH_MATH = "math:math";
+        private static final String MATH_MATH = "math:math";
 
-		private static final String TEXT_P = "text:p";
+        private static final String TEXT_P = "text:p";
 
-		private static final String TEXT_H = "text:h";
+        private static final String TEXT_H = "text:h";
 
-		private StringBuilder contents = new StringBuilder(4096);
+        private final StringBuilder contents = new StringBuilder(4096);
 
-		private boolean insideBody = false;
+        private boolean insideBody = false;
 
-		public String getContents() {
-			return contents.toString();
-		}
+        public String getContents() {
+            return contents.toString();
+        }
 
-		public void startTag(String tagName, Map atts, String text) {
-			if (OFFICE_BODY.equals(tagName) || MATH_MATH.equals(tagName)) {
-				insideBody = true;
-			}
-			else if (insideBody && text.length() > 0) {
-				if (TEXT_H.equals(tagName) && contents.length() > 0) {
-					contents.append(END_OF_LINE);
-					contents.append(END_OF_LINE);
-				}
+        @Override
+        public void startElement(String uri, String localName, String tagName,
+                org.xml.sax.Attributes attributes) throws SAXException {
+            if (OFFICE_BODY.equals(tagName) || MATH_MATH.equals(tagName)) {
+                insideBody = true;
+            }
+            else if (insideBody) {
+                if (TEXT_H.equals(tagName))
+                    contents.append(END_OF_LINE);
+            }
+        }
 
-				contents.append(text);
+        @Override
+        public void characters(char[] ch, int start, int length) throws SAXException {
+            contents.append(ch, start, length);
+        }
 
-				if (TEXT_P.equals(tagName)) {
-					contents.append(END_OF_LINE);
-				}
-				else if (TEXT_H.equals(tagName)) {
-					contents.append(END_OF_LINE);
-					contents.append(END_OF_LINE);
-				}
-				else {
-					contents.append(' ');
-				}
-			}
-		}
-
-		public void endTag(String tagName) {
-			if (OFFICE_BODY.equals(tagName) || MATH_MATH.equals(tagName)) {
-				insideBody = false;
-			}
-		}
-	}
+        @Override
+        public void endElement(String uri, String localName, String tagName) throws SAXException {
+            if (OFFICE_BODY.equals(tagName) || MATH_MATH.equals(tagName)) {
+                insideBody = false;
+            }
+            else if (insideBody) {
+                if (TEXT_H.equals(tagName))
+                    contents.append(END_OF_LINE).append(END_OF_LINE);
+                else if (TEXT_P.equals(tagName))
+                    contents.append(END_OF_LINE);
+            }
+        }
+    }
 }
