@@ -43,6 +43,14 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
     
     private static final String OPEN_DOCUMENT_WRITER_DOC = DOCS_PATH + "openoffice-2.0-writer.odt";
     
+    
+    private static final String OPEN_DOCUMENT_WRITER_MULTI_SPACE_DOC = DOCS_PATH + "openoffice-sf2352674-2.4-writer-multi-space.odt";
+    // The literal has a sequence of ONE space; the source document has two spaces, and the .ODT has one space
+    //  and a <text:s> tag. The fulltext extractor renders that combination as a single space.
+    private static final String OPEN_DOCUMENT_WRITER_MULTI_SPACE_DOC_FULLTEXT = 
+        "This text has a sequence of two spaces: ' '.";
+       
+    
     public void testContentExtraction() throws ExtractorException, IOException, ModelException {
         // repeat for every example OpenDocument/OpenOffice document
         for (int i = 0; i < RESOURCES.length; i++) {
@@ -52,6 +60,23 @@ public class OpenDocumentExtractorTest extends ExtractorTestBase {
             validate(container, false);
             container.dispose();
         }
+    }
+    
+    /**
+     * Tests the content extraction in a multi-space file. More detailed explanation on the tracker:
+     * 
+     * <a href="http://sourceforge.net/tracker/index.php?func=detail&aid=2352674&group_id=150969&atid=779500">
+     * link</a>
+     * 
+     * @throws ExtractorException
+     * @throws IOException
+     * @throws ModelException
+     */
+    public void testsf2352674() throws ExtractorException, IOException, ModelException {
+        RDFContainer container = getStatements(OPEN_DOCUMENT_WRITER_MULTI_SPACE_DOC);
+        checkStatement(NIE.plainTextContent, OPEN_DOCUMENT_WRITER_MULTI_SPACE_DOC_FULLTEXT, container);
+        validate(container, false);
+        container.dispose();
     }
     
     private RDFContainer getStatements(String resourceName) throws ExtractorException, IOException {

@@ -69,7 +69,7 @@ public class AbstractArchiverSubCrawlerTest extends SubCrawlerTestBase {
      * @return
      */
     private InputStream getDummyStream() {
-        return org.semanticdesktop.aperture.util.ResourceUtil.getInputStream(DOCS_PATH + "/tar-test.tar", this.getClass());
+        return org.semanticdesktop.aperture.util.ResourceUtil.getInputStream(DOCS_PATH + "tar-test.tar", this.getClass());
     }
 
     private static class DummyArchiverSubCrawler extends AbstractArchiverSubCrawler {
