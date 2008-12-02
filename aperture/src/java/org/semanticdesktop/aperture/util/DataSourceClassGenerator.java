@@ -82,8 +82,6 @@ public class DataSourceClassGenerator {
 
     private File outputFile;
 
-    private Boolean namespacestrict = false;
-
     private Syntax inputFileSyntax;
 
     private boolean domainBoundableDataSource = false;
@@ -606,11 +604,10 @@ public class DataSourceClassGenerator {
         return fullUri.substring(splitIdx + 1);
     }
 
-    private void getOpt(String[] args) throws Exception {
+    private void getOpt(String[] args) {
         int i = 0;
         if (args.length == 0) {
-            help();
-            throw new Exception("no arguments given");
+            usage("no arguments given");
         }
         // args
         while ((i < args.length) && args[i].startsWith("-")) {
@@ -637,19 +634,8 @@ public class DataSourceClassGenerator {
             else if (args[i].equals("-f")) {
                 forceGeneration = true;
             }
-            else if (args[i].equals("-namespacestrict")) {
-                i++;
-                String s = args[i];
-                if ("false".equals(s))
-                    namespacestrict = false;
-                else if ("true".equals(s))
-                    namespacestrict = true;
-                else
-                    throw new Exception("namespacestrict only allows 'true' or 'false', not '" + s + "'");
-
-            }
             else
-                throw new Exception("unknow argument " + args[i]);
+                usage("unknown argument " + args[i]);
             i++;
         }
 
@@ -668,20 +654,37 @@ public class DataSourceClassGenerator {
         inputRdfFile = new File(inputRdfFilePath);
         // System.out.println("input file: " + inputRdfFilePath);
         if (!inputRdfFile.canRead()) {
-            usage("cannot read the input file");
+            usage("cannot read the input file: " + inputRdfFilePath);
         }
 
         outputDirFile = new File(outputDirectoryPath);
         if (!outputDirFile.canWrite()) {
-            usage("cannot write to the output directory");
+            usage("cannot write to the output directory: " + outputDirectoryPath);
         }
 
         outputFile = new File(outputDirectoryPath, outputFileName + ".java");
     }
 
-    private void help() {
-        System.err
-                .println("Syntax: java VocabularyWriter -i inputfile -o outputdir -c classuri --package package ");
+    private void usage(String msg) {
+        System.err.println(msg);
+        System.err.println();
+        System.err.println("Syntax: java DataSourceClassGenerator -i <inputfile> -o <outputdir>");
+        System.err.println("        -c <classuri> -n <vocabularyClassName> --package <package> [-f]");
+        System.err.println();
+        System.err.println(" -i     the path to the input file (i.e. the .ttl file with the");
+        System.err.println("        data source description in RDF serialized with Turtle)");
+        System.err.println(" -o     the path to the directory where the output artifacts are placed");
+        System.err.println(" -c     the uri of the data source class");
+        System.err.println(" -n     the name of the vocabulary class, generated with the   ");
+        System.err.println("        VocabularyWriter tool, placed in the output folder");
+        System.err.println(" --package the dot-separated fully qualified name of the java package");
+        System.err.println("        where the output classes will be, the program can't deduce it");
+        System.err.println("        from the output path (note: package is dot-separated, whereas");
+        System.err.println("        the path is usually slash-separated)");
+        System.err.println(" -f     force generation, even if the input file is older than the");
+        System.err.println("        output file. By default the output files are not overwritten");
+        System.err.println("        if they already exist and are newer than the input.");
+        System.exit(-1);
     }
 
     /**
@@ -728,10 +731,6 @@ public class DataSourceClassGenerator {
         }
 
         return result;
-    }
-
-    private static void usage(String string) throws Exception {
-        throw new Exception(string);
     }
 
     private URI getFresnelLensURI(Model model, String typeString) {
