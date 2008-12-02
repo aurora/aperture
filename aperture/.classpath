@@ -37,8 +37,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/rdf2go.impl.base-4.6.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/rdf2go.impl.sesame20-4.6.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/rdf2go.impl.util-4.6.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/poi-3.0.2-FINAL-20080204.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/poi-scratchpad-3.0.2-FINAL-20080204.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/JempBox-0.2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/aduna-commons-xml-2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ant-compression-utils-1.7.1.jar"/>
@@ -47,5 +45,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-api-1.5.0.jar" sourcepath="D:/software/slf4j-1.5.0/slf4j-api/src/main/java"/>
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-jdk14-1.5.0.jar" sourcepath="D:/software/slf4j-1.5.0/slf4j-jdk14/src/main/java"/>
 	<classpathentry exported="true" kind="lib" path="lib/jcl104-over-slf4j-1.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/poi-3.2-FINAL-20081019.jar"/>
+	<classpathentry kind="lib" path="lib/poi-scratchpad-3.2-FINAL-20081019.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>
