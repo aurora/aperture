@@ -57,9 +57,6 @@ import com.aetrion.flickr.tags.Tag;
  */
 public class FlickrCrawler extends CrawlerBase {
 
-    // FIXME make this configurable
-    private static final String API_KEY = "f47691529440669449065e6962e1346a";
-
     private static final Logger LOG = LoggerFactory.getLogger(FlickrCrawler.class);
 
     public FlickrCrawler(DataSource ds) {
@@ -79,27 +76,36 @@ public class FlickrCrawler extends CrawlerBase {
     @SuppressWarnings("unchecked")
     protected ExitCode crawlObjects() {
         final FlickrDataSource localSource = (FlickrDataSource) getDataSource();
-        final RDFContainer configuration = localSource.getConfiguration();
-        final String username = ConfigurationUtil.getUsername(configuration);
-        final String password = ConfigurationUtil.getPassword(configuration);
-
+        final String accountToCrawl = localSource.getAccountToCrawl();
+        final String sharedSecret = localSource.getSharedSecret();
+        String apiKey = localSource.getApikey();
+        
         try {
             // TODO: actually, the shared secret of the flickr API key has to be passed here, not a password
-            FlickrCredentials credentials = new FlickrCredentials(API_KEY, password);
+            FlickrCredentials credentials = new FlickrCredentials(apiKey, sharedSecret);
             Flickr flickr = credentials.getFlickrInterface();
 
             PeopleInterface peopleIf = flickr.getPeopleInterface();
 
-            String meId;
-            if (username.indexOf('@') != -1 && username.indexOf('.') != -1) {
+            String meId = null;
+            if (accountToCrawl.indexOf('@') != -1 && accountToCrawl.indexOf('.') != -1) {
                 User meUser;
-                meUser = peopleIf.findByEmail(username);
-                meId = meUser.getId();
+                meUser = peopleIf.findByEmail(accountToCrawl);
+                if (meUser != null) {
+                    meId = meUser.getId();
+                }
             }
             else {
                 // FIXME maybe remove support for Flickr-internal user-IDs
                 // meUser = peopleIf.findByUsername(username);
-                meId = username;
+                User meUser;
+                meUser = peopleIf.findByUsername(accountToCrawl);
+                if (meUser != null) {
+                    meId = meUser.getId();
+                }
+            }
+            if (meId == null) {
+                throw new RuntimeException("user: " + accountToCrawl + " not found");
             }
 
             // FIXME store flickr data from different accounts in different contexts?

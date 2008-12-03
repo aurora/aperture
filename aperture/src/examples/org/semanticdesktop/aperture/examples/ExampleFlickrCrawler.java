@@ -15,6 +15,8 @@ import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.accessor.base.AccessDataImpl;
 import org.semanticdesktop.aperture.accessor.impl.DefaultDataAccessorRegistry;
+import org.semanticdesktop.aperture.datasource.imap.ImapDataSource.ConnectionSecurity;
+import org.semanticdesktop.aperture.examples.handler.IMAPUrisValidatingCrawlerHandler;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
 import org.semanticdesktop.aperture.websites.flickr.FlickrCrawler;
@@ -25,7 +27,19 @@ public class ExampleFlickrCrawler extends AbstractExampleCrawler {
 	
 	private static final Logger LOGGER = Logger.getLogger(ExampleFlickrCrawler.class.getName());
 
-	private String username = null;
+	private static final String ACCOUNT_TO_CRAWL_OPTION = "--accountToCrawl";
+	
+	private static final String APIKEY_OPTION = "--apikey";
+	
+	private static final String SHARED_SECRET_OPTION = "--sharedSecret";
+	
+	private static final String DOWNLOAD_FOLDER_OPTION = "--download";
+	
+	private String accountToCrawl = null;
+	
+	private String apikey = null;
+	
+	private String sharedSecret = null;
 
 	/**
 	 * download-dir. Null means: don't download
@@ -37,12 +51,20 @@ public class ExampleFlickrCrawler extends AbstractExampleCrawler {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public void setUsername(String user) {
-		this.username = user;
+	public void setAccountToCrawl(String user) {
+		this.accountToCrawl = user;
+	}
+	
+	public void setApikey(String key) {
+	    this.apikey = key;
+	}
+	
+	public void setSharedSecret(String pass) {
+	    this.sharedSecret = pass;
 	}
 	
 	public String getUsername() {
-	    return username;
+	    return accountToCrawl;
 	}
 	
 	
@@ -52,18 +74,31 @@ public class ExampleFlickrCrawler extends AbstractExampleCrawler {
 		List<String> remainingOptions = crawler.processCommonOptions(args);
 
 		Iterator<String> iterator = remainingOptions.iterator();
-		if (iterator.hasNext()) {
-		    String arg = iterator.next();
-		    if ("-download".equals(arg))
-		    {
-		        String val = iterator.next();
-		        if (val==null)
-		            crawler.exitWithUsageMessage();
-		        crawler.setDownloadDirectory(val);
-		    } else // the rest
-		        crawler.setUsername(arg);
-		} else
-		    crawler.exitWithUsageMessage();
+		
+        while (iterator.hasNext()) {
+            // fetch the option name
+            String option = iterator.next();
+            
+            // fetch the option value
+            if (!iterator.hasNext()) {
+                System.err.println("missing value for option " + option);
+                crawler.exitWithUsageMessage();
+            }
+            
+            String value = iterator.next();
+
+            if (ACCOUNT_TO_CRAWL_OPTION.equals(option)) {
+                crawler.setAccountToCrawl(value);
+            } else if (APIKEY_OPTION.equals(option)) {
+                crawler.setApikey(value);
+            } else if (DOWNLOAD_FOLDER_OPTION.equals(option)) {
+                crawler.setDownloadDirectory(value);
+            } else if (SHARED_SECRET_OPTION.equals(option)) {
+                crawler.setSharedSecret(value);
+            } else
+                crawler.exitWithUsageMessage();
+        }
+		
 		if (crawler.getUsername() == null)
 		    crawler.exitWithUsageMessage();
 		
@@ -90,13 +125,14 @@ public class ExampleFlickrCrawler extends AbstractExampleCrawler {
         else
             source.setCrawlType(CrawlType.MetadataOnlyCrawlType);
         //set the Flickr Username
-        source.setUsername(username);
+        source.setAccountToCrawl(accountToCrawl);
+        source.setApikey(apikey);
+        source.setSharedSecret(sharedSecret);
         
         // setup a crawler that can handle this type of DataSource
         FlickrCrawler crawler = new FlickrCrawler(source);
         crawler.setDataSource(source);
         crawler.setDataAccessorRegistry(new DefaultDataAccessorRegistry());
-        crawler.setAccessData(new AccessDataImpl());
         crawler.setCrawlerHandler(getHandler());
         crawler.setAccessData(getAccessData());
         
@@ -106,14 +142,19 @@ public class ExampleFlickrCrawler extends AbstractExampleCrawler {
 
     @Override
     protected String getSpecificExplanationPart() {
-        return getAlignedOption("-download") +"set <pathfordownload> to a directory where\n" +
-        	           getAlignedOption(null)+"downloaded pictures should be stored\n"
-            + getAlignedOption("username")+"your Flickr username";
+        return getAlignedOption(ACCOUNT_TO_CRAWL_OPTION) +"the Flickr account to crawl\n"
+             + getAlignedOption(APIKEY_OPTION)+"your Flickr API key\n"     
+             + getAlignedOption(SHARED_SECRET_OPTION)+"your Flickr password key\n"
+             + getAlignedOption(DOWNLOAD_FOLDER_OPTION) + "directory to download path to the folder where\n"
+             + getAlignedOption("") + "pictures are to be downloaded";
     }
 
     @Override
     protected String getSpecificSyntaxPart() {
-        return "[--download <pathfordownload>] username";
+        return ACCOUNT_TO_CRAWL_OPTION + " <username> " + 
+               APIKEY_OPTION + " <apikey> " + 
+               SHARED_SECRET_OPTION + " <sharedSecret>" + 
+               DOWNLOAD_FOLDER_OPTION + " <folder>";
     }
 
     

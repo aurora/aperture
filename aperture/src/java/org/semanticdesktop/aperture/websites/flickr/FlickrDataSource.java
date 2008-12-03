@@ -6,13 +6,19 @@
  */
 package org.semanticdesktop.aperture.websites.flickr;
 import org.ontoware.rdf2go.model.node.URI;
+import org.ontoware.rdf2go.model.node.Node;
+import org.semanticdesktop.aperture.util.ModelUtil;
 import org.semanticdesktop.aperture.datasource.DataSource;
 import org.semanticdesktop.aperture.datasource.base.DataSourceBase;
-import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.datasource.config.ConfigurationUtil;
+import org.semanticdesktop.aperture.util.ModelUtil;
+import java.util.Collection;
+import java.util.List;
+import java.util.LinkedList;
 
 /**
- * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Wed Sep 10 18:58:37 CEST 2008
- * input file: /Users/ck/Entwicklung/nepomuk/workspace2/aperture/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
+ * Data source class file. Created by org.semanticdesktop.aperture.util.DataSourceClassGenerator on Wed Dec 03 00:32:23 CET 2008
+ * input file: D:\ganymedeworkspace\aperture-trunk/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
  * class uri: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#FlickrDataSource
  */
 public class FlickrDataSource extends DataSourceBase {
@@ -25,54 +31,80 @@ public class FlickrDataSource extends DataSourceBase {
     }
 
     /**
-     * Returns the Username used for authentication in a data source
+     * Returns the The Flickr account that should be crawled
      * 
-     * @return the Username used for authentication in a data source or null if no value has been set
+     * @return the The Flickr account that should be crawled or null if no value has been set
      * @throws NullPointerException if no configuration has been set, use
      *             {@link #setConfiguration(RDFContainer)} before calling this method
      */
-     public String getUsername() {
-          return getConfiguration().getString(org.semanticdesktop.aperture.vocabulary.DATASOURCE.username);
+     public String getAccountToCrawl() {
+          return getConfiguration().getString(FLICKRDS.accountToCrawl);
      }
 
     /**
-     * Sets the Username used for authentication in a data source
+     * Sets the The Flickr account that should be crawled
      * 
-     * @param username Username used for authentication in a data source, can be null in which case any previous setting will be removed
+     * @param accountToCrawl The Flickr account that should be crawled, can be null in which case any previous setting will be removed
      * @throws NullPointerException if no configuration has been set, use
      *             {@link #setConfiguration(RDFContainer)} before calling this method
      */
-     public void setUsername(String username) {
-         if ( username == null) {
-             getConfiguration().remove(org.semanticdesktop.aperture.vocabulary.DATASOURCE.username);
+     public void setAccountToCrawl(String accountToCrawl) {
+         if ( accountToCrawl == null) {
+             getConfiguration().remove(FLICKRDS.accountToCrawl);
          } else {
-             getConfiguration().put(org.semanticdesktop.aperture.vocabulary.DATASOURCE.username,username);
+             getConfiguration().put(FLICKRDS.accountToCrawl,accountToCrawl);
          }
      }
 
     /**
-     * Returns the The Password used to access this datasource.
+     * Returns the The Flickr API key
      * 
-     * @return the The Password used to access this datasource. or null if no value has been set
+     * @return the The Flickr API key or null if no value has been set
      * @throws NullPointerException if no configuration has been set, use
      *             {@link #setConfiguration(RDFContainer)} before calling this method
      */
-     public String getPassword() {
-          return getConfiguration().getString(org.semanticdesktop.aperture.vocabulary.DATASOURCE.password);
+     public String getApikey() {
+          return getConfiguration().getString(FLICKRDS.apikey);
      }
 
     /**
-     * Sets the The Password used to access this datasource.
+     * Sets the The Flickr API key
      * 
-     * @param password The Password used to access this datasource., can be null in which case any previous setting will be removed
+     * @param apikey The Flickr API key, can be null in which case any previous setting will be removed
      * @throws NullPointerException if no configuration has been set, use
      *             {@link #setConfiguration(RDFContainer)} before calling this method
      */
-     public void setPassword(String password) {
-         if ( password == null) {
-             getConfiguration().remove(org.semanticdesktop.aperture.vocabulary.DATASOURCE.password);
+     public void setApikey(String apikey) {
+         if ( apikey == null) {
+             getConfiguration().remove(FLICKRDS.apikey);
          } else {
-             getConfiguration().put(org.semanticdesktop.aperture.vocabulary.DATASOURCE.password,password);
+             getConfiguration().put(FLICKRDS.apikey,apikey);
+         }
+     }
+
+    /**
+     * Returns the The shared secret associated with your Flicckr API key
+     * 
+     * @return the The shared secret associated with your Flicckr API key or null if no value has been set
+     * @throws NullPointerException if no configuration has been set, use
+     *             {@link #setConfiguration(RDFContainer)} before calling this method
+     */
+     public String getSharedSecret() {
+          return getConfiguration().getString(FLICKRDS.sharedSecret);
+     }
+
+    /**
+     * Sets the The shared secret associated with your Flicckr API key
+     * 
+     * @param sharedSecret The shared secret associated with your Flicckr API key, can be null in which case any previous setting will be removed
+     * @throws NullPointerException if no configuration has been set, use
+     *             {@link #setConfiguration(RDFContainer)} before calling this method
+     */
+     public void setSharedSecret(String sharedSecret) {
+         if ( sharedSecret == null) {
+             getConfiguration().remove(FLICKRDS.sharedSecret);
+         } else {
+             getConfiguration().put(FLICKRDS.sharedSecret,sharedSecret);
          }
      }
 

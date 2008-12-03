@@ -71,7 +71,7 @@ your copy of ANT at http://ant.apache.org/
                target="${java.target.version}"
                srcdir="${src.dir}"
                includes="**/util/*.java,**/vocabulary/*.java"
-               excludes="**/extractor/**,**/*Test*"
+        	   excludes="**/extractor/**,**/*Test*,**/XmlSafety*,**/Inference*"
                destdir="${classes.java.dir}"
                classpathref="classpath"
                debug="${compile.debug}"

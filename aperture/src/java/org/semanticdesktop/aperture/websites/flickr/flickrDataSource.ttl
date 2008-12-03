@@ -17,8 +17,9 @@
 :FlickrDataSourceLens rdf:type fresnel:Lens ;
                    fresnel:purpose fresnel:defaultLens ;
                    fresnel:classLensDomain :FlickrDataSource ;
-                   fresnel:showProperties ( source:username 
-                                            source:password 
+                   fresnel:showProperties ( :accountToCrawl 
+                                            :apikey
+                                            :sharedSecret
                                             :targetFolder
                                             :crawlType
                                            ) .
@@ -53,7 +54,7 @@
 :targetFolder a rdf:Property ;
     rdfs:label "Photo Folder" ;
     rdfs:comment "Path to the folder where local copies of your photos will be stored" ;
-    rdfs:domain :FileSystemDataSource ;
+    rdfs:domain :FlickrDataSource ;
     rdfs:range xsd:string .
     
 :targetFolderFormat a fresnel:Format ;
@@ -61,3 +62,40 @@
     	a sourceformat:TextFieldWidget 
     ] ;
     fresnel:propertyFormatDomain :targetFolder .
+
+:accountToCrawl a rdf:Property ;
+    rdfs:label "Account the crawl" ;
+    rdfs:comment "The Flickr account that should be crawled" ;
+    rdfs:domain :FlickrDataSource ;
+    rdfs:range xsd:string .
+    
+:accountToCrawlFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+    	a sourceformat:TextFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :accountToCrawl .
+
+
+:apikey a rdf:Property ;
+    rdfs:label "API Key" ;
+    rdfs:comment "The Flickr API key" ;
+    rdfs:domain :FlickrDataSource ;
+    rdfs:range xsd:string .
+    
+:apikeyFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+    	a sourceformat:TextFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :apikey .
+
+:sharedSecret a rdf:Property ;
+    rdfs:label "Shared secret" ;
+    rdfs:comment "The shared secret associated with your Flicckr API key" ;
+    rdfs:domain :FlickrDataSource ;
+    rdfs:range xsd:string .
+    
+:sharedSecretFormat a fresnel:Format ;
+    sourceformat:valueWidget [
+    	a sourceformat:TextFieldWidget 
+    ] ;
+    fresnel:propertyFormatDomain :sharedSecret .

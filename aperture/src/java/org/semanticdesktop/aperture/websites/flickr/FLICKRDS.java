@@ -5,17 +5,16 @@
  * Licensed under the Aperture BSD-style license.
  */
 package org.semanticdesktop.aperture.websites.flickr;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
-
+import java.io.FileNotFoundException;
 import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 /**
- * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Sep 10 18:58:36 CEST 2008
- * input file: /Users/ck/Entwicklung/nepomuk/workspace2/aperture/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
+ * Vocabulary File. Created by org.semanticdesktop.aperture.util.VocabularyWriter on Wed Dec 03 00:32:23 CET 2008
+ * input file: D:\ganymedeworkspace\aperture-trunk/src/java/org/semanticdesktop/aperture/websites/flickr/flickrDataSource.ttl
  * namespace: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#
  */
 public class FLICKRDS {
@@ -73,8 +72,32 @@ public class FLICKRDS {
      * Type: Property <br/>
      * Label: Photo Folder  <br/>
      * Comment: Path to the folder where local copies of your photos will be stored  <br/>
-     * Domain: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#FileSystemDataSource  <br/>
+     * Domain: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#FlickrDataSource  <br/>
      * Range: http://www.w3.org/2001/XMLSchema#string  <br/>
      */
     public static final URI targetFolder = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#targetFolder");
+    /**
+     * Type: Property <br/>
+     * Label: Account the crawl  <br/>
+     * Comment: The Flickr account that should be crawled  <br/>
+     * Domain: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#FlickrDataSource  <br/>
+     * Range: http://www.w3.org/2001/XMLSchema#string  <br/>
+     */
+    public static final URI accountToCrawl = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#accountToCrawl");
+    /**
+     * Type: Property <br/>
+     * Label: API Key  <br/>
+     * Comment: The Flickr API key  <br/>
+     * Domain: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#FlickrDataSource  <br/>
+     * Range: http://www.w3.org/2001/XMLSchema#string  <br/>
+     */
+    public static final URI apikey = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#apikey");
+    /**
+     * Type: Property <br/>
+     * Label: Shared secret  <br/>
+     * Comment: The shared secret associated with your Flicckr API key  <br/>
+     * Domain: http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#FlickrDataSource  <br/>
+     * Range: http://www.w3.org/2001/XMLSchema#string  <br/>
+     */
+    public static final URI sharedSecret = new URIImpl("http://aperture.semanticdesktop.org/ontology/2007/08/11/flickrds#sharedSecret");
 }
