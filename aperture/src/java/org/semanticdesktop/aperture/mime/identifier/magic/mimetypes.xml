@@ -604,6 +604,11 @@ See http://www.wotsit.org/ for an online database of file format descriptions.
 </description>
 
 <description>
+	<mimeType>application/mbox</mimeType>
+	<magicNumber encoding="string">From </magicNumber>
+</description>	
+	
+<description>
 	<mimeType>application/vnd.ms-outlook</mimeType>
 	<extensions>pst</extensions>
 	<magicNumber encoding="hex">21 42 44 4e</magicNumber>
