@@ -215,6 +215,11 @@ public class FileInspectorPanel extends JPanel {
                     currentFileExtractor.extract(container.getDescribedUri(), file, null, mimeType, container);
                 }
             }
+            
+            if (container == null) {
+                return;
+            }
+            
             // do inference
             if (inference) {
                 if (inferenceUtil == null) {
