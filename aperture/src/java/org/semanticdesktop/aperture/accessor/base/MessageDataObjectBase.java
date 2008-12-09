@@ -6,14 +6,6 @@
  */
 package org.semanticdesktop.aperture.accessor.base;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.ontoware.rdf2go.model.node.URI;
@@ -54,9 +46,6 @@ public class MessageDataObjectBase extends DataObjectBase implements MessageData
 
     private Logger logger = LoggerFactory.getLogger(getClass());
     private MimeMessage message;
-    private InputStream contentStream;
-    private ExecutorService executorService;
-    private boolean executorServiceShared;
 
     /**
      * Constructor accepting a message. It will use an exclusive single-thread executor service. Therefore
@@ -71,61 +60,7 @@ public class MessageDataObjectBase extends DataObjectBase implements MessageData
      */
     public MessageDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata, MimeMessage message){
         super(id,dataSource,metadata);
-        this.executorService = Executors.newSingleThreadExecutor();
-        this.executorServiceShared = false;
         this.message = message;
-    }
-
-    /**
-     * <p>
-     * Constructor accepting a message and a shared ExecutorService. The executor service will not be closed
-     * on disposal of this MessageDataObject. If you cal getContent() on this instance, a new task will be
-     * submitted to the executor service. Please adjust the executor service for the amount of
-     * MessageDataObjectBase instances you wish to process simultaneously.
-     * </p>
-     * 
-     * @param id URI of the data object (obligatory)
-     * @param dataSource the data source where this data object came from (optional)
-     * @param metadata the metadata for this data object (optional)
-     * @param message the MimeMessage
-     * @param service the ExecutorService, see the docs for this class for an explanation what it's for
-     */
-    public MessageDataObjectBase(URI id, DataSource dataSource, RDFContainer metadata, MimeMessage message, 
-            ExecutorService service) {
-        super(id,dataSource,metadata);
-        this.executorService = service;
-        this.executorServiceShared = true;
-        this.message = message;
-    }
-
-    private InputStream getMessageStream(final MimeMessage msg) throws MessagingException, IOException {
-        PipedInputStream in = new PipedInputStream();
-        final PipedOutputStream out = new PipedOutputStream(in);
-
-        Runnable r = new Runnable() {
-            public void run() {
-                try {
-                    msg.writeTo(out);
-                }
-                catch (Exception e) {
-                    if (e.getMessage() == null || !e.getMessage().equals("Pipe closed")) {
-                        // a "pipe closed" message is OK, it means that the reader closed the stream
-                        // the user doesn't have to read the entire content of the stream
-                        logger.warn("Error while generating the MailDataObject content stream",e);
-                    }
-                }
-                finally {
-                    try {
-                        out.close();
-                    }
-                    catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-        executorService.execute(r);
-        return in;
     }
 
     public void setMimeMessage(MimeMessage message) {
@@ -134,48 +69,5 @@ public class MessageDataObjectBase extends DataObjectBase implements MessageData
 
     public MimeMessage getMimeMessage() {
         return message;
-    }
-    
-    /**
-     * @return Returns the executorService.
-     */
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
-    public InputStream getContent() throws MessagingException, IOException {
-        if (isDisposed()) {
-            throw new IllegalStateException("Can't get content from a disposed data object");
-        } else if (contentStream != null) {
-            return contentStream;
-        } else {
-            contentStream = getMessageStream(this.message);
-            return contentStream;
-        }  
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        closeContent();
-        if (!executorServiceShared) {
-            executorService.shutdown();
-        }
-    }
-    
-    /**
-     * Closes the content stream and sets it to null.
-     */
-    protected void closeContent() {
-        try {
-            if (contentStream != null) {
-                contentStream.close();
-                contentStream = null;
-            }
-        }
-        catch (IOException e) {
-            Logger logger = LoggerFactory.getLogger(getClass());
-            logger.error("IOException while closing stream", e);
-        }
     }
 }

@@ -179,7 +179,6 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
             boolean fatalError = false;
     
             try {
-                executorService = Executors.newSingleThreadExecutor();
                 
                 // crawl all specified base folders
                 int nrFolders = baseFolders.size();
@@ -217,9 +216,6 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
         } finally {
          // terminate the connection
             closeConnection();
-            if (executorService != null) {
-                executorService.shutdown();
-            }
         }
     }
 
@@ -448,7 +444,7 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
                     throw new UrlNotFoundException("unknown UID: " + messageUID);
                 }
                 
-                DataObjectFactory fac = new DataObjectFactory(message, containerFactory, null, this, dataSource,
+                DataObjectFactory fac = new DataObjectFactory(message, containerFactory, this, dataSource,
                         new URIImpl(getMessageUri(folder, message)), getFolderURI(folder));
                 
                 // create a DataObject for the requested message or message part
@@ -626,8 +622,8 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
      */
     @Override
     public MessageDataObject createDataObject(URI dataObjectId, DataSource dataSource, RDFContainer metadata,
-            MimeMessage msg, ExecutorService executorService) throws MessagingException {
-        return streamPool.getObjectForAMessage(dataObjectId,dataSource,metadata,msg,executorService);
+            MimeMessage msg) throws MessagingException {
+        return streamPool.getObjectForAMessage(dataObjectId,dataSource,metadata,msg);
     }
 
     /**

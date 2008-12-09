@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -78,7 +77,7 @@ class ImapStreamPool {
     }
     
     public synchronized MessageDataObject getObjectForAMessage(URI dataObjectId, DataSource dataSource,
-            RDFContainer metadata, MimeMessage msg, ExecutorService executorService) throws MessagingException {
+            RDFContainer metadata, MimeMessage msg) throws MessagingException {
         if (!store.isConnected()) {
             // this should work. I've checked out the source code of the javax.mail.Service class
             // and it seems that all the settings are preserved, so we can use the 0-argument
@@ -86,7 +85,7 @@ class ImapStreamPool {
             store.connect();
             closeRequested = false;
         }
-        MessageDataObject result = new ImapDataObject(dataObjectId,dataSource,metadata,msg,executorService,this);
+        MessageDataObject result = new ImapDataObject(dataObjectId,dataSource,metadata,msg,this);
         this.objectSet.add(result);
         return result;
     }
@@ -135,8 +134,8 @@ class ImapStreamPool {
         private MimeMessage msg;
         
         public ImapDataObject(URI id, DataSource dataSource, RDFContainer metadata, MimeMessage message,
-                ExecutorService service, ImapStreamPool pool) {
-            super(id, dataSource, metadata, message, service);
+                ImapStreamPool pool) {
+            super(id, dataSource, metadata, message);
             this.pool = pool;
         }
 

@@ -15,8 +15,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -229,7 +227,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     public void testPartUriDelimiter() throws Exception {
         InputStream stream = ResourceUtil.getInputStream(DOCS_PATH + "mail-multipart-test.eml", this.getClass());
         MimeMessage msg =  new MimeMessage(null, stream);
-        DataObjectFactory fac = new DataObjectFactory(msg,containerFactory,service,null,null,
+        DataObjectFactory fac = new DataObjectFactory(msg,containerFactory,null,null,
             new URIImpl("mime:zip:uri:dummymailuri:somefile.zip!/mail-multipart-test.eml!/"), null,"");
         DataObject obj1 = fac.getObject();
         DataObject obj2 = fac.getObject();
@@ -246,7 +244,6 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         URI pdfUri = obj2.getID();
         assertEquals(pdfUri.toString(), "mime:zip:uri:dummymailuri:somefile.zip!/mail-multipart-test.eml!/1");
         obj2.dispose();
-        service.shutdown();
     }
     
     /**
@@ -592,23 +589,19 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     }
 
     private TestRDFContainerFactory containerFactory;
-    private ExecutorService service;
     
     @Override public void setUp() {
         this.containerFactory = new TestRDFContainerFactory();
-        this.service = Executors.newSingleThreadExecutor();
     }
     
     @Override public void tearDown() {
         containerFactory = null;
-        service.shutdown();
-        service = null;
     }
     
     private DataObjectFactory wrapEmail(String resourceName) throws MessagingException, IOException {
         InputStream stream = ResourceUtil.getInputStream(DOCS_PATH + resourceName, this.getClass());
         MimeMessage msg =  new MimeMessage(null, stream);
-        DataObjectFactory fac = new DataObjectFactory(msg,containerFactory,service, null,null,
+        DataObjectFactory fac = new DataObjectFactory(msg,containerFactory,null,null,
             new URIImpl("uri:dummymailuri:" + resourceName), null);
         return fac;
     }

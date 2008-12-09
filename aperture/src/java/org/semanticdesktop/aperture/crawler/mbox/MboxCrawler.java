@@ -84,7 +84,6 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
         boolean fatalError = false;
 
         try {
-            executorService = Executors.newSingleThreadExecutor();
             // crawl all specified base folders
             int nrFolders = baseFolders.size();
             if (nrFolders == 0) {
@@ -103,11 +102,6 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
         catch (MessagingException e) {
             logger.warn("MessagingException while crawling", e);
             fatalError = true;
-        }
-        finally {
-            if (executorService != null) {
-                executorService.shutdown();
-            }
         }
 
         // terminate the connection

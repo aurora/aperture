@@ -18,19 +18,6 @@ import javax.mail.internet.MimeMessage;
 public interface MessageDataObject extends DataObject {
 
     /**
-     * <p>
-     * Gets an InputStream containing the raw bytes of the MimeMessage - suitable for basic low-level
-     * processing.
-     * </p>
-
-     * @return An input stream containing the raw bytes of the MimeMessage, equivalent to serializing the
-     *         message to a .eml file and reading from that file.
-     * @throws IOException If an I/O error occurred.
-     * @throws MessagingException If the message is faulty.
-     */
-    public InputStream getContent() throws MessagingException, IOException;
-
-    /**
      * Gets an instance of the MimeMessage encapsulated by this DataObject.
      * 
      * @return an instance of the MimeMessage encapsulated by this MessageDataObject

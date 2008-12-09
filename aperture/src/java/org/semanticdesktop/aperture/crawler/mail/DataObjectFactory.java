@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 import javax.mail.Address;
 import javax.mail.BodyPart;
@@ -114,7 +113,7 @@ public class DataObjectFactory {
          * @throws MessagingException 
          */
         public MessageDataObject createDataObject(URI dataObjectId, DataSource dataSource,
-                RDFContainer metadata, MimeMessage msg, ExecutorService executorService) throws MessagingException;
+                RDFContainer metadata, MimeMessage msg) throws MessagingException;
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -171,11 +170,6 @@ public class DataObjectFactory {
     private List<DataObject> dataObjectsToReturn;
     
     /**
-     * The Executor service for MessageDataObjects
-     */
-    private ExecutorService executorService;
-
-    /**
      * The index in that list specifying the data object to be returned on the next call to
      * {@link #getObject()}
      */
@@ -202,12 +196,11 @@ public class DataObjectFactory {
      * @throws IOException
      * @throws MessagingException
      */
-    public DataObjectFactory(MimeMessage message, RDFContainerFactory containerFactory, ExecutorService executorService,
+    public DataObjectFactory(MimeMessage message, RDFContainerFactory containerFactory,
             PartStreamFactory streamFactory, DataSource dataSource, URI messageUri, URI folderUri, String partUriDelimiter)
             throws IOException, MessagingException {
         this.message = message;
         this.partUriDelimiter = partUriDelimiter;
-        this.executorService = executorService;
         this.containerFactory = containerFactory;
         this.dataSource = dataSource;
         this.folderUri = folderUri;
@@ -221,8 +214,8 @@ public class DataObjectFactory {
                     return part.getInputStream();
                 }
                 public MessageDataObject createDataObject(URI dataObjectId, DataSource dataSource,
-                        RDFContainer metadata, MimeMessage msg, ExecutorService executorService) {
-                    return new MessageDataObjectBase(dataObjectId,dataSource,metadata,msg,executorService);
+                        RDFContainer metadata, MimeMessage msg) {
+                    return new MessageDataObjectBase(dataObjectId,dataSource,metadata,msg);
                 }
             };
         } else {
@@ -254,10 +247,10 @@ public class DataObjectFactory {
      * @throws IOException
      * @throws MessagingException
      */
-    public DataObjectFactory(MimeMessage message, RDFContainerFactory containerFactory, ExecutorService executorService,
+    public DataObjectFactory(MimeMessage message, RDFContainerFactory containerFactory,
             PartStreamFactory streamFactory, DataSource dataSource, URI messageUri, URI folderUri)
             throws IOException, MessagingException {
-        this(message,containerFactory,executorService, streamFactory,dataSource,messageUri,folderUri,null);
+        this(message,containerFactory,streamFactory,dataSource,messageUri,folderUri,null);
     }
     
     /**
@@ -1151,7 +1144,7 @@ public class DataObjectFactory {
         if (mailPart instanceof MimeMessage) {
             try {
                 dataObject = streamFactory.createDataObject(dataObjectId, dataSource, metadata,
-                    (MimeMessage) mailPart, executorService);
+                    (MimeMessage) mailPart);
             }
             catch (MessagingException e) {
                 logger.warn("Couldn't create a data object for a message",e);
