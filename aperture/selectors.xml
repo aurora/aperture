@@ -14,8 +14,8 @@
     
     <selector id="jars.poi.selector">
         <or>
-            <filename name="lib/poi-scratchpad-3.0.2-FINAL-20080204.jar" />
-            <filename name="lib/poi-3.0.2-FINAL-20080204.jar" />
+            <filename name="lib/poi-scratchpad-3.2-FINAL-20081019.jar" />
+            <filename name="lib/poi-3.2-FINAL-20081019.jar" />
         </or>
     </selector>
     
