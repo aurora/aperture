@@ -217,7 +217,7 @@
             <or>
                 <filename name="org/semanticdesktop/aperture/addressbook/**" />
                 <filename name="lib/applewrapper-0.2.jar" />
-                <filename name="lib/demork-2.0.jar" />
+                <filename name="lib/demork-2.1.jar" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>
