@@ -115,7 +115,7 @@ class ImapStreamPool {
                 closeStore();
             }
         } else {
-            logger.warn("Trying to return a stream that doesn't belong here");
+            logger.warn("Trying to return an object that doesn't belong here");
         }
     }
     
