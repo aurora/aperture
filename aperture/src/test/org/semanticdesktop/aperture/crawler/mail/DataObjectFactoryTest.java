@@ -34,6 +34,7 @@ import org.semanticdesktop.aperture.accessor.MessageDataObject;
 import org.semanticdesktop.aperture.extractor.Extractor;
 import org.semanticdesktop.aperture.extractor.pdf.PdfExtractorFactory;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.util.DateUtil;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 import org.semanticdesktop.aperture.vocabulary.NCO;
@@ -91,7 +92,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         assertEquals(sender,receiver); // the sender and receiver are the same resource
         
         testStandardMessageMetadata(model, emailUri, "iso-8859-1", "message/rfc822", 
-            "text/plain", "test subject", "15", "2006-02-20T14:47:14", "<43F9C862.9040605@aduna.biz>");
+            "text/plain", "test subject", "15", "2006-02-20T13:47:14Z", "<43F9C862.9040605@aduna.biz>");
         
         // test the plain text content extraction
         String content = container.getString(NMO.plainTextMessageContent);
@@ -129,7 +130,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
          */
         testStandardMessageMetadata(model, emailUri, "iso-8859-1", "message/rfc822", 
             "text/plain", "SourceForge.net needs your input on OSS development and support issues", 
-            "10251", "2006-10-25T14:50:02", "<CONFIRMITblZz02H67y00000e88@smtp.buzzsponge.com>");
+            "10251", "2006-10-25T12:50:02Z", "<CONFIRMITblZz02H67y00000e88@smtp.buzzsponge.com>");
         
         // test the plain text content extraction
         String content = container.getString(NMO.plainTextMessageContent);
@@ -171,7 +172,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         Model model1 = container1.getModel();
         testSenderAndReceiver(model1, emailUri, "Antoni My\u0142ka","antoni.mylka@gmail.com","aperture-devel","aperture-devel@lists.sourceforge.net");
         testStandardMessageMetadata(model1, emailUri, "iso-8859-2", "message/rfc822", "text/plain",
-            "[Fwd: Re: [Aperture-devel] Developer's Checklists]", "36872", "2008-07-28T00:10:47",
+            "[Fwd: Re: [Aperture-devel] Developer's Checklists]", "36872", "2008-07-27T22:10:47Z",
             "<488CF267.3030008@gmail.com>");
         String content = container1.getString(NMO.plainTextMessageContent);
         assertEquals("This is a test of a multipart message, that has some content and an \r\n" + 
@@ -188,7 +189,7 @@ public class DataObjectFactoryTest extends ApertureTestBase {
         Model model3 = obj3.getMetadata().getModel();
         testSenderAndReceiver(model3, obj3.getID(), "Leo Sauermann","leo.sauermann@dfki.de","Antoni Mylka","antoni.mylka@gmail.com");
         testStandardMessageMetadata(model3, obj3.getID(), "iso-8859-2", "message/rfc822", "text/plain",
-            "Re: [Aperture-devel] Developer's Checklists", "1341", "2008-07-25T10:50:18",
+            "Re: [Aperture-devel] Developer's Checklists", "1341", "2008-07-25T08:50:18Z",
             "<488993CA.8070205@dfki.de>");
         assertMessageContentContains("> http://aperture.wiki.sourceforge.net/DevelopersChecklists", obj3);
         assertMessageContentContains("> about all this, but it may nevertheless be interesting.", obj3);
@@ -569,14 +570,19 @@ public class DataObjectFactoryTest extends ApertureTestBase {
     }
     
     private void testStandardMessageMetadata(Model model, URI emailUri, String charset, String mimeType, 
-            String contentMimeType, String subject, String byteSize, String contentCreated, String messageId) {
+            String contentMimeType, String subject, String byteSize, String contentCreated, String messageId) throws Exception {
         assertSingleValueProperty(model, emailUri, NIE.characterSet, charset);
         assertSingleValueProperty(model, emailUri, NIE.mimeType, mimeType);
         assertSingleValueProperty(model, emailUri, NMO.contentMimeType, contentMimeType);
         assertSingleValueProperty(model, emailUri, NMO.messageSubject, subject);
         assertSingleValueProperty(model, emailUri, NIE.byteSize, model.createDatatypeLiteral(byteSize, XSD._integer));
+        
         // this exhibits the problem with ambiguous dates
-        assertSingleValueProperty(model, emailUri, NIE.contentCreated, model.createDatatypeLiteral(contentCreated, XSD._dateTime));
+        String contentCreatedDateString = findSingleObjectNode(model, emailUri, NIE.contentCreated).asLiteral().getValue();
+        assertEquals(contentCreated, DateUtil.string2UTCString(contentCreatedDateString));
+        //assertSingleValueProperty(model, emailUri, NIE.contentCreated, model.createDatatypeLiteral(contentCreated, XSD._dateTime));
+        
+        
         // this exhibits the problem with brackets
         assertSingleValueProperty(model, emailUri, NMO.messageId, messageId);
         

@@ -10,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +42,7 @@ import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.mime.identifier.magic.MagicMimeTypeIdentifier;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.rdf.impl.RDFContainerImpl;
+import org.semanticdesktop.aperture.util.DateUtil;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.vocabulary.GEO;
 import org.semanticdesktop.aperture.vocabulary.NCAL;
@@ -489,6 +491,18 @@ public class ApertureTestBase extends TestCase {
         assertTrue(encounteredSubstring);
     }
 
+    /**
+     * Checks if the container contains a given date.
+     * @param property the property to look for
+     * @param utcDate the date in an UTC ISO8601 version (with the Z at the end)
+     * @param container the container
+     * @throws ParseException
+     */
+    public void checkUTCDate(URI property, String utcDate, RDFContainer container) throws ParseException {
+        String date = container.getString(property);
+        assertEquals(utcDate, DateUtil.string2UTCString(date));
+    }
+    
     /**
      * Asserts that the given container contains the given property AND that there is exactly
      * one value for this property AND that the value of this property is a Resource with an

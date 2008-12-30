@@ -9,7 +9,15 @@ package org.semanticdesktop.aperture.util;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * Provides utility methods for handling dates.
@@ -17,18 +25,25 @@ import java.util.Date;
 public class DateUtil {
 
     private static DateFormat fullDateFormat = null;
+    private static DateFormat notzDateFormat = null;
     private static DateFormat plainDateFormat = null;
-
+    private static DatatypeFactory datatypeFactory = null;
+    
     /**
      * Format the given date in a good dateTime format: ISO-8601, using the T separator and the - and :
-     * seperators accordingly. Example: 2003-01-22T17:00:00.
+     * seperators accordingly. Example: 2003-01-22T17:00:00+01:00.
      * 
      * @param date A date instance.
      * @return A String containing the date in ISO-8601 format.
      * @see #string2DateTime(String)
      */
     public static String dateTime2String(Date date) {
-        return getISO8601DateFormat().format(date);
+        long ts = date.getTime();
+        GregorianCalendar gcal = new GregorianCalendar();
+        gcal.setTimeInMillis(ts);
+        XMLGregorianCalendar cal = getDataTypeFactory().newXMLGregorianCalendar(gcal);
+        cal.setMillisecond(0);
+        return cal.toXMLFormat();
     }
     
     /**
@@ -52,7 +67,15 @@ public class DateUtil {
      * @see #dateTime2String(Date)
      */
     public static Date string2DateTime(String string) throws ParseException {
-        return getISO8601DateFormat().parse(string);
+        Date res = null;
+        try {
+            XMLGregorianCalendar xcal = getDataTypeFactory().newXMLGregorianCalendar(string);
+            xcal.setMillisecond(0);
+            return xcal.toGregorianCalendar().getTime();
+        } catch (IllegalArgumentException pe) {
+            res=getISO8601DateFormat().parse(string);
+        }
+        return res; 
     }
     
     /**
@@ -68,15 +91,55 @@ public class DateUtil {
     }
 
     /**
+     * Converts the string in the ISO-8601 dateTime format to a string representing the same timestamp,
+     * normalized to the UTC timezone.
+     * 
+     * @param string
+     * @return a normalized version of the input date
+     * @throws ParseException
+     */
+    public static String string2UTCString(String string) throws ParseException {
+        Date date = string2DateTime(string);
+        Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.UK);
+        utcCalendar.setTimeInMillis(date.getTime());
+        return utcCalendar.get(Calendar.YEAR) + "-" + 
+               zeroPad((utcCalendar.get(Calendar.MONTH)+1)) + "-" + 
+               zeroPad(utcCalendar.get(Calendar.DAY_OF_MONTH)) + "T" + 
+               zeroPad(utcCalendar.get(Calendar.HOUR_OF_DAY)) + ":" +
+               zeroPad(utcCalendar.get(Calendar.MINUTE)) + ":" + 
+               zeroPad(utcCalendar.get(Calendar.SECOND)) + "Z";
+    }
+    
+    private static String zeroPad(long i) {
+        if (i >= 0 && i <=9) {
+            return "0" + i;
+        } else {
+            return String.valueOf(i);
+        }
+    }
+    
+    /**
      * Returns a statically shared DateFormat that uses the ISO-8601 format, which is used by
-     * XSD-DATETIME.
+     * XSD-DATETIME. This method returns the format with the timezone suffix.
      * @return the DateFormat
      */
     public static DateFormat getISO8601DateFormat() {
         if (fullDateFormat == null) {
-            fullDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            fullDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
         }
         return fullDateFormat;
+    }
+    
+    /**
+     * Returns a statically shared DateFormat that uses the ISO-8601 format, which is used by
+     * XSD-DATETIME. This method returns the format without the timezone suffix.
+     * @return the DateFormat
+     */
+    public static DateFormat getISO8601DateFormatNoTimezone() {
+        if (notzDateFormat == null) {
+            notzDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        }
+        return notzDateFormat;
     }
     
     /**
@@ -89,5 +152,18 @@ public class DateUtil {
             plainDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         }
         return plainDateFormat;
+    }
+    
+    private static DatatypeFactory getDataTypeFactory() {
+        if (datatypeFactory == null) {
+            try {
+                datatypeFactory = DatatypeFactory.newInstance();
+            }
+            catch (DatatypeConfigurationException e) {
+                // this will not happen
+                e.printStackTrace();
+            }
+        }
+        return datatypeFactory;
     }
 }

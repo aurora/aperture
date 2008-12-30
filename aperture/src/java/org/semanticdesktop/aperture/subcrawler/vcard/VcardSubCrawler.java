@@ -9,6 +9,7 @@ package org.semanticdesktop.aperture.subcrawler.vcard;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.util.Date;
 
 import net.wimpi.pim.Pim;
@@ -566,9 +567,7 @@ public class VcardSubCrawler extends AbstractSubCrawler {
     private void addDateTimeProperty(Model model, Resource resource, URI property, Date date) {
         if (date != null) {
             String dateString = DateUtil.dateTime2String(date);
-            // note the + "Z" part, there are no timezones in VCARD and all timestamps are
-            // in UTC
-            model.addStatement(resource, property, model.createDatatypeLiteral(dateString + "Z", XSD._dateTime));
+            model.addStatement(resource, property, model.createDatatypeLiteral(dateString, XSD._dateTime));
         }
     }
 

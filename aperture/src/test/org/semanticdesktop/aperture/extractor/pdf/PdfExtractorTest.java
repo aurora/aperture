@@ -7,6 +7,7 @@
 package org.semanticdesktop.aperture.extractor.pdf;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 import org.ontoware.rdf2go.exception.ModelException;
 import org.semanticdesktop.aperture.extractor.Extractor;
@@ -14,6 +15,7 @@ import org.semanticdesktop.aperture.extractor.ExtractorException;
 import org.semanticdesktop.aperture.extractor.ExtractorFactory;
 import org.semanticdesktop.aperture.extractor.ExtractorTestBase;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
+import org.semanticdesktop.aperture.util.DateUtil;
 import org.semanticdesktop.aperture.vocabulary.NCO;
 import org.semanticdesktop.aperture.vocabulary.NFO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
@@ -105,17 +107,17 @@ public class PdfExtractorTest extends ExtractorTestBase {
         validate(container);
     }
     
-    public void testDistiller6() throws ExtractorException, IOException, ModelException {
+    public void testDistiller6() throws ExtractorException, IOException, ModelException, ParseException {
         container = getStatements(PDF_DISTILLER_WEIRDCHARS_DOC);
         
         checkStatement(NIE.title, "Microsoft Word - wp618-kessell.doc", container);
         checkSimpleContact(NCO.creator, "Angela Kessell", container);
         checkStatement(NIE.generator, "PScript5.dll Version 5.2.2", container);
         checkStatement(NIE.generator, "Acrobat Distiller 6.0 (Windows)", container);
-        //checkStatement(DATA.date, "2006-02-18T20:44:22", container);
-        checkStatement(NIE.contentCreated, "2006-02-18T12:44:22", container);
+        checkUTCDate(NIE.contentCreated, "2006-02-18T11:44:22Z", container);
+        checkStatement(NIE.contentCreated, "2006-02", container);
         checkStatement(NFO.pageCount, "6", container);
-        // note that the apostrophe in people's is NOT a normal apostrophy
+        // note that the apostrophe in people's is NOT a normal apostrophe
         // it's some kind of a weird unicode character that caused problems
         checkStatement(NIE.plainTextContent, "of people’s recorded tasks", container);
         validate(container);

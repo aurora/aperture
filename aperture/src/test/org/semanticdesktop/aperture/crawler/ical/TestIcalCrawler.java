@@ -244,7 +244,6 @@ public class TestIcalCrawler extends ApertureTestBase {
 	public void testVTimezoneComponent() throws Exception {
 	    model = readIcalFile("cal01.ics");
 		Resource vtimezoneNode = findSingleTimezone(model);
-		
 		assertTrue(vtimezoneNode instanceof URI);
 		assertTrue(vtimezoneNode.toString().contains("America/New_York"));
 		

@@ -26,5 +26,7 @@ public class TestUtils extends TestSuite {
         addTest(new TestSuite(XmlSafetyTest.class));
         addTest(new TestSuite(XmlSafeModelTests.class));
         addTest(new TestSuite(UriUtilTest.class));
+        addTest(new TestSuite(DateUtilTest.class));
+        addTest(new TestSuite(HttpClientUtilTest.class));
     }
 }
