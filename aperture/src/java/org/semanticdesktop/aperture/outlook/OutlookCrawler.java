@@ -566,10 +566,14 @@ public class OutlookCrawler extends CrawlerBase implements DataOpener {
 	 * @see org.gnowsis.data.adapter.Adapter#endCall()
 	 */
 	protected void endCall() {
-		outlookMapi.safeRelease();
-		outlookMapi = null;
-		outlookApp.safeRelease();
-		outlookApp = null;
+	    if (outlookMapi!=null) {
+	        outlookMapi.safeRelease();
+	        outlookMapi = null;
+	    }
+	    if (outlookApp!=null) {
+	        outlookApp.safeRelease();
+	        outlookApp = null;
+	    }
 		accessor = null;
 	}
 	
