@@ -130,7 +130,7 @@ your copy of ANT at http://ant.apache.org/
 
         <!-- compilation flags -->
         <property name="compile.debug" value="true" />
-        <property name="compile.debuglevel" value="source,lines,var" />
+        <property name="compile.debuglevel" value="source,lines,vars" />
         <property name="compile.deprecation" value="false" />
         <property name="compile.optimize" value="true" />
         <property name="java.source.version" value="1.5" />
@@ -421,6 +421,41 @@ your copy of ANT at http://ant.apache.org/
                     <selector refid="bundle.exclude.resources.selector" />
                 </and>
             </fileset>-->
+            <fileset dir="${classes.activators.dir}">
+                <selector refid="bundle.impl.coarsegrained.selector" />
+            </fileset>
+            <fileset dir="${src.activators.dir}">
+                <and>
+                    <selector refid="bundle.impl.coarsegrained.selector" />
+                    <selector refid="bundle.exclude.resources.selector" />
+                </and>
+            </fileset>
+            <fileset dir="${basedir}">
+                <selector refid="bundle.impl.coarsegrained.selector" />
+            </fileset>
+        </jar>
+    </target>
+	
+    <target name="bundle.impl.withsource.jar"
+            depends="compile.activators"
+            description="create the aperture implementation bundle">
+        <mkdir dir="${dist.bundle.dir}" />
+        <jar destfile="${dist.bundle.dir}/${bundle.impl.jar}"
+             compress="no"
+        	 manifest="${impl.manifest.mf}">
+        	<manifest>
+        		<attribute name="Bundle-Version" value="${project.version.osgi}"/>
+        	</manifest>
+            <fileset dir="${classes.java.dir}">
+                <selector refid="bundle.impl.coarsegrained.selector" />
+            </fileset>
+            <!-- 27.1.2009 Leo: made a new target bundle with sources for debugging -->
+            <fileset dir="${src.java.dir}">
+                <and>
+                    <selector refid="bundle.impl.coarsegrained.selector" />
+                    <selector refid="bundle.exclude.resources.selector" />
+                </and>
+            </fileset>
             <fileset dir="${classes.activators.dir}">
                 <selector refid="bundle.impl.coarsegrained.selector" />
             </fileset>
