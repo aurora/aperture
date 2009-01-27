@@ -400,6 +400,40 @@ your copy of ANT at http://ant.apache.org/
             </fileset>
         </jar>
     </target>
+	
+	<target name="bundle.core.withsource.jar"
+	            depends="compile.activators"
+	            description="create the core aperture bundle">
+	        <mkdir dir="${dist.bundle.dir}" />
+	        <jar destfile="${dist.bundle.dir}/${bundle.core.jar}"
+	             compress="no" manifest="${core.manifest.mf}">
+	        	<manifest>
+	        		<attribute name="Bundle-Version" value="${project.version.osgi}"/>
+	        	</manifest>
+	            <fileset dir="${classes.java.dir}">
+	                <selector refid="bundle.core.coarsegrained.selector" />
+	            </fileset>
+	        	<!-- 27.1.2009 Leo: made a new target bundle with sources for debugging -->
+	            <fileset dir="${src.java.dir}">
+	                <and>
+	                    <selector refid="bundle.core.coarsegrained.selector" />
+	                    <selector refid="bundle.exclude.resources.selector" />
+	                </and>
+	            </fileset>
+	            <fileset dir="${classes.activators.dir}">
+	                <selector refid="bundle.core.coarsegrained.selector" />
+	            </fileset>
+	            <fileset dir="${src.activators.dir}">
+	                <and>
+	                    <selector refid="bundle.core.coarsegrained.selector" />
+	                    <selector refid="bundle.exclude.resources.selector" />
+	                </and>
+	            </fileset>
+	            <fileset dir="${basedir}">
+	                <selector refid="bundle.core.coarsegrained.selector" />
+	            </fileset>
+	        </jar>
+	    </target>
 
     <target name="bundle.impl.jar"
             depends="compile.activators"
@@ -490,6 +524,10 @@ your copy of ANT at http://ant.apache.org/
     <!-- generates all three bundles -->
     <target name="jar.bundles"
             depends="bundle.core.jar,bundle.impl.jar,bundle.example.jar"
+            description="create aperture OSGi bundles" />
+	<!-- make the two bundles for which we have source jars -->
+    <target name="jar.withsource.bundles"
+            depends="bundle.core.withsource.jar,bundle.impl.withsource.jar"
             description="create aperture OSGi bundles" />
  
     <!-- ******************************************************************* -->
