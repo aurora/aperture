@@ -12,29 +12,29 @@
     </selector>
 
     
-    <selector id="jars.poi.selector">
-        <or>
-            <filename name="lib/poi-scratchpad-3.2-FINAL-20081019.jar" />
-            <filename name="lib/poi-3.2-FINAL-20081019.jar" />
-        </or>
-    </selector>
+<!--    <selector id="jars.poi.selector">-->
+<!--        <or>-->
+<!--            <filename name="lib/poi-scratchpad-3.2-FINAL-20081019.jar" />-->
+<!--            <filename name="lib/poi-3.2-FINAL-20081019.jar" />-->
+<!--        </or>-->
+<!--    </selector>-->
     
-    <selector id="jars.pdfbox.selector">
-        <or>
-            <filename name="lib/pdfbox-0.7.4-dev-20071030.jar" />
-            <filename name="lib/fontbox-0.2.0-dev.jar" />
-            <filename name="lib/bcmail-jdk14-132.jar" />
-            <filename name="lib/bcprov-jdk14-132.jar" />
-            <filename name="lib/jai_codec-1.1.3.jar" />
-            <filename name="lib/jai_core-1.1.3.jar" />
-            <filename name="lib/JempBox-0.2.0.jar" />
-        </or>   
-    </selector>
+<!--    <selector id="jars.pdfbox.selector">-->
+<!--        <or>-->
+<!--            <filename name="lib/pdfbox-0.7.4-dev-20071030.jar" />-->
+<!--            <filename name="lib/fontbox-0.2.0-dev.jar" />-->
+<!--            <filename name="lib/bcmail-jdk14-132.jar" />-->
+<!--            <filename name="lib/bcprov-jdk14-132.jar" />-->
+<!--            <filename name="lib/jai_codec-1.1.3.jar" />-->
+<!--            <filename name="lib/jai_core-1.1.3.jar" />-->
+<!--            <filename name="lib/JempBox-0.2.0.jar" />-->
+<!--        </or>   -->
+<!--    </selector>-->
     
     <selector id="jars.mail.selector">
         <or>
-            <filename name="lib/mail-1.4.jar" />
-            <filename name="lib/activation-1.0.2-upd2.jar" />
+<!--            <filename name="lib/mail-1.4.jar" />-->
+<!--            <filename name="lib/activation-1.0.2-upd2.jar" />-->
             <filename name="lib/jutf7-0.9.0.jar" />
         </or>
     </selector>
@@ -53,6 +53,19 @@
                 <filename name="org/semanticdesktop/aperture/accessor/*" />
                 <filename name="org/semanticdesktop/aperture/accessor/base/*" />
                 <filename name="org/semanticdesktop/aperture/accessor/impl/*" />
+            </or>
+            <not>
+            	<filename name="**/MessageDataObject*"/>
+            </not>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
+    <selector id="bundle.messagedataobject.service.selector">
+        <and>
+            <or>
+                <filename name="org/semanticdesktop/aperture/accessor/base/MessageDataObjectBase.java" />
+                <filename name="org/semanticdesktop/aperture/accessor/MessageDataObject.java" />
             </or>
             <selector refid="bundle.basic.selector" />
         </and>
@@ -305,7 +318,7 @@
         <and>
             <or>
                 <filename name="org/semanticdesktop/aperture/extractor/excel/*" />
-                <selector refid="jars.poi.selector" />
+<!--                <selector refid="jars.poi.selector" />-->
             </or>
             <selector refid="bundle.basic.selector" />
         </and>      
@@ -320,7 +333,7 @@
         <and>
         	<or>
             	<filename name="org/semanticdesktop/aperture/extractor/jpg/*" />
-            	<filename name="lib/metadata-extractor-2.4.0-beta-1.jar" />
+<!--            	<filename name="lib/metadata-extractor-2.4.0-beta-1.jar" />-->
             </or>
             <selector refid="bundle.basic.selector" />
         </and>      
@@ -365,7 +378,7 @@
         <and>
             <or>
                 <filename name="org/semanticdesktop/aperture/extractor/pdf/*" />
-                <selector refid="jars.pdfbox.selector" />
+<!--                <selector refid="jars.pdfbox.selector" />-->
             </or>
             <selector refid="bundle.basic.selector" />
         </and>      
@@ -380,7 +393,7 @@
         <and>
             <or>
                 <filename name="org/semanticdesktop/aperture/extractor/powerpoint/*" />
-                <selector refid="jars.poi.selector" />
+<!--                <selector refid="jars.poi.selector" />-->
             </or>
             <selector refid="bundle.basic.selector" />
         </and>      
@@ -419,7 +432,7 @@
         <and>
             <or>
                 <filename name="org/semanticdesktop/aperture/extractor/word/*" />
-                <selector refid="jars.poi.selector" />
+<!--                <selector refid="jars.poi.selector" />-->
             </or>
             <selector refid="bundle.basic.selector" />
         </and>      
@@ -447,8 +460,8 @@
         <and>
             <or>
                 <filename name="org/semanticdesktop/aperture/extractor/util/*" />
-                <selector refid="jars.poi.selector" />
-                <filename name="lib/htmlparser-1.6.jar" />
+<!--                <selector refid="jars.poi.selector" />-->
+<!--                <filename name="lib/htmlparser-1.6.jar" />-->
             </or>
             <selector refid="bundle.basic.selector" />
         </and>      
@@ -544,6 +557,16 @@
         </and>
     </selector>
     
+    <selector id="bundle.subcrawler.mime.selector">
+        <and>
+        	<or>
+            	<filename name="org/semanticdesktop/aperture/subcrawler/mime/*" />
+            	<selector refid="jars.mail.selector" />
+            </or>
+            <selector refid="bundle.basic.selector" />
+        </and>
+    </selector>
+    
     <selector id="bundle.security.trustdecider.dialog.selector">
         <and>
             <filename name="org/semanticdesktop/aperture/security/trustdecider/dialog/*" />
@@ -558,8 +581,7 @@
         </and>  
     </selector>
     
-    <!-- selectors for bundles at medium granularity, division proposed by Herko ter Horst -->
-    <selector id="bundle.core.services.selector">
+    <selector id="bundle.core.selector">
         <or>
             <selector refid="bundle.accessor.service.selector" />
             <selector refid="bundle.crawler.service.selector" />
@@ -569,22 +591,19 @@
             <selector refid="bundle.extractor.service.selector" />
             <selector refid="bundle.opener.service.selector" />
             <selector refid="bundle.rdf.service.selector" />
-            <filename name="org/semanticdesktop/aperture/CoreServicesActivator.*" />
-        </or>
-    </selector>
-    
-    <selector id="bundle.supporting.services.selector">
-        <or>
             <selector refid="bundle.linkextractor.service.selector" />
             <selector refid="bundle.mime.identifier.service.selector" />
             <selector refid="bundle.security.trustmanager.service.selector" />
             <selector refid="bundle.security.trustdecider.service.selector" />
-            <filename name="org/semanticdesktop/aperture/SupportingServicesActivator.*" />
+            <selector refid="bundle.vocabulary.selector" />
+            <selector refid="bundle.supporting.api.selector" />
+            <filename name="org/semanticdesktop/aperture/CoreActivator.*" />
         </or>
     </selector>
     
-    <selector id="bundle.core.services.impl.selector">
-        <or>
+    <selector id="bundle.impl.selector">
+       	<or>
+        	<selector refid="bundle.messagedataobject.service.selector" />
         	<selector refid="bundle.addressbook.selector" />
             <selector refid="bundle.accessor.file.selector" />
             <selector refid="bundle.accessor.http.selector" />
@@ -595,15 +614,36 @@
             <selector refid="bundle.crawler.filesystem.selector" />
             <selector refid="bundle.crawler.web.selector" />
             <selector refid="bundle.websites.selector" />
-            <selector refid="bundle.extractor.excel.selector" />
+            <selector refid="bundle.extractor.mp3.selector" />
+			<selector refid="bundle.extractor.mime.selector" />            
+            <selector refid="bundle.subcrawler.vcard.selector" />
+            <selector refid="bundle.subcrawler.zip.selector" />
+            <selector refid="bundle.subcrawler.gzip.selector" />
+            <selector refid="bundle.subcrawler.tar.selector" />
+            <selector refid="bundle.subcrawler.bzip2.selector" />
+            <selector refid="bundle.subcrawler.mime.selector" />
+            <selector refid="bundle.opener.file.selector" />
+            <selector refid="bundle.opener.http.selector" />
+            <selector refid="bundle.opener.email.selector" />
+            <selector refid="bundle.outlook.selector" />
+            <selector refid="bundle.security.socketfactory.standard.selector" />
+            <selector refid="bundle.hypertext.linkextractor.html.selector" />
+            <selector refid="bundle.security.trustmanager.standard.selector" />
+            <selector refid="bundle.security.trustdecider.dialog.selector" />
+            <selector refid="bundle.extractor.pdf.selector" />
+            <filename name="org/semanticdesktop/aperture/ImplActivator.*" />
+        </or>
+    </selector>
+        
+    <selector id="bundle.safe.selector">
+    	<or>
+    		<selector refid="bundle.extractor.excel.selector" />
             <selector refid="bundle.extractor.html.selector" />
             <selector refid="bundle.extractor.jpg.selector" />
-            <selector refid="bundle.extractor.mime.selector" />
-            <selector refid="bundle.extractor.mp3.selector" />
             <selector refid="bundle.extractor.office.selector" />
             <selector refid="bundle.extractor.opendocument.selector" />
             <selector refid="bundle.extractor.openxml.selector" />
-            <selector refid="bundle.extractor.pdf.selector" />
+            
             <selector refid="bundle.extractor.plaintext.selector" />
             <selector refid="bundle.extractor.powerpoint.selector" />
             <selector refid="bundle.extractor.presentations.selector" />
@@ -615,49 +655,8 @@
             <selector refid="bundle.extractor.wordperfect.selector" />
             <selector refid="bundle.extractor.works.selector" />
             <selector refid="bundle.extractor.xml.selector" />
-            <selector refid="bundle.subcrawler.vcard.selector" />
-            <selector refid="bundle.subcrawler.zip.selector" />
-            <selector refid="bundle.subcrawler.gzip.selector" />
-            <selector refid="bundle.subcrawler.tar.selector" />
-            <selector refid="bundle.subcrawler.bzip2.selector" />
-            
-            <!-- this is used by the above impl -->
             <selector refid="bundle.extractor.util.selector" />
-            <selector refid="bundle.opener.file.selector" />
-            <selector refid="bundle.opener.http.selector" />
-            <selector refid="bundle.opener.email.selector" />
-            <selector refid="bundle.outlook.selector" />
-            <selector refid="bundle.security.socketfactory.standard.selector" />
-            <filename name="org/semanticdesktop/aperture/CoreImplementationsActivator.*" />
-        </or>
-    </selector>
-    
-    <selector id="bundle.supporting.services.impl.selector">
-        <or>
-            <selector refid="bundle.hypertext.linkextractor.html.selector" />
             <selector refid="bundle.mime.identifier.magic.selector" />
-            <selector refid="bundle.security.trustmanager.standard.selector" />
-            <selector refid="bundle.security.trustdecider.dialog.selector" />
-            <filename name="org/semanticdesktop/aperture/SupportingImplementationsActivator.*" />
-        </or>
-    </selector>
-    
-    <!-- selectors for bundles at the highest level (core and impl) division by Antoni -->
-    
-    <selector id="bundle.core.coarsegrained.selector">
-        <or>
-            <selector refid="bundle.vocabulary.selector" />
-            <selector refid="bundle.core.services.selector" />
-            <selector refid="bundle.supporting.services.selector" />
-            <selector refid="bundle.supporting.api.selector" />
-            <filename name="org/semanticdesktop/aperture/CoarsegrainedCoreActivator.*" />
-        </or>   
-    </selector>
-    
-    <selector id="bundle.impl.coarsegrained.selector">
-        <or>
-            <selector refid="bundle.core.services.impl.selector" />
-            <selector refid="bundle.supporting.services.impl.selector" />           
-            <filename name="org/semanticdesktop/aperture/CoarsegrainedImplActivator.*" />
-        </or>
+            <filename name="org/semanticdesktop/aperture/SafeActivator.*" />		
+    	</or>
     </selector>

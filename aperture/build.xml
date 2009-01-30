@@ -77,17 +77,23 @@ your copy of ANT at http://ant.apache.org/
         <property name="bundle.core.jar"
                   value="${project.bundlename}_${project.version.osgi}.jar" />
         <property name="core.manifest.mf"
-                  value="${manifest.dir}/core.manifest.mf" />
+                  value="${manifest.dir}/core/META-INF/MANIFEST.MF" />
 
         <property name="bundle.impl.jar"
                   value="${project.bundlename}.impl_${project.version.osgi}.jar" />
         <property name="impl.manifest.mf"
-                  value="${manifest.dir}/impl.manifest.mf" />
+                  value="${manifest.dir}/impl/META-INF/MANIFEST.MF" />
 
         <property name="bundle.example.jar"
                   value="${project.bundlename}.example_${project.version.osgi}.jar" />
         <property name="example.manifest.mf"
-                  value="${manifest.dir}/aperture.example.manifest.mf" />
+                  value="${manifest.dir}/example/META-INF/MANIFEST.MF" />
+    	
+    	<property name="bundle.safe.jar"
+                  value="${project.bundlename}.safe_${project.version.osgi}.jar" />
+        <property name="safe.manifest.mf"
+                  value="${manifest.dir}/safe/META-INF/MANIFEST.MF" />
+
 
         <!-- release dirs and files -->
         <property name="release.dir" value="${build.dir}/release" />
@@ -377,7 +383,7 @@ your copy of ANT at http://ant.apache.org/
         		<attribute name="Bundle-Version" value="${project.version.osgi}"/>
         	</manifest>
             <fileset dir="${classes.java.dir}">
-                <selector refid="bundle.core.coarsegrained.selector" />
+                <selector refid="bundle.core.selector" />
             </fileset>
             <!-- 29.06.2008 Antoni: I excluded the sources from the bundles -->
             <!--<fileset dir="${src.java.dir}">
@@ -387,16 +393,16 @@ your copy of ANT at http://ant.apache.org/
                 </and>
             </fileset>-->
             <fileset dir="${classes.activators.dir}">
-                <selector refid="bundle.core.coarsegrained.selector" />
+                <selector refid="bundle.core.selector" />
             </fileset>
             <fileset dir="${src.activators.dir}">
                 <and>
-                    <selector refid="bundle.core.coarsegrained.selector" />
+                    <selector refid="bundle.core.selector" />
                     <selector refid="bundle.exclude.resources.selector" />
                 </and>
             </fileset>
             <fileset dir="${basedir}">
-                <selector refid="bundle.core.coarsegrained.selector" />
+                <selector refid="bundle.core.selector" />
             </fileset>
         </jar>
     </target>
@@ -446,7 +452,7 @@ your copy of ANT at http://ant.apache.org/
         		<attribute name="Bundle-Version" value="${project.version.osgi}"/>
         	</manifest>
             <fileset dir="${classes.java.dir}">
-                <selector refid="bundle.impl.coarsegrained.selector" />
+                <selector refid="bundle.impl.selector" />
             </fileset>
             <!-- 29.06.2008 Antoni: I excluded the sources from the bundles -->
             <!--<fileset dir="${src.java.dir}">
@@ -456,19 +462,47 @@ your copy of ANT at http://ant.apache.org/
                 </and>
             </fileset>-->
             <fileset dir="${classes.activators.dir}">
-                <selector refid="bundle.impl.coarsegrained.selector" />
+                <selector refid="bundle.impl.selector" />
             </fileset>
             <fileset dir="${src.activators.dir}">
                 <and>
-                    <selector refid="bundle.impl.coarsegrained.selector" />
+                    <selector refid="bundle.impl.selector" />
                     <selector refid="bundle.exclude.resources.selector" />
                 </and>
             </fileset>
             <fileset dir="${basedir}">
-                <selector refid="bundle.impl.coarsegrained.selector" />
+                <selector refid="bundle.impl.selector" />
             </fileset>
         </jar>
     </target>
+	
+	<target name="bundle.safe.jar"
+	        depends="compile.activators"
+	        description="create the aperture smila-ready bundle">
+	    <mkdir dir="${dist.bundle.dir}" />
+	    <jar destfile="${dist.bundle.dir}/${bundle.safe.jar}"
+	         compress="no"
+	    	 manifest="${safe.manifest.mf}">
+	    	<manifest>
+	    		<attribute name="Bundle-Version" value="${project.version.osgi}"/>
+	    	</manifest>
+	        <fileset dir="${classes.java.dir}">
+	            <selector refid="bundle.safe.selector" />
+	        </fileset>
+	        <fileset dir="${classes.activators.dir}">
+	            <selector refid="bundle.safe.selector" />
+	        </fileset>
+	        <fileset dir="${src.activators.dir}">
+	            <and>
+	                <selector refid="bundle.safe.selector" />
+	                <selector refid="bundle.exclude.resources.selector" />
+	            </and>
+	        </fileset>
+	        <fileset dir="${basedir}">
+	            <selector refid="bundle.safe.selector" />
+	        </fileset>
+	    </jar>
+	</target>
 	
     <target name="bundle.impl.withsource.jar"
             depends="compile.activators"
@@ -523,8 +557,9 @@ your copy of ANT at http://ant.apache.org/
 
     <!-- generates all three bundles -->
     <target name="jar.bundles"
-            depends="bundle.core.jar,bundle.impl.jar,bundle.example.jar"
+            depends="bundle.core.jar,bundle.impl.jar,bundle.example.jar, bundle.safe.jar"
             description="create aperture OSGi bundles" />
+            
 	<!-- make the two bundles for which we have source jars -->
     <target name="jar.withsource.bundles"
             depends="bundle.core.withsource.jar,bundle.impl.withsource.jar"
@@ -666,14 +701,25 @@ your copy of ANT at http://ant.apache.org/
 
         <!-- copy osgi bundles necessary to have a full-blown osgi environment -->
         <copy todir="${osgirelease.lib.dir}">
-            <fileset file="${lib.dir}/rdf2go.api-4.6.2.jar" />
-            <fileset file="${lib.dir}/rdf2go.impl.base-4.6.2.jar" />
-            <fileset file="${lib.dir}/rdf2go.impl.util-4.6.2.jar" />
-            <fileset file="${lib.dir}/rdf2go.impl.sesame20-4.6.2.jar" />
+            <fileset file="${lib.dir}/rdf2go.api-4.7.0.jar" />
+            <fileset file="${lib.dir}/rdf2go.impl.sesame22-4.7.0.jar" />
             <fileset file="${lib.dir}/slf4j-api-1.5.0.jar" />
             <fileset file="${lib.dir}/slf4j-jdk14-1.5.0.jar" />
             <fileset file="${lib.dir}/jcl104-over-slf4j-1.5.0.jar" />
-            <fileset file="${lib.dir}/openrdf-sesame-2.2.1-onejar-osgi.jar" />
+            <fileset file="${lib.dir}/openrdf-sesame-onejar-osgi-2.2.3.jar" />
+        	<fileset file="${lib.dir}/com.drew.metadata_2.4.0.jar" />
+        	<fileset file="${lib.dir}/org.apache.poi_3.2.0.jar" />
+        	<fileset file="${lib.dir}/org.fontbox_0.2.0.jar" />
+        	<fileset file="${lib.dir}/org.jempbox.xmp_0.2.0.jar" />
+        	<fileset file="${lib.dir}/org.pdfbox_0.7.4.jar" />
+        	<fileset file="${lib.dir}/com.sun.jai.codec_1.1.3.jar" />
+        	<fileset file="${lib.dir}/com.sun.jai.core_1.1.3.jar" />
+        	<fileset file="${lib.dir}/org.htmlparser_1.6.0.jar" />
+        	<fileset file="${lib.dir}/org.bouncycastle.bcmail_1.32.0.jar" />
+        	<fileset file="${lib.dir}/org.bouncycastle.bcprovider_1.32.0.jar" />
+        	<fileset file="${lib.dir}/javax.activation_1.1.1.jar" />
+        	<fileset file="${lib.dir}/javax.mail_1.4.1.jar" />
+        	<fileset file="${lib.dir}/javax.xml_1.3.4.v200806030440.jar" />
         </copy>
 
         <!-- copy licenses of third party libs -->

@@ -1,0 +1,9 @@
+-nouses true
+Bundle-Name: JAI core.
+Bundle-ClassPath: . 
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: com.sun.jai.core
+Bundle-Version: 1.1.3
+Bundle-Vendor: Antoni
+Bundle-Localization: plugin
+

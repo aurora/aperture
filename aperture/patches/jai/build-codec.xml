@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<project name="bundle" basedir="." default="build">
+
+	<target name="init" description="initialize variables used in all other targets">
+	
+        <property name="original.name" value="jai_codec-1.1.3" />
+
+
+        <property name="new.name" value="com.sun.jai.codec_1.1.3" />
+        <property name="bnd.transformation.file" value="${original.name}.bnd"/>        
+        <property name="original.jar" value="${original.name}.jar" />
+        <property name="original.url" value="${remote.folder}${original.jar}" />
+        <property name="new.jar" value="${new.name}.jar" />
+        <property name="bnd.folder" value="http://www.aqute.biz/repo/biz/aQute/bnd/0.0.249/"/>
+        <property name="bnd.jar" value ="bnd-0.0.249.jar"/>
+        <property name="bnd.url" value="${bnd.folder}${bnd.jar}"/> 
+    </target>
+
+	<target name="download" description="downloads the jar and the bnd tool">
+		<!-- <get src="${original.url}" dest="${original.jar}"/> -->
+        <get src="${bnd.url}" dest="${bnd.jar}"/>
+	</target>
+	
+	<target name="call-bnd" description="calls the bnd tool">
+		<java jar="${bnd.jar}" fork="true" failonerror="true">
+         <arg value="wrap"/>
+         <arg value="-output"/>
+         <arg value="${new.jar}"/>
+         <arg value="-properties"/>
+         <arg value="${bnd.transformation.file}"/>
+         <arg value="${original.jar}"/>
+       </java>
+	</target>
+
+	<target name="clean" description="deletes bnd and the original jar">
+		<delete>
+			<fileset dir="." includes="${bnd.jar},${original.jar}"/>
+		</delete>
+	</target>
+
+    <!-- generates all three jars -->
+    <target name="build"  description="builds the bundle" depends="init,download,call-bnd">
+    </target>
+ 
+ 	<target name="dist" description="builds the bundle and deletes unneeded files"
+ 	    depends="build,clean"/>
+
+</project>

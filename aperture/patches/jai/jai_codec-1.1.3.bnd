@@ -1,0 +1,9 @@
+-nouses true
+Bundle-Name: JAI codec.
+Bundle-ClassPath: . 
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: com.sun.jai.codec
+Bundle-Version: 1.1.3
+Bundle-Vendor: Antoni
+Bundle-Localization: plugin
+

@@ -23,8 +23,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.mail.FetchProfile;
 import javax.mail.Flags;
@@ -63,8 +61,6 @@ import org.semanticdesktop.aperture.security.trustmanager.standard.StandardTrust
 import org.semanticdesktop.aperture.util.HttpClientUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.mail.imap.IMAPFolder;
 
 /**
  * A Combined Crawler and DataAccessor implementation for IMAP.
@@ -839,10 +835,10 @@ public class ImapCrawler extends AbstractJavaMailCrawler implements DataAccessor
     @Override
     protected void recordCurrentFolderInAccessData(AccessData newAccessData) throws MessagingException {
         // register the access data of this url
-        IMAPFolder imapFolder = (IMAPFolder)currentFolder;
+        UIDFolder imapFolder = (UIDFolder)currentFolder;
         String currentUriString = currentFolderURI.toString();
         if (newAccessData != null) {
-            if (holdsMessages(imapFolder)) {
+            if (holdsMessages(currentFolder)) {
                 newAccessData.put(currentUriString, UID_VALIDITY, String.valueOf(imapFolder.getUIDValidity()));
             } else {
                 newAccessData.put(currentUriString, UID_VALIDITY, String.valueOf(-1));

@@ -1,0 +1,12 @@
+-nouses true
+Bundle-Name: Sesame 2.2.3 onejar.
+Bundle-ClassPath: . 
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.openrdf.sesame2
+Bundle-Version: 2.2.3
+Bundle-Vendor: Aduna Software, packaged by DFKI GmbH
+Bundle-Localization: plugin
+Eclipse-RegisterBuddy: org.semanticdesktop.common.log
+Eclipse-BuddyPolicy: registered
+Import-Package: org.slf4j, *;resolution:=optional
+Export-Package: *;version=2.2.3
