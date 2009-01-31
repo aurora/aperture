@@ -1,0 +1,28 @@
+@prefix nrl:     <http://www.semanticdesktop.org/ontologies/2006/11/24/nrl#> .
+@prefix nao:     <http://www.semanticdesktop.org/ontologies/2007/03/nao#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sample:  <http://www.abc.com/sample#> .
+@prefix ex:      <http://www.abc.com/ex#> .
+@prefix si:      <http://www.abc.com/sampleInstances#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+
+si:Chardonnay
+      a       sample:Wine .
+
+si:Merlot
+      a       sample:Wine .
+
+si:Milena
+      a       ex:Person ;
+      sample:drinks (
+      	si:Chardonnay 
+      	si:Merlot
+      ) .
+
+si:Stefan
+      a       ex:Person .
+    
+si:Dave
+      a       ex:Person .
+

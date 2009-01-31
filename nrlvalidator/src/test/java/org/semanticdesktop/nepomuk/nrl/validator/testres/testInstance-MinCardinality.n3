@@ -1,0 +1,22 @@
+@prefix : <http://example.org/inst1#> .
+@prefix ont1: <http://example.org/ontology1#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . 
+		 
+:Instance1a a ont1:Class1 .
+:Instance1b a ont1:Class1 .
+
+:Instance2a a ont1:Class2 .
+:Instance2b1 a ont1:Class2 .
+:Instance2b2 a ont1:Class2 .
+
+#this is OK, minimum cardinality of 1 respected
+:Instance1a ont1:Property1 :Instance2a .
+
+#this is OK, minimum cardinality of 1 respected
+:Instance1b ont1:Property1 :Instance2b1 .
+:Instance1b ont1:Property1 :Instance2b2 .
+		 
+#this is supposed to be the only error, minimum cardinality of 2 is not respected
+:Instance1a ont1:Property2 :Instance2a .
+

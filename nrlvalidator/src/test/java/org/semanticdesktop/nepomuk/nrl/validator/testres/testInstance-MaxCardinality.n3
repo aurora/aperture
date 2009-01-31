@@ -1,0 +1,20 @@
+@prefix : <http://example.org/inst1#> .
+@prefix ont1: <http://example.org/ontology1#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . 
+		 
+:Instance1a a ont1:Class1 .
+:Instance1b a ont1:Class1 .
+
+:Instance2a1 a ont1:Class2 .
+:Instance2a2 a ont1:Class2 .
+:Instance2a3 a ont1:Class2 .
+
+#this is OK, maximum cardinality of 2 respected
+:Instance1a ont1:Property3 :Instance2a1 .
+:Instance1a ont1:Property3 :Instance2a2 .
+		 
+#this is supposed to be the only error, maximum cardinality of 2 is not respected
+:Instance1b ont1:Property3 :Instance2a1 .
+:Instance1b ont1:Property3 :Instance2a2 .
+:Instance1b ont1:Property3 :Instance2a3 .

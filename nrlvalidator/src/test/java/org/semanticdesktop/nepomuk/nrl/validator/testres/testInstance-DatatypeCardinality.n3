@@ -1,0 +1,25 @@
+@prefix : <http://example.org/inst1#> .
+@prefix ont1: <http://example.org/ontology1#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . 
+		 
+:Instance1 a ont1:Class1 .
+
+:Instance2 a ont1:Class2 .
+:Instance3 a ont1:Class2 .
+:Instance4 a ont1:Class2 .
+
+# Error, datatype undefined
+:Instance1 ont1:Property1 :Instance2 .
+
+# minimum cardinality equal to zero is not an error
+:Instance1 ont1:Property2 :Instance2 .
+
+# Error, maximum cardinality is zero
+:Instance1 ont1:Property3 :Instance2 .
+
+# Two errors, minimum cardinality higher than maximum cardinality
+# and maximum cardinality is 2
+:Instance1 ont1:Property4 :Instance2 .
+:Instance1 ont1:Property4 :Instance3 .
+:Instance1 ont1:Property4 :Instance4 .

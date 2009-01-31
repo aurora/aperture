@@ -1,0 +1,24 @@
+@prefix : <http://example.org/ontology2#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . 
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:Class1 a rdfs:Class .
+
+:Class2 a rdfs:Class .
+:Class2 rdfs:subClassOf :Class1 .
+
+:Class3 a rdfs:Class .
+:Class3 rdfs:subClassOf :Class2 .
+
+:Property1 a rdf:Property ;
+     rdfs:domain :Class2 ;
+     rdfs:range  :Class2 .
+     
+:StringProperty a rdf:Property ;
+     rdfs:domain :Class2 ;
+     rdfs:range  xsd:string .
+     
+:IntegerProperty a rdf:Property ;
+     rdfs:domain :Class2 ;
+     rdfs:range  xsd:integer .

@@ -1,0 +1,32 @@
+@prefix : <http://example.org/inst1#> .
+@prefix ont2: <http://example.org/ontology2#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . 
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:Instance1 a ont2:Class1 .
+:Instance2 a ont2:Class2 .
+:Instance3 a ont2:Class3 .
+
+#this is OK by definition
+:Instance2 ont2:Property1 :Instance2 .
+
+#this is also OK if we take inference into account
+:Instance2 ont2:Property1 :Instance3 .
+
+#this is supposed to be OK, 
+:Instance2 ont2:IntegerProperty "42"^^xsd:integer .
+
+#this is supposed to be OK too
+:Instance2 ont2:IntegerProperty 42 .
+
+#this is supposed to be OK, since xsd:long is a subtype of xsd:integer
+:Instance3 ont2:IntegerProperty "345"^^xsd:long .
+
+#this is supposed to be wrong
+:Instance2 ont2:IntegerProperty "45" .
+
+#this is supposed to be wrong too
+:Instance2 ont2:IntegerProperty "true"^^xsd:boolean .
+
+#overall: two errors
