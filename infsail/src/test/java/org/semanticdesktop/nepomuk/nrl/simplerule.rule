@@ -1,0 +1,3 @@
+@prefix example: <http://example.org/> . 
+
+(?x example:inv ?y ) -> ( ?y example:inv ?x ) . 

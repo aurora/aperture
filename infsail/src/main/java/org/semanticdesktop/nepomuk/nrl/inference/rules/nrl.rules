@@ -1,0 +1,100 @@
+#------------------------------------------------------------------
+# NRL rule set v0.0.0.1.
+# This is a direct implementation of the NRL closure rules.
+# $Id: $
+#------------------------------------------------------------------
+
+#------------------------------------------------------------------
+# NRL Axioms
+#------------------------------------------------------------------
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . 
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>. 
+@prefix nrl: <http://www.semanticdesktop.org/ontologies/2007/08/15/nrl#>.
+
+-> (rdf:type      rdfs:range rdfs:Class).
+-> (rdfs:Resource  rdf:type  rdfs:Class).
+-> (rdfs:Literal   rdf:type  rdfs:Class).
+-> (rdf:Statement  rdf:type  rdfs:Class).
+-> (rdf:nil        rdf:type  rdf:List).
+-> (rdf:subject    rdf:type  rdf:Property).
+-> (rdf:object     rdf:type  rdf:Property).
+-> (rdf:predicate  rdf:type  rdf:Property).
+-> (rdf:first      rdf:type  rdf:Property).
+-> (rdf:rest       rdf:type  rdf:Property).
+        
+-> (rdfs:subPropertyOf rdfs:domain rdf:Property).
+-> (rdfs:subClassOf rdfs:domain rdfs:Class).
+-> (rdfs:domain rdfs:domain rdf:Property).
+-> (rdfs:range rdfs:domain rdf:Property).
+-> (rdf:subject rdfs:domain rdf:Statement).
+-> (rdf:predicate rdfs:domain rdf:Statement).
+-> (rdf:object rdfs:domain rdf:Statement).
+-> (rdf:first rdfs:domain rdf:List).
+-> (rdf:rest rdfs:domain rdf:List).
+
+-> (rdfs:subPropertyOf rdfs:range rdf:Property).
+-> (rdfs:subClassOf rdfs:range rdfs:Class).
+-> (rdfs:domain rdfs:range rdfs:Class).
+-> (rdfs:range rdfs:range rdfs:Class).
+-> (rdf:type rdfs:range rdfs:Class).
+-> (rdfs:comment rdfs:range rdfs:Literal).
+-> (rdfs:label rdfs:range rdfs:Literal).
+-> (rdf:rest rdfs:range rdf:List).
+
+# NRL does not use collections
+# -> (rdf:Alt rdfs:subClassOf rdfs:Container).
+# -> (rdf:Bag rdfs:subClassOf rdfs:Container).
+# -> (rdf:Seq rdfs:subClassOf rdfs:Container).
+# -> (rdfs:ContainerMembershipProperty rdfs:subClassOf rdf:Property).
+
+-> (rdfs:isDefinedBy rdfs:subPropertyOf rdfs:seeAlso).
+
+-> (rdf:XMLLiteral rdf:type rdfs:Datatype).
+-> (rdfs:Datatype rdfs:subClassOf rdfs:Class).
+
+# Transativity of subClass subProperty
+-> (rdfs:subClassOf rdf:type nrl:TransitiveProperty).
+-> (rdfs:subPropertyOf rdf:type nrl:TransitiveProperty).
+
+#------------------------------------------------------------------
+# NRL Closure rules
+#------------------------------------------------------------------
+
+# This one could be omitted since the results are not really very interesting!
+
+#commented out by Antoni Mylka on 12.07.2007
+#[rdf1and4: (?x ?p ?y) -> (?p rdf:type rdf:Property), (?x rdf:type rdfs:Resource), (?y rdf:type rdfs:Resource)]
+
+[rdfs7b: (?a rdf:type rdfs:Class) -> (?a rdfs:subClassOf rdfs:Resource)] 
+
+# Not needed for closed-world semantics
+#[rdfs2:  (?x ?p ?y), (?p rdfs:domain ?c) -> (?x rdf:type ?c)] 
+#[rdfs3:  (?x ?p ?y), (?p rdfs:range ?c) -> (?y rdf:type ?c)] 
+
+# Not needed when subPropertyOf is declared transitive 
+# [rdfs5a: (?a rdfs:subPropertyOf ?b), (?b rdfs:subPropertyOf ?c) -> (?a rdfs:subPropertyOf ?c)] 
+
+[rdfs5b: (?a rdf:type rdf:Property) -> (?a rdfs:subPropertyOf ?a)] 
+[rdfs6:  (?a ?p ?b), (?p rdfs:subPropertyOf ?q) -> (?a ?q ?b)] 
+[rdfs7:  (?a rdf:type rdfs:Class) -> (?a rdfs:subClassOf ?a)]
+
+# Not needed when subClassOf is declared transitive
+# [rdfs8:  (?a rdfs:subClassOf ?b), (?b rdfs:subClassOf ?c) -> (?a rdfs:subClassOf ?c)] 
+
+[rdfs9:  (?x rdfs:subClassOf ?y), (?a rdf:type ?x) -> (?a rdf:type ?y)] 
+
+# No collections in NRL
+# [rdfs10: (?x rdf:type rdfs:ContainerMembershipProperty) -> (?x rdfs:subPropertyOf rdfs:member)] 
+
+# Inverse properties
+[nrl1: (?x ?p ?y), (?p nrl:inverseProperty ?pI) -> (?y ?pI ?x)]
+[nrl2: (?p nrl:inverseProperty ?pI) -> (?pI nrl:inverseProperty ?p)]
+
+# Transitive Properties
+[transitivePropery1: (?P rdf:type nrl:TransitiveProperty), (?A ?P ?B), (?B ?P ?C) -> (?A ?P ?C)]
+
+# Symmetric Properties 
+[symmetricProperty1: (?P rdf:type nrl:SymmetricProperty), (?X ?P ?Y) -> (?Y ?P ?X)]
+
+
