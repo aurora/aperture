@@ -220,8 +220,6 @@ public class UnionMemoryStoreConnection extends MemoryStoreConnection implements
 		}
 		return res;
 	}
-	
-
 	/**
 	 * Uses the MemoryStore's statement sizes to give cost estimates based on the
 	 * size of the expected results. This process could be improved with
@@ -233,18 +231,14 @@ public class UnionMemoryStoreConnection extends MemoryStoreConnection implements
 	protected class MemEvaluationStatistics extends EvaluationStatistics {
 
 		@Override
-		protected CardinalityCalculator getCardinalityCalculator(Set<String> boundVars) {
-			return new MemCardinalityCalculator(boundVars);
+		protected CardinalityCalculator createCardinalityCalculator() {
+			return new MemCardinalityCalculator();
 		}
 
 		protected class MemCardinalityCalculator extends CardinalityCalculator {
 
-			public MemCardinalityCalculator(Set<String> boundVars) {
-				super(boundVars);
-			}
-
 			@Override
-			public void meet(StatementPattern sp) {
+			public double getCardinality(StatementPattern sp) {
 				Resource subj = (Resource)getConstantValue(sp.getSubjectVar());
 				URI pred = (URI)getConstantValue(sp.getPredicateVar());
 				Value obj = getConstantValue(sp.getObjectVar());
@@ -262,8 +256,7 @@ public class UnionMemoryStoreConnection extends MemoryStoreConnection implements
 						&& memObj == null || context != null && memContext == null)
 				{
 					// non-existent subject, predicate, object or context
-					cardinality = 0;
-					return;
+					return 0.0;
 				}
 
 				// Search for the smallest list that can be used by the iterator
@@ -281,29 +274,27 @@ public class UnionMemoryStoreConnection extends MemoryStoreConnection implements
 					listSizes.add(memContext.getContextStatementCount());
 				}
 
+				double cardinality;
+
 				if (listSizes.isEmpty()) {
+					// all wildcards
 					cardinality = unionstore.size();
-
-					int sqrtFactor = 2 * countBoundVars(sp);
-
-					if (sqrtFactor > 1) {
-						cardinality = Math.pow(cardinality, 1.0 / sqrtFactor);
-					}
 				}
 				else {
 					cardinality = Collections.min(listSizes);
 
-					int constantVarCount = countConstantVars(sp);
-					int boundVarCount = countBoundVars(sp);
-
-					// Subtract 1 from constantVarCount as this was used for the list
+					// List<Var> vars = getVariables(sp);
+					// int constantVarCount = countConstantVars(vars);
+					//
+					// // Subtract 1 from var count as this was used for the list
 					// size
-					int sqrtFactor = 2 * boundVarCount + Math.max(0, constantVarCount - 1);
-
-					if (sqrtFactor > 1) {
-						cardinality = Math.pow(cardinality, 1.0 / sqrtFactor);
-					}
+					// double unboundVarFactor = (double)(vars.size() -
+					// constantVarCount) / (vars.size() - 1);
+					//
+					// cardinality = Math.pow(cardinality, unboundVarFactor);
 				}
+
+				return cardinality;
 			}
 
 			protected Value getConstantValue(Var var) {
@@ -315,6 +306,96 @@ public class UnionMemoryStoreConnection extends MemoryStoreConnection implements
 			}
 		}
 	} // end inner class MemCardinalityCalculator
+//
+//	/**
+//	 * Uses the MemoryStore's statement sizes to give cost estimates based on the
+//	 * size of the expected results. This process could be improved with
+//	 * repository statistics about size and distribution of statements.
+//	 * 
+//	 * @author Arjohn Kampman
+//	 * @author James Leigh
+//	 */
+//	protected class MemEvaluationStatistics extends EvaluationStatistics {
+//
+//		@Override
+//		protected CardinalityCalculator createCardinalityCalculator() {
+//			return new MemCardinalityCalculator();
+//		}
+//
+//		protected class MemCardinalityCalculator extends CardinalityCalculator {
+//
+//			@Override
+//			public void meet(StatementPattern sp) {
+//				Resource subj = (Resource)getConstantValue(sp.getSubjectVar());
+//				URI pred = (URI)getConstantValue(sp.getPredicateVar());
+//				Value obj = getConstantValue(sp.getObjectVar());
+//				Resource context = (Resource)getConstantValue(sp.getContextVar());
+//
+//				MemValueFactory valueFactory = store.getValueFactory();
+//
+//				// Perform look-ups for value-equivalents of the specified values
+//				MemResource memSubj = valueFactory.getMemResource(subj);
+//				MemURI memPred = valueFactory.getMemURI(pred);
+//				MemValue memObj = valueFactory.getMemValue(obj);
+//				MemResource memContext = valueFactory.getMemResource(context);
+//
+//				if (subj != null && memSubj == null || pred != null && memPred == null || obj != null
+//						&& memObj == null || context != null && memContext == null)
+//				{
+//					// non-existent subject, predicate, object or context
+//					cardinality = 0;
+//					return;
+//				}
+//
+//				// Search for the smallest list that can be used by the iterator
+//				List<Integer> listSizes = new ArrayList<Integer>(4);
+//				if (memSubj != null) {
+//					listSizes.add(memSubj.getSubjectStatementCount());
+//				}
+//				if (memPred != null) {
+//					listSizes.add(memPred.getPredicateStatementCount());
+//				}
+//				if (memObj != null) {
+//					listSizes.add(memObj.getObjectStatementCount());
+//				}
+//				if (memContext != null) {
+//					listSizes.add(memContext.getContextStatementCount());
+//				}
+//
+//				if (listSizes.isEmpty()) {
+//					cardinality = unionstore.size();
+//
+//					int sqrtFactor = 2 * countBoundVars(sp);
+//
+//					if (sqrtFactor > 1) {
+//						cardinality = Math.pow(cardinality, 1.0 / sqrtFactor);
+//					}
+//				}
+//				else {
+//					cardinality = Collections.min(listSizes);
+//
+//					int constantVarCount = countConstantVars(sp);
+//					int boundVarCount = countBoundVars(sp);
+//
+//					// Subtract 1 from constantVarCount as this was used for the list
+//					// size
+//					int sqrtFactor = 2 * boundVarCount + Math.max(0, constantVarCount - 1);
+//
+//					if (sqrtFactor > 1) {
+//						cardinality = Math.pow(cardinality, 1.0 / sqrtFactor);
+//					}
+//				}
+//			}
+//
+//			protected Value getConstantValue(Var var) {
+//				if (var != null) {
+//					return var.getValue();
+//				}
+//
+//				return null;
+//			}
+//		}
+//	} // end inner class MemCardinalityCalculator
 
 	@Override
 	protected boolean removeStatementsInternal(Resource subj, URI pred,

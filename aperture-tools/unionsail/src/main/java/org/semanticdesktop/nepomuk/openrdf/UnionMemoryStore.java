@@ -31,6 +31,7 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.sail.NotifyingSailConnection;
 import org.openrdf.sail.SailConnection;
 import org.openrdf.sail.SailException;
 import org.openrdf.sail.memory.MemoryStore;
@@ -143,7 +144,7 @@ protected HashMap<Resource, Set<Resource>> unions;
 	
 	
 	@Override
-	protected SailConnection getConnectionInternal()
+	protected NotifyingSailConnection getConnectionInternal()
 		throws SailException
 	{
 		if (!super.isInitialized()) {

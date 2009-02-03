@@ -33,6 +33,7 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.sail.NotifyingSailConnection;
 import org.openrdf.sail.Sail;
 import org.openrdf.sail.SailConnection;
 import org.openrdf.sail.SailException;
@@ -195,7 +196,7 @@ public class UnionNativeStore extends NativeStore implements Sail, UnionSail {
 	
 	
 	@Override
-	protected SailConnection getConnectionInternal()
+	protected NotifyingSailConnection getConnectionInternal()
 		throws SailException
 	{
 		if (!super.isInitialized()) {
