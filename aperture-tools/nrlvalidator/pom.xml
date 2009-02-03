@@ -1,80 +1,48 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.semanticdesktop.nepomuk</groupId>
-  <artifactId>nrlvalidator</artifactId>
-  <name>The NRL Validator</name>
-  <version>1.0-SNAPSHOT</version>
-  <description>A simple validator for NRL data</description>
-  <dependencies>
-    <dependency>
-      <groupId>org.semanticdesktop.nepomuk</groupId>
-      <artifactId>unionsail</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.semanticdesktop.nepomuk</groupId>
-      <artifactId>infsail</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.semweb4j</groupId>
-      <artifactId>rdf2go.api</artifactId>
-      <version>4.7.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.semweb4j</groupId>
-      <artifactId>rdf2go.impl.sesame22</artifactId>
-      <version>4.7.0</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.5</version>
-      <scope>test</scope>
-    </dependency>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <dependency>
-      <groupId>org.openrdf.sesame</groupId>
-      <artifactId>sesame-rio-rdfxml</artifactId>
-      <version>2.2.4</version>
-      <scope>test</scope>
-    </dependency>
+	<modelVersion>4.0.0</modelVersion>
 
+	<parent>
+		<groupId>org.semanticdesktop.nepomuk</groupId>
+		<artifactId>aperture-tools</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
 
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-compiler-plugin</artifactId>
-	<configuration>
-	  <source>1.5</source>
-	  <target>1.5</target>
-	</configuration>
-      </plugin>
-    </plugins>
-  </build>
+	<artifactId>nrlvalidator</artifactId>
 
-  <repositories>
-    <repository>
-      <id>rdf2go-repo</id>
-      <url>http://mavenrepo.fzi.de/semweb4j.org/repo</url>
-    </repository>
+	<name>The NRL Validator</name>
+	<description>A simple validator for NRL data</description>
 
-  <repository>
-    <releases>
-      <enabled>true</enabled>
-      <updatePolicy>always</updatePolicy>
-      <checksumPolicy>warn</checksumPolicy>
-    </releases>
-    <snapshots>
-      <enabled>false</enabled>
-      <updatePolicy>never</updatePolicy>
-      <checksumPolicy>fail</checksumPolicy>
-    </snapshots>
-    <id>aduna-repo</id>
-    <name>Aduna Repository</name>
-    <url>http://repo.aduna-software.org/maven2/releases</url>
-  </repository>
-  </repositories>
+	<dependencies>
+		<dependency>
+			<groupId>org.semanticdesktop.nepomuk</groupId>
+			<artifactId>unionsail</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.semanticdesktop.nepomuk</groupId>
+			<artifactId>infsail</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.semweb4j</groupId>
+			<artifactId>rdf2go.api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.semweb4j</groupId>
+			<artifactId>rdf2go.impl.sesame22</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-rio-rdfxml</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
