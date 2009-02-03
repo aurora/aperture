@@ -91,7 +91,7 @@ public class XmlSafetyTest extends TestCase {
         LanguageTagLiteral ltLiteralBadFixed = (LanguageTagLiteral)XmlSafetyUtils.makeXmlSafe(model, ltLiteralBad);
         assertTrue(ltLiteralBad != ltLiteralBadFixed);
         assertEquals("Bad   literal ",ltLiteralBadFixed.getValue());
-        
+        model.close();
     }
 
     /**

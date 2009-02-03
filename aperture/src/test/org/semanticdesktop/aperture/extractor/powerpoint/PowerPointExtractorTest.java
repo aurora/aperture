@@ -57,5 +57,6 @@ public class PowerPointExtractorTest extends ExtractorTestBase {
         testXmlSafety(container1.getModel());
         
         validate(container1);
+        container1.dispose();
     }
 }

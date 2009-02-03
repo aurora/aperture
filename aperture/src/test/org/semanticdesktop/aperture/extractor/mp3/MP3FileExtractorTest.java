@@ -34,6 +34,7 @@ public class MP3FileExtractorTest extends FileExtractorTestBase {
         checkStatement(NID3.trackNumber, "2", metadata);
         checkStatement(NID3.contentType,"Instrumental",metadata);
         validate(metadata);
+        metadata.dispose();
     }
     
     /**
@@ -55,5 +56,6 @@ public class MP3FileExtractorTest extends FileExtractorTestBase {
         assertTrue(metadata.getAll(NID3.albumTitle).size() == 0);
         assertTrue(metadata.getAll(NID3.trackNumber).size() == 0);
         validate(metadata);
+        metadata.dispose();
     }
 }

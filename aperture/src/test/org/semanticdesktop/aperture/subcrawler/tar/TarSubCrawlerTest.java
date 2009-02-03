@@ -43,6 +43,7 @@ public class TarSubCrawlerTest extends SubCrawlerTestBase {
         URI uri = new URIImpl("tar:uri:dummyuri/pdf-openoffice-2.0-writer.pdf.tar!/pdf-openoffice-2.0-writer.pdf");
         RDFContainer container = new RDFContainerImpl(handler.getModel(),uri);
         checkStatement(NIE.plainTextContent, "is an example document created with OpenOffice 2.0", container);
+        handler.close();
     }
     
     public void testTarSubCrawlerIncrementalCombination() throws Exception {

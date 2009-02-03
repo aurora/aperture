@@ -54,6 +54,7 @@ public class AbstractAddressbookCrawlerTest extends ApertureTestBase {
         // the exit code of the crawler is supposed to be STOP_REQUESTED
         assertEquals(ExitCode.STOP_REQUESTED, crawler.getCrawlReport().getExitCode());
         crawler.getDataSource().getConfiguration().dispose(); // dispose the dummy data source configuration
+        handler.close();
     }
 
     /**
@@ -85,6 +86,7 @@ public class AbstractAddressbookCrawlerTest extends ApertureTestBase {
         // the exit code of the crawler is supposed to be STOP_REQUESTED
         assertEquals(ExitCode.STOP_REQUESTED, crawler.getCrawlReport().getExitCode());
         crawler.getDataSource().getConfiguration().dispose(); // dispose the dummy data source configuration
+        handler.close();
     }
     
     /**

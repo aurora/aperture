@@ -100,6 +100,7 @@ public class MimeSubCrawlerTest extends SubCrawlerTestBase {
         assertNewModUnmod(handler, 2, 0, 0, 0); // two attachments - two new objects
         assertTrue(handler.getNewObjects().contains("mime:uri:dummyuri/mail-multipart-test.eml!/1"));
         assertTrue(handler.getNewObjects().contains("mime:uri:dummyuri/mail-multipart-test.eml!/2"));
+        handler.close();
     }
 	
     /**

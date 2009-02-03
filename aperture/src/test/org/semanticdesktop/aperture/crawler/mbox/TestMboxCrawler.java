@@ -54,6 +54,8 @@ public class TestMboxCrawler extends ApertureTestBase {
         TestIncrementalCrawlerHandler handler2 = crawl("mbox-aperture-inc2",accessData, handler1.getFile());
         // one new mail, the mail folder has been changed, while all other four mails are unchanged 
         assertNewModUnmodDel(handler2, 1, 1, 4, 0);
+        handler1.close();
+        handler2.close();
     }
     
     public void testDeletedMail() throws Exception {
@@ -61,9 +63,11 @@ public class TestMboxCrawler extends ApertureTestBase {
         TestIncrementalCrawlerHandler handler1 = crawl("mbox-aperture-inc1",accessData, null);
         // four mails and the mailbox, everything is new
         assertNewModUnmodDel(handler1, 5, 0, 0, 0);
+        handler1.close();
         TestIncrementalCrawlerHandler handler2 = crawl("mbox-aperture-inc3",accessData, handler1.getFile());
         // no new mails, the mail folder has been changed, three unchanged emails and one deleted email 
         assertNewModUnmodDel(handler2, 0, 1, 3, 1);
+        handler2.close();
     }
     
     public void testModifiedMail() throws Exception {
@@ -71,11 +75,13 @@ public class TestMboxCrawler extends ApertureTestBase {
         TestIncrementalCrawlerHandler handler1 = crawl("mbox-aperture-inc1",accessData, null);
         // four mails and the mailbox, everything is new
         assertNewModUnmodDel(handler1, 5, 0, 0, 0);
+        handler1.close();
         TestIncrementalCrawlerHandler handler2 = crawl("mbox-aperture-inc4",accessData, handler1.getFile());
         // the crawler doesn't detect changes in emails, the email that has been changed is reported
         // as a new one, while the old one has been deleted
         // one new, the mailbox has been modified, 3 unchanged and 1 deleted
         assertNewModUnmodDel(handler2, 1, 1, 3, 1);
+        handler2.close();
     }
     
     public void testMaximumSize() throws Exception {
@@ -90,6 +96,9 @@ public class TestMboxCrawler extends ApertureTestBase {
         TestIncrementalCrawlerHandler handler3 = crawl("mbox-testfolder",null, null, 20);
         // only the mailbox is returned, all other four dataobjects should be filtered out
         assertNewModUnmodDel(handler3, 1, 0, 0, 0);
+        handler1.close();
+        handler2.close();
+        handler3.close();
     }
     
     private TestIncrementalCrawlerHandler crawl(String fileName, AccessData data, File oldTempFile) throws Exception {

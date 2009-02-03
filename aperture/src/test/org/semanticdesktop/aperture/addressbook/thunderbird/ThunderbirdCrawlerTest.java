@@ -56,8 +56,8 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
 	public void testThunderbird() throws Exception { 
 		
 		ThunderbirdAddressbookDataSource ds=new ThunderbirdAddressbookDataSource();
-		
-		ds.setConfiguration(createRDFContainer(URN_TEST_THUNDER_BIRD_DATA_SOURCE));
+		RDFContainer cont = createRDFContainer(URN_TEST_THUNDER_BIRD_DATA_SOURCE);
+		ds.setConfiguration(cont);
         
 		//ConfigurationUtil.setBasepath(makeFileFromResource(data),ds.getConfiguration());
         ds.setThunderbirdAddressbookPath(makeFileFromResource(data));
@@ -89,6 +89,7 @@ public class ThunderbirdCrawlerTest extends ApertureTestBase implements CrawlerH
             model.createURI(URN_TEST_THUNDER_BIRD_DATA_SOURCE),
             new DataObjectTreeModelTester());
 		model.close();
+		cont.dispose();
 	}
 
 	public RDFContainer getRDFContainer(URI uri) {

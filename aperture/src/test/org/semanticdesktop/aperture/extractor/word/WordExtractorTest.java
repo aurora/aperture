@@ -63,5 +63,8 @@ public class WordExtractorTest extends ExtractorTestBase {
         validate(container1);
         validate(container2);
         validate(container3);
+        container1.dispose();
+        container2.dispose();
+        container3.dispose();
     }
 }

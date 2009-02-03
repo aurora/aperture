@@ -106,7 +106,7 @@ public class TestMboxCrawlerMultiFolder extends ApertureTestBase {
             "      FILTER(regex(str(?x),\".*/lists.sbd/www-rdf-calendar/.*\"))}");
         
         validate(model);
-        
+        handler.close();
         dataSource.setMaximumDepth(1);
         handler = crawl(null);
         model = handler.getModel();
@@ -128,6 +128,7 @@ public class TestMboxCrawlerMultiFolder extends ApertureTestBase {
             "SELECT ?x WHERE " +
             "{     ?x " + RDF.type.toSPARQL() + " " + NMO.Email.toSPARQL() + " . " +
             "      FILTER(regex(str(?x),\".*/lists.sbd/www-rdf-calendar/.*\"))}");
+        handler.close();
     }
     
     public void testDomainBoundaries() throws Exception {
@@ -161,7 +162,7 @@ public class TestMboxCrawlerMultiFolder extends ApertureTestBase {
             "      FILTER(regex(str(?x),\".*/lists.sbd/sourceforge/.*\"))}");
         
         validate(model);
-        
+        handler.close();
     }
     
     private TestIncrementalCrawlerHandler crawl(AccessData data) throws Exception {
