@@ -27,6 +27,8 @@ public class TestNativeStoreModelAccessData extends AccessDataTest {
 	private File accessDataFile;
 	
 	private Model model;
+	
+	private Repository repo;
 
 	public void setUp() throws IOException, SailException, RepositoryException {
 		tmpDir = new File(System.getProperty("java.io.tmpdir"), TMP_SUBDIR)
@@ -34,16 +36,17 @@ public class TestNativeStoreModelAccessData extends AccessDataTest {
 		FileUtil.deltree(tmpDir);
 		tmpDir.mkdir();
 		NativeStore store = new NativeStore(tmpDir);
-		Repository repo = new SailRepository(store);
+		repo = new SailRepository(store);
 		repo.initialize();
 		model = new RepositoryModel(repo);
 		model.open();
 		super.setUp(new ModelAccessData(model));
 	}
 	
-    public void tearDown() {
+    public void tearDown() throws RepositoryException {
         // delete the temporary folder
         model.close();
+        repo.shutDown();
         FileUtil.deltree(tmpDir);
     }
 }
