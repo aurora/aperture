@@ -42,10 +42,12 @@ your copy of ANT at http://ant.apache.org/
         <property name="src.test.dir" value="${src.dir}/test" />
         <property name="src.examples.dir" value="${src.dir}/examples" />
         <property name="src.activators.dir" value="${src.dir}/activators" />
+    	<property name="src.integration.test.dir" value="${src.dir}/integration-test" />
         <property name="manifest.dir" value="${src.dir}/manifest" />
 
         <property name="bin.dir" value="${basedir}/bin" />
         <property name="lib.dir" value="${basedir}/lib" />
+    	<property name="lib.integration.dir" value="${basedir}/integration-test-lib" />
         <property name="doc.dir" value="${basedir}/doc" />
         <property name="patches.dir" value="${basedir}/patches" />
         <property name="doc.ontologies.dir" value="${doc.dir}/ontology" />
@@ -54,10 +56,9 @@ your copy of ANT at http://ant.apache.org/
         <property name="build.dir" value="${basedir}/build" />
         <property name="classes.java.dir" value="${build.dir}/classes" />
         <property name="classes.test.dir" value="${build.dir}/classes-test" />
-        <property name="classes.examples.dir"
-                  value="${build.dir}/classes-examples" />
-        <property name="classes.activators.dir"
-                  value="${build.dir}/classes-activators" />
+        <property name="classes.examples.dir" value="${build.dir}/classes-examples" />
+        <property name="classes.activators.dir" value="${build.dir}/classes-activators" />
+    	<property name="classes.integration.test.dir" value="${build.dir}/classes-integration" />
 
         <!-- dist dirs -->
         <property name="dist.dir" value="${build.dir}/dist" />
@@ -149,6 +150,18 @@ your copy of ANT at http://ant.apache.org/
                 <include name="*.jar" />
             </fileset>
         </path>
+    	
+    	<path id="classpath.integration.lib">
+    		<fileset dir="${lib.integration.dir}">
+	            <include name="*.jar" />
+	        </fileset>
+    	</path>
+    	
+    	<path id="classpath.osgirelease.jars">
+    		<fileset dir="${osgirelease.lib.dir}">
+    			<include name="*.jar"/>
+    		</fileset>
+    	</path>
 
         <!-- classpath to compile tests -->
         <path id="classpath.test">
@@ -173,6 +186,14 @@ your copy of ANT at http://ant.apache.org/
             <path refid="classpath.test" />
             <pathelement location="${classes.test.dir}" />
         </path>
+    	
+    	<!-- classpath to run integraion tests -->
+    	<path id="classpath.integration.test">
+    		<path refid="classpath.osgirelease.jars" />
+    		<path refid="classpath.integration.lib" />
+    		<pathelement location="${lib.dir}/org.eclipse.osgi_3.4.0.v20080605-1900.jar" />
+            <pathelement location="${classes.integration.test.dir}" />
+    	</path>
 
         <!-- pattern to define resource files -->
         <patternset id="resources">
@@ -314,6 +335,30 @@ your copy of ANT at http://ant.apache.org/
         </copy>
     </target>
 
+	<target name="compile.integration.test"
+	            depends="init, compile"
+	            description="compile Aperture OSGI integration tests">
+	        <!-- compile integration tests -->
+			<mkdir dir="${classes.integration.test.dir}" />
+	        <javac source="${java.source.version}"
+	               target="${java.target.version}"
+	               srcdir="${src.integration.test.dir}"
+	               destdir="${classes.integration.test.dir}"
+	               classpathref="classpath.integration.test"
+	               debug="${compile.debug}"
+	               debuglevel="${compile.debuglevel}"
+	               deprecation="${compile.deprecation}"
+	               optimize="${compile.optimize}" 
+	               encoding="${javac.encoding}"/>
+
+	        <!-- copy resource files -->
+	        <copy todir="${classes.integration.test.dir}">
+	            <fileset dir="${src.integration.test.dir}">
+	                <patternset refid="resources" />
+	            </fileset>
+	        </copy>
+	    </target>
+	
     <!-- ******************************************************************* -->
 	<!-- ************** NORMAL - NON-OSGI JARS GENERATION ****************** -->
 	<!-- ******************************************************************* -->
@@ -681,7 +726,7 @@ your copy of ANT at http://ant.apache.org/
         </zip>
     </target>
 
-    <target name="osgirelease"
+    <target name="prepareosgirelease"
             depends="release, jar.bundles"
             description="builds the normal release and adds the osgi bundles zip">
 
@@ -763,6 +808,11 @@ your copy of ANT at http://ant.apache.org/
             <exclude name="**/CVS, **/.svn/**" />
         </zip>
     </target>
+	
+	<target name="osgirelease"
+		    depends="prepareosgirelease, test.integration"
+			description="Does the integration-testing of the osgi release">
+	</target>
 
     <target name="package"
             depends="osgirelease"
@@ -812,6 +862,8 @@ your copy of ANT at http://ant.apache.org/
                failureproperty="unit.test.failed"
                showoutput="yes">
             <classpath refid="classpath.junit" />
+       		<!-- uncomment to see what went wrong in the result.txt file -->
+       		<!-- <formatter type="plain" /> -->
             <test name="org.semanticdesktop.aperture.TestAll"
                   outfile="result" />
             <jvmarg value="-Daperture.validation.skip=${aperture.validation.skip}"/>
@@ -819,4 +871,21 @@ your copy of ANT at http://ant.apache.org/
         <fail if="unit.test.failed" message="Tests failed." />
     </target>
     
+	<target name="test.integration"
+	            depends="compile.integration.test"
+	            description="test the Aperture core classes">
+       <junit fork="yes"
+               printsummary="withOutAndErr"
+               failureproperty="unit.test.failed"
+               showoutput="yes">
+            <classpath refid="classpath.integration.test" />
+       	    <!-- uncomment to see what went wrong in the result-integration.txt file -->
+       		<!-- <formatter type="plain" /> -->
+            <test name="org.semanticdesktop.aperture.integration.IntegrationTestAll"
+                  outfile="result-integration" />
+            <jvmarg value="-Daperture.validation.skip=${aperture.validation.skip}"/>
+        </junit>
+        <fail if="unit.test.failed" message="Tests failed." />
+    </target>
+	
 </project>

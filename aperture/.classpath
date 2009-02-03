@@ -4,11 +4,10 @@
 	<classpathentry kind="src" path="src/java"/>
 	<classpathentry kind="src" path="src/test"/>
 	<classpathentry kind="src" path="src/activators"/>
+	<classpathentry kind="src" output="build/classes-integration" path="src/integration-test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="lib/junit-3.8.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/winlaf-0.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/applewrapper-0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/osgi.core-4.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/DFKIUtils2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/infsail-0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/nrlvalidator-0.1.jar"/>
@@ -25,9 +24,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/aduna-commons-xml-2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ant-compression-utils-1.7.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/demork-2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/slf4j-api-1.5.0.jar" sourcepath="D:/software/slf4j-1.5.0/slf4j-api/src/main/java"/>
-	<classpathentry exported="true" kind="lib" path="lib/slf4j-jdk14-1.5.0.jar" sourcepath="D:/software/slf4j-1.5.0/slf4j-jdk14/src/main/java"/>
-	<classpathentry exported="true" kind="lib" path="lib/jcl104-over-slf4j-1.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/com.drew.metadata_2.4.0.jar"/>
 	<classpathentry kind="lib" path="lib/org.apache.poi_3.2.0.jar"/>
 	<classpathentry kind="lib" path="lib/org.fontbox_0.2.0.jar"/>
@@ -39,11 +35,30 @@
 	<classpathentry kind="lib" path="lib/jutf7-0.9.0.jar"/>
 	<classpathentry kind="lib" path="lib/javax.activation_1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/javax.mail_1.4.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/rdf2go.api-4.7.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/rdf2go.impl.sesame22-4.7.0.jar"/>
+	<classpathentry kind="lib" path="lib/rdf2go.api-4.7.0.jar"/>
+	<classpathentry kind="lib" path="lib/rdf2go.impl.sesame22-4.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/com.sun.jai.codec_1.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/com.sun.jai.core_1.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/javax.xml_1.3.4.v200806030440.jar"/>
 	<classpathentry kind="lib" path="lib/openrdf-sesame-onejar-osgi-2.2.3.jar"/>
+	<classpathentry kind="lib" path="integration-test-lib/com.springsource.net.sf.cglib-2.1.3.jar"/>
+	<classpathentry kind="lib" path="integration-test-lib/com.springsource.org.aopalliance-1.0.0.jar"/>
+	<classpathentry kind="lib" path="integration-test-lib/com.springsource.org.objectweb.asm-2.2.3.jar"/>
+	<classpathentry kind="lib" path="integration-test-lib/spring-aop-2.5.5.jar"/>
+	<classpathentry kind="lib" path="integration-test-lib/spring-beans-2.5.5.jar"/>
+	<classpathentry kind="lib" path="integration-test-lib/spring-context-2.5.5.jar"/>
+	<classpathentry kind="lib" path="integration-test-lib/spring-core-2.5.5.jar"/>
+	<classpathentry kind="lib" path="integration-test-lib/spring-osgi-annotation-1.1.2.jar"/>
+	<classpathentry kind="lib" path="integration-test-lib/spring-osgi-core-1.1.2.jar"/>
+	<classpathentry kind="lib" path="integration-test-lib/spring-osgi-extender-1.1.2.jar"/>
+	<classpathentry kind="lib" path="integration-test-lib/spring-osgi-io-1.1.2.jar"/>
+	<classpathentry kind="lib" path="integration-test-lib/spring-osgi-mock-1.1.2.jar"/>
+	<classpathentry kind="lib" path="integration-test-lib/spring-osgi-test-1.1.2.jar"/>
+	<classpathentry kind="lib" path="integration-test-lib/spring-test-2.5.5.jar"/>
+	<classpathentry kind="lib" path="lib/jcl104-over-slf4j-1.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/junit-3.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-jdk14-1.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.osgi_3.4.0.v20080605-1900.jar"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>
