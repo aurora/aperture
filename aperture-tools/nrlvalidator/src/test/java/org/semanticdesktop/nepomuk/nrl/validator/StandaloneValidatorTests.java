@@ -4,11 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.UUID;
 
 import org.junit.Test;
 import org.ontoware.rdf2go.RDF2Go;
@@ -16,8 +13,6 @@ import org.ontoware.rdf2go.model.Model;
 import org.ontoware.rdf2go.model.Syntax;
 import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.vocabulary.RDFS;
-import org.openrdf.model.vocabulary.OWL;
-import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.sail.SailRepository;
@@ -26,15 +21,12 @@ import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.RDFWriterFactory;
 import org.openrdf.rio.RDFWriterRegistry;
 import org.openrdf.sail.Sail;
-import org.openrdf.sail.memory.MemoryStore;
-import org.openrdf.sail.nativerdf.NativeStore;
 import org.semanticdesktop.nepomuk.nrl.validator.exception.ModelTesterException;
 import org.semanticdesktop.nepomuk.nrl.validator.exception.StandaloneValidatorException;
 import org.semanticdesktop.nepomuk.nrl.validator.impl.StandaloneValidatorImpl;
 import org.semanticdesktop.nepomuk.nrl.validator.testres.TESTRESOURCES;
 import org.semanticdesktop.nepomuk.openrdf.InfSail;
 import org.semanticdesktop.nepomuk.openrdf.UnionMemoryStore;
-import org.semanticdesktop.nepomuk.openrdf.UnionNativeStore;
 
 public class StandaloneValidatorTests {
     
