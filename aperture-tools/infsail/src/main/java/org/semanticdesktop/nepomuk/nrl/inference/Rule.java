@@ -744,7 +744,7 @@ public class Rule implements ClauseEntry {
         /**
          * Return a map of all the discovered prefixes
          */
-        public Map getPrefixMap() {
+        public Map<String, String> getPrefixMap() {
             return prefixMapping.getNsPrefixMap();
         }
         

@@ -151,9 +151,9 @@ public class BindingStack implements BindingEnvironment {
             Functor functor = (Functor)node;
             if (functor.isGround()) return node;
             Value[] args = functor.getArgs();
-            ArrayList boundargs = new ArrayList(args.length);
+            ArrayList<Value> boundargs = new ArrayList<Value>(args.length);
             for (int i = 0; i < args.length; i++) {
-                Object binding = getBinding(args[i]);
+                Value binding = getBinding(args[i]);
                 if (binding == null) {
                     // Not sufficent bound to instantiate functor yet
                     return null;

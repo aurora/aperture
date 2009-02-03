@@ -9,10 +9,10 @@ package org.semanticdesktop.nepomuk.nrl.inference.utils;
 
 import info.aduna.xml.XMLUtil;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-
-import com.sun.org.apache.xerces.internal.util.XMLChar;
 
 
 /**
@@ -24,20 +24,20 @@ import com.sun.org.apache.xerces.internal.util.XMLChar;
 */
 public class PrefixMappingImpl implements PrefixMapping
     {
-    protected Map prefixToURI;
-    protected Map URItoPrefix;
+    protected Map<String, String> prefixToURI;
+    protected Map<String, String> URItoPrefix;
     protected boolean locked;
     
     public PrefixMappingImpl()
-        { prefixToURI = new HashMap();
-        URItoPrefix = new HashMap(); }
+        { prefixToURI = new HashMap<String, String>();
+        URItoPrefix = new HashMap<String, String>(); }
     
     protected void set( String prefix, String uri )
         { prefixToURI.put( prefix, uri );
         URItoPrefix.put( uri, prefix ); }
     
     protected String get( String prefix )
-        { return (String) prefixToURI.get( prefix ); }
+        { return prefixToURI.get( prefix ); }
            
     public PrefixMapping lock()
         { 
@@ -58,7 +58,7 @@ public class PrefixMappingImpl implements PrefixMapping
     public PrefixMapping removeNsPrefix( String prefix )
         {
         checkUnlocked();
-        String uri = (String) prefixToURI.remove( prefix );
+        String uri = prefixToURI.remove( prefix );
         regenerateReverseMapping();
         return this;
         }
@@ -66,10 +66,10 @@ public class PrefixMappingImpl implements PrefixMapping
     protected void regenerateReverseMapping()
         {
         URItoPrefix.clear();
-        Iterator it = prefixToURI.entrySet().iterator();
+        Iterator<Map.Entry<String, String>> it = prefixToURI.entrySet().iterator();
         while (it.hasNext())
             {
-            Map.Entry e = (Map.Entry) it.next();
+            Map.Entry<String, String> e = it.next();
             URItoPrefix.put( e.getValue(), e.getKey() );
             } 
         }
@@ -86,7 +86,7 @@ public class PrefixMappingImpl implements PrefixMapping
         {
         if (uri.equals( "" )) return false;
         char last = uri.charAt( uri.length() - 1 );
-        return !XMLChar.isNCName( last ); 
+        return !XMLUtil.isNCNameChar( last ); 
         }
         
     /**
@@ -106,11 +106,11 @@ public class PrefixMappingImpl implements PrefixMapping
     public PrefixMapping withDefaultMappings( PrefixMapping other )
         {
         checkUnlocked();
-        Iterator it = other.getNsPrefixMap().entrySet().iterator();
+        Iterator<Map.Entry<String, String>> it = other.getNsPrefixMap().entrySet().iterator();
         while (it.hasNext())
             {
-            Map.Entry e = (Map.Entry) it.next();
-            String prefix = (String) e.getKey(), uri = (String) e.getValue();
+            Map.Entry<String, String> e = it.next();
+            String prefix = e.getKey(), uri = e.getValue();
             if (getNsPrefixURI( prefix ) == null && getNsURIPrefix( uri ) == null)
                 setNsPrefix( prefix, uri );
             }
@@ -125,14 +125,14 @@ public class PrefixMappingImpl implements PrefixMapping
         
          @param other the Map whose bindings we are to add to this.
     */
-    public PrefixMapping setNsPrefixes( Map other )
+    public PrefixMapping setNsPrefixes( Map<String, String> other )
         {
         checkUnlocked();
-        Iterator it = other.entrySet().iterator();
+        Iterator<Map.Entry<String, String>> it = other.entrySet().iterator();
         while (it.hasNext())
             {
-            Map.Entry e = (Map.Entry) it.next();
-            setNsPrefix( (String) e.getKey(), (String) e.getValue() );
+            Map.Entry<String, String> e = it.next();
+            setNsPrefix( e.getKey(), e.getValue() );
             }
         return this;
         }
@@ -142,18 +142,18 @@ public class PrefixMappingImpl implements PrefixMapping
     */
     private void checkLegal( String prefix )
         {
-        if (prefix.length() > 0 && !XMLChar.isValidNCName( prefix ))
+        if (prefix.length() > 0 && !XMLUtil.isNCName( prefix ))
             throw new PrefixMapping.IllegalPrefixException( prefix ); 
         }
         
     public String getNsPrefixURI( String prefix ) 
         { return get( prefix ); }
         
-    public Map getNsPrefixMap()
-        { return new HashMap( prefixToURI ); }
+    public Map<String, String> getNsPrefixMap()
+        { return new HashMap<String, String>( prefixToURI ); }
         
     public String getNsURIPrefix( String uri )
-        { return (String) URItoPrefix.get( uri ); }
+        { return URItoPrefix.get( uri ); }
         
     /**
         Expand a prefixed URI. There's an assumption that any URI of the form
@@ -193,7 +193,7 @@ public class PrefixMappingImpl implements PrefixMapping
         int split = Util.splitNamespace( uri );
         String ns = uri.substring( 0, split ), local = uri.substring( split );
         if (local.equals( "" )) return null;
-        String prefix = (String) URItoPrefix.get( ns );
+        String prefix = URItoPrefix.get( ns );
         return prefix == null ? null : prefix + ":" + local;
         }
     
@@ -213,8 +213,8 @@ public class PrefixMappingImpl implements PrefixMapping
     */
     public String shortForm( String uri )
         {
-        Map.Entry e = findMapping( uri, true );
-        return e == null ? uri : e.getKey() + ":" + uri.substring( ((String) e.getValue()).length() );
+        Map.Entry<String, String> e = findMapping( uri, true );
+        return e == null ? uri : e.getKey() + ":" + uri.substring( e.getValue().length() );
         }
         
     public boolean samePrefixMappingAs( PrefixMapping other )
@@ -244,13 +244,13 @@ public class PrefixMappingImpl implements PrefixMapping
         @param true if the match can be any leading substring, false for exact match
         @return some entry (k, v) such that uri starts with v [equal for partial=false]
     */
-    private Map.Entry findMapping( String uri, boolean partial )
+    private Map.Entry<String, String> findMapping( String uri, boolean partial )
         {
-        Iterator it = prefixToURI.entrySet().iterator();
+        Iterator<Map.Entry<String, String>> it = prefixToURI.entrySet().iterator();
         while (it.hasNext())
             {
-            Map.Entry e = (Map.Entry) it.next();
-            String ss = (String) e.getValue();
+            Map.Entry<String, String> e = (Map.Entry<String, String>) it.next();
+            String ss = e.getValue();
             if (uri.startsWith( ss ) && (partial || ss.length() == uri.length())) return e;
             } 
         return null;         

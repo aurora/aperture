@@ -79,7 +79,7 @@ public interface PrefixMapping
         @param map the Map whose maplets are to be added
         @return this PrefixMapping
     */
-    PrefixMapping setNsPrefixes( Map map );
+    PrefixMapping setNsPrefixes( Map<String, String> map );
     
     /**
          Update this PrefixMapping with the bindings in <code>map</code>, only
@@ -113,7 +113,7 @@ public interface PrefixMapping
         
         @return a copy of the internal String -> String mapping 
     */
-    Map getNsPrefixMap();
+    Map<String, String> getNsPrefixMap();
     
     /**
         Expand the uri using the prefix mappings if possible. If prefixed has the

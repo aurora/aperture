@@ -1,5 +1,6 @@
 package org.semanticdesktop.nepomuk.nrl.inference.utils;
 
+
 import info.aduna.xml.XMLUtil;
 
 import java.io.BufferedReader;
@@ -15,7 +16,6 @@ import java.util.logging.Logger;
 
 import org.semanticdesktop.nepomuk.nrl.inference.exceptions.WrappedIOException;
 
-import com.sun.org.apache.xerces.internal.util.XMLChar;
 
 
 
@@ -53,7 +53,7 @@ public class Util {
         }
         for (j = i + 1; j < lg; j++) {
             ch = uri.charAt(j);
-            if (XMLChar.isNCNameStart(ch)) {
+            if (XMLUtil.isNCNameChar(ch)) {
                 if (uri.charAt(j - 1) == ':'
                     && uri.lastIndexOf(':', j - 2) == -1)
                     continue; // split "mailto:me" as "mailto:m" and "e" !
@@ -69,7 +69,7 @@ public class Util {
 	 a possible split-point start.
 	 */
 	public static boolean notNameChar(char ch) {
-		return !XMLChar.isNCName(ch);
+		return !XMLUtil.isNCNameChar(ch);
 	}
 
 	public static BufferedReader readerFromURL(String urlStr) {

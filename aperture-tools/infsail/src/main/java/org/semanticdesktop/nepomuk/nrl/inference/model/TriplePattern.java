@@ -158,7 +158,7 @@ public class TriplePattern implements ClauseEntry {
      * of the same variable.
      */
     public boolean variantOf(TriplePattern pattern) {
-        Map vmap = new HashMap();
+        Map<Value, Value> vmap = new HashMap<Value, Value>();
         if ( ! variantOf(subject, pattern.subject, vmap) ) return false;
         if ( ! variantOf(predicate, pattern.predicate, vmap) ) return false;
       
@@ -168,7 +168,7 @@ public class TriplePattern implements ClauseEntry {
     /**
      * Test if one Value is a variant of another give a table of variable matches.
      */
-    private boolean variantOf(Value n, Value p, Map vmap) {
+    private boolean variantOf(Value n, Value p, Map<Value, Value> vmap) {
         if (n instanceof Variable) {
             if (p instanceof Variable) {
                 Object nMatch = vmap.get(n);

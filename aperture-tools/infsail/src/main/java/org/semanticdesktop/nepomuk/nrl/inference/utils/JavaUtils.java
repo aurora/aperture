@@ -186,7 +186,7 @@ public  class JavaUtils {
 		}
 
 		public Tree<C> addChild(C child) {
-			Tree t = new Tree(child);
+			Tree<C> t = new Tree<C>(child);
 			children.add(t);
 			return t;
 		}
@@ -213,7 +213,7 @@ public  class JavaUtils {
 			return children;
 		}
 		
-		public TreeIterator iterator() {
+		public TreeIterator<C> iterator() {
 			return new TreeIterator<C>(this);
 		}
 
@@ -378,7 +378,7 @@ public  class JavaUtils {
 	 * @throws InstantiationException 
 	 * @throws IllegalArgumentException 
 	 */
-	public static <C extends Object> List<C> stringsToList(List<String> list, Constructor cons) throws IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	public static <C extends Object> List<C> stringsToList(List<String> list, Constructor<C> cons) throws IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		List<C> res=new Vector<C>(list.size());
 		for (String i: list) {
 			res.add((C) cons.newInstance(i));
@@ -477,7 +477,7 @@ public  class JavaUtils {
 	 */
 	public static <C extends Object> String join(List<C> list, String delim) {
 		StringBuffer buffer = new StringBuffer();
-		Iterator i=list.iterator();
+		Iterator<C> i=list.iterator();
 		while (i.hasNext()) {
 			buffer.append(i.next().toString());
 			if (i.hasNext()) {

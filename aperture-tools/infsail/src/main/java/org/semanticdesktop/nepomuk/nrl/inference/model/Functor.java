@@ -82,7 +82,7 @@ public class Functor implements ClauseEntry {
      * @param name the name of the functor
      * @param args a list of Values defining the arguments
      */
-    public Functor(String name, List args) {
+    public Functor(String name, List<Value> args) {
         this.name = name;
         this.args = (Value[]) args.toArray(new Value[]{});
     }
@@ -105,7 +105,7 @@ public class Functor implements ClauseEntry {
      * @param registry a table of builtins to consult to check for 
      * implementations of this functor when used as a rule clause
      */
-    public Functor(String name, List args, BuiltinRegistry registry) {
+    public Functor(String name, List<Value> args, BuiltinRegistry registry) {
         this.name = name;
         this.args = (Value[]) args.toArray(new Value[]{});
         this.implementor = registry.getImplementation(name);
@@ -150,7 +150,6 @@ public class Functor implements ClauseEntry {
      */
     public boolean isGround(BindingEnvironment env) {
         for (int i = 0; i < args.length; i++) {
-            Value n = args[i];
             if (env.getBinding(args[i]) instanceof Variable) return false;
         }
         return true;
