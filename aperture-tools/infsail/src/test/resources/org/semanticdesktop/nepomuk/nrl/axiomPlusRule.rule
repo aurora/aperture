@@ -1,4 +1,0 @@
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-
--> (rdfs:isDefinedBy rdfs:subPropertyOf rdfs:seeAlso).
-[rdfs6:  (?a ?p ?b), (?p rdfs:subPropertyOf ?q) -> (?a ?q ?b)] 
