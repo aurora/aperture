@@ -8,7 +8,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="lib/winlaf-0.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/applewrapper-0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/DFKIUtils2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/infsail-0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/nrlvalidator-0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/unionsail-0.1.jar"/>
