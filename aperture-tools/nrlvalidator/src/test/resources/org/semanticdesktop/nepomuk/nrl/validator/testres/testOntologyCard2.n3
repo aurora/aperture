@@ -8,17 +8,17 @@
 ont1:Class1 a rdfs:Class .
 ont1:Class2 a rdfs:Class .
 
-# Error, datatype undefined
 ont1:Property1 a rdf:Property ;
      rdfs:domain ont1:Class1 ;
      rdfs:range  ont1:Class2 ;
 		 nrl:cardinality "1" .
 
-# no error, minimum cardinality can be zero
 ont1:Property2 a rdf:Property ;
      rdfs:domain ont1:Class1 ;
      rdfs:range  ont1:Class2 ;
 		 nrl:minCardinality "0"^^xsd:nonNegativeInteger .
+
+# two errors in the ontology
 
 # Error, maximum cardinality is not positive
 ont1:Property3 a rdf:Property ;
@@ -31,5 +31,4 @@ ont1:Property4 a rdf:Property ;
      rdfs:domain ont1:Class1 ;
      rdfs:range  ont1:Class2 ;
      nrl:minCardinality "3"^^xsd:nonNegativeInteger ;
-		 nrl:maxCardinality "2"^^xsd:positiveInteger .
-
+     nrl:maxCardinality "2"^^xsd:positiveInteger .

@@ -9,17 +9,14 @@
 :Instance3 a ont1:Class2 .
 :Instance4 a ont1:Class2 .
 
-# Error, datatype undefined
-:Instance1 ont1:Property1 :Instance2 .
+:Instance1 ont1:Property1 :Instance2 . # no error
+:Instance1 ont1:Property2 :Instance2 . # no error minCardinality = 0
 
-# minimum cardinality equal to zero is not an error
-:Instance1 ont1:Property2 :Instance2 .
+# Error, maximum cardinality is zero, so this triple 
+# violates the maxCardinality constraint
+:Instance1 ont1:Property3 :Instance2 . 
 
-# Error, maximum cardinality is zero
-:Instance1 ont1:Property3 :Instance2 .
-
-# Two errors, minimum cardinality higher than maximum cardinality
-# and maximum cardinality is 2
+# the maximum cardinality for Property4 is 2, so this should be an error
 :Instance1 ont1:Property4 :Instance2 .
 :Instance1 ont1:Property4 :Instance3 .
 :Instance1 ont1:Property4 :Instance4 .

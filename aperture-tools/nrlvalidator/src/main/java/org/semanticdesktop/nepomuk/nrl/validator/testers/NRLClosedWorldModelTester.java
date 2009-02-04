@@ -1,6 +1,7 @@
 package org.semanticdesktop.nepomuk.nrl.validator.testers;
 
 import java.io.IOException;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 
 import org.ontoware.aifbcommons.collection.ClosableIterable;
@@ -505,15 +506,15 @@ public class NRLClosedWorldModelTester implements ModelTester {
       try {
           iterator = _unionModel.findStatements(resource, NRL_MIN_CARDINALITY_URI, Variable.ANY);
           if (!iterator.hasNext()) {
-              return 0;
+              return -1;
           } else {
               Statement st = iterator.next();
               Node node = st.getObject();
               if (!(node instanceof Literal)) {
                   logger.warn("Weird, minimum cardinality of " + resource + " is not a literal");
-                  return 0;
+                  return -1;
               } else if (!checkLiteralRange(node.asLiteral(), RDFS.Literal, st)){
-                  return 0;
+                  return -1;
               } else {
                   return Integer.parseInt(node.asLiteral().getValue());
               }
@@ -528,16 +529,16 @@ public class NRLClosedWorldModelTester implements ModelTester {
       try {
           iterator = _unionModel.findStatements(resource, NRL_MAX_CARDINALITY_URI, Variable.ANY);
           if (!iterator.hasNext()) {
-              return 0;
+              return -1;
           } else {
               Statement st = iterator.next();
               Node node = st.getObject();
               if (!(node instanceof Literal)) {
                   logger.warn("Weird, maximum cardinality of " + resource + 
                       " is not a literal");
-                  return 0;
+                  return -1;
               } else if (!checkLiteralRange(node.asLiteral(), RDFS.Literal, st)){
-                return 0;
+                return -1;
               } else {
                   return Integer.parseInt(node.asLiteral().getValue());
               }
@@ -552,16 +553,16 @@ public class NRLClosedWorldModelTester implements ModelTester {
       try {
           iterator = _unionModel.findStatements(resource, NRL_CARDINALITY_URI, Variable.ANY);
           if (!iterator.hasNext()) {
-              return 0;
+              return -1;
           } else {
               Statement st = iterator.next();
               Node node = st.getObject();
               if (!(node instanceof Literal)) {
                   logger.warn("Weird, cardinality of " + resource + 
                       " is not a literal");
-                  return 0;
+                  return -1;
               } else if (!checkLiteralRange(node.asLiteral(), RDFS.Literal, st)){
-                return 0;
+                return -1;
               } else {
                   return Integer.parseInt(node.asLiteral().getValue());
               }
@@ -619,6 +620,10 @@ public class NRLClosedWorldModelTester implements ModelTester {
                             "INVALID DATA",
                             "Cardinality for " + p + " must be " + propertyCard,
                             statements);
+                  } else if (propertyCard == 0) {
+                      _report.addMessage(
+                			  MessageType.WARNING,
+							  "ONTOLOGY WARNING", "Cardinality for " + p + " is 0");
                   }
                   
                   if (propertyCard > 0 && (propertyMinCard > 0 || propertyMaxCard > 0))
@@ -641,6 +646,12 @@ public class NRLClosedWorldModelTester implements ModelTester {
                           "cardinality for " + p,
                           statements);
                   
+                  if (propertyMaxCard == 0) {
+                	  _report.addMessage(
+                			  MessageType.WARNING,
+							  "ONTOLOGY WARNING", "maxCardinality for " + p + " is 0");
+                  }
+                  
                   if (propertyMinCard > 0) {
                       // Check minimum cardinality
                       if (statements.length < propertyMinCard)
@@ -651,7 +662,7 @@ public class NRLClosedWorldModelTester implements ModelTester {
                             statements);
                   }
                   
-                  if (propertyMaxCard > 0) {
+                  if (propertyMaxCard >= 0) {
                       // Check maximum cardinality
                       if (statements.length > propertyMaxCard)
                         _report.addMessage(
