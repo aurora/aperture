@@ -24,7 +24,7 @@ public class ValidatorTest {
         ModelTester tester = new NRLClosedWorldModelTester();
         validator.setModelTesters(tester);
         ValidationReport report = validator.validate(stream, RDFFormat.TURTLE.getDefaultMIMEType());
-        printValidationReport(report);
+        //printValidationReport(report);
         assertEquals(errors, report.getMessages().size());
     }
     

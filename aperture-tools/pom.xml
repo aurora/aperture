@@ -20,6 +20,7 @@
 		<module>infsail</module>
 		<module>nrlvalidator</module>
 		<module>unionsail</module>
+		<module>demork</module>
 	</modules>
 
 	<properties>
