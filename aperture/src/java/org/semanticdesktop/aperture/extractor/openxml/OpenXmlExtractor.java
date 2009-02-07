@@ -425,6 +425,12 @@ public class OpenXmlExtractor implements Extractor {
                 // ignore
             }
         }
+        else if ("Manager".equals(localName)) {
+            addContactStatement(NCO.creator, value, metadata);
+        }
+        else if ("Company".equals(localName)) {
+            metadata.add(NCO.org, value);
+        }
         else if ("keywords".equals(localName)) {
             StringTokenizer tokenizer = new StringTokenizer(value, " \t.,;|/\\", false);
             while (tokenizer.hasMoreTokens()) {
