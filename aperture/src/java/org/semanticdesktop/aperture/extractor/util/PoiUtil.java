@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.StringTokenizer;
 
 import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.hpsf.DocumentSummaryInformation;
 import org.apache.poi.hpsf.PropertySetFactory;
 import org.apache.poi.hpsf.SummaryInformation;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
@@ -24,6 +25,7 @@ import org.ontoware.rdf2go.model.node.URI;
 import org.ontoware.rdf2go.vocabulary.RDF;
 import org.semanticdesktop.aperture.rdf.RDFContainer;
 import org.semanticdesktop.aperture.util.UriUtil;
+import org.semanticdesktop.aperture.vocabulary.NAO;
 import org.semanticdesktop.aperture.vocabulary.NCO;
 import org.semanticdesktop.aperture.vocabulary.NFO;
 import org.semanticdesktop.aperture.vocabulary.NIE;
@@ -70,6 +72,30 @@ public class PoiUtil {
         return summary;
     }
 
+    /**
+     * Returns the SummaryInformation holding the document metadata from a POIFSFileSystem. Any POI-related or
+     * I/O Exceptions that may occur during this operation are ignored and 'null' is returned in those cases.
+     * 
+     * @param poiFileSystem The POI file system to obtain the metadata from.
+     * @return A populated SummaryInformation, or 'null' when the relevant document parts could not be
+     *         located.
+     */
+    public static DocumentSummaryInformation getDocumentSummaryInformation(POIFSFileSystem poiFileSystem) {
+        DocumentSummaryInformation docSummary = null;
+
+        try {
+            DocumentInputStream docInputStream = poiFileSystem
+                    .createDocumentInputStream(DocumentSummaryInformation.DEFAULT_STREAM_NAME);
+            docSummary = (DocumentSummaryInformation) PropertySetFactory.create(docInputStream);
+            docInputStream.close();
+        }
+        catch (Exception e) {
+            // ignore
+        }
+
+        return docSummary;
+    }
+    
     /**
      * Extract all metadata from an OLE document.
      * 
@@ -139,6 +165,13 @@ public class PoiUtil {
                     container.add(NIE.keyword, keyword);
                 }
             }
+        }
+        
+        DocumentSummaryInformation docSummary = getDocumentSummaryInformation(poiFileSystem);
+        if(docSummary != null) {
+            copyContact(docSummary.getManager(), NCO.contributor, container);
+            copyString(docSummary.getCompany(), NCO.org, container);
+            copyString(docSummary.getCategory(), NAO.hasTopic, container);
         }
     }
 
