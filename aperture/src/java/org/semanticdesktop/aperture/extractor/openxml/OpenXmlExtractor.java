@@ -426,7 +426,7 @@ public class OpenXmlExtractor implements Extractor {
             }
         }
         else if ("Manager".equals(localName)) {
-            addContactStatement(NCO.creator, value, metadata);
+            addContactStatement(NCO.contributor, value, metadata);
         }
         else if ("Company".equals(localName)) {
             metadata.add(NCO.org, value);
