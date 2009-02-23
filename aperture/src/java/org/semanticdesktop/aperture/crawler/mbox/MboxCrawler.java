@@ -369,7 +369,7 @@ public class MboxCrawler extends AbstractJavaMailCrawler {
             hash = IOUtil.rollingHash(message.getInputStream());
         }
         catch (IOException e1) {
-            throw new MessagingException("Couldn't obtain a hash of the message");
+            throw new MessagingException("Couldn't obtain a hash of the message",e1);
         }
         
         if (messageIds != null && messageIds.length > 0) {
