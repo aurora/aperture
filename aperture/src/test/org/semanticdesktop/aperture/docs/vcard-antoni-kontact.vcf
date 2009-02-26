@@ -4,7 +4,7 @@ ADR;TYPE=work:;;Trippstadter Strasse 122;Kaiserslautern;Rheinland-Pfalz;676
  63;Niemcy
 ADR;TYPE=intl;TYPE=postal;TYPE=work:;;Trippstadter Str. 122;Kaiserslautern;
  Rheinland-Pfalz;67663;Niemcy
-BDAY:1985-01-28T00:00:00Z
+BDAY:19850128T000000Z
 CLASS:PUBLIC
 EMAIL;TYPE=PREF:antoni.mylka.kde@somedomain.com
 EMAIL:antoni.mylka.otherkde@otherdomain.com
@@ -362,7 +362,7 @@ PHOTO;ENCODING=b;TYPE=image/jpeg:/9j/4AAQSkZJRgABAQIAAAAAAAD/2wBDAAEBAQEBAQ
  XEnh3QjHZ+NPEehaJq0kf2mGxk1uGzcafJJIltM0MqWrgzNFM+WhUgEISShort9H+F3hLxk+r+I
  tdtZ7nVL/Vn+0zebGQwgsNPggVVmhmMaQ28cUCIjKgSNWKmVpJHK+CTw9k3VxKejajCDSel0m6q
  bSa0bSbXRdPa9rUvpCm1fRylUvb3bXs7X11tpvbRn/9k=
-REV:2008-01-28T15:50:16Z
+REV:20080128T155016Z
 ROLE:Software Developer
 TEL;TYPE=HOME:+48 91 3 177 6584
 TEL;TYPE=WORK:+48 12 617 23 34
