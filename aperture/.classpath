@@ -59,6 +59,5 @@
 	<classpathentry exported="true" kind="lib" path="lib/org.eclipse.osgi_3.4.0.v20080605-1900.jar"/>
 	<classpathentry kind="lib" path="lib/ical4j-1.0-rc1.jar"/>
 	<classpathentry kind="lib" path="lib/ical4j-vcard-0.9.1-SNAPSHOT.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/ical4j-vcard"/>
 	<classpathentry kind="output" path="build_eclipse"/>
 </classpath>
