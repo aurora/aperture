@@ -461,7 +461,7 @@ public class DataObjectFactory {
         // i.e. for the extraction of the actual content stream
         if (emptyContent) {
             // we explicitly don't need any content from this mail part
-            result = handleEmptyContentSinglePart(uri);
+            result = handleEmptyContentSinglePart(uri, messageCreationDate);
         }
         else if ("message/rfc822".equals(mimeType)) {
             // the part is a message in itself, we need to crawl into it
@@ -532,9 +532,11 @@ public class DataObjectFactory {
      * @param uri the uri of the mail part that is to be exempted from the content extraction
      * @return a hashmap containing a single ID key with the uri value
      */
-    private HashMap handleEmptyContentSinglePart(URI uri) {
+    private HashMap handleEmptyContentSinglePart(URI uri, Date messageCreationDate) {
         HashMap result = new HashMap();
         result.put(ID_KEY, uri);
+        if( messageCreationDate != null )
+      	  result.put( NIE.contentCreated, messageCreationDate );
         return result;
     }
 
