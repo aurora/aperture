@@ -10,14 +10,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import junit.framework.TestCase;
+
 import org.ontoware.rdf2go.model.node.impl.URIImpl;
-import org.semanticdesktop.aperture.ApertureTestBase;
 import org.semanticdesktop.aperture.mime.identifier.MimeTypeIdentifier;
 import org.semanticdesktop.aperture.util.IOUtil;
 import org.semanticdesktop.aperture.util.ResourceUtil;
 
-public class TestMagicMimeTypeIdentifier extends ApertureTestBase {
+public class TestMagicMimeTypeIdentifier extends TestCase {
 
+    protected static final String DOCS_PATH = "org/semanticdesktop/aperture/docs/";
+    
 	public void testXmlFileParsing() {
 		// test whether the Java class file description contains the right byte sequence (ca fe ba be)
 		byte[] requiredBytes = new byte[] { (byte) 202, (byte) 254, (byte) 186, (byte) 190 };
