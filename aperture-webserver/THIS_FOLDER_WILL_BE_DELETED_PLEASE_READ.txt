@@ -1,0 +1,8 @@
+THIS FOLDER WILL BE REMOVED!!!!!
+
+THE CURRENT APERTURE-WEBSERVER TRUNK HAS BEEN MOVED HERE
+
+http://aperture.svn.sourceforge.net/svnroot/aperture/aperture-webserver/trunk
+
+PLEASE UPDATE YOUR WORKING COPIES!!!!
+THIS FOLDER WILL BE REMOVED SHORTLY!!!

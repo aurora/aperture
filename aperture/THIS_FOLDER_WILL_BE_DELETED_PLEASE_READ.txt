@@ -1,0 +1,11 @@
+THIS FOLDER WILL BE REMOVED!!!!!
+
+THE CURRENT APERTURE TRUNK IS BUILT WITH MAVEN IS LOCATED HERE:
+
+http://aperture.svn.sourceforge.net/svnroot/aperture/aperture/trunk
+
+IF YOU REALLY NEED TO WORK WITH THIS ANT-BASED CODEBASE, IT HAS BEEN MOVED TO
+
+http://aperture.svn.sourceforge.net/svnroot/aperture/aperture/branches/aperture_old_ant_trunk
+
+PLEASE UPDATE YOUR WORKING COPIES!!!!

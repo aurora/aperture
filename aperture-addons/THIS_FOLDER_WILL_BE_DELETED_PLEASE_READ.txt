@@ -1,0 +1,8 @@
+THIS FOLDER WILL BE REMOVED!!!!!
+
+THE CURRENT APERTURE-ADDONS TRUNK HAS BEEN MOVED HERE
+
+http://aperture.svn.sourceforge.net/svnroot/aperture/aperture-addons/trunk
+
+PLEASE UPDATE YOUR WORKING COPIES!!!!
+THIS FOLDER WILL BE REMOVED SHORTLY!!!
